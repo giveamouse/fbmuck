@@ -88,7 +88,7 @@ typedef void (*Gui_CB) (GUI_EVENT_CB_ARGS);
 /*
  * Do this when the muck itself starts.
  */
-void gui_initialize();
+void gui_initialize(void);
 
 /*
  * First you check to see if the MCP GUI package is supported.
