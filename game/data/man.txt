@@ -101,7 +101,7 @@ Array Manipulation:
   array_get_reflist  array_put_reflist  array_get_proplist array_put_proplist
   array_get_propvals array_put_propvals array_get_propdirs array_filter_prop
   array_matchkey     array_matchval     array_extract      array_join
-  array_excludeval   array_sort_indexed }join
+  array_excludeval   array_sort_indexed }join              array_get_ignorelist
   
 Connection Management:
   awake?        online         online_array    concount
@@ -137,7 +137,7 @@ MCP GUI Package Defines:
   c_combobox      c_listbox      c_spinner     c_scale      c_menu
   c_frame         c_notebook
   
-MUF Program and Process Meta-Primitives.
+MUF Program and Process Meta-Primitives:
   instances       compiled?   compile   uncompile   program_getlines
   debugger_break
   
@@ -153,7 +153,8 @@ Misc:
   pname-ok?   prog            random       recycle       rmatch
   set         setlink         setown       setseed       setsysparm
   srand       stats           sysparm      timestamps    toadplayer
-  trig        userlog         version
+  trig        userlog         version      ignoring?     ignore_add
+  ignore_del
   
 In the documentation some primitives are grouped together as:
   MATH OPERATORS
@@ -3977,5 +3978,24 @@ formatted like:
 Winged(#4023) [newaction.muf(#666)] 06/11/02 03:09:31: <string>
 The program must be running at a mucker level at least equal to the @tune
 value 'userlog_mlev' (defaults to 3) to write this log entry.
-
-
+~
+IGNORING?|
+IGNORING? ( ref:Player1 ref:Player2 -- int:Result )
+Returns true if either player has an ignore set for the other.  If one of
+the players is an unquelled wizard this will always return false.
+This primitive requires at least Mucker Level 3.
+~
+IGNORE_ADD|
+IGNORE_ADD ( ref:Player ref:Who -- )
+Adds the player "Who" to "Player"'s ignore list.
+This primitive requires at least Mucker Level 3.
+~
+IGNORE_DEL|
+IGNORE_DEL ( ref:Player ref:Who -- )
+Removes the player "Who" from "Player"'s ignore list.
+This primitive requires at least Mucker Level 3.
+~
+ARRAY_GET_IGNORELIST|
+ARRAY_GET_IGNORELIST ( ref:Player -- list:Players )
+Returns a list array of players "Player" is ignoring.
+This primitive requires at least Mucker Level 3.
