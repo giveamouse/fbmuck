@@ -1695,7 +1695,7 @@ prim_ansi_strcut(PRIM_PROTOTYPE)
 	while (*ptr) {
 		if ((*op++ = *ptr++) == ESCAPE_CHAR) {
 			if (*ptr == '\0') {
-				*op++ = *ptr++;
+				break;
 			} else if (*ptr != '[') {
 				*op++ = *ptr++;
 			} else {
@@ -1742,5 +1742,98 @@ prim_ansi_strip(PRIM_PROTOTYPE)
 
 	strip_ansi(buf, oper1->data.string->data);
 	CLEAR(oper1);
+	PushString(buf);
+}
+
+void
+prim_ansi_midstr(PRIM_PROTOTYPE)
+{
+	int loc, start, range;
+	const char* ptr;
+	char* op;
+	
+	CHECKOP(3);
+	oper1 = POP(); /* length */
+	oper2 = POP(); /* begin */
+	oper3 = POP(); /* string */
+	
+	if (oper3->type != PROG_STRING)
+		abort_interp("Non-string argument! (3)");
+	if (oper2->type != PROG_INTEGER)
+		abort_interp("Non-integer argument! (2)");
+	if (oper1->type != PROG_INTEGER)
+		abort_interp("Non-integer argument! (1)");
+	if (oper2->data.number < 1)
+		abort_interp("Data must be a positve integer. (2)");
+	if (oper1->data.number < 0)
+		abort_interp("Data must be a postive integer. (1)");
+
+	start = oper2->data.number - 1;
+	range = oper1->data.number;
+	
+	if (!oper3->data.string || start > oper3->data.string->length ||
+			range == 0) {
+		CLEAR(oper1);
+		CLEAR(oper2);
+		CLEAR(oper3);
+		PushNullStr;
+		return;
+	}
+	
+	ptr = oper3->data.string->data;
+	op = buf;
+	loc = 0;
+
+	if (start == 0)
+		goto after_locating_loop;
+	
+	/* First, loop till the beginning of the section to copy... */
+	while (*ptr && loc < start) {
+		if ((*ptr++) == ESCAPE_CHAR) {
+			if (*ptr == '\0') {
+				break;
+			} else if (*ptr != '[') {
+				*ptr++;
+			} else {
+				*ptr++;
+				while (isdigit(*ptr) || *ptr == ';')
+					*ptr++;
+				if (*ptr == 'm')
+					*ptr++;
+			}
+		} else {
+			loc++;
+		}
+	}
+after_locating_loop:;
+
+	
+	loc = 0;				
+	/* Then, start copying, and counting while we do... */
+	while (*ptr) {
+		if ((*op++ = *ptr++) == ESCAPE_CHAR) {
+			if (*ptr == '\0') {
+				break;
+			} else if (*ptr != '[') {
+				*op++ = *ptr++;
+			} else {
+				*op++ = *ptr++;
+				while (isdigit(*ptr) || *ptr == ';')
+					*op++ = *ptr++;
+				if (*ptr == 'm')
+					*op++ = *ptr++;
+			}
+		} else {
+			loc++;
+			if (loc == range) {
+				break;
+			}
+		}
+	}
+	*op = '\0';
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
 	PushString(buf);
 }

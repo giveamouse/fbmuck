@@ -39,7 +39,9 @@ Added MCP_REGISTER_EVENT ( strPkgName fltMinVers fltMaxVers -- ) MUF prim.
   sent for this package can be caught, not just the ones you bound.  Also,
   the process that will handle the events is kept alive, so your data stored
   in variables, or on the stack, is kept.
-
+Added ANSI_MIDSTR ( s i i -- s' ) MUF prim.
+  Does exactly what MIDSTR does, except it ignores ansi escapes when
+  determining what section of the string to extract. 
 
 
 2.2fb6.00a30
