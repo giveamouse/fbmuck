@@ -189,6 +189,7 @@ scopedvar_dupall(struct frame *fr, struct frame *oldfr)
 			copyinst(&cur->vars[count], &newsv->vars[count]);
 		}
 		*prev = newsv;
+		prev = &newsv->next;
 	}
 }
 
