@@ -44,6 +44,8 @@ do_name(int descr, dbref player, const char *name, char *newname)
 	dbref thing;
 	char *password;
 
+	NOGUEST("@name",player);
+
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		/* check for bad name */
 		if (*newname == '\0') {
@@ -111,6 +113,8 @@ do_describe(int descr, dbref player, const char *name, const char *description)
 {
 	dbref thing;
 
+	NOGUEST("@describe",player);
+
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETDESC(thing, description);
@@ -126,6 +130,8 @@ void
 do_idescribe(int descr, dbref player, const char *name, const char *description)
 {
 	dbref thing;
+
+	NOGUEST("@idescribe",player);
 
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
@@ -143,6 +149,8 @@ do_doing(int descr, dbref player, const char *name, const char *mesg)
 {
 	dbref thing;
 
+	NOGUEST("@doing",player);
+
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETDOING(thing, mesg);
@@ -159,6 +167,8 @@ do_fail(int descr, dbref player, const char *name, const char *message)
 {
 	dbref thing;
 
+	NOGUEST("@fail",player);
+
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETFAIL(thing, message);
@@ -174,6 +184,8 @@ void
 do_success(int descr, dbref player, const char *name, const char *message)
 {
 	dbref thing;
+
+	NOGUEST("@success",player);
 
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
@@ -192,6 +204,8 @@ do_drop_message(int descr, dbref player, const char *name, const char *message)
 {
 	dbref thing;
 
+	NOGUEST("@drop",player);
+
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETDROP(thing, message);
@@ -207,6 +221,8 @@ void
 do_osuccess(int descr, dbref player, const char *name, const char *message)
 {
 	dbref thing;
+
+	NOGUEST("@osuccess",player);
 
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
@@ -224,6 +240,8 @@ do_ofail(int descr, dbref player, const char *name, const char *message)
 {
 	dbref thing;
 
+	NOGUEST("@ofail",player);
+
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETOFAIL(thing, message);
@@ -239,6 +257,8 @@ void
 do_odrop(int descr, dbref player, const char *name, const char *message)
 {
 	dbref thing;
+
+	NOGUEST("@odrop",player);
 
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
@@ -256,6 +276,8 @@ do_oecho(int descr, dbref player, const char *name, const char *message)
 {
 	dbref thing;
 
+	NOGUEST("@oecho",player);
+
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETOECHO(thing, message);
@@ -271,6 +293,8 @@ void
 do_pecho(int descr, dbref player, const char *name, const char *message)
 {
 	dbref thing;
+
+	NOGUEST("@pecho",player);
 
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
@@ -315,6 +339,8 @@ do_conlock(int descr, dbref player, const char *name, const char *keyname)
 	struct boolexp *key;
 	struct match_data md;
 	PData mydat;
+
+	NOGUEST("@conlock",player);
 
 	init_match(descr, player, name, NOTYPE, &md);
 	match_absolute(&md);
@@ -363,6 +389,8 @@ do_flock(int descr, dbref player, const char *name, const char *keyname)
 	struct boolexp *key;
 	struct match_data md;
 	PData mydat;
+
+	NOGUEST("@force_lock",player);
 
 	init_match(descr, player, name, NOTYPE, &md);
 	match_absolute(&md);
@@ -417,6 +445,8 @@ do_chlock(int descr, dbref player, const char *name, const char *keyname)
 	struct match_data md;
 	PData mydat;
 
+	NOGUEST("@chown_lock",player);
+
 	init_match(descr, player, name, NOTYPE, &md);
 	match_absolute(&md);
 	match_everything(&md);
@@ -464,6 +494,8 @@ do_lock(int descr, dbref player, const char *name, const char *keyname)
 	struct boolexp *key;
 	struct match_data md;
 
+	NOGUEST("@lock",player);
+
 	init_match(descr, player, name, NOTYPE, &md);
 	match_absolute(&md);
 	match_everything(&md);
@@ -502,6 +534,8 @@ void
 do_unlock(int descr, dbref player, const char *name)
 {
 	dbref thing;
+
+	NOGUEST("@unlock",player);
 
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
@@ -629,6 +663,7 @@ _do_unlink(int descr, dbref player, const char *name, int quiet)
 void
 do_unlink(int descr, dbref player, const char *name)
 {
+	NOGUEST("@unlink",player);
 	/* do a regular, non-quiet unlink. */
 	_do_unlink(descr, player, name, 0);
 }
@@ -655,6 +690,8 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 	dbref good_dest[MAX_LINKS];
 	struct match_data md;
 	int ndest;
+
+	NOGUEST("@relink",player);
 
 	init_match(descr, player, thing_name, TYPE_EXIT, &md);
 	match_all_exits(&md);
@@ -864,6 +901,8 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	dbref thing;
 	const char *p;
 	object_flag_type f;
+
+	NOGUEST("@set",player);
 
 	/* find thing */
 	if ((thing = match_controlled(descr, player, name)) == NOTHING)
@@ -1099,6 +1138,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 	struct boolexp *lok;
 	PData mydat;
 
+	NOGUEST("@propset",player);
 
 	/* find thing */
 	if ((thing = match_controlled(descr, player, name)) == NOTHING)

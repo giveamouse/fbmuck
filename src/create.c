@@ -104,6 +104,8 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	char *rname, *qname;
 	int i, ndest;
 
+	NOGUEST("@open",player);
+
 	if (!Builder(player)) {
 		notify(player, "That command is restricted to authorized builders.");
 		return;
@@ -331,6 +333,8 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 
 	int ndest, i;
 
+	NOGUEST("@link",player);
+
 	init_match(descr, player, thing_name, TYPE_EXIT, &md);
 	match_all_exits(&md);
 	match_neighbor(&md);
@@ -476,6 +480,8 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	char *qname;
 	struct match_data md;
 
+	NOGUEST("@dig",player);
+
 	if (!Builder(player)) {
 		notify(player, "That command is restricted to authorized builders.");
 		return;
@@ -572,6 +578,8 @@ do_prog(int descr, dbref player, const char *name)
 	char buf[BUFFER_LEN];
 	struct match_data md;
 
+	NOGUEST("@program",player);
+
 	if (Typeof(player) != TYPE_PLAYER) {
 		notify(player, "Only players can edit programs.");
 		return;
@@ -659,6 +667,8 @@ do_edit(int descr, dbref player, const char *name)
 	dbref i;
 	struct match_data md;
 
+	NOGUEST("@edit",player);
+
 	if (Typeof(player) != TYPE_PLAYER) {
 		notify(player, "Only players can edit programs.");
 		return;
@@ -708,6 +718,8 @@ do_mcpedit(int descr, dbref player, const char *name)
 	McpFrame *mfr;
 	McpVer supp;
 
+	NOGUEST("@mcpedit",player);
+
 	mfr = descr_mcpframe(descr);
 	if (!mfr) {
 		do_edit(descr, player, name);
@@ -755,6 +767,8 @@ do_mcpprogram(int descr, dbref player, const char* name)
 	char buf[BUFFER_LEN];
 	struct match_data md;
 	int jj;
+
+	NOGUEST("@mcpprogram",player);
 
 	if (Typeof(player) != TYPE_PLAYER) {
 		notify(player, "Only players can edit programs.");
@@ -989,6 +1003,8 @@ do_clone(int descr, dbref player, char *name)
 
 	/* Perform sanity checks */
 
+	NOGUEST("@clone",player);
+
 	if (!Builder(player)) {
 		notify(player, "That command is restricted to authorized builders.");
 		return;
@@ -1103,6 +1119,8 @@ do_create(dbref player, char *name, char *acost)
 	static char buf[BUFFER_LEN];
 	char buf2[BUFFER_LEN];
 	char *rname, *qname;
+
+	NOGUEST("@create",player);
 
 	strcpy(buf2, acost);
 	for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
@@ -1299,6 +1317,8 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 	char buf2[BUFFER_LEN];
 	char *rname, *qname;
 
+	NOGUEST("@action",player);
+
 	if (!Builder(player)) {
 		notify(player, "That command is restricted to authorized builders.");
 		return;
@@ -1364,8 +1384,10 @@ void
 do_attach(int descr, dbref player, const char *action_name, const char *source_name)
 {
 	dbref action, source;
-	dbref loc;					/* player's current location */
+	dbref loc;				/* player's current location */
 	struct match_data md;
+
+	NOGUEST("@attach",player);
 
 	if ((loc = DBFETCH(player)->location) == NOTHING)
 		return;

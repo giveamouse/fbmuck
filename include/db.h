@@ -106,6 +106,7 @@ typedef int dbref;				/* offset into db */
 #define MESGPROP_CONLOCK	"_/clk"
 #define MESGPROP_CHLOCK		"_/chlk"
 #define MESGPROP_VALUE		"@/value"
+#define MESGPROP_GUEST		"@/isguest"
 
 #define GETMESG(x,y)   (get_property_class(x, y))
 #define GETDESC(x)	GETMESG(x, MESGPROP_DESC)
@@ -166,6 +167,9 @@ typedef int dbref;				/* offset into db */
 #define GETVALUE(x)	get_property_value(x, MESGPROP_VALUE)
 #define SETVALUE(x,y)	add_property(x, MESGPROP_VALUE, NULL, y)
 #define LOADVALUE(x,y)	add_prop_nofetch(x, MESGPROP_VALUE, NULL, y)
+
+#define ISGUEST(x)	(get_property(x, MESGPROP_GUEST) != NULL)
+#define NOGUEST(_cmd,x) if(ISGUEST(x)) { char tmpstr[BUFFER_LEN]; log_status("Guest %s(#%d) failed attempt to %s.\n",NAME(x),x,_cmd); snprintf(tmpstr, sizeof(tmpstr), "Guests are not allowed to %s.\r", _cmd); notify_nolisten(x,tmpstr,1); return; }
 
 #define DB_PARMSINFO     0x0001
 #define DB_COMPRESSED    0x0002

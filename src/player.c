@@ -141,6 +141,8 @@ create_player(const char *name, const char *password)
 void
 do_password(dbref player, const char *old, const char *newobj)
 {
+	NOGUEST("@password",player);
+
 	if (!PLAYER_PASSWORD(player) || !check_password(player, old)) {
 		notify(player, "Sorry, old password did not match current password.");
 	} else if (!ok_password(newobj)) {
