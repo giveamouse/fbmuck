@@ -497,10 +497,13 @@ prim_pmatch(PRIM_PROTOTYPE)
 		abort_interp("Non-string argument.");
 	if (!oper1->data.string)
 		abort_interp("Empty string argument.");
-	if (!string_compare(oper1->data.string->data, "me")) {
+
+        strip_ansi(buf, oper1->data.string->data);
+
+	if (!string_compare(buf, "me")) {
 		ref = player;
 	} else {
-		ref = lookup_player(oper1->data.string->data);
+		ref = lookup_player(buf);
 	}
 	CLEAR(oper1);
 	PushObject(ref);
@@ -512,6 +515,7 @@ prim_match(PRIM_PROTOTYPE)
 {
 	struct inst *oper1=NULL, *oper2=NULL, *oper3=NULL, *oper4=NULL;
 	dbref ref;
+	char buf2[BUFFER_LEN];
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -525,8 +529,9 @@ prim_match(PRIM_PROTOTYPE)
 
 		(void) strcpy(buf, match_args);
 		(void) strcpy(tmppp, match_cmdname);
-		init_match(fr->descr, player, oper1->data.string->data, NOTYPE, &md);
-		if (oper1->data.string->data[0] == REGISTERED_TOKEN) {
+		strip_ansi(buf2, oper1->data.string->data);
+		init_match(fr->descr, player, buf2, NOTYPE, &md);
+		if (buf2[0] == REGISTERED_TOKEN) {
 			match_registered(&md);
 		} else {
 			match_all_exits(&md);

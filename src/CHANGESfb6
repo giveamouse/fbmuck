@@ -1,4 +1,6 @@
 2.2fb6.00b4
+Fixed bug #424057 -- MATCH and PMATCH primitives now strip ansi sequences
+  before processing.
 Changed password-change errors more informative, so "Sorry." isn't seen.
 Fixed bug #233181 -- now DETACH won't if -convert or -insanity is specified
   on the commandline.
