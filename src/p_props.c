@@ -897,8 +897,11 @@ prim_parseprop(PRIM_PROTOTYPE)
 	}
 	ptr = (oper2->data.string) ? oper2->data.string->data : "";
 	if (temp) {
-		result = oper4->data.number & (~MPI_ISLISTENER);
-		result |= Prop_Blessed(oper3->data.objref, type)? MPI_ISBLESSED : 0;
+		result = 0;
+		if (oper4->data.number)
+			result |= MPI_ISPRIVATE;
+		if (Prop_Blessed(oper3->data.objref, type))
+			result |= MPI_ISBLESSED;
 		ptr = do_parse_mesg(fr->descr, player, oper3->data.objref, temp, ptr, buf, result);
 		CLEAR(oper1);
 		CLEAR(oper2);
