@@ -54,7 +54,7 @@ getparent(dbref obj)
 		do {
 			if (Typeof(obj) == TYPE_THING && (FLAGS(obj) & VEHICLE) && limit-- > 0) {
 				obj = THING_HOME(obj);
-				if (Typeof(obj) == TYPE_PLAYER) {
+				if (obj != NOTHING && Typeof(obj) == TYPE_PLAYER) {
 					obj = PLAYER_HOME(obj);
 				}
 			} else {
