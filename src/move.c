@@ -2,6 +2,9 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.14  2001/10/29 19:18:21  revar
+ * Fixed crasher with doing a parent_loop_check on HOME.
+ *
  * Revision 1.13  2001/10/29 07:48:59  revar
  * Fixed parent loop checks to allow moving into #0.
  *
@@ -332,6 +335,18 @@ parent_loop_check(dbref source, dbref dest)
   unsigned int place = 0;
   dbref pstack[MAX_PARENT_DEPTH+2];
 
+  if (dest == HOME) {
+	  switch(Typeof(source)) {
+		  case TYPE_PLAYER:
+			  dest = PLAYER_HOME(source);
+			  break;
+		  case TYPE_THING:
+			  dest = THING_HOME(source);
+			  break;
+		  default:
+			  return 1;
+	  }
+  }
   if (location_loop_check(source, dest)) {
 	  return 1;
   }
