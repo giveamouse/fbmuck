@@ -1021,6 +1021,7 @@ void
 prim_getlinks(PRIM_PROTOTYPE)
 {
 	int i, count;
+	dbref my_obj;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -1029,29 +1030,30 @@ prim_getlinks(PRIM_PROTOTYPE)
 	CHECKREMOTE(oper1->data.objref);
 	if (Typeof(oper1->data.objref) == TYPE_PROGRAM)
 		abort_interp("Illegal object referenced.");
+	my_obj = oper1->data.objref;
 	CLEAR(oper1);
-	switch (Typeof(oper1->data.objref)) {
+	switch (Typeof(my_obj)) {
 	case TYPE_EXIT:
-		count = DBFETCH(oper1->data.objref)->sp.exit.ndest;
+		count = DBFETCH(my_obj)->sp.exit.ndest;
 		for (i = 0; i < count; i++) {
-			PushObject((DBFETCH(oper1->data.objref)->sp.exit.dest)[i]);
+			PushObject((DBFETCH(my_obj)->sp.exit.dest)[i]);
 		}
 		PushInt(count);
 		break;
 	case TYPE_PLAYER:
-		ref = PLAYER_HOME(oper1->data.objref);
+		ref = PLAYER_HOME(my_obj);
 		count = 1;
 		PushObject(ref);
 		PushInt(count);
 		break;
 	case TYPE_THING:
-		ref = THING_HOME(oper1->data.objref);
+		ref = THING_HOME(my_obj);
 		count = 1;
 		PushObject(ref);
 		PushInt(count);
 		break;
 	case TYPE_ROOM:
-		ref = DBFETCH(oper1->data.objref)->sp.room.dropto;
+		ref = DBFETCH(my_obj)->sp.room.dropto;
 		if (ref != NOTHING) {
 			count = 0;
 			PushInt(count);
