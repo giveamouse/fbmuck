@@ -326,8 +326,8 @@ prim_fmtstring(PRIM_PROTOTYPE)
 						abort_interp("Format specified object not valid.");
 					ref = oper2->data.objref;
 					CHECKREMOTE(ref);
-					if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
-						ts_lastuseobject(ref);
+					/* if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
+					   ts_lastuseobject(ref); */
 					if (NAME(ref)) {
 						strcpy(hold, PNAME(ref));
 					} else {

@@ -1,5 +1,15 @@
 /* $Header$
  * $Log: params.h,v $
+ * Revision 1.7  2001/09/17 13:26:00  points
+ * For MUF: Fixed problems with updating last_used on objects when only
+ * exits, contents or name was checked.  This was inconsistent use.  MUF
+ * will only update last_used now if a moveto occurs.
+ * Other: parenting loop check has now been added with an emegency escape
+ * to #0 when a loop can not be avoided.  Loop check has been made linear
+ * instead of recursive, and better handles the potential of 'things' in the
+ * envchain.  MAX_PARENT_DEPTH now limits envchain depth.  Extensive testing
+ * done, and have not been able to infloop the server anymore.
+ *
  * Revision 1.6  2000/11/30 05:26:46  revar
  * Updated TODO file.
  * Changed MAX_OUTPUT from a server #define to an @tune option.
@@ -106,7 +116,7 @@
 #define EXIT_DELIMITER ';'		/* delimiter for lists of exit aliases  */
 #define MAX_LINKS 50			/* maximum number of destinations for an exit */
 
-
+#define MAX_PARENT_DEPTH 256            /* Maximum parenting depth allowed. */
 
 #define PCREATE_FLAGS (BUILDER)	/* default flag bits for created players */
 

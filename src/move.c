@@ -2,6 +2,16 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.10  2001/09/17 13:26:01  points
+ * For MUF: Fixed problems with updating last_used on objects when only
+ * exits, contents or name was checked.  This was inconsistent use.  MUF
+ * will only update last_used now if a moveto occurs.
+ * Other: parenting loop check has now been added with an emegency escape
+ * to #0 when a loop can not be avoided.  Loop check has been made linear
+ * instead of recursive, and better handles the potential of 'things' in the
+ * envchain.  MAX_PARENT_DEPTH now limits envchain depth.  Extensive testing
+ * done, and have not been able to infloop the server anymore.
+ *
  * Revision 1.9  2001/06/25 07:53:56  winged
  * Fixed a build error (case TYPEOF instead of Typeof).  Ooops.
  *
@@ -127,9 +137,6 @@
 #include "match.h"
 #include "externs.h"
 
-/* Static declaration for this file... */
-static int parent_loop_check_int(dbref source, dbref dest, unsigned int level);
-
 void
 moveto(dbref what, dbref where)
 {
@@ -156,8 +163,11 @@ moveto(dbref what, dbref where)
 			break;
 		case TYPE_THING:
 			where = THING_HOME(what);
-			if (parent_loop_check(what, where))
-				where = PLAYER_HOME(OWNER(what));
+			if (parent_loop_check(what, where)) {
+			  where = PLAYER_HOME(OWNER(what));
+			  if (parent_loop_check(what, where))
+			    where = (dbref) 0;
+			}
 			break;
 		case TYPE_ROOM:
 			where = GLOBAL_ENVIRONMENT;
@@ -166,6 +176,29 @@ moveto(dbref what, dbref where)
 			where = OWNER(what);
 			break;
 		}
+		break;
+        default:
+	  if (parent_loop_check(what, where)) {
+	    switch (Typeof(what)) {
+		case TYPE_PLAYER:
+			where = PLAYER_HOME(what);
+			break;
+		case TYPE_THING:
+			where = THING_HOME(what);
+			if (parent_loop_check(what, where)) {
+			  where = PLAYER_HOME(OWNER(what));
+			  if (parent_loop_check(what, where))
+			    where = (dbref) 0;
+			}
+			break;
+		case TYPE_ROOM:
+			where = GLOBAL_ENVIRONMENT;
+			break;
+		case TYPE_PROGRAM:
+			where = OWNER(what);
+			break;
+		}
+	  }
 	}
 
 	/* now put what in where */
@@ -229,29 +262,57 @@ maybe_dropto(int descr, dbref loc, dbref dropto)
 	send_contents(descr, loc, dropto);
 }
 
+/* What are we doing here?  Quick explanation - we want to prevent
+   environment loops from happening.  Any item should always be able
+   to 'find' its way to room #0.  Since the loop check is recursive,
+   we also put in a max iteration check, to keep people from creating
+   huge envchains in order to bring the server down.  We have a loop
+   if we:
+   a) Try to parent to ourselves.
+   b) Parent to nothing (not really a loop, but won't get you to #0).
+   c) Parent to our own home (not a valid destination).
+   d) Find our source room down the environment chain.
+   Note: This system will only work if every step _up_ to this point has
+   resulted in a consistent (ie: no loops) environment.
+*/
+
 int
 parent_loop_check(dbref source, dbref dest)
-{
-    return parent_loop_check_int(source, dest, 0);
-}
-
-#define MAX_PARENT_RECURSE_LEVEL 256
-
-static int
-parent_loop_check_int(dbref source, dbref dest, unsigned int level)
 {   
-    if (level > MAX_PARENT_RECURSE_LEVEL)
-        return 0;               /* This is an error event. */
-    if (source == dest)
-	return 1;               /* That's an easy one! */
-    if (dest == NOTHING)
-	return 0;
-    if (dest == HOME)
-	return 0;
-    if (Typeof(dest) == TYPE_THING &&
-          parent_loop_check_int(source, THING_HOME(dest), (level+1)))
+  unsigned int level = 0;
+  unsigned int place = 0;
+  dbref pstack[MAX_PARENT_DEPTH+2];
+
+  if (source == dest) {
+    return 1;
+  }
+  pstack[0] = source;
+  pstack[1] = dest;
+
+  while (level < MAX_PARENT_DEPTH) {
+    /* if (Typeof(dest) == TYPE_THING) {
+         dest = THING_HOME(dest);
+       } */
+    dest = DBFETCH(dest)->location;
+    if (dest == NOTHING) {     /* We should never get this */
+      return 1;
+    }
+    if (dest == HOME) {        /* We should never get this, either. */
+      return 1;
+    }
+    if (dest == (dbref) 0) {   /* Reached the top of the chain. */
+      return 0;
+    }
+    /* Check to see if we've found this item before.. */
+    for (place = 0; place < (level+2); place++) {
+      if (pstack[place] == dest) {
 	return 1;
-    return parent_loop_check_int(source, DBFETCH(dest)->location, (level+1));
+      }
+    }
+    pstack[level+2] = dest;
+    level++;
+  }
+  return 1;
 }
 
 static int donelook = 0;
@@ -268,6 +329,28 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 
 	/* get old location */
 	old = DBFETCH(player)->location;
+
+	if (parent_loop_check(player, loc)) {
+	  switch (Typeof(player)) {
+	  case TYPE_PLAYER:
+	    loc = PLAYER_HOME(player);
+	    break;
+	  case TYPE_THING:
+	    loc = THING_HOME(player);
+	    if (parent_loop_check(player, loc)) {
+	      loc = PLAYER_HOME(OWNER(player));
+	      if (parent_loop_check(player, loc))
+		loc = (dbref) 0;
+	    }
+	    break;
+	  case TYPE_ROOM:
+	    loc = GLOBAL_ENVIRONMENT;
+	    break;
+	  case TYPE_PROGRAM:
+	    loc = OWNER(player);
+	    break;
+	  }
+	}
 
 	/* check for self-loop */
 	/* self-loops don't do move or other player notification */
@@ -969,10 +1052,19 @@ recycle(int descr, dbref player, dbref thing)
 			break;
 		case TYPE_THING:
 			if (THING_HOME(rest) == thing) {
-				if (PLAYER_HOME(OWNER(rest)) == thing)
-					PLAYER_SET_HOME(OWNER(rest), tp_player_start);
-				THING_SET_HOME(rest, PLAYER_HOME(OWNER(rest)));
-				DBDIRTY(rest);
+			  dbref loc;
+
+			  if (PLAYER_HOME(OWNER(rest)) == thing)
+			    PLAYER_SET_HOME(OWNER(rest), tp_player_start);
+			  loc = PLAYER_HOME(OWNER(rest));
+			  if (parent_loop_check(rest, loc)) {
+			    loc = OWNER(rest);
+			    if (parent_loop_check(rest, loc)) {
+			      loc = (dbref) 0;
+			    }
+			  }
+			  THING_SET_HOME(rest, loc);
+			  DBDIRTY(rest);
 			}
 			if (DBFETCH(rest)->exits == thing) {
 				DBFETCH(rest)->exits = DBFETCH(thing)->next;

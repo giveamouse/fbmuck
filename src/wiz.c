@@ -82,8 +82,12 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 			break;
 		case TYPE_THING:
 			destination = THING_HOME(victim);
-			if (parent_loop_check(victim, destination))
-				destination = PLAYER_HOME(OWNER(victim));
+			if (parent_loop_check(victim, destination)) {
+			  destination = PLAYER_HOME(OWNER(victim));
+			  if (parent_loop_check(victim, destination)) {
+			    destination = (dbref) 0;
+			  }
+			}
 			break;
 		case TYPE_ROOM:
 			destination = GLOBAL_ENVIRONMENT;

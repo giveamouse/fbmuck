@@ -277,8 +277,8 @@ prim_contents(PRIM_PROTOTYPE)
 	ref = DBFETCH(oper1->data.objref)->contents;
 	while (mlev < 2 && ref != NOTHING && (FLAGS(ref) & DARK) && !controls(ProgUID, ref))
 		ref = DBFETCH(ref)->next;
-	if (Typeof(oper1->data.objref) != TYPE_PLAYER &&
-		Typeof(oper1->data.objref) != TYPE_PROGRAM) ts_lastuseobject(oper1->data.objref);
+	/* if (Typeof(oper1->data.objref) != TYPE_PLAYER &&
+	   Typeof(oper1->data.objref) != TYPE_PROGRAM) ts_lastuseobject(oper1->data.objref); */
 	CLEAR(oper1);
 	PushObject(ref);
 }
@@ -297,7 +297,7 @@ prim_exits(PRIM_PROTOTYPE)
 	switch (Typeof(ref)) {
 	case TYPE_ROOM:
 	case TYPE_THING:
-		ts_lastuseobject(ref);
+	  /* ts_lastuseobject(ref); */
 	case TYPE_PLAYER:
 		ref = DBFETCH(ref)->exits;
 		break;
@@ -373,8 +373,8 @@ prim_truename(PRIM_PROTOTYPE)
 		strcpy(buf, "<garbage>");
 	} else {
 		CHECKREMOTE(ref);
-		if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
-			ts_lastuseobject(ref);
+		/* if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
+		   ts_lastuseobject(ref); */
 		if (NAME(ref)) {
 			strcpy(buf, NAME(ref));
 		} else {
@@ -402,8 +402,8 @@ prim_name(PRIM_PROTOTYPE)
 		strcpy(buf, "<garbage>");
 	} else {
 		CHECKREMOTE(ref);
-		if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
-			ts_lastuseobject(ref);
+		/* if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
+		   ts_lastuseobject(ref); */
 		if (NAME(ref)) {
 			strcpy(buf, PNAME(ref));
 		} else {
