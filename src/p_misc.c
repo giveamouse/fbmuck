@@ -739,7 +739,8 @@ prim_event_send(PRIM_PROTOTYPE)
 		temp1.data.array = arr;
 
 		sprintf(buf, "USER.%.32s", DoNullInd(oper2->data.string));
-		muf_event_add(destfr, buf, oper3, 0);
+		muf_event_add(destfr, buf, &temp1, 0);
+		CLEAR(&temp1);
 	}
 
 	CLEAR(oper1);
@@ -751,6 +752,7 @@ prim_event_send(PRIM_PROTOTYPE)
 void
 prim_pname_okp(PRIM_PROTOTYPE)
 {
+	CHECKOP(1);
 	oper1 = POP();
 	if (oper1->type != PROG_STRING)
 		abort_interp("Player name string expected.");
@@ -765,6 +767,7 @@ prim_pname_okp(PRIM_PROTOTYPE)
 void
 prim_name_okp(PRIM_PROTOTYPE)
 {
+	CHECKOP(1);
 	oper1 = POP();
 	if (oper1->type != PROG_STRING)
 		abort_interp("Object name string expected.");
