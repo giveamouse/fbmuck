@@ -139,6 +139,7 @@ Fixed a crasher bug with using various MPI commands on #0.
 Fixed a bug to make XYZ_TO_POLAR and POLAR_TO_XYZ set the NAN flag and
   return 0.0's, like the rest of the FP prims do.
 Fixed a crasher bug in MCP when client fails to send authentication key.
+Fixed bug with stringpfx and null string arguments.
 Changed ARRAY_GETRANGE to return empty list for out of range indexes.
 Changed the MIDSTR muf prim to consider the first char of a string to be
   position 1, instead of 0.  This makes it match the results of instr.
