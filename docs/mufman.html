@@ -6,11 +6,12 @@
 <p><hr size="6"><h3><a name="SectList">List of Topics by Category</a></h3>
 <h4>You can get more help on the following topics:</h4>
 <ul>  <li><a href="#DefDets">Details and Definitions</a></li>
-  <li><a href="#CompDefs">Compiler Directives</a></li>
+  <li><a href="#CompDefs">Macros and Compiler Directives</a></li>
   <li><a href="#StackOps">Stack Manipulation Operators</a></li>
   <li><a href="#VarHandling">Variables and Handling Thereof</a></li>
   <li><a href="#LogicOps">Logical Operators</a></li>
   <li><a href="#ExecStructs">Execution Control Structures</a></li>
+  <li><a href="#IOOps">I/O Operators</a></li>
   <li><a href="#MathOps">Mathematical Operators</a></li>
   <li><a href="#FloatOps">Floating Point Operators</a></li>
   <li><a href="#StringOps">String Manipulation Operators</a></li>
@@ -85,16 +86,18 @@
     <td nowrap> &nbsp; <a href="#&gt;=">&gt;=</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#@">@</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#\">\</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#__version">__version</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#__fuzzball__">__fuzzball__</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#__muckname">__muckname</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#__version">__version</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#{">{</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#}">}</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#}dict">}dict</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#}join">}join</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#}list">}list</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#}join">}join</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#}list">}list</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#}tell">}tell</a> &nbsp; </td>
   </tr>
 </table></blockquote>
@@ -172,6 +175,11 @@
   </tr>
   <tr>
     <td nowrap> &nbsp; <a href="#array_ndiff">array_ndiff</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#array_nested_del">array_nested_del</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#array_nested_get">array_nested_get</a> &nbsp; </td>
+  </tr>
+  <tr>
+    <td nowrap> &nbsp; <a href="#array_nested_set">array_nested_set</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_next">array_next</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_nintersect">array_nintersect</a> &nbsp; </td>
   </tr>
@@ -225,7 +233,6 @@
     <td nowrap> &nbsp; <a href="#blessprop">blessprop</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#break">break</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#breakpoints">breakpoints</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#bunny">bunny</a> &nbsp; </td>
   </tr>
 </table></blockquote>
 
@@ -299,7 +306,6 @@
   <tr>
     <td nowrap> &nbsp; <a href="#copyplayer">copyplayer</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#cos">cos</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#credits">credits</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#ctoi">ctoi</a> &nbsp; </td>
   </tr>
 </table></blockquote>
@@ -450,25 +456,24 @@
     <td nowrap> &nbsp; <a href="#gmtoffset">gmtoffset</a> &nbsp; </td>
   </tr>
   <tr>
-    <td nowrap> &nbsp; <a href="#graffiti">graffiti</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#gui-options">gui-options</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#gui_available">gui_available</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#gui_ctrl_command">gui_ctrl_command</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#gui_ctrl_create">gui_ctrl_create</a> &nbsp; </td>
   </tr>
   <tr>
-    <td nowrap> &nbsp; <a href="#gui_ctrl_create">gui_ctrl_create</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#gui_dlog_close">gui_dlog_close</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#gui_dlog_create">gui_dlog_create</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#gui_dlog_helper">gui_dlog_helper</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#gui_dlog_show">gui_dlog_show</a> &nbsp; </td>
   </tr>
   <tr>
-    <td nowrap> &nbsp; <a href="#gui_dlog_show">gui_dlog_show</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#gui_dlog_simple">gui_dlog_simple</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#gui_dlog_tabbed">gui_dlog_tabbed</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#gui_value_get">gui_value_get</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#gui_value_set">gui_value_set</a> &nbsp; </td>
   </tr>
   <tr>
-    <td nowrap> &nbsp; <a href="#gui_value_set">gui_value_set</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#gui_values_get">gui_values_get</a> &nbsp; </td>
   </tr>
 </table></blockquote>
@@ -540,27 +545,30 @@
 <h4>M's</h4><blockquote><table border=0>
   <tr>
     <td nowrap> &nbsp; <a href="#match">match</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#max_variable_count">max_variable_count</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#mcp_bind">mcp_bind</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#mcp_register">mcp_register</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#mcp_register">mcp_register</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#mcp_register_event">mcp_register_event</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#mcp_send">mcp_send</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#mcp_supports">mcp_supports</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#mcp_supports">mcp_supports</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#me">me</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#midstr">midstr</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#mlevel">mlevel</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#mlevel">mlevel</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#mode">mode</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#modf">modf</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#movepennies">movepennies</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#movepennies">movepennies</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#moveto">moveto</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#mucker levels">mucker levels</a> &nbsp; </td>
+  </tr>
+  <tr>
     <td nowrap> &nbsp; <a href="#multitasking">multitasking</a> &nbsp; </td>
   </tr>
 </table></blockquote>
@@ -844,11 +852,10 @@
     <td width="20%"> &nbsp; <a href="#arrive">arrive</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#compilation">compilation</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#connect">connect</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#credits">credits</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#flags">flags</a> &nbsp; </td>
+    <td width="20%"> &nbsp; <a href="#libraries">libraries</a> &nbsp; </td>
   </tr>
   <tr>
-    <td width="20%"> &nbsp; <a href="#libraries">libraries</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#listeners">listeners</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#mucker levels">mucker levels</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#multitasking">multitasking</a> &nbsp; </td>
@@ -1131,64 +1138,91 @@ you want, but they are run in alphabetic order.
 <p>
 
 
-<hr><h4><a name="credits">Credits:
-<br>
-
-<br>
-The people responsible (at fault?) for this manual are:
-<br>
-</a></h4>
-    Revar (revar@belfry.com), who wrote the original terrible docs, and
-<p>
-    WhiteFire (kinomon@glia.biostr.washington.edu), who cleaned them up a lot.
-<p>
-    Fre'ta (tiger@tyger.org), who fixed sme errors.
-<p>
-    Revar (revar@belfry.com), who rewrote most of these docs.
-<p>
-
-
 
 <p><hr size=6>
-<h3><a name="CompDefs">Compiler Directives</a></h3>
+<h3><a name="CompDefs">Macros and Compiler Directives</a></h3>
 <blockquote><table border=0>
   <tr>
-    <td width="20%"> &nbsp; <a href="#$abort">$abort</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$author">$author</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$cleardefs">$cleardefs</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$def">$def</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$define">$define</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$abort">$abort</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$author">$author</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$cleardefs">$cleardefs</a> &nbsp; </td>
   </tr>
   <tr>
-    <td width="20%"> &nbsp; <a href="#$echo">$echo</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$ifcancall">$ifcancall</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$ifdef">$ifdef</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$iflib">$iflib</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$iflibver">$iflibver</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$def">$def</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$define">$define</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$echo">$echo</a> &nbsp; </td>
   </tr>
   <tr>
-    <td width="20%"> &nbsp; <a href="#$ifncancall">$ifncancall</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$ifndef">$ifndef</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$ifnlib">$ifnlib</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$ifnlibver">$ifnlibver</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$ifnver">$ifnver</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$ifcancall">$ifcancall</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$ifdef">$ifdef</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$iflib">$iflib</a> &nbsp; </td>
   </tr>
   <tr>
-    <td width="20%"> &nbsp; <a href="#$ifver">$ifver</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$include">$include</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$lib-version">$lib-version</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$libdef">$libdef</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$note">$note</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$iflibver">$iflibver</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$ifncancall">$ifncancall</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$ifndef">$ifndef</a> &nbsp; </td>
   </tr>
   <tr>
-    <td width="20%"> &nbsp; <a href="#$pubdef">$pubdef</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$undef">$undef</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#$version">$version</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#\">\</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#__version">__version</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$ifnlib">$ifnlib</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$ifnlibver">$ifnlibver</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$ifnver">$ifnver</a> &nbsp; </td>
+  </tr>
+  <tr>
+    <td width="33%"> &nbsp; <a href="#$ifver">$ifver</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$include">$include</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$lib-version">$lib-version</a> &nbsp; </td>
+  </tr>
+  <tr>
+    <td width="33%"> &nbsp; <a href="#$libdef">$libdef</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$note">$note</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$pubdef">$pubdef</a> &nbsp; </td>
+  </tr>
+  <tr>
+    <td width="33%"> &nbsp; <a href="#$undef">$undef</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$version">$version</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#\">\</a> &nbsp; </td>
+  </tr>
+  <tr>
+    <td width="33%"> &nbsp; <a href="#__fuzzball__">__fuzzball__</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#__muckname">__muckname</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#__version">__version</a> &nbsp; </td>
+  </tr>
+  <tr>
+    <td width="33%"> &nbsp; <a href="#max_variable_count">max_variable_count</a> &nbsp; </td>
   </tr>
 </table></blockquote>
 
+
+
+<hr><h4><a name="__fuzzball__">__FUZZBALL__
+<br>
+
+<br>
+</a></h4>
+  A pre$defined macro that contains the value 1 on a FuzzBall Muck server.
+This is useful for server-type specific $ifdefs, when code needs to be
+different on, say, FuzzBall Mucks and ProtoMucks.  For example:
+<pre>
+    $ifdef __fuzzball__
+        me @ &quot;This is a FuzzBall Muck server.!&quot; notify
+    $endif
+</pre>
+<p>
+
+
+<hr><h4><a name="__muckname">__MUCKNAME
+<br>
+
+<br>
+</a></h4>
+  A pre$defined macro that contains the name of the server's muckname @tune
+parameter value.  This is useful for muck specific $ifdefs.  For example:
+<pre>
+    $ifdef __muckname=FurryMUCK
+        me @ &quot;Helloooooo Furry!&quot; notify
+    $endif
+</pre>
+<p>
 
 
 <hr><h4><a name="__version">__VERSION
@@ -1201,6 +1235,23 @@ the same string that the VERSION primitive returns.  This is mainly useful
 in $ifdef/$ifndef comparisons.  The value of this will always start with
 'Muck2.2fb' for historical reasons, followed by the current fbmuck server
 version.  Ie: Muck2.2fb6.00 for the 6.00 fbmuck server.
+<p><h5>Also see:
+    <a href="#version">VERSION</a>,
+    <a href="#$ifdef">$IFDEF</a>,
+    <a href="#$define">$DEFINE</a> and
+    <a href="#$def">$DEF</a>
+</h5>
+<p>
+
+
+<hr><h4><a name="max_variable_count">MAX_VARIABLE_COUNT
+<br>
+
+<br>
+</a></h4>
+  A pre$defined macro that expands to the maximum number of variables of
+each type allowed in a program.  For function-scoped variables, this is the
+max number of scoped vars that each function may have.
 <p>
 
 
@@ -3182,6 +3233,132 @@ current program has permissions to call.  Returns false, otherwise.
 
 
 <p><hr size=6>
+<h3><a name="IOOps">I/O Operators</a></h3>
+<blockquote><table border=0>
+  <tr>
+    <td width="25%"> &nbsp; <a href="#notify">notify</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#notify_except">notify_except</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#notify_exclude">notify_exclude</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#read">read</a> &nbsp; </td>
+  </tr>
+  <tr>
+    <td width="25%"> &nbsp; <a href="#read_wants_blanks">read_wants_blanks</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#tread">tread</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#userlog">userlog</a> &nbsp; </td>
+  </tr>
+</table></blockquote>
+
+
+
+<hr><h4><a name="notify">NOTIFY ( d s -- )
+<br>
+
+<br>
+</a></h4>
+  d must be a player object. s must be a string. Tells player d message
+s.  If s is null it will print nothing.  This primitive will trigger
+the _listen'er property on the object the message is sent to, unless
+the program that would be run is the same as one one currently running.
+<p>
+
+
+<hr><h4><a name="notify_except">NOTIFY_EXCEPT ( d1 d2 s -- )
+<br>
+
+<br>
+</a></h4>
+  d1 must be a room object, s must be a string.  Tells everyone at
+location d1 except object d2 message s.  If object d2 is not a player
+or NOTHING (#-1) all players are notified.  If s is null it prints
+nothing.  NOTE: notify_except is now only an inserver $define.  It is
+translated to '1 swap notify_exclude'.  Please see the man sections on
+NOTIFY_EXCLUDE and DIRECTIVES for more information.
+<p>
+
+
+<hr><h4><a name="notify_exclude">NOTIFY_EXCLUDE (d dn ... d1 n s -- )
+<br>
+
+<br>
+</a></h4>
+  Displays the message s to all the players (or _listening objects),
+excluding the n given players, in the given room.  For example:
+<p>
+  #0 #1 #23 #7 3 &quot;Hi!&quot; notify_exclude
+would send &quot;Hi!&quot; to everyone in room #0 except for players (or objects)
+#1, #7, and #23.  _listener's will not be triggered by a notify_exclude
+if the program they would run is the same as the current program running.
+<p>
+
+
+<hr><h4><a name="read_wants_blanks">READ_WANTS_BLANKS ( -- )
+<br>
+
+<br>
+</a></h4>
+  Tells the interpreter that this process wants to be able to receive blank
+lines from the READ primitive.  If this is not executed, the process will
+silently ignore blank (&quot;&quot;) lines in READ.  This only needs to be done once
+per process, and isn't reversable.
+<p><h5>Also see:
+    <a href="#read">READ</a> and
+    <a href="#tread">TREAD</a>
+</h5>
+<p>
+
+
+<hr><h4><a name="read">READ ( -- s )
+<br>
+
+<br>
+</a></h4>
+  Reads a string s from the user. This command should not be used in a
+program that is locked (as opposed to linked) to an object, as the
+lock will always fail and print the fail messages at read time.  It
+cannot be used in a program associated with a room object.
+<p><h5>Also see:
+    <a href="#read_wants_blanks">READ_WANTS_BLANKS</a> and
+    <a href="#tread">TREAD</a>
+</h5>
+<p>
+
+
+<hr><h4><a name="tread">TREAD ( i -- s i )
+<br>
+
+<br>
+</a></h4>
+  Acts like a timed READ call.  If the user does not provide input within
+the given number of seconds, the READ call will time-out and return a
+false boolean, otherwise it returns a true boolean and the string value
+entered.  This is implemented as an in-server macro as follows:
+<p>
+    &quot;__tread&quot; timer_start { &quot;TIMER.__tread&quot; &quot;READ&quot; }list event_waitfor
+<p>
+    swap pop &quot;READ&quot; strcmp if &quot;&quot; 0 else read 1 &quot;__tread&quot; timer_stop then
+<p><h5>Also see:
+    <a href="#read_wants_blanks">READ_WANTS_BLANKS</a> and
+    <a href="#read">READ</a>
+</h5>
+<p>
+
+
+<hr><h4><a name="userlog">USERLOG ( str:mesg -- )
+<br>
+
+<br>
+</a></h4>
+  Logs an arbitrary message to the user log file.  (#defined in config.h
+as USER_LOG, defaults to the &quot;logs/user&quot; file.)  The log entry will be
+formatted like:
+Winged(#4023) [newaction.muf(#666)] 06/11/02 03:09:31: &lt;string&gt;
+The program must be running at a mucker level at least equal to the @tune
+value 'userlog_mlev' (defaults to 3) to write this log entry.
+<p>
+
+
+
+<p><hr size=6>
 <h3><a name="MathOps">Mathematical Operators</a></h3>
 <blockquote><table border=0>
   <tr>
@@ -4916,6 +5093,11 @@ Returns &quot;*UNLOCKED*&quot; if the object doesn't have a lock set.
   </tr>
   <tr>
     <td width="33%"> &nbsp; <a href="#array_ndiff">array_ndiff</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#array_nested_del">array_nested_del</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#array_nested_get">array_nested_get</a> &nbsp; </td>
+  </tr>
+  <tr>
+    <td width="33%"> &nbsp; <a href="#array_nested_set">array_nested_set</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_next">array_next</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_nintersect">array_nintersect</a> &nbsp; </td>
   </tr>
@@ -5138,6 +5320,90 @@ Returns the resulting array.
 </a></h4>
   Deletes a range of items between two indexes (inclusive) from
 an array.
+<p>
+
+
+<hr><h4><a name="array_nested_get">ARRAY_NESTED_GET ( a1 a2 -- ? )
+<br>
+
+<br>
+</a></h4>
+  Takes a nested array a1, and a list of array indexes a2, and recursively
+fetches nested sub-array values.  Returns 0 if the item doesn't exist.
+Example:
+<pre>
+    arr1 @ { &quot;foo&quot; 2 &quot;bar&quot; }list array_nested_get
+</pre>
+is roughly equivalent to
+<pre>
+    arr1 @ &quot;foo&quot; [] dup if
+        2 [] dup if
+            &quot;bar&quot; []
+        then
+    then
+</pre>
+<p>
+
+
+<hr><h4><a name="array_nested_set">ARRAY_NESTED_SET ( ? a a2 -- a' )
+<br>
+
+<br>
+</a></h4>
+  Sets the nested array entry in a, specified by the list of array indexes
+in a2, to the given value, creating new sub-arrays if needed.
+Example:
+<pre>
+    { }dict
+    &quot;qux&quot; swap { &quot;foo&quot; &quot;bar&quot; &quot;baz&quot; }list array_nested_set
+    4 swap { &quot;foo&quot; 2 &quot;clam&quot; }list array_nested_set
+</pre>
+would return the same array as
+<pre>
+    {
+        &quot;foo&quot; {
+            &quot;bar&quot; {
+                &quot;baz&quot; &quot;qux&quot;
+            }dict
+            2 {
+                &quot;clam&quot; 4
+            }dict
+        }dict
+    }dict
+</pre>
+<p>
+
+
+<hr><h4><a name="array_nested_del">ARRAY_NESTED_DEL ( a a2 -- a' )
+<br>
+
+<br>
+</a></h4>
+  Deletes the nested array entry in a, specified by the list of array
+indexes in a2.  Example:
+<pre>
+    {
+        &quot;foo&quot; {
+            &quot;bar&quot; {
+                &quot;baz&quot; &quot;qux&quot;
+            }dict
+            2 {
+                &quot;clam&quot; 4
+            }dict
+        }dict
+    }dict
+    { &quot;foo&quot; 2 }list array_nested_del
+</pre>
+would return the same array as
+<pre>
+    {
+        &quot;foo&quot; {
+            &quot;bar&quot; {
+                &quot;baz&quot; &quot;qux&quot;
+            }dict
+        }dict
+    }dict
+</pre>
 <p>
 
 
@@ -9917,40 +10183,12 @@ before the JMP or EXIT for each nexted FOR loop.
 <h3><a name="MiscOps">Miscellaneous</a></h3>
 <blockquote><table border=0>
   <tr>
-    <td width="25%"> &nbsp; <a href="#bunny">bunny</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#force">force</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#force_level">force_level</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#graffiti">graffiti</a> &nbsp; </td>
-  </tr>
-  <tr>
-    <td width="25%"> &nbsp; <a href="#notify">notify</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#notify_except">notify_except</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#notify_exclude">notify_exclude</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#read">read</a> &nbsp; </td>
-  </tr>
-  <tr>
-    <td width="25%"> &nbsp; <a href="#read_wants_blanks">read_wants_blanks</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#tread">tread</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#userlog">userlog</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#version">version</a> &nbsp; </td>
+    <td width="16%"> &nbsp; <a href="#force">force</a> &nbsp; </td>
+    <td width="16%"> &nbsp; <a href="#force_level">force_level</a> &nbsp; </td>
+    <td width="16%"> &nbsp; <a href="#version">version</a> &nbsp; </td>
   </tr>
 </table></blockquote>
 
-
-
-<hr><h4><a name="notify_exclude">NOTIFY_EXCLUDE (d dn ... d1 n s -- )
-<br>
-
-<br>
-</a></h4>
-  Displays the message s to all the players (or _listening objects),
-excluding the n given players, in the given room.  For example:
-<p>
-  #0 #1 #23 #7 3 &quot;Hi!&quot; notify_exclude
-would send &quot;Hi!&quot; to everyone in room #0 except for players (or objects)
-#1, #7, and #23.  _listener's will not be triggered by a notify_exclude
-if the program they would run is the same as the current program running.
-<p>
 
 
 <hr><h4><a name="version">VERSION ( -- s)
@@ -9959,24 +10197,9 @@ if the program they would run is the same as the current program running.
 <br>
 </a></h4>
   Returns the version of this code in a string. &quot;Muck2.2fb5.55&quot;, currently.
-<p>
-
-
-<hr><h4><a name="bunny">Easter Egg!
-<br>
-
-<br>
-</a></h4>
-    __
-<p>
-  ,'  `.
-<p>
- /______\
-|\/\/\/\/|
-|\/\/\/\/|
-\~~~~~~~~/
-<p>
- `.____,'
+<p><h5>Also see:
+    <a href="#__version">__VERSION</a>
+</h5>
 <p>
 
 
@@ -9986,17 +10209,9 @@ if the program they would run is the same as the current program running.
 <br>
 </a></h4>
   Forces player d to do action s as if they were @forced.  (wizbit only)
-<p>
-
-
-<hr><h4><a name="graffiti">Graffiti
-<br>
-
-<br>
-</a></h4>
-  Fre'ta waz here, September '95
-<p>
-  Back again March '96 (Stupid spelling errors)
+<p><h5>Also see:
+    <a href="#force_level">FORCE_LEVEL</a>
+</h5>
 <p>
 
 
@@ -10006,88 +10221,8 @@ if the program they would run is the same as the current program running.
 <br>
 </a></h4>
   Returns non-zero if the code we are running was triggered by an @force.
-<p>
-
-
-<hr><h4><a name="userlog">USERLOG ( str:mesg -- )
-<br>
-
-<br>
-</a></h4>
-  Logs an arbitrary message to the user log file.  (#defined in config.h
-as USER_LOG, defaults to the &quot;logs/user&quot; file.)  The log entry will be
-formatted like:
-Winged(#4023) [newaction.muf(#666)] 06/11/02 03:09:31: &lt;string&gt;
-The program must be running at a mucker level at least equal to the @tune
-value 'userlog_mlev' (defaults to 3) to write this log entry.
-<p>
-
-
-<hr><h4><a name="notify">NOTIFY ( d s -- )
-<br>
-
-<br>
-</a></h4>
-  d must be a player object. s must be a string. Tells player d message
-s.  If s is null it will print nothing.  This primitive will trigger
-the _listen'er property on the object the message is sent to, unless
-the program that would be run is the same as one one currently running.
-<p>
-
-
-<hr><h4><a name="notify_except">NOTIFY_EXCEPT ( d1 d2 s -- )
-<br>
-
-<br>
-</a></h4>
-  d1 must be a room object, s must be a string.  Tells everyone at
-location d1 except object d2 message s.  If object d2 is not a player
-or NOTHING (#-1) all players are notified.  If s is null it prints
-nothing.  NOTE: notify_except is now only an inserver $define.  It is
-translated to '1 swap notify_exclude'.  Please see the man sections on
-NOTIFY_EXCLUDE and DIRECTIVES for more information.
-<p>
-
-
-<hr><h4><a name="read">READ ( -- s )
-<br>
-
-<br>
-</a></h4>
-  Reads a string s from the user. This command should not be used in a
-program that is locked (as opposed to linked) to an object, as the
-lock will always fail and print the fail messages at read time.  It
-cannot be used in a program associated with a room object.
-<p>
-
-
-<hr><h4><a name="read_wants_blanks">READ_WANTS_BLANKS ( -- )
-<br>
-
-<br>
-</a></h4>
-  Tells the interpreter that this process wants to be able to receive blank
-lines from the READ primitive.  If this is not executed, the process will
-silently ignore blank (&quot;&quot;) lines in READ.  This only needs to be done once
-per process, and isn't reversable.
-<p>
-
-
-<hr><h4><a name="tread">TREAD ( i -- s i )
-<br>
-
-<br>
-</a></h4>
-  Acts like a timed READ call.  If the user does not provide input within
-the given number of seconds, the READ call will time-out and return a
-false boolean, otherwise it returns a true boolean and the string value
-entered.  This is implemented as an in-server macro as follows:
-<p>
-    &quot;__tread&quot; timer_start { &quot;TIMER.__tread&quot; &quot;READ&quot; }list event_waitfor
-<p>
-    swap pop &quot;READ&quot; strcmp if &quot;&quot; 0 else read 1 &quot;__tread&quot; timer_stop then
 <p><h5>Also see:
-    <a href="#read">READ</a>
+    <a href="#force">FORCE</a>
 </h5>
 <p>
 
