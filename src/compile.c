@@ -77,6 +77,7 @@ struct PROC_LIST {
 
 #define INTMEDFLG_DIVBYZERO 1
 #define INTMEDFLG_MODBYZERO 2
+#define INTMEDFLG_INTRY		4
 
 struct INTERMEDIATE {
 	int no;						/* which number instruction this is */
@@ -693,10 +694,16 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 	int i;
 	int lvarflag = 0;
 
+	if (first->flags & INTMEDFLG_INTRY)
+		return;
+
 	if (first->in.type == PROG_LVAR_AT || first->in.type == PROG_LVAR_AT_CLEAR)
 		lvarflag = 1;
 
 	for(; curr; curr = curr->next) {
+		if (curr->flags & INTMEDFLG_INTRY)
+			return;
+
 		switch(curr->in.type) {
 			case PROG_PRIMITIVE:
 				/* Don't trust any physical @ or !'s in the code, someone
@@ -3665,6 +3672,8 @@ prealloc_inst(COMPSTATE * cstat)
 
 	nu = alloc_inst();
 
+	nu->flags |= (cstat->nested_trys > 0) ? INTMEDFLG_INTRY : 0;
+
 	if (!cstat->nextinst) {
 		cstat->nextinst = nu;
 	} else {
@@ -3688,6 +3697,8 @@ new_inst(COMPSTATE * cstat)
 	}
 	cstat->nextinst = nu->next;
 	nu->next = NULL;
+
+	nu->flags |= (cstat->nested_trys > 0) ? INTMEDFLG_INTRY : 0;
 
 	return nu;
 }
