@@ -1127,7 +1127,7 @@ mfn_parse(MFUNARGS)
 	}
 
 	if (argc > 4) {
-		ptr = MesgParse(sepbuf, sepbuf);
+		ptr = MesgParse(sepbuf, sepoutbuf);
 		CHECKRETURN(ptr, "PARSE", "arg 5");
 		sepbuf = sepoutbuf;
 	} else {

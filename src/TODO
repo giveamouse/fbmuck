@@ -1,42 +1,40 @@
-These items are mandatory for FB6 release.
-  Fix security of {lexec} by requiring all listprops to be blessed, to
+These items are mandatory for FB6 release.  The number prefix is priority.
+
+1 Fix security of {lexec} by requiring all listprops to be blessed, to
     run blessed.
-  Change @bless and @unbless to allow specifying possible multiple props via
+1 Change @bless and @unbless to allow specifying possible multiple props via
     an smatch wildcard argument.  Should list all props thusly blessed.
-  Integrate multiple listener ports mods.
-  Fix compression bugs, or implement new compression schema.
-  Separate MPI perms away from Builder bit a la ProtoMUCK.
-  Implement Viewable flag for MUF program @listing.
 
-  Modify array code to allow floats and dbrefs as indexes.
-  ARRAY_FILTER_LOCK ([d] l -- [d']) As per ARRAY_FILTER_PROP, except only
-    those dbrefs that would pass the given lock are returned.
+2 Add memory usage based limits on MUF progs.
+2 Update documentation.
 
-  REFLIST_ADD ( ref:ToAdd ref:Object str:PropName -- ) Adds a dbref to a
+3 Integrate multiple listener ports mods.
+3 Fix compression bugs, or implement new compression schema.
+3 REFLIST_ADD ( ref:ToAdd ref:Object str:PropName -- ) Adds a dbref to a
     reflist if it is not already in the list.
-  REFLIST_DELETE ( ref:ToDel ref:Object str:PropName -- ) Removed a dbref
+3 REFLIST_DELETE ( ref:ToDel ref:Object str:PropName -- ) Removed a dbref
     from a reflist if it is in it.
-  REFLIST_FIND ( ref:ToFind ref:Object str:PropName -- int:Position ) Finds
+3 REFLIST_FIND ( ref:ToFind ref:Object str:PropName -- int:Position ) Finds
     a given dbref in a reflist, and returns its position.  Returns 0 if not
     found.  The first dbref in the reflist is 1.
 
-  CORD_OPEN  (          intDescr strType -- strCordID)
-  CORD_SEND  (strCordID strName dictData -- )
-  CORD_CLOSE (                 strCordID -- )
-
-  WATCHPROP (d s -- ) Specifies that this process wants to recieve an event
+4 Modify array code to allow floats and dbrefs as indexes.
+4 WATCHPROP (d s -- ) Specifies that this process wants to recieve an event
     when the given property on the given object is set, deleted, or changed.
     The event recieved will have an ID of "PROPCHANGE.#dbref.propname" where
     the dbref and the property name will be replaced by those of the property
     you specified.
-  FINDNEXT (d s1 s2 -- d) Finds the next object that matches the name pattern
-    s2, and the flag pattern s1.  The flag pattern is the same as that used in
-    @find or @owned.  A dbref of #-1 is returned when no more items match.
-    The search is debug with a dbref of #-1.  (Note - should this be broken down
-    into a FIND command and then just have a FINDNEXT ( d -- d ) portion?)
+
+5 CORD_OPEN  (          intDescr strType -- strCordID)
+5 CORD_SEND  (strCordID strName dictData -- )
+5 CORD_CLOSE (                 strCordID -- )
 
 
 These items may be considered to be optional for release:
+  Separate MPI perms away from Builder bit a la ProtoMUCK.
+  Implement Viewable flag for MUF program @listing.
+  Add Per-User CPU usage throttles.
+
   ISO-Latin high-bit character support.
   SWITCH/CASE compiler support within MUF.
   Secure communications layer.
@@ -44,6 +42,15 @@ These items may be considered to be optional for release:
     command line option to reset #1's password.
   MUF ability to call in-server commands acting as player (ie: WHO, or @dig).
   Integrate time() speedups.
+
+  ARRAY_FILTER_LOCK ([d] l -- [d']) As per ARRAY_FILTER_PROP, except only
+    those dbrefs that would pass the given lock are returned.
+
+  FINDNEXT (d s1 s2 -- d) Finds the next object that matches the name pattern
+    s2, and the flag pattern s1.  The flag pattern is the same as that used in
+    @find or @owned.  A dbref of #-1 is returned when no more items match.
+    The search is debug with a dbref of #-1.  (Note - should this be broken down
+    into a FIND command and then just have a FINDNEXT ( d -- d ) portion?)
 
 
 These items may be considered to be a wishlist:
