@@ -1,4 +1,6 @@
 2.2fb6.00b4
+Fixed problem in primitive NEWOBJECT where due to a logic error, objects were
+  not valid destinations.
 Fixed SSL connections that were broken by the MCP flush changes.
 Fixed garbage char at end of muf DEBUG lines.
 Fixed bug #205753 -- env-looping problems.
