@@ -193,7 +193,7 @@ clobber: cleaner
 
 nuke:
 	${RM} ${OBJ} core version.o
-	${RM} ${TARGETS} tags *~ *.bak *.orig
+	${RM} ${TARGETS} tags *~ *.bak *.orig *.cpp
 	${RM} Makefile config.status ${INCLUDE}/autoconf.h
 	cp Makefile.cfg Makefile
 	-${CLEAN} *
