@@ -1304,7 +1304,7 @@ process_command(int descr, dbref player, char *command)
 	totaltime = endtime.tv_sec + (endtime.tv_usec * 1.0e-6);
 	if (totaltime > (tp_cmd_log_threshold_msec / 1000.0)) {
 		log2file(LOG_CMD_TIMES, "%6.3fs, %.16s: %s%s%s%s(%d) in %s(%d):%s %s",
-					totaltime, ctime(&starttime.tv_sec),
+					totaltime, ctime((time_t *)&starttime.tv_sec),
 					Wizard(OWNER(player)) ? "WIZ: " : "",
 					(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
 					(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
