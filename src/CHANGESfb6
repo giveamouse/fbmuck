@@ -1,4 +1,7 @@
 2.2fb6.00b4
+Fixed problem in primitive SETLINK where due to a logic error, objects were
+  unable to become the 'home' of other objects.  Also allow setlink to now
+  parent rooms to objects.
 Fixed problem in primitive NEWOBJECT where due to a logic error, objects were
   not valid destinations.
 Fixed SSL connections that were broken by the MCP flush changes.
