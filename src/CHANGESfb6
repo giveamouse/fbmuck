@@ -1,6 +1,7 @@
 2.2fb6.00a33
 Fixed a string termination bug in ARRAY_PUT_REFLIST.
 Fixed a bug with ARRAY_GET_REFLIST not decompressing before parsing strings.
+Fixed a bug with zombies not echoing text.  Bug was introduced in O(1) code.
 Changed the build scripts to do 'configure' from the directory above src.
 Changed the restart script to look for netmuck in /usr/local/fbmuck/bin/
 Changed 'make install' to install the binaries to /usr/local/fbmuck/bin/

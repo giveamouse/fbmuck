@@ -542,7 +542,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 									(BUFFER_LEN - (strlen(prefix) + 2)), buf);
 						}
 
-						darr = get_player_descrs(player, &dcount);
+						darr = get_player_descrs(OWNER(player), &dcount);
                         for (di = 0; di < dcount; di++) {
                             queue_string(descrdata_by_descr(darr[di]), buf2);
                             if (firstpass) retval++;
@@ -951,7 +951,7 @@ flush_user_output(dbref player)
     int dcount;
 	struct descriptor_data *d;
 
-	darr = get_player_descrs(player, &dcount);
+	darr = get_player_descrs(OWNER(player), &dcount);
     for (di = 0; di < dcount; di++) {
         d = descrdata_by_descr(darr[di]);
         if (d && !process_output(d)) {
