@@ -30,7 +30,7 @@
 #define CTYPE_ELSE  2
 #define CTYPE_BEGIN 3
 #define CTYPE_FOR   4			/* Get it?  CTYPE_FOUR!!  HAHAHAHAHA  -Fre'ta */
-					  /* C-4?  *BOOM!*  -Revar */
+								/* C-4?  *BOOM!*  -Revar */
 #define CTYPE_WHILE 5
 #define CTYPE_TRY   6			/* reserved for exception handling */
 #define CTYPE_CATCH 7			/* reserved for exception handling */
@@ -41,6 +41,7 @@ static int IN_FORITER;
 static int IN_FOREACH;
 static int IN_FORPOP;
 static int IN_FOR;
+static int IN_BANG;
 
 
 static hash_tab primitive_list[COMP_HASH_SIZE];
@@ -68,7 +69,8 @@ struct PROC_LIST {
    when there is no hint or notion of how much code there
    will be, and to help resolve all references.
    There is always a pointer to the current word that is
-   being compiled kept.                                   */
+   being compiled kept.
+   */
 
 struct INTERMEDIATE {
 	int no;						/* which number instruction this is */
@@ -399,8 +401,8 @@ init_defs(COMPSTATE * cstat)
 	insert_def(cstat, "c_listbox", "\"listbox\"");
 	insert_def(cstat, "c_frame", "\"frame\"");
 	insert_def(cstat, "c_notebook", "\"notebook\"");
-	/* insert_def(cstat, "c_image",     "\"image\""); */
-	/* insert_def(cstat, "c_radiobtn",  "\"radio\""); */
+	insert_def(cstat, "c_image",     "\"image\"");
+	insert_def(cstat, "c_radiobtn",  "\"radio\"");
 
 	/* Backwards compatibility for old GUI dialog creation prims */
 	insert_def(cstat, "gui_dlog_simple", "d_simple 0 array_make_dict");
@@ -992,12 +994,26 @@ process_special(COMPSTATE * cstat, const char *token)
 	if (!string_compare(token, ":")) {
 		const char *proc_name;
 		struct INTERMEDIATE *new2;
+		int argsflag = 0;
+		int initvarcount = 0;
 
 		if (cstat->curr_proc)
 			abort_compile(cstat, "Definition within definition.");
 		proc_name = next_token(cstat);
 		if (!proc_name)
 			abort_compile(cstat, "Unexpected end of file within procedure.");
+
+		strcpy(buf, proc_name);
+		if (proc_name)
+			free((void *) proc_name);
+		proc_name = buf;
+
+		if (*proc_name && buf[strlen(buf)-1] == '[') {
+			argsflag = 1;
+			buf[strlen(buf)-1] = '\0';
+			if (!*proc_name)
+				abort_compile(cstat, "Bad procedure name.");
+		}
 
 		new = new_inst(cstat);
 		new->no = cstat->nowords++;
@@ -1013,10 +1029,49 @@ process_special(COMPSTATE * cstat, const char *token)
 
 		cstat->curr_proc = new;
 		cstat->curr_decl = new2;
-		add_proc(cstat, proc_name, new);
 
-		if (proc_name)
-			free((void *) proc_name);
+		if (argsflag) {
+			const char* varspec;
+			const char* varname;
+			int argsdone = 0;
+			int outflag = 0;
+
+			do {
+				varspec = next_token(cstat);
+				if (!varspec)
+					abort_compile(cstat, "Unexpected end of file within procedure.");
+
+				if (!strcmp(varspec, "]")) {
+					argsdone = 1;
+				} else if (!strcmp(varspec, "--")) {
+					outflag = 1;
+				} else if (!outflag) {
+					varname = index(varspec, ':');
+					if (varname) {
+						varname++;
+					} else {
+						varname = varspec;
+					}
+					if (add_scopedvar(cstat, varname) < 0)
+						abort_compile(cstat, "Variable limit exceeded.");
+
+					new2->in.data.number++;
+					initvarcount++;
+					if (varspec)
+						free((void *) varspec);
+				}
+			} while(!argsdone);
+		}
+
+		if (initvarcount > 0) {
+			struct INTERMEDIATE *new3;
+			new3 = (new2->next = new_inst(cstat));
+			new3->no = cstat->nowords++;
+			new3->in.type = PROG_INITVARS;
+			new3->in.line = cstat->lineno;
+			new3->in.data.number = initvarcount;
+		}
+		add_proc(cstat, proc_name, new);
 
 		return new;
 	} else if (!string_compare(token, ";")) {
@@ -1290,6 +1345,36 @@ process_special(COMPSTATE * cstat, const char *token)
 				abort_compile(cstat, "Variable limit exceeded.");
 			if (tok)
 				free((void *) tok);
+		}
+		return 0;
+	} else if (!string_compare(token, "VAR!")) {
+		if (cstat->curr_proc) {
+			struct INTERMEDIATE *new;
+			struct INTERMEDIATE *curr;
+
+			tok = next_token(cstat);
+			if (!tok)
+				abort_compile(cstat, "Unexpected end of program.");
+			if (add_scopedvar(cstat, tok) < 0)
+				abort_compile(cstat, "Variable limit exceeded.");
+			if (tok)
+				free((void *) tok);
+
+			new = new_inst(cstat);
+			new->no = cstat->nowords++;
+			new->in.type = PROG_SVAR;
+			new->in.line = cstat->lineno;
+			new->in.data.number = cstat->curr_decl->in.data.number++;
+
+			curr = (new->next = new_inst(cstat));
+			curr->no = cstat->nowords++;
+			curr->in.type = PROG_PRIMITIVE;
+			curr->in.line = cstat->lineno;
+			curr->in.data.number = IN_BANG;
+
+			return new;
+		} else {
+			abort_compile(cstat, "VAR! used outside of procedure.");
 		}
 		return 0;
 	} else if (!string_compare(token, "LVAR")) {
@@ -1798,6 +1883,7 @@ special(const char *token)
 					   && string_compare(token, "PUBLIC")
 					   && string_compare(token, "WIZCALL")
 					   && string_compare(token, "LVAR")
+					   && string_compare(token, "VAR!")
 					   && string_compare(token, "VAR")));
 }
 
@@ -2008,6 +2094,7 @@ copy_program(COMPSTATE * cstat)
 		case PROG_PRIMITIVE:
 		case PROG_INTEGER:
 		case PROG_DECLVAR:
+		case PROG_INITVARS:
 		case PROG_SVAR:
 		case PROG_LVAR:
 		case PROG_VAR:
@@ -2177,6 +2264,7 @@ init_primitives(void)
 	for (i = BASE_MIN; i <= BASE_MAX; i++) {
 		add_primitive(i);
 	}
+	IN_BANG = get_primitive("!");
 	IN_FORPOP = get_primitive(" FORPOP");
 	IN_FORITER = get_primitive(" FORITER");
 	IN_FOR = get_primitive(" FOR");

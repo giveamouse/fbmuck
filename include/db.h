@@ -1,6 +1,13 @@
 /* $Header$
  *
  * $Log: db.h,v $
+ * Revision 1.4  2000/05/08 08:21:17  revar
+ * Added VAR! directive to the muf compiler.
+ * Added procedural argument variable declaration.  ie: : myfunc[ foo bar baz ]
+ * Added MCP_REGISTER_EVENT for muf event based MCP handling.
+ * Changed MCP_SEND to error out on non-support of MCP on the given connection.
+ * Fixed Mucker Level error messages in MCP_REGISTER.
+ *
  * Revision 1.3  2000/04/29 04:16:04  revar
  * Added PROCESS_TIMER_LIMIT @tune.
  * Added TIMER_START muf prim.
@@ -336,6 +343,7 @@ struct line {
 #define PROG_DECLVAR     16		/* DECLare scoped VARiables */
 #define PROG_ARRAY       17		/* Array of other stack items. */
 #define PROG_MARK        18		/* Stack marker for [ and ] */
+#define PROG_INITVARS    19		/* Initializer for scoped vars */
 
 #define MAX_VAR         54		/* maximum number of variables including the
 								   * basic ME, LOC, TRIGGER, and COMMAND vars */

@@ -127,6 +127,9 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 	case PROG_DECLVAR:
 		sprintf(buffer, "DECLVAR(%dvars)", theinst->data.number);
 		break;
+	case PROG_INITVARS:
+		sprintf(buffer, "INITVARS(%dvars)", theinst->data.number);
+		break;
 	case PROG_IF:
 		sprintf(buffer, "IF->line%d", theinst->data.call->line);
 		break;

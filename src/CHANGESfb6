@@ -1,3 +1,47 @@
+2.2fb6.00a31
+Changed MCP_SEND to error out if the connection doesn't support the package.
+Fixed an error message in MCP_REGISTER.  (required ML3, not wizbit.)
+Added VAR! MUF compiler directive.  'var! foo' is the same as 'var foo foo !'.
+Added new MUF procedure declaration syntax, to allow the declaration and
+  initialization of procedure-local variables from the stack.  Basically, if
+  a procedure name ends with a '[' char, then that tells the compiler that
+  you are specifying a list of variables that should be declared and init-
+  ialized from the stack.  A ']' as a word terminates the list.  If a '--'
+  is found before the ']', then anything from the '--' to the ']' gets ignored,
+  and is treated sort of like a comment.  This lets coders specify what this
+  procedure is expected to return.  Each variable can also be preceeded by
+  an arbitrary type name and a colon (':'), as sort of a comment to show what
+  stack item types it is expected to be.  The line:
+      : myproc[ str:foo int:bar dbref:baz -- lock:qux ]
+  gets effectively translated to:
+      : myproc var! baz var! bar var! foo
+  Note that the type name and return section are optional, so the line:
+      : myproc[ foo bar baz ]
+  is effectively the same as the above example.  The declaration of the
+  returned values is _highly_ reccommended, though.  Type names may later
+  get used to test that the passed arguments are of the right types, auto-
+  matically.  This means that the type name should be one of 'addr', 'arr',
+  'dbref', 'dict', 'float', 'int', 'lock', 'str', 'var', or 'lvar'.
+Added MCP_REGISTER_EVENT ( strPkgName fltMinVers fltMaxVers -- ) MUF prim.
+  Registers an MCP package so that clients can know what is supported, and
+  marks this process as wanting to receive MCP messages as Muf Events.
+  These events can be read with EVENT_WAIT, and will have event ids starting
+  with "MCP.", followed by the package and message names.  The event data
+  will be a dictionary, containing "descr", "package", "message", and "args"
+  elements.  The args element will have a dictionary of message arguments as
+  it's value.  The minimum and maximum package versions supported are
+  represented as floating point numbers, with the minor version number being
+  divided by 1000.  For example, an MCP package of version 1.1 is represented
+  as 1.001, and a version of 1.23 is represented as 1.023.  This lets you use
+  arithmetic compares to check version numbers.  Since this primitive arranges
+  for MCP messages to be received as muf events, there is no need to use the
+  MCP_BIND primitive with this.  A side benefit is that _any_ MCP message
+  sent for this package can be caught, not just the ones you bound.  Also,
+  the process that will handle the events is kept alive, so your data stored
+  in variables, or on the stack, is kept.
+
+
+
 2.2fb6.00a30
 Reformatted all code to a uniform code style based off of K&R.
 Removed GUI_DLOG_SIMPLE MUF primitive and replaced it with a macro that

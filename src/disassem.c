@@ -2,6 +2,13 @@
 
 /*
  * $Log: disassem.c,v $
+ * Revision 1.3  2000/05/08 08:21:17  revar
+ * Added VAR! directive to the muf compiler.
+ * Added procedural argument variable declaration.  ie: : myfunc[ foo bar baz ]
+ * Added MCP_REGISTER_EVENT for muf event based MCP handling.
+ * Changed MCP_SEND to error out on non-support of MCP on the given connection.
+ * Fixed Mucker Level error messages in MCP_REGISTER.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -88,6 +95,10 @@ disassemble(dbref player, dbref program)
 		case PROG_ARRAY:
 			sprintf(buf, "%d: (line %d) ARRAY: %d items", i, curr->line,
 					curr->data.array ? curr->data.array->items : 0);
+			break;
+		case PROG_INITVARS:
+			sprintf(buf, "%d: (line %d) INITIALIZE SCOPED VARS: %d", i,
+					curr->line, curr->data.number);
 			break;
 		case PROG_DECLVAR:
 			sprintf(buf, "%d: (line %d) DECLARE SCOPED VARS: %d", i,

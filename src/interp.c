@@ -46,18 +46,22 @@ p_null(PRIM_PROTOTYPE)
 /* void    (*prim_func[]) (PRIM_PROTOTYPE) = */
 void (*prim_func[]) () = {
 	p_null, p_null, p_null, p_null, p_null, p_null, p_null, p_null,
-			/* JMP, READ,   TREAD,  SLEEP,  CALL,   EXECUTE, RETURN, EVENT_WAIT, */
-			PRIMS_CONNECTS_FUNCS,
-			PRIMS_DB_FUNCS,
-			PRIMS_MATH_FUNCS,
-			PRIMS_MISC_FUNCS,
-			PRIMS_PROPS_FUNCS,
-			PRIMS_STACK_FUNCS,
-			PRIMS_STRINGS_FUNCS,
+	/* JMP, READ,   TREAD,  SLEEP,  CALL,   EXECUTE, RETURN, EVENT_WAIT, */
+	PRIMS_CONNECTS_FUNCS,
+	PRIMS_DB_FUNCS,
+	PRIMS_MATH_FUNCS,
+	PRIMS_MISC_FUNCS,
+	PRIMS_PROPS_FUNCS,
+	PRIMS_STACK_FUNCS,
+	PRIMS_STRINGS_FUNCS,
 
-			PRIMS_ARRAY_FUNCS,
-			PRIMS_FLOAT_FUNCS,
-			PRIMS_ERROR_FUNCS, PRIMS_MCP_FUNCS, PRIMS_INTERNAL_FUNCS, (void *) NULL};
+	PRIMS_ARRAY_FUNCS,
+	PRIMS_FLOAT_FUNCS,
+	PRIMS_ERROR_FUNCS,
+	PRIMS_MCP_FUNCS,
+	PRIMS_INTERNAL_FUNCS,
+	(void *) NULL
+};
 
 void
 scopedvar_addlevel(struct frame *fr, int count)
@@ -688,6 +692,26 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			else
 				pc++;
 			CLEAR(temp1);
+			break;
+
+		case PROG_INITVARS:
+			{
+				int i = pc->data.number;
+				if (atop < i)
+					abort_loop("Stack Underflow.", NULL, NULL);
+				while (i-->0)
+				{
+					struct inst *tmp;
+					temp1 = arg + --atop;
+					tmp = scopedvar_get(fr, i);
+					if (!tmp)
+						abort_loop("Internal error: Scoped variable number out of range in INITVARS.", temp1, NULL);
+					CLEAR(tmp);
+					copyinst(temp1, tmp);
+					CLEAR(temp1);
+				}
+				pc++;
+			}
 			break;
 
 		case PROG_DECLVAR:

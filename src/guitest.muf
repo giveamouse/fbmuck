@@ -1,12 +1,10 @@
 $include $lib/gui
 $def tell descrcon swap connotify
   
-: generic-handler (intDescr strDlogID strCtrlID strEvent -- intExit)
-    var guievent guievent !
-    var ctrlid ctrlid !
-    var dlogid dlogid !
-    var dscr dscr !
-    var vals dlogid @ GUI_VALUES_GET vals !
+: generic-handler[ int:dscr str:dlogid str:ctrlid str:guievent -- int:exit ]
+
+    dlogid @ GUI_VALUES_GET
+	var! vals
     
     guievent @ ctrlid @ "%s sent %s event!" fmtstring dscr @ tell 
   
@@ -20,12 +18,12 @@ $def tell descrcon swap connotify
     0
 ;
   
-: cancelbtn-handler (intDescr strDlogID strCtrlId strEvent -- intExit)
+: cancelbtn-handler[ int:dscr str:dlogid str:ctrlid str:guievent -- int:exit ]
     pop pop pop "Dialog cancelled!" swap tell
     0
 ;
   
-: gen_writer_dlog ( -- dictHandlers strDlogId )
+: gen_writer_dlog[ -- arr:Handlers str:DlogId ]
     {SIMPLE_DLOG "Post Message"
         {LABEL ""
             "value" "Subject"

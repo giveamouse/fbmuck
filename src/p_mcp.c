@@ -97,7 +97,80 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 			interp_loop(user, obj, tmpfr, 0);
 		}
 	}
-	/* mcp_mesg_clear(mesg); */
+}
+
+
+void
+muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
+{
+	int destpid = (int) context;
+	struct frame* destfr = timequeue_pid_frame(destpid);
+	int descr = mcpframe_to_descr(mfr);
+	char *pkgname = mesg->package;
+	char *msgname = mesg->mesgname;
+	McpArg *arg;
+
+	if (destfr) {
+		char buf[BUFFER_LEN];
+		stk_array *argarr;
+		stk_array *contarr;
+		struct inst argname, argval, argpart;
+
+		argarr = new_array_dictionary();
+		for (arg = mesg->args; arg; arg = arg->next) {
+			if (!arg->value) {
+				argval.type = PROG_STRING;
+				argval.data.string = NULL;
+			} else if (!arg->value->next) {
+				argval.type = PROG_STRING;
+				argval.data.string = alloc_prog_string(arg->value->value);
+			} else {
+				McpArgPart *partptr;
+				int count = 0;
+
+				argname.type = PROG_INTEGER;
+				argval.type = PROG_ARRAY;
+				argval.data.array =
+						new_array_packed(mcp_mesg_arg_linecount(mesg, arg->name));
+
+				for (partptr = arg->value; partptr; partptr = partptr->next) {
+					argname.data.number = count++;
+					argpart.type = PROG_STRING;
+					argpart.data.string = alloc_prog_string(partptr->value);
+					array_setitem(&argval.data.array, &argname, &argpart);
+					CLEAR(&argpart);
+				}
+			}
+			argname.type = PROG_STRING;
+			argname.data.string = alloc_prog_string(arg->name);
+			array_setitem(&argarr, &argname, &argval);
+			CLEAR(&argname);
+			CLEAR(&argval);
+		}
+
+		contarr = new_array_dictionary();
+		array_set_strkey_intval(&contarr, "descr", descr);
+		array_set_strkey_strval(&contarr, "package", pkgname);
+		array_set_strkey_strval(&contarr, "message", msgname);
+
+		argname.type = PROG_STRING;
+		argname.data.string = alloc_prog_string("args");
+		argval.type = PROG_ARRAY;
+		argval.data.array = argarr;
+		array_setitem(&contarr, &argname, &argval);
+		CLEAR(&argname);
+		CLEAR(&argval);
+
+		argval.type = PROG_ARRAY;
+		argval.data.array = contarr;
+		if (msgname && *msgname) {
+			sprintf(buf, "MCP.%.128s-%.128s", pkgname, msgname);
+		} else {
+			sprintf(buf, "MCP.%.128s", pkgname);
+		}
+		muf_event_add(destfr, buf, &argval);
+		CLEAR(&argval);
+	}
 }
 
 
@@ -198,7 +271,7 @@ prim_mcp_register(PRIM_PROTOTYPE)
 	/* pkgstr minver  maxver */
 
 	if (mlev < 3)
-		abort_interp("Requires Wizbit.");
+		abort_interp("Requires Mucker Level 3.");
 	if (oper1->type != PROG_STRING)
 		abort_interp("Package name string expected. (1)");
 	if (oper2->type != PROG_FLOAT)
@@ -215,6 +288,46 @@ prim_mcp_register(PRIM_PROTOTYPE)
 	vermax.verminor = (int) (oper3->data.fnumber * 1000) % 1000;
 
 	mcp_package_register(pkgname, vermin, vermax, muf_mcp_callback, (void *) program);
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
+}
+
+
+
+void
+prim_mcp_register_event(PRIM_PROTOTYPE)
+{
+	char *pkgname;
+	McpVer vermin, vermax;
+
+	CHECKOP(3);
+	oper3 = POP();
+	oper2 = POP();
+	oper1 = POP();
+
+	/* oper1  oper2   oper3  */
+	/* pkgstr minver  maxver */
+
+	if (mlev < 3)
+		abort_interp("Requires Mucker Level 3.");
+	if (oper1->type != PROG_STRING)
+		abort_interp("Package name string expected. (1)");
+	if (oper2->type != PROG_FLOAT)
+		abort_interp("Floating point minimum version number expected. (2)");
+	if (oper3->type != PROG_FLOAT)
+		abort_interp("Floating point maximum version number expected. (3)");
+	if (!oper1->data.string || !*oper1->data.string->data)
+		abort_interp("Package name cannot be a null string. (1)");
+
+	pkgname = oper1->data.string->data;
+	vermin.vermajor = (int) oper2->data.fnumber;
+	vermin.verminor = (int) (oper2->data.fnumber * 1000) % 1000;
+	vermax.vermajor = (int) oper3->data.fnumber;
+	vermax.verminor = (int) (oper3->data.fnumber * 1000) % 1000;
+
+	mcp_package_register(pkgname, vermin, vermax, muf_mcp_event_callback, (void *) fr->pid);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -364,6 +477,10 @@ prim_mcp_send(PRIM_PROTOTYPE)
 	mfr = descr_mcpframe(descr);
 	if (mfr) {
 		McpMesg msg;
+		McpVer ver = mcp_frame_package_supported(mfr, pkgname);
+
+		if (ver.verminor == 0 && ver.vermajor == 0)
+			abort_interp("MCP package not supported by that descriptor.");
 
 		mcp_mesg_init(&msg, pkgname, msgname);
 

@@ -692,6 +692,7 @@ prim_timer_stop(PRIM_PROTOTYPE)
 void
 prim_event_count(PRIM_PROTOTYPE)
 {
+	CHECKOP(0);
 	CHECKOFLOW(1);
 	result = muf_event_count(fr);
 	PushInt(result);
