@@ -491,7 +491,7 @@ new_array_packed(int size)
 	}
 
 	nu = new_array();
-	nu->items = size;
+	nu->items = (short int)size;
 	nu->type = ARRAY_PACKED;
 	if (size < 1)
 		size = 1;
@@ -1642,6 +1642,9 @@ array_get_intkey_strval(stk_array * arr, int key)
 
 /*
  * $Log: array.c,v $
+ * Revision 1.25  2002/03/17 07:55:25  winged
+ * Fixing pedantic warnings
+ *
  * Revision 1.24  2002/02/17 02:30:32  winged
  * Last set of changes for splint for today.
  *

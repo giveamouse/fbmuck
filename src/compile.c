@@ -685,9 +685,6 @@ RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE* curr)
 void
 RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE* curr)
 {
-	struct INTERMEDIATE* tmp;
-	int i;
-
 	if (!curr->next) {
 		return;
 	}

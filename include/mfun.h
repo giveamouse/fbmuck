@@ -1,6 +1,9 @@
 #ifndef _MFUN_H
 #define _MFUN_H
 
+/* Include definition of MFUNARGS */
+#include "msgparse.h"
+
 const char *mfn_abs(MFUNARGS);
 const char *mfn_add(MFUNARGS);
 const char *mfn_and(MFUNARGS);

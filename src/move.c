@@ -2,6 +2,9 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.16  2002/03/17 07:55:25  winged
+ * Fixing pedantic warnings
+ *
  * Revision 1.15  2001/10/29 19:21:49  revar
  * More fixes for the parent_loop_check on HOME.
  *
@@ -332,6 +335,7 @@ location_loop_check(dbref source, dbref dest)
   return 1;
 }
 
+int
 parent_loop_check(dbref source, dbref dest)
 {   
   unsigned int level = 0;

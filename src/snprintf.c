@@ -848,3 +848,5 @@ int main (void)
 #endif /* SNPRINTF_TEST */
 
 #endif /* !HAVE_SNPRINTF */
+
+static void empty_function(void) {empty_function();}

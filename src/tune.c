@@ -300,16 +300,16 @@ static const char *
 timestr_full(long dtime)
 {
 	static char buf[32];
-	int days, hours, minutes;
+	int days, hours, minutes, seconds;
 
 	days = dtime / 86400;
 	dtime %= 86400;
 	hours = dtime / 3600;
 	dtime %= 3600;
 	minutes = dtime / 60;
-	dtime %= 60;
+	seconds = dtime % 60;
 
-	sprintf(buf, "%3dd %2d:%02d:%02d", days, hours, minutes, dtime);
+	sprintf(buf, "%3dd %2d:%02d:%02d", days, hours, minutes, seconds);
 
 	return buf;
 }

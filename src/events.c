@@ -7,6 +7,7 @@
 #include "params.h"
 #include "tune.h"
 #include "externs.h"
+#include "fb.h"
 
 
 /****************************************************************

@@ -20,6 +20,7 @@ struct mfun_dat {
 };
 
 /******** MFUN LIST ********/
+#ifdef DEFINE_MFUN_LIST
 MFNDAT mfun_list[] = {
 	/* Name, Func, Preparse?, Postparse?, strip?, Minargs, Maxargs  */
 
@@ -161,5 +162,8 @@ MFNDAT mfun_list[] = {
 
 	{NULL, NULL, 0, 0, 0, 0, 0}	/* Ends the mfun list */
 };
+#else
+extern MFNDAT mfun_list[];
+#endif /* defined DEFINE_MFUN_LIST */
 
 #endif /* _MFUNLIST_H */

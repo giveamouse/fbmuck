@@ -299,7 +299,7 @@ gui_dlog_alloc(int descr, Gui_CB callback, GuiErr_CB error_cb, void *context)
 	DlogData *ptr;
 
 	while (1) {
-		sprintf(tmpid, "%08lX", random());
+		sprintf(tmpid, "%08lX", (unsigned long)random());
 		if (!gui_dlog_find(tmpid)) {
 			break;
 		}

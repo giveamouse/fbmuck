@@ -37,6 +37,7 @@
 #include "props.h"
 #include "smatch.h"
 #include "strings.h"
+#include "speech.h"
 #include "tune.h"
 #include "version.h"
 

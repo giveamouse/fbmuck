@@ -2,6 +2,9 @@
 
 /*
  * $Log: speech.c,v $
+ * Revision 1.5  2002/03/17 07:55:25  winged
+ * Fixing pedantic warnings
+ *
  * Revision 1.4  2000/11/22 10:01:58  revar
  * Changed MPI from using Wizbit objects to give special permissions, to using
  * 'Blessed' properties.  Blessed props have few permissions restrictions.
@@ -96,11 +99,10 @@
 #include "tune.h"
 #include "props.h"
 #include "externs.h"
+#include "speech.h"
 #include <ctype.h>
 
 /* Commands which involve speaking */
-
-int blank(const char *s);
 
 void
 do_say(dbref player, const char *message)

@@ -16,6 +16,8 @@ typedef void *voidptr;
 #define UPCASE(x) (toupper(x))
 #define DOWNCASE(x) (tolower(x))
 
+void purge_try_pool(void);
+
 #ifdef COMPRESS
 extern const char *uncompress(const char *);
 extern const char *compress(const char *);

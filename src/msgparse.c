@@ -939,7 +939,7 @@ purge_mfns(void)
 }
 
 
-
+#define DEFINE_MFUN_LIST
 #include "mfunlist.h"
 
 
