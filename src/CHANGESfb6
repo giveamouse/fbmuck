@@ -1,5 +1,7 @@
 2.2fb6.01
+Fixed bug with configure script not finding tm_gmtoff under OS X.
 Fixed bug with 'configure --with-ssl=SSLTOPDIR' not working.
+Changed DESCRDBREF to return #-1 for an invalid or not-logged-in descriptor.
 Added docs for ARRAY_FMTSTRINGS to muf manual.
 
 

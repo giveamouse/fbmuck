@@ -165,10 +165,30 @@ AC_HEADER_STDC
 AC_HEADER_DIRENT
 AC_HEADER_TIME
 AC_CHECK_HEADERS(errno.h sys/errno.h)
-echo "checking for tm_gmtoff"
-AC_EGREP_HEADER([[^_a-zA-Z]]tm_gmtoff;, time.h, AC_DEFINE(HAVE_TM_GMTOFF))
-AC_EGREP_HEADER([[^_a-zA-Z]]tm_gmtoff;, sys/time.h, AC_DEFINE(HAVE_SYS_TM_GMTOFF))
-AC_EGREP_HEADER([[^_a-zA-Z]]_timezone\>, time.h, AC_DEFINE(HAVE__TIMEZONE))
+
+echo -n "checking for tm_gmtoff..."
+found_gmt_offset=0
+AC_EGREP_HEADER(\<tm_gmtoff[[ 	]]*;, time.h,
+	AC_DEFINE(HAVE_TM_GMTOFF)
+	found_gmt_offset=1
+	echo -n " time.h"
+)
+AC_EGREP_HEADER(\<tm_gmtoff[[ 	]]*;, sys/time.h,
+	AC_DEFINE(HAVE_SYS_TM_GMTOFF)
+	found_gmt_offset=1
+	echo -n " sys/time.h"
+)
+AC_EGREP_HEADER(\<_timezone\>, time.h,
+	AC_DEFINE(HAVE__TIMEZONE)
+	found_gmt_offset=1
+	echo -n " _timezone"
+)
+if test "$found_gmt_offset" = "0"; then
+	echo "not found."
+else
+	echo ""
+fi
+
 
 dnl
 dnl Libraries and functions.

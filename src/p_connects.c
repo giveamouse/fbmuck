@@ -132,7 +132,7 @@ prim_descr_dbref(PRIM_PROTOTYPE)
 		abort_interp("Argument not an integer. (1)");
 	result = pdescrdbref(oper1->data.number);
 	if (result < 0)
-		abort_interp("Invalid descriptor number. (1)");
+		result = NOTHING;
 	CHECKOFLOW(1);
 	CLEAR(oper1);
 	PushObject(result);
