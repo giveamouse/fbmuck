@@ -52,10 +52,11 @@ Symbols
   $iflibver      $ifncancall    $ifndef        $ifnlib        $ifnlibver
   $ifnver        $ifver         $include       $lib-version   $libdef
   $note          $pubdef        $undef         $version       %
-  *              +              ++             -              --
-  /              <              <=             =              >
-  >=             @              \              __version      {
-  }              }dict          }join          }list          }tell
+  '              *              +              ++             -
+  --             /              <              <=             =
+  >              >=             @              \              __version
+  {              }              }dict          }join          }list
+  }tell          
 
 A's
   abort                     abs                       acos
@@ -112,11 +113,11 @@ D's
   dupn               
 
 E's
-  envprop        envpropstr     epsilon        error?         error_bit
-  error_name     error_num      error_str      event_count    event_exists
-  event_send     event_wait     event_waitfor  execute        exit
-  exit?          exits          exits_array    exp            explode
-  explode_array  
+  else           envprop        envpropstr     epsilon        error?
+  error_bit      error_name     error_num      error_str      event_count
+  event_exists   event_send     event_wait     event_waitfor  execute
+  exit           exit?          exits          exits_array    exp
+  explode        explode_array  
 
 F's
   fabs         fail         fg_mode      findnext     firstdescr   flag?
@@ -145,17 +146,17 @@ K's
   kill  
 
 L's
-  lastdescr      ldup           libraries      listeners      localvar
-  location       lock?          locked?        log            log10
-  loop-example1  loop-example2  loop-example3  loops          lreverse
-  lvar           
+  lastdescr      ldup           libraries      listeners      loc
+  localvar       location       lock?          locked?        log
+  log10          loop-example1  loop-example2  loop-example3  loops
+  lreverse       lvar           
 
 M's
   match                     mcp_bind                  mcp_register
   mcp_register_event        mcp_send                  mcp_supports
-  midstr                    mlevel                    mode
-  modf                      movepennies               moveto
-  mucker levels             multitasking              
+  me                        midstr                    mlevel
+  mode                      modf                      movepennies
+  moveto                    mucker levels             multitasking
 
 N's
   name               name-ok?           newexit            newobject
@@ -202,9 +203,10 @@ S's
   sysparm            sysparm_array      systime            
 
 T's
-  tan          testlock     textattr     thing?       time         timefmt
-  timer_start  timer_stop   timesplit    timestamps   toadplayer   tokensplit
-  tolower      toupper      tread        trig         truename     try
+  tan          testlock     textattr     then         thing?       time
+  timefmt      timer_start  timer_stop   timesplit    timestamps   toadplayer
+  tokensplit   tolower      toupper      tread        trig         trigger
+  truename     try          
 
 U's
   unblessprop  uncompile    unparselock  unparseobj   until        userlog
@@ -277,28 +279,28 @@ not listed by NEXTPROP with ML3 are listed with ML4.  Programs running
 ML4 do not even have instruction limits on PREEMPT mode programs.
   
   The MUCKER level permissions that a program runs at is the lesser of
-it's own MUCKER level and the MUCKER level of it's owner.
-  If it is owned by a player who is MUCKER level 2, and it is MUCKER
-level 3, then it runs at Mucker level 2.  The one exception to this is
-programs owned by a Wizard player.  They run at Mucker level 2 if the
-program itself is not wizbit, and at Mucker level 4 if the program IS
-set wizbit.
+it's own MUCKER level and the MUCKER level of it's owner.  If it is
+owned by a player who is MUCKER level 2, and it is MUCKER level 3,
+then it runs at Mucker level 2.  The one exception to this is programs
+owned by a Wizard player.  They run at Mucker level 2 if the program
+itself is not wizbit, and at Mucker level 4 if the program IS set wizbit.
   
   Mucker level is referred to in flags lists by M# where the # is the
 Mucker level.  Level zero objects don't show a flag for it.  Example:
-Revar(#37PM3)
+    Revar(#37PM3)
   In verbose flags lists, Mucker levels greater than zero are shown
 by MUCKER# where # is the mucker level.
   
   To set a level on a player or program, use the level number as the
 flag name.  MUCKER is the same as 2, and !MUCKER is the same as 0.
-Example:  @set Revar=2
+Example:
+    @set Revar=2
   A player may set the MUCKER level on a program they own to any level
 lower than or equal to their own level, and a wizard may set a program
-or player to any MUCKER level.
-  When a program is created, it is automatically set to the same MUCKER
-level as the creating player.  When a program is loaded from an old db,
-if it is Mucker Level 0, it is upgraded to Mucker Level 2.
+or player to any MUCKER level.  When a program is created, it is
+automatically set to the same MUCKER level as the creating player.
+When a program is loaded from an old db, if it is Mucker Level 0,
+it is upgraded to Mucker Level 2.
 ~
 ~
 MULTITASKING
@@ -336,21 +338,17 @@ How to use a library:
         and it will run as if it were a function in your program.
 
 How to make a library:
-    1) create a program with several useful generic subroutines.
+    1) Create a program with several useful generic subroutines.
     2) DOCUMENT those subroutines in a commented out header in the prog.
     3) @set <program>=_docs:<command to list those DOCS you made>
-    4) make sure that all the functions are declared PUBLIC.
-    5) Make sure the program is set LINK_OK.
-    6) Globally register the program with the @register command with a
-        prefix of "lib/".  ie: @reg lib-strings=lib/strings
-    7) Set up the interface for each function on the program. To do this,
-        you will need to set properties on the program in the form
-        _defs/<callname>:"$<libname>" match "<funcname>" call
-        where <callname> is the name that you want to have people use to
-        invoke it in their programs, <libname> is the registered name you
-        gave it (ie: lib/strings), and <funcname> is the actual name of
-        the function in the program.  Example:
-        @set lib-strings=_defs/.split:"$lib/strings" match "split" call
+    5) For each function you want to be externally callable, do the following:
+        a) Declare it PUBLIC
+        b) Create the caller macro with either:
+            $libdef FUNCNAME     or
+            $pubdef EXPORTEDNAME "$lib/THISLIB" match "FUNCNAME" call
+    6) Make sure the program is set LINK_OK and VIEWABLE.
+    7) Globally register the program with the @register command with a
+        prefix of "lib/".  ie: @reg lib-strings.muf=lib/strings
     8) You're done!
 
 Currently standard libraries:
@@ -497,7 +495,7 @@ $AUTHOR <rest_of_line>
 
   Sets the _author string property on the program to <rest_of_line>.
 The preferred format is an email address with name comment. ie:
-$author Revar Desmera <revar@belfry.com>
+    $author Revar Desmera <revar@belfry.com>
 ~
 ~
 $VERSION
@@ -556,7 +554,8 @@ references to 'desc', 'setpropstr', 'setpropval', and 'setprop' would
 be expanded to the string values of their respective programs.  For example,
 'desc' would be replaced throughout the program with '"_/de" getpropstr'
 NOTE:  You cannot have a slash in a definition name.  ie: The property
-_defs/a/b:foo  will NOT make a definition named a/b.
+    _defs/a/b:foo
+will NOT make a definition named a/b.
 Also see: $DEFINE, $DEF, $CLEARDEFS, $IFDEF, PUBLIC, WIZCALL, $PUBDEF and $LIBDEF
 ~
 ~
@@ -578,7 +577,7 @@ For example:
     $pubdef tell me @ swap notify
 would put a property named '_defs/tell' on the program object, with the
 value 'me @ swap notify'.  Def names cannot have ':' nor '/' in them.
-Also see: $LIBDEF
+Also see: $LIBDEF, PUBLIC, WIZCALL, CANCALL? and CALL
 ~
 ~
 $LIBDEF
@@ -590,7 +589,7 @@ For example:
     $libdef myfunc
 would put a prop named '_defs/myfunc' on the program object, with the
 value '<this_programs_dbref> "myfunc" call'
-Also see: $PUBDEF
+Also see: $PUBDEF, PUBLIC, WIZCALL, CANCALL? and CALL
 ~
 ~
 $CLEARDEFS
@@ -849,58 +848,73 @@ POP
 POP ( x -- )
 
   Pops the top of the stack into oblivion.
+Also see: POPN
 ~
 ~
 POPN
 POPN ( ?n..?1 i -- )
 
   Pops the top i stack items.
+Also see: POP
 ~
 ~
 DUP
 DUP ( x -- x x )
 
   Duplicates the item at the top of the stack.
+Also see: DUPN and LDUP
 ~
 ~
 DUPN
 DUPN ( ?n..?1 i -- ?n..?1 ?n..?1 )
 
   Duplicates the top i stack items.
-Also see: LDUP
+Also see: DUP and LDUP
 ~
 ~
 LDUP
 LDUP ( {?} -- {?} {?} )
 
   Duplicates a stackrange on top of the stack.
+Also see: DUP and DUPN
 ~
 ~
 SWAP
 SWAP ( x y -- y x )
 
   Takes objects x and y on the stack and reverses their order.
+Also see: PICK, OVER and DUP
 ~
 ~
 OVER
 OVER ( x y -- x y x )
 
   Duplicates the second-to-top thing on the stack.  This is the same as 2 pick.
+Also see: PICK, SWAP and DUP
 ~
 ~
 ROT
 ROT ( x y z -- y z x )
 
   Rotates the top three things on the stack.  This is equivalent to 3 rotate.
+Also see: ROTATE and SWAP
 ~
 ~
 ROTATE
 ROTATE ( ni ... n1 i -- n(i-1) ... n1 ni )
 
-  Rotates the top i things on the stack.   '"a" "b" "c" "d" 4 rotate' would
-leave "b" "c" "d" "a" on the stack.  Using a negative rotational value rotates
-backwards.  ie: '"a" "b" "c" "d" -4 rotate'  would leave "d" "a" "b" "c" on
-the stack.
+  Rotates the top i things on the stack.  Using a negative rotational
+value rotates backwards.
+Examples:
+    "a"  "b"  "c"  "d"  4  rotate
+would leave
+    "b"  "c"  "d"  "a"
+on the stack.
+    "a"  "b"  "c"  "d"  -4  rotate
+would leave
+    "d"  "a"  "b"  "c"
+on the stack.
+Also see: ROT and SWAP
 ~
 ~
 PICK
@@ -908,23 +922,29 @@ PICK ( ni ... n1 i -- ni ... n1 ni )
 
   Takes the i'th thing from the top of the stack and pushes it on the top.
 1 pick is equivalent to dup, and 2 pick is equivalent to over.
+Also see: OVER and PUT
 ~
 ~
 PUT
 PUT ( nx...n1 ni i -- nx...ni...n1 )
 
   Replaces the i'th item from the top of the stack with the value of ni.
-1 put is equivalent to swap pop
+The command sequence '1 put' is equivalent to 'swap pop'.
 Example:
-"a" "b" "c" "d" "e" 3 put
+    "a"  "b"  "c"  "d"  "e"  3  put
 would return on the stack:
-"a", "e", "c", "d"
+    "a"  "e"  "c"  "d"
+Also see: PICK
 ~
 ~
 REVERSE
 REVERSE ( ?n..?1 i -- ?1..?n )
 
   Reverses the order of the top i items on the stack.
+Example:
+    "a"  "b"  "c"  "d"  "e"  4  reverse
+would return on the stack:
+    "a"  "e"  "d"  "c"  "b"
 Also see: LREVERSE
 ~
 ~
@@ -932,18 +952,24 @@ LREVERSE
 LREVERSE ( ?n..?1 i -- ?1..?n i )
 
   Reverses the order of the top i stack items, leaving i.
+Example:
+    "a"  "b"  "c"  "d"  "e"  4  lreverse
+would return on the stack:
+    "a"  "e"  "d"  "c"  "b"  4
+Also see: REVERSE
 ~
 ~
 DEPTH
 DEPTH ( -- i )
 
-  Returns the number of items on the stack.
+  Returns the number of items currently on the stack.
 ~
 ~
 {
 {  ( -- marker)
 
   Pushes a marker onto the stack, to be used with } or }list or }dict.
+Also see: }, }list, }dict, }tell and }join
 ~
 ~
 }
@@ -952,6 +978,7 @@ DEPTH ( -- i )
   Finds the topmost marker in the stack, and counts how many stack items
 are between it and the top of the stack.  The marker is removed from the
 stack, and the count is pushed onto the stack.
+Also see: {, }list, }dict, }tell and }join
 ~
 ~
 ~
@@ -963,12 +990,52 @@ stack, and the count is pushed onto the stack.
 Variables and Handling Thereof|VarHandling
 Variables and Handling Thereof
 
-!          @          command    localvar   lvar       var        var!
-variable   
+!          @          command    loc        localvar   lvar       me
+trigger    var        var!       variable   
 
 ~----------------------------------------------------------------------------
 ~
 ~
+~
+~
+ME
+ME @
+
+  There is a global variable named ME that contains the dbref of the
+player who invoked the program.  The value of this variable is not
+guaranteed to be secure, as another program could change the value of
+ME then call your program.  If you must be certain that the value of
+the ME variable is correct, use the commands:
+    "me" match me !
+The ME global variable is the same variable as '0 variable'
+Also see: COMMAND, TRIGGER and LOC
+~
+~
+LOC
+LOC @
+
+  There is a global variable named LOC that contains the dbref of the
+location of the player who invoked the program.  The value of this
+variable is not guaranteed to be secure, as another program could change
+the value of LOC then call your program.  If you must be certain that
+the value of the LOC variable is correct, use the commands:
+    "me" match location loc !
+The LOC global variable is the same variable as '1 variable'
+Also see: COMMAND, TRIGGER and ME
+~
+~
+TRIGGER
+TRIGGER @
+
+  There is a global variable named TRIGGER that contains the dbref of the
+trigger object that invoked the process.  The value of this variable is
+not guaranteed to be secure, as another program could change the value of
+TRIGGER then call your program.  If you must be certain that the value of
+the TRIGGER variable is correct, use the commands:
+    trig trigger !
+The TRIGGER global variable is the same variable as '2 variable'
+The value of TRIGGER will be #-1 for AUTOSTART programs,
+Also see: COMMAND, LOC and ME
 ~
 ~
 COMMAND
@@ -980,27 +1047,39 @@ that triggered the the program, without the command line arguments.  ie:
 if there was an exit named "abracadabra;foo bar;frozzboz" that was linked
 to the program, and the user typed in "foo bar baz", then the program
 would run with "baz" on the stack, and "foo bar" in the global COMMAND
-variable.
+variable.  The TRIGGER global variable is the same variable as '2 variable'
+Also see: TRIGGER, LOC and ME
 ~
 ~
 VAR
 VAR <name>
 
-  When used outside of a word, the compiler allows the use of <name> as
-a variable in all words sequentially defined after the var declaration.
+  When used inside a function, a function-scoped variable is created.
+This variable is local to each invocation of a given function; recursive
+calls each get their own scoped variable dataspace.  This variable type
+is analogous to C's function-scoped variables.  The use of function-scoped
+variables is highly recomended to make functions more readable.
 
-  When used inside a word, a variable local to each invocation of a given
-word; recursive calls each get their own scoped variables.
+  When used outside of a function, the compiler allows the use of <name>
+as a global variable in all functions defined after the var declaration.
+This variable dataspace is shared between ALL muf programs called in
+this process.  This means that if program A declares a global variable,
+then calls program B, and program B also declares a global variable,
+then changes its value, then the global variable declared in program A
+will also have been changed.  For this reason, this usage of VAR is
+deprecated and shoud NOT be used.  Use LVAR instead.  This usage is only
+kept around for backwards compatability with some old icky programs that
+used this feature to pass data between some programs.
 Also see: VAR!, LVAR, !, @, VARIABLE and LOCALVAR
 ~
 ~
 VAR!
 VAR! <name>
 
-  This must be used within a word.  It declares a function scoped variable
-named <name> that is then set with the topmost stack item.  For example,
-the following program prints out "Hello World!":
-    : myword
+  This must be used within a function.  It declares a function-scoped
+variable named <name> that then has its value set to the topmost stack
+item.  For example, the following program prints out "Hello World!":
+    : myfunction
         "Hello World!" var! foo
         me @ foo @ notify
     ;
@@ -1010,10 +1089,16 @@ Also see: VAR, LVAR, !, @, VARIABLE and LOCALVAR
 LVAR
 LVAR <varname>
 
-  This declares a variable as a local variable, that is local to a specific
-program.  If another program calls this program, the values of the local
-variables will not be changed in the calling program, even if the called
-program changes them.
+  This declares a variable as a program-local variable.  If another program
+calls this program, the values of the program-local variables will not be
+changed in the calling program, even if the called program changes them.
+This variable will be available to all functions defined later in the
+program, after the lvar declaration.  This variable's data is persistent
+within this process.  Ie: if program A calls program B, and program B sets
+the value of this program-local variable, then returns to A, which then
+calls B again, the value of this variable will still have the value it was
+set to in the first call.  The value is NOT persistent between different
+processes.  This variable type is analogous to C's global variables.
 Also see: VAR, VAR!, !, @, VARIABLE and LOCALVAR
 ~
 ~
@@ -1021,35 +1106,42 @@ Also see: VAR, VAR!, !, @, VARIABLE and LOCALVAR
 @ ( v -- x )
 
   Retrieves variable v's value x.
+Also see: !, VARIABLE, VAR, LVAR, LOCALVAR and MISCELLANEOUS
 ~
 ~
 !
 ! ( x v -- )
 
   Sets variable v's value to x.
-Also see: VARIABLE, VAR, LVAR, LOCALVAR and MISCELLANEOUS
+Also see: @, VARIABLE, VAR, LVAR, LOCALVAR and MISCELLANEOUS
 ~
 ~
 VARIABLE
 VARIABLE ( i -- v )
 
-  Converts integer i to variable reference v. Of the pre-defined variables,
-`me' corresponds to integer 0, `loc' to 1, and `trigger' to 2. Thus:
+  Converts integer i to global variable reference v. Of the pre-defined
+variables, `me' corresponds to integer 0, `loc' to 1, `trigger' to 2,
+and 'command' to 3.
+Thus:
     me @
 and
     0 variable @
 will do the same thing (returning the user's dbref). User-defined variables
-are numbered sequentially starting at 3 by the compiler. Note that these
+are numbered sequentially starting at 4 by the compiler. Note that these
 variable numbers can be used even if variables have not been formally
-declared, making implementation of such things as arrays conveniently easy.
-Also see: @, ! and VAR
+declared.  This command has been deprecated, and is not recommended to use.
+It's original purpose was to allow MUF to do small arrays.  Since MUF now
+has an intrinsic array stack item type, this should no longer be used.
+Also see: @, !, VAR, ME, TRIGGER, LOC and COMMAND
 ~
 ~
 LOCALVAR
 LOCALVAR (i -- l)
 
-  Takes an integer and returns the respective local variable.  Similar to
-the 'variable' primitive.
+  Takes an integer and returns the respective program-local variable.
+Similar to the 'variable' primitive.  Use of this command is deprecated
+and is not recommended.  Use the array stack item type instead.
+Also see: VARIABLE, VAR, LVAR, @ and !
 ~
 ~
 ~
@@ -1074,18 +1166,21 @@ lock?        not          or           string?      xor
 <  ( n1 n2 -- i )
 
   Compares two numbers and returns 1 if n1 is less than n2, and 0 otherwise.
+Also see: >, <=, >=, =, NOT, AND and OR
 ~
 ~
 >
 >  ( n1 n2 -- i )
 
   Compares two numbers and returns 1 if n1 is greater than n2, and 0 otherwise.
+Also see: <, <=, >=, =, NOT, AND and OR
 ~
 ~
 =
 =  ( n1 n2 -- i )
 
   Compares two numbers and returns 1 if n1 is equal to n2, and 0 otherwise.
+Also see: <, >, <=, >=, NOT, AND and OR
 ~
 ~
 <= 
@@ -1093,6 +1188,7 @@ lock?        not          or           string?      xor
 
   Compares two numbers and returns 1 if n1 is less than or equal to n2,
 and 0 otherwise.
+Also see: <, >, =, >=, NOT, AND and OR
 ~
 ~
 >=
@@ -1100,6 +1196,7 @@ and 0 otherwise.
 
   Compares two numbers and returns 1 if n1 is greater than or equal to n2,
 and 0 otherwise.
+Also see: <, >, <=, =, NOT, AND and OR
 ~
 ~
 NOT
@@ -1112,6 +1209,7 @@ types, here are their false values:
     Float        0.0
     DBRef        #-1
     String       ""
+Also see: AND, OR and XOR
 ~
 ~
 AND
@@ -1124,6 +1222,7 @@ various types, here are their false values:
     Float        0.0
     DBRef        #-1
     String       ""
+Also see: NOT, OR and XOR
 ~
 ~
 OR
@@ -1136,6 +1235,7 @@ various types, here are their false values:
     Float        0.0
     DBRef        #-1
     String       ""
+Also see: NOT, AND and XOR
 ~
 ~
 XOR
@@ -1148,12 +1248,31 @@ of any type.  For the various types, here are their false values:
     Float        0.0
     DBRef        #-1
     String       ""
+Also see: NOT, AND and OR
 ~
 ~
-ADDRESS?
-ADDRESS? (? -- i)
+STRING?
+STRING? ( x -- i )
 
-  Returns true if the top stack item is a function address.
+  Returns true if x is a string.
+~
+~
+INT?
+INT? ( x -- i )
+
+  Returns true if x is a int.
+~
+~
+FLOAT?
+FLOAT? ( ? -- i )
+
+  Returns true if the item on the stack is a floating point value.
+~
+~
+DBREF?
+DBREF? ( x -- i )
+
+  Returns true if x is a dbref.
 ~
 ~
 ARRAY?
@@ -1172,28 +1291,10 @@ if so, 0 if otherwise.
 Also see: ARRAY?, INT?, DBREF?, ARRAY_MAKE_DICT and ARRAY_MAKE
 ~
 ~
-FLOAT?
-FLOAT? ( ? -- i )
+ADDRESS?
+ADDRESS? (? -- i)
 
-  Returns true if the item on the stack is a floating point value.
-~
-~
-DBREF?
-DBREF? ( x -- i )
-
-  Returns true if x is a dbref.
-~
-~
-INT?
-INT? ( x -- i )
-
-  Returns true if x is a int.
-~
-~
-STRING?
-STRING? ( x -- i )
-
-  Returns true if x is a string.
+  Returns true if the top stack item is a function address.
 ~
 ~
 LOCK?
@@ -1212,18 +1313,18 @@ Also see: GETPROP, SETPROP, PARSELOCK, UNPARSELOCK, PRETTYLOCK and TESTLOCK
 Execution Control Structures|ExecStructs
 Execution Control Structures
 
-begin          break          call           cancall?       continue
-execute        exit           for            foreach        if
-interp         jmp            loop-example1  loop-example2  loop-example3
-loops          public         repeat         until          while
-wizcall        
+'              begin          break          call           cancall?
+continue       else           execute        exit           for
+foreach        if             interp         jmp            loop-example1
+loop-example2  loop-example3  loops          public         repeat
+then           until          while          wizcall        
 
 ~----------------------------------------------------------------------------
 ~
 ~
 ~
 ~
-IF|ELSE|THEN
+IF
 IF (x -- ) ... THEN
 IF (x -- ) ... ELSE ... THEN
 
@@ -1238,10 +1339,38 @@ before the if. For every IF in a word, there MUST be a THEN, and
 vice-versa.  ELSE is optional.
 ~
 ~
+ELSE
+IF (x -- ) ... ELSE ... THEN
+
+  Begins an ELSE block in an IF-ELSE-THEN code block.  If the value
+tested by the IF is false, then this code block will be executed.
+Also see: IF and THEN
+~
+~
+THEN
+IF (x -- ) ... THEN
+IF (x -- ) ... ELSE ... THEN
+
+  Denotes the end of an IF-THEN or IF-ELSE-THEN code block.
+Also see: IF and ELSE
+~
+~
+'
+'FUNCNAME ( -- a )
+
+  Pushed the address of the start of the previously defined function
+FUNCNAME onto the stack.  This can be useful for use with EXECUTE and
+arrays to make a list of functions you can call by index, or for making
+function callbacks.
+~
+~
 EXECUTE
 EXECUTE ( a -- ?? )
 
   Executes the function pointed to by the address a on the stack.
+This function does NOT need to be in the same program as the function
+that did the EXECUTE.
+Also see: '
 ~
 ~
 JMP
@@ -1251,8 +1380,8 @@ JMP (a -- )
 moves execution to that point.  It's one early way that was used to do
 tail-recursion loops without as much overhead, and without failing due to
 system stack overflows.  It's mostly obsolete now, except that it's one
-of the three or four internal primitives used to implement if-else-then and
-begin-while-repeat loops and such.  You shouldn't use JMP explicitly in
+of the three or four internal primitives used to implement IF-ELSE-THEN and
+BEGIN-WHILE-REPEAT loops and such.  You shouldn't use JMP explicitly in
 in modern MUF code, as it is deprecated.  NOTE: Using JMP to jump into a
 different function can have problems, and is not recommended.
 
@@ -1270,6 +1399,7 @@ A better ways to do the same thing with looping primitives would be:
             dup intostr .tell
         repeat
     ;
+Also see: ' and EXECUTE
 ~
 ~
 CALL
@@ -1297,26 +1427,26 @@ string for anything else.
 EXIT
 EXIT ( -- )
 
-  Exits from the word currently being executed, returning control to the calling
-word, at the statement immediately after the location of the call (exiting
-the program if applicable).
+  Exits from the function currently being executed, returning control to
+the calling function, at the statement immediately after the location of
+the call (exiting the program if applicable).
 ~
 ~
 BEGIN
 BEGIN ( -- )
 
-  Marks the beginning of begin-until or begin-repeat loops.
+  Marks the beginning of BEGIN-UNTIL or BEGIN-REPEAT loops.
 Also see: LOOPS
 ~
 ~
 FOR
 FOR (i1 i2 i3 -- i)
 
-  Marks the beginning of a iterative FOR loop, and sets up the current for
-loop with i1 as the start index, i2 as the end index, and i3 as the step. 
-If i2 is less then i1, or if i3 is negative and i2 is greater then i1, the
-entire loop is skipped without executing.  If i3 is 0 the loop will run
-infinitely until some other condition causes an exit.
+  Marks the beginning of a iterative FOR loop, and initializes it with i1
+as the start index, i2 as the end index, and i3 as the step.  If i2 is less
+then i1, or if i3 is negative and i2 is greater then i1, the entire loop is
+skipped without executing.  If i3 is 0 the loop will run infinitely until
+some other condition causes an exit.
 Also see: LOOPS
 ~
 ~
@@ -1377,30 +1507,26 @@ Also see: LOOPS
 LOOPS
 Loops:
 
-  The BEGIN or FOR statement marks the beginning of a loop.
+  The BEGIN, FOR, or FOREACH statement marks the beginning of a loop.
 Either the UNTIL or the REPEAT statement marks the end of the loop.
 REPEAT will do an unconditional jump back to the BEGIN or FOR statement.
 UNTIL checks to see if the value on the stack is false.  If it is, it
-    jumps back to the BEGIN or FOR statement, otherwise, it falls through
-    on execution to the statement after the UNTIL.
-Within a loop, even within IF-ELSE-THEN structures within the loop
+jumps back to the BEGIN or FOR statement, otherwise, it falls through
+on execution to the statement after the UNTIL.
+  Within a loop, even within IF-ELSE-THEN structures within the loop
 structure, you can place WHILE, CONTINUE, or BREAK statements.  There
 is no limit as to how many, or in what combinations these instructions
 are used.
-A WHILE statement checks to see if the value on the stack is false.
-    If it is, execution jumps to the first statement after the end of
-    the loop.  If the value was true, execution falls through to the
-    statement after the WHILE.
-The CONTINUE statement forces execution to jump to the beginning of
-    the loop, at the BEGIN or FOR.
-The BREAK statement forces execution to jump to the end of the loop,
-    at the statement after the REPEAT or UNTIL, effectively exiting the
-    loop.
-Note: You can nest loops complexly, but WHILE, BREAK, and CONTINUE
+  A WHILE statement checks to see if the top value on the stack is false.
+If it is, then execution breaks out of the innermost loop and resumes
+after the matching REPEAT or UNTIL statement.
+  The CONTINUE statement causes the loop to jump back to the beginning
+of its next iteration, after the BEGIN, FOR, or FOREACH.
+  The BREAK statement forces execution to break out of the innermost loop,
+resuming after the matching REPEAT or UNTIL.
+  Note: You can nest loops complexly, but WHILE, BREAK, and CONTINUE
 statements only refer to the innermost loop structure.
-For an example of a BEGIN-REPEAT and BEGIN-UNTIL loops, see LOOP-EXAMPLE1.
-For an example of a complex loop, see LOOP-EXAMPLE2.
-For an example of FOR and FOREACH loops, see LOOP-EXAMPLE3.
+Also see: LOOP-EXAMPLE1, LOOP-EXAMPLE2 and LOOP-EXAMPLE3
 ~
 ~
 LOOP-EXAMPLE1
@@ -1424,10 +1550,48 @@ How to count from 1 to 10 using a FOR-REPEAT loop:
     1 10 1 for
         intostr me @ swap notify
     repeat
+Also see: LOOPS, LOOP-EXAMPLE2 and LOOP-EXAMPLE3
 ~
 ~
 LOOP-EXAMPLE2
 Loop Examples 2:
+
+Example of a FOR loop:
+    1 10 1 for
+        me @ swap intostr notify
+    repeat
+
+Example of nested FOR loops:
+    1 5 1 for
+        "" swap 1 -1 for
+            intostr strcat
+        repeat
+        me @ swap notify
+    repeat
+
+Example of a complex (if pointless) FOR loop:
+    10 -10 -2 for
+        me @ over intostr notify
+        dup -5 > while
+        dup 0 = if pop continue then
+        dup -3 = if pop break then
+        not
+    until
+
+Example of a FOREACH loop:
+    {
+        "index1" "value1"
+        "index2" "value2"
+        "index3" "value3"
+    }dict
+    foreach
+        " = " swap strcat strcat me @ swap notify
+    repeat
+Also see: LOOPS, LOOP-EXAMPLE1 and LOOP-EXAMPLE3
+~
+~
+LOOP-EXAMPLE3
+Loop Examples 3:
 
 Example of a complex loop structure:
     101 begin                       (BEGIN the outer loop)
@@ -1447,35 +1611,7 @@ Example of a complex loop structure:
         dup intostr
         me @ swap notify
     dup 1 = until pop               (This UNTIL ends the outer loop)
-~
-~
-LOOP-EXAMPLE3
-Loop Examples 3:
-
-Example of a FOR loop:
-    1 10 1 for
-        me @ swap intostr notify
-    repeat
-
-Example of nested FOR loops:
-    1 5 1 for
-        "" swap 1 -1 for
-        intostr strcat
-        repeat
-        me @ swap notify
-    repeat
-
-Example of complex FOR loop:
-    10 -10 -2 for
-        me @ over intostr notify
-        not
-    until
-
-Example of a FOREACH loop:
-    { "index1" "value1" "index2" "value2" }dict
-    foreach
-        " = " swap strcat strcat me @ swap notify
-    repeat
+Also see: LOOPS, LOOP-EXAMPLE1 and LOOP-EXAMPLE2
 ~
 ~
 PUBLIC
@@ -1486,7 +1622,8 @@ programs.  This is a compile-time directive, not a run-time primitive.  To
 call a public function, put the dbref of the program on the stack, then put
 a string, containing the function name, on the stack, then use CALL.
 For example:
-  #888 "functionname" CALL
+    #888 "functionname" CALL
+Also see: WIZCALL, CANCALL?, CALL, $LIBDEF and $PUBDEF
 ~
 ~
 WIZCALL
@@ -1496,9 +1633,9 @@ WIZCALL <functionname>
 as long as the calling program has wizbit permissions.  This is a compile-
 time directive, not a run-time primitive.  To call a public function, put
 the dbref of the program on the stack, then put a string, containing the
-function name, on the stack, then use CALL.
-For example:
-  #888 "functionname" CALL
+function name, on the stack, then use CALL.  For example:
+    #888 "functionname" CALL
+Also see: PUBLIC, CANCALL?, CALL, $LIBDEF and $PUBDEF
 ~
 ~
 CANCALL?
@@ -1506,6 +1643,7 @@ CANCALL?  (d s -- i)
 
   Returns true if the given program has a public or wizcall function that the
 current program has permissions to call.  Returns false, otherwise.
+Also see: PUBLIC, WIZCALL, CALL, $LIBDEF and $PUBDEF
 ~
 ~
 ~
@@ -1587,6 +1725,7 @@ use either the FMOD or MODF primitives.
   If given an integer, float, or dbref, adds 1 to it, and returns the result.
 If given a variable containing an integer, float, or dbref, adds 1 to the
 value stored in the variable, and returns nothing.
+Also see: --
 ~
 ~
 --
@@ -1597,6 +1736,7 @@ value stored in the variable, and returns nothing.
 returns the result.  If given a variable containing an integer, float,
 or dbref, this subtracts 1 from the value stored in the variable, and
 returns nothing.
+Also see: ++
 ~
 ~
 ABS
@@ -1706,6 +1846,7 @@ INF ( -- f )
 
   Returns the value of an Infinite result.  Most functions will not
 accept this value as a legal input.
+Also see: EPSILON and FLOAT
 ~
 ~
 EPSILON
@@ -1720,8 +1861,7 @@ to within the precision of the system.  ie:
   When you are working with numbers that have exponent parts that may not be
 near e+00, you should do a relative comparison instead:
     float1 @ float2 @ - float1 @ / fabs epsilon < if "Equivalent" then
-
-
+Also see: INF, FLOAT, FABS, -, /, @, <, IF and THEN
 ~
 ~
 FTOSTR
@@ -1751,20 +1891,25 @@ CEIL
 CEIL ( f - f )
 
   Returns the next highest integer, as a floating point type.
+Also see: ROUND and FLOOR
 ~
 ~
 FLOOR
 FLOOR ( f -- f )
 
   Returns the next lowest integer number, as a floating point type.
+Also see: ROUND and CIEL
 ~
 ~
 ROUND
 ROUND ( f i -- f )
 
   Rounds the floating point number to the precision requested, given as the
-number of places to the right of the decimal point.  ie: '1.11 1 round' would
-leave '1.1' on the stack, while '1.11 0 round' would leave '1.0'.
+number of places to the right of the decimal point.  ie: '1.111 1 round'
+would leave '1.1' on the stack, while '1.111 0 round' would leave '1.0'.
+Negative i values denote places to the left of the decimal place.  ie:
+'1234.56 -2 round' would return '1200.0' on the stack.
+Also see: FLOOR and CIEL
 ~
 ~
 FMOD
@@ -1895,6 +2040,7 @@ POLAR_TO_XYZ ( fr ft fp -- fx fy fz )
 (fx, fy, fz).  fr is the radius, ft is theta (the plane angle), and fp is phi
 (the elevation angle)  To do 2D radius and angle to X-Y conversion, simply use
 a phi angle (fp) of 0, and discard Z (fz).
+Also see: XYZ_TO_POLAR, DIST3D, SIN, COS, TAN and ATAN2
 ~
 ~
 FRAND
