@@ -671,7 +671,8 @@ prim_set(PRIM_PROTOTYPE)
 			tmp = XFORCIBLE;
 		else if (string_prefix("zombie", flag))
 			tmp = ZOMBIE;
-		else if (string_prefix("vehicle", flag))
+		else if (string_prefix("vehicle", flag)
+			 || string_prefix("viewable", flag))
 			tmp = VEHICLE;
 		else if (string_prefix("quell", flag))
 			tmp = QUELL;
@@ -802,7 +803,8 @@ prim_flagp(PRIM_PROTOTYPE)
 			tmp = ZOMBIE;
 		else if (string_prefix("xforcible", flag))
 			tmp = XFORCIBLE;
-		else if (string_prefix("vehicle", flag))
+		else if (string_prefix("vehicle", flag)
+			|| string_prefix("viewable", flag))
 			tmp = VEHICLE;
 		else if (string_prefix("quell", flag))
 			tmp = QUELL;

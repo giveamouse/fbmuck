@@ -3,6 +3,10 @@
 
 /*
  * $Log: set.c,v $
+ * Revision 1.4  2001/04/06 00:10:00  wog
+ * Made @set and the FLAG? and SET primitives know that VIEWABLE is a valid
+ * alias for the VEHICLE flag.
+ *
  * Revision 1.3  2000/12/28 03:02:08  revar
  * Fixed support for Linux mallinfo() calls in @memory.
  * Fixed a crasher bug in ARRAY_NUNION, ARRAY_NDIFF, and ARRAY_NINTERSECT.
@@ -934,7 +938,8 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 		f = WIZARD;
 	} else if (string_prefix("ZOMBIE", p)) {
 		f = ZOMBIE;
-	} else if (string_prefix("VEHICLE", p)) {
+	} else if (string_prefix("VEHICLE", p)
+		|| string_prefix("VIEWABLE", p)) {
 		if (*flag == NOT_TOKEN && Typeof(thing) == TYPE_THING) {
 			dbref obj = DBFETCH(thing)->contents;
 
@@ -964,7 +969,6 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 
 	} else if (string_prefix("KILL_OK", p)) {
 		f = KILL_OK;
-
 	} else if ((string_prefix("DARK", p)) || (string_prefix("DEBUG", p))) {
 		f = DARK;
 	} else if ((string_prefix("STICKY", p)) || (string_prefix("SETUID", p)) ||
