@@ -4006,7 +4006,8 @@ REGEXP ( str:Text str:Pattern int:Flag -- list:SubMatchVals list:SubMatchIdx )
 Apply the regular expression "Pattern" to "Text", returns a list array of
 the matched substrings in SubMatchVals.  (The first element of the list is
 the entire matched string.)  The indices into "Text" of the submatches are
-returned in SubMatchIdx.
+returned in SubMatchIdx.  If the match failed, both returned lists will be
+empty.
  
 The "Flag" argument may be a combination, or none of the following:
  
@@ -4022,6 +4023,11 @@ The "Flag" argument may be a combination, or none of the following:
  
     $def REG_ICASE    1   (Case insensitive match)
     $def REG_ALL      2   (Substitute all matches, rather than just the first)
+
+Ie: to replace all words in a string with 'yadda', ignoring case, you would
+use the following code:
+
+    "[a-z]+" "yadda" REG_ICASE REG_ALL + REGSUB
 ~
 PARSEPROPEX|
 PARSEPROPEX ( ref:Obj str:Prop dict:Vars int:Private -- dict:Vars str:Result )
