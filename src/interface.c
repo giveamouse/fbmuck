@@ -3237,6 +3237,8 @@ welcome_user(struct descriptor_data *d)
 	char *ptr;
 	char buf[BUFFER_LEN];
 
+	mcp_negotiation_start(&d->mcpframe);
+
 	if ((f = fopen(WELC_FILE, "r")) == NULL) {
 		queue_ansi(d, DEFAULT_WELCOME_MESSAGE);
 		perror("spit_file: welcome.txt");

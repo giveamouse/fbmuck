@@ -202,6 +202,30 @@ mcp_initialize(void)
 
 
 
+/*****************************************************************
+ *
+ * void mcp_negotiation_start(McpFrame* mfr);
+ *
+ *   Starts MCP negotiations, if any are to be had.
+ *
+ *****************************************************************/
+
+void
+mcp_negotiation_start(McpFrame * mfr)
+{
+	McpMesg reply;
+
+	mfr->enabled = 1;
+	mcp_mesg_init(&reply, MCP_INIT_PKG, "");
+	mcp_mesg_arg_append(&reply, "version", "2.1");
+	mcp_mesg_arg_append(&reply, "to", "2.1");
+	mcp_frame_output_mesg(mfr, &reply);
+	mcp_mesg_clear(&reply);
+	mfr->enabled = 0;
+}
+
+
+
 
 
 
@@ -227,24 +251,12 @@ mcp_initialize(void)
 void
 mcp_frame_init(McpFrame * mfr, connection_t con)
 {
-	McpMesg reply;
-
-	/* McpVer twoone = {2,1}; */
-
 	mfr->descriptor = con;
-	mfr->enabled = 1;
 	mfr->version.verminor = 0;
 	mfr->version.vermajor = 0;
 	mfr->authkey = NULL;
 	mfr->packages = NULL;
 	mfr->messages = NULL;
-
-	mcp_mesg_init(&reply, MCP_INIT_PKG, "");
-	mcp_mesg_arg_append(&reply, "version", "2.1");
-	mcp_mesg_arg_append(&reply, "to", "2.1");
-	mcp_frame_output_mesg(mfr, &reply);
-	mcp_mesg_clear(&reply);
-
 	mfr->enabled = 0;
 }
 
@@ -735,7 +747,6 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 		strcat(outbuf, "\r\n");
 		SendText(mfr, outbuf);
 	}
-	FlushText(mfr);
 
 	return EMCP_SUCCESS;
 }
@@ -1611,6 +1622,9 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.14  2001/09/18 18:23:38  revar
+* Fixed SSL connections that were broken by the MCP flush changes.
+*
 * Revision 1.13  2001/09/17 08:48:18  revar
 * Changed MCP code to flush long messages periodically to try to bypass
 *   '<Output Flushed>' events.

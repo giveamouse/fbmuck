@@ -113,6 +113,12 @@ typedef struct McpFrame_T {
  *
  *****************************************************************
  *
+ * void mcp_negotiation_start(McpFrame* mfr);
+ *
+ *   Starts MCP negotiations, if any are to be had.
+ *
+ *****************************************************************
+ *
  * void mcp_frame_init(McpFrame* mfr, connection_t con);
  *
  *   Initializes an McpFrame for a new connection.
@@ -306,6 +312,7 @@ typedef struct McpFrame_T {
 
 
 void mcp_initialize(void);
+void mcp_negotiation_start(McpFrame * mfr);
 
 void mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver,
 						  McpPkg_CB callback, void *context, ContextCleanup_CB cleanup);

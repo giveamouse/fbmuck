@@ -1,4 +1,5 @@
 2.2fb6.00b4
+Fixed SSL connections that were broken by the MCP flush changes.
 Fixed garbage char at end of muf DEBUG lines.
 Fixed bug #205753 -- env-looping problems.
 Fixed bug #450413 -- Problems with forks within loops.
