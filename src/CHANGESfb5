@@ -228,7 +228,7 @@ Added {debugif:condition,statement}. If condition evals true, use debug mode
 Added several checks to trap failed memory allocations.  Prints msg to stderr.
 Added ABATE alias for ABODE flag on exits.  An exit with the ABATE flag
   is a lower priority then one without the ABATE flag, making it lower
-  then the M0 exir priority.
+  then the M0 exit priority.
 Changed MPI permissions so MPI with Wizard permissions can set any property.
 Fixed DELPROP error reporting in MPI.
 Fixed bug that padded all strings echoed from vehicles to the maximum
