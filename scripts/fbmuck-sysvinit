@@ -140,6 +140,10 @@ case "$cmd" in
     done
     echo ""
     ;;
+  reload)
+    $0 stop
+    $0 start
+    ;;
   restart)
     $0 stop
     $0 start

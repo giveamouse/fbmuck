@@ -149,6 +149,10 @@ case "$cmd" in
     done
     rm -f /var/lock/subsys/fbmuck
     ;;
+  reload)
+    $0 stop
+    $0 start
+    ;;
   restart)
     $0 stop
     $0 start
