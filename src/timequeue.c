@@ -815,7 +815,7 @@ dequeue_prog(dbref program, int sleeponly)
 int
 dequeue_process(int pid)
 {
-	timequeue tmp, ptr = tqhead;
+	timequeue tmp, ptr;
 	int deqflag = 0;
 
 	if (!pid)
@@ -823,9 +823,10 @@ dequeue_process(int pid)
 
 	if (muf_event_dequeue_pid(pid)) {
 		process_count--;
+		deqflag = 1;
 	}
 
-	tmp = ptr;
+	tmp = ptr = tqhead;
 	while (ptr) {
 		if (pid == ptr->eventnum) {
 			if (tmp == ptr) {
@@ -863,7 +864,7 @@ int
 dequeue_timers(int pid, char* id)
 {
 	char buf[40];
-	timequeue tmp, ptr = tqhead;
+	timequeue tmp, ptr;
 	int deqflag = 0;
 
 	if (!pid)
@@ -872,7 +873,7 @@ dequeue_timers(int pid, char* id)
 	if (id)
 		sprintf(buf, "TIMER.%.30s", id);
 
-	tmp = ptr;
+	tmp = ptr = tqhead;
 	while (ptr) {
 		if (pid == ptr->eventnum &&
 			ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_TIMER &&
