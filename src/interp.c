@@ -845,6 +845,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			abort_loop_hard("Program not compilable. Cannot run.", NULL, NULL);
 		}
 		PROGRAM_INC_PROF_USES(program);
+		PROGRAM_INC_INSTANCES(program);
 	}
 	ts_useobject(program);
 	err = 0;
