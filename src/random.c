@@ -25,8 +25,15 @@
  * will fill a supplied 16-byte array with the digest.
  */
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+typedef uint32_t word32;
+typedef uint8_t byte;
+#else
 typedef unsigned long word32;
 typedef unsigned char byte;
+#endif
+
 
 struct xMD5Context {
 	word32 buf[4];
@@ -264,7 +271,8 @@ MD5hash(void *dest, const void *orig, int len)
 
 /*
  * outbuf MUST be at least (((strlen(inbuf)+3)/4)*3)+1 chars long to read
- * the full set of base64 encoded data in the string.
+ * the full set of base64 encoded data in the string.  More simply, make sure
+ * your output buffer is at least 3/4ths the size of your input, plus 4 bytes.
  */
 size_t
 Base64Decode(void* outbuf, size_t outbuflen, const char* inbuf)
@@ -310,7 +318,11 @@ Base64Decode(void* outbuf, size_t outbuflen, const char* inbuf)
 }
 
 
-/* outbuf MUST be at least (((inlen+2)/3)*4)+1 chars long. */
+/*
+ * outbuf MUST be at least (((inlen+2)/3)*4)+1 chars long.
+ * More simply, make sure your output buffer is at least 4/3rds the size
+ * of the input buffer, plus five bytes.
+ */
 void
 Base64Encode(char* outbuf, const void* inbuf, size_t inlen)
 {
@@ -393,11 +405,11 @@ static unsigned long digest[4];
 void *
 init_seed(char *seed)
 {
-	unsigned long *digest;
+	word32* digest;
 	int loop;
 	int tbuf[8];
 
-	if (!(digest = (unsigned long *) malloc(sizeof(unsigned long) * 4))) {
+	if (!(digest = (word32*) malloc(sizeof(word32) * 4))) {
 		return (NULL);
 	}
 	if (!seed) {
@@ -419,10 +431,10 @@ delete_seed(void *buffer)
 	free(buffer);
 }
 
-unsigned long
+word32
 rnd(void *buffer)
 {
-	unsigned long *digest = (unsigned long *) buffer;
+	word32* digest = (word32*) buffer;
 
 	if (!digest)
 		return (0);

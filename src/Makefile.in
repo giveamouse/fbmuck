@@ -244,11 +244,10 @@ Makefile: Makefile.in
 
 clean:
 	-${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${MALLOBJ} ${ANNOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o libpcre.a
-	-cd pcre && make clean
+	-${RM} -rf pcre
 
 cleaner: clean
 	-${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp
-	-${RM} -r pcre
 
 clobber: cleaner
 	-${RM} tags *~ *.bak *.orig
