@@ -2,6 +2,10 @@
 
 /*
  * $Log: rob.c,v $
+ * Revision 1.3  2000/07/07 15:37:30  revar
+ * Made rob give pennies to owner of robber puppet.
+ * This is more consistent with the way give works for puppets.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -101,7 +105,7 @@ do_rob(int descr, dbref player, const char *what)
 			notify(thing, buf);
 		} else if (can_doit(descr, player, thing, "Your conscience tells you not to.")) {
 			/* steal a penny */
-			PLAYER_ADD_PENNIES(player, 1);
+			PLAYER_ADD_PENNIES(OWNER(player), 1);
 			DBDIRTY(player);
 			PLAYER_ADD_PENNIES(thing, -1);
 			DBDIRTY(thing);
