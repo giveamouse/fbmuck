@@ -1,6 +1,8 @@
 2.2fb6.02
 Fixed a number of off-by-one crasher bugs, due to bad comparisons with db_top.
 Fixed compilation issue with socklen_t on OS X 10.3 Panther.
+Fixed possible crasher with dequeueing of tasks from a mufevent run process.
+Fixed lost process bug with mufevent queue.
 
 
 
