@@ -197,6 +197,12 @@ prim_moveto(PRIM_PROTOTYPE)
 			if (victim == GLOBAL_ENVIRONMENT)
 				abort_interp("Permission denied.");
 			if (dest == HOME) {
+				/* Allow the owner of the room or the owner of
+				   the room's location to reparent the room to
+				   #0 */
+				if ((mlev < 3) && (!permissions(ProgUID,victim)
+				     && !permissions(ProgUID,getloc(victim))))
+					abort_interp("Permission denied.");
 				dest = GLOBAL_ENVIRONMENT;
 			} else {
 				if ((mlev < 3) && (!permissions(ProgUID, victim)
