@@ -1,4 +1,5 @@
 2.2fb6.00b2
+Changed MCP GUI code to limit to 256 "values" per dialog.
 Added inserver muf define for C_MENU.
 Added support for "valname" option to MCP GUI control creation.
 

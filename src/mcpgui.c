@@ -156,6 +156,7 @@ gui_value_set_local(const char *dlogid, const char *id, int lines, const char **
 	DlogValue *ptr;
 	DlogData *ddata = gui_dlog_find(dlogid);
 	int i;
+	int limit = 256;
 
 	if (!ddata) {
 		return;
@@ -163,6 +164,9 @@ gui_value_set_local(const char *dlogid, const char *id, int lines, const char **
 	ptr = ddata->values;
 	while (ptr && strcmp(ptr->name, id)) {
 		ptr = ptr->next;
+		if (!limit--) {
+			return;
+		}
 	}
 	if (ptr) {
 		for (i = 0; i < ptr->lines; i++) {
@@ -216,7 +220,6 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		return;
 	}
 	if (!string_compare(msg->mesgname, "ctrl-value")) {
-		const char* valname = mcp_mesg_arg_getline(msg, "valname", 0);
 		int valcount = mcp_mesg_arg_linecount(msg, "value");
 		int i;
 		const char **value = (const char **) malloc(sizeof(const char *) * valcount);
@@ -225,13 +228,10 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 			show_mcp_error(mfr, msg->mesgname, "Missing control ID.");
 			return;
 		}
-		if (!valname || !*valname) {
-			valname = id;
-		}
 		for (i = 0; i < valcount; i++) {
 			value[i] = mcp_mesg_arg_getline(msg, "value", i);
 		}
-		gui_value_set_local(dlogid, valname, valcount, value);
+		gui_value_set_local(dlogid, id, valcount, value);
 		free(value);
 
 	} else if (!string_compare(msg->mesgname, "ctrl-event")) {
@@ -769,7 +769,8 @@ gui_ctrl_process_layout(McpMesg * msg, int layout)
 
 
 int
-gui_ctrl_make_v(const char *dlogid, const char *type, const char *pane, const char *id, const char *text, const char *value,
+gui_ctrl_make_v(const char *dlogid, const char *type, const char *pane,
+		        const char *id, const char *text, const char *value,
 				int layout, const char **args)
 {
 	McpMesg msg;

@@ -750,6 +750,7 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
 	char *dlogid = NULL;
 	char *ctrlid = NULL;
 	char *ctrltype = NULL;
+	char *valname = NULL;
 	stk_array *arr;
 	McpMesg msg;
 	McpFrame *mfr;
@@ -816,11 +817,15 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
 	}
 	
 	vallines = mcp_mesg_arg_linecount(&msg, "value");
-	if (ctrlid && vallines > 0) {
+	valname = mcp_mesg_arg_getline(&msg, "valname", 0);
+	if (!valname || !*valname) {
+		valname = ctrlid;
+	}
+	if (valname && vallines > 0) {
 		vallist = (char**)malloc(sizeof(char*) * vallines);
 		for (i = 0; i < vallines; i++)
 			vallist[i] = mcp_mesg_arg_getline(&msg, "value", i);
-		gui_value_set_local(dlogid, ctrlid, vallines, (const char**)vallist);
+		gui_value_set_local(dlogid, valname, vallines, (const char**)vallist);
 		free(vallist);
 	}
 
