@@ -1,6 +1,9 @@
 #ifndef _TUNE_H
 #define _TUNE_H
 
+/* Ensure that 'dbref' type gets properly typedef'd */
+#include "db.h"
+
 /* strings */
 extern const char *tp_dumpwarn_mesg;
 extern const char *tp_deltawarn_mesg;
