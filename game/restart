@@ -95,7 +95,7 @@ umask 077
 
 ulimit -t unlimited   ;# Max amount of cpu time in seconds
 
-if [ -e $PIDFILE -a -r $PIDFILE -a -s $PIDFILE ]; then
+if [ -r $PIDFILE -a -s $PIDFILE ]; then
 	muckpid=`cat $PIDFILE`
 	if [ "x$muckpid" != "x" ]; then
 		muck=`${PS} | awk '{print $1}' | egrep "\\<${muckpid}\\>" | wc -l`
@@ -125,14 +125,8 @@ if [ -r $DBOUT ]; then
     mv $DBOUT $DBIN
 fi
 
-if [ ! -e $DBIN ]; then
-	echo "Hey\!  You gotta have a "$DBIN" file to restart the server\!"
-	echo "Restart attempt aborted."
-	exit
-fi
-
 if [ ! -r $DBIN ]; then
-	echo "Hey\!  The "$DBIN" file has to be readable to restart the server\!"
+	echo "Hey\!  The "$DBIN" file has to exist and be readable to restart the server\!"
 	echo "Restart attempt aborted."
 	exit
 fi
@@ -170,8 +164,8 @@ fi
 dbsiz=`ls -1s $DBIN | awk '{print $1}'`
 diskfree=`df -k . | tail -1 | awk '{print $4}'`
 
-diskneeded=$(($dbsiz * 3))
-spacediff=$(($diskneeded - $diskfree))
+diskneeded=`expr $dbsiz \* 3`
+spacediff=`expr $diskneeded - $diskfree`
 
 if [ $diskfree -lt $diskneeded ]; then
     echo "WARNING: you have insufficient disk space."
