@@ -442,6 +442,7 @@ init_defs(COMPSTATE * cstat)
 	/* Create standard server defines */
 	insert_def(cstat, "__version", VERSION);
 	insert_def(cstat, "__muckname", tp_muckname);
+	insert_intdef(cstat, "__fuzzball__", 1);
 	insert_def(cstat, "strip", "striplead striptail");
 	insert_def(cstat, "instring", "tolower swap tolower swap instr");
 	insert_def(cstat, "rinstring", "tolower swap tolower swap rinstr");

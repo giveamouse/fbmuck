@@ -2,6 +2,8 @@
 Changed MCP GUI code to limit to 256 "values" per dialog.
 Added inserver muf define for C_MENU.
 Added support for "valname" option to MCP GUI control creation.
+Added a __fuzzball__ inserver MUF $define, set to 1, to let programmers
+  differentiate between Fuzzball and ProtoMuck servers.
 Fixed bug with MCP not properly dealing with \r's in arg strings.
 
 
