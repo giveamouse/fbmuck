@@ -7,35 +7,35 @@ RM=rm -f
 
 all:	Makefile
 	for d in ${subdirs}; do \
-		cd $${d} && make all; \
+		cd $${d} && ${MAKE} all; \
 	done
 
 install:	Makefile
 	for d in ${subdirs}; do \
-		cd $${d} && make install; \
+		cd $${d} && ${MAKE} install; \
 	done
 
 clean:
 	for d in ${subdirs}; do \
-		cd $${d} && make clean; \
+		cd $${d} && ${MAKE} clean; \
 	done
 
 cleaner:
 	${RM} Makefile config.status config.cache config.log
 	for d in ${subdirs}; do \
-		cd $${d} && make cleaner; \
+		cd $${d} && ${MAKE} cleaner; \
 	done
 
 nuke:
 	${RM} Makefile config.status config.cache config.log
 	cp Makefile.cfg Makefile
 	for d in ${subdirs}; do \
-		cd $${d} && make nuke; \
+		cd $${d} && ${MAKE} nuke; \
 	done
 
 Makefile: Makefile.in
 	./configure
-	@echo Please re-run Make, as the Makefile was re-generated.
+	@echo Please re-run Make, because the Makefile was re-generated.
 	false
 
 #############################################################
