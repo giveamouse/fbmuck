@@ -32,6 +32,7 @@ Fixed bug #568297: @sweep will list all listener env rooms.
 Fixed bug #577291: 'configure --with-ssl' checks for SSL header/lib existence.
 Fixed crasher bug with @mcpprogram with no arguments.
 Fixed @ps to list progref & name by the first program on the caller stack.
+Fixed ARRAY_GET_PROPDIRS muf prim, which pretty much just didn't work before.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.

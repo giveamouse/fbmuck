@@ -1029,6 +1029,7 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 	PropPtr propadr, pptr;
 	PropPtr prptr;
 	int count = 0;
+	int len;
 
 	/* dbref strPropDir -- array */
 	CHECKOP(2);
@@ -1047,13 +1048,16 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 	strcpy(dir, DoNullInd(oper2->data.string));
 	if (!*dir)
 		strcpy(dir, "/");
+	len = strlen(dir) - 1;
+	if (len > 0 && dir[len] == PROPDIR_DELIMITER)
+		dir[len] = '\0';
 
 	nu = new_array_packed(0);
 	propadr = first_prop(ref, dir, &pptr, propname);
 	while (propadr) {
 		snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 		if (prop_read_perms(ProgUID, ref, buf, mlev)) {
-			prptr = get_property(ref, propname);
+			prptr = get_property(ref, buf);
 			if (prptr) {
 #ifdef DISKBASE
 				propfetch(ref, prptr);
