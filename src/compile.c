@@ -1209,10 +1209,15 @@ process_special(COMPSTATE * cstat, const char *token)
 		return new;
 	} else if (!string_compare(token, "ELSE")) {
 		struct INTERMEDIATE *eef;
+		struct INTERMEDIATE *beef;
 
 		eef = find_if(cstat);
+		beef = locate_begin(cstat);
 		if (!eef)
 			abort_compile(cstat, "ELSE without IF.");
+		if (beef && eef->no < beef->no)
+			abort_compile(cstat, "Unexpected end of loop.");
+
 		new = new_inst(cstat);
 		new->no = cstat->nowords++;
 		new->in.type = PROG_JMP;
@@ -2312,6 +2317,8 @@ prealloc_inst(COMPSTATE * cstat)
 		for (ptr = cstat->nextinst; ptr->next; ptr = ptr->next);
 		ptr->next = new;
 	}
+
+	new->no = cstat->nowords;
 
 	return new;
 }
