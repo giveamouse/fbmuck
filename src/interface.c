@@ -1343,7 +1343,7 @@ spawn_resolver()
 		execl("./resolver", "resolver", NULL);
 		execl("resolver", "resolver", NULL);
 #endif
-		perror("resolver execlp");
+		log_status("%s","Unable to spawn host resolver!");
 		_exit(1);
 	}
 }
