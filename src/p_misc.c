@@ -468,6 +468,7 @@ prim_parselock(PRIM_PROTOTYPE)
 	}
 	CLEAR(oper1);
 	PushLock(lok);
+	free_boolexp(lok);
 }
 
 

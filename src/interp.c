@@ -271,9 +271,7 @@ int nargs = 0;
 static struct frame *free_frames_list = NULL;
 
 struct forvars *for_pool = NULL;
-struct forvars **last_for = &for_pool;
 struct tryvars *try_pool = NULL;
-struct tryvars **last_try = &try_pool;
 
 void
 purge_free_frames(void)
@@ -306,10 +304,7 @@ purge_for_pool(void)
 {
 	struct forvars *cur, *next;
 
-	cur = *last_for;
-	*last_for = NULL;
-	last_for = &for_pool;
-
+	cur = for_pool;
 	while (cur) {
 		next = cur->next;
 		free(cur);
@@ -323,9 +318,7 @@ purge_try_pool(void)
 {
 	struct tryvars *cur, *next;
 
-	cur = *last_try;
-	*last_try = NULL;
-	last_try = &try_pool;
+	cur = try_pool;
 
 	while (cur) {
 		next = cur->next;
@@ -462,9 +455,6 @@ push_for(struct forvars *forstack)
 		nu = malloc(sizeof(struct forvars));
 	} else {
 		nu = for_pool;
-		if (*last_for == for_pool->next) {
-			last_for = &for_pool;
-		}
 		for_pool = nu->next;
 	}
 	nu->next = forstack;
@@ -476,12 +466,12 @@ pop_for(struct forvars *forstack)
 {
 	struct forvars *newstack;
 
+	if (!forstack) {
+		return NULL;
+	}
 	newstack = forstack->next;
 	forstack->next = for_pool;
 	for_pool = forstack;
-	if (last_for == &for_pool) {
-		last_for = &(for_pool->next);
-	}
 	return newstack;
 }
 
@@ -495,9 +485,6 @@ push_try(struct tryvars *trystack)
 		nu = malloc(sizeof(struct tryvars));
 	} else {
 		nu = try_pool;
-		if (*last_try == try_pool->next) {
-			last_try = &try_pool;
-		}
 		try_pool = nu->next;
 	}
 	nu->next = trystack;
@@ -509,12 +496,12 @@ pop_try(struct tryvars *trystack)
 {
 	struct tryvars *newstack;
 
+	if (!trystack) {
+		return NULL;
+	}
 	newstack = trystack->next;
 	trystack->next = try_pool;
 	try_pool = trystack;
-	if (last_try == &try_pool) {
-		last_try = &(try_pool->next);
-	}
 	return newstack;
 }
 
@@ -609,9 +596,6 @@ prog_clean(struct frame *fr)
 			loop = &((*loop)->next);
 		}
 		*loop = for_pool;
-		if (last_for == &for_pool) {
-			last_for = loop;
-		}
 		for_pool = fr->fors.st;
 		fr->fors.st = NULL;
 		fr->fors.top = 0;
@@ -624,9 +608,6 @@ prog_clean(struct frame *fr)
 			loop = &((*loop)->next);
 		}
 		*loop = try_pool;
-		if (last_try == &try_pool) {
-			last_try = loop;
-		}
 		try_pool = fr->trys.st;
 		fr->trys.st = NULL;
 		fr->trys.top = 0;

@@ -889,6 +889,7 @@ prim_array_sort(PRIM_PROTOTYPE)
 		temp1.data.number = i;
 		array_setitem(&nu, &temp1, tmparr[i]);
 	}
+	free(tmparr);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
