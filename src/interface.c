@@ -1992,7 +1992,10 @@ process_input(struct descriptor_data *d)
 	if (got <= 0 || got == SOCKET_ERROR)
 # endif
 #endif
+	{
+		/* perror("socket_read"); */
 		return 0;
+	}
 	if (!d->raw_input) {
 		MALLOC(d->raw_input, char, MAX_COMMAND_LEN);
 
@@ -2021,6 +2024,13 @@ process_input(struct descriptor_data *d)
 					/* could be handy, but for now leave unimplemented */
 					d->inIAC = 0;
 					break;
+				case '\366': /* AYT */
+					{
+						char sendbuf[] = "[Yes]\r\n";
+						socket_write(d, sendbuf, strlen(sendbuf));
+						d->inIAC = 0;
+						break;
+					}
 				case '\367': /* Erase character */
 					if (p > d->raw_input)
 						p--;
@@ -2035,8 +2045,10 @@ process_input(struct descriptor_data *d)
 					d->inIAC = 0;
 					break;
 				case '\373': /* WILL (option offer) */
-				case '\374': /* WONT (option offer) */
 					d->inIAC = 2;
+					break;
+				case '\374': /* WONT (option offer) */
+					d->inIAC = 4;
 					break;
 				case '\375': /* DO (option request) */
 				case '\376': /* DONT (option request) */
@@ -2071,6 +2083,9 @@ process_input(struct descriptor_data *d)
 			sendbuf[2] = *q;
 			sendbuf[3] = '\0';
 			socket_write(d, sendbuf, 3);
+			d->inIAC = 0;
+		} else if (d->inIAC == 4) {
+			/* Ignore WONT option. */
 			d->inIAC = 0;
 		} else if (*q == '\377') {
 			/* Got TELNET IAC, store for next byte */	
