@@ -111,7 +111,7 @@ ANNOBJ= announce.o
 
 MISCSRC= Makefile.in ChangeLog COPYING mkversion.sh
 
-CSRCS= array.c boolexp.c compile.c compress.c create.c db.c debugger.c \
+CSRC= array.c boolexp.c compile.c compress.c create.c db.c debugger.c \
 	disassem.c diskprop.c edit.c events.c game.c hashtab.c help.c inst.c \
 	interp.c log.c look.c match.c mcp.c mcpgui.c mcppkgs.c mfuns2.c \
 	mfuns.c move.c msgparse.c mufevent.c oldcompress.c p_array.c \
@@ -121,14 +121,23 @@ CSRCS= array.c boolexp.c compile.c compress.c create.c db.c debugger.c \
 	signal.c smatch.c snprintf.c speech.c strftime.c stringutil.c \
 	timequeue.c timestamp.c tune.c unparse.c utils.c wiz.c
 
-CSRC= $(sort $(CSRCS))
 LSRC= copyright.c
 MSRC= olddecomp.c reconst.c interface.c resolver.c topwords.c
 
 
-COBJ= $(patsubst %.c,%.o,$(CSRC))
-LOBJ= $(patsubst %.c,%.o,$(LSRC))
-MOBJ= $(patsubst %.c,%.o,$(MSRC))
+COBJ= array.o boolexp.o compile.o compress.o create.o db.o debugger.o \
+	disassem.o diskprop.o edit.o events.o game.o hashtab.o help.o inst.o \
+	interp.o log.o look.o match.o mcp.o mcpgui.o mcppkgs.o mfuns2.o \
+	mfuns.o move.o msgparse.o mufevent.o oldcompress.o p_array.o \
+	p_connects.o p_db.o p_error.o p_float.o player.o p_math.o p_mcp.o \
+	p_misc.o p_props.o p_regex.o predicates.o propdirs.o property.o \
+	props.o p_stack.o p_strings.o random.o rob.o rwho.o sanity.o set.o \
+	signal.o smatch.o snprintf.o speech.o strftime.o stringutil.o \
+	timequeue.o timestamp.o tune.o unparse.o utils.o wiz.o
+
+LOBJ= copyright.o
+MOBJ= olddecomp.o reconst.o interface.o resolver.o topwords.o
+
 
 SRC= ${MISCSRC} ${CSRC} ${LSRC} ${MSRC}
 OBJ= ${COBJ} ${ROBJ} ${LOBJ} ${MOBJ}
