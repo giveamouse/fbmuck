@@ -2,6 +2,9 @@
 
 /*
  * $Log: utils.c,v $
+ * Revision 1.1  2004/01/16 21:34:04  winged
+ * Initial revision
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.

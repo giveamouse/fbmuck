@@ -1,5 +1,8 @@
 /* $Header$
  * $Log: match.h,v $
+ * Revision 1.1  2004/01/16 21:34:01  winged
+ * Initial revision
+ *
  * Revision 1.4  2003/04/07 18:37:00  cutevixy
  * Changed struct match_data and match_exits to not partially match Xpress exits unless specifically matching exits, or partial exit matching is requested in the match_data struct.
  *

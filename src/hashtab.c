@@ -3,6 +3,9 @@
 /*
  *
  * $Log: hashtab.c,v $
+ * Revision 1.1  2004/01/16 21:34:02  winged
+ * Initial revision
+ *
  * Revision 1.3  2001/10/15 02:08:49  revar
  * Minor cleanups for possible Win32 port plans.
  *

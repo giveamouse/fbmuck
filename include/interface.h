@@ -1,6 +1,9 @@
 
 /* $Header$
  * $Log: interface.h,v $
+ * Revision 1.1  2004/01/16 21:34:01  winged
+ * Initial revision
+ *
  * Revision 1.8  2002/09/12 22:58:07  sombre
  * Changed function naming convention of recently added code from InterCaps to underline_separated_words at Revar's request. (mutter grumble ;>)
  *

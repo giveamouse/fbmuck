@@ -2,6 +2,9 @@
 
 /*
  * $Log: oldcompress.c,v $
+ * Revision 1.1  2004/01/16 21:34:03  winged
+ * Initial revision
+ *
  * Revision 1.3  2000/07/19 01:33:18  revar
  * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
  * Changed the mcpgui package to use 'const char*'s instead of 'char *'s

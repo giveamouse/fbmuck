@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.1  2004/01/16 21:34:04  winged
+ * Initial revision
+ *
  * Revision 1.11  2004/01/14 16:57:11  wolfwings
  * Further cleanup of #defines across codebase.
  * Replaced numerous #defines relating to Pennies with SETVALUE/GETVALUE.
