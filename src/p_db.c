@@ -2148,15 +2148,78 @@ prim_getpids(PRIM_PROTOTYPE)
 	if (oper1->type != PROG_OBJECT)
 		abort_interp("Non-object argument (1)");
 	nw = get_pids(oper1->data.objref);
+
+	if (program == oper1->data.objref)
+	{
+		struct inst temp;
+
+		temp.type			= PROG_INTEGER;
+		temp.data.number	= fr->pid;
+
+		array_appenditem(&nw, &temp);
+
+		CLEAR(&temp);
+	}
+	
 	CLEAR(oper1);
 	PushArrayRaw(nw);
 }
 
 
+void gpi_add_int(stk_array** nu, const char* idx_str, int val_int, int is_dbref)
+{
+	struct inst idx, val;
+
+	idx.type		= PROG_STRING;
+	idx.data.string	= alloc_prog_string(idx_str);
+
+	val.type		= is_dbref ? PROG_OBJECT : PROG_INTEGER;
+	val.data.number	= val_int;
+
+	array_setitem(nu, &idx, &val);
+
+	CLEAR(&idx);
+	CLEAR(&val);
+}
+
+void gpi_add_flt(stk_array** nu, const char* idx_str, float val_flt)
+{
+	struct inst idx, val;
+
+	idx.type		= PROG_STRING;
+	idx.data.string	= alloc_prog_string(idx_str);
+
+	val.type			= PROG_FLOAT;
+	val.data.fnumber	= val_flt;
+
+	array_setitem(nu, &idx, &val);
+
+	CLEAR(&idx);
+	CLEAR(&val);
+}
+
+void gpi_add_str(stk_array** nu, const char* idx_str, const char* val_str)
+{
+	struct inst idx, val;
+
+	idx.type		= PROG_STRING;
+	idx.data.string	= alloc_prog_string(idx_str);
+
+	val.type		= PROG_STRING;
+	val.data.string	= alloc_prog_string(val_str);
+
+	array_setitem(nu, &idx, &val);
+
+	CLEAR(&idx);
+	CLEAR(&val);
+}
+
 void
 prim_getpidinfo(PRIM_PROTOTYPE)
 {
-	stk_array *nw;
+	stk_array*	nu;
+	float		cpu;
+	time_t		etime;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -2164,9 +2227,42 @@ prim_getpidinfo(PRIM_PROTOTYPE)
 		abort_interp("Permission denied.  Requires Mucker Level 3.");
 	if (oper1->type != PROG_INTEGER)
 		abort_interp("Non-integer argument (1)");
-	nw = get_pidinfo(oper1->data.number);
+
+	if (oper1->data.objref == fr->pid)
+	{
+		if ((nu = new_array_dictionary()) == NULL)
+			abort_interp("Out of memory");
+
+		if ((etime = time(NULL) - fr->started) > 0)
+		{
+			cpu = ((fr->totaltime.tv_sec + (fr->totaltime.tv_usec / 1000000.0f)) * 100.0f) / etime;
+
+			if (cpu > 100.0f)
+				cpu = 100.0f;
+		}
+		else
+			cpu = 0.0f;
+			
+		gpi_add_int(&nu, "PID",			fr->pid,		0);
+		gpi_add_int(&nu, "CALLED_PROG",	program,		1);
+		gpi_add_int(&nu, "TRIG",		fr->trig,		1);
+		gpi_add_int(&nu, "PLAYER",		player,			1);
+		gpi_add_int(&nu, "INSTCNT",		fr->instcnt,	0);
+		gpi_add_int(&nu, "DESCR",		fr->descr,		0);
+		gpi_add_int(&nu, "NEXTRUN",		0,				0);
+		gpi_add_int(&nu, "STARTED",		fr->started,	0);
+
+		gpi_add_flt(&nu, "CPU",			cpu);
+
+		gpi_add_str(&nu, "CALLED_DATA",	"");
+		gpi_add_str(&nu, "TYPE",		"MUF");
+		gpi_add_str(&nu, "SUBTYPE",		"");
+	}
+	else
+		nu = get_pidinfo(oper1->data.number);
+
 	CLEAR(oper1);
-	PushArrayRaw(nw);
+	PushArrayRaw(nu);
 }
 
 
