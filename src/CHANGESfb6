@@ -1,5 +1,4 @@
 2.2fb6.00b4
-Added the ability to allow wizards to use the OVERODE_TOKEN on WHO.
 Fixed permissions problem when both GOD_PRIV and tp_who_doing are set.
 Fixed bug #424057 -- MATCH and PMATCH primitives now strip ansi sequences
   before processing.
@@ -33,6 +32,7 @@ Fixed irregular crasher bug with @shutdown.
 Fixed various minor memory leaks.  Cleaned up freeing of non-leak allocations
   on shutdown, to make real memory leaks more apparent.
 Fixed bad macro definition of gui_dlog_simple.
+Added the ability to allow wizards to use the OVERIDE_TOKEN on WHO.
 Added new @tune -- lazy_mpi_istype_perm.  This changes the permissions for
   {istype} to be the lazy, pre-5.56 method, allowing {istype} to reference
   remote objects.
@@ -49,6 +49,19 @@ Added PROGRAM_GETLINES ( d i1 i2 -- a ) muf primitive.  Returns a list array
   with a single string element.  The target program must be controlled by
   the current program's UID, be set VIEWABLE, or the current program must
   be running with wizard permissions.
+Added ARRAY_CUT ( a1 @ -- a2 a3 ) muf primitive.  Given an array, and an
+  index into the array, cuts the array into two arrays at that position.
+  The first array output will contain all array items before the given
+  index.  The second array will contain the given position and all items
+  after it.  When used on a list array, both output arrays will be list
+  arrays.  When used on dictionaries, both arrays will be dictionaries.
+Added ARRAY_COMPARE ( a1 a2 -- i ) muf primitive.  Compares two arrays
+  using the same ordering assumptions as ARRAY_SORT in case sensitive
+  ascending order mode.  If the two arrays are identical, this returns 0.
+  If the first array is considered greater than the second, this returns
+  a positive value.  If the second array is considered greater, this
+  returns a negative value.  I'm not sure if the greater/lesser-than
+  comparison results are really useful, though.
 Added DIFF3 ( fx1 fy1 fz1 fx2 fy2 fz2 -- fx' fy' fz' ) muf primitive.
   Returns three floats, being the differences of fx1 - fx2, fy1 - fy2, and
   fz1 - fz2, respectively.
