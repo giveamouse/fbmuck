@@ -3999,3 +3999,27 @@ ARRAY_GET_IGNORELIST|
 ARRAY_GET_IGNORELIST ( ref:Player -- list:Players )
 Returns a list array of players "Player" is ignoring.
 This primitive requires at least Mucker Level 3.
+~
+REGEXP|
+REGEXP ( str:Text str:Pattern int:Flag -- list:SubMatchVals list:SubMatchIdx )
+  Apply the regular expression "Pattern" to "Text", returns a list array of
+  the matched substrings in SubMatchVals.  (The first element of the list is
+  the entire matched string.)  The indices into "Text" of the submatches are
+  returned in SubMatchIdx.
+ 
+  The "Flag" argument may be a combination, or none of the following:
+ 
+  $def REG_ICASE    1   (Case insensitive match)
+  $def REG_NEWLINE  2   (Allow $ to match newlines)
+~
+REGSUB|
+REGSUB ( str:Text str:Pattern str:Replace int:Flag -- str:Result )
+  Performs a regular expression substitution using "Pattern" against "Text",
+  replacing the match with "Replace".  "Replace" may contain \digit to
+  specify a submatch.
+ 
+  The "Flag" argument may be a combination, or none of the following:
+ 
+  $def REG_ICASE    1   (Case insensitive match)
+  $def REG_NEWLINE  2   (Allow $ to match newlines)
+  $def REG_ALL      4   (Substitute all matches, rather than just the first)
