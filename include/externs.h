@@ -318,8 +318,15 @@ extern void disassemble(dbref player, dbref program);
 void *init_seed(char *seed);
 void delete_seed(void *buffer);
 unsigned long rnd(void *buffer);
+
+    /* dest buffer MUST be at least 24 chars long. */
 void MD5base64(char* dest, const void* orig, int len);
+
+    /* outbuf MUST be at least (((inlen+2)/3)*4)+1 chars long. */
 void Base64Encode(char* outbuf, const void* inbuf, size_t inlen);
+    /* outbuf MUST be at least (((strlen(inbuf)+3)/4)*3)+1 chars long to read
+     * the full set of base64 encoded data in the string. */
+size_t Base64Decode(void* outbuf, size_t outbuflen, const char* inbuf);
 
 /* from mcppkgs.c */
 extern void show_mcp_error(McpFrame * mfr, char *topic, char *text);

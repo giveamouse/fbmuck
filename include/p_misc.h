@@ -23,6 +23,7 @@ extern void prim_testlock(PRIM_PROTOTYPE);
 extern void prim_sysparm(PRIM_PROTOTYPE);
 extern void prim_cancallp(PRIM_PROTOTYPE);
 extern void prim_setsysparm(PRIM_PROTOTYPE);
+extern void prim_sysparm_array(PRIM_PROTOTYPE);
 extern void prim_timer_start(PRIM_PROTOTYPE);
 extern void prim_timer_stop(PRIM_PROTOTYPE);
 extern void prim_event_count(PRIM_PROTOTYPE);
@@ -41,7 +42,8 @@ extern void prim_read_wants_blanks(PRIM_PROTOTYPE);
     prim_prettylock, prim_testlock, prim_sysparm, prim_cancallp,          \
     prim_setsysparm, prim_timer_start, prim_timer_stop, prim_event_count, \
 	prim_event_exists, prim_event_send, prim_pname_okp, prim_name_okp,    \
-	prim_force_level, prim_watchpid, prim_read_wants_blanks
+	prim_force_level, prim_watchpid, prim_read_wants_blanks,              \
+	prim_sysparm_array
 
 #define PRIMS_MISC_NAMES "TIME", "DATE", "GMTOFFSET",         \
     "SYSTIME", "TIMESPLIT", "TIMEFMT", "QUEUE", "KILL",       \
@@ -50,9 +52,10 @@ extern void prim_read_wants_blanks(PRIM_PROTOTYPE);
     "PRETTYLOCK", "TESTLOCK", "SYSPARM", "CANCALL?",	      \
     "SETSYSPARM", "TIMER_START", "TIMER_STOP", "EVENT_COUNT", \
 	"EVENT_EXISTS", "EVENT_SEND", "PNAME-OK?", "NAME-OK?",    \
-	"FORCE_LEVEL", "WATCHPID", "READ_WANTS_BLANKS"
+	"FORCE_LEVEL", "WATCHPID", "READ_WANTS_BLANKS",           \
+	"SYSPARM_ARRAY"
 
-#define PRIMS_MISC_CNT 32
+#define PRIMS_MISC_CNT 33
 
 
 #endif /* _P_MISC_H */

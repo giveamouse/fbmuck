@@ -133,5 +133,7 @@ extern int tp_optimize_muf;
 extern int tune_count_parms(void);
 extern void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
 extern void tune_save_parms_to_file(FILE * f);
+extern int tune_setparm(const char *parmname, const char *val);
+extern stk_array *tune_parms_array(const char* pattern, int mlev);
 
 #endif /* _TUNE_H */

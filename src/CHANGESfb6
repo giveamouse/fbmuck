@@ -1,3 +1,10 @@
+2.2fb6.00rc5
+Added SYSPARM_ARRAY ( str:pattern -- listofdict:sysparminfo ) MUF prim.
+  Returns a list of dictionaries with info about each @tune parameter that
+  matches the given smatch wildcard pattern.
+
+
+
 2.2fb6.00rc4
 Changed MUF debugger so it breakpoints just before the program would exit.
 Changed database format to Foxen7 format, which uses MD5 hashed passwords.

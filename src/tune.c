@@ -3,6 +3,8 @@
 #include "db.h"
 #include "defaults.h"
 #include "externs.h"
+#include "array.h"
+#include "interp.h"
 
 
 const char *tp_dumpwarn_mesg = DUMPWARN_MESG;
@@ -36,6 +38,7 @@ const char *tp_proplist_entry_fmt = PROPLIST_ENTRY_FORMAT;
 const char *tp_ssl_keyfile_passwd = SSL_KEYFILE_PASSWD;
 
 struct tune_str_entry {
+	const char *group;
 	const char *name;
 	const char **str;
 	int security;
@@ -43,29 +46,32 @@ struct tune_str_entry {
 };
 
 struct tune_str_entry tune_str_list[] = {
-	{"dumpwarn_mesg", &tp_dumpwarn_mesg, 0, 1},
-	{"deltawarn_mesg", &tp_deltawarn_mesg, 0, 1},
-	{"dumpdeltas_mesg", &tp_dumpdeltas_mesg, 0, 1},
-	{"dumping_mesg", &tp_dumping_mesg, 0, 1},
-	{"dumpdone_mesg", &tp_dumpdone_mesg, 0, 1},
-	{"penny", &tp_penny, 0, 1},
-	{"pennies", &tp_pennies, 0, 1},
-	{"cpenny", &tp_cpenny, 0, 1},
-	{"cpennies", &tp_cpennies, 0, 1},
-	{"muckname", &tp_muckname, 0, 1},
-	{"rwho_passwd", &tp_rwho_passwd, 4, 1},
-	{"rwho_server", &tp_rwho_server, 4, 1},
-	{"huh_mesg", &tp_huh_mesg, 0, 1},
-	{"leave_mesg", &tp_leave_mesg, 0, 1},
-	{"idle_boot_mesg", &tp_idle_mesg, 0, 1},
-	{"register_mesg", &tp_register_mesg, 0, 1},
-	{"playermax_warnmesg", &tp_playermax_warnmesg, 0, 1},
-	{"playermax_bootmesg", &tp_playermax_bootmesg, 0, 1},
-	{"autolook_cmd", &tp_autolook_cmd, 0, 1},
-	{"proplist_counter_fmt", &tp_proplist_counter_fmt, 0, 1},
-	{"proplist_entry_fmt", &tp_proplist_entry_fmt, 0, 1},
-	{"ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, 4, 1},
-	{NULL, NULL, 0, 0}
+	{"Commands",   "autolook_cmd", &tp_autolook_cmd, 0, 1},
+	{"Currency",   "penny", &tp_penny, 0, 1},
+	{"Currency",   "pennies", &tp_pennies, 0, 1},
+	{"Currency",   "cpenny", &tp_cpenny, 0, 1},
+	{"Currency",   "cpennies", &tp_cpennies, 0, 1},
+	{"DB Dumps",   "dumpwarn_mesg", &tp_dumpwarn_mesg, 0, 1},
+	{"DB Dumps",   "deltawarn_mesg", &tp_deltawarn_mesg, 0, 1},
+	{"DB Dumps",   "dumpdeltas_mesg", &tp_dumpdeltas_mesg, 0, 1},
+	{"DB Dumps",   "dumping_mesg", &tp_dumping_mesg, 0, 1},
+	{"DB Dumps",   "dumpdone_mesg", &tp_dumpdone_mesg, 0, 1},
+	{"Idle Boot",  "idle_boot_mesg", &tp_idle_mesg, 0, 1},
+	{"Player Max", "playermax_warnmesg", &tp_playermax_warnmesg, 0, 1},
+	{"Player Max", "playermax_bootmesg", &tp_playermax_bootmesg, 0, 1},
+	{"Properties", "proplist_counter_fmt", &tp_proplist_counter_fmt, 0, 1},
+	{"Properties", "proplist_entry_fmt", &tp_proplist_entry_fmt, 0, 1},
+	{"Registration", "register_mesg", &tp_register_mesg, 0, 1},
+	{"RWHO",       "rwho_passwd", &tp_rwho_passwd, 4, 1},
+	{"RWHO",       "rwho_server", &tp_rwho_server, 4, 1},
+	{"Misc",       "muckname", &tp_muckname, 0, 1},
+	{"Misc",       "leave_mesg", &tp_leave_mesg, 0, 1},
+	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, 1},
+
+
+	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, 4, 1},
+
+	{NULL, NULL, NULL, 0, 0}
 };
 
 
@@ -81,20 +87,22 @@ int tp_maxidle = MAXIDLE;
 
 
 struct tune_time_entry {
+	const char *group;
 	const char *name;
 	int *tim;
 	int security;
 };
 
 struct tune_time_entry tune_time_list[] = {
-	{"rwho_interval", &tp_rwho_interval, 0},
-	{"dump_interval", &tp_dump_interval, 0},
-	{"dump_warntime", &tp_dump_warntime, 0},
-	{"monolithic_interval", &tp_monolithic_interval, 0},
-	{"clean_interval", &tp_clean_interval, 0},
-	{"aging_time", &tp_aging_time, 0},
-	{"maxidle", &tp_maxidle, 0},
-	{NULL, NULL, 0}
+	{"Database",  "aging_time", &tp_aging_time, 0},
+	{"DB Dumps",  "dump_interval", &tp_dump_interval, 0},
+	{"DB Dumps",  "dump_warntime", &tp_dump_warntime, 0},
+	{"DB Dumps",  "monolithic_interval", &tp_monolithic_interval, 0},
+	{"Idle Boot", "maxidle", &tp_maxidle, 0},
+	{"RWHO",      "rwho_interval", &tp_rwho_interval, 0},
+	{"Tuning",    "clean_interval", &tp_clean_interval, 0},
+
+	{NULL, NULL, NULL, 0}
 };
 
 
@@ -136,48 +144,45 @@ int tp_cmd_log_threshold_msec = CMD_LOG_THRESHOLD_MSEC;
 int tp_mcp_muf_mlev = MCP_MUF_MLEV;
 
 struct tune_val_entry {
+	const char *group;
 	const char *name;
 	int *val;
 	int security;
 };
 
 struct tune_val_entry tune_val_list[] = {
-	{"max_object_endowment", &tp_max_object_endowment, 0},
-	{"object_cost", &tp_object_cost, 0},
-	{"exit_cost", &tp_exit_cost, 0},
-	{"link_cost", &tp_link_cost, 0},
-	{"room_cost", &tp_room_cost, 0},
-	{"lookup_cost", &tp_lookup_cost, 0},
-	{"max_pennies", &tp_max_pennies, 0},
-	{"penny_rate", &tp_penny_rate, 0},
-	{"start_pennies", &tp_start_pennies, 0},
+	{"Costs",       "max_object_endowment", &tp_max_object_endowment, 0},
+	{"Costs",       "object_cost", &tp_object_cost, 0},
+	{"Costs",       "exit_cost", &tp_exit_cost, 0},
+	{"Costs",       "link_cost", &tp_link_cost, 0},
+	{"Costs",       "room_cost", &tp_room_cost, 0},
+	{"Costs",       "lookup_cost", &tp_lookup_cost, 0},
+	{"Currency",    "max_pennies", &tp_max_pennies, 0},
+	{"Currency",    "penny_rate", &tp_penny_rate, 0},
+	{"Currency",    "start_pennies", &tp_start_pennies, 0},
+	{"Killing",     "kill_base_cost", &tp_kill_base_cost, 0},
+	{"Killing",     "kill_min_cost", &tp_kill_min_cost, 0},
+	{"Killing",     "kill_bonus", &tp_kill_bonus, 0},
+	{"Listeners",   "listen_mlev", &tp_listen_mlev, 0},
+	{"Logging",     "cmd_log_threshold_msec", &tp_cmd_log_threshold_msec, 0},
+	{"MUF",         "max_process_limit", &tp_max_process_limit, 0},
+	{"MUF",         "max_plyr_processes", &tp_max_plyr_processes, 0},
+	{"MUF",         "max_instr_count", &tp_max_instr_count, 0},
+	{"MUF",         "instr_slice", &tp_instr_slice, 0},
+	{"MUF",         "process_timer_limit", &tp_process_timer_limit, 0},
+	{"MUF",         "mcp_muf_mlev", &tp_mcp_muf_mlev, 0},
+	{"MPI",         "mpi_max_commands", &tp_mpi_max_commands, 0},
+	{"Player Max",  "playermax_limit", &tp_playermax_limit, 0},
+	{"Spam Limits", "command_burst_size", &tp_command_burst_size, 0},
+	{"Spam Limits", "commands_per_time", &tp_commands_per_time, 0},
+	{"Spam Limits", "command_time_msec", &tp_command_time_msec, 0},
+	{"Spam Limits", "max_output", &tp_max_output, 0},
+	{"Tuning",      "pause_min", &tp_pause_min, 0},
+	{"Tuning",      "free_frames_pool", &tp_free_frames_pool, 0},
+	{"Tuning",      "max_delta_objs", &tp_max_delta_objs, 0},
+	{"Tuning",      "max_loaded_objs", &tp_max_loaded_objs, 0},
 
-	{"kill_base_cost", &tp_kill_base_cost, 0},
-	{"kill_min_cost", &tp_kill_min_cost, 0},
-	{"kill_bonus", &tp_kill_bonus, 0},
-
-	{"command_burst_size", &tp_command_burst_size, 0},
-	{"commands_per_time", &tp_commands_per_time, 0},
-	{"command_time_msec", &tp_command_time_msec, 0},
-	{"max_output", &tp_max_output, 0},
-
-	{"max_delta_objs", &tp_max_delta_objs, 0},
-	{"max_loaded_objs", &tp_max_loaded_objs, 0},
-	{"max_process_limit", &tp_max_process_limit, 0},
-	{"max_plyr_processes", &tp_max_plyr_processes, 0},
-	{"max_instr_count", &tp_max_instr_count, 0},
-	{"instr_slice", &tp_instr_slice, 0},
-	{"mpi_max_commands", &tp_mpi_max_commands, 0},
-	{"pause_min", &tp_pause_min, 0},
-	{"free_frames_pool", &tp_free_frames_pool, 0},
-
-	{"listen_mlev", &tp_listen_mlev, 0},
-	{"playermax_limit", &tp_playermax_limit, 0},
-	{"process_timer_limit", &tp_process_timer_limit, 0},
-    {"cmd_log_threshold_msec", &tp_cmd_log_threshold_msec, 0},
-	{"mcp_muf_mlev", &tp_mcp_muf_mlev, 0},
-
-	{NULL, NULL, 0}
+	{NULL, NULL, NULL, 0}
 };
 
 
@@ -189,6 +194,7 @@ dbref tp_default_room_parent = GLOBAL_ENVIRONMENT;
 
 
 struct tune_ref_entry {
+	const char *group;
 	const char *name;
 	int typ;
 	dbref *ref;
@@ -196,9 +202,10 @@ struct tune_ref_entry {
 };
 
 struct tune_ref_entry tune_ref_list[] = {
-	{"player_start", TYPE_ROOM, &tp_player_start, 0},
-	{"default_room_parent", TYPE_ROOM, &tp_default_room_parent, 0},
-	{NULL, 0, NULL, 0}
+	{"Database", "default_room_parent", TYPE_ROOM, &tp_default_room_parent, 0},
+	{"Database", "player_start", TYPE_ROOM, &tp_player_start, 0},
+
+	{NULL, NULL, 0, NULL, 0}
 };
 
 
@@ -245,54 +252,55 @@ int tp_lazy_mpi_istype_perm = LAZY_MPI_ISTYPE_PERM;
 int tp_optimize_muf = OPTIMIZE_MUF;
 
 struct tune_bool_entry {
+	const char *group;
 	const char *name;
 	int *bool;
 	int security;
 };
 
 struct tune_bool_entry tune_bool_list[] = {
-	{"use_hostnames", &tp_hostnames, 0},
-	{"log_commands", &tp_log_commands, 4},
-	{"log_failed_commands", &tp_log_failed_commands, 4},
-	{"log_programs", &tp_log_programs, 4},
-	{"log_interactive", &tp_log_interactive, 4},
-	{"dbdump_warning", &tp_dbdump_warning, 0},
-	{"deltadump_warning", &tp_deltadump_warning, 0},
-	{"periodic_program_purge", &tp_periodic_program_purge, 0},
-	{"support_rwho", &tp_rwho, 0},
-	{"secure_who", &tp_secure_who, 0},
-	{"who_doing", &tp_who_doing, 0},
-	{"realms_control", &tp_realms_control, 0},
-	{"allow_listeners", &tp_listeners, 0},
-	{"allow_listeners_obj", &tp_listeners_obj, 0},
-	{"allow_listeners_env", &tp_listeners_env, 0},
-	{"allow_zombies", &tp_zombies, 0},
-	{"wiz_vehicles", &tp_wiz_vehicles, 0},
-	{"force_mlev1_name_notify", &tp_force_mlev1_name_notify, 0},
-	{"restrict_kill", &tp_restrict_kill, 0},
-	{"registration", &tp_registration, 0},
-	{"teleport_to_player", &tp_teleport_to_player, 0},
-	{"secure_teleport", &tp_secure_teleport, 0},
-	{"exit_darking", &tp_exit_darking, 0},
-	{"thing_darking", &tp_thing_darking, 0},
-	{"dark_sleepers", &tp_dark_sleepers, 0},
-	{"who_hides_dark", &tp_who_hides_dark, 4},
-	{"compatible_priorities", &tp_compatible_priorities, 0},
-	{"do_mpi_parsing", &tp_do_mpi_parsing, 0},
-	{"look_propqueues", &tp_look_propqueues, 0},
-	{"lock_envcheck", &tp_lock_envcheck, 0},
-	{"diskbase_propvals", &tp_diskbase_propvals, 0},
-	{"idleboot", &tp_idleboot, 0},
-	{"playermax", &tp_playermax, 0},
-	{"enable_home", &tp_allow_home, 4},
-	{"enable_prefix", &tp_enable_prefix, 4},
-	{"secure_thing_movement", &tp_thing_movement, 4},
-	{"expanded_debug_trace", &tp_expanded_debug, 0},
-	{"proplist_int_counter", &tp_proplist_int_counter, 0},
-	{"lazy_mpi_istype_perm", &tp_lazy_mpi_istype_perm, 0},
-	{"optimize_muf", &tp_optimize_muf, 0},
+	{"Commands",   "enable_home", &tp_allow_home, 4},
+	{"Commands",   "enable_prefix", &tp_enable_prefix, 4},
+	{"Dark",       "exit_darking", &tp_exit_darking, 0},
+	{"Dark",       "thing_darking", &tp_thing_darking, 0},
+	{"Dark",       "dark_sleepers", &tp_dark_sleepers, 0},
+	{"Dark",       "who_hides_dark", &tp_who_hides_dark, 4},
+	{"Database",   "realms_control", &tp_realms_control, 0},
+	{"Database",   "compatible_priorities", &tp_compatible_priorities, 0},
+	{"DB Dumps",   "diskbase_propvals", &tp_diskbase_propvals, 0},
+	{"DB Dumps",   "dbdump_warning", &tp_dbdump_warning, 0},
+	{"DB Dumps",   "deltadump_warning", &tp_deltadump_warning, 0},
+	{"Idle Boot",  "idleboot", &tp_idleboot, 0},
+	{"Killing",    "restrict_kill", &tp_restrict_kill, 0},
+	{"Listeners",  "allow_listeners", &tp_listeners, 0},
+	{"Listeners",  "allow_listeners_obj", &tp_listeners_obj, 0},
+	{"Listeners",  "allow_listeners_env", &tp_listeners_env, 0},
+	{"Logging",    "log_commands", &tp_log_commands, 4},
+	{"Logging",    "log_failed_commands", &tp_log_failed_commands, 4},
+	{"Logging",    "log_interactive", &tp_log_interactive, 4},
+	{"Logging",    "log_programs", &tp_log_programs, 4},
+	{"Movement",   "teleport_to_player", &tp_teleport_to_player, 0},
+	{"Movement",   "secure_teleport", &tp_secure_teleport, 0},
+	{"Movement",   "secure_thing_movement", &tp_thing_movement, 4},
+	{"MPI",        "do_mpi_parsing", &tp_do_mpi_parsing, 0},
+	{"MPI",        "lazy_mpi_istype_perm", &tp_lazy_mpi_istype_perm, 0},
+	{"MUF",        "optimize_muf", &tp_optimize_muf, 0},
+	{"MUF",        "expanded_debug_trace", &tp_expanded_debug, 0},
+	{"MUF",        "force_mlev1_name_notify", &tp_force_mlev1_name_notify, 0},
+	{"Player Max", "playermax", &tp_playermax, 0},
+	{"Properties", "proplist_int_counter", &tp_proplist_int_counter, 0},
+	{"Properties", "look_propqueues", &tp_look_propqueues, 0},
+	{"Properties", "lock_envcheck", &tp_lock_envcheck, 0},
+	{"Registration", "registration", &tp_registration, 0},
+	{"RWHO",       "support_rwho", &tp_rwho, 0},
+	{"Tuning",     "periodic_program_purge", &tp_periodic_program_purge, 0},
+	{"WHO",        "use_hostnames", &tp_hostnames, 0},
+	{"WHO",        "secure_who", &tp_secure_who, 0},
+	{"WHO",        "who_doing", &tp_who_doing, 0},
+	{"Misc",       "allow_zombies", &tp_zombies, 0},
+	{"Misc",       "wiz_vehicles", &tp_wiz_vehicles, 0},
 
-	{NULL, NULL, 0}
+	{NULL, NULL, NULL, 0}
 };
 
 
@@ -432,6 +440,126 @@ tune_save_parms_to_file(FILE * f)
 		tbool++;
 	}
 }
+
+
+stk_array*
+tune_parms_array(const char* pattern, int mlev)
+{
+	struct tune_str_entry *tstr = tune_str_list;
+	struct tune_time_entry *ttim = tune_time_list;
+	struct tune_val_entry *tval = tune_val_list;
+	struct tune_ref_entry *tref = tune_ref_list;
+	struct tune_bool_entry *tbool = tune_bool_list;
+	stk_array *nu = new_array_packed(0);
+	struct inst temp1;
+	char pat[BUFFER_LEN];
+	char buf[BUFFER_LEN];
+	int i = 0;
+
+	strcpy(pat, pattern);
+	while (tbool->name) {
+		if (tbool->security <= mlev) {
+			strcpy(buf, tbool->name);
+			if (!*pattern || equalstr(pat, buf)) {
+				stk_array *item = new_array_dictionary();
+				array_set_strkey_strval(&item, "type", "boolean");
+				array_set_strkey_strval(&item, "group", tbool->group);
+				array_set_strkey_strval(&item, "name",  tbool->name);
+				array_set_strkey_intval(&item, "value", *tbool->bool? 1 : 0);
+				array_set_strkey_intval(&item, "mlev",  tbool->security);
+
+				temp1.type = PROG_ARRAY;
+				temp1.data.array = item;
+				array_set_intkey(&nu, i++, &temp1);
+				CLEAR(&temp1);
+			}
+		}
+		tbool++;
+	}
+
+	while (ttim->name) {
+		if (ttim->security <= mlev) {
+			strcpy(buf, ttim->name);
+			if (!*pattern || equalstr(pat, buf)) {
+				stk_array *item = new_array_dictionary();
+				array_set_strkey_strval(&item, "type", "timespan");
+				array_set_strkey_strval(&item, "group", ttim->group);
+				array_set_strkey_strval(&item, "name",  ttim->name);
+				array_set_strkey_intval(&item, "value", *ttim->tim);
+				array_set_strkey_intval(&item, "mlev",  ttim->security);
+
+				temp1.type = PROG_ARRAY;
+				temp1.data.array = item;
+				array_set_intkey(&nu, i++, &temp1);
+				CLEAR(&temp1);
+			}
+		}
+		ttim++;
+	}
+
+	while (tval->name) {
+		if (tval->security <= mlev) {
+			strcpy(buf, tval->name);
+			if (!*pattern || equalstr(pat, buf)) {
+				stk_array *item = new_array_dictionary();
+				array_set_strkey_strval(&item, "type", "integer");
+				array_set_strkey_strval(&item, "group", tval->group);
+				array_set_strkey_strval(&item, "name",  tval->name);
+				array_set_strkey_intval(&item, "value", *tval->val);
+				array_set_strkey_intval(&item, "mlev",  tval->security);
+
+				temp1.type = PROG_ARRAY;
+				temp1.data.array = item;
+				array_set_intkey(&nu, i++, &temp1);
+				CLEAR(&temp1);
+			}
+		}
+		tval++;
+	}
+
+	while (tref->name) {
+		if (tref->security <= mlev) {
+			strcpy(buf, tref->name);
+			if (!*pattern || equalstr(pat, buf)) {
+				stk_array *item = new_array_dictionary();
+				array_set_strkey_strval(&item, "type", "dbref");
+				array_set_strkey_strval(&item, "group", tref->group);
+				array_set_strkey_strval(&item, "name",  tref->name);
+				array_set_strkey_refval(&item, "value", *tref->ref);
+				array_set_strkey_intval(&item, "mlev",  tref->security);
+
+				temp1.type = PROG_ARRAY;
+				temp1.data.array = item;
+				array_set_intkey(&nu, i++, &temp1);
+				CLEAR(&temp1);
+			}
+		}
+		tref++;
+	}
+
+	while (tstr->name) {
+		if (tstr->security <= mlev) {
+			strcpy(buf, tstr->name);
+			if (!*pattern || equalstr(pat, buf)) {
+				stk_array *item = new_array_dictionary();
+				array_set_strkey_strval(&item, "type", "string");
+				array_set_strkey_strval(&item, "group", tstr->group);
+				array_set_strkey_strval(&item, "name",  tstr->name);
+				array_set_strkey_strval(&item, "value", *tstr->str);
+				array_set_strkey_intval(&item, "mlev",  tstr->security);
+
+				temp1.type = PROG_ARRAY;
+				temp1.data.array = item;
+				array_set_intkey(&nu, i++, &temp1);
+				CLEAR(&temp1);
+			}
+		}
+		tstr++;
+	}
+
+	return nu;
+}
+
 
 void
 tune_save_parmsfile(void)

@@ -690,6 +690,24 @@ prim_setsysparm(PRIM_PROTOTYPE)
 
 
 void
+prim_sysparm_array(PRIM_PROTOTYPE)
+{
+	stk_array *nu;
+
+	CHECKOP(1);
+	oper1 = POP();				/* string: match pattern */
+
+	if (oper1->type != PROG_STRING)
+		abort_interp("Expected a string smatch pattern.");
+	nu = tune_parms_array(DoNullInd(oper1->data.string), mlev);
+
+	CLEAR(oper1);
+	PushArrayRaw(nu);
+}
+
+
+
+void
 prim_timer_start(PRIM_PROTOTYPE)
 {
 	CHECKOP(2);
