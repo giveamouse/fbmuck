@@ -1748,10 +1748,21 @@ near e+00, you should do a relative comparison instead:
 FTOSTR
 FTOSTR ( f -- s )
 
-  Converts a floating point number into a string.  Always includes the decimal
-point.  FTOSTR can return either the xxx.yyy form or the x.yyyEzz form of
-a float, depending on which would give the shortest string length.
-~~alsosee FMTSTRING.
+  Converts a floating point number into a string.  Trailing zeros are not
+removed from the end of the number, when no mantissa is shown.  FTOSTR can
+return either the xxx.yyy form or the x.yyyEzz form of a float, depending
+on which would give the shortest string length.
+~~alsosee FMTSTRING,FTOSTRC
+~
+~
+FTOSTRC
+FTOSTRC ( f -- s )
+
+  Converts a floating point number into a string.  Trailing zeros are removed
+from the initial decimal, if no mantissa is shown.  FTOSTRC can return either
+the xxx.yyy form or the x.yyyEzz form of a float, depending on which would
+give the shortest string length.
+~~alsosee FMTSTRING,FTOSTR
 ~
 ~
 STRTOF
@@ -2685,13 +2696,29 @@ separate line to the user.  This is actually an inserver macro, defined to
 ~
 ~
 ARRAY_JOIN
-ARRAY_JOIN ([s] s -- s) Takes a list array and a delimiter string, and
+ARRAY_JOIN ([s] s -- s)
 
-  returns a single string that is the concatenation of all the items in the
-list array, with the delimiter string in between.  For example:
+  Takes a list array and a delimiter string, and returns a single string
+that is the concatenation of all the items in the list array, with the
+delimiter string in between.  For example:
+~~code
     { "one" 2 "three" 3.14159 }list "... " array_join
+~~endcode
 will result in a single string: "one... 2... three... 3.14159"
-~~alsosee }JOIN
+~~alsosee }JOIN,ARRAY_INTERPRET,}CAT
+~
+~
+ARRAY_INTERPRET
+ARRAY_INTERPRET ([s] -- s)
+
+  Takes a list array and and returns a single string that is the concatenation
+of all the items in the list array, with dbrefs translated to the name of
+their respective objects.  For example:
+~~code
+    { #1 " " 2 " three " 3.14159 }list array_join
+~~endcode
+will result in a single string like: "Wizard 2 three 3.14159"
+~~alsosee ARRAY_JOIN,}CAT,}JOIN
 ~
 ~
 }JOIN
@@ -2699,9 +2726,20 @@ will result in a single string: "one... 2... three... 3.14159"
 
   Takes all stack items from the top of the stack to the topmost stack
 marker and concatenates them into a string based on the default reresentat-
-ion of each stack item type.  This is actually an inserver macro, defined
-to '} array_make "" array_join'.
-~~alsosee ARRAY_JOIN
+ion of each stack item type.  Dbrefs will be shown as #REF numbers.  This
+actually is an inserver macro, defined to '} array_make "" array_join'.
+~~alsosee ARRAY_JOIN,}CAT,ARRAY_INTERPRET
+~
+~
+}CAT
+}CAT  ( marker ?n ... ?1 -- string )
+
+  Takes all stack items from the top of the stack to the topmost stack
+marker and concatenates them into a string based on the default reresentat-
+ion of each stack item type.  Dbrefs will be translated to the name of the
+object that they reference.  This primitive is actually an inserver macro,
+defined to '} array_make array_interpret'.
+~~alsosee ARRAY_JOIN,}JOIN,ARRAY_INTERPRET
 ~
 ~
 ARRAY_COUNT

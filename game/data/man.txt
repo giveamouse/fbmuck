@@ -56,8 +56,8 @@ Symbols
   '              *              +              ++             -
   --             /              <              <=             =
   >              >=             @              \              __fuzzball__
-  __muckname     __version      {              }              }dict
-  }join          }list          }tell          
+  __muckname     __version      {              }              }cat
+  }dict          }join          }list          }tell          
 
 A's
   abort                     abs                       acos
@@ -72,17 +72,18 @@ A's
   array_get_ignorelist      array_get_propdirs        array_get_proplist
   array_get_propvals        array_get_reflist         array_getitem
   array_getrange            array_insertitem          array_insertrange
-  array_intersect           array_join                array_keys
-  array_last                array_make                array_make_dict
-  array_matchkey            array_matchval            array_ndiff
-  array_nested_del          array_nested_get          array_nested_set
-  array_next                array_nintersect          array_notify
-  array_nunion              array_prev                array_put_proplist
-  array_put_propvals        array_put_reflist         array_reverse
-  array_setitem             array_setrange            array_sort
-  array_sort_indexed        array_union               array_vals
-  arrive                    asin                      atan
-  atan2                     atoi                      awake?
+  array_interpret           array_intersect           array_join
+  array_keys                array_last                array_make
+  array_make_dict           array_matchkey            array_matchval
+  array_ndiff               array_nested_del          array_nested_get
+  array_nested_set          array_next                array_nintersect
+  array_notify              array_nunion              array_prev
+  array_put_proplist        array_put_propvals        array_put_reflist
+  array_reverse             array_setitem             array_setrange
+  array_sort                array_sort_indexed        array_union
+  array_vals                arrive                    asin
+  atan                      atan2                     atoi
+  awake?                    
 
 B's
   background   begin        bg_mode      bitand       bitor        bitshift
@@ -125,7 +126,7 @@ F's
   fabs         fail         fg_mode      findnext     firstdescr   flag?
   flags        float        float?       floor        fmod         fmtstring
   for          force        force_level  foreach      foreground   fork
-  frand        ftostr       
+  frand        ftostr       ftostrc      
 
 G's
   getlink            getlinks           getlinks_array     getlockstr
@@ -1949,10 +1950,10 @@ acos           asin           atan           atan2          ceil
 clear          clear_error    cos            diff3          dist3d
 epsilon        error?         error_bit      error_name     error_num
 error_str      exp            fabs           float          floor
-fmod           frand          ftostr         inf            is_set?
-log            log10          modf           pi             polar_to_xyz
-pow            round          set_error      sin            sqrt
-strtof         tan            xyz_to_polar   
+fmod           frand          ftostr         ftostrc        inf
+is_set?        log            log10          modf           pi
+polar_to_xyz   pow            round          set_error      sin
+sqrt           strtof         tan            xyz_to_polar   
 
 ~----------------------------------------------------------------------------
 ~
@@ -1997,10 +1998,21 @@ Also see: INF, FLOAT, FABS, -, /, @, <, IF and THEN
 FTOSTR
 FTOSTR ( f -- s )
 
-  Converts a floating point number into a string.  Always includes the decimal
-point.  FTOSTR can return either the xxx.yyy form or the x.yyyEzz form of
-a float, depending on which would give the shortest string length.
-Also see: FMTSTRING.
+  Converts a floating point number into a string.  Trailing zeros are not
+removed from the end of the number, when no mantissa is shown.  FTOSTR can
+return either the xxx.yyy form or the x.yyyEzz form of a float, depending
+on which would give the shortest string length.
+Also see: FMTSTRING and FTOSTRC
+~
+~
+FTOSTRC
+FTOSTRC ( f -- s )
+
+  Converts a floating point number into a string.  Trailing zeros are removed
+from the initial decimal, if no mantissa is shown.  FTOSTRC can return either
+the xxx.yyy form or the x.yyyEzz form of a float, depending on which would
+give the shortest string length.
+Also see: FMTSTRING and FTOSTR
 ~
 ~
 STRTOF
@@ -2899,16 +2911,17 @@ array_cut                 array_delitem             array_delrange
 array_diff                array_excludeval          array_explode
 array_extract             array_findval             array_first
 array_getitem             array_getrange            array_insertitem
-array_insertrange         array_intersect           array_join
-array_keys                array_last                array_make
-array_make_dict           array_matchkey            array_matchval
-array_ndiff               array_nested_del          array_nested_get
-array_nested_set          array_next                array_nintersect
-array_notify              array_nunion              array_prev
-array_reverse             array_setitem             array_setrange
-array_sort                array_sort_indexed        array_union
-array_vals                }dict                     }join
-}list                     }tell                     
+array_insertrange         array_interpret           array_intersect
+array_join                array_keys                array_last
+array_make                array_make_dict           array_matchkey
+array_matchval            array_ndiff               array_nested_del
+array_nested_get          array_nested_set          array_next
+array_nintersect          array_notify              array_nunion
+array_prev                array_reverse             array_setitem
+array_setrange            array_sort                array_sort_indexed
+array_union               array_vals                }cat
+}dict                     }join                     }list
+}tell                     
 
 ~----------------------------------------------------------------------------
 ~
@@ -2965,13 +2978,25 @@ Also see: ARRAY_NOTIFY
 ~
 ~
 ARRAY_JOIN
-ARRAY_JOIN ([s] s -- s) Takes a list array and a delimiter string, and
+ARRAY_JOIN ([s] s -- s)
 
-  returns a single string that is the concatenation of all the items in the
-list array, with the delimiter string in between.  For example:
+  Takes a list array and a delimiter string, and returns a single string
+that is the concatenation of all the items in the list array, with the
+delimiter string in between.  For example:
     { "one" 2 "three" 3.14159 }list "... " array_join
 will result in a single string: "one... 2... three... 3.14159"
-Also see: }JOIN
+Also see: }JOIN, ARRAY_INTERPRET and }CAT
+~
+~
+ARRAY_INTERPRET
+ARRAY_INTERPRET ([s] -- s)
+
+  Takes a list array and and returns a single string that is the concatenation
+of all the items in the list array, with dbrefs translated to the name of
+their respective objects.  For example:
+    { #1 " " 2 " three " 3.14159 }list array_join
+will result in a single string like: "Wizard 2 three 3.14159"
+Also see: ARRAY_JOIN, }CAT and }JOIN
 ~
 ~
 }JOIN
@@ -2979,9 +3004,20 @@ Also see: }JOIN
 
   Takes all stack items from the top of the stack to the topmost stack
 marker and concatenates them into a string based on the default reresentat-
-ion of each stack item type.  This is actually an inserver macro, defined
-to '} array_make "" array_join'.
-Also see: ARRAY_JOIN
+ion of each stack item type.  Dbrefs will be shown as #REF numbers.  This
+actually is an inserver macro, defined to '} array_make "" array_join'.
+Also see: ARRAY_JOIN, }CAT and ARRAY_INTERPRET
+~
+~
+}CAT
+}CAT  ( marker ?n ... ?1 -- string )
+
+  Takes all stack items from the top of the stack to the topmost stack
+marker and concatenates them into a string based on the default reresentat-
+ion of each stack item type.  Dbrefs will be translated to the name of the
+object that they reference.  This primitive is actually an inserver macro,
+defined to '} array_make array_interpret'.
+Also see: ARRAY_JOIN, }JOIN and ARRAY_INTERPRET
 ~
 ~
 ARRAY_COUNT

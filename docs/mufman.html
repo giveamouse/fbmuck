@@ -93,9 +93,10 @@
     <td nowrap> &nbsp; <a href="#__version">__version</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#{">{</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#}">}</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#}dict">}dict</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#}cat">}cat</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#}dict">}dict</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#}join">}join</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#}list">}list</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#}tell">}tell</a> &nbsp; </td>
@@ -164,58 +165,61 @@
     <td nowrap> &nbsp; <a href="#array_insertrange">array_insertrange</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#array_interpret">array_interpret</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_intersect">array_intersect</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_join">array_join</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#array_keys">array_keys</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#array_keys">array_keys</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_last">array_last</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_make">array_make</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#array_make_dict">array_make_dict</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#array_make_dict">array_make_dict</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_matchkey">array_matchkey</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_matchval">array_matchval</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#array_ndiff">array_ndiff</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#array_ndiff">array_ndiff</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_nested_del">array_nested_del</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_nested_get">array_nested_get</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#array_nested_set">array_nested_set</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#array_nested_set">array_nested_set</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_next">array_next</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_nintersect">array_nintersect</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#array_notify">array_notify</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#array_notify">array_notify</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_nunion">array_nunion</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_prev">array_prev</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#array_put_proplist">array_put_proplist</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#array_put_proplist">array_put_proplist</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_put_propvals">array_put_propvals</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_put_reflist">array_put_reflist</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#array_reverse">array_reverse</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#array_reverse">array_reverse</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_setitem">array_setitem</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_setrange">array_setrange</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#array_sort">array_sort</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#array_sort">array_sort</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_sort_indexed">array_sort_indexed</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#array_union">array_union</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#array_vals">array_vals</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#array_vals">array_vals</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#arrive">arrive</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#asin">asin</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#atan">atan</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#atan">atan</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#atan2">atan2</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#atoi">atoi</a> &nbsp; </td>
+  </tr>
+  <tr>
     <td nowrap> &nbsp; <a href="#awake?">awake?</a> &nbsp; </td>
   </tr>
 </table></blockquote>
@@ -435,6 +439,7 @@
   <tr>
     <td nowrap> &nbsp; <a href="#frand">frand</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#ftostr">ftostr</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#ftostrc">ftostrc</a> &nbsp; </td>
   </tr>
 </table></blockquote>
 
@@ -3653,24 +3658,25 @@ Same as the C &lt;&lt; operator.  If the second integer is negative, its like &g
     <td width="20%"> &nbsp; <a href="#fmod">fmod</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#frand">frand</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#ftostr">ftostr</a> &nbsp; </td>
+    <td width="20%"> &nbsp; <a href="#ftostrc">ftostrc</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#inf">inf</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#is_set?">is_set?</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="20%"> &nbsp; <a href="#is_set?">is_set?</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#log">log</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#log10">log10</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#modf">modf</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#pi">pi</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#polar_to_xyz">polar_to_xyz</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="20%"> &nbsp; <a href="#polar_to_xyz">polar_to_xyz</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#pow">pow</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#round">round</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#set_error">set_error</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#sin">sin</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#sqrt">sqrt</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="20%"> &nbsp; <a href="#sqrt">sqrt</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#strtof">strtof</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#tan">tan</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#xyz_to_polar">xyz_to_polar</a> &nbsp; </td>
@@ -3749,11 +3755,29 @@ near e+00, you should do a relative comparison instead:
 
 <br>
 </a></h4>
-  Converts a floating point number into a string.  Always includes the decimal
-point.  FTOSTR can return either the xxx.yyy form or the x.yyyEzz form of
-a float, depending on which would give the shortest string length.
+  Converts a floating point number into a string.  Trailing zeros are not
+removed from the end of the number, when no mantissa is shown.  FTOSTR can
+return either the xxx.yyy form or the x.yyyEzz form of a float, depending
+on which would give the shortest string length.
 <p><h5>Also see:
-    <a href="#fmtstring.">FMTSTRING.</a>
+    <a href="#fmtstring">FMTSTRING</a> and
+    <a href="#ftostrc">FTOSTRC</a>
+</h5>
+<p>
+
+
+<hr><h4><a name="ftostrc">FTOSTRC ( f -- s )
+<br>
+
+<br>
+</a></h4>
+  Converts a floating point number into a string.  Trailing zeros are removed
+from the initial decimal, if no mantissa is shown.  FTOSTRC can return either
+the xxx.yyy form or the x.yyyEzz form of a float, depending on which would
+give the shortest string length.
+<p><h5>Also see:
+    <a href="#fmtstring">FMTSTRING</a> and
+    <a href="#ftostr">FTOSTR</a>
 </h5>
 <p>
 
@@ -5178,51 +5202,55 @@ Returns &quot;*UNLOCKED*&quot; if the object doesn't have a lock set.
   </tr>
   <tr>
     <td width="33%"> &nbsp; <a href="#array_insertrange">array_insertrange</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#array_interpret">array_interpret</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_intersect">array_intersect</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#array_join">array_join</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#array_join">array_join</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_keys">array_keys</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_last">array_last</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#array_make">array_make</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#array_make">array_make</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_make_dict">array_make_dict</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_matchkey">array_matchkey</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#array_matchval">array_matchval</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#array_matchval">array_matchval</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_ndiff">array_ndiff</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_nested_del">array_nested_del</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#array_nested_get">array_nested_get</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#array_nested_get">array_nested_get</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_nested_set">array_nested_set</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_next">array_next</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#array_nintersect">array_nintersect</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#array_nintersect">array_nintersect</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_notify">array_notify</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_nunion">array_nunion</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#array_prev">array_prev</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#array_prev">array_prev</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_reverse">array_reverse</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_setitem">array_setitem</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#array_setrange">array_setrange</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#array_setrange">array_setrange</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_sort">array_sort</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_sort_indexed">array_sort_indexed</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#array_union">array_union</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#array_union">array_union</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#array_vals">array_vals</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#}cat">}cat</a> &nbsp; </td>
+  </tr>
+  <tr>
     <td width="33%"> &nbsp; <a href="#}dict">}dict</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#}join">}join</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#}list">}list</a> &nbsp; </td>
   </tr>
   <tr>
-    <td width="33%"> &nbsp; <a href="#}list">}list</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#}tell">}tell</a> &nbsp; </td>
   </tr>
 </table></blockquote>
@@ -5298,17 +5326,41 @@ separate line to the user.  This is actually an inserver macro, defined to
 <p>
 
 
-<hr><h4><a name="array_join">ARRAY_JOIN ([s] s -- s) Takes a list array and a delimiter string, and
+<hr><h4><a name="array_join">ARRAY_JOIN ([s] s -- s)
 <br>
 
 <br>
 </a></h4>
-  returns a single string that is the concatenation of all the items in the
-list array, with the delimiter string in between.  For example:
-<p>
+  Takes a list array and a delimiter string, and returns a single string
+that is the concatenation of all the items in the list array, with the
+delimiter string in between.  For example:
+<pre>
     { &quot;one&quot; 2 &quot;three&quot; 3.14159 }list &quot;... &quot; array_join
+</pre>
 will result in a single string: &quot;one... 2... three... 3.14159&quot;
 <p><h5>Also see:
+    <a href="#}join">}JOIN</a>,
+    <a href="#array_interpret">ARRAY_INTERPRET</a> and
+    <a href="#}cat">}CAT</a>
+</h5>
+<p>
+
+
+<hr><h4><a name="array_interpret">ARRAY_INTERPRET ([s] -- s)
+<br>
+
+<br>
+</a></h4>
+  Takes a list array and and returns a single string that is the concatenation
+of all the items in the list array, with dbrefs translated to the name of
+their respective objects.  For example:
+<pre>
+    { #1 &quot; &quot; 2 &quot; three &quot; 3.14159 }list array_join
+</pre>
+will result in a single string like: &quot;Wizard 2 three 3.14159&quot;
+<p><h5>Also see:
+    <a href="#array_join">ARRAY_JOIN</a>,
+    <a href="#}cat">}CAT</a> and
     <a href="#}join">}JOIN</a>
 </h5>
 <p>
@@ -5321,10 +5373,30 @@ will result in a single string: &quot;one... 2... three... 3.14159&quot;
 </a></h4>
   Takes all stack items from the top of the stack to the topmost stack
 marker and concatenates them into a string based on the default reresentat-
-ion of each stack item type.  This is actually an inserver macro, defined
-to '} array_make &quot;&quot; array_join'.
+ion of each stack item type.  Dbrefs will be shown as #REF numbers.  This
+actually is an inserver macro, defined to '} array_make &quot;&quot; array_join'.
 <p><h5>Also see:
-    <a href="#array_join">ARRAY_JOIN</a>
+    <a href="#array_join">ARRAY_JOIN</a>,
+    <a href="#}cat">}CAT</a> and
+    <a href="#array_interpret">ARRAY_INTERPRET</a>
+</h5>
+<p>
+
+
+<hr><h4><a name="}cat">}CAT  ( marker ?n ... ?1 -- string )
+<br>
+
+<br>
+</a></h4>
+  Takes all stack items from the top of the stack to the topmost stack
+marker and concatenates them into a string based on the default reresentat-
+ion of each stack item type.  Dbrefs will be translated to the name of the
+object that they reference.  This primitive is actually an inserver macro,
+defined to '} array_make array_interpret'.
+<p><h5>Also see:
+    <a href="#array_join">ARRAY_JOIN</a>,
+    <a href="#}join">}JOIN</a> and
+    <a href="#array_interpret">ARRAY_INTERPRET</a>
 </h5>
 <p>
 
