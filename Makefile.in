@@ -79,6 +79,7 @@ TMPREV=/tmp/tmp_fbmuck_rev
 help:
 	cd src && make prochelp
 	cd game/data && ../../src/prochelp mpihelp.raw mpihelp.txt ../../docs/mpihelp.html
+	cd game/data && ../../src/prochelp mufman.raw man.txt ../../docs/mufman.html
 
 package:
 	rm -rf ${TMPPKGDIR}

@@ -37,29 +37,83 @@ ALPHA|ALPHABETICAL|COMMANDS
  
 You can get more help on the following topics:
 
-&arg         &cmd         &how         abs          add          and
-attr         awake        bless        center       commas       comments
-concat       contains     contents     controls     convsecs     convtime
-count        created      date         dbeq         debug        debugif
-dec          default      definitions  delay        delprop      dice
-dist         div          eq           eval         eval!        exec
-exec!        exits        filter       flags        fold         for
-force        foreach      ftime        fullname     func         ge
-gt           holds        idle         if           inc          index
-index!       instr        isdbref      isnum        istype       kill
-lastused     lcommon      le           left         lexec        links
-list         listprops    lit          lmember      loc          locked
-lrand        lremove      lsort        lt           ltimestr     lunion
-lunique      macros       max          midstr       min          mklist
-mod          modified     money        muckname     muf          mult
-name         ne           nearby       nl           not          null
-online       ontime       or           otell        owner        parse
-pronouns     prop         prop!        propdir      rand         ref
-revoke       right        secs         select       set          sign
-smatch       stimestr     store        strip        strlen       sublist
-subst        subt         tell         testlock     time         timestr
-timesub      tolower      toupper      type         tzoffset     unbless
-usecount     v            version      while        with         xor
+Symbols
+  &arg  &cmd  &how  
+
+A's
+  abs    add    and    attr   awake  
+
+B's
+  bless  
+
+C's
+  center     commas     comments   concat     contains   contents   controls
+  convsecs   convtime   count      created    
+
+D's
+  date         dbeq         debug        debugif      dec          default
+  definitions  delay        delprop      dice         dist         div
+
+E's
+  eq     eval   eval!  exec   exec!  exits  
+
+F's
+  filter     flags      fold       for        force      foreach    ftime
+  fullname   func       
+
+G's
+  ge  gt  
+
+H's
+  holds  
+
+I's
+  idle     if       inc      index    index!   instr    isdbref  isnum
+  istype   
+
+K's
+  kill  
+
+L's
+  lastused   lcommon    le         left       lexec      links      list
+  listprops  lit        lmember    loc        locked     lrand      lremove
+  lsort      lt         ltimestr   lunion     lunique    
+
+M's
+  macros     max        midstr     min        mklist     mod        modified
+  money      muckname   muf        mult       
+
+N's
+  name    ne      nearby  nl      not     null    
+
+O's
+  online  ontime  or      otell   owner   
+
+P's
+  parse      pronouns   prop       prop!      propdir    
+
+R's
+  rand    ref     revoke  right   
+
+S's
+  secs       select     set        sign       smatch     stimestr   store
+  strip      strlen     sublist    subst      subt       
+
+T's
+  tell       testlock   time       timestr    timesub    tolower    toupper
+  type       tzoffset   
+
+U's
+  unbless    usecount   
+
+V's
+  v        version  
+
+W's
+  while  with   
+
+X's
+  xor  
  
 Use 'mpi <topicname>' to get more information on a topic.
 ~
@@ -115,8 +169,8 @@ both considered false.  Any other value is considered true.
 Time Functions|TimeFuncs
 Time Functions
 
-convsecs     convtime     date         delay        ftime        kill
-ltimestr     secs         stimestr     time         timestr      tzoffset
+convsecs   convtime   date       delay      ftime      kill       ltimestr
+secs       stimestr   time       timestr    tzoffset   
 
 ~----------------------------------------------------------------------------
 ~
@@ -223,8 +277,8 @@ killed.  Usually 1.
 Logical Functions|LogicFuncs
 Logical Functions
 
-and          default      eq           ge           gt           if
-le           lt           ne           not          or           xor
+and      default  eq       ge       gt       if       le       lt
+ne       not      or       xor      
 
 ~----------------------------------------------------------------------------
 ~
@@ -322,9 +376,9 @@ Otherwise, this returns false.
 Property Handling|PropFuncs
 Property Handling
 
-bless        concat       delprop      exec         exec!        index
-index!       lexec        list         listprops    prop         prop!
-propdir      rand         select       store        timesub      unbless
+bless      concat     delprop    exec       exec!      index      index!
+lexec      list       listprops  prop       prop!      propdir    rand
+select     store      timesub    unbless    
 
 ~----------------------------------------------------------------------------
 ~
@@ -581,10 +635,9 @@ Also see: propdir and smatch
 String Functions|Strings|StringFuncs
 String Functions
 
-attr         center       eval         eval!        instr        left
-lit          midstr       nl           null         otell        pronouns
-revoke       right        smatch       strip        strlen       subst
-tell         tolower      toupper      
+attr       center     eval       eval!      instr      left       lit
+midstr     nl         null       otell      pronouns   revoke     right
+smatch     strip      strlen     subst      tell       tolower    toupper
 
 ~----------------------------------------------------------------------------
 ~
@@ -808,9 +861,7 @@ commands probably just won't work.
 Math Functions|Math|MathFuncs
 Math Functions
 
-abs          add          dec          dice         dist         div
-inc          max          min          mod          mult         sign
-subt         
+abs   add   dec   dice  dist  div   inc   max   min   mod   mult  sign  subt
 
 ~----------------------------------------------------------------------------
 ~
@@ -932,7 +983,7 @@ distance between a pair of 3D points.
 Looping Functions|Loops|Looping
 Looping Functions
 
-filter       fold         for          foreach      parse        while
+filter   fold     for      foreach  parse    while    
 
 ~----------------------------------------------------------------------------
 ~
@@ -1025,10 +1076,10 @@ items delimited by that string, otherwise it assumes a carriage return.
 Database Related Functions|Database|DBFuncs
 Database Related Functions
 
-contains     contents     controls     created      dbeq         exits
-flags        force        fullname     holds        istype       lastused
-links        loc          locked       modified     money        name
-nearby       owner        ref          testlock     type         usecount
+contains   contents   controls   created    dbeq       exits      flags
+force      fullname   holds      istype     lastused   links      loc
+locked     modified   money      name       nearby     owner      ref
+testlock   type       usecount   
 
 ~----------------------------------------------------------------------------
 ~
@@ -1221,7 +1272,7 @@ this just sees if obj1 is within the locational environment of obj2.
 Connection Related Functions|Connection|ConnFuncs
 Connection Related Functions
 
-awake        idle         online       ontime       
+awake   idle    online  ontime  
 
 ~----------------------------------------------------------------------------
 ~
@@ -1265,7 +1316,7 @@ if there are multiple connects.
 Variable Handling Functions|Variable|Variables|Vars|Var|VarFuncs
 Variable Handling Functions
 
-&arg         &cmd         &how         set          v            with
+&arg  &cmd  &how  set   v     with  
 
 ~----------------------------------------------------------------------------
 ~
@@ -1351,8 +1402,8 @@ scope of variables inside of {with:} commands:
 List Handling Functions|List Handling|ListFuncs
 List Handling Functions
 
-commas       count        lcommon      lmember      lrand        lremove
-lsort        lunion       lunique      mklist       sublist      
+commas   count    lcommon  lmember  lrand    lremove  lsort    lunion
+lunique  mklist   sublist  
 
 ~----------------------------------------------------------------------------
 ~
@@ -1475,8 +1526,7 @@ Harry."
 Miscellaneous Functions|Miscellaneous|Misc|MiscFuncs
 Miscellaneous Functions
 
-debug        debugif      isdbref      isnum        muckname     muf
-version      
+debug      debugif    isdbref    isnum      muckname   muf        version
 
 ~----------------------------------------------------------------------------
 ~
@@ -1542,7 +1592,7 @@ Also see: debug and if
 Macros and Functions|Functions
 Macros and Functions
 
-func         macros       
+func    macros  
 
 ~----------------------------------------------------------------------------
 ~

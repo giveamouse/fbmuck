@@ -1,239 +1,11 @@
-                  MUF Reference Manual for FBMuck 6.00
-                   by Revar Desmera <revar@belfry.com>
-
-You may get a listing of topics that you can get help on, either sorted
-Alphabetically or sorted by Category.  To get these lists, type:
-        man alpha        or
-        man category
-
+~~title MUF Reference Manual for FBMuck 6.00
+~~author Revar Desmera <revar@belfry.com>
+~~doccmd man
+~~sectlist
+~~index
+~~file info/mufman1
 ~
-~----------------------------------------------------------------------------
-~
-CATEGORY|CATEGORIES|TOPICS|SECTIONS
-                   List of Topics by Category:
- 
-You can get more help on the following topics:
- 
-  Details and Definitions                  (DefDets)
-  Compiler Directives                      (CompDefs)
-  Stack Manipulation Operators             (StackOps)
-  Variables and Handling Thereof           (VarHandling)
-  Logical Operators                        (LogicOps)
-  Execution Control Structures             (ExecStructs)
-  Mathematical Operators                   (MathOps)
-  Floating Point Operators                 (FloatOps)
-  String Manipulation Operators            (StringOps)
-  Lock Manipulation Operators              (LockOps)
-  Array Manipulation Operators             (ArrayOps)
-  Property Manipulation Operators          (PropOps)
-  Database Related Operators               (DBOps)
-  Time Manipulation Operators              (TimeOps)
-  Process Management Operators             (ProcOps)
-  Connection Management Operators          (ConnOps)
-  Event Handling Operators                 (EventOps)
-  MCP Support Operators                    (MCPOps)
-  GUI Support Operators                    (GUIOps)
-  Exception Handling                       (Exceptions)
-  Debugging                                (Debug)
-  Miscellaneous                            (MiscOps)
- 
-Use 'man <topicname>' to get more information on a topic.
-~
-~----------------------------------------------------------------------------
-~
-ALPHA|ALPHABETICAL|COMMANDS
-                 Alphabetical List of Topics:
- 
-You can get more help on the following topics:
-
-Symbols
-  !              $abort         $author        $cleardefs     $def
-  $define        $echo          $ifcancall     $ifdef         $iflib
-  $iflibver      $ifncancall    $ifndef        $ifnlib        $ifnlibver
-  $ifnver        $ifver         $include       $lib-version   $libdef
-  $note          $pubdef        $undef         $version       %
-  *              +              ++             -              --
-  /              <              <=             =              >
-  >=             @              \              __version      {
-  }              }dict          }join          }list          }tell
-
-A's
-  abort                     abs                       acos
-  addpennies                addprop                   address?
-  and                       ansi_midstr               ansi_strcut
-  ansi_strip                ansi_strlen               array?
-  array_appenditem          array_compare             array_count
-  array_cut                 array_delitem             array_delrange
-  array_diff                array_excludeval          array_explode
-  array_extract             array_filter_prop         array_findval
-  array_first               array_get_ignorelist      array_get_propdirs
-  array_get_proplist        array_get_propvals        array_get_reflist
-  array_getitem             array_getrange            array_insertitem
-  array_insertrange         array_intersect           array_join
-  array_keys                array_last                array_make
-  array_make_dict           array_matchkey            array_matchval
-  array_ndiff               array_next                array_nintersect
-  array_notify              array_nunion              array_prev
-  array_put_proplist        array_put_propvals        array_put_reflist
-  array_reverse             array_setitem             array_setrange
-  array_sort                array_sort_indexed        array_union
-  array_vals                arrive                    asin
-  atan                      atan2                     atoi
-  awake?                    
-
-B's
-  background   begin        bg_mode      bitand       bitor        bitshift
-  bitxor       blessed?     blessprop    break        breakpoints  bunny
-
-C's
-  c_button           c_checkbox         c_combobox         c_datum
-  c_edit             c_frame            c_hrule            c_image
-  c_label            c_listbox          c_menu             c_multiedit
-  c_notebook         c_radiobtn         c_scale            c_spinner
-  c_vrule            call               caller             cancall?
-  ceil               checkargs          checkpassword      clear
-  clear_error        command            compilation        compile
-  compiled?          conboot            concount           condbref
-  condescr           conhost            conidle            connect
-  connotify          contents           contents_array     contime
-  continue           controls           conuser            copyobj
-  copyplayer         cos                credits            ctoi
-
-D's
-  date               dbcmp              dbref              dbref?
-  dbtop              debug notation     debug_line         debug_off
-  debug_on           debugger           debugger_break     debugger_commands
-  depth              desc               descr              descr_array
-  descr_setuser      descrboot          descrbufsize       descrcon
-  descrdbref         descrflush         descrhost          descridle
-  descriptors        descrleastidle     descrmostidle      descrnotify
-  descrsecure?       descrtime          descruser          dictionary?
-  diff3              dist3d             drop               dup
-  dupn               
-
-E's
-  envprop        envpropstr     epsilon        error?         error_bit
-  error_name     error_num      error_str      event_count    event_exists
-  event_send     event_wait     event_waitfor  execute        exit
-  exit?          exits          exits_array    exp            explode
-  explode_array  
-
-F's
-  fabs         fail         fg_mode      findnext     firstdescr   flag?
-  flags        float        float?       floor        fmod         fmtstring
-  for          force        force_level  foreach      foreground   fork
-  frand        ftostr       
-
-G's
-  getlink            getlinks           getlinks_array     getlockstr
-  getpidinfo         getpids            getprop            getpropfval
-  getpropstr         getpropval         getseed            gmtoffset
-  graffiti           gui-options        gui_available      gui_ctrl_command
-  gui_ctrl_create    gui_dlog_close     gui_dlog_create    gui_dlog_helper
-  gui_dlog_show      gui_dlog_simple    gui_dlog_tabbed    gui_value_get
-  gui_value_set      gui_values_get     
-
-I's
-  if           ignore_add   ignore_del   ignoring?    inf          instances
-  instr        instring     int          int?         interp       intostr
-  is_set?      ispid?       itoc         
-
-J's
-  jmp  
-
-K's
-  kill  
-
-L's
-  lastdescr      ldup           libraries      listeners      localvar
-  location       lock?          locked?        log            log10
-  loop-example1  loop-example2  loop-example3  loops          lreverse
-  lvar           
-
-M's
-  match                     mcp_bind                  mcp_register
-  mcp_register_event        mcp_send                  mcp_supports
-  midstr                    mlevel                    mode
-  modf                      movepennies               moveto
-  mucker levels             multitasking              
-
-N's
-  name               name-ok?           newexit            newobject
-  newpassword        newplayer          newprogram         newroom
-  next               nextdescr          nextentrance       nextowned
-  nextprop           not                notify             notify_except
-  notify_exclude     number?            
-
-O's
-  objmem         odrop          ofail          ok?            online
-  online_array   or             osucc          over           owner
-
-P's
-  parselock          parseprop          parsepropex        part_pmatch
-  pennies            pi                 pick               pid
-  player?            pmatch             pname-ok?          polar_to_xyz
-  pop                popn               pow                pr_mode
-  preempt            prettylock         prog               program?
-  program_getlines   program_setlines   pronoun_sub        propdir?
-  public             put                
-
-Q's
-  queue  
-
-R's
-  random             read               read_wants_blanks  recycle
-  reflist_add        reflist_del        reflist_find       regexp
-  regsub             remove_prop        repeat             reverse
-  rinstr             rinstring          rmatch             room?
-  rot                rotate             round              rsplit
-
-S's
-  set                set_error          setdesc            setdrop
-  setfail            setlink            setlinks_array     setlockstr
-  setmode            setname            setodrop           setofail
-  setosucc           setown             setprop            setseed
-  setsucc            setsysparm         sign               sin
-  sleep              smatch             split              sqrt
-  srand              stats              stod               strcat
-  strcmp             strcut             strdecrypt         strencrypt
-  string?            stringcmp          stringpfx          strip
-  striplead          striptail          strlen             strncmp
-  strtof             subst              succ               swap
-  sysparm            sysparm_array      systime            
-
-T's
-  tan          testlock     textattr     thing?       time         timefmt
-  timer_start  timer_stop   timesplit    timestamps   toadplayer   tokensplit
-  tolower      toupper      tread        trig         truename     try
-
-U's
-  unblessprop  uncompile    unparselock  unparseobj   until        userlog
-
-V's
-  var        var!       variable   version    
-
-W's
-  watchpid   while      wizcall    
-
-X's
-  xor            xyz_to_polar   
- 
-Use 'man <topicname>' to get more information on a topic.
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Details and Definitions|DefDets
-Details and Definitions
-
-arrive         compilation    connect        credits        flags
-libraries      listeners      mucker levels  multitasking   
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Details and Definitions|DefDets
 ~
 ~
 MUCKER LEVELS|LEVELS|MUCKER1|MUCKER2|MUCKER3|MUCKER4
@@ -320,7 +92,7 @@ default to running in foreground mode.  QUEUEd program events, such as
 those set up by _listen, _connect, _disconnect, etc, and those QUEUEd by
 other programs default to running in background mode. (NOTE: these
 programs cannot be changed out of background mode)
-Also see: FOREGROUND, BACKGROUND, PREEMPT, FORK, QUEUE, KILL and SLEEP
+~~alsosee FOREGROUND,BACKGROUND,PREEMPT,FORK,QUEUE,KILL,SLEEP
 ~
 ~
 LIBRARIES
@@ -403,7 +175,7 @@ A program that is set WIZARD ignores almost all permissions checking.
 
 The Mucker Level of the program also has a great deal of influence on what
 a program can and cannot do.  See MUCKER LEVELS for more information.
-Also see: DEBUGGER
+~~alsosee DEBUGGER
 ~
 ~
 COMPILATION
@@ -463,23 +235,7 @@ The people responsible (at fault?) for this manual are:
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Compiler Directives|Directives|CompDefs
-Compiler Directives
-
-$abort         $author        $cleardefs     $def           $define
-$echo          $ifcancall     $ifdef         $iflib         $iflibver
-$ifncancall    $ifndef        $ifnlib        $ifnlibver     $ifnver
-$ifver         $include       $lib-version   $libdef        $note
-$pubdef        $undef         $version       \              __version
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Compiler Directives|Directives|CompDefs
 ~
 ~
 __VERSION
@@ -547,17 +303,19 @@ $INCLUDE <dbref>
 
   Sets a bunch of $defines from the properties in the /_defs/ propdir of the
 given program.  For example, if object #345 had the following properties:
+~~code
     /_defs/desc: "_/de" getpropstr
     /_defs/setpropstr: dup if 0 addprop else pop remove_prop then
     /_defs/setpropval: dup if "" swap addprop else pop remove_prop then
     /_defs/setprop: dup int? if setpropval else setpropstr then
+~~endcode
 then if a program contained '$include #345' in it, then all subsequent
 references to 'desc', 'setpropstr', 'setpropval', and 'setprop' would
 be expanded to the string values of their respective programs.  For example,
 'desc' would be replaced throughout the program with '"_/de" getpropstr'
 NOTE:  You cannot have a slash in a definition name.  ie: The property
 _defs/a/b:foo  will NOT make a definition named a/b.
-Also see: $DEFINE, $DEF, $CLEARDEFS, $IFDEF, PUBLIC, WIZCALL, $PUBDEF and $LIBDEF
+~~alsosee $DEFINE,$DEF,$CLEARDEFS,$IFDEF,PUBLIC,WIZCALL,$PUBDEF,$LIBDEF
 ~
 ~
 $PUBDEF
@@ -575,10 +333,12 @@ $pubdef <defname> <rest_of_line>   Sets _defs/<defname> prop to <rest_of_line>.
 $pubdef \<defname> <rest_of_line>  Sets _def/<defname> if not already set.
 
 For example:
+~~code
     $pubdef tell me @ swap notify
+~~endcode
 would put a property named '_defs/tell' on the program object, with the
 value 'me @ swap notify'.  Def names cannot have ':' nor '/' in them.
-Also see: $LIBDEF
+~~alsosee $LIBDEF
 ~
 ~
 $LIBDEF
@@ -587,10 +347,12 @@ $LIBDEF \<function>
 
   Sets up an _defs/ prop on the program to call the specified function.
 For example:
+~~code
     $libdef myfunc
+~~endcode
 would put a prop named '_defs/myfunc' on the program object, with the
 value '<this_programs_dbref> "myfunc" call'
-Also see: $PUBDEF
+~~alsosee $PUBDEF
 ~
 ~
 $CLEARDEFS
@@ -599,7 +361,7 @@ $CLEARDEFS [ALL]
   Ignores program _defs/ when compiling the program. Wizards programs can
 use '$cleardefs ALL' to also ignore #0 _defs/ when compiling. This does
 not affect macros, and internal _defs/ are always loaded no matter what.
-Also see: $DEFINE, $DEF and $UNDEF
+~~alsosee $DEFINE,$DEF,$UNDEF
 ~
 ~
 $IFDEF|$ELSE|$ENDIF
@@ -609,10 +371,12 @@ $IFDEF <condition> <compile if true> $else <compile if false> $endif
   This determines whether or not to compile optional sections of code,
 depending on the existence of or value of certain $defined names.
 The four accepted forms of the <condition> argument are:
+~~code
     DEFNAME        Is true if DEFNAME was $defined earlier, whatever the value.
     DEFNAME=VALUE  Is true if DEFNAME exists and its value equals VALUE.
     DEFNAME>VALUE  Is true if DEFNAME exists and is greater than VALUE.
     DEFNAME<VALUE  Is true if DEFNAME exists and is less than VALUE.
+~~endcode
 
   The semantics of greater than and less than is the same as that used by
 the strcmp string comparison command.  There must be no spaces between the
@@ -621,11 +385,14 @@ DEFNAME, comparator, and VALUE.  They must be run together as one word.
   There is no >= or <= comparator available, so to make such a comparison
 you need to use $ifndef with the opposite comparator.  Ie, to check if
 FOO is greater than or equal to 3, use:
+~~code
     $ifndef FOO<3
         BAR
     $enddef
+~~endcode
 
 Compiler directives are nestable also.  For examples:
+~~code
     $ifdef __version>Muck2.2fb3.5
         $def envprop .envprop
     $endif
@@ -636,7 +403,8 @@ Compiler directives are nestable also.  For examples:
             owner
         $endif
     $enddef
-Also see: $IFNDEF, $DEFINE, $DEF and $DEF
+~~endcode
+~~alsosee $IFNDEF,$DEFINE,$DEF,$DEF
 ~
 ~
 $IFNDEF
@@ -648,15 +416,17 @@ depending on the non-existence of or value of $defined names.  $ifndef is
 short for 'If NOT Defined' or 'If Not', so it compiles the first code
 branch (before the optional $else), only if the <condition> is false.
 The four accepted forms of the <condition> argument are:
+~~code
     DEFNAME        Is true if DEFNAME was $defined earlier, whatever the value.
     DEFNAME=VALUE  Is true if DEFNAME exists and its value equals VALUE.
     DEFNAME>VALUE  Is true if DEFNAME exists and is greater than VALUE.
     DEFNAME<VALUE  Is true if DEFNAME exists and is less than VALUE.
+~~endcode
 
 The semantics of greater than and less than is the same as that used by the
 strcmp string comparison command.  There must be no spaces between the
 DEFNAME, comparator, and VALUE.  They must be run together as one word.
-Also see: $IFDEF, $DEFINE, $DEF and $DEF
+~~alsosee $IFDEF,$DEFINE,$DEF,$DEF
 ~
 ~
 $IFVER
@@ -676,7 +446,7 @@ the program referenced by $regname or #dbref.
 is greater than or equal to the given <float>, using a floating point
 number comparison.  Otherwise, the <falsebranch>, if given, will be
 compiled.
-Also see: $IFNVER, $IFLIBVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFNVER,$IFLIBVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFNVER
@@ -695,7 +465,7 @@ the program referenced by $regname or #dbref.
   The <truebranch> will be compiled if the given program's $version
 is less than the given <float>, using a floating point number comparison.
 Otherwise, the <falsebranch>, if given, will be compiled.
-Also see: $IFVER, $IFLIBVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFVER,$IFLIBVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFLIBVER
@@ -715,7 +485,7 @@ of the program referenced by $regname or #dbref.
 is greater than or equal to the given <float>, using a floating point
 number comparison.  Otherwise, the <falsebranch>, if given, will be
 compiled.
-Also see: $IFNLIBVER, $IFNVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFNLIBVER,$IFNVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFNLIBVER
@@ -734,7 +504,7 @@ of the program referenced by $regname or #dbref.
   The <truebranch> will be compiled if the given program's $lib-version
 is less than the given <float>, using a floating point number comparison.
 Otherwise, the <falsebranch>, if given, will be compiled.
-Also see: $IFLIBVER, $IFVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFLIBVER,$IFVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFLIB
@@ -747,7 +517,7 @@ $IFLIB <dbref> <truebranch> $else <falsebranch> $endif
 depending on the existence of a given program.
   The <truebranch> will be compiled if the given object exists and is a
 program.  Otherwise, the <falsebranch>, if given, will be compiled.
-Also see: $IFNLIB, $IFLIBVER, $IFVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFNLIB,$IFLIBVER,$IFVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFNLIB
@@ -761,7 +531,7 @@ depending on the existence of a given program.
   The <truebranch> will be compiled if the given object does not exist, or
 if it is not a program.  Otherwise, the <falsebranch>, if given, will be
 compiled.
-Also see: $IFLIB, $IFLIBVER, $IFVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFLIB,$IFLIBVER,$IFVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFCANCALL
@@ -781,7 +551,7 @@ given callable function was declared earlier in this compiling program.
 program, and has a given callable function (declared with PUBLIC or WIZCALL)
 that this compiling program has permission to call.  Otherwise, the
 <falsebranch>, if given, will be compiled.
-Also see: $IFNCANCALL, $IFLIB, $IFLIBVER, $IFVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFNCANCALL,$IFLIB,$IFLIBVER,$IFVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFNCANCALL
@@ -801,7 +571,7 @@ given callable function was declared earlier in this compiling program.
 is not a program, or does not have a given callable function (declared with
 PUBLIC or WIZCALL) that this compiling program has permission to call.
 Otherwise, the <falsebranch>, if given, will be compiled.
-Also see: $IFCANCALL, $IFLIB, $IFLIBVER, $IFVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFCANCALL,$IFLIB,$IFLIBVER,$IFVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $ECHO
@@ -821,28 +591,16 @@ Escaping Literal Tokens:
   You can escape a token in MUF so that it will be interpreted literally.
 ie:  \.pmatch will try to compile '.pmatch' without expanding it as a
 macro.  This lets you make special things with $defines such as:
+~~code
     $define addprop over over or if \addprop else pop pop remove_prop $enddef
+~~endcode
 so that all the 'addprop's in the program will be expanded to the
 definition, but the 'addprop' in the definition will not try to expand
 recursively.  It will call the actual addprop.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Stack Manipulation Operators|StackOps
-Stack Manipulation Operators
-
-depth      dup        dupn       ldup       lreverse   over       pick
-pop        popn       put        reverse    rot        rotate     swap
-{          }          
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Stack Manipulation Operators|StackOps
 ~
 ~
 POP
@@ -867,7 +625,7 @@ DUPN
 DUPN ( ?n..?1 i -- ?n..?1 ?n..?1 )
 
   Duplicates the top i stack items.
-Also see: LDUP
+~~alsosee LDUP
 ~
 ~
 LDUP
@@ -925,7 +683,7 @@ REVERSE
 REVERSE ( ?n..?1 i -- ?1..?n )
 
   Reverses the order of the top i items on the stack.
-Also see: LREVERSE
+~~alsosee LREVERSE
 ~
 ~
 LREVERSE
@@ -955,20 +713,7 @@ stack, and the count is pushed onto the stack.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Variables and Handling Thereof|VarHandling
-Variables and Handling Thereof
-
-!          @          command    localvar   lvar       var        var!
-variable   
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Variables and Handling Thereof|VarHandling
 ~
 ~
 COMMAND
@@ -991,7 +736,7 @@ a variable in all words sequentially defined after the var declaration.
 
   When used inside a word, a variable local to each invocation of a given
 word; recursive calls each get their own scoped variables.
-Also see: VAR!, LVAR, !, @, VARIABLE and LOCALVAR
+~~alsosee VAR!,LVAR,!,@,VARIABLE,LOCALVAR
 ~
 ~
 VAR!
@@ -1000,11 +745,13 @@ VAR! <name>
   This must be used within a word.  It declares a function scoped variable
 named <name> that is then set with the topmost stack item.  For example,
 the following program prints out "Hello World!":
+~~code
     : myword
         "Hello World!" var! foo
         me @ foo @ notify
     ;
-Also see: VAR, LVAR, !, @, VARIABLE and LOCALVAR
+~~endcode
+~~alsosee VAR,LVAR,!,@,VARIABLE,LOCALVAR
 ~
 ~
 LVAR
@@ -1014,7 +761,7 @@ LVAR <varname>
 program.  If another program calls this program, the values of the local
 variables will not be changed in the calling program, even if the called
 program changes them.
-Also see: VAR, VAR!, !, @, VARIABLE and LOCALVAR
+~~alsosee VAR,VAR!,!,@,VARIABLE,LOCALVAR
 ~
 ~
 @
@@ -1027,7 +774,7 @@ Also see: VAR, VAR!, !, @, VARIABLE and LOCALVAR
 ! ( x v -- )
 
   Sets variable v's value to x.
-Also see: VARIABLE, VAR, LVAR, LOCALVAR and MISCELLANEOUS
+~~alsosee VARIABLE,VAR,LVAR,LOCALVAR,MISCELLANEOUS
 ~
 ~
 VARIABLE
@@ -1042,7 +789,7 @@ will do the same thing (returning the user's dbref). User-defined variables
 are numbered sequentially starting at 3 by the compiler. Note that these
 variable numbers can be used even if variables have not been formally
 declared, making implementation of such things as arrays conveniently easy.
-Also see: @, ! and VAR
+~~alsosee @,!,VAR
 ~
 ~
 LOCALVAR
@@ -1053,21 +800,7 @@ the 'variable' primitive.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Logical Operators|LogicOps
-Logical Operators
-
-<            <=           =            >            >=           address?
-and          array?       dbref?       dictionary?  float?       int?
-lock?        not          or           string?      xor          
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Logical Operators|LogicOps
 ~
 ~
 <
@@ -1161,7 +894,7 @@ ARRAY? ( ? -- i )
 
   Tests if stack item is an array.  Returns i as 1 if so, 0 if
 otherwise.
-Also see: DICTIONARY?, INT?, DBREF?, ARRAY_MAKE_DICT and ARRAY_MAKE
+~~alsosee DICTIONARY?,INT?,DBREF?,ARRAY_MAKE_DICT,ARRAY_MAKE
 ~
 ~
 DICTIONARY?
@@ -1169,7 +902,7 @@ DICTIONARY? ( ? -- i )
 
   Tests if stack item is an array of dictionary type.  Returns i as 1
 if so, 0 if otherwise.
-Also see: ARRAY?, INT?, DBREF?, ARRAY_MAKE_DICT and ARRAY_MAKE
+~~alsosee ARRAY?,INT?,DBREF?,ARRAY_MAKE_DICT,ARRAY_MAKE
 ~
 ~
 FLOAT?
@@ -1200,27 +933,11 @@ LOCK?
 LOCK? (? -- i)
 
   Returns true if the top stack item is a lock.
-Also see: GETPROP, SETPROP, PARSELOCK, UNPARSELOCK, PRETTYLOCK and TESTLOCK
+~~alsosee GETPROP,SETPROP,PARSELOCK,UNPARSELOCK,PRETTYLOCK,TESTLOCK
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Execution Control Structures|ExecStructs
-Execution Control Structures
-
-begin          break          call           cancall?       continue
-execute        exit           for            foreach        if
-interp         jmp            loop-example1  loop-example2  loop-example3
-loops          public         repeat         until          while
-wizcall        
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Execution Control Structures|ExecStructs
 ~
 ~
 IF|ELSE|THEN
@@ -1257,19 +974,23 @@ in modern MUF code, as it is deprecated.  NOTE: Using JMP to jump into a
 different function can have problems, and is not recommended.
 
 Example of JMP as a tail-recursion optimization:
+~~code
     : countforever ( i -- )
         1 +
         dup intostr .tell
         'countforever jmp
     ;
+~~endcode
 
 A better ways to do the same thing with looping primitives would be:
+~~code
     : countforever ( i -- )
         begin
             1 +
             dup intostr .tell
         repeat
     ;
+~~endcode
 ~
 ~
 CALL
@@ -1306,7 +1027,7 @@ BEGIN
 BEGIN ( -- )
 
   Marks the beginning of begin-until or begin-repeat loops.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 FOR
@@ -1317,7 +1038,7 @@ loop with i1 as the start index, i2 as the end index, and i3 as the step.
 If i2 is less then i1, or if i3 is negative and i2 is greater then i1, the
 entire loop is skipped without executing.  If i3 is 0 the loop will run
 infinitely until some other condition causes an exit.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 FOREACH
@@ -1325,7 +1046,7 @@ FOREACH (a -- @ ? )
 
   Marks the beginning of an iterative FOREACH loop, stepping through every
 index/value pair in the array.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 WHILE
@@ -1335,7 +1056,7 @@ WHILE (i -- )
 to jump to the instruction after the UNTIL or REPEAT for the current
 loop.  If the value is true, however, execution falls through to the
 instruction after the WHILE.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 BREAK
@@ -1343,14 +1064,14 @@ BREAK ( -- )
 
   Breaks out of the innermost loop.  Jumps execution to the instruction
 after the UNTIL or REPEAT for the current loop.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 CONTINUE
 CONTINUE ( -- )
 
   Jumps execution to the beginning of the current loop.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 REPEAT
@@ -1358,7 +1079,7 @@ REPEAT ( -- )
 
   This marks the end of the current loop.  Execution jumps to the instruction
 after the matching BEGIN, FOREACH or FOR in a loop.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 UNTIL
@@ -1371,7 +1092,7 @@ the loop, and continues execution at the next instruction following
 the UNTIL.
   Loops, TRY-CATCH-ENDCATCH's, and IF-ELSE-THEN's can all be nested in
 each other as much as you want.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 LOOPS
@@ -1407,29 +1128,36 @@ LOOP-EXAMPLE1
 Loop Examples 1:
 
 How to count from 1 to 10 using a BEGIN-REPEAT loop:
+~~code
     0 begin
         dup 10 < while
         1 +
         me @ over intostr notify
     repeat
+~~endcode
 
 How to count from 1 to 10 using a BEGIN-UNTIL loop:
+~~code
     0 begin
         1 +
         me @ over intostr notify
         dup 10 =
     until
+~~endcode
 
 How to count from 1 to 10 using a FOR-REPEAT loop:
+~~code
     1 10 1 for
         intostr me @ swap notify
     repeat
+~~endcode
 ~
 ~
 LOOP-EXAMPLE2
 Loop Examples 2:
 
 Example of a complex loop structure:
+~~code
     101 begin                       (BEGIN the outer loop)
         dup while 1 -                 (This WHILE, ...)
         dup not if break then         (this BREAK, and..)
@@ -1447,35 +1175,44 @@ Example of a complex loop structure:
         dup intostr
         me @ swap notify
     dup 1 = until pop               (This UNTIL ends the outer loop)
+~~endcode
 ~
 ~
 LOOP-EXAMPLE3
 Loop Examples 3:
 
 Example of a FOR loop:
+~~code
     1 10 1 for
         me @ swap intostr notify
     repeat
+~~endcode
 
 Example of nested FOR loops:
+~~code
     1 5 1 for
         "" swap 1 -1 for
         intostr strcat
         repeat
         me @ swap notify
     repeat
+~~endcode
 
 Example of complex FOR loop:
+~~code
     10 -10 -2 for
         me @ over intostr notify
         not
     until
+~~endcode
 
 Example of a FOREACH loop:
+~~code
     { "index1" "value1" "index2" "value2" }dict
     foreach
         " = " swap strcat strcat me @ swap notify
     repeat
+~~endcode
 ~
 ~
 PUBLIC
@@ -1509,21 +1246,7 @@ current program has permissions to call.  Returns false, otherwise.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Mathematical Operators|MathOps
-Mathematical Operators
-
-%          *          +          ++         -          --         /
-abs        bitand     bitor      bitshift   bitxor     getseed    int
-random     setseed    sign       srand      
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Mathematical Operators|MathOps
 ~
 ~
 INT
@@ -1629,7 +1352,7 @@ SRAND
 SRAND ( -- i )
 
   Generates a seeded random number.
-Also see: SETSEED and GETSEED
+~~alsosee SETSEED,GETSEED
 ~
 ~
 RANDOM
@@ -1638,7 +1361,7 @@ RANDOM ( -- i )
   Returns a random integer from 0 to the MAXINT of the system running the MUCK.
 In general this number is (2^31)-1 or 2,147,483,647 (2.1 billion).  This is
 based on the standard C random() function, so it's not very secure.
-Also see: SETSEED, GETSEED, SRAND and FRAND
+~~alsosee SETSEED,GETSEED,SRAND,FRAND
 ~
 ~
 BITOR
@@ -1667,26 +1390,7 @@ Same as the C << operator.  If the second integer is negative, its like >>.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Floating Point Operators|FloatOps
-Floating Point Operators
-
-acos           asin           atan           atan2          ceil
-clear          clear_error    cos            diff3          dist3d
-epsilon        error?         error_bit      error_name     error_num
-error_str      exp            fabs           float          floor
-fmod           frand          ftostr         inf            is_set?
-log            log10          modf           pi             polar_to_xyz
-pow            round          set_error      sin            sqrt
-strtof         tan            xyz_to_polar   
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Floating Point Operators|FloatOps
 ~
 ~
 FLOAT
@@ -1730,7 +1434,7 @@ FTOSTR ( f -- s )
   Converts a floating point number into a string.  Always includes the decimal
 point.  FTOSTR can return either the xxx.yyy form or the x.yyyEzz form of
 a float, depending on which would give the shortest string length.
-Also see: FMTSTRING.
+~~alsosee FMTSTRING.
 ~
 ~
 STRTOF
@@ -1885,7 +1589,7 @@ XYZ_TO_POLAR ( fx fy fz -- fr ft fp )
 (fr, ft, fp).  fr is the radius, ft is theta (the plane angle), and fp is phi
 (the elevation angle)  To do 2D X-Y to radius and angle conversion, simply use
 a Z coordinate (fz) of 0, and discard phi (fp).
-Also see: POLAR_TO_XYZ, DIST3D, SIN, COS and TAN
+~~alsosee POLAR_TO_XYZ,DIST3D,SIN,COS,TAN
 ~
 ~
 POLAR_TO_XYZ
@@ -1907,14 +1611,14 @@ CLEAR
 CLEAR ( -- )
 
   Clears all error flags for floating point math operations.
-Also see: ERROR?.
+~~alsosee ERROR?.
 ~
 ~
 CLEAR_ERROR
 CLEAR_ERROR ( s|i -- i )
 
   Clears a specific error flag for floating point math operations.
-Also see: ERROR?.
+~~alsosee ERROR?.
 ~
 ~
 ERROR?
@@ -1926,18 +1630,20 @@ most cases, an error condition in a math operation will return a zero value
 or underflow condition).  It is possible to poll for error conditions after
 every math operation, or when a '0' result is found.
 The following is a list of the current Error Flags:
+~~code
     DIV_ZERO  - (0) Division by zero attempted.
     NAN       - (1) Result was not a number.
     IMAGINARY - (2) Result would be imaginary. 
     FBOUNDS   - (3) Floating-point inputs were out of range.
     IBOUNDS   - (4) Calculation resulted in an integer overflow or underflow.
+~~endcode
 ~
 ~
 ERROR_BIT
 ERROR_BIT ( s -- i )
 
   Returns the bit identifier for a given floating point error flag string name.
-Also see: ERROR?.
+~~alsosee ERROR?.
 ~
 ~
 ERROR_NAME
@@ -1945,59 +1651,39 @@ ERROR_NAME ( i -- s )
 
   Returns the string name for the error flag, given a floating point error
 identifier.
-Also see: ERROR?.
+~~alsosee ERROR?.
 ~
 ~
 ERROR_NUM
 ERROR_NUM ( -- i )
 
   Returns the total number of floating point error flag types.
-Also see: ERROR?.
+~~alsosee ERROR?.
 ~
 ~
 ERROR_STR
 ERROR_STR ( s|i -- s )
 
   Returns a user-readable error string, given a floating point error identifier.
-Also see: ERROR?.
+~~alsosee ERROR?.
 ~
 ~
 IS_SET?
 IS_SET? ( s|i - i )
 
   Checks if a specific floating point error flag is set.
-Also see: ERROR?
+~~alsosee ERROR?
 ~
 ~
 SET_ERROR
 SET_ERROR ( s|i -- i )
 
   Sets the specified error flag for floating point operations.
-Also see: ERROR?
+~~alsosee ERROR?
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-String Manipulation Operators|StringOps
-String Manipulation Operators
-
-ansi_midstr    ansi_strcut    ansi_strip     ansi_strlen    atoi
-ctoi           explode        explode_array  fmtstring      instr
-instring       intostr        itoc           midstr         name-ok?
-number?        pname-ok?      pronoun_sub    regexp         regsub
-rinstr         rinstring      rsplit         smatch         split
-stod           strcat         strcmp         strcut         strdecrypt
-strencrypt     stringcmp      stringpfx      strip          striplead
-striptail      strlen         strncmp        subst          textattr
-tokensplit     tolower        toupper        
-
-~----------------------------------------------------------------------------
-~
-~
+~~section String Manipulation Operators|StringOps
 ~
 ~
 ATOI
@@ -2011,7 +1697,7 @@ CTOI
 CTOI ( s -- i )
 
   Converts the first character in s into its ASCII equivilent.
-Also see: ITOC.
+~~alsosee ITOC.
 ~
 ~
 STRLEN
@@ -2036,7 +1722,7 @@ character in the strings.  For example, "a" "z" strcmp returns 25.
 The reason it returns a 0 for a match, and the difference on a non-match,
 is to allow for nice things like string sorting functions.
 This primitive is case sensitive, unlike stringcmp.
-Also see: STRNCMP
+~~alsosee STRNCMP
 ~
 ~
 STRNCMP
@@ -2044,7 +1730,7 @@ STRNCMP ( s1 s2 i -- i' )
 
   Compares the first i characters in strings s1 and s2.
 Return value is like strcmp.
-Also see: STRINGCMP
+~~alsosee STRINGCMP
 ~
 ~
 STRINGCMP
@@ -2054,7 +1740,7 @@ STRINGCMP ( s1 s2 -- i )
 otherwise returns i as the difference between the first non-matching
 character in the strings.  For example, "a" "z" stringcmp returns 25.
 This function is not case sensitive, unlike strcmp.
-Also see: STRNCMP
+~~alsosee STRNCMP
 ~
 ~
 STRINGPFX
@@ -2069,7 +1755,7 @@ INSTR ( s s1 -- i )
 
   Returns the first occurrence of string s1 in string s, or 0 if s1 is
 not found.
-Also see: RINSTR and INSTRING
+~~alsosee RINSTR,INSTRING
 ~
 ~
 RINSTR
@@ -2077,7 +1763,7 @@ RINSTR ( s s1 -- i )
 
   Returns the last occurrence of string s1 in string s, or 0 if s1 is
 not found.  '"abcbcba" "bc" rinstr' returns 4.
-Also see: INSTR
+~~alsosee INSTR
 ~
 ~
 STRCUT
@@ -2106,14 +1792,14 @@ SPLIT ( s1 s2 -- s1' s2' )
 
   Splits string s1 at the first found instance of s2.  If there are no
 matches of s2 in s1, will return s1 and a null string.
-Also see: RSPLIT
+~~alsosee RSPLIT
 ~
 ~
 RSPLIT
 RSPLIT ( s1 s2 -- s1' s2' )
 
   Splits a string, as SPLIT, but splits on the last occurence of s2.
-Also see: SPLIT
+~~alsosee SPLIT
 ~
 ~
 EXPLODE
@@ -2122,14 +1808,18 @@ EXPLODE ( s1 s2 -- ... i )
   s2 is the delimiter string, and s1 is the target string, which will be
 fragmented, with i pushed on top of the stack as the number of strings
 s1 was broken into.  For instance:
+~~code
     "Hello world" " " explode
+~~endcode
 will result in
+~~code
     "world" "Hello" 2
+~~endcode
 on the stack.  (Note that if you read these items off in order, they
 will come out "Hello" first, then "world".)  For TinyMUCK 2.2, s2 may
 be any length.  But "" (null string) is not an acceptable string for
 parameter s2.
-Also see: EXPLODE_ARRAY
+~~alsosee EXPLODE_ARRAY
 ~
 ~
 EXPLODE_ARRAY
@@ -2138,13 +1828,17 @@ EXPLODE_ARRAY ( s1 s2 -- a )
   s2 is the delimiter string, and s1 is the target string.  s1 will be split
 up at each place where s2 is found in s1, and all the parts will be returned
 in a list array.  For instance:
+~~code
     "alpha, beta, gamma"  ", "  explode_array
+~~endcode
 will result in a list array that is identical to:
+~~code
     { "alpha" "beta" "gamma" }list
+~~endcode
 s2 cannot be a null string, but it can be of any non-zero length.  When s2
 is more than one character long, the delimiter is considered to be the
 entire s2 string.  The delimiters are removed from the results.
-Also see: EXPLODE
+~~alsosee EXPLODE
 ~
 ~
 SUBST
@@ -2152,9 +1846,13 @@ SUBST ( s1 s2 s3 -- s )
 
   s1 is the string to operate on, s2 is the string to change all occurrences
 of s3 into, and s is resultant string.  For example:
+~~code
     "HEY_YOU_THIS_IS" " " "_" subst
+~~endcode
 results in
+~~code
     "HEY YOU THIS IS"
+~~endcode
 s2 and s3 may be of any length.
 ~
 ~
@@ -2176,6 +1874,7 @@ literal '%' is needed in the string, a '%%' may be used.  The format of a
 substitution is as follows: '%[-,|][+, ][0][number][.number]type'
 Where 'number' is an integer value, and 'type' is one of the following
 identifiers:
+~~code
     i - integer argument
     s - string argument
     d - dbref number, in the form of #123
@@ -2188,6 +1887,7 @@ identifiers:
     ~ - default representation of any stack type
     ? - unknown type argument, will print a string stating what the
         variable type is
+~~endcode
 
   A '-' at the start of a format substitution indicates the field will be left
 justified.  A '|' at the start indicated the field will be centered.  A '+'
@@ -2205,13 +1905,18 @@ PRONOUN_SUB ( d s -- s' )
 
   Takes database object d and substitutes string s according to o-message
 rules.  For example:
+~~code
   me @ "%N has lost %p marbles." pronoun_sub
+~~endcode
 would return:
+~~code
   "Igor has lost his marbles."
+~~endcode
 if the player's name was Igor and his sex were male.
 d does not have to be a player for the substitutions to work.
   
 The substitutions are:
+~~code
     %a/%A for absolute possessive (his/hers/its, His/Hers/Its)
     %s/%S for subjective pronouns (he/she/it, He/She/It)
     %o/%O for objective pronouns (him/her/it, Him/Her/It)
@@ -2219,6 +1924,7 @@ The substitutions are:
     %r/%R for reflexive pronouns (himself/herself/itself,
                                   Himself/Herself/Itself)
     %n/%N for the player's name.
+~~endcode
   
   if it comes across a %X substitution, where X is any character not listed
 in the above substitutions table, it will search down the environment tree
@@ -2234,9 +1940,11 @@ appropriate client.  The attributes are passed to TEXTATTR in s2 as a
 series of comma separated attribute names.
 
 These are the attributes currently recognized:
+~~code
     reset    bold   dim       uline    flash   reverse
     black    red    yellow    green    cyan    blue    magenta    white
     bg_black bg_red bg_yellow bg_green bg_cyan bg_blue bg_magenta bg_white
+~~endcode
 ~
 ~
 STOD
@@ -2291,7 +1999,7 @@ ITOC ( i -- s )
 
   Converts an integer i to its ASCII equivilent character, or a null
 if i is not a valid display character.
-Also see: CTOI
+~~alsosee CTOI
 ~
 ~
 STRENCRYPT
@@ -2305,7 +2013,7 @@ technique used here is pretty simple, so I highly doubt it breaks
 any laws to take it outside the USA.  By the same token, it probably
 shouldn't be trusted with any really important data.  I'm not an expert
 at cryptography, so this ain't DES.
-Also see: STRDECRYPT
+~~alsosee STRDECRYPT
 ~
 ~
 STRDECRYPT
@@ -2313,7 +2021,7 @@ STRDECRYPT ( s1 s2 -- s3 )
 
   Takes the encrypted string s1, and decrypts it, using the key s2, returning
 the plaintext string s3.
-Also see: STRENCRYPT
+~~alsosee STRENCRYPT
 ~
 ~
 TOUPPER
@@ -2408,7 +2116,7 @@ INSTRING ( s s1 -- i )
   Returns the first occurrence of string s1 in string s, or 0 if s1 is
 not found. Non-case sensitive.  This is an inserver define equivalent to
 $def INSTRING tolower swap tolower swap instr
-Also see: RINSTRING, INSTR and RINSTR
+~~alsosee RINSTRING,INSTR,RINSTR
 ~
 ~
 RINSTRING
@@ -2417,7 +2125,7 @@ RINSTRING ( s s1 -- i )
   Returns the last occurrence of string s1 in string s, or -1 if s1 is
 not found. Non-case sensitive.  This is an inserver define equivalent to
 $def RINSTRING tolower swap tolower swap rinstr
-Also see: INSTRING, INSTR and RINSTR
+~~alsosee INSTRING,INSTR,RINSTR
 ~
 ~
 NAME-OK?
@@ -2477,20 +2185,7 @@ returns the values:
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Lock Manipulation Operators|LockOps
-Lock Manipulation Operators
-
-getlockstr   locked?      parselock    prettylock   setlockstr   testlock
-unparselock  
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Lock Manipulation Operators|LockOps
 ~
 ~
 LOCKED?
@@ -2507,21 +2202,21 @@ PARSELOCK (s -- l)
 
   Parses a lock string into a lock.  If the parsing failed, then the lock
 returned will be a TRUE_BOOLEXP, which is logically false to an 'if' test.
-Also see: UNPARSELOCK, LOCK?, PRETTYLOCK, TESTLOCK, GETLOCKSTR, SETLOCKSTR and LOCKED?
+~~alsosee UNPARSELOCK,LOCK?,PRETTYLOCK,TESTLOCK,GETLOCKSTR,SETLOCKSTR,LOCKED?
 ~
 ~
 UNPARSELOCK
 UNPARSELOCK (l -- s)
 
   Unparses a lock into a string fit for program editing.
-Also see: LOCK?, PARSELOCK, PRETTYLOCK, TESTLOCK, GETLOCKSTR, SETLOCKSTR and LOCKED?
+~~alsosee LOCK?,PARSELOCK,PRETTYLOCK,TESTLOCK,GETLOCKSTR,SETLOCKSTR,LOCKED?
 ~
 ~
 PRETTYLOCK
 PRETTYLOCK (l -- s)
 
   Unparses a lock into a string fit for players to see.
-Also see: LOCK?, PARSELOCK, UNPARSELOCK, TESTLOCK, GETLOCKSTR, SETLOCKSTR and LOCKED?
+~~alsosee LOCK?,PARSELOCK,UNPARSELOCK,TESTLOCK,GETLOCKSTR,SETLOCKSTR,LOCKED?
 ~
 ~
 TESTLOCK
@@ -2529,7 +2224,7 @@ TESTLOCK (d l -- i)
 
   Tests the player dbref against the given lock.  If the test was successful,
 then this returns a 1.  If the test failed, then this returns a 0.
-Also see: LOCK?, PARSELOCK, UNPARSELOCK, PRETTYLOCK, GETLOCKSTR, SETLOCKSTR and LOCKED?
+~~alsosee LOCK?,PARSELOCK,UNPARSELOCK,PRETTYLOCK,GETLOCKSTR,SETLOCKSTR,LOCKED?
 ~
 ~
 SETLOCKSTR
@@ -2549,32 +2244,7 @@ Returns "*UNLOCKED*" if the object doesn't have a lock set.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Array Manipulation Operators|ArrayOps
-Array Manipulation Operators
-
-array_appenditem          array_compare             array_count
-array_cut                 array_delitem             array_delrange
-array_diff                array_excludeval          array_explode
-array_extract             array_findval             array_first
-array_getitem             array_getrange            array_insertitem
-array_insertrange         array_intersect           array_join
-array_keys                array_last                array_make
-array_make_dict           array_matchkey            array_matchval
-array_ndiff               array_next                array_nintersect
-array_notify              array_nunion              array_prev
-array_reverse             array_setitem             array_setrange
-array_sort                array_sort_indexed        array_union
-array_vals                }dict                     }join
-}list                     }tell                     
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Array Manipulation Operators|ArrayOps
 ~
 ~
 ARRAY_MAKE
@@ -2623,7 +2293,7 @@ marker and notifies them to the 'me @' user.  This will throw an error
 if you try to send a non-string.  Each separate string will be send as a
 separate line to the user.  This is actually an inserver macro, defined to
 '} array_make me @ 1 array_make array_notify'.
-Also see: ARRAY_NOTIFY
+~~alsosee ARRAY_NOTIFY
 ~
 ~
 ARRAY_JOIN
@@ -2633,7 +2303,7 @@ ARRAY_JOIN ([s] s -- s) Takes a list array and a delimiter string, and
 list array, with the delimiter string in between.  For example:
     { "one" 2 "three" 3.14159 }list "... " array_join
 will result in a single string: "one... 2... three... 3.14159"
-Also see: }JOIN
+~~alsosee }JOIN
 ~
 ~
 }JOIN
@@ -2643,7 +2313,7 @@ Also see: }JOIN
 marker and concatenates them into a string based on the default reresentat-
 ion of each stack item type.  This is actually an inserver macro, defined
 to '} array_make "" array_join'.
-Also see: ARRAY_JOIN
+~~alsosee ARRAY_JOIN
 ~
 ~
 ARRAY_COUNT
@@ -2738,21 +2408,27 @@ ARRAY_EXPLODE
 ARRAY_EXPLODE ( a -- {@ ?} )
 
   Explodes an array into a stackrange of its index/value pairs.  Example:
+~~code
     "index0" "value0" "index1" "value1" 2
+~~endcode
 ~
 ~
 ARRAY_KEYS
 ARRAY_KEYS ( a -- {@} )
 
   Returns the keys of an array in a stackrange.  Example:
+~~code
     "index0" "index1" 2 
+~~endcode
 ~
 ~
 ARRAY_VALS
 ARRAY_VALS ( a -- {?} )
 
   Returns the values of an array in a stackrange.  Example:
+~~code
     "value0" "value1" 2
+~~endcode
 ~
 ~
 ARRAY_FIRST
@@ -2845,7 +2521,7 @@ NOTE: arrays that don't have an item matching the given index, will be
 sorted as lesser than arrays that do.
 
 See ARRAY_SORT for more information on sort ordering.
-Also see: ARRAY_SORT
+~~alsosee ARRAY_SORT
 ~
 ~
 ARRAY_UNION
@@ -2914,7 +2590,9 @@ ARRAY_FINDVAL (a1 ? -- a2)
   Returns a list array containing the keys of every element in the array
 a1 whose values match the given value.  For example:
 
+~~code
     { #5 #10 #15 #10 #20 }list #10 array_findval
+~~endcode
 
 will return a list containing 1 and 3, being the keys (indexes) of the
 matching items.
@@ -2925,13 +2603,19 @@ ARRAY_EXCLUDEVAL (a1 ? -- a2)
 
   Returns a list array containing the keys of every element in the array
 a1 whose values did NOT match the given value.  For example:
+~~code
     { #5 #10 #15 #10 #20 }list #10 array_excludeval
+~~endcode
 will return a list containing 0, 2 and 4, being the keys (indexes) of the
 items that didn't match.  If you want the values, use ARRAY_DIFF or
 ARRAY_EXTRACT.  Ie:
+~~code
     { #5 #10 #15 #10 #20 }list { #10 }list array_diff
+~~endcode
 or
+~~code
     { #5 #10 #15 #10 #20 }list dup #10 array_excludeval array_extract
+~~endcode
 which will both return a list containing #5, #15, and #20.  The main
 difference between these two methods is that ARRAY_DIFF will remove any
 duplicate values in the remaining items, and the ordering of the resulting
@@ -2956,27 +2640,7 @@ smatch wildcard pattern.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Property Manipulation Operators|PropOps
-Property Manipulation Operators
-
-addprop                   array_filter_prop         array_get_propdirs
-array_get_proplist        array_get_propvals        array_get_reflist
-array_put_proplist        array_put_propvals        array_put_reflist
-blessed?                  blessprop                 envprop
-envpropstr                getprop                   getpropfval
-getpropstr                getpropval                nextprop
-parseprop                 parsepropex               propdir?
-reflist_add               reflist_del               reflist_find
-remove_prop               setprop                   unblessprop
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Property Manipulation Operators|PropOps
 ~
 ~
 GETPROP
@@ -2987,7 +2651,7 @@ This can return a lock, a string, a dbref, or an integer, depending
 on the type of the property.  Permissions are the same as those for
 GETPROPSTR.  This primitive returns 0 if no such property exists, of
 if it is a valueless propdir.
-Also see: SETPROP, ADDPROP, REMOVE_PROP, GETPROPSTR, GETPROPVAL, INT?, DBREF?, STRING? and LOCK?
+~~alsosee SETPROP,ADDPROP,REMOVE_PROP,GETPROPSTR,GETPROPVAL,INT?,DBREF?,STRING?,LOCK?
 ~
 ~
 GETPROPSTR
@@ -3047,7 +2711,7 @@ SETPROP (d s ? -- )
 
   Stores a lock, dbref, integer, or string into the named property on the
 given object.  Permissions are the same as for ADDPROP.
-Also see: ADDPROP, REMOVE_PROP, GETPROPSTR and GETPROPVAL
+~~alsosee ADDPROP,REMOVE_PROP,GETPROPSTR,GETPROPVAL
 ~
 ~
 REMOVE_PROP
@@ -3221,45 +2885,7 @@ This primitives requires at least mucker level 3.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Database Related Operators|DBOps
-Database Related Operators
-
-addpennies                array_get_ignorelist      caller
-checkpassword             contents                  contents_array
-controls                  copyobj                   copyplayer
-dbcmp                     dbref                     dbtop
-desc                      drop                      exit?
-exits                     exits_array               fail
-findnext                  flag?                     getlink
-getlinks                  getlinks_array            ignore_add
-ignore_del                ignoring?                 location
-match                     mlevel                    movepennies
-moveto                    name                      newexit
-newobject                 newpassword               newplayer
-newprogram                newroom                   next
-nextentrance              nextowned                 objmem
-odrop                     ofail                     ok?
-osucc                     owner                     part_pmatch
-pennies                   player?                   pmatch
-prog                      program?                  recycle
-rmatch                    room?                     set
-setdesc                   setdrop                   setfail
-setlink                   setlinks_array            setname
-setodrop                  setofail                  setosucc
-setown                    setsucc                   setsysparm
-stats                     succ                      sysparm
-sysparm_array             thing?                    timestamps
-toadplayer                trig                      truename
-unparseobj                
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Database Related Operators|DBOps
 ~
 ~
 DBREF
@@ -3396,7 +3022,7 @@ by that same player.  When no more objects are left owned by that player,
 #-1 is returned.  The order of the objects is not guarenteed, but when used
 correctly, each object owned by that player will be returned exactly once.
 The player object itself will NOT be returned.
-Also see: NEXT
+~~alsosee NEXT
 ~
 ~
 FINDNEXT
@@ -3427,12 +3053,14 @@ search criteria, then #-1 is returned.  Otherwise, the next matching
 object is returned.
 
 This primitive is used like this:
+~~code
     #-1 begin
         me @ "*.muf" "F" FINDNEXT
         dup while
         dup unparseobj .tell
     repeat
-Also see: NEXT and NEXTOWNED
+~~endcode
+~~alsosee NEXT,NEXTOWNED
 ~
 ~
 NEXTENTRANCE
@@ -3532,7 +3160,7 @@ SET ( d s -- )
   Sets flag s to object d.  Currently settable things are: abode, chown,
 dark, haven, jump, link, sticky.  Boolean operations (e.g. `!abode')
 work as expected.
-Also see: SETNAME, SETDESC and FLAG?
+~~alsosee SETNAME,SETDESC,FLAG?
 ~
 ~
 FLAG?
@@ -3548,14 +3176,14 @@ a program's READ, or if they are in the MUF editor.
 The "Truewizard" flag will check for a W flag with or without the QUELL set.
 The "Mucker" flag returns the most significant bit of the mucker level and
 the "Nucker" flag returns the least significant bit. (Use MLEV instead.)
-Also see: SET and MLEV
+~~alsosee SET,MLEV
 ~
 ~
 MLEVEL
 MLEVEL (d -- i)
 
   returns the mucker (or priority) level of the given object.
-Also see: MUCKER LEVELS
+~~alsosee MUCKER LEVELS
 ~
 ~
 OK?
@@ -3563,7 +3191,7 @@ OK? ( x -- i )
 
   Takes x and returns 1 if x is a type dbref, as well as 0 or above,
 below the top of the database, and is not an object of type garbage.
-Also see: EXIT?, PLAYER?, PROGRAM? and THING?
+~~alsosee EXIT?,PLAYER?,PROGRAM?,THING?
 ~
 ~
 PLAYER?
@@ -3571,7 +3199,7 @@ PLAYER? ( d -- i )
 
   Returns 1 if object d is a player object, otherwise returns 0.
 If the dbref is that of an invalid object, it will return 0.
-Also see: PROGRAM?, ROOM?, THING?, EXIT? and OK?
+~~alsosee PROGRAM?,ROOM?,THING?,EXIT?,OK?
 ~
 ~
 ROOM?
@@ -3579,21 +3207,21 @@ ROOM? ( d -- i )
 
   Returns 1 if object d is a room, otherwise returns 0.  If the dbref is that
 of an invalid object, it will return 0.  A dbref of #-3 (HOME) returns 1.
-Also see: PLAYER?, PROGRAM?, THING?, EXIT? and OK?
+~~alsosee PLAYER?,PROGRAM?,THING?,EXIT?,OK?
 ~
 ~
 THING?
 THING? ( d -- i )
 
   Returns i as 1 if object d is a thing, otherwise returns i as 0.
-Also see: PLAYER?, PROGRAM?, ROOM?, EXIT? and OK?
+~~alsosee PLAYER?,PROGRAM?,ROOM?,EXIT?,OK?
 ~
 ~
 EXIT?
 EXIT? ( d -- i )
 
   Returns 1 if object d is an exit object, 0 if otherwise.
-Also see: PLAYER?, PROGRAM?, ROOM?, THING? and OK?
+~~alsosee PLAYER?,PROGRAM?,ROOM?,THING?,OK?
 ~
 ~
 PROGRAM?
@@ -3601,7 +3229,7 @@ PROGRAM? ( d -- i )
 
   Returns 1 if object d is a program, otherwise returns 0.
 If the dbref is that of an invalid object, it will return 0.
-Also see: PLAYER?, ROOM?, THING?, EXIT? and OK?
+~~alsosee PLAYER?,ROOM?,THING?,EXIT?,OK?
 ~
 ~
 SYSPARM
@@ -3721,7 +3349,7 @@ If a given entry is of the "dbref" type, it will also have the extra field:
                 the strings "player", "thing", "room", "exit", "program",
                 "garbage", or "any".
 
-Also see: SETSYSPARM and SYSPARM
+~~alsosee SETSYSPARM, SYSPARM
 ~
 ~
 SETSYSPARM
@@ -3744,7 +3372,7 @@ SETNAME  ( d s -- )
 names of objects that are owned by the effective user of the program,
 or any object if the program is Wizard.  The name of a player can never
 be set, since that would normally require a password.
-Also see: SET, NAME and SETDESC
+~~alsosee SET,NAME,SETDESC
 ~
 ~
 TRUENAME
@@ -3768,8 +3396,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setdesc  "_/de"  swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 SUCC
@@ -3786,8 +3416,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setsucc  "_/sc" swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 FAIL
@@ -3804,8 +3436,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setfail  "_/fl" swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 DROP
@@ -3822,8 +3456,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setdrop  "_/dr" swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 OSUCC
@@ -3840,8 +3476,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setosucc  "_/osc" swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 OFAIL
@@ -3858,8 +3496,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setofail  "_/ofl" swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 ODROP
@@ -3876,8 +3516,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setodrop  "_/odr" swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 GETLINK
@@ -4043,19 +3685,7 @@ This primitive requires at least Mucker Level 3.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Time Manipulation Operators|TimeOps
-Time Manipulation Operators
-
-date       gmtoffset  sleep      systime    time       timefmt    timesplit
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Time Manipulation Operators|TimeOps
 ~
 ~
 TIME
@@ -4130,7 +3760,7 @@ with the time.  The format string is ascii text with formatting commands:
   %y -- year, "00" - "99"
   %Y -- year, "1900" - "2155"
   %Z -- Time zone.  "GMT", "EDT", "PST", etc.
-Also see: FMTSTRING
+~~alsosee FMTSTRING
 ~
 ~
 SLEEP
@@ -4142,24 +3772,7 @@ may not thereafter use the READ primitive.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Process Management Operators|ProcOps
-Process Management Operators
-
-background         bg_mode            compile            compiled?
-fg_mode            foreground         fork               getpidinfo
-getpids            instances          ispid?             kill
-mode               pid                pr_mode            preempt
-program_getlines   program_setlines   queue              setmode
-uncompile          
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Process Management Operators|ProcOps
 ~
 ~
 MODE
@@ -4169,7 +3782,7 @@ MODE ( -- i)
 BOUND bits on programs.  The integer this returns will be the same as
 one of those defined by the standard $defines bg_mode, fg_mode, and
 pr_mode, being background, foreground, and preempt mode, respectively.
-Also see: PR_MODE, FG_MODE, BG_MODE and SETMODE
+~~alsosee PR_MODE,FG_MODE,BG_MODE,SETMODE
 ~
 ~
 SETMODE
@@ -4180,7 +3793,7 @@ uses will be the same as one of those defined by the standard $defines
 bg_mode, fg_mode, and pr_mode, being background, foreground, and preempt
 mode, respectively.  Programs set BOUND will run PREEMPT, ignoring this
 mode.
-Also see: PR_MODE, FG_MODE, BG_MODE and MODE
+~~alsosee PR_MODE,FG_MODE,BG_MODE,MODE
 ~
 ~
 PR_MODE
@@ -4191,7 +3804,7 @@ SETMODE to show what mode the program is running in, or to set what mode
 it will run in.  For example, MODE returns an integer on the stack, that
 you can compare against PR_MODE, FG_MODE, or BG_MODE, to determine what
 mode the program is in.  PR_MODE is preempt mode, and is defined as 0.
-Also see: PREEMPT, MULTITASKING, PR_MODE, MODE and SETMODE
+~~alsosee PREEMPT,MULTITASKING,PR_MODE,MODE,SETMODE
 ~
 ~
 FG_MODE
@@ -4202,7 +3815,7 @@ SETMODE to show what mode the program is running in, or to set what mode
 it will run in.  For example, MODE returns an integer on the stack, that
 you can compare against PR_MODE, FG_MODE, or BG_MODE, to determine what
 mode the program is in.  FG_MODE is foreground mode, and is defined as 1.
-Also see: FOREGROUND, MULTITASKING, PR_MODE, MODE and SETMODE
+~~alsosee FOREGROUND,MULTITASKING,PR_MODE,MODE,SETMODE
 ~
 ~
 BG_MODE
@@ -4213,7 +3826,7 @@ SETMODE to show what mode the program is running in, or to set what mode
 it will run in.  For example, MODE returns an integer on the stack, that
 you can compare against PR_MODE, FG_MODE, or BG_MODE, to determine what
 mode the program is in.  BG_MODE is background mode, and is defined as 2.
-Also see: BACKGROUND, MULTITASKING, PR_MODE, MODE and SETMODE
+~~alsosee BACKGROUND,MULTITASKING,PR_MODE,MODE,SETMODE
 ~
 ~
 PREEMPT
@@ -4226,7 +3839,7 @@ completed.  Basically what this command does is to turn off multitasking,
 but then you have a limit on how many instructions you can run without
 needing either to pause with a SLEEP, or have a wizbit on the program.
 This primitive is actually an inserver $define to 'pr_mode setmode'.
-Also see: MULTITASKING, PR_MODE, MODE and SETMODE
+~~alsosee MULTITASKING,PR_MODE,MODE,SETMODE
 ~
 ~
 FOREGROUND
@@ -4240,7 +3853,7 @@ finishes.  You cannot foreground a program once it is running in the
 background. A program will stay in foreground mode until it finishes
 running or until you change the mode.
 This primitive is actually an inserver $define to 'fg_mode setmode'.
-Also see: MULTITASKING, BG_MODE, MODE and SETMODE
+~~alsosee MULTITASKING,BG_MODE,MODE,SETMODE
 ~
 ~
 BACKGROUND
@@ -4253,7 +3866,7 @@ the READ command in a background program.  Once a program is put into
 background mode, you cannot set it into foreground or preempt mode.
 A program will remain in the background until it finishes execution.
 This primitive is actually an inserver $define to 'bg_mode setmode'.
-Also see: MULTITASKING, BG_MODE, MODE and SETMODE
+~~alsosee MULTITASKING,BG_MODE,MODE,SETMODE
 ~
 ~
 QUEUE
@@ -4264,7 +3877,7 @@ will execute the given program with the given string as the only string on
 the stack, after a delay of the given number of second.  Returns  the pid
 of the queued process, or 0 if the timequeue was full.
 (Requires Mucker Level 3)
-Also see: SLEEP, FORK, KILL, ISPID? and GETPIDINFO
+~~alsosee SLEEP,FORK,KILL,ISPID?,GETPIDINFO
 ~
 ~
 FORK
@@ -4275,7 +3888,7 @@ running program.  It returns the pid of the child process to the parent
 process, and returns a 0 to the child.  If the timequeue was full, then
 it returns a -1 to the parent process, and there is no child process.
 (Requires Mucker Level 3)
-Also see: QUEUE, KILL, ISPID? and GETPIDINFO
+~~alsosee QUEUE,KILL,ISPID?,GETPIDINFO
 ~
 ~
 KILL
@@ -4284,14 +3897,14 @@ KILL (i -- i)
   Attempts to kill the process referred to by the given process ID.
 Returns 1 if the process existed, and 0 if it didn't.
 (Requires Mucker Level 3)
-Also see: QUEUE, FORK, KILL, ISPID? and GETPIDINFO
+~~alsosee QUEUE,FORK,KILL,ISPID?,GETPIDINFO
 ~
 ~
 PID
 PID ( -- i)
 
   Returns the process ID of the program that is currently running.
-Also see: ISPID?, GETPIDS and GETPIDINFO
+~~alsosee ISPID?,GETPIDS,GETPIDINFO
 ~
 ~
 ISPID?
@@ -4301,7 +3914,7 @@ ISPID? (i -- i)
 timequeue.  It returns 1 if it is, and 0 if it is not.  ispid? will also
 return 1 if the given process id is that of the currently running program.
 This primitive requires at least mucker level 3.
-Also see: GETPIDINFO, GETPIDS and PID
+~~alsosee GETPIDINFO,GETPIDS,PID
 ~
 ~
 GETPIDS
@@ -4313,7 +3926,7 @@ If obj is a player dbref, this will return a list of all the PIDs assigned to
 that player.  If obj is a trigger dbref, it will return all the active PIDs
 associated with that trigger.   And finally, if obj is #-1, then all active
 PIDs will be included in the array that gets returned.
-Also see: GETPIDINFO, ISPID? and PID
+~~alsosee GETPIDINFO,ISPID?,PID
 ~
 ~
 GETPIDINFO
@@ -4333,7 +3946,7 @@ that process. The information returned is:
     SUBTYPE     - Additional information about the process.
     TRIG        - The trigger that called that process.
     TYPE        - What type of process it is. MUF/MPI.
-Also see: GETPIDS
+~~alsosee GETPIDS
 ~
 ~
 INSTANCES
@@ -4387,26 +4000,7 @@ This primitive requires at least mucker level 4.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Connection Management Operators|ConnOps
-Connection Management Operators
-
-awake?             conboot            concount           condbref
-condescr           conhost            conidle            connotify
-contime            conuser            descr              descr_array
-descr_setuser      descrboot          descrbufsize       descrcon
-descrdbref         descrflush         descrhost          descridle
-descriptors        descrleastidle     descrmostidle      descrnotify
-descrsecure?       descrtime          descruser          firstdescr
-lastdescr          nextdescr          online             online_array
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Connection Management Operators|ConnOps
 ~
 ~
 DESCR
@@ -4504,7 +4098,7 @@ DESCRCON (i -- i)
   Takes a descriptor and returns the associated connection number,
 or 0 if no match was found.
 (Requires Mucker Level 3)
-Also see: DESCRIPTORS and CONDESCR
+~~alsosee DESCRIPTORS,CONDESCR
 ~
 ~
 DESCRDBREF
@@ -4619,7 +4213,7 @@ DESCRIPTORS (d -- ix...i1 i)
 associated with that dbref (or all for #-1) with their count on top.
 Descriptors are numbers that always stay the same for a connection, while
 a connection# is the relative position in the WHO list of a connection.
-Also see: DESCRCON and CONDESCR
+~~alsosee DESCRCON,CONDESCR
 ~
 ~
 DESCR_ARRAY
@@ -4633,7 +4227,7 @@ sequence 'descriptors array_make', but doesn't overflow the stack if too
 many descriptors are available.  Descriptors are numbers that always stay
 the same for a connection, while a connection# is the relative position
 in the WHO list of a connection.
-Also see: DESCRIPTORS, DESCRCON and CONDESCR
+~~alsosee DESCRIPTORS,DESCRCON,CONDESCR
 ~
 ~
 DESCR_SETUSER
@@ -4658,20 +4252,7 @@ Also note that \r in lines gets translated to CR LF byte pairs.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Event Handling Operators|EventOps
-Event Handling Operators
-
-event_count    event_exists   event_send     event_wait     event_waitfor
-timer_start    timer_stop     watchpid       
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Event Handling Operators|EventOps
 ~
 ~
 EVENT_COUNT
@@ -4813,20 +4394,7 @@ event.  This primitive requires at least Mucker Level 3.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-MCP Support Operators|MCPOps
-MCP Support Operators
-
-mcp_bind                  mcp_register              mcp_register_event
-mcp_send                  mcp_supports              
-
-~----------------------------------------------------------------------------
-~
-~
+~~section MCP Support Operators|MCPOps
 ~
 ~
 MCP_REGISTER
@@ -4896,26 +4464,7 @@ getting sent.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-GUI Support Operators|GUIOps
-GUI Support Operators
-
-c_button           c_checkbox         c_combobox         c_datum
-c_edit             c_frame            c_hrule            c_image
-c_label            c_listbox          c_menu             c_multiedit
-c_notebook         c_radiobtn         c_scale            c_spinner
-c_vrule            gui-options        gui_available      gui_ctrl_command
-gui_ctrl_create    gui_dlog_close     gui_dlog_create    gui_dlog_helper
-gui_dlog_show      gui_dlog_simple    gui_dlog_tabbed    gui_value_get
-gui_value_set      gui_values_get     
-
-~----------------------------------------------------------------------------
-~
-~
+~~section GUI Support Operators|GUIOps
 ~
 ~
 GUI_AVAILABLE
@@ -5172,7 +4721,7 @@ to create a Datum control in a GUI dialog.  The Datum control is a non-
 visible control that just holds a value.  It's useful for keeping program
 state information.
 The control has no control-specific options.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_MENU
@@ -5187,7 +4736,7 @@ The control options specific to this type of control are:
             example: "Settings", "Help", etc.
     pane    The id of the menu in which to place this menu as a cascading
             menu.  If specified as "", then this is a toplevel menu.
-Also see: GUI_CTRL_CREATE and GUI_DLOG_CREATE
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE
 ~
 ~
 C_LABEL
@@ -5201,7 +4750,7 @@ The control options specific to this type of control are:
     justify  Which way to justify the text, if word wrapped.  Can be one of
             left, right, or center.
     maxwidth The max width in pixels for the label, before it word wraps.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_IMAGE
@@ -5214,7 +4763,7 @@ The control options specific to this type of control are:
     value    Holds the url of the image to be displayed.
     width    The width of the image in pixels.  This is required.
     height   The height of the image in pixels.  This is required.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_HRULE
@@ -5225,7 +4774,7 @@ to create a Horizontal Rule control in a GUI dialog.
 The hrule control is just a horizontal line, nothing more.
 The control options specific to this type of control are:
     height   Number of pixels of vertical thickness of the horizontal line.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_VRULE
@@ -5236,7 +4785,7 @@ to create a Vertical Rule control in a GUI dialog.
 The vrule control is just a vertical line, nothing more.
 The control options specific to this type of control are:
     width    Number of pixels of horizontal thickness of the vertical line.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_BUTTON
@@ -5250,7 +4799,7 @@ The control options specific to this type of control are:
     width    Number of characters text the button should be able to hold.
     dismiss  If 1, the dialog will be dismissed when this button is pressed.
             Defaults to 1.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_CHECKBOX
@@ -5265,7 +4814,7 @@ The control options specific to this type of control are:
     offvalue The value this control should have when not checked.
     value    The current state/value of the control.  This should match either
             the value of the "onvalue" or "offvalue" argument.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_RADIOBTN
@@ -5282,7 +4831,7 @@ The control options specific to this type of control are:
     selvalue The value of this radio button group, when this is selected.
     value    The current state/value of the radio button group.  This should
             match one of the selvalues of a radio button in this group.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_EDIT
@@ -5303,7 +4852,7 @@ The control options specific to this type of control are:
     height   Number of lines high this control will be.  Defaults to 1.
             If this is greater than 1, then text will wrap as you type it,
             but you still won't be able to insert carriage returns.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_MULTIEDIT
@@ -5318,7 +4867,7 @@ The control options specific to this type of control are:
             Defaults to 40 characters wide.
     height   Number of lines high this control will be.  Defaults to 1.
     font     Specifies whether the font used is "fixed" or "proportional".
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_COMBOBOX
@@ -5342,7 +4891,7 @@ The control options specific to this type of control are:
             user can only pick a value from the combobox pulldown menu.
             Defaults to 0
     sorted   Causes the contents of the pulldown menu to be auto-sorted.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_LISTBOX
@@ -5362,7 +4911,7 @@ The control options specific to this type of control are:
     selectmode  One of "single", "multiple", or "extended".  Specifies how
             list item selection is performed, and whether more than one item
             can be selected at a time.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_SPINNER
@@ -5379,7 +4928,7 @@ The control options specific to this type of control are:
     maxval   The maximum integer value that this control can be set to.
     width    Number of digits that this control should be able to hold.
             Defaults to 12 digits.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_SCALE
@@ -5403,7 +4952,7 @@ The control options specific to this type of control are:
             Defaults to 100 pixels.
     width      The length of the short axis of the scale, in pixels.
             Defaults to 15 pixels.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_FRAME
@@ -5419,7 +4968,7 @@ The control options specific to this type of control are:
     visible     If set to 1, causes a border to be drawn around the frame.
     collapsible This, is set to 1, allows the group box to be collapsed.
     collapsed   If the frame is collapsible, this sets the state to collapsed.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_NOTEBOOK
@@ -5438,23 +4987,11 @@ The control options specific to this type of control are:
                 should be for the second name, etc.
     width       The minimum width of the notebook's client area, in pixels.
     height      The minimum height of the notebook's client area, in pixels.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Exception Handling|Exceptions
-Exception Handling
-
-abort      checkargs  try        
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Exception Handling|Exceptions
 ~
 ~
 TRY|CATCH|ENDCATCH|EXCEPTION|EXCEPTIONS|EXCEPTION HANDLING
@@ -5583,20 +5120,7 @@ string.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Debugging|Debug
-Debugging
-
-breakpoints        debug notation     debug_line         debug_off
-debug_on           debugger           debugger_break     debugger_commands
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Debugging|Debug
 ~
 ~
 DEBUG_ON
@@ -5642,7 +5166,7 @@ stack is displayed, as well as a dump of the current line.  If execution
 is at the beginning of the line, the actual line of source will be
 displayed, otherwise the compiled instructions will be displayed with the
 current instruction marked by surrounding braces.
-Also see: DEBUGGER-COMMANDS, BREAKPOINTS and NOTATION
+~~alsosee DEBUGGER-COMMANDS,BREAKPOINTS,NOTATION
 ~
 ~
 DEBUGGER_COMMANDS
@@ -5675,7 +5199,7 @@ Debugger commands:
   pop             pops top data item off the stack.
   help            displays this help screen.
   quit            stop execution here.
-Also see: DEBUGGER, BREAKPOINTS and NOTATION
+~~alsosee DEBUGGER,BREAKPOINTS,NOTATION
 ~
 ~
 BREAKPOINTS
@@ -5729,21 +5253,7 @@ before the JMP or EXIT for each nexted FOR loop.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Miscellaneous|MiscOps
-Miscellaneous
-
-bunny              force              force_level        graffiti
-notify             notify_except      notify_exclude     read
-read_wants_blanks  tread              userlog            version
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Miscellaneous|MiscOps
 ~
 ~
 NOTIFY_EXCLUDE
@@ -5852,6 +5362,6 @@ false boolean, otherwise it returns a true boolean and the string value
 entered.  This is implemented as an in-server macro as follows:
     "__tread" timer_start { "TIMER.__tread" "READ" }list event_waitfor
     swap pop "READ" strcmp if "" 0 else read 1 "__tread" timer_stop then
-Also see: READ
+~~alsosee READ
 ~
 ~
