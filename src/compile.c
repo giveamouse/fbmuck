@@ -1333,11 +1333,17 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 
 	/* do compilation */
 	while ((token = next_token(&cstat))) {
+		/* test for errors */
+		if (cstat.compile_err) {
+			free((void *) token);
+			return;
+		}
+
 		new_word = next_word(&cstat, token);
 
 		/* test for errors */
 		if (cstat.compile_err) {
-		        free((void *) token);
+			free((void *) token);
 			return;
 		}
 
