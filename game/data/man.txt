@@ -155,7 +155,7 @@ Misc:
   set         setlink         setown       setseed       setsysparm
   srand       stats           sysparm      timestamps    toadplayer
   trig        userlog         version      ignoring?     ignore_add
-  ignore_del
+  ignore_del  setlinks_array
   
 In the documentation some primitives are grouped together as:
   MATH OPERATORS
@@ -4058,3 +4058,8 @@ DEBUG_LINE|
 DEBUG_LINE ( -- )
 Displays a single line of debug stack trace if the player running the program
 controls it.
+~
+SETLINKS_ARRAY|
+SETLINKS_ARRAY ( ref:Obj arr:Destinations -- )
+Sets the destinations/dropto/home of "Obj" to "Destinations".  Objects may be
+unlinked by passing in an empty array.
