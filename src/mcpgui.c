@@ -216,7 +216,7 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		return;
 	}
 	if (!string_compare(msg->mesgname, "ctrl-value")) {
-		char* valname = mcp_mesg_arg_getline(msg, "valname", 0);
+		const char* valname = mcp_mesg_arg_getline(msg, "valname", 0);
 		int valcount = mcp_mesg_arg_linecount(msg, "value");
 		int i;
 		const char **value = (const char **) malloc(sizeof(const char *) * valcount);
