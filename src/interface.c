@@ -2,6 +2,9 @@
 
 /*
  * $Log: interface.c,v $
+ * Revision 1.6  2000/07/13 01:50:51  winged
+ * More portability fixes, in variables used only for time.
+ *
  * Revision 1.5  2000/07/09 09:46:52  revar
  * Fixed stupid error with checking PLAYER_BLOCK on not-yet connected descriptor.
  *
@@ -894,7 +897,8 @@ void
 shovechars(int port)
 {
 	fd_set input_set, output_set;
-	long now, tmptq;
+	time_t now;
+	long tmptq;
 	struct timeval last_slice, current_time;
 	struct timeval next_slice;
 	struct timeval timeout, slice_timeout;
@@ -2070,7 +2074,7 @@ dump_users(struct descriptor_data *e, char *user)
 {
 	struct descriptor_data *d;
 	int wizard, players;
-	long now;
+	time_t now;
 	char buf[2048];
 	char pbuf[64];
 
@@ -2404,7 +2408,7 @@ int
 pidle(int c)
 {
 	struct descriptor_data *d;
-	long now;
+	time_t now;
 
 	for (d = descriptor_list; d && (!(d->connected) || (--c)); d = d->next) ;
 
@@ -2432,7 +2436,7 @@ int
 pontime(int c)
 {
 	struct descriptor_data *d;
-	long now;
+	time_t now;
 
 	for (d = descriptor_list; d && (!(d->connected) || (--c)); d = d->next) ;
 
@@ -2715,7 +2719,7 @@ void
 dump_status()
 {
 	struct descriptor_data *d;
-	long now;
+	time_t now;
 	char buf[BUFFER_LEN];
 
 	(void) time(&now);
