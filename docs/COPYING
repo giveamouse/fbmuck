@@ -1,5 +1,5 @@
 TinyMUCK 2.2, being a deriviative work of TinyMUD 1.5.2 and TinyMUCK
-1.1 is subject to all conditions listed in "copyright.h"
+1.1 is subject to all conditions listed in "copyright.c"
 
 In addition, I, named ChupChup throughout this work, request that you
 follow the following conditions:
@@ -20,7 +20,7 @@ made.  If you are unable to do the latter, you must state the changes
 in some way evident to the user when either running the software or
 when unpacking the archive.
 
-3. Inform me of any note-worthy uses of this software.
+3. Inform me of any note-worthy uses of this software, if possible.
 
 Any text file with seperate copying permissions specifications will
 have these specifications overridden by those unless the files have
