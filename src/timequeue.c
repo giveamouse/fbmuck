@@ -889,7 +889,7 @@ get_pidinfo(int pid)
 		temp1.type = PROG_STRING;
 		temp1.data.string = alloc_prog_string("INSTCNT");
 		temp2.type = PROG_INTEGER;
-		temp2.data.number = ptr->fr->instcnt;
+		temp2.data.number = ptr->fr ? ptr->fr->instcnt : 0;
 		array_setitem(&nw, &temp1, &temp2);
 		CLEAR(&temp1);
 		CLEAR(&temp2);
@@ -917,7 +917,7 @@ get_pidinfo(int pid)
 		temp1.type = PROG_STRING;
 		temp1.data.string = alloc_prog_string("STARTED");
 		temp2.type = PROG_INTEGER;
-		temp2.data.number = (int) ptr->fr->started;
+		temp2.data.number = (int) (ptr->fr ? ptr->fr->started : 0);
 		array_setitem(&nw, &temp1, &temp2);
 		CLEAR(&temp1);
 		CLEAR(&temp2);
