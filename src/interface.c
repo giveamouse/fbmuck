@@ -2,6 +2,17 @@
 
 /*
  * $Log: interface.c,v $
+ * Revision 1.3  2000/06/15 18:18:31  revar
+ * Fixed some ugly code formatting in the usage message output.
+ * Changed code to look for the resolver program at:
+ * 	./resolver
+ * 	./bin/resolver
+ *     /usr/lib/fbmuck/resolver
+ * 	/usr/local/lib/fbmuck/resolver
+ * 	/usr/local/bin/resolver
+ * 	../src/resolver
+ * and then anywhere in the path.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -286,27 +297,19 @@ show_program_usage(char *prog)
 {
 	fprintf(stderr, "Usage: %s [<options>] [infile [outfile [portnum]]]\n", prog);
 	fprintf(stderr, "    Arguments:\n");
-	fprintf(stderr,
-			"        infile          db file loaded at startup.  optional with -dbin.\n");
-	fprintf(stderr,
-			"        outfile         output db file to save to.  optional with -dbout.\n");
+	fprintf(stderr, "        infile          db file loaded at startup.  optional with -dbin.\n");
+	fprintf(stderr, "        outfile         output db file to save to.  optional with -dbout.\n");
 	fprintf(stderr, "        portnum         port number to listen for connections on.\n");
 	fprintf(stderr, "    Options:\n");
-	fprintf(stderr,
-			"        -dbin INFILE    use INFILE as the database to load at startup.\n");
-	fprintf(stderr,
-			"        -dbout OUTFILE  use OUTFILE as the output database to save to.\n");
-	fprintf(stderr,
-			"        -port NUMBER    sets the port number to listen for connections on.\n");
+	fprintf(stderr, "        -dbin INFILE    use INFILE as the database to load at startup.\n");
+	fprintf(stderr, "        -dbout OUTFILE  use OUTFILE as the output database to save to.\n");
+	fprintf(stderr, "        -port NUMBER    sets the port number to listen for connections on.\n");
 	fprintf(stderr, "        -gamedir PATH   changes directory to PATH before starting up.\n");
-	fprintf(stderr,
-			"        -convert        load the db, save in current format, and quit.\n");
+	fprintf(stderr, "        -convert        load the db, save in current format, and quit.\n");
 	fprintf(stderr, "        -decompress     when saving db, save in uncompressed format.\n");
 	fprintf(stderr, "        -nosanity       don't do db sanity checks at startup time.\n");
-	fprintf(stderr,
-			"        -insanity       load db, then enter the interactive sanity editor.\n");
-	fprintf(stderr,
-			"        -sanfix         attempt to auto-fix a corrupt db after loading.\n");
+	fprintf(stderr, "        -insanity       load db, then enter the interactive sanity editor.\n");
+	fprintf(stderr, "        -sanfix         attempt to auto-fix a corrupt db after loading.\n");
 	fprintf(stderr, "        -wizonly        only allow wizards to login.\n");
 	fprintf(stderr, "        -version        display this server's version.\n");
 	fprintf(stderr, "        -help           display this message.\n");
@@ -1153,7 +1156,11 @@ spawn_resolver()
 		dup(resolver_sock[0]);
 		execl("./resolver", "resolver", NULL);
 		execl("./bin/resolver", "resolver", NULL);
+		execl("/usr/lib/fbmuck/resolver", "resolver", NULL);
+		execl("/usr/local/lib/fbmuck/resolver", "resolver", NULL);
+		execl("/usr/local/bin/resolver", "resolver", NULL);
 		execl("../src/resolver", "resolver", NULL);
+		execl("resolver", "resolver", NULL);
 		perror("resolver execlp");
 		_exit(1);
 	}
