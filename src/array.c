@@ -1626,7 +1626,14 @@ array_get_intkey_strval(stk_array * arr, int key)
 	}
 }
 
-/* $Log: array.c,v $
-/* Revision 1.13  2001/04/05 18:07:10  winged
-/* Added $Log$ identifier to the end of the file.
-/* */
+/*
+ * $Log: array.c,v $
+ * Revision 1.14  2001/04/05 18:08:50  winged
+ * Changed Log string
+ *
+ * Revision 1.13  2001/04/05 18:07:10  winged
+ * Added $Log: array.c,v $
+ * Added Revision 1.14  2001/04/05 18:08:50  winged
+ * Added Changed Log string
+ * Added identifier to the end of the file.
+ */
