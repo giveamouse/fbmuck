@@ -1132,8 +1132,8 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 			mcp_mesg_arg_append(&reply, "to", "2.1");
 			sprintf(authval, "%0.8X%0.8X", random(), random());
 			mcp_mesg_arg_append(&reply, "authentication-key", authval);
-			mfr->authkey = (char *) malloc(strlen(auth) + 1);
-			strcpy(mfr->authkey, auth);
+			mfr->authkey = (char *) malloc(strlen(authval) + 1);
+			strcpy(mfr->authkey, authval);
 			mcp_frame_output_mesg(mfr, &reply);
 			mcp_mesg_clear(&reply);
 		}
@@ -1558,6 +1558,9 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.4  2000/04/30 11:03:30  revar
+* Fixed MCP crasher bug when client fails to send authentication key.
+*
 * Revision 1.3  2000/03/29 12:21:02  revar
 * Reformatted all code into consistent format.
 * 	Tabs are 4 spaces.

@@ -13,6 +13,17 @@ Added an EXPANDED_DEBUG_TRACE @tune option to allow display of expanded
 Added an PROCESS_TIMER_LIMIT @tune option to specify the maximum number
   of timers allowed to any one process.  This defaults to 4.  See the
   description of timers in TIMER_START.
+Added PROPLIST_INT_COUNTER @tune, to specify whether the system standard
+  for proplist storage is to use integer or string props for the counter.
+Added PROPLIST_ENTRY_FMT @tune, to specify the system standard naming
+  format for proplists.  ie: lists of data stored in properties like
+  _list#:3    _list#/1:One    _list#/2:Two    _list#/3:Three
+  This string specifies the format of the names of the properties that
+  each list items is stored in.  Any instance of P in this string will
+  be replaced by the proplist name.  Any instances of N in this string
+  will be replaced by the item's number.  All other characters will be
+  taken literally.  The default is: "P#/N" which will make for proplists
+  which store their items in props like  _list#/1:First
 Added an ARRAY_DIFF      convenience macro define for '2 array_ndiff'.
 Added an ARRAY_UNION     convenience macro define for '2 array_nunion'.
 Added an ARRAY_INTERSECT convenience macro define for '2 array_nintersect'.
@@ -119,17 +130,6 @@ Added PROPLIST_COUNTER_FMT @tune, to specify the system standard naming
   string will be replaced by the proplist name.  All other characters
   will be taken literally.  The default is: "P#" which will make for
   proplists which store their count in props like  _list#:3
-Added PROPLIST_INT_COUNTER @tune, to specify whether the system standard
-  for proplist storage is to use integer or string props for the counter.
-Added PROPLIST_ENTRY_FMT @tune, to specify the system standard naming
-  format for proplists.  ie: lists of data stored in properties like
-  _list#:3    _list#/1:One    _list#/2:Two    _list#/3:Three
-  This string specifies the format of the names of the properties that
-  each list items is stored in.  Any instance of P in this string will
-  be replaced by the proplist name.  Any instances of N in this string
-  will be replaced by the item's number.  All other characters will be
-  taken literally.  The default is: "P#/N" which will make for proplists
-  which store their items in props like  _list#/1:First
 Added ARRAY_REVERSE (a -- a') MUF prim many versions ago, but forgot to
   note it here before.  Takes a list array and reverses its order.
 Fixed crasher bug with MCP-GUI and players logging out and back in.
@@ -138,6 +138,7 @@ Fixed a minor bug in fmtstring to handle arrays for %? formats.
 Fixed a crasher bug with using various MPI commands on #0.
 Fixed a bug to make XYZ_TO_POLAR and POLAR_TO_XYZ set the NAN flag and
   return 0.0's, like the rest of the FP prims do.
+Fixed a crasher bug in MCP when client fails to send authentication key.
 Changed ARRAY_GETRANGE to return empty list for out of range indexes.
 Changed the MIDSTR muf prim to consider the first char of a string to be
   position 1, instead of 0.  This makes it match the results of instr.
