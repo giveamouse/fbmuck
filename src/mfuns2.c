@@ -133,7 +133,7 @@ mfn_locked(MFUNARGS)
 		ABORT_MPI("LOCKED", "Match failed. (arg2)");
 	if (obj == PERMDENIED)
 		ABORT_MPI("LOCKED", "Permission denied. (arg2)");
-	snprintf(buf, sizeof(buf), "%d", !could_doit(descr, who, obj));
+	snprintf(buf, BUFFER_LEN, "%d", !could_doit(descr, who, obj));
 	return buf;
 }
 
@@ -310,7 +310,7 @@ mfn_ref(MFUNARGS)
 		if (obj == UNKNOWN)
 			obj = NOTHING;
 	}
-	snprintf(buf, sizeof(buf), "#%d", obj);
+	snprintf(buf, BUFFER_LEN, "#%d", obj);
 	return buf;
 }
 
@@ -533,7 +533,7 @@ mfn_count(MFUNARGS)
 			ABORT_MPI("COUNT", "Can't use null seperator string.");
 		strcpy(buf, argv[1]);
 	}
-	snprintf(buf, sizeof(buf), "%d", countlitems(argv[0], buf));
+	snprintf(buf, BUFFER_LEN, "%d", countlitems(argv[0], buf));
 	return buf;
 }
 
@@ -560,7 +560,7 @@ mfn_with(MFUNARGS)
 	for (cnt = 2; cnt < argc; cnt++) {
 		ptr = MesgParse(argv[cnt], cmdbuf);
 		if (!ptr) {
-			snprintf(buf, sizeof(buf), "%s %cWITH%c (arg %d)", get_mvar("how"),
+			snprintf(buf, BUFFER_LEN, "%s %cWITH%c (arg %d)", get_mvar("how"),
 					MFUN_LEADCHAR, MFUN_ARGEND, cnt);
 			notify(player, buf);
 			return NULL;
@@ -1181,7 +1181,7 @@ mfn_smatch(MFUNARGS)
 const char *
 mfn_strlen(MFUNARGS)
 {
-	snprintf(buf, sizeof(buf), "%d", strlen(argv[0]));
+	snprintf(buf, BUFFER_LEN, "%d", strlen(argv[0]));
 	return buf;
 }
 
@@ -1207,7 +1207,7 @@ mfn_awake(MFUNARGS)
 		return ("0");
 	}
 
-	snprintf(buf, sizeof(buf), "%d", online(obj));
+	snprintf(buf, BUFFER_LEN, "%d", online(obj));
 	return (buf);
 }
 
@@ -1385,7 +1385,7 @@ mfn_delay(MFUNARGS)
 	i = add_mpi_event(i, descr, player, getloc(player), perms, argv[1], cmdchr, argchr,
 					  (mesgtyp & MPI_ISLISTENER), (!(mesgtyp & MPI_ISPRIVATE)),
 					  (mesgtyp & MPI_ISBLESSED));
-	snprintf(buf, sizeof(buf), "%d", i);
+	snprintf(buf, BUFFER_LEN, "%d", i);
 	return buf;
 }
 
@@ -1410,7 +1410,7 @@ mfn_kill(MFUNARGS)
 	} else {
 		ABORT_MPI("KILL", "Invalid process ID.");
 	}
-	snprintf(buf, sizeof(buf), "%d", i);
+	snprintf(buf, BUFFER_LEN, "%d", i);
 	return buf;
 }
 
@@ -1463,12 +1463,12 @@ mfn_muf(MFUNARGS)
 		}
 		break;
 	case PROG_INTEGER:
-		snprintf(buf, sizeof(buf), "%d", rv->data.number);
+		snprintf(buf, BUFFER_LEN, "%d", rv->data.number);
 		CLEAR(rv);
 		return buf;
 		break;
 	case PROG_FLOAT:
-		snprintf(buf, sizeof(buf), "%g", rv->data.fnumber);
+		snprintf(buf, BUFFER_LEN, "%g", rv->data.fnumber);
 		CLEAR(rv);
 		return buf;
 		break;
@@ -1603,7 +1603,7 @@ mfn_instr(MFUNARGS)
 	for (ptr = argv[0]; *ptr && !string_prefix(ptr, argv[1]); ptr++) ;
 	if (!*ptr)
 		return "0";
-	snprintf(buf, sizeof(buf), "%d", (ptr - argv[0] + 1));
+	snprintf(buf, BUFFER_LEN, "%d", (ptr - argv[0] + 1));
 	return buf;
 }
 
@@ -1635,7 +1635,7 @@ mfn_lmember(MFUNARGS)
 	}
 	if (!*ptr)
 		return "0";
-	snprintf(buf, sizeof(buf), "%d", i);
+	snprintf(buf, BUFFER_LEN, "%d", i);
 	return buf;
 }
 
@@ -1801,7 +1801,7 @@ mfn_attr(MFUNARGS)
 		}
 	}
 	exlen = strlen(buf) + strlen(ANSI_RESET) + 1;
-	strncat(buf, argv[argc - 1], (sizeof(buf) - exlen));
+	strncat(buf, argv[argc - 1], (BUFFER_LEN - exlen));
 	strcat(buf, ANSI_RESET);
 	return buf;
 }
