@@ -345,7 +345,7 @@ main(int argc, char **argv)
 		setbuf(stdout, NULL);
 
 		/* Disassociate from Process Group */
-# ifdef SYS_POSIX
+# ifdef _POSIX_SOURCE
 		setsid();
 # else
 #  ifdef SYSV
@@ -363,7 +363,7 @@ main(int argc, char **argv)
 			}
 		}
 #  endif						/* TIOCNOTTY */
-# endif							/* !SYS_POSIX */
+# endif							/* !_POSIX_SOURCE */
 #endif							/* DETACH */
 
 #ifdef SPAWN_HOST_RESOLVER
