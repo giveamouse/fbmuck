@@ -289,4 +289,7 @@
 /* Log commands that take longer than this many milliseconds */
 #define CMD_LOG_THRESHOLD_MSEC 1000
 
+/* max. amount of queued output in bytes, before you get <output flushed> */
+#define MAX_OUTPUT 131071
+
 #endif /* _DEFAULTS_H */

@@ -1,3 +1,5 @@
+Separate MPI perms away from Builder bit a la ProtoMUCK.
+Implement Viewable flag for MUF program @listing.
 Integrate multiple listener ports mods.
 Integrate time() speedups.
 
@@ -11,6 +13,14 @@ ARRAY_JOIN ([s] s -- s) Takes a list array of strings and a delimiter string,
   the list array, with the delimiter string in between.  For example:
     { "one" "two" "three" }list "... " array_join
   will result in a single string: "one... two... three"
+
+REFLIST_ADD ( ref:ToAdd ref:Object str:PropName -- ) Adds a dbref to a
+  reflist if it is not already in the list.
+REFLIST_DELETE ( ref:ToDel ref:Object str:PropName -- ) Removed a dbref from
+  a reflist if it is in it.
+REFLIST_FIND ( ref:ToFind ref:Object str:PropName -- int:Position ) Finds a
+  given dbref in a reflist, and returns its position.  Returns 0 if not found.
+  First dbref in reflist is 1.
 
 CORD_OPEN  (          intDescr strType -- strCordID)
 CORD_SEND  (strCordID strName dictData -- )

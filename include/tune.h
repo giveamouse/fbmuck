@@ -59,6 +59,7 @@ extern int tp_kill_bonus;
 extern int tp_command_burst_size;
 extern int tp_commands_per_time;
 extern int tp_command_time_msec;
+extern int tp_max_output;
 
 extern int tp_max_delta_objs;
 extern int tp_max_loaded_objs;

@@ -1,5 +1,9 @@
 /* $Header$
  * $Log: params.h,v $
+ * Revision 1.6  2000/11/30 05:26:46  revar
+ * Updated TODO file.
+ * Changed MAX_OUTPUT from a server #define to an @tune option.
+ *
  * Revision 1.5  2000/09/04 22:07:12  winged
  * Added MUD_GID define support code
  *
@@ -80,8 +84,6 @@
 #define TIME_HOUR(x)    ((x) * (TIME_MINUTE(60)))	/* 60 minutes */
 #define TIME_DAY(x)     ((x) * (TIME_HOUR(24)))	/* 24 hours   */
 
-
-#define MAX_OUTPUT 131071		/* maximum amount of queued output in bytes */
 
 #define DB_INITIAL_SIZE 100		/* initial malloc() size for the db */
 

@@ -114,6 +114,7 @@ int tp_kill_bonus = KILL_BONUS;
 int tp_command_burst_size = COMMAND_BURST_SIZE;
 int tp_commands_per_time = COMMANDS_PER_TIME;
 int tp_command_time_msec = COMMAND_TIME_MSEC;
+int tp_max_output = MAX_OUTPUT;
 
 int tp_max_delta_objs = MAX_DELTA_OBJS;
 int tp_max_loaded_objs = MAX_LOADED_OBJS;
@@ -154,6 +155,7 @@ struct tune_val_entry tune_val_list[] = {
 	{"command_burst_size", &tp_command_burst_size, 0},
 	{"commands_per_time", &tp_commands_per_time, 0},
 	{"command_time_msec", &tp_command_time_msec, 0},
+	{"max_output", &tp_max_output, 0},
 
 	{"max_delta_objs", &tp_max_delta_objs, 0},
 	{"max_loaded_objs", &tp_max_loaded_objs, 0},

@@ -1479,7 +1479,7 @@ queue_write(struct descriptor_data *d, const char *b, int n)
 {
 	int space;
 
-	space = MAX_OUTPUT - d->output_size - n;
+	space = tp_max_output - d->output_size - n;
 	if (space < 0)
 		d->output_size -= flush_queue(&d->output, -space);
 	add_to_queue(&d->output, b, n);
