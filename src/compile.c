@@ -630,7 +630,7 @@ do_proginfo(dbref player, const char *arg)
 
 	thing = (dbref) atoi(arg+1);
 
-	if(((dbref) i == NOTHING) || (i < 0) || (i > db_top) || Typeof(thing) != TYPE_PROGRAM || !controls(player,thing)) {
+	if(((dbref) thing == NOTHING) || (thing < 0) || (thing > db_top) || Typeof(thing) != TYPE_PROGRAM || !controls(player,thing)) {
 		if(Wizard(OWNER(player))) {
 			notify_nolisten(player, "That's not a program.", 1);
 		} else {
