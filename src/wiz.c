@@ -2,6 +2,9 @@
 
 /*
  * $Log: wiz.c,v $
+ * Revision 1.3  2000/07/07 18:41:04  revar
+ * Fixed a db corruption bug with @toading players.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -594,7 +597,7 @@ do_boot(dbref player, const char *name)
 }
 
 void
-do_toad(dbref player, const char *name, const char *recip)
+do_toad(int descr, dbref player, const char *name, const char *recip)
 {
 	dbref victim;
 	dbref recipient;
@@ -625,7 +628,7 @@ do_toad(dbref player, const char *name, const char *recip)
 	} else {
 		/* we're ok */
 		/* do it */
-		send_contents(player, HOME);
+		send_contents(descr, player, HOME);
 		for (stuff = 0; stuff < db_top; stuff++) {
 			if (OWNER(stuff) == victim) {
 				switch (Typeof(stuff)) {
@@ -652,8 +655,6 @@ do_toad(dbref player, const char *name, const char *recip)
 			PLAYER_SET_PASSWORD(victim, 0);
 		}
 		dequeue_prog(victim, 0);	/* dequeue progs that player's running */
-		FREE_PLAYER_SP(victim);
-		ALLOC_THING_SP(victim);
 
 		FLAGS(victim) = (FLAGS(victim) & ~TYPE_MASK) | TYPE_THING;
 		OWNER(victim) = player;	/* you get it */
@@ -667,6 +668,10 @@ do_toad(dbref player, const char *name, const char *recip)
 		log_status("TOADED: %s(%d) by %s(%d)\n", NAME(victim), victim, NAME(player), player);
 
 		delete_player(victim);
+		FREE_PLAYER_SP(victim);
+		ALLOC_THING_SP(victim);
+		THING_SET_HOME(victim, PLAYER_HOME(player));
+
 		/* reset name */
 		sprintf(buf, "A slimy toad named %s", unmangle(victim, PNAME(victim)));
 		free((void *) NAME(victim));

@@ -2,6 +2,9 @@
 
 /*
  * $Log: game.c,v $
+ * Revision 1.3  2000/07/07 18:41:04  revar
+ * Fixed a db corruption bug with @toading players.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -1077,7 +1080,7 @@ process_command(int descr, dbref player, char *command)
 				case 'O':
 					if (strcmp(command, "@toad"))
 						goto bad;
-					do_toad(player, arg1, arg2);
+					do_toad(descr, player, arg1, arg2);
 					break;
 				case 'r':
 				case 'R':

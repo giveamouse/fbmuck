@@ -1,6 +1,9 @@
 /* $Header$
  * 
  * $Log: externs.h,v $
+ * Revision 1.6  2000/07/07 18:41:04  revar
+ * Fixed a db corruption bug with @toading players.
+ *
  * Revision 1.5  2000/07/07 01:30:06  revar
  * 64 bit compile cleanups.
  *
@@ -273,7 +276,7 @@ extern dbref remove_first(dbref first, dbref what);
 extern void do_teleport(int descr, dbref player, const char *arg1, const char *arg2);
 extern void do_force(int descr, dbref player, const char *what, char *command);
 extern void do_stats(dbref player, const char *name);
-extern void do_toad(dbref player, const char *name, const char *recip);
+extern void do_toad(int descr, dbref player, const char *name, const char *recip);
 extern void do_boot(dbref player, const char *name);
 extern void do_pcreate(dbref player, const char *arg1, const char *arg2);
 extern void do_usage(dbref player);
