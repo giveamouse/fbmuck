@@ -202,7 +202,7 @@ RETSIGTYPE sig_shutdown(int i)
 RETSIGTYPE sig_reap_resolver(int i)
 {
 	int status = 0;
-	int pid = waitpid(-1, &status, WNOHANG);
+	(void)waitpid(-1, &status, WNOHANG);
 
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
 	return 0;

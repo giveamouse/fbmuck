@@ -24,6 +24,7 @@
 #endif
 #endif
 #include <ctype.h>
+#define NEED_SOCKLEN_T
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -580,7 +581,6 @@ queue_ansi(struct descriptor_data *d, const char *msg)
 int
 notify_nolisten(dbref player, const char *msg, int isprivate)
 {
-	struct descriptor_data *d;
 	int retval = 0;
 	char buf[BUFFER_LEN + 2];
 	char buf2[BUFFER_LEN + 2];
@@ -639,10 +639,10 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 						if (!prefix || !*prefix) {
 							prefix = NAME(player);
 							sprintf(buf2, "%s> %.*s", prefix,
-									(BUFFER_LEN - (strlen(prefix) + 3)), buf);
+									(int)(BUFFER_LEN - (strlen(prefix) + 3)), buf);
 						} else {
 							sprintf(buf2, "%s %.*s", prefix,
-									(BUFFER_LEN - (strlen(prefix) + 2)), buf);
+									(int)(BUFFER_LEN - (strlen(prefix) + 2)), buf);
 						}
 
 						darr = get_player_descrs(OWNER(player), &dcount);
@@ -709,7 +709,7 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 
 				if (!prefix || !*prefix)
 					prefix = "Outside>";
-				sprintf(buf, "%s %.*s", prefix, (BUFFER_LEN - (strlen(prefix) + 2)), msg);
+				sprintf(buf, "%s %.*s", prefix, (int)(BUFFER_LEN - (strlen(prefix) + 2)), msg);
 				ref = DBFETCH(player)->contents;
 				while (ref != NOTHING) {
 					notify_nolisten(ref, buf, isprivate);
@@ -1200,10 +1200,10 @@ new_connection(int port, int sock)
 #else
 	struct sockaddr_in addr;
 #endif
-	int addr_len;
+	socklen_t addr_len;
 	char hostname[128];
 
-	addr_len = sizeof(addr);
+	addr_len = (socklen_t)sizeof(addr);
 	newsock = accept(sock, (struct sockaddr *) &addr, &addr_len);
 	if (newsock < 0) {
 		return 0;
@@ -2132,7 +2132,6 @@ boot_off(dbref player)
 {
     int* darr;
     int dcount;
-	struct descriptor_data *d;
 	struct descriptor_data *last = NULL;
 
 	darr = get_player_descrs(player, &dcount);
@@ -2340,10 +2339,11 @@ dump_users(struct descriptor_data *e, char *user)
 							d->hostname, d->username);
 			} else {
 				if (tp_who_doing) {
+					/* Modified to take into account PLAYER_NAME_LIMIT changes */
 #ifdef USE_SSL
-					sprintf(buf, "%-*s %10s %4s%c%c %-0.44s\r\n",
+					sprintf(buf, "%-*s %10s %4s%c%c %*s\r\n",
 #else
-					sprintf(buf, "%-*s %10s %4s%c  %-0.44s\r\n",
+					sprintf(buf, "%-*s %10s %4s%c  %*s\r\n",
 #endif
 							PLAYER_NAME_LIMIT + 1,
 							NAME(d->player),
@@ -2353,6 +2353,7 @@ dump_users(struct descriptor_data *e, char *user)
 #ifdef USE_SSL
 							(d->ssl_session ? '@' : ' '),
 #endif		
+							(int) (44 - (PLAYER_NAME_LIMIT - 16)),
 							GETDOING(d->player) ?
 #ifdef COMPRESS
 							uncompress(GETDOING(d->player))
@@ -2366,7 +2367,7 @@ dump_users(struct descriptor_data *e, char *user)
 #else
 					sprintf(buf, "%-*s %10s %4s%c\r\n",
 #endif
-							PLAYER_NAME_LIMIT + 1,
+							(int)(PLAYER_NAME_LIMIT + 1),
 							NAME(d->player),
 							time_format_1(now - d->connected_at),
 							time_format_2(now - d->last_time),
@@ -2515,7 +2516,6 @@ announce_disconnect(struct descriptor_data *d)
 	dbref player = d->player;
 	dbref loc;
 	char buf[BUFFER_LEN];
-	struct descriptor_data *temp;
 	int dcount;
 
 	if ((loc = getloc(player)) == NOTHING)
@@ -3153,7 +3153,6 @@ dbref_first_descr(dbref c)
 {
 	int dcount;
 	int* darr;
-	struct descriptor_data *d;
 
 	darr = get_player_descrs(c, &dcount);
 	if (dcount > 0) {

@@ -112,6 +112,8 @@ extern void do_info(dbref player, const char *topic, const char *seg);
 
 /* From look.c */
 extern void look_room(int descr, dbref player, dbref room, int verbose);
+extern long size_object(dbref i, int load);
+
 
 /* extern void look_room_simple(dbref player, dbref room); */
 extern void do_look_around(int descr, dbref player);
@@ -190,10 +192,10 @@ extern void do_wall(dbref player, const char *message);
 extern void do_gripe(dbref player, const char *message);
 extern void do_say(dbref player, const char *message);
 extern void do_page(dbref player, const char *arg1, const char *arg2);
-extern void notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
-
-							 int isprivate);
+extern void notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg, int isprivate);
 extern void notify_except(dbref first, dbref exception, const char *msg, dbref who);
+extern void parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname, const char *prefix, const char *whatcalled);
+extern void parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg, const char *prefix, const char *whatcalled, int mpiflags) ;
 
 /* From stringutil.c */
 extern int alphanum_compare(const char *s1, const char *s2);
@@ -275,6 +277,9 @@ extern struct frame *interp(int descr, dbref player, dbref location, dbref progr
 							dbref source, int nosleeping, int whichperms);
 extern void purge_for_pool(void);
 
+/* From mufevent.c */
+extern int muf_event_exists(struct frame* fr, const char* eventid);
+
 /* declared in log.c */
 extern void log2file(char *myfilename, char *format, ...);
 extern void log_error(char *format, ...);
@@ -323,6 +328,7 @@ extern int rwhocli_setup(const char *server, const char *serverpw, const char *m
 /* from interface.c */
 extern void update_rwho(void);
 extern void do_armageddon(dbref player, const char *msg);
+extern int pdescrsecure(int c);
 
 /* from events.c */
 extern void dump_db_now(void);
@@ -341,6 +347,9 @@ void kill_resolver(void);
 int add_mpi_event(int delay, int descr, dbref player, dbref loc, dbref trig, const char *mpi, const char *cmdstr, const char *argstr, int listen_p, int omesg_p, int bless_p);
 stk_array *get_pids(dbref ref);
 stk_array *get_pidinfo(int pid);
+
+/* from mcpgui.c */
+int gui_dlog_closeall_descr(int descr);
 
 
 #endif /* _EXTERNS_H */

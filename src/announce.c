@@ -50,7 +50,8 @@ notify(int player, const char *msg)
 int
 main(int argc, char *argv[])
 {
-	int s, ns, foo;
+	int s, ns;
+	socklen_t foo;
 
 #ifdef USE_IPV6
 	static struct sockaddr_in6 sin = { AF_INET6 };

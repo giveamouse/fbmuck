@@ -241,7 +241,7 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild
 void
 do_unbless(int descr, dbref player, const char *what, const char *propname)
 {
-	dbref victim, loc;
+	dbref victim;
 	struct match_data md;
 	char buf[BUFFER_LEN];
 	int cnt;
@@ -277,7 +277,7 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
 void
 do_bless(int descr, dbref player, const char *what, const char *propname)
 {
-	dbref victim, loc;
+	dbref victim;
 	struct match_data md;
 	char buf[BUFFER_LEN];
 	int cnt;

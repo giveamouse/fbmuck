@@ -2,6 +2,9 @@
 
 /*
  * $Log: speech.c,v $
+ * Revision 1.6  2002/03/17 09:54:28  winged
+ * Fixes for -Wall -Wall-pedantic -pedantic.  Also fixed a formatting bug in interface.c when tp_who_doing was set and MAX_PLAYER_LEN had been changed from its default setting.
+ *
  * Revision 1.5  2002/03/17 07:55:25  winged
  * Fixing pedantic warnings
  *
@@ -266,11 +269,13 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
 				char pbuf[BUFFER_LEN];
 				const char *prefix;
 
+				memset(buf,0,BUFFER_LEN); /* Make sure the buffer is zeroed */
+
 				prefix = do_parse_prop(-1, who, obj, MESGPROP_OECHO,
 										"(@Oecho)", pbuf, MPI_ISPRIVATE);
 				if (!prefix || !*prefix)
 					prefix = "Outside>";
-				sprintf(buf, "%s %.*s", prefix, (BUFFER_LEN - 2 - strlen(prefix)), msg);
+				sprintf(buf, "%s %.*s", prefix, (int)(BUFFER_LEN - 2 - strlen(prefix)), msg);
 				ref = DBFETCH(obj)->contents;
 				while (ref != NOTHING) {
 					notify_nolisten(ref, buf, isprivate);

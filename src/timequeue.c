@@ -329,7 +329,6 @@ add_muf_delay_event(int delay, int descr, dbref player, dbref loc, dbref trig, d
 void
 read_event_notify(int descr, dbref player)
 {
-	struct frame *fr;
 	timequeue ptr;
 
 	if (muf_event_read_notify(descr, player)) {
@@ -560,7 +559,7 @@ next_timequeue_event(void)
 
 					sprintf(bbuf, ">> %.4000s %.*s",
 							NAME(event->uid),
-							(4000 - strlen(NAME(event->uid))),
+							(int)(4000 - strlen(NAME(event->uid))),
 							pronoun_substitute(event->descr, event->uid, cbuf));
 					plyr = DBFETCH(event->loc)->contents;
 					for (; plyr != NOTHING; plyr = DBFETCH(plyr)->next) {

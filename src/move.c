@@ -2,6 +2,9 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.17  2002/03/17 09:54:27  winged
+ * Fixes for -Wall -Wall-pedantic -pedantic.  Also fixed a formatting bug in interface.c when tp_who_doing was set and MAX_PLAYER_LEN had been changed from its default setting.
+ *
  * Revision 1.16  2002/03/17 07:55:25  winged
  * Fixing pedantic warnings
  *
@@ -159,6 +162,7 @@
 #include "interface.h"
 #include "match.h"
 #include "externs.h"
+#include "fb.h"
 
 void
 moveto(dbref what, dbref where)

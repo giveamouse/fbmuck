@@ -1745,7 +1745,6 @@ prim_newplayer(PRIM_PROTOTYPE)
 {
 	dbref newplayer;
 	char *name, *password;
-	struct object *newp;
 
     CHECKOP(2);
     oper1 = POP();

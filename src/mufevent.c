@@ -649,12 +649,15 @@ muf_event_remove(struct frame *fr, char *event, int which)
  * program instance's event queue.  The event is not removed
  * from the queue.
  */
+/*
+ * Commented out by Winged for non-reference.  If you need it, de-comment.
+ *
 static struct mufevent *
 muf_event_peek(struct frame *fr)
 {
 	return fr->events;
 }
-
+ */
 
 
 /* static struct mufevent* muf_event_pop(struct frame* fr)

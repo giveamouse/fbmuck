@@ -538,9 +538,9 @@ strencrypt(const char *data, const char *key)
 	static char linebuf[BUFFER_LEN];
 	char buf[BUFFER_LEN + 8];
 	const char *cp;
-	unsigned char *ptr;
-	unsigned char *ups;
-	const unsigned char *upt;
+	char *ptr;
+	char *ups;
+	const char *upt;
 	int linelen;
 	int count;
 	int seed, seed2, seed3;
@@ -565,7 +565,7 @@ strencrypt(const char *data, const char *key)
 		seed2 = ((seed2 + 1) & 0x3f);
 		if (!*(++cp))
 			cp = key;
-		result = (enarr[*upt] - (32 - (CHARCOUNT - 96))) + count + seed;
+		result = (enarr[(unsigned char)*upt] - (32 - (CHARCOUNT - 96))) + count + seed;
 		*ups = enarr[(result % CHARCOUNT) + (32 - (CHARCOUNT - 96))];
 		count = (((*upt) ^ count) + seed) & 0xff;
 		ups++;
@@ -598,9 +598,9 @@ strdecrypt(const char *data, const char *key)
 	char linebuf[BUFFER_LEN];
 	static char buf[BUFFER_LEN];
 	const char *cp;
-	unsigned char *ptr;
-	unsigned char *ups;
-	const unsigned char *upt;
+	char *ptr;
+	char *ups;
+	const char *upt;
 	int linelen;
 	int outlen;
 	int count;
@@ -639,7 +639,7 @@ strdecrypt(const char *data, const char *key)
 			cp = key;
 		seed2 = ((seed2 + 1) & 0x3f);
 
-		result = (enarr[*upt] - (32 - (chrcnt - 96))) - (count + seed);
+		result = (enarr[(unsigned char)*upt] - (32 - (chrcnt - 96))) - (count + seed);
 		while (result < 0)
 			result += chrcnt;
 		*ups = enarr[result + (32 - (chrcnt - 96))];
