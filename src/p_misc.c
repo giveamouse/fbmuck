@@ -703,6 +703,8 @@ void
 prim_event_send(PRIM_PROTOTYPE)
 {
 	struct frame* destfr;
+	stk_array *arr;
+	struct inst temp1;
 
 	CHECKOP(3);
 	oper3 = POP();				/* any: data to pass */
@@ -718,6 +720,14 @@ prim_event_send(PRIM_PROTOTYPE)
 
 	destfr = timequeue_pid_frame(oper1->data.number);
 	if (destfr) {
+		arr = new_array_dictionary();
+		array_set_strkey(&arr, "data", oper3);
+		array_set_strkey_intval(&arr, "caller_pid", fr->pid);
+		array_set_strkey_refval(&arr, "caller_prog", program);
+
+		temp1.type = PROG_ARRAY;
+		temp1.data.array = arr;
+
 		sprintf(buf, "USER.%.32s", DoNullInd(oper2->data.string));
 		muf_event_add(destfr, buf, oper3);
 	}

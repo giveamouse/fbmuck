@@ -1,5 +1,18 @@
 2.2fb6.00a31
 Changed MCP_SEND to error out if the connection doesn't support the package.
+Changed EVENT_SEND MUF prim to the following:
+  EVENT_SEND ( i s ? -- ) Sends a "USER." event to the process referred
+  to by the given pid.  The target process will receive an event that
+  can be read with EVENT_WAIT.  The event type will be "USER." with the
+  given event id string appended to it.  The given event id string will
+  be truncated at 32 characters.  The event data argument will contain
+  the sent data in the "data" element.  A "caller_pid" element will
+  contain the process id of the caller, and a "caller_prog" element will
+  have the dbref of the caller.  ie: '23 "foobar" 3.1416 event_send' will
+  send an event to process 23, with an eventid of "USER.foobar", and a
+  floating point data value of 3.1416 in the "data" element of the args
+  dictionary that EVENT_WAIT will return.  This primitive requires at
+  least Mucker Level 3.
 Fixed an error message in MCP_REGISTER.  (required ML3, not wizbit.)
 Fixed a bug with JMPs to function headers over-declaring scoped var sets.
 Optimized MUF interp to merge the FUNCTION/DECLVAR/INITVARS trio of instrs
