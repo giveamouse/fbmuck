@@ -895,7 +895,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 			for (type++; isspace(*type); type++) ;
 			if (string_compare(type, "clear")) {
 				notify(player, "Use '@set <obj>=:clear' to clear all props on an object");
-				free((void *)type);
+				free((void *)x);
 				return;
 			}
 			remove_property_list(thing, Wizard(OWNER(player)));
