@@ -712,11 +712,11 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 
 	/* Create the message name from the package and message subnames */
 	strncpy(mesgname, msg->package, sizeof(mesgname));
-	mesgname[sizeof(mesgname)] = '\0';
+	mesgname[sizeof(mesgname) - 1] = '\0';
 	if (msg->mesgname && *msg->mesgname) {
 		strcat(mesgname, MCP_MESG_DELIMITER);
 		strncat(mesgname, msg->mesgname, sizeof(mesgname) - strlen(mesgname));
-		mesgname[sizeof(mesgname)] = '\0';
+		mesgname[sizeof(mesgname) - 1] = '\0';
 	}
 
 	strcpy(outbuf, MCP_MESG_PREFIX);
