@@ -480,7 +480,8 @@ include_internal_defs(COMPSTATE * cstat)
 
 	/* Array convenience defines */
 	insert_def(cstat, "}list", "} array_make");
-	insert_def(cstat, "}dict", "}  2 / array_make_dict");
+	insert_def(cstat, "}dict", "} 2 / array_make_dict");
+	insert_def(cstat, "}join", "} array_make \"\" array_join");
 	insert_def(cstat, "[]", "array_getitem");
 	insert_def(cstat, "->[]", "array_setitem");
 	insert_def(cstat, "[..]", "array_getrange");

@@ -20,6 +20,7 @@ void muf_event_register_specific(dbref player, dbref prog, struct frame *fr, int
 int muf_event_read_notify(int descr, dbref player);
 int muf_event_count(struct frame* fr);
 int muf_event_exists(struct frame* fr, const char* eventid);
+int muf_event_list(dbref player, const char *pat);
 void muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive);
 void muf_event_remove(struct frame *fr, char *event, int which);
 void muf_event_purge(struct frame *fr);

@@ -60,7 +60,6 @@ int muf_debugger(int descr, dbref player, dbref program, const char *text, struc
 void muf_dlog_purge(struct frame *fr);
 void muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive);
 int muf_event_count(struct frame* fr);
-int muf_event_list(dbref player, char *pat);
 long next_muckevent_time(void);
 void next_muckevent(void);
 int notify_nolisten(dbref player, const char *msg, int isprivate);

@@ -1,3 +1,10 @@
+2.2fb6.00b6
+Added MUF $define for }join as '} array_make "" array_join'
+Added ProgName field to @ps display.
+Changed @ps display code to be cleaner.
+
+
+
 2.2fb6.00b5
 Removed #ifdefs for FLUSHCHANGES as that code should not be optional.
 Fixed infinite loop parenting bug.  I think.

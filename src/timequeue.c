@@ -695,63 +695,62 @@ void
 list_events(dbref player)
 {
 	char buf[BUFFER_LEN];
-	char buf2[BUFFER_LEN];
+	char pidstr[128];
+	char duestr[128];
+	char runstr[128];
+	char inststr[128];
+	char cpustr[128];
+	char progstr[128];
+	char prognamestr[128];
 	int count = 0;
 	timequeue ptr = tqhead;
 	time_t rtime = time((time_t *) NULL);
 	time_t etime;
 	double pcnt;
+	const char* strfmt = "%10s %4s %4s %6s %4s %7s %-10.10s %-12s %.512s";
 
-	notify_nolisten(player, "     PID Next  Run KInst %CPU Prog#   Player", 1);
+	(void)sprintf(buf, strfmt, "PID", "Next", "Run", "KInst", "%CPU", "Prog#", "ProgName", "Player", "");
+	notify_nolisten(player, buf, 1);
 
 	while (ptr) {
-		strcpy(buf2, ((ptr->when - rtime) > 0) ?
-			   time_format_2((long) (ptr->when - rtime)) : "Due");
+		sprintf(pidstr, "%d", ptr->eventnum);
+		strcpy(duestr, ((ptr->when - rtime) > 0) ?
+				time_format_2((long) (ptr->when - rtime)) : "Due");
+		strcpy(runstr, ptr->fr ?
+				time_format_2((long) (rtime - ptr->fr->started)): "0s");
+		sprintf(inststr, "%d", ptr->fr? (ptr->fr->instcnt / 1000) : 0);
+
 		if (ptr->fr) {
 			etime = rtime - ptr->fr->started;
 			if (etime > 0) {
 				pcnt = ptr->fr->totaltime.tv_sec;
 				pcnt += ptr->fr->totaltime.tv_usec / 1000000;
 				pcnt = pcnt * 100 / etime;
-				if (pcnt > 100.0) {
-					pcnt = 100.0;
+				if (pcnt > 99.9) {
+					pcnt = 99.9;
 				}
 			} else {
 				pcnt = 0.0;
 			}
-		}
-		if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_DELAY) {
-			(void) sprintf(buf, "%8d %4s %4s %5d %4.1f #%-6d %-16s %.512s",
-						   ptr->eventnum, buf2,
-						   time_format_2((long) (rtime - ptr->fr->started)),
-						   (ptr->fr->instcnt / 1000), pcnt, 
-						   ptr->called_prog, NAME(ptr->uid), ptr->called_data);
-		} else if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ) {
-			(void) sprintf(buf, "%8d %4s %4s %5d %4.1f #%-6d %-16s %.512s",
-						   ptr->eventnum, "--",
-						   time_format_2((long) (rtime - ptr->fr->started)),
-						   (ptr->fr->instcnt / 1000), pcnt, 
-						   ptr->called_prog, NAME(ptr->uid), ptr->called_data);
-		} else if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_TIMER) {
-			(void) sprintf(buf, "(%6d) %4s %4s %5d %4.1f #%-6d %-16s %.512s",
-						   ptr->eventnum, buf2,
-						   time_format_2((long) (rtime - ptr->fr->started)),
-						   (ptr->fr->instcnt / 1000), pcnt, 
-						   ptr->called_prog, NAME(ptr->uid), ptr->called_data);
-		} else if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_TREAD) {
-			(void) sprintf(buf, "%8d %4s %4s %5d %4.1f #%-6d %-16s %.512s",
-						   ptr->eventnum, buf2,
-						   time_format_2((long) (rtime - ptr->fr->started)),
-						   (ptr->fr->instcnt / 1000), pcnt, 
-						   ptr->called_prog, NAME(ptr->uid), ptr->called_data);
-		} else if (ptr->typ == TQ_MPI_TYP) {
-			(void) sprintf(buf, "%8d %4s   --   MPI   -- #%-6d %-16s \"%.512s\"",
-						   ptr->eventnum, buf2, ptr->trig, NAME(ptr->uid), ptr->called_data);
 		} else {
-			(void) sprintf(buf, "%8d %4s   0s     0   -- #%-6d %-16s \"%.512s\"",
-						   ptr->eventnum, buf2, ptr->called_prog,
-						   NAME(ptr->uid), ptr->called_data);
+			pcnt = 0.0;
 		}
+		sprintf(cpustr, "%4.1f", pcnt);
+		sprintf(progstr, "#%d", ptr->called_prog);
+		sprintf(prognamestr, "%s", NAME(ptr->called_prog));
+
+		if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ) {
+			strcpy(duestr, "--");
+		} else if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_TIMER) {
+			sprintf(pidstr, "(%d)", ptr->eventnum);
+		} else if (ptr->typ == TQ_MPI_TYP) {
+			strcpy(runstr, "--");
+			strcpy(inststr, "MPI");
+			strcpy(cpustr, "--");
+		}
+		(void) sprintf(buf, strfmt, pidstr, duestr, runstr, inststr,
+					                cpustr, progstr, prognamestr, NAME(ptr->uid), 
+									ptr->called_data? ptr->called_data : "");
 		if (Wizard(OWNER(player)) || ptr->uid == player) {
 			notify_nolisten(player, buf, 1);
 		} else if (ptr->called_prog != NOTHING && OWNER(ptr->called_prog) == OWNER(player)) {
@@ -760,7 +759,7 @@ list_events(dbref player)
 		ptr = ptr->next;
 		count++;
 	}
-	count += muf_event_list(player, "%8d %4s %4s %5d %4.1f #%-6d %-16s %.512s");
+	count += muf_event_list(player, strfmt);
 	sprintf(buf, "%d events.", count);
 	notify_nolisten(player, buf, 1);
 }

@@ -266,9 +266,13 @@ muf_event_controls(dbref player, int pid)
  * This is used by the @ps command.
  */
 int
-muf_event_list(dbref player, char *pat)
+muf_event_list(dbref player, const char *pat)
 {
 	char buf[BUFFER_LEN];
+	char pidstr[BUFFER_LEN];
+	char inststr[BUFFER_LEN];
+	char cpustr[BUFFER_LEN];
+	char progstr[BUFFER_LEN];
 	int count = 0;
 	time_t rtime = time((time_t *) NULL);
 	time_t etime;
@@ -282,17 +286,20 @@ muf_event_list(dbref player, char *pat)
 				pcnt = proc->fr->totaltime.tv_sec;
 				pcnt += proc->fr->totaltime.tv_usec / 1000000;
 				pcnt = pcnt * 100 / etime;
-				if (pcnt > 100.0) {
-					pcnt = 100.0;
+				if (pcnt > 99.9) {
+					pcnt = 99.9;
 				}
 			} else {
 				pcnt = 0.0;
 			}
 		}
-		sprintf(buf, pat,
-				proc->fr->pid, "--",
+		sprintf(pidstr, "%d", proc->fr->pid);
+		sprintf(inststr, "%d", (proc->fr->instcnt / 1000));
+		sprintf(cpustr, "%4.1f", pcnt);
+		sprintf(progstr, "#%d", proc->prog);
+		sprintf(buf, pat, pidstr, "--",
 				time_format_2((long) (rtime - proc->fr->started)),
-				(proc->fr->instcnt / 1000), pcnt, proc->prog, NAME(proc->player),
+				inststr, cpustr, progstr, NAME(proc->prog), NAME(proc->player),
 				"EVENT_WAITFOR");
 		if (Wizard(OWNER(player)) || (OWNER(proc->prog) == OWNER(player))
 			|| (proc->player == player))
