@@ -117,6 +117,8 @@ Changed 'examine' command to list properties with either a '-' or a 'B' in
   front, to denote whether the property has been Blessed or not.
 Changed the 'log_reads' @tune to 'log_interactive' to be compatible with fb5.
 Changed EVENT_EXISTS to allow matching by smatch wildcard pattern.
+Changes @bless and @unbless to (un)bless all props that match the given
+  wildcard property name.
 
 
 2.2fb6.00a33
