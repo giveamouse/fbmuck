@@ -32,7 +32,7 @@ Multi-Tasking:
   pr_mode  bg_mode     fg_mode     setmode  mode  abort
   
 Math and Comparison:
-  +   -   *   /   %   <   >   =   <=   >=   and   or   not
+  +   -   *   /   %   <   >   =   <=   >=   ++   --   and   or   not
   strcmp   stringcmp   strncmp   smatch   stringpfx   dbcmp   number?
 
 Floating Point Math:
@@ -147,15 +147,30 @@ In the documentation some primitives are grouped together as:
 See man <primitive> for information on each primitive.
 ~
 MATH OPERATORS|+|-|*|/|%|MODULO|ADD|SUBTRACT|MULTIPLY|DIVIDE|
-+ - * / % ( i1 i2 -- i )
++ - * / % ( n1 n2 -- i )
 These words perform arithmetic operations on numbers. `+' = addition
-(i1 + i2); `-' = subtraction (i1 - i2); `*' = multiplication (i1 times
-i2, or i1 * i2); `/' = division (i1 divided by i2, or i1 / i2) with
+(n1 + n2); `-' = subtraction (n1 - n2); `*' = multiplication (n1 times
+n2, or n1 * n2); `/' = division (n1 divided by n2, or n1 / n2) with
 integer division truncation of fractions; `%' = modulo (remainder of
-i1 / i2, or i1 % i2)  Floats cannot use the % modulo function.  See
+n1 / n2, or n1 % n2)  Floats cannot use the % modulo function.  See
 the FMOD or MODF primitives.
 You may use these operators on different types of data, ie dbrefs,
 local variables, and variables.  Floats may be combined with integers.
+~
+INCREMENT|++|
+++ ( v -- )
+++ ( n -- n' )
+If given an integer, float, or dbref, adds 1 to it, and returns the result.
+If given a variable containing an integer, float, or dbref, adds 1 to the
+value stored in the variable, and returns nothing.
+~
+DECREMENT|--|
+-- ( v -- )
+-- ( n -- n' )
+If given an integer, float, or dbref, this subtracts 1 from it, and
+returns the result.  If given a variable containing an integer, float,
+or dbref, this subtracts 1 from the value stored in the variable, and
+returns nothing.
 ~
 LOGICAL OPERATORS|<|>|<=|>=|=|LESS THAN|GREATER THAN|EQUALS|
 < > = <= >= ( x1 x2 -- i )

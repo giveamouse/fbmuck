@@ -4,6 +4,11 @@ Added inserver muf define for C_MENU.
 Added support for "valname" option to MCP GUI control creation.
 Added a __fuzzball__ inserver MUF $define, set to 1, to let programmers
   differentiate between Fuzzball and ProtoMuck servers.
+Added ++ and -- muf primitives.  They will increment or decrement ints, floats
+  and dbrefs, and if passed a variable, they will increment/decrement the
+  int, float, or dbref contained within the variable, much like in C.  When
+  passed a variable, nothing is returned on the stack.  When passed an int,
+  float, or dbref, the incremented/decremented value is returned.
 Fixed bug with MCP not properly dealing with \r's in arg strings.
 
 
