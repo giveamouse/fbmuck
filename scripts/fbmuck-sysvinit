@@ -46,6 +46,7 @@ mucknames=$@
 case "$cmd" in
   start)
     # Start mucks.
+	echo -n "Starting fbmucks: "
     cat /etc/fbmucks | \
     grep -v '^[ 	]*#' |\
     grep -v '^[ 	]*$' |\
@@ -53,19 +54,19 @@ case "$cmd" in
         if [ "x$mucknames" != "x" ]; then
             found=0
             for muckname in $mucknames; do
-                if [ "x$muckname" == "x$name" ]; then
+                if [ "x$muckname" = "x$name" ]; then
                     found=1
                 fi
             done
-            if [ $found == 0 ]; then
+            if [ $found -eq 0 ]; then
                 continue
             fi
         fi
-        if [ "x$who" == "xroot" -o "x$who" == "x$user" ]; then
-            echo -n "Starting fbmuck for $name: "
+        if [ "x$who" = "xroot" -o "x$who" = "x$user" ]; then
+            echo -n "$name "
             ports=`echo $ports | sed 's/,/ /g' | sed 's/\([0-9]*\)s/-sport \1/g'`
             rm -f $path/$pidfile
-            if [ "x$who" == "x$user" ]; then
+            if [ "x$who" = "x$user" ]; then
                 $path/$script $ports >> /dev/null 2>&1
             else
                 su - $user -c "$path/$script $ports >> /dev/null 2>&1"
@@ -73,12 +74,13 @@ case "$cmd" in
             while [ ! -f $path/$pidfile ]; do
                 sleep 1
             done
-            echo fbmuck
         fi
     done
+	echo ""
     ;;
   stop)
     # Stop mucks.
+	echo -n "Shutting down fbmucks: "
     cat /etc/fbmucks | \
     grep -v '^[ 	]*#' |\
     grep -v '^[ 	]*$' |\
@@ -86,29 +88,44 @@ case "$cmd" in
         if [ "x$mucknames" != "x" ]; then
             found=0
             for muckname in $mucknames; do
-                if [ "x$muckname" == "x$name" ]; then
+                if [ "x$muckname" = "x$name" ]; then
                     found=1
                 fi
             done
-            if [ $found == 0 ]; then
+            if [ $found = 0 ]; then
                 continue
             fi
         fi
-        if [ "x$who" == "xroot" -o "x$who" == "x$user" ]; then
-            echo -n "Shutting down fbmuck for $name: "
+        if [ "x$who" = "xroot" -o "x$who" = "x$user" ]; then
+            echo -n "$name "
             if [ -f $path/$pidfile ]; then
                 pid=`cat $path/$pidfile`
                 if [ -d /proc/$pid ]; then
                     kill $pid
-                    while [ ! -d /proc/$pid ]; do
+                    # Wait for server to complete a clean shutdown.
+                    # If the process doesn't change status for a period
+                    # longer than sixty seconds, assume it is hung, and exit.
+                    laststat="S"
+                    limitcnt=60
+                    while [ -d /proc/$pid ]; do
+                        newstat=`grep 'State:' /proc/$pid/status|awk '{print $2}'`
+                        if [ "x$newstat" != "xR" -a "x$laststat" = "x$newstat" ]; then
+                            limitcnt=`expr $limitcnt - 1`
+                            if [ $limitcnt -eq 0 ]; then
+                                break
+                            fi
+                        else
+                            limitcnt=60
+                            laststat=$newstat
+                        fi
                         sleep 1
                     done
                 fi
                 rm -f $path/$pidfile
             fi
-            echo fbmuck
         fi
     done
+	echo ""
     ;;
   restart)
     $0 stop
@@ -122,15 +139,15 @@ case "$cmd" in
         if [ "x$mucknames" != "x" ]; then
             found=0
             for muckname in $mucknames; do
-                if [ "x$muckname" == "x$name" ]; then
+                if [ "x$muckname" = "x$name" ]; then
                     found=1
                 fi
             done
-            if [ $found == 0 ]; then
+            if [ $found -eq 0 ]; then
                 continue
             fi
         fi
-        if [ "x$who" == "xroot" -o "x$who" == "x$user" ]; then
+        if [ "x$who" = "xroot" -o "x$who" = "x$user" ]; then
             echo -n "fbmuck for $name "
             if [ -f $path/$pidfile ]; then
                 pid=`cat $path/$pidfile`
