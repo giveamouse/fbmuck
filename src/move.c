@@ -2,6 +2,9 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.7  2001/06/20 09:10:20  winged
+ * Bugfix #201633: Now no referenced programs can be @recycled from force_level.
+ *
  * Revision 1.6  2000/11/22 10:01:58  revar
  * Changed MPI from using Wizbit objects to give special permissions, to using
  * 'Blessed' properties.  Blessed props have few permissions restrictions.
@@ -824,7 +827,7 @@ do_recycle(int descr, dbref player, const char *name)
 					return;
 				}
 				if (thing == tp_player_start || thing == GLOBAL_ENVIRONMENT) {
-					notify(player, "This room may not be recycled.");
+					notify(player, "This room may not be recycled (is either player start or the global environment).");
 					return;
 				}
 				break;
@@ -860,6 +863,11 @@ do_recycle(int descr, dbref player, const char *name)
 			case TYPE_PROGRAM:
 				if (OWNER(thing) != OWNER(player)) {
 					notify(player, "Permission denied.");
+					return;
+				}
+				/* FIXME: This is a workaround for bug #201633 */
+				if(PROGRAM_INSTANCES(thing)) {
+					notify(player, "Recycle failed: Program is running.");
 					return;
 				}
 				break;
