@@ -1045,11 +1045,8 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 				break;
 			}
 
-			temp1.type = PROG_INTEGER;
-			temp1.data.number = count;
-			array_setitem(&new, &temp1, &temp2);
+			array_appenditem(&new, &temp2);
 
-			CLEAR(&temp1);
 			CLEAR(&temp2);
 		} else {
 			break;
