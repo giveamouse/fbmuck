@@ -320,6 +320,7 @@ has_property(int descr, dbref player, dbref what, const char *pname, const char 
 }
 
 
+static int has_prop_recursion_limit = 2;
 /* checks if object has property, returns 1 if it has the property */
 int
 has_property_strict(int descr, dbref player, dbref what, const char *pname, const char *strval,
@@ -343,9 +344,16 @@ has_property_strict(int descr, dbref player, dbref what, const char *pname, cons
 			str = DoNull(PropDataStr(p));
 #endif							/* COMPRESS */
 
-			ptr = do_parse_mesg(descr, player, what, str, "(Lock)", buf,
-								(MPI_ISPRIVATE | MPI_ISLOCK |
-								 ((PropFlags(p) & PROP_BLESSED)? MPI_ISBLESSED : 0)));
+			if (has_prop_recursion_limit-->0) {
+				ptr = do_parse_mesg(descr, player, what, str, "(Lock)", buf,
+									(MPI_ISPRIVATE | MPI_ISLOCK |
+									((PropFlags(p) & PROP_BLESSED)? MPI_ISBLESSED : 0)));
+			} else {
+				strncpy(buf, str, sizeof(buf)); 
+				buf[sizeof(buf)-1] = '\0';
+				ptr = buf;
+			}
+			has_prop_recursion_limit++;
 			return (equalstr((char *) strval, ptr));
 		} else if (PropType(p) == PROP_LOKTYP) {
 			return 0;

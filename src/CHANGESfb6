@@ -2,6 +2,7 @@
 Fixed crasher in prochelp when given too-long topic titles.
 Fixed infloop problem in vehicles calling envprop when secure_thing_movement
   not set.  Bug #621067.
+Fixed long-hang bug with sex properties parsing MPI recursively.
 Changed help.txt into a muckhelp.raw file that is processed by prochelp.
 Changed property loading routines to not abort(), but to instead log corrupt
   properties when they are found.
