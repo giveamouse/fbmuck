@@ -1822,7 +1822,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	} else if (!string_compare(temp, "version")) {
 		tmpname = (char *) next_token_raw(cstat); 
 		if (!ifloat(tmpname))
-			v_abort_compile(cstat, "Not a floating point number for the version.");
+			v_abort_compile(cstat, "Expected a floating point number for the version.");
 		add_property(cstat->program, "_version", tmpname, 0);
 		while (*cstat->next_char)
 			cstat->next_char++;
@@ -1832,7 +1832,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	} else if (!string_compare(temp, "lib-version")) {
 		tmpname = (char *) next_token_raw(cstat);
 		if (!ifloat(tmpname))
-			v_abort_compile(cstat, "Not a floating point number for the version.");
+			v_abort_compile(cstat, "Expected a floating point number for the version.");
 		add_property(cstat->program, "_lib-version", tmpname, 0);
 		while (*cstat->next_char)
 			cstat->next_char++;
@@ -1988,8 +1988,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 	} else if (!string_compare(temp, "ifver")  || !string_compare(temp, "iflibver") ||
 			   !string_compare(temp, "ifnver") || !string_compare(temp, "ifnlibver")) {
 		struct match_data md;
-		float verflt = 0;
-		float checkflt = 0;
+		double verflt = 0;
+		double checkflt = 0;
 		int needFree = 0;
 
 		tmpname = (char *) next_token_raw(cstat);
@@ -2035,14 +2035,14 @@ do_directive(COMPSTATE * cstat, char *direct)
 		if (!tmpptr || !ifloat(tmpptr)) {
 			verflt = 0.0;
 		} else {
-			sscanf(tmpptr, "%g", &verflt);
+			sscanf(tmpptr, "%lg", &verflt);
 		}
 		if ( needFree )
 			free(tmpptr);
 		if (!tmpname || !ifloat(tmpname)) {
 			checkflt = 0.0;
 		} else {
-			sscanf(tmpname, "%g", &checkflt);
+			sscanf(tmpname, "%lg", &checkflt);
 		}
 		free(tmpname);
 		while (*cstat->next_char)
@@ -2843,7 +2843,7 @@ float_word(COMPSTATE * cstat, const char *token)
 	nu->no = cstat->nowords++;
 	nu->in.type = PROG_FLOAT;
 	nu->in.line = cstat->lineno;
-	sscanf(token, "%g", &(nu->in.data.fnumber));
+	sscanf(token, "%lg", &(nu->in.data.fnumber));
 	return nu;
 }
 

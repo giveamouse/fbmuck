@@ -2172,7 +2172,7 @@ void
 prim_getpidinfo(PRIM_PROTOTYPE)
 {
 	stk_array*	nu;
-	float		cpu;
+	double		cpu;
 	time_t		etime;
 
 	CHECKOP(1);

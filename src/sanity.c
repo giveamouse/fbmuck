@@ -1218,9 +1218,9 @@ extract_prop(FILE * f, const char *dir, PropPtr p)
 		ptr2 = intostr(PropDataVal(p));
 		break;
 	case PROP_FLTTYP:
-		if ((PropDataFVal(p) < SMALL_NUM) && (PropDataFVal(p) > NSMALL_NUM))
+		if (PropDataFVal(p) == 0.0)
 			return;
-		snprintf(tbuf, sizeof(tbuf), "%g", PropDataFVal(p));
+		snprintf(tbuf, sizeof(tbuf), "%.17lg", PropDataFVal(p));
 		ptr2 = tbuf;
 		break;
 	case PROP_REFTYP:

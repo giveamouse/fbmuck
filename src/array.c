@@ -103,32 +103,32 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 {
 	if (a->type != b->type) {
 		if (a->type == PROG_INTEGER && b->type == PROG_FLOAT) {
-			if (((float)a->data.number - b->data.fnumber) >= FLT_EPSILON) {
-				return 1;
-			} else if ((b->data.fnumber - (float)a->data.number) >= FLT_EPSILON) {
-				return -1;
-			} else {
+			if (fabs(((double)a->data.number - b->data.fnumber) / (double)a->data.number) < DBL_EPSILON) {
 				return 0;
+			} else if (a->data.number > b->data.fnumber) {
+				return 1;
+			} else {
+				return -1;
 			}
-		} else if (b->type == PROG_INTEGER && a->type == PROG_FLOAT) {
-			if ((a->data.fnumber - (float)b->data.number) >= FLT_EPSILON) {
-				return 1;
-			} else if (((float)b->data.number - a->data.fnumber) >= FLT_EPSILON) {
-				return -1;
-			} else {
+		} else if (a->type == PROG_FLOAT && b->type == PROG_INTEGER) {
+			if (fabs((a->data.fnumber - b->data.number) / a->data.fnumber) < DBL_EPSILON) {
 				return 0;
+			} else if (a->data.fnumber > b->data.number) {
+				return 1;
+			} else {
+				return -1;
 			}
 		}
 		return (a->type - b->type);
 	}
 	/* Indexes are of same type if we reached here. */
 	if (a->type == PROG_FLOAT) {
-		if ((a->data.fnumber - b->data.fnumber) >= FLT_EPSILON) {
-			return 1;
-		} else if ((b->data.fnumber - a->data.fnumber) >= FLT_EPSILON) {
-			return -1;
-		} else {
+		if (fabs((a->data.fnumber - b->data.fnumber) / a->data.fnumber) < DBL_EPSILON) {
 			return 0;
+		} else if (a->data.fnumber > b->data.fnumber) {
+			return 1;
+		} else {
+			return -1;
 		}
 	} else if (a->type == PROG_STRING) {
 		char *astr = (a->data.string) ? a->data.string->data : "";
@@ -1618,7 +1618,7 @@ array_set_strkey_intval(stk_array ** arr, const char *key, int val)
 }
 
 int
-array_set_strkey_fltval(stk_array ** arr, const char *key, float val)
+array_set_strkey_fltval(stk_array ** arr, const char *key, double val)
 {
 	struct inst value;
 	int result;
@@ -1718,7 +1718,7 @@ array_set_intkey_intval(stk_array ** harr, int key, int val)
 }
 
 int
-array_set_intkey_fltval(stk_array ** harr, int key, float val)
+array_set_intkey_fltval(stk_array ** harr, int key, double val)
 {
 	struct inst value;
 	int result;
@@ -1842,7 +1842,7 @@ array_set_intval(stk_array ** harr, struct inst* key, int val)
 }
 
 int
-array_set_fltval(stk_array ** harr, struct inst* key, float val)
+array_set_fltval(stk_array ** harr, struct inst* key, double val)
 {
 	struct inst value;
 	int result;

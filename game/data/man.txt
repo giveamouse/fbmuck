@@ -51,7 +51,7 @@ Floating Point Math:
   sin     asin    cos     acos    tan     atan    atan2
   pi      inf     sqrt    pow     exp     log     log10
   floor   ceil    round   fabs    modf    fmod    frand
-  float
+  float   epsilon
 
 Floating Point Errors:
   error?     is_set?     set_error  clear         clear_error
@@ -4070,3 +4070,16 @@ SETLINKS_ARRAY|
 SETLINKS_ARRAY ( ref:Obj arr:Destinations -- )
 Sets the destinations/dropto/home of "Obj" to "Destinations".  Objects may be
 unlinked by passing in an empty array.
+~
+EPSILON|
+EPSILON ( -- flt:epsilon )
+Returns the smallest number such that 1.0 + Epsilon is distinct from 1.0
+in the internal representation for floating point numbers.  This is the
+precision error.  This is useful when comparing that two numbers are equal
+to within the precision of the system.  ie:
+    float1 @ float2 @ - fabs epsilon < if "Equivalent" then
+
+When you are working with numbers that have exponent parts that may not be
+near e+00, you should do a relative comparison instead:
+    float1 @ float2 @ - float1 @ / fabs epsilon < if "Equivalent" then
+

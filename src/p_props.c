@@ -111,7 +111,7 @@ prim_getpropval(PRIM_PROTOTYPE)
 void
 prim_getpropfval(PRIM_PROTOTYPE)
 {
-	float fresult;
+	double fresult;
 
 	CHECKOP(2);
 	oper1 = POP();
@@ -360,7 +360,7 @@ prim_remove_prop(PRIM_PROTOTYPE)
 void
 prim_envprop(PRIM_PROTOTYPE)
 {
-	float fresult;
+	double fresult;
 
 	CHECKOP(2);
 	oper1 = POP();
@@ -526,7 +526,7 @@ prim_blessprop(PRIM_PROTOTYPE)
 		abort_interp("Non-object argument (1)");
 	CHECKREMOTE(oper1->data.objref);
 
-	if (mlev < 3)
+	if (mlev < 4)
 		abort_interp("Permission denied.");
 
 	{
@@ -574,7 +574,7 @@ prim_unblessprop(PRIM_PROTOTYPE)
 		abort_interp("Non-object argument (1)");
 	CHECKREMOTE(oper1->data.objref);
 
-	if (mlev < 3)
+	if (mlev < 4)
 		abort_interp("Permission denied.");
 
 	{

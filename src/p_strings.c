@@ -414,7 +414,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				case 'f':
 				case 'e':
 				case 'g':
-					strcat(sfmt, "h");
+					strcat(sfmt, "l");
 					snprintf(hold, sizeof(hold), "%c", sstr[scnt]);
 					strcat(sfmt, hold);
 					if (oper2->type != PROG_FLOAT)
@@ -662,6 +662,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 								sstr[scnt] = 'D';
 								break;
 							case PROG_FLOAT:
+								sstr[scnt++] = 'l';
 								sstr[scnt] = 'g';
 								break;
 							case PROG_INTEGER:
@@ -885,7 +886,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 						case 'f':
 						case 'e':
 						case 'g':
-							strcat(sfmt, "h");
+							strcat(sfmt, "l");
 							snprintf(hold, sizeof(hold), "%c", sstr[scnt]);
 							strcat(sfmt, hold);
 							if (oper3->type != PROG_FLOAT)
@@ -1517,7 +1518,7 @@ prim_intostr(PRIM_PROTOTYPE)
 	if (oper1->type == PROG_STRING)
 		abort_interp("Invalid argument.");
 	if (oper1->type == PROG_FLOAT) {
-		snprintf(buf, sizeof(buf), "%g", oper1->data.fnumber);
+		snprintf(buf, sizeof(buf), "%.16lg", oper1->data.fnumber);
 		ptr=buf;
 	} else {
 		val = oper1->data.number;

@@ -11,16 +11,7 @@
 #include "externs.h"
 #include "interface.h"
 #include <strings.h>
-
-#ifdef WIN32
-# include <limits>
-using namespace std;
-# define INF (numeric_limits<float>::infinity())
-# define NINF (-1 * numeric_limits<float>::infinity())
-#else
-# define INF (9.9E999)
-# define NINF (-9.9E999)
-#endif
+#include <math.h>
 
 #ifdef COMPRESS
 extern const char *compress(const char *);
@@ -103,7 +94,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 		break;
 	case PROP_FLTTYP:
 		SetPDataFVal(p, dat->data.fval);
-		if ((dat->data.fval < SMALL_NUM) && (dat->data.fval > NSMALL_NUM)) {
+		if (dat->data.fval == 0.0) {
 			SetPType(p, PROP_DIRTYP);
 			if (!PropDir(p)) {
 				remove_property_nofetch(player, pname);
@@ -407,7 +398,7 @@ get_property_value(dbref player, const char *pname)
 }
 
 /* return float value of a property */
-float
+double
 get_property_fvalue(dbref player, const char *pname)
 {
 	PropPtr p;
@@ -796,7 +787,7 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 		snprintf(buf, bufsiz, "%c int %s:%d", blesschar, mybuf, PropDataVal(p));
 		break;
 	case PROP_FLTTYP:
-		snprintf(buf, bufsiz, "%c flt %s:%g", blesschar, mybuf, PropDataFVal(p));
+		snprintf(buf, bufsiz, "%c flt %s:%.17lg", blesschar, mybuf, PropDataFVal(p));
 		break;
 	case PROP_LOKTYP:
 		if (PropFlags(p) & PROP_ISUNLOADED) {
@@ -951,12 +942,12 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 				}
 			} else {
 				if (!strncmp(tpnt, "NAN", 3)) {
-					mydat.data.fval = 0.0;
+					/* FIXME: This should be NaN. */
+					mydat.data.fval = INF;
 				}
-				abort();
 			}
 		} else {
-			sscanf(value, "%g", &mydat.data.fval);
+			sscanf(value, "%lg", &mydat.data.fval);
 		}
 		set_property_nofetch(obj, name, &mydat);
 		break;
@@ -1011,7 +1002,7 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
 	case PROP_FLTTYP:
 		if (!PropDataFVal(p))
 			return;
-		snprintf(tbuf, sizeof(tbuf), "%g", PropDataFVal(p));
+		snprintf(tbuf, sizeof(tbuf), "%.17lg", PropDataFVal(p));
 		ptr2 = tbuf;
 		break;
 	case PROP_REFTYP:

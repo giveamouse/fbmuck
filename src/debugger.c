@@ -386,7 +386,7 @@ push_arg(dbref player, struct frame *fr, const char *arg)
 {
 	int num, lflag = 0;
 	int sflag = 0;
-	float inum;
+	double inum;
 
 	if (fr->argument.top >= STACK_SIZE) {
 		notify_nolisten(player, "That would overflow the stack.", 1);
@@ -399,7 +399,7 @@ push_arg(dbref player, struct frame *fr, const char *arg)
 		notify_nolisten(player, "Integer pushed.", 1);
 	} else if (ifloat(arg)) {
 		/* push a float */
-		inum = (float) atof(arg);
+		inum = atof(arg);
 		push(fr->argument.st, &fr->argument.top, PROG_FLOAT, MIPSCAST & inum);
 		notify_nolisten(player, "Float pushed.", 1);
 	} else if (*arg == NUMBER_TOKEN) {

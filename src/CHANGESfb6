@@ -10,6 +10,7 @@ Changed parsing so commands starting with ';' exit delimiters will now trigger
 Changed MCP-GUI package version to 1.1 (1.001 as MUF sees it.)
 Changed NOTIFY_EXCLUDE so excluding the room excludes environmental listeners.
 Changed TOKENSPLIT to allow a delimiter token to also be an escape char.
+Changed floats in MUF to be of double precision.
 Fixed bug with non-DISKBASE mucks where third save message wouldn't get sent.
 Fixed bug with non-DISKBASE mucks where @dump would drop SSL users.
 Fixed bug with reporting of incorrect line numbers in muf backtraces.
@@ -64,6 +65,7 @@ Fixed bug #608081: Scoped vars lost with FORK prim.
 Fixed bug #515341: "pid getpidinfo" returns empty array.
 Fixed bug where listen and queued programs wouldn't get the pids they initially
   claimed they were going to get.
+Fixed BLESSPROP and UNBLESSPROP to be wizbit instead of ML3.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.
@@ -118,6 +120,7 @@ Added PROGRAM_SETLINES ( ref:Program list:Lines -- )
 Added DEBUG_ON, DEBUG_OFF, and DEBUG_LINE prims in-server to avoid the stack
   pollution created by the macro versions.
 Added SETLINKS_ARRAY ( ref:Obj arr:Links -- ) Multiple destination setlinking.
+Added EPSILON ( -- flt:epsilon) muf primitive to provide precision of floats.
 Removed dead concentrater log code.
 Removed dead LOCKOUT code from include/config.h.
 

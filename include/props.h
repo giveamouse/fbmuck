@@ -6,7 +6,7 @@ union pdata_u {
 	char *str;
 	struct boolexp *lok;
 	int val;
-	float fval;
+	double fval;
 	dbref ref;
 	long pos;
 };
@@ -152,7 +152,7 @@ extern int has_property_strict(int descr, dbref player, dbref what, const char *
 							   const char *strval, int value);
 
 extern const char *get_property_class(dbref player, const char *type);
-extern float get_property_fvalue(dbref player, const char *type);
+extern double get_property_fvalue(dbref player, const char *type);
 extern int get_property_value(dbref player, const char *type);
 extern struct boolexp *get_property_lock(dbref player, const char *type);
 extern const char *envpropstr(dbref * where, const char *propname);

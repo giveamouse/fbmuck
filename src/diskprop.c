@@ -163,7 +163,7 @@ void
 report_fetchstats(dbref player)
 {
 	int i, count, slot;
-	float sum, minv, maxv;
+	double sum, minv, maxv;
 	char buf[BUFFER_LEN];
 	time_t now;
 
@@ -240,7 +240,7 @@ report_cachestats(dbref player)
 	dbref obj;
 	int count, total, checked, gap, ipct;
 	time_t when, now;
-	float pct;
+	double pct;
 	char buf[BUFFER_LEN];
 
 	notify(player, "LRU proploaded cache time distribution graph.");
@@ -280,7 +280,7 @@ void
 diskbase_debug(dbref player)
 {
 	char buf[BUFFER_LEN];
-	float ph, pm;
+	double ph, pm;
 
 	ph = propcache_hits;
 	pm = propcache_misses;
