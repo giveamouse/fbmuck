@@ -1785,9 +1785,9 @@ mfn_attr(MFUNARGS)
 			strcat(buf, ANSI_BG_MAGENTA);
 		} else if (!string_compare(argv[i], "bg_white")) {
 			strcat(buf, ANSI_BG_WHITE);
+		} else if (!string_compare(argv[i], "")) {
 		} else {
-			ABORT_MPI("ATTR",
-					  "Unrecognized ansi tag.  Try one of reset, bold, dim, underline, reverse, black, red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, bg_green, bg_cyan, bg_blue, bg_magenta, or bg_white.");
+			ABORT_MPI("ATTR", "Unrecognized ansi tag.  Try one of reset, bold, dim, underline, reverse, black, red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, bg_green, bg_cyan, bg_blue, bg_magenta, or bg_white.");
 		}
 	}
 	exlen = strlen(buf) + strlen(ANSI_RESET) + 1;
