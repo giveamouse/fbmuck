@@ -119,9 +119,7 @@
 /* per allocated block, but can be some    */
 /* help in tracking down obscure memory    */
 /* trashing pointer bugs.                  */
-#ifndef CRT_DEBUG_ALSO			/* Let user set switch in extern head file. */
-#define CRT_DEBUG_ALSO FALSE	/* Default to reasonable val if s/he didn't. */
-#endif
+/* #define CRT_DEBUG_ALSO                  */
 
 /* When debugging is selected, we check the */
 /* last CRT_NEW_TO_CHECK blocks allocated   */
@@ -185,7 +183,7 @@ static Block block_list = NULL;
 struct CrT_header_rec {
 	Block b;
 	size_t size;
-#if CRT_DEBUG_ALSO
+#ifdef CRT_DEBUG_ALSO
 	struct CrT_header_rec *next;
 	struct CrT_header_rec *prev;
 	char *end;
@@ -197,7 +195,7 @@ typedef struct CrT_header_rec *Header;
 /* }}} */
 /* {{{ Globals supporting debug functionality.				*/
 
-#if CRT_DEBUG_ALSO
+#ifdef CRT_DEBUG_ALSO
 static A_Block Root_Owner = {
 
 	__FILE__,					/* file */
@@ -302,7 +300,7 @@ static int next_touched = 0;	/* Always indexes above. */
 #undef free
 
 /* Number of bytes of overhead we add to a block: */
-#if CRT_DEBUG_ALSO
+#ifdef CRT_DEBUG_ALSO
 #define CRT_OVERHEAD_BYTES (sizeof(A_Header) +1)
 #else
 #define CRT_OVERHEAD_BYTES (sizeof(A_Header)   )
@@ -567,7 +565,7 @@ CrT_summarize_to_file(const char *file, const char *comment)
 
 /* }}} */
 
-#if CRT_DEBUG_ALSO
+#ifdef CRT_DEBUG_ALSO
 
 /* Debug support functions: */
 /* {{{ CrT_check -- abort if we can find any trashed malloc blocks.	*/
@@ -674,7 +672,7 @@ CrT_malloc(size_t size, const char *file, int line)
 
 
 
-#if CRT_DEBUG_ALSO
+#ifdef CRT_DEBUG_ALSO
 	/* Look around for trashed ram blocks: */
 	CrT_check(file, line);
 
@@ -728,7 +726,7 @@ CrT_calloc(size_t num, size_t siz, const char *file, int line)
 
 
 
-#if CRT_DEBUG_ALSO
+#ifdef CRT_DEBUG_ALSO
 
 	/* Look around for trashed ram blocks: */
 	CrT_check(file, line);
@@ -773,7 +771,7 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
 	Header m = ((Header) p) - 1;
 	Block b = m->b;
 
-#if CRT_DEBUG_ALSO
+#ifdef CRT_DEBUG_ALSO
 	/* Look around for trashed ram blocks: */
 	check_block(m, __FILE__, __LINE__);
 	CrT_check(file, line);
@@ -807,7 +805,7 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
 
 	m->size = size;
 
-#if CRT_DEBUG_ALSO
+#ifdef CRT_DEBUG_ALSO
 
 	/* Remember where end of block is: */
 	m->end = &((char *) m)[size + (CRT_OVERHEAD_BYTES - 1)];
@@ -842,7 +840,7 @@ CrT_free(void *p, const char *file, int line)
 	Header m = ((Header) p) - 1;
 	Block b = m->b;
 
-#if CRT_DEBUG_ALSO
+#ifdef CRT_DEBUG_ALSO
 	/* Look around for trashed ram blocks: */
 	if (*m->end == CRT_FREE_MAGIC)
 		crash("Duplicate free()", m, file, line);
