@@ -2,6 +2,9 @@
 
 /*
  * $Log: db.c,v $
+ * Revision 1.3  2000/05/23 22:34:54  wog
+ * Changed number() to not think "-" or "+" is a number.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -822,6 +825,8 @@ number(const char *s)
 		s++;
 	if (*s == '+' || *s == '-')
 		s++;
+	if (!*s) 
+		return 0;
 	for (; *s; s++)
 		if (*s < '0' || *s > '9')
 			return 0;
