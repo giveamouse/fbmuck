@@ -38,6 +38,7 @@ Fixed ARRAY_GET_PROPDIRS muf prim, which pretty much just didn't work before.
 Fixed strip_evil_characters() for speed and correctness.
 Fixed examine for @oecho and @pecho not showing without who_doing @tuned on.
 Fixed crasher bug with {commas} MPI function.
+Fixed typo in default idleboot message.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.

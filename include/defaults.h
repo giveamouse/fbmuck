@@ -24,7 +24,7 @@
 #define LEAVE_MESSAGE "Come back later!"
 
 /*  Idleboot message.  */
-#define IDLEBOOT_MESSAGE "Autodisonnecting for inactivity."
+#define IDLEBOOT_MESSAGE "Autodisconnecting for inactivity."
 
 /*  How long someone can idle for.  */
 #define MAXIDLE TIME_HOUR(2)
