@@ -62,18 +62,21 @@ typedef int dbref;				/* offset into db */
 #define OWNER(x)    (db[x].owner)
 
 /* defines for possible data access mods. */
-#define MESGPROP_DESC	"_/de"
-#define MESGPROP_IDESC	"_/ide"
-#define MESGPROP_SUCC	"_/sc"
-#define MESGPROP_OSUCC	"_/osc"
-#define MESGPROP_FAIL	"_/fl"
-#define MESGPROP_OFAIL	"_/ofl"
-#define MESGPROP_DROP	"_/dr"
-#define MESGPROP_ODROP	"_/odr"
-#define MESGPROP_DOING	"_/do"
-#define MESGPROP_OECHO	"_/oecho"
-#define MESGPROP_PECHO	"_/pecho"
-#define MESGPROP_LOCK	"_/lok"
+#define MESGPROP_DESC		"_/de"
+#define MESGPROP_IDESC		"_/ide"
+#define MESGPROP_SUCC		"_/sc"
+#define MESGPROP_OSUCC		"_/osc"
+#define MESGPROP_FAIL		"_/fl"
+#define MESGPROP_OFAIL		"_/ofl"
+#define MESGPROP_DROP		"_/dr"
+#define MESGPROP_ODROP		"_/odr"
+#define MESGPROP_DOING		"_/do"
+#define MESGPROP_OECHO		"_/oecho"
+#define MESGPROP_PECHO		"_/pecho"
+#define MESGPROP_LOCK		"_/lok"
+#define MESGPROP_FLOCK		"_/fl"
+#define MESGPROP_CONLOCK	"_/clk"
+#define MESGPROP_CHLOCK		"_/chlk"
 
 #define GETMESG(x,y)   (get_property_class(x, y))
 #define GETDESC(x)	GETMESG(x, MESGPROP_DESC)
@@ -115,6 +118,21 @@ typedef int dbref;				/* offset into db */
 #define SETLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_LOCK, &mydat);}
 #define LOADLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_LOCK, &mydat); DBDIRTY(x);}
 #define CLEARLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_LOCK, &mydat);}
+
+#define GETFLOCK(x)    (get_property_lock(x, MESGPROP_FLOCK))
+#define SETFLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_FLOCK, &mydat);}
+#define LOADFLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_FLOCK, &mydat); DBDIRTY(x);}
+#define CLEARFLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_FLOCK, &mydat);}
+
+#define GETCONLOCK(x)    (get_property_lock(x, MESGPROP_CONLOCK))
+#define SETCONLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_CONLOCK, &mydat);}
+#define LOADCONLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_CONLOCK, &mydat); DBDIRTY(x);}
+#define CLEARCONLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_CONLOCK, &mydat);}
+
+#define GETCHLOCK(x)    (get_property_lock(x, MESGPROP_CHLOCK))
+#define SETCHLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_CHLOCK, &mydat);}
+#define LOADCHLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_CHLOCK, &mydat); DBDIRTY(x);}
+#define CLEARCHLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_CHLOCK, &mydat);}
 
 #define DB_PARMSINFO     0x0001
 #define DB_COMPRESSED    0x0002
