@@ -8,6 +8,7 @@ Changed parsing so commands starting with ';' exit delimiters will now trigger
   actions named 'delimiter', similar to how ':' triggers pose actions.
 Changed MCP-GUI package version to 1.1 (1.001 as MUF sees it.)
 Changed NOTIFY_EXCLUDE so excluding the room excludes environmental listeners.
+Changed TOKENSPLIT to allow a delimiter token to also be an escape char.
 Fixed bug with non-DISKBASE mucks where third save message wouldn't get sent.
 Fixed bug with non-DISKBASE mucks where @dump would drop SSL users.
 Fixed bug with reporting of incorrect line numbers in muf backtraces.
