@@ -6,6 +6,7 @@ Changed FMTSTRING and ARRAY_FMTSTRINGS MUF prims to be ANSI-aware.
 Changed all sprintf()s in the code to snprintf()s.
 Changed parsing so commands starting with ';' exit delimiters will now trigger
   actions named 'delimiter', similar to how ':' triggers pose actions.
+Changed MCP-GUI package version to 1.1 (1.001 as MUF sees it.)
 Fixed bug with non-DISKBASE mucks where third save message wouldn't get sent.
 Fixed bug with non-DISKBASE mucks where @dump would drop SSL users.
 Fixed bug with reporting of incorrect line numbers in muf backtraces.
@@ -49,6 +50,7 @@ Added and merged Windows specific winfuzz4 changes.
 Added @mcpprogram PROGNAME command, like @mcpedit, except it creates the
   program if it doesn't already exist.
 Added dbdump_warning @tune, to turn on/off the dumpdone messages independantly.
+Added XOR ( i i -- i ) logical eXclusive OR muf primitive.
 
 
 

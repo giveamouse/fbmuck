@@ -317,6 +317,22 @@ prim_or(PRIM_PROTOTYPE)
 }
 
 void
+prim_xor(PRIM_PROTOTYPE)
+{
+	CHECKOP(2);
+	oper1 = POP();
+	oper2 = POP();
+	if (false_inst(oper1)) {
+		result = !false_inst(oper2);
+	} else {
+		result = false_inst(oper2);
+	}
+	CLEAR(oper1);
+	CLEAR(oper2);
+	PushInt(result);
+}
+
+void
 prim_not(PRIM_PROTOTYPE)
 {
 	CHECKOP(1);

@@ -1113,6 +1113,12 @@ or ( x y -- i )
 Performs the boolean `or' operation on x and y. Returns i as 1 if
 either x or y is TRUE, returns i as 0 otherwise.
 ~
+XOR|
+xor ( x y -- i )
+Performs the boolean `xor' operation on x and y. Returns i as 1 if
+either x is TRUE and y is FALSE, or if x is FALSE and y is TRUE.
+If both x and y are TRUE, or both are FALSE, this returns 0.
+~
 OSUCC|
 osucc ( d -- s )
 Takes object d and returns its osuccess (@osucc) string field.

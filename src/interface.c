@@ -2433,7 +2433,7 @@ dump_users(struct descriptor_data *e, char *user)
 	}
 */
 /* #else */
-	wizard = e->connected && Wizard(e->player);
+	wizard = e->connected && Wizard(e->player) && !tp_who_doing;
 /* #endif */
 
 	while (*user && (isspace(*user) || *user == '*')) {

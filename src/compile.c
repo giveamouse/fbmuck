@@ -508,12 +508,14 @@ include_internal_defs(COMPSTATE * cstat)
 	insert_def(cstat, "c_button",    "\"button\"");
 	insert_def(cstat, "c_checkbox",  "\"checkbox\"");
 	insert_def(cstat, "c_radiobtn",  "\"radio\"");
+	insert_def(cstat, "c_password",  "\"password\"");
 	insert_def(cstat, "c_edit",      "\"edit\"");
 	insert_def(cstat, "c_multiedit", "\"multiedit\"");
 	insert_def(cstat, "c_combobox",  "\"combobox\"");
 	insert_def(cstat, "c_spinner",   "\"spinner\"");
 	insert_def(cstat, "c_scale",     "\"scale\"");
 	insert_def(cstat, "c_listbox",   "\"listbox\"");
+	insert_def(cstat, "c_tree",      "\"tree\"");
 	insert_def(cstat, "c_frame",     "\"frame\"");
 	insert_def(cstat, "c_notebook",  "\"notebook\"");
 
