@@ -699,6 +699,9 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	set_start(&cstat);
 	cleanup(&cstat);
 
+	/* Set PROGRAM_INSTANCES to zero (cuz they don't get set elsewhere) */
+	PROGRAM_INSTANCES(cstat.program) = 0;
+
 	/* restart AUTOSTART program. */
 	if ((FLAGS(cstat.program) & ABODE) && TrueWizard(OWNER(cstat.program)))
 		add_muf_queue_event(-1, OWNER(cstat.program), NOTHING, NOTHING,
