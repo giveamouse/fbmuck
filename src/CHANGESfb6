@@ -1,4 +1,4 @@
-2.2fb6.01
+2.2fb6.00rc3
 Added ARRAY_FMTSTRINGS ( arr:dicts str:fmt -- list:strs ) MUF prim.  Creates
   a formatted string for each dictionary in a list, returning a list of the
   formatted strings.
