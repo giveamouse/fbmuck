@@ -20,6 +20,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 #ifdef USE_IPV6
 #include <netinet6/in6.h>
@@ -28,17 +29,18 @@
 extern char **environ;
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
-#elsif HAVE_SYS_ERRNO_H
-#incldue <sys/errno.h>
+#else
+#ifdef HAVE_SYS_ERRNO_H
+#include <sys/errno.h>
 #else
 extern int errno;
+#endif
 #endif
 char *Name;						/* name of this program for error messages */
 char msg[32768];
 
 int
-main(argc, argv)
-char *argv[];
+main(int argc, char *argv[])
 {
 	int s, ns, foo;
 
@@ -73,7 +75,7 @@ char *argv[];
 	strcpy(msg, "");
 	strcpy(tmp, "");
 	while (1) {
-		if ((gets(tmp)) == NULL)
+		if (fgets(tmp,32766,stdin) == NULL)
 			break;
 		strcat(tmp, "\r\n");
 		strcat(msg, tmp);

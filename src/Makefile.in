@@ -77,6 +77,8 @@ LINTFLAGS= -I${INCLUDE}
 #            You should not have to change anything below here           #
 ##########################################################################
 
+ANNSRC= announce.c
+
 MISCSRC= Makefile ChangeLog COPYING mkversion.sh
 
 CSRC= array.c boolexp.c compile.c compress.c create.c db.c \
@@ -111,8 +113,8 @@ EOBJ= oldcompress.o diskprop.o property.o propdirs.o props.o stringutil.o \
 	unparse.o utils.o predicates.o db.o boolexp.o log.o
 
 OBJ= ${COBJ} ${ROBJ} ${LOBJ} ${MOBJ}
-TARGETS= netmuck resolver olddecompress topwords
-OLDTARGETS = netmuck~ resolver~ olddecompress~ topwords~
+TARGETS= netmuck resolver olddecompress topwords announce
+OLDTARGETS = netmuck~ resolver~ olddecompress~ topwords~ announce~
 
 .c.o:
 	${PRE} ${CC} ${CFLAGS} -c $*.c
