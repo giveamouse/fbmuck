@@ -1,0 +1,4 @@
++gnuextensions
+-skipposixheaders
++posixlib
+-I../include
