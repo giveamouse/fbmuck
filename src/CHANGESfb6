@@ -27,6 +27,7 @@ Optimized MUF interp to merge the FUNCTION/DECLVAR/INITVARS trio of instrs
   into a single FUNCTION instr.  This should improve speed slightly.
 Optimized CLEAR and RCLEAR to use a switch statement.
 Optimized copyinst() to use a switch statement.
+Updated MUF manual (man.txt) to include docs for all muf primitives.
 Added VAR! MUF compiler directive.  'var! foo' is the same as 'var foo foo !'.
 Added new MUF procedure declaration syntax, to allow the declaration and
   initialization of procedure-local variables from the stack.  Basically, if
@@ -162,6 +163,9 @@ Added SETSYSPARM ( s1 s2 -- ) MUF prim.  Assigns the @tunable parameter s1
 Added ARRAY_FINDVAL (a1 ? -- a2) MUF prim.  Returns a list array containing
   the keys of every element in the array a1 whose values match the given
   value.
+Added ARRAY_EXCLUDEVAL (a1 ? -- a2) MUF prim.  Returns a list array containing
+  the keys of every element in the array a1 whose values did NOT match the
+  given value.
 Added ARRAY_GET_PROPDIRS( d s -- a ) MUF prim.  Returns a list array
   containing the names of all the sub-propdirs contained within the given
   propdir.  Any propdirs the program wouldn't be able to read, are left out.
