@@ -1,87 +1,5 @@
 /* $Header$ */
 
-/*
- * $Log: property.c,v $
- * Revision 1.6  2000/07/20 20:21:40  winged
- * Fixes to not have uninitialized pointers floating around anymore
- *
- * Revision 1.5  2000/07/19 01:33:18  revar
- * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
- * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
- *
- * Revision 1.4  2000/07/18 18:12:40  winged
- * Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
- *
- * Revision 1.3  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.2  2000/02/08 23:05:53  revar
- * Changes get_property_fvalue() to return 0.0 instead of SMALL_NUM when
- *   the property doesn't exist, or is not a float.
- *
- * Revision 1.1.1.1  2000/01/11 01:56:04  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.2  2000/01/11 01:56:04  foxen
- * Removed dangerous buggy propdir diskbasing code.
- *
- * Revision 1.1.1.1  1999/12/12 07:27:43  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 02:55:59  foxen
- * Initial revision
- *
- * Revision 5.17  1994/03/21  15:13:01  foxen
- * Fixed bug with @set obj=:clear not clearing all props on obj.
- *
- * Revision 5.16  1994/03/21  11:00:42  foxen
- * Autoconfiguration mods.
- *
- * Revision 5.15  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.14  1994/02/13  13:57:51  foxen
- * Ckeaned up display of properties in examine and such.
- *
- * Revision 5.13  1994/01/31  10:00:40  foxen
- * Fixed bug with setting properties with : at the beginning of the propname.
- *
- * Revision 5.12  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.11  1993/12/20  06:22:51  foxen
- * *** empty log message ***
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.6  91/04/06  18:22:47  jearls
- * Rewrote for property directories
- *
- * Revision 1.5  90/09/16  04:42:47  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.4  90/09/15  22:27:45  rearl
- * Fixed dangerous COMPRESS-related bug.
- *
- * Revision 1.3  90/09/10  02:19:49  rearl
- * Introduced string compression of properties, for the
- * COMPRESS compiler option.
- *
- * Revision 1.2  90/08/02  18:50:00  rearl
- * Fixed NULL pointer problem in get_property_class().
- *
- * Revision 1.1  90/07/19  23:04:03  casie
- * Initial revision
- *
- *
- */
-
 #include "copyright.h"
 #include "config.h"
 #include "params.h"
@@ -421,8 +339,9 @@ has_property_strict(int descr, dbref player, dbref what, const char *pname, cons
 			str = DoNull(PropDataStr(p));
 #endif							/* COMPRESS */
 
-			ptr = do_parse_mesg(descr, player, what, str, "(Lock)",
-								buf, (MPI_ISPRIVATE | MPI_ISLOCK));
+			ptr = do_parse_mesg(descr, player, what, str, "(Lock)", buf,
+								(MPI_ISPRIVATE | MPI_ISLOCK |
+								 ((PropFlags(p) & PROP_BLESSED)? MPI_ISBLESSED : 0)));
 			return (equalstr((char *) class, ptr));
 		} else if (PropType(p) == PROP_LOKTYP) {
 			return 0;
@@ -543,6 +462,40 @@ get_property_flags(dbref player, const char *pname)
 		return (PropFlags(p));
 	} else {
 		return 0;
+	}
+}
+
+
+/* return flags of property */
+void
+clear_property_flags(dbref player, const char *pname, int flags)
+{
+	PropPtr p;
+
+	flags &= ~PROP_TYPMASK;
+	p = get_property(player, pname);
+	if (p) {
+		SetPFlags(p, (PropFlags(p) & ~flags));
+#ifdef DISKBASE
+		dirtyprops(player);
+#endif
+	}
+}
+
+
+/* return flags of property */
+void
+set_property_flags(dbref player, const char *pname, int flags)
+{
+	PropPtr p;
+
+	flags &= ~PROP_TYPMASK;
+	p = get_property(player, pname);
+	if (p) {
+		SetPFlags(p, (PropFlags(p) | flags));
+#ifdef DISKBASE
+		dirtyprops(player);
+#endif
 	}
 }
 
@@ -801,6 +754,7 @@ displayprop(dbref player, dbref obj, const char *name, char *buf)
 {
 	char mybuf[BUFFER_LEN];
 	int pdflag;
+	char blesschar = '-';
 	PropPtr p = get_property(obj, name);
 
 	if (!p) {
@@ -810,31 +764,33 @@ displayprop(dbref player, dbref obj, const char *name, char *buf)
 #ifdef DISKBASE
 	propfetch(obj, p);
 #endif
+	if (PropFlags(p) & PROP_BLESSED)
+		blesschar = 'B';
 	pdflag = (PropDir(p) != NULL);
 	sprintf(mybuf, "%.*s%c", (BUFFER_LEN / 4), name, (pdflag) ? PROPDIR_DELIMITER : '\0');
 	switch (PropType(p)) {
 	case PROP_STRTYP:
-		sprintf(buf, "str %s:%.*s", mybuf, (BUFFER_LEN / 2), PropDataStr(p));
+		sprintf(buf, "%c str %s:%.*s", blesschar, mybuf, (BUFFER_LEN / 2), PropDataStr(p));
 		break;
 	case PROP_REFTYP:
-		sprintf(buf, "ref %s:%s", mybuf, unparse_object(player, PropDataRef(p)));
+		sprintf(buf, "%c ref %s:%s", blesschar, mybuf, unparse_object(player, PropDataRef(p)));
 		break;
 	case PROP_INTTYP:
-		sprintf(buf, "int %s:%d", mybuf, PropDataVal(p));
+		sprintf(buf, "%c int %s:%d", blesschar, mybuf, PropDataVal(p));
 		break;
 	case PROP_FLTTYP:
-		sprintf(buf, "flt %s:%hg", mybuf, PropDataFVal(p));
+		sprintf(buf, "%c flt %s:%hg", blesschar, mybuf, PropDataFVal(p));
 		break;
 	case PROP_LOKTYP:
 		if (PropFlags(p) & PROP_ISUNLOADED) {
-			sprintf(buf, "lok %s:*UNLOCKED*", mybuf);
+			sprintf(buf, "%c lok %s:*UNLOCKED*", blesschar, mybuf);
 		} else {
-			sprintf(buf, "lok %s:%.*s", mybuf, (BUFFER_LEN / 2),
+			sprintf(buf, "%c lok %s:%.*s", blesschar, mybuf, (BUFFER_LEN / 2),
 					unparse_boolexp(player, PropDataLok(p), 1));
 		}
 		break;
 	case PROP_DIRTYP:
-		sprintf(buf, "dir %s:(no value)", mybuf);
+		sprintf(buf, "%c dir %s:(no value)", blesschar, mybuf);
 		break;
 	}
 	return buf;

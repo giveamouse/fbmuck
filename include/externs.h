@@ -123,9 +123,11 @@ extern void do_owned(dbref player, const char *name, const char *flags);
 extern void do_trace(int descr, dbref player, const char *name, int depth);
 extern void do_entrances(int descr, dbref player, const char *name, const char *flags);
 extern void do_contents(int descr, dbref player, const char *name, const char *flags);
+extern void exec_or_notify_prop(int descr, dbref player, dbref thing,
+						   const char *propname, const char *whatcalled);
 extern void exec_or_notify(int descr, dbref player, dbref thing,
-
-						   const char *message, const char *whatcalled);
+						   const char *message, const char *whatcalled,
+						   int mpiflags);
 
 /* From move.c */
 extern void moveto(dbref what, dbref where);
@@ -222,6 +224,8 @@ extern void do_serverdebug(int descr, dbref player, const char *arg1, const char
 extern void do_muf_topprofs(dbref player, char *arg1);
 extern void do_mpi_topprofs(dbref player, char *arg1);
 extern void do_all_topprofs(dbref player, char *arg1);
+extern void do_bless(int descr, dbref player, const char *target, const char *propname);
+extern void do_unbless(int descr, dbref player, const char *target, const char *propname);
 
 extern time_t mpi_prof_start_time;
 extern time_t sel_prof_start_time;
@@ -332,4 +336,5 @@ void dump_status(void);
 void log_status(char *format, ...);
 void kill_resolver(void);
 
+int add_mpi_event(int delay, int descr, dbref player, dbref loc, dbref trig, const char *mpi, const char *cmdstr, const char *argstr, int listen_p, int omesg_p, int bless_p);
 #endif /* _EXTERNS_H */

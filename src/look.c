@@ -51,8 +51,20 @@ print_owner(dbref player, dbref thing)
 }
 
 void
+exec_or_notify_prop(int descr, dbref player, dbref thing,
+					const char *propname, const char *whatcalled)
+{
+	const char *message = get_property_class(thing, propname);
+	int mpiflags = Prop_Blessed(thing, propname)? MPI_ISBLESSED : 0;
+
+	if (message)
+		exec_or_notify(descr, player, thing, message, whatcalled, mpiflags);
+}
+
+void
 exec_or_notify(int descr, dbref player, dbref thing,
-			   const char *message, const char *whatcalled)
+			   const char *message, const char *whatcalled,
+			   int mpiflags)
 {
 	char *p;
 	char *p2;
@@ -102,7 +114,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
 
 			strcpy(tmparg, match_args);
 			strcpy(tmpcmd, match_cmdname);
-			p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, MPI_ISPRIVATE);
+			p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, MPI_ISPRIVATE | mpiflags);
 			strcpy(match_args, p);
 			strcpy(match_cmdname, whatcalled);
 			tmpfr = interp(descr, player, DBFETCH(player)->location, i, thing,
@@ -114,7 +126,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
 			strcpy(match_cmdname, tmpcmd);
 		}
 	} else {
-		p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, MPI_ISPRIVATE);
+		p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, MPI_ISPRIVATE | mpiflags);
 		notify(player, p);
 	}
 }
@@ -147,7 +159,8 @@ static void
 look_simple(int descr, dbref player, dbref thing)
 {
 	if (GETDESC(thing)) {
-		exec_or_notify(descr, player, thing, GETDESC(thing), "(@Desc)");
+		exec_or_notify(descr, player, thing, GETDESC(thing), "(@Desc)",
+				Prop_Blessed(thing, MESGPROP_DESC)? MPI_ISBLESSED : 0);
 	} else {
 		notify(player, "You see nothing special.");
 	}
@@ -164,13 +177,15 @@ look_room(int descr, dbref player, dbref loc, int verbose)
 	/* tell him the description */
 	if (Typeof(loc) == TYPE_ROOM) {
 		if (GETDESC(loc)) {
-			exec_or_notify(descr, player, loc, GETDESC(loc), "(@Desc)");
+			exec_or_notify(descr, player, loc, GETDESC(loc), "(@Desc)",
+				Prop_Blessed(loc, MESGPROP_DESC)? MPI_ISBLESSED : 0);
 		}
 		/* tell him the appropriate messages if he has the key */
 		can_doit(descr, player, loc, 0);
 	} else {
 		if (GETIDESC(loc)) {
-			exec_or_notify(descr, player, loc, GETIDESC(loc), "(@Idesc)");
+			exec_or_notify(descr, player, loc, GETIDESC(loc), "(@Idesc)",
+				Prop_Blessed(loc, MESGPROP_IDESC)? MPI_ISBLESSED : 0);
 		}
 	}
 	ts_useobject(loc);
@@ -306,7 +321,8 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 #ifdef DISKBASE
 				propfetch(thing, lastmatch);	/* DISKBASE PROPVALS */
 #endif
-				exec_or_notify(descr, player, thing, PropDataStr(lastmatch), "(@detail)");
+				exec_or_notify(descr, player, thing, PropDataStr(lastmatch), "(@detail)",
+					(PropFlags(lastmatch) & PROP_BLESSED)? MPI_ISBLESSED : 0);
 			} else if (ambig_flag) {
 				notify(player, AMBIGUOUS_MESSAGE);
 			} else if (*detail) {

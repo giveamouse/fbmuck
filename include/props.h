@@ -42,10 +42,13 @@ typedef struct plist *PropPtr;
 #define PROP_DIRTYP   0x0
 #define PROP_STRTYP   0x2
 #define PROP_INTTYP   0x3
-#define PROP_FLTTYP   0x6
 #define PROP_LOKTYP   0x4
 #define PROP_REFTYP   0x5
+#define PROP_FLTTYP   0x6
 #define PROP_TYPMASK  0x7
+
+/* If set, this prop's string value uses Dr.Cat's compression code. */
+#define PROP_COMPRESSED  0x0008
 
 /* Property flags.  Unimplemented as yet. */
 #define PROP_UREAD       0x0010
@@ -56,13 +59,13 @@ typedef struct plist *PropPtr;
 /* half implemented.  Will be used for stuff like password props. */
 #define PROP_SYSPERMS    0x0100
 
-/* If set, this prop's string value uses Dr.Cat's compression code. */
-#define PROP_COMPRESSED  0x0008
-
 /* Internally used prop flags.  Never stored on disk. */
 #define PROP_ISUNLOADED  0x0200
 #define PROP_TOUCHED     0x0400
 #define PROP_DIRUNLOADED 0x0800
+
+/* Blessed props evaluate with wizbit MPI perms. */
+#define PROP_BLESSED     0x1000
 
 
 /* Macros */
@@ -95,6 +98,8 @@ typedef struct plist *PropPtr;
 
 #define SetPFlagsRaw(x,y) {(x)->flags = (short)y;}
 #define PropFlagsRaw(x) ((x)->flags)
+
+#define Prop_Blessed(obj,propname) (get_property_flags(obj, propname) & PROP_BLESSED)
 
 /* property access macros */
 #define Prop_ReadOnly(name) \
@@ -152,6 +157,9 @@ extern struct boolexp *get_property_lock(dbref player, const char *type);
 extern const char *envpropstr(dbref * where, const char *propname);
 extern PropPtr get_property(dbref player, const char *type);
 extern PropPtr envprop(dbref * where, const char *propname, int typ);
+extern int get_property_flags(dbref player, const char *type);
+extern void set_property_flags(dbref player, const char *type, int flags);
+extern void clear_property_flags(dbref player, const char *type, int flags);
 
 extern int genderof(int descr, dbref player);
 extern struct plist *copy_prop(dbref old);

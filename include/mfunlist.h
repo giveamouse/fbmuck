@@ -28,6 +28,7 @@ MFNDAT mfun_list[] = {
 	{"AND", mfn_and, 0, 0, 1, 2, 9},
 	{"ATTR", mfn_attr, 1, 0, 1, 2, 9},
 	{"AWAKE", mfn_awake, 1, 0, 1, 1, 1},
+	{"BLESS", mfn_bless, 1, 0, 1, 1, 2},
 	{"CENTER", mfn_center, 1, 0, 0, 1, 3},
 	{"COMMAS", mfn_commas, 0, 0, 0, 1, 4},
 	{"CONCAT", mfn_concat, 1, 0, 1, 1, 2},
@@ -126,6 +127,7 @@ MFNDAT mfun_list[] = {
 	{"RAND", mfn_rand, 1, 1, 1, 1, 2},
 	{"RIGHT", mfn_right, 1, 0, 0, 1, 3},
 	{"REF", mfn_ref, 1, 0, 1, 1, 1},
+	{"REVOKE", mfn_revoke, 0, 0, 0, 1, 1},
 	{"SECS", mfn_secs, 0, 0, 0, 0, 0},
 	{"SELECT", mfn_select, 1, 0, 1, 2, 3},
 	{"SET", mfn_set, 1, 0, 0, 2, 2},
@@ -148,6 +150,7 @@ MFNDAT mfun_list[] = {
 	{"TOUPPER", mfn_toupper, 1, 0, 0, 1, 1},
 	{"TYPE", mfn_type, 1, 0, 1, 1, 1},
 	{"TZOFFSET", mfn_tzoffset, 0, 0, 0, 0, 0},
+	{"UNBLESS", mfn_unbless, 1, 0, 1, 1, 2},
 	{"USECOUNT", mfn_usecount, 1, 0, 1, 1, 1},
 	{"V", mfn_v, 1, 0, 1, 1, 1},	/* variable value */
 	{"VERSION", mfn_version, 0, 0, 0, 0, 0},

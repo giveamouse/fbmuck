@@ -2,6 +2,14 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.6  2000/11/22 10:01:58  revar
+ * Changed MPI from using Wizbit objects to give special permissions, to using
+ * 'Blessed' properties.  Blessed props have few permissions restrictions.
+ * Added @bless and @unbless wizard commands.
+ * Added BLESSPROP and UNBLESSPROP muf primitives.
+ * Added {bless} {unbless} and {revoke} MPI commands.
+ * Fixed {listprops} crasher bug.
+ *
  * Revision 1.5  2000/08/20 19:15:09  winged
  * Fixed non-static declaration of parent_loop_check_int, as well as lack of function prototype before it was called
  *
@@ -423,9 +431,9 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 					break;
 				}
 				if (GETDROP(exit))
-					exec_or_notify(descr, player, exit, GETDROP(exit), "(@Drop)");
+					exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
 				if (GETODROP(exit) && !Dark(player)) {
-					parse_omessage(descr, player, dest, exit, GETODROP(exit),
+					parse_oprop(descr, player, dest, exit, MESGPROP_ODROP,
 								   PNAME(player), "(@Odrop)");
 				}
 				enter_room(descr, player, dest, exit);
@@ -440,9 +448,9 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 						break;
 					}
 					if (GETDROP(exit))
-						exec_or_notify(descr, player, exit, GETDROP(exit), "(@Drop)");
+						exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
 					if (GETODROP(exit) && !Dark(player)) {
-						parse_omessage(descr, player, dest, exit, GETODROP(exit),
+						parse_oprop(descr, player, dest, exit, MESGPROP_ODROP,
 									   PNAME(player), "(@Odrop)");
 					}
 					enter_room(descr, player, dest, exit);
@@ -494,11 +502,11 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 				succ = 1;
 				if (FLAGS(dest) & JUMP_OK) {
 					if (GETDROP(exit)) {
-						exec_or_notify(descr, player, exit, GETDROP(exit), "(@Drop)");
+						exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
 					}
 					if (GETODROP(exit) && !Dark(player)) {
-						parse_omessage(descr, player, getloc(dest), exit,
-									   GETODROP(exit), PNAME(player), "(@Odrop)");
+						parse_oprop(descr, player, getloc(dest), exit,
+									   MESGPROP_ODROP, PNAME(player), "(@Odrop)");
 					}
 					enter_room(descr, player, DBFETCH(dest)->location, exit);
 				} else {
@@ -764,15 +772,15 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 		}
 
 		if (GETDROP(thing))
-			exec_or_notify(descr, player, thing, GETDROP(thing), "(@Drop)");
+			exec_or_notify_prop(descr, player, thing, MESGPROP_DROP, "(@Drop)");
 		else
 			notify(player, "Dropped.");
 
 		if (GETDROP(loc))
-			exec_or_notify(descr, player, loc, GETDROP(loc), "(@Drop)");
+			exec_or_notify_prop(descr, player, loc, MESGPROP_DROP, "(@Drop)");
 
 		if (GETODROP(thing)) {
-			parse_omessage(descr, player, loc, thing, GETODROP(thing),
+			parse_oprop(descr, player, loc, thing, MESGPROP_ODROP,
 						   PNAME(player), "(@Odrop)");
 		} else {
 			sprintf(buf, "%s drops %s.", PNAME(player), PNAME(thing));
@@ -780,7 +788,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 		}
 
 		if (GETODROP(loc)) {
-			parse_omessage(descr, player, loc, loc, GETODROP(loc), PNAME(thing), "(@Odrop)");
+			parse_oprop(descr, player, loc, loc, MESGPROP_ODROP, PNAME(thing), "(@Odrop)");
 		}
 		break;
 	default:

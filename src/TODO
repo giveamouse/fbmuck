@@ -1,18 +1,16 @@
-Fix wizbit MPI security hole.
-
-Integrate LOG_INTERACTIVE @tune.
 Integrate multiple listener ports mods.
 Integrate time() speedups.
 
-GUI_LIST_ADD     (strDlogID strCtrlID arrItems intPos -- )
-    Adds items into the middle of a control's list.
-GUI_LIST_DEL     (strDlogID strCtrlID intPosFrom intPosTo -- )
-    Deletes items from the middle of a control's list.
 ARRAY_FILTER_PROP ([d] s1 s2 -- [d']) Takes a homogenous list array of dbrefs,
-    and returns a list array with only those dbrefs who have a property
-    specified by s1, set to a value that smatch matches s2.
-ARRAY_EXTRACT ([?] [@] -- [?]} Takes an array, and returns every element whose
-    name is in the index array. (The @ means an index item.  String or int.)
+  and returns a list array with only those dbrefs who have a property specified
+  by s1, set to a value that smatch matches s2.
+ARRAY_EXTRACT ([?] [@] -- [?]) Takes an array, and returns every element whose
+  name is in the index array. (The @ means an index item.  String or int.)
+ARRAY_JOIN ([s] s -- s) Takes a list array of strings and a delimiter string,
+  and returns a single string that is the concatenation of all the strings in
+  the list array, with the delimiter string in between.  For example:
+    { "one" "two" "three" }list "... " array_join
+  will result in a single string: "one... two... three"
 
 CORD_OPEN  (          intDescr strType -- strCordID)
 CORD_SEND  (strCordID strName dictData -- )

@@ -2469,4 +2469,6 @@ init_primitives(void)
 	IN_FORITER = get_primitive(" FORITER");
 	IN_FOR = get_primitive(" FOR");
 	IN_FOREACH = get_primitive(" FOREACH");
+	log_status("MUF: %d primitives exist.\n", BASE_MAX);
 }
+

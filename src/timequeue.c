@@ -36,6 +36,7 @@
 #define TQ_MPI_SUBMASK  0x7
 #define TQ_MPI_LISTEN   0x8
 #define TQ_MPI_OMESG   0x10
+#define TQ_MPI_BLESSED 0x20
 
 
 /*
@@ -250,12 +251,15 @@ add_event(int event_typ, int subtyp, int dtime, int descr, dbref player, dbref l
 int
 add_mpi_event(int delay, int descr, dbref player, dbref loc, dbref trig,
 			  const char *mpi, const char *cmdstr, const char *argstr,
-			  int listen_p, int omesg_p)
+			  int listen_p, int omesg_p, int blessed_p)
 {
 	int subtyp = TQ_MPI_QUEUE;
 
 	if (delay >= 1) {
 		subtyp = TQ_MPI_DELAY;
+	}
+	if (blessed_p) {
+		subtyp |= TQ_MPI_BLESSED;
 	}
 	if (listen_p) {
 		subtyp |= TQ_MPI_LISTEN;
@@ -525,6 +529,9 @@ next_timequeue_event(void)
 			strcpy(match_args, event->str3 ? event->str3 : "");
 			strcpy(match_cmdname, event->command ? event->command : "");
 			ival = (event->subtyp & TQ_MPI_OMESG) ? MPI_ISPUBLIC : MPI_ISPRIVATE;
+			if (event->subtyp & TQ_MPI_BLESSED) {
+				ival |= MPI_ISBLESSED;
+			}
 			if (event->subtyp & TQ_MPI_LISTEN) {
 				ival |= MPI_ISLISTENER;
 				do_parse_mesg(event->descr, event->uid, event->trig, event->called_data,
@@ -1062,6 +1069,8 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 					strcpy(match_args, "");
 					strcpy(match_cmdname, toparg);
 					ival = (mt == 0) ? MPI_ISPUBLIC : MPI_ISPRIVATE;
+					if (Prop_Blessed(what, propname))
+						ival |= MPI_ISBLESSED;
 					do_parse_mesg(descr, player, what, tmpchar + 1, "(MPIqueue)", cbuf, ival);
 					if (*cbuf) {
 						if (mt) {
@@ -1201,7 +1210,8 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
 			if (the_prog == AMBIGUOUS) {
 				if (mpi_p) {
 					add_mpi_event(1, descr, player, where, trigger, tmpchar + 1,
-								  (mt ? "Listen" : "Olisten"), toparg, 1, (mt == 0));
+								  (mt ? "Listen" : "Olisten"), toparg, 1, (mt == 0),
+								  Prop_Blessed(what, propname));
 				}
 			} else if (the_prog != NOTHING) {
 				add_muf_queue_event(descr, player, where, trigger, the_prog, toparg,

@@ -69,13 +69,13 @@ mfn_prop(MFUNARGS)
 
 	pname = argv[0];
 	if (argc == 2) {
-		obj = mesg_dbref(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("PROP", "Match failed.");
 	if (obj == PERMDENIED)
 		ABORT_MPI("PROP", "Permission denied.");
-	ptr = safegetprop(player, obj, perms, pname);
+	ptr = safegetprop(player, obj, perms, pname, mesgtyp);
 	if (!ptr)
 		ABORT_MPI("PROP", "Failed read.");
 	return ptr;
@@ -90,13 +90,13 @@ mfn_propbang(MFUNARGS)
 
 	pname = argv[0];
 	if (argc == 2) {
-		obj = mesg_dbref(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("PROP", "Match failed.");
 	if (obj == PERMDENIED)
 		ABORT_MPI("PROP", "Permission denied.");
-	ptr = safegetprop_strict(player, obj, perms, pname);
+	ptr = safegetprop_strict(player, obj, perms, pname, mesgtyp);
 	if (!ptr)
 		ABORT_MPI("PROP", "Failed read.");
 	return ptr;
@@ -112,15 +112,55 @@ mfn_store(MFUNARGS)
 	pname = argv[1];
 	ptr = argv[0];
 	if (argc > 2) {
-		obj = mesg_dbref_strict(descr, player, what, perms, argv[2]);
+		obj = mesg_dbref_strict(descr, player, what, perms, argv[2], mesgtyp);
 	}
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("STORE", "Match failed.");
 	if (obj == PERMDENIED)
 		ABORT_MPI("STORE", "Permission denied.");
-	if (!safeputprop(obj, perms, pname, ptr))
+	if (!safeputprop(obj, perms, pname, ptr, mesgtyp))
 		ABORT_MPI("STORE", "Permission denied.");
 	return ptr;
+}
+
+
+const char *
+mfn_bless(MFUNARGS)
+{
+	dbref obj = what;
+	char *pname;
+
+	pname = argv[0];
+	if (argc > 1) {
+		obj = mesg_dbref_strict(descr, player, what, perms, argv[1], mesgtyp);
+	}
+	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
+		ABORT_MPI("BLESS", "Match failed.");
+	if (obj == PERMDENIED)
+		ABORT_MPI("BLESS", "Permission denied.");
+	if (!safeblessprop(obj, perms, pname, mesgtyp, 1))
+		ABORT_MPI("BLESS", "Permission denied.");
+	return "";
+}
+
+
+const char *
+mfn_unbless(MFUNARGS)
+{
+	dbref obj = what;
+	char *pname;
+
+	pname = argv[0];
+	if (argc > 1) {
+		obj = mesg_dbref_strict(descr, player, what, perms, argv[1], mesgtyp);
+	}
+	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
+		ABORT_MPI("UNBLESS", "Match failed.");
+	if (obj == PERMDENIED)
+		ABORT_MPI("UNBLESS", "Permission denied.");
+	if (!safeblessprop(obj, perms, pname, mesgtyp, 0))
+		ABORT_MPI("UNBLESS", "Permission denied.");
+	return "";
 }
 
 
@@ -132,13 +172,13 @@ mfn_delprop(MFUNARGS)
 
 	pname = argv[0];
 	if (argc > 1) {
-		obj = mesg_dbref_strict(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref_strict(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("DELPROP", "Match failed.");
 	if (obj == PERMDENIED)
 		ABORT_MPI("DELPROP", "Permission denied.");
-	if (!safeputprop(obj, perms, pname, NULL))
+	if (!safeputprop(obj, perms, pname, NULL, mesgtyp))
 		ABORT_MPI("DELPROP", "Permission denied.");
 	return "";
 }
@@ -152,7 +192,7 @@ mfn_exec(MFUNARGS)
 
 	pname = argv[0];
 	if (argc == 2) {
-		obj = mesg_dbref(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("EXEC", "Match failed.");
@@ -160,10 +200,15 @@ mfn_exec(MFUNARGS)
 		ABORT_MPI("EXEC", "Permission denied.");
 	while (*pname == PROPDIR_DELIMITER)
 		pname++;
-	ptr = safegetprop(player, obj, perms, pname);
+	ptr = safegetprop(player, obj, perms, pname, mesgtyp);
 	if (!ptr)
 		ABORT_MPI("EXEC", "Failed read.");
 	trg = what;
+	if (Prop_Blessed(obj, pname)) {
+		mesgtyp |= MPI_ISBLESSED;
+	} else {
+		mesgtyp &= ~MPI_ISBLESSED;
+	}
 	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname))
 		trg = obj;
 	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
@@ -180,7 +225,7 @@ mfn_execbang(MFUNARGS)
 
 	pname = argv[0];
 	if (argc == 2) {
-		obj = mesg_dbref(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("EXEC!", "Match failed.");
@@ -188,10 +233,15 @@ mfn_execbang(MFUNARGS)
 		ABORT_MPI("EXEC!", "Permission denied.");
 	while (*pname == PROPDIR_DELIMITER)
 		pname++;
-	ptr = safegetprop_strict(player, obj, perms, pname);
+	ptr = safegetprop_strict(player, obj, perms, pname, mesgtyp);
 	if (!ptr)
 		ABORT_MPI("EXEC!", "Failed read.");
 	trg = what;
+	if (Prop_Blessed(obj, pname)) {
+		mesgtyp |= MPI_ISBLESSED;
+	} else {
+		mesgtyp &= ~MPI_ISBLESSED;
+	}
 	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname))
 		trg = obj;
 	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
@@ -209,20 +259,20 @@ mfn_index(MFUNARGS)
 
 	pname = argv[0];
 	if (argc == 2) {
-		obj = mesg_dbref(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("INDEX", "Match failed.");
 	if (obj == PERMDENIED)
 		ABORT_MPI("INDEX", "Permission denied.");
 	tmpobj = obj;
-	ptr = safegetprop(player, obj, perms, pname);
+	ptr = safegetprop(player, obj, perms, pname, mesgtyp);
 	if (!ptr)
 		ABORT_MPI("INDEX", "Failed read.");
 	if (!*ptr)
 		return "";
 	obj = tmpobj;
-	ptr = safegetprop(player, obj, perms, ptr);
+	ptr = safegetprop(player, obj, perms, ptr, mesgtyp);
 	if (!ptr)
 		ABORT_MPI("INDEX", "Failed read.");
 	return ptr;
@@ -239,20 +289,20 @@ mfn_indexbang(MFUNARGS)
 
 	pname = argv[0];
 	if (argc == 2) {
-		obj = mesg_dbref(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("INDEX", "Match failed.");
 	if (obj == PERMDENIED)
 		ABORT_MPI("INDEX", "Permission denied.");
 	tmpobj = obj;
-	ptr = safegetprop_strict(player, obj, perms, pname);
+	ptr = safegetprop_strict(player, obj, perms, pname, mesgtyp);
 	if (!ptr)
 		ABORT_MPI("INDEX", "Failed read.");
 	if (!*ptr)
 		return "";
 	obj = tmpobj;
-	ptr = safegetprop_strict(player, obj, perms, ptr);
+	ptr = safegetprop_strict(player, obj, perms, ptr, mesgtyp);
 	if (!ptr)
 		ABORT_MPI("INDEX", "Failed read.");
 	return ptr;
@@ -268,7 +318,7 @@ mfn_propdir(MFUNARGS)
 
 	pname = argv[0];
 	if (argc == 2) {
-		obj = mesg_dbref(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("PROPDIR", "Match failed.");
@@ -295,7 +345,7 @@ mfn_listprops(MFUNARGS)
 
 	pname = argv[0];
 	if (argc > 1) {
-		obj = mesg_dbref(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("LISTPROPS", "Match failed.");
@@ -325,7 +375,7 @@ mfn_listprops(MFUNARGS)
 		ptr = next_prop_name(obj, tmpbuf, pname);
 		if (ptr && *ptr) {
 			flag = 1;
-			if (!Wizperms(what)) {
+			if (!(mesgtyp & MPI_ISBLESSED)) {
 				if (Prop_Hidden(ptr)) {
 					flag = 0;
 				}
@@ -348,11 +398,14 @@ mfn_listprops(MFUNARGS)
 				}
 			}
 			if (flag) {
-				if (*buf) {
-					*endbuf++ = '\r';
+				int entrylen = strlen(ptr);
+				if ((endbuf - buf) + entrylen + 2 < BUFFER_LEN) {
+					if (*buf) {
+						*endbuf++ = '\r';
+					}
+					strcpy(endbuf, ptr);
+					endbuf += entrylen;
 				}
-				strcpy(endbuf, ptr);
-				endbuf += strlen(endbuf);
 			}
 		}
 		pname = ptr;
@@ -371,13 +424,13 @@ mfn_concat(MFUNARGS)
 
 	pname = argv[0];
 	if (argc == 2) {
-		obj = mesg_dbref(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == PERMDENIED)
 		ABORT_MPI("CONCAT", "Permission denied.");
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("CONCAT", "Match failed.");
-	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 1);
+	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 1, mesgtyp);
 	if (!ptr)
 		ABORT_MPI("CONCAT", "Failed list read.");
 	return ptr;
@@ -402,7 +455,7 @@ mfn_select(MFUNARGS)
 
 	pname = argv[1];
 	if (argc == 3) {
-		obj = mesg_dbref(descr, player, what, perms, argv[2]);
+		obj = mesg_dbref(descr, player, what, perms, argv[2], mesgtyp);
 	}
 	if (obj == PERMDENIED)
 		ABORT_MPI("LIST", "Permission denied.");
@@ -417,7 +470,7 @@ mfn_select(MFUNARGS)
 	limit = 18;
 	i = targval = atoi(argv[0]);
 	do {
-		ptr = get_list_item(player, obj, perms, pname, i--);
+		ptr = get_list_item(player, obj, perms, pname, i--, mesgtyp);
 	} while (limit-->0 && i >= 0 && ptr && !*ptr);
 	if (!ptr)
 		ABORT_MPI("SELECT", "Failed list read.");
@@ -485,7 +538,7 @@ mfn_select(MFUNARGS)
 	}
 	
 	if (*bestname) {
-		ptr = safegetprop_strict(player, bestobj, perms, bestname);
+		ptr = safegetprop_strict(player, bestobj, perms, bestname, mesgtyp);
 		if (!ptr)
 			ABORT_MPI("SELECT", "Failed property read.");
 	} else {
@@ -504,13 +557,13 @@ mfn_list(MFUNARGS)
 
 	pname = argv[0];
 	if (argc == 2) {
-		obj = mesg_dbref(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == PERMDENIED)
 		ABORT_MPI("LIST", "Permission denied.");
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("LIST", "Match failed.");
-	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 0);
+	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 0, mesgtyp);
 	if (!ptr)
 		ptr = "";
 	return ptr;
@@ -526,7 +579,7 @@ mfn_lexec(MFUNARGS)
 
 	pname = argv[0];
 	if (argc == 2) {
-		obj = mesg_dbref(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == PERMDENIED)
 		ABORT_MPI("LEXEC", "Permission denied.");
@@ -534,10 +587,15 @@ mfn_lexec(MFUNARGS)
 		ABORT_MPI("LEXEC", "Match failed.");
 	while (*pname == PROPDIR_DELIMITER)
 		pname++;
-	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 2);
+	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 2, mesgtyp);
 	if (!ptr)
 		ptr = "";
 	trg = what;
+	if (Prop_Blessed(obj, pname)) {
+		mesgtyp |= MPI_ISBLESSED;
+	} else {
+		mesgtyp &= ~MPI_ISBLESSED;
+	}
 	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname))
 		trg = obj;
 	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
@@ -556,16 +614,16 @@ mfn_rand(MFUNARGS)
 
 	pname = argv[0];
 	if (argc == 2) {
-		obj = mesg_dbref(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == PERMDENIED)
 		ABORT_MPI("RAND", "Permission denied.");
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("RAND", "Match failed.");
-	num = get_list_count(what, obj, perms, pname);
+	num = get_list_count(what, obj, perms, pname, mesgtyp);
 	if (!num)
 		ABORT_MPI("RAND", "Failed list read.");
-	ptr = get_list_item(what, obj, perms, pname, (((RANDOM() / 256) % num) + 1));
+	ptr = get_list_item(what, obj, perms, pname, (((RANDOM() / 256) % num) + 1), mesgtyp);
 	if (!ptr)
 		ABORT_MPI("RAND", "Failed list read.");
 	return ptr;
@@ -584,13 +642,13 @@ mfn_timesub(MFUNARGS)
 	offset = atoi(argv[1]);
 	pname = argv[2];
 	if (argc == 4) {
-		obj = mesg_dbref(descr, player, what, perms, argv[3]);
+		obj = mesg_dbref(descr, player, what, perms, argv[3], mesgtyp);
 	}
 	if (obj == PERMDENIED)
 		ABORT_MPI("TIMESUB", "Permission denied.");
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("TIMESUB", "Match failed.");
-	num = get_list_count(what, obj, perms, pname);
+	num = get_list_count(what, obj, perms, pname, mesgtyp);
 	if (!num)
 		ABORT_MPI("TIMESUB", "Failed list read.");
 	if (period < 1)
@@ -598,7 +656,7 @@ mfn_timesub(MFUNARGS)
 	offset = ((((long) time(NULL) + offset) % period) * num) / period;
 	if (offset < 0)
 		offset = -offset;
-	ptr = get_list_item(what, obj, perms, pname, offset + 1);
+	ptr = get_list_item(what, obj, perms, pname, offset + 1, mesgtyp);
 	if (!ptr)
 		ABORT_MPI("TIMESUB", "Failed list read.");
 	return ptr;
@@ -694,7 +752,7 @@ mfn_pronouns(MFUNARGS)
 	dbref obj = player;
 
 	if (argc > 1) {
-		obj = mesg_dbref_local(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref_local(descr, player, what, perms, argv[1], mesgtyp);
 		if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 			ABORT_MPI("PRONOUNS", "Match failed.");
 		if (obj == PERMDENIED)
@@ -751,7 +809,7 @@ mfn_online(MFUNARGS)
 	int count = pcount();
 	char buf2[BUFFER_LEN];
 
-	if (!Wizperms(what))
+	if (!(mesgtyp & MPI_ISBLESSED))
 		ABORT_MPI("ONLINE", "Permission denied.");
 	*buf = '\0';
 	while (count && list_limit--) {
@@ -785,7 +843,7 @@ mfn_contains(MFUNARGS)
 	dbref obj1 = player;
 
 	if (argc > 1)
-		obj1 = mesg_dbref_local(descr, player, what, perms, argv[1]);
+		obj1 = mesg_dbref_local(descr, player, what, perms, argv[1], mesgtyp);
 
 	if (obj2 == UNKNOWN || obj2 == AMBIGUOUS || obj2 == NOTHING || obj2 == HOME)
 		ABORT_MPI("CONTAINS", "Match failed (1).");
@@ -814,7 +872,7 @@ mfn_holds(MFUNARGS)
 	dbref obj2 = player;
 
 	if (argc > 1)
-		obj2 = mesg_dbref_local(descr, player, what, perms, argv[1]);
+		obj2 = mesg_dbref_local(descr, player, what, perms, argv[1], mesgtyp);
 
 	if (obj1 == UNKNOWN || obj1 == AMBIGUOUS || obj1 == NOTHING || obj1 == HOME)
 		ABORT_MPI("HOLDS", "Match failed (1).");
@@ -1562,7 +1620,7 @@ mfn_loc(MFUNARGS)
 {
 	dbref obj;
 
-	obj = mesg_dbref_local(descr, player, what, perms, argv[0]);
+	obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("LOC", "Match failed.");
 	if (obj == PERMDENIED)
@@ -1595,7 +1653,7 @@ mfn_nearby(MFUNARGS)
 	} else {
 		obj2 = what;
 	}
-	if (!Wizperms(what) && !isneighbor(obj, what) && !isneighbor(obj2, what) &&
+	if (!(mesgtyp & MPI_ISBLESSED) && !isneighbor(obj, what) && !isneighbor(obj2, what) &&
 		!isneighbor(obj, player) && !isneighbor(obj2, player)
 			) {
 		ABORT_MPI("NEARBY", "Permission denied.  Neither object is local.");
@@ -1611,7 +1669,7 @@ mfn_nearby(MFUNARGS)
 const char *
 mfn_money(MFUNARGS)
 {
-	dbref obj = mesg_dbref(descr, player, what, perms, argv[0]);
+	dbref obj = mesg_dbref(descr, player, what, perms, argv[0], mesgtyp);
 
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("MONEY", "Match failed.");
@@ -1635,7 +1693,7 @@ mfn_money(MFUNARGS)
 const char *
 mfn_flags(MFUNARGS)
 {
-	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0]);
+	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
 
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("FLAGS", "Match failed.");
@@ -1652,7 +1710,7 @@ mfn_tell(MFUNARGS)
 	dbref obj = player;
 
 	if (argc > 1)
-		obj = mesg_dbref_local(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref_local(descr, player, what, perms, argv[1], mesgtyp);
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("TELL", "Match failed.");
 	if (obj == PERMDENIED)
@@ -1693,7 +1751,7 @@ mfn_otell(MFUNARGS)
 	dbref thing;
 
 	if (argc > 1)
-		obj = mesg_dbref_local(descr, player, what, perms, argv[1]);
+		obj = mesg_dbref_local(descr, player, what, perms, argv[1], mesgtyp);
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("OTELL", "Match failed.");
 	if (obj == PERMDENIED)
@@ -1827,7 +1885,7 @@ mfn_created(MFUNARGS)
 {
 	dbref obj;
 
-	obj = mesg_dbref(descr, player, what, perms, argv[0]);
+	obj = mesg_dbref(descr, player, what, perms, argv[0], mesgtyp);
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("CREATED", "Match failed.");
 	if (obj == PERMDENIED)
@@ -1844,7 +1902,7 @@ mfn_lastused(MFUNARGS)
 {
 	dbref obj;
 
-	obj = mesg_dbref(descr, player, what, perms, argv[0]);
+	obj = mesg_dbref(descr, player, what, perms, argv[0], mesgtyp);
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("LASTUSED", "Match failed.");
 	if (obj == PERMDENIED)
@@ -1861,7 +1919,7 @@ mfn_modified(MFUNARGS)
 {
 	dbref obj;
 
-	obj = mesg_dbref(descr, player, what, perms, argv[0]);
+	obj = mesg_dbref(descr, player, what, perms, argv[0], mesgtyp);
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("MODIFIED", "Match failed.");
 	if (obj == PERMDENIED)
@@ -1878,7 +1936,7 @@ mfn_usecount(MFUNARGS)
 {
 	dbref obj;
 
-	obj = mesg_dbref(descr, player, what, perms, argv[0]);
+	obj = mesg_dbref(descr, player, what, perms, argv[0], mesgtyp);
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("USECOUNT", "Match failed.");
 	if (obj == PERMDENIED)

@@ -2,6 +2,14 @@
 
 /*
  * $Log: speech.c,v $
+ * Revision 1.4  2000/11/22 10:01:58  revar
+ * Changed MPI from using Wizbit objects to give special permissions, to using
+ * 'Blessed' properties.  Blessed props have few permissions restrictions.
+ * Added @bless and @unbless wizard commands.
+ * Added BLESSPROP and UNBLESSPROP muf primitives.
+ * Added {bless} {unbless} and {revoke} MPI commands.
+ * Fixed {listprops} crasher bug.
+ *
  * Revision 1.3  2000/07/19 01:33:18  revar
  * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
  * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
@@ -256,11 +264,8 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
 				char pbuf[BUFFER_LEN];
 				const char *prefix;
 
-				prefix = GETOECHO(obj);
-				if (prefix && *prefix) {
-					prefix = do_parse_mesg(-1, who, obj, prefix,
-										   "(@Oecho)", pbuf, MPI_ISPRIVATE);
-				}
+				prefix = do_parse_prop(-1, who, obj, MESGPROP_OECHO,
+										"(@Oecho)", pbuf, MPI_ISPRIVATE);
 				if (!prefix || !*prefix)
 					prefix = "Outside>";
 				sprintf(buf, "%s %.*s", prefix, (BUFFER_LEN - 2 - strlen(prefix)), msg);
@@ -309,13 +314,26 @@ notify_except(dbref first, dbref exception, const char *msg, dbref who)
 
 
 void
-parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
+parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname,
 			   const char *prefix, const char *whatcalled)
+{
+	const char* msg = get_property_class(exit, propname);
+	int ival = 0;
+	if (Prop_Blessed(exit, propname))
+		ival |= MPI_ISBLESSED;
+
+	if (msg)
+		parse_omessage(descr, player, dest, exit, msg, prefix, whatcalled, ival);
+}
+
+void
+parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
+			   const char *prefix, const char *whatcalled, int mpiflags)
 {
 	char buf[BUFFER_LEN * 2];
 	char *ptr;
 
-	do_parse_mesg(descr, player, exit, msg, whatcalled, buf, MPI_ISPUBLIC);
+	do_parse_mesg(descr, player, exit, msg, whatcalled, buf, MPI_ISPUBLIC | mpiflags);
 	ptr = pronoun_substitute(descr, player, buf);
 	if (!*ptr)
 		return;

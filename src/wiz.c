@@ -183,6 +183,76 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 }
 
 void
+do_unbless(int descr, dbref player, const char *what, const char *propname)
+{
+	dbref victim, loc;
+	struct match_data md;
+
+	if (!tp_zombies && (!Wizard(player) || Typeof(player) != TYPE_PLAYER)) {
+		notify(player, "Only Wizard players may use this command.");
+		return;
+	}
+
+	if (!propname || !*propname) {
+		notify(player, "Usage is @unbless object=propname.");
+		return;
+	}
+
+	/* get victim */
+	init_match(descr, player, what, NOTYPE, &md);
+	match_everything(&md);
+	if ((victim = noisy_match_result(&md)) == NOTHING) {
+		return;
+	}
+
+	if (!Wizard(OWNER(player))) {
+		notify(player, "Permission denied.");
+		return;
+	}
+
+	clear_property_flags(victim, propname, PROP_BLESSED);
+	notify(player, "Property unblessed.");
+}
+
+
+void
+do_bless(int descr, dbref player, const char *what, const char *propname)
+{
+	dbref victim, loc;
+	struct match_data md;
+
+	if (force_level) {
+		notify(player, "Can't @force an @bless.");
+		return;
+	}
+
+	if (!tp_zombies && (!Wizard(player) || Typeof(player) != TYPE_PLAYER)) {
+		notify(player, "Only Wizard players may use this command.");
+		return;
+	}
+
+	if (!propname || !*propname) {
+		notify(player, "Usage is @bless object=propname.");
+		return;
+	}
+
+	/* get victim */
+	init_match(descr, player, what, NOTYPE, &md);
+	match_everything(&md);
+	if ((victim = noisy_match_result(&md)) == NOTHING) {
+		return;
+	}
+
+	if (!Wizard(OWNER(player))) {
+		notify(player, "Permission denied.");
+		return;
+	}
+
+	set_property_flags(victim, propname, PROP_BLESSED);
+	notify(player, "Property blessed.");
+}
+
+void
 do_force(int descr, dbref player, const char *what, char *command)
 {
 	dbref victim, loc;
@@ -637,11 +707,15 @@ do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2)
 		notify(player, "Permission denied.");
 		return;
 	}
+	if (!*arg1) {
+		notify(player, "Usage: @dbginfo [cache|guitest|misc]");
+		return;
+	}
 #ifdef DISKBASE
-	if (!*arg1 || string_prefix(arg1, "cache")) {
+	if (string_prefix(arg1, "cache")) {
 		notify(player, "Cache info:");
 		diskbase_debug(player);
-	}
+	} else
 #endif
 	if (string_prefix(arg1, "guitest")) {
 		do_post_dlog(descr, arg2);

@@ -197,7 +197,6 @@ struct tune_ref_entry tune_ref_list[] = {
 int tp_hostnames = HOSTNAMES;
 int tp_log_commands = LOG_COMMANDS;
 int tp_log_failed_commands = LOG_FAILED_COMMANDS;
-int tp_log_read = LOG_READ;
 int tp_log_programs = LOG_PROGRAMS;
 int tp_dbdump_warning = DBDUMP_WARNING;
 int tp_deltadump_warning = DELTADUMP_WARNING;
@@ -232,6 +231,7 @@ int tp_enable_prefix = ENABLE_PREFIX;
 int tp_thing_movement = SECURE_THING_MOVEMENT;
 int tp_expanded_debug = EXPANDED_DEBUG_TRACE;
 int tp_proplist_int_counter = PROPLIST_INT_COUNTER;
+int tp_log_interactive = LOG_INTERACTIVE;
 
 struct tune_bool_entry {
 	const char *name;
@@ -242,9 +242,9 @@ struct tune_bool_entry {
 struct tune_bool_entry tune_bool_list[] = {
 	{"use_hostnames", &tp_hostnames, 0},
 	{"log_commands", &tp_log_commands, 4},
-	{"log_reads", &tp_log_read, 4},
 	{"log_failed_commands", &tp_log_failed_commands, 4},
 	{"log_programs", &tp_log_programs, 4},
+	{"log_interactive", &tp_log_interactive, 4},
 	{"dbdump_warning", &tp_dbdump_warning, 0},
 	{"deltadump_warning", &tp_deltadump_warning, 0},
 	{"periodic_program_purge", &tp_periodic_program_purge, 0},

@@ -45,11 +45,9 @@ int shutdown_flag = 0;
 int restart_flag = 0;
 
 static const char *connect_fail =
-
 		"Either that player does not exist, or has a different password.\r\n";
 
 static const char *create_fail =
-
 		"Either there is already a player with that name, or that name is illegal.\r\n";
 
 static const char *flushed_message = "<Output Flushed>\r\n";
@@ -545,16 +543,13 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 					if (isprivate || getloc(player) != getloc(OWNER(player))) {
 						char pbuf[BUFFER_LEN];
 						const char *prefix;
+						char ch = *match_args;
 
-						prefix = GETPECHO(player);
-						if (prefix && *prefix) {
-							char ch = *match_args;
+						*match_args = '\0';
+						prefix = do_parse_prop(-1, player, player, MESGPROP_PECHO,
+												"(@Pecho)", pbuf, MPI_ISPRIVATE);
+						*match_args = ch;
 
-							*match_args = '\0';
-							prefix = do_parse_mesg(-1, player, player, prefix,
-												   "(@Pecho)", pbuf, MPI_ISPRIVATE);
-							*match_args = ch;
-						}
 						if (!prefix || !*prefix) {
 							prefix = NAME(player);
 							sprintf(buf2, "%s> %.*s", prefix,
@@ -619,16 +614,13 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 				char buf[BUFFER_LEN];
 				char pbuf[BUFFER_LEN];
 				const char *prefix;
+				char ch = *match_args;
 
-				prefix = GETOECHO(player);
-				if (prefix && *prefix) {
-					char ch = *match_args;
+				*match_args = '\0';
+				prefix = do_parse_prop(-1, from, player, MESGPROP_OECHO,
+										"(@Oecho)", pbuf, MPI_ISPRIVATE);
+				*match_args = ch;
 
-					*match_args = '\0';
-					prefix = do_parse_mesg(-1, from, player, prefix,
-										   "(@Oecho)", pbuf, MPI_ISPRIVATE);
-					*match_args = ch;
-				}
 				if (!prefix || !*prefix)
 					prefix = "Outside>";
 				sprintf(buf, "%s %.*s", prefix, (BUFFER_LEN - (strlen(prefix) + 2)), msg);

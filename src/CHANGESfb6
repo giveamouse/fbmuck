@@ -1,4 +1,18 @@
 2.2fb6.00a34
+Fixed crasher bug in {listprops} with too many properties.
+Added @bless and @unbless commands for granting wizbit mpi permissions to
+  individual properties.  Syntax is @[un]bless object=propname.
+Added MPI {bless:propname[,object]} command to bless a property.  Requires
+  blessed permissions to bless a property.
+Added MPI {unbless:propname[,object]} command to unbless a property.  Requires
+  blessed permissions to unbless a property.
+Added MPI {revoke:commands} command to run the given mpi commands without
+  any Blessing that the running script may currently have.  This is good
+  to wrap around {eval} statments to prevent security holes.
+Added BLESSPROP (dbrefObject strPropname -- ) MUF primitive.  Blesses the given
+  property for MPI.  Requires Wizbit perms.
+Added UNBLESSPROP (dbrefObject strPropname -- ) MUF primitive.  Unblesses the
+  given property for MPI.  Requires Wizbit perms.
 Added GUI_CTRL_COMMAND (strDlogID strCtrlID strCommand dictArgs -- ) muf prim.
   This is the generic primitive for executing a GUI control specific command.
   The dictionary contains the arguments for the given command.
@@ -16,13 +30,19 @@ Added ARRAY_SORT (arrData intSortType -- arrSortedData) muf primitive.  This
     SORTTYPE_NOCASE_ASCEND   Case insensitive and ascending order.
     SORTTYPE_CASE_DESCEND    Case sensitive and descending order.
     SORTTYPE_NOCASE_DESCEND  Case insensitive and descending order.
+Changed MPI to not use the trigger's wizbit for permissions.  Instead, if the
+  property is itself Blessed, then it gets the permissions that wizbit mpi
+  used to have.
+Changed 'examine' command to list properties with either a '-' or a 'B' in
+  front, to denote whether the property has been Blessed or not.
+Changed the 'log_reads' @tune to 'log_interactive' to be compatible with fb5.
 
 
 2.2fb6.00a33
 Fixed 'make package' script to correct location of configure script.
 Fixed a crasher bug with closing a the input db file before we are done with
   it, when DISKBASE is #undefed and DELTADUMPS is #defined.
-Fixed a crasher bug where ARRAY_APPENTITEM checked the wrong argument's type.
+Fixed a crasher bug where ARRAY_APPENDITEM checked the wrong argument's type.
 Fixed a crasher bug with DESCR_SETUSER for players with null passwords.
 Fixed a crasher bug with CHECKPASSWORD for players with null passwords.
 Fixed a string termination bug in ARRAY_PUT_REFLIST.

@@ -2,6 +2,14 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.4  2000/11/22 10:01:58  revar
+ * Changed MPI from using Wizbit objects to give special permissions, to using
+ * 'Blessed' properties.  Blessed props have few permissions restrictions.
+ * Added @bless and @unbless wizard commands.
+ * Added BLESSPROP and UNBLESSPROP muf primitives.
+ * Added {bless} {unbless} and {revoke} MPI commands.
+ * Fixed {listprops} crasher bug.
+ *
  * Revision 1.3  2000/06/15 18:35:11  revar
  * Prettified some code formatting slightly.
  *
@@ -219,22 +227,22 @@ can_doit(int descr, dbref player, dbref thing, const char *default_fail_msg)
 	if (!could_doit(descr, player, thing)) {
 		/* can't do it */
 		if (GETFAIL(thing)) {
-			exec_or_notify(descr, player, thing, GETFAIL(thing), "(@Fail)");
+			exec_or_notify_prop(descr, player, thing, MESGPROP_FAIL, "(@Fail)");
 		} else if (default_fail_msg) {
 			notify(player, default_fail_msg);
 		}
 		if (GETOFAIL(thing) && !Dark(player)) {
-			parse_omessage(descr, player, loc, thing, GETOFAIL(thing),
+			parse_oprop(descr, player, loc, thing, MESGPROP_OFAIL,
 						   PNAME(player), "(@Ofail)");
 		}
 		return 0;
 	} else {
 		/* can do it */
 		if (GETSUCC(thing)) {
-			exec_or_notify(descr, player, thing, GETSUCC(thing), "(@Succ)");
+			exec_or_notify_prop(descr, player, thing, MESGPROP_SUCC, "(@Succ)");
 		}
 		if (GETOSUCC(thing) && !Dark(player)) {
-			parse_omessage(descr, player, loc, thing, GETOSUCC(thing),
+			parse_oprop(descr, player, loc, thing, MESGPROP_OSUCC,
 						   NAME(player), "(@Osucc)");
 		}
 		return 1;

@@ -75,7 +75,7 @@ mfn_links(MFUNARGS)
 	dbref obj;
 	int i, cnt;
 
-	obj = mesg_dbref(descr, player, what, perms, argv[0]);
+	obj = mesg_dbref(descr, player, what, perms, argv[0], mesgtyp);
 	if (obj == AMBIGUOUS || obj == UNKNOWN || obj == NOTHING || obj == HOME)
 		ABORT_MPI("LINKS", "Match failed.");
 	if (obj == PERMDENIED)
@@ -122,8 +122,8 @@ mfn_links(MFUNARGS)
 const char *
 mfn_locked(MFUNARGS)
 {
-	dbref who = mesg_dbref_local(descr, player, what, perms, argv[0]);
-	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[1]);
+	dbref who = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
+	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[1], mesgtyp);
 
 	if (who == AMBIGUOUS || who == UNKNOWN || who == NOTHING || who == HOME)
 		ABORT_MPI("LOCKED", "Match failed. (arg1)");
@@ -143,10 +143,10 @@ mfn_testlock(MFUNARGS)
 {
 	struct boolexp *lok;
 	dbref who = player;
-	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0]);
+	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
 
 	if (argc > 2)
-		who = mesg_dbref_local(descr, player, what, perms, argv[2]);
+		who = mesg_dbref_local(descr, player, what, perms, argv[2], mesgtyp);
 	if (who == AMBIGUOUS || who == UNKNOWN || who == NOTHING || who == HOME)
 		ABORT_MPI("TESTLOCK", "Match failed. (arg1)");
 	if (who == PERMDENIED)
@@ -171,7 +171,7 @@ mfn_contents(MFUNARGS)
 {
 	char buf2[50];
 	int list_limit = MAX_MFUN_LIST_LEN;
-	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0]);
+	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
 	int typchk, ownroom;
 	int outlen, nextlen;
 
@@ -230,7 +230,7 @@ mfn_exits(MFUNARGS)
 	int outlen, nextlen;
 	char buf2[50];
 	int list_limit = MAX_MFUN_LIST_LEN;
-	dbref obj = mesg_dbref(descr, player, what, perms, argv[0]);
+	dbref obj = mesg_dbref(descr, player, what, perms, argv[0], mesgtyp);
 
 	if (obj == AMBIGUOUS || obj == UNKNOWN || obj == NOTHING || obj == HOME)
 		ABORT_MPI("EXITS", "Match failed.");
@@ -298,7 +298,7 @@ mfn_ref(MFUNARGS)
 	if (*p == '#' && number(p + 1)) {
 		obj = atoi(p + 1);
 	} else {
-		obj = mesg_dbref_local(descr, player, what, perms, argv[0]);
+		obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
 		if (obj == PERMDENIED)
 			ABORT_MPI("REF", "Permission denied.");
 		if (obj == UNKNOWN)
@@ -1190,7 +1190,7 @@ mfn_subst(MFUNARGS)
 const char *
 mfn_awake(MFUNARGS)
 {
-	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0]);
+	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
 
 	if (obj == PERMDENIED || obj == AMBIGUOUS || obj == UNKNOWN || obj == NOTHING ||
 		obj == HOME) return ("0");
@@ -1209,7 +1209,7 @@ mfn_awake(MFUNARGS)
 const char *
 mfn_type(MFUNARGS)
 {
-	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0]);
+	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
 
 	if (obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN)
 		return ("Bad");
@@ -1245,7 +1245,7 @@ mfn_type(MFUNARGS)
 const char *
 mfn_istype(MFUNARGS)
 {
-	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0]);
+	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
 
 	if (obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN)
 		return (string_compare(argv[1], "Bad") ? "0" : "1");
@@ -1313,6 +1313,17 @@ mfn_debug(MFUNARGS)
 
 
 const char *
+mfn_revoke(MFUNARGS)
+{
+	char *ptr = mesg_parse(descr, player, what, perms, argv[0],
+						   buf, BUFFER_LEN, (mesgtyp & ~MPI_ISBLESSED));
+
+	CHECKRETURN(ptr, "REVOKE", "arg 1");
+	return buf;
+}
+
+
+const char *
 mfn_timing(MFUNARGS)
 {
 	char buf2[128];
@@ -1352,13 +1363,14 @@ mfn_delay(MFUNARGS)
 	if (i < 1)
 		i = 1;
 #ifdef WIZZED_DELAY
-	if (!Wizperms(perms))
-		ABORT_MPI("delay", "Permission denied.");
+	if (!(mesgtyp & MPI_ISBLESSED))
+		ABORT_MPI("DELAY", "Permission denied.");
 #endif
 	cmdchr = get_mvar("cmd");
 	argchr = get_mvar("arg");
 	i = add_mpi_event(i, descr, player, getloc(player), perms, argv[1], cmdchr, argchr,
-					  (mesgtyp & MPI_ISLISTENER), (!(mesgtyp & MPI_ISPRIVATE)));
+					  (mesgtyp & MPI_ISLISTENER), (!(mesgtyp & MPI_ISPRIVATE)),
+					  (mesgtyp & MPI_ISBLESSED));
 	sprintf(buf, "%d", i);
 	return buf;
 }
@@ -1473,9 +1485,9 @@ mfn_force(MFUNARGS)
 		ABORT_MPI("FORCE", "Bad object reference. (arg1)");
 	if (!*argv[1])
 		ABORT_MPI("FORCE", "Null command string. (arg2)");
-	if (!tp_zombies && !Wizperms(perms))
+	if (!tp_zombies && !(mesgtyp & MPI_ISBLESSED))
 		ABORT_MPI("FORCE", "Permission Denied.");
-	if (!Wizperms(perms)) {
+	if (!(mesgtyp & MPI_ISBLESSED)) {
 		const char *ptr = RNAME(obj);
 		char objname[BUFFER_LEN], *ptr2;
 		dbref loc = getloc(obj);

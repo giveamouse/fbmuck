@@ -166,8 +166,8 @@
 /* To enable logging of all commands */
 #define LOG_COMMANDS 1
 
-/* To enable logging on commands while in the read or interactive mode */
-#define LOG_READ 0
+/* To enable logging of commands while in the read or interactive mode */
+#define LOG_INTERACTIVE 1
 
 /* Log failed commands ( HUH'S ) to status log */
 #define LOG_FAILED_COMMANDS 0

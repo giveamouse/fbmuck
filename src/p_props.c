@@ -506,6 +506,102 @@ prim_envpropstr(PRIM_PROTOTYPE)
 
 
 void
+prim_blessprop(PRIM_PROTOTYPE)
+{
+	CHECKOP(2);
+	oper2 = POP();
+	oper1 = POP();
+	if (oper2->type != PROG_STRING)
+		abort_interp("Non-string argument (2)");
+	if (!oper2->data.string)
+		abort_interp("Empty string argument (2)");
+	if (!valid_object(oper1))
+		abort_interp("Non-object argument (1)");
+	CHECKREMOTE(oper1->data.objref);
+
+	if (mlev < 3)
+		abort_interp("Permission denied.");
+
+	{
+		char *tmpe;
+		char tname[BUFFER_LEN];
+
+		tmpe = oper2->data.string->data;
+		while (*tmpe && *tmpe != '\r' && *tmpe != ':')
+			tmpe++;
+		if (*tmpe)
+			abort_interp("Illegal propname");
+
+		tmpe = oper2->data.string->data;
+		while ((tmpe = index(tmpe, PROPDIR_DELIMITER)))
+			if (!(*(++tmpe)))
+				abort_interp("Cannot access a propdir directly.");
+
+		strcpy(tname, oper2->data.string->data);
+
+		set_property_flags(oper1->data.objref, tname, PROP_BLESSED);
+
+#ifdef LOG_PROPS
+		log2file("props.log", "#%d (%d) BLESSPROP: o=%d n=\"%s\"",
+				 program, pc->line, oper1->data.objref, tname);
+#endif
+
+		ts_modifyobject(oper1->data.objref);
+	}
+	CLEAR(oper1);
+	CLEAR(oper2);
+}
+
+
+void
+prim_unblessprop(PRIM_PROTOTYPE)
+{
+	CHECKOP(2);
+	oper2 = POP();
+	oper1 = POP();
+	if (oper2->type != PROG_STRING)
+		abort_interp("Non-string argument (2)");
+	if (!oper2->data.string)
+		abort_interp("Empty string argument (2)");
+	if (!valid_object(oper1))
+		abort_interp("Non-object argument (1)");
+	CHECKREMOTE(oper1->data.objref);
+
+	if (mlev < 3)
+		abort_interp("Permission denied.");
+
+	{
+		char *tmpe;
+		char tname[BUFFER_LEN];
+
+		tmpe = oper2->data.string->data;
+		while (*tmpe && *tmpe != '\r' && *tmpe != ':')
+			tmpe++;
+		if (*tmpe)
+			abort_interp("Illegal propname");
+
+		tmpe = oper2->data.string->data;
+		while ((tmpe = index(tmpe, PROPDIR_DELIMITER)))
+			if (!(*(++tmpe)))
+				abort_interp("Cannot access a propdir directly.");
+
+		strcpy(tname, oper2->data.string->data);
+
+		clear_property_flags(oper1->data.objref, tname, PROP_BLESSED);
+
+#ifdef LOG_PROPS
+		log2file("props.log", "#%d (%d) BLESSPROP: o=%d n=\"%s\"",
+				 program, pc->line, oper1->data.objref, tname);
+#endif
+
+		ts_modifyobject(oper1->data.objref);
+	}
+	CLEAR(oper1);
+	CLEAR(oper2);
+}
+
+
+void
 prim_setprop(PRIM_PROTOTYPE)
 {
 	CHECKOP(3);
@@ -749,6 +845,7 @@ prim_parseprop(PRIM_PROTOTYPE)
 	char *ptr;
 	struct inst *oper1, *oper2, *oper3, *oper4;
 	char buf[BUFFER_LEN];
+	char type[BUFFER_LEN];
 
 	CHECKOP(4);
 	oper4 = POP();				/* int */
@@ -773,7 +870,6 @@ prim_parseprop(PRIM_PROTOTYPE)
 		abort_interp("Integer of 0 or 1 expected. (4)");
 	CHECKREMOTE(oper3->data.objref);
 	{
-		char type[BUFFER_LEN];
 		char *tmpptr;
 
 		tmpptr = oper1->data.string->data;
@@ -802,6 +898,7 @@ prim_parseprop(PRIM_PROTOTYPE)
 	ptr = (oper2->data.string) ? oper2->data.string->data : "";
 	if (temp) {
 		result = oper4->data.number & (~MPI_ISLISTENER);
+		result |= Prop_Blessed(oper3->data.objref, type)? MPI_ISBLESSED : 0;
 		ptr = do_parse_mesg(fr->descr, player, oper3->data.objref, temp, ptr, buf, result);
 		CLEAR(oper1);
 		CLEAR(oper2);

@@ -1,7 +1,6 @@
 #ifndef _EXTERNS_AUTO_H
 #define _EXTERNS_AUTO_H
 
-int add_mpi_event(int delay, int descr, dbref player, dbref loc, dbref trig, const char *mpi, const char *cmdstr, const char *argstr, int listen_p, int omesg_p);
 int add_muf_delay_event(int delay, int descr, dbref player, dbref loc, dbref trig, dbref prog, struct frame *fr, const char *mode);
 int add_muf_delayq_event(int delay, int descr, dbref player, dbref loc, dbref trig, dbref prog, const char *argstr, const char *cmdstr, int listen_p);
 int add_muf_timer_event(int descr, dbref player, dbref prog, struct frame *fr, int delay, char *id);
@@ -73,7 +72,7 @@ void notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char 
 void notify_except(dbref first, dbref exception, const char *msg, dbref who);
 int ok_password(const char *password);
 int ok_player_name(const char *name);
-void parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg, const char *prefix, const char *whatcalled);
+void parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg, const char *prefix, const char *whatcalled, int mpiflags);
 void prog_clean(struct frame *fr);
 int prop_read_perms(dbref player, dbref obj, const char *name, int mlev);
 int prop_write_perms(dbref player, dbref obj, const char *name, int mlev);

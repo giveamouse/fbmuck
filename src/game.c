@@ -452,7 +452,7 @@ process_command(int descr, dbref player, char *command)
 						NAME(DBFETCH(player)->location),
 						(int) DBFETCH(player)->location, " ", command);
 		} else {
-			if (tp_log_read) {
+			if (tp_log_interactive) {
 				log_command("%s%s%s%s(%d) in %s(%d):%s %s\n",
 							Wizard(OWNER(player)) ? "WIZ: " : "",
 							(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
@@ -588,8 +588,20 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'b':
 			case 'B':
-				Matched("@boot");
-				do_boot(player, arg1);
+				switch (command[2]) {
+				case 'l':
+				case 'L':
+					Matched("@bless");
+					do_bless(descr, player, arg1, arg2);
+					break;
+				case 'o':
+				case 'O':
+					Matched("@boot");
+					do_boot(player, arg1);
+					break;
+				default:
+					goto bad;
+				}
 				break;
 			case 'c':
 			case 'C':
@@ -1005,7 +1017,10 @@ process_command(int descr, dbref player, char *command)
 				switch (command[2]) {
 				case 'N':
 				case 'n':
-					if (string_prefix(command, "@unli")) {
+					if (string_prefix(command, "@unb")) {
+						Matched("@unbless");
+						do_unbless(descr, player, arg1, arg2);
+					} else if (string_prefix(command, "@unli")) {
 						Matched("@unlink");
 						do_unlink(descr, player, arg1);
 					} else if (string_prefix(command, "@unlo")) {

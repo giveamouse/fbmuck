@@ -2,6 +2,14 @@
 
 /*
  * $Log: rob.c,v $
+ * Revision 1.5  2000/11/22 10:01:58  revar
+ * Changed MPI from using Wizbit objects to give special permissions, to using
+ * 'Blessed' properties.  Blessed props have few permissions restrictions.
+ * Added @bless and @unbless wizard commands.
+ * Added BLESSPROP and UNBLESSPROP muf primitives.
+ * Added {bless} {unbless} and {revoke} MPI commands.
+ * Fixed {listprops} crasher bug.
+ *
  * Revision 1.4  2000/07/19 01:33:18  revar
  * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
  * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
@@ -185,8 +193,8 @@ do_kill(int descr, dbref player, const char *what, int cost)
 				/* now notify everybody else */
 				if (GETODROP(victim)) {
 					sprintf(buf, "%s killed %s! ", PNAME(player), PNAME(victim));
-					parse_omessage(descr, player, getloc(player), victim,
-								   GETODROP(victim), buf, "(@Odrop)");
+					parse_oprop(descr, player, getloc(player), victim,
+								   MESGPROP_ODROP, buf, "(@Odrop)");
 				} else {
 					sprintf(buf, "%s killed %s!", NAME(player), NAME(victim));
 				}

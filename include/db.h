@@ -62,46 +62,59 @@ typedef int dbref;				/* offset into db */
 #define OWNER(x)    (db[x].owner)
 
 /* defines for possible data access mods. */
+#define MESGPROP_DESC	"_/de"
+#define MESGPROP_IDESC	"_/ide"
+#define MESGPROP_SUCC	"_/sc"
+#define MESGPROP_OSUCC	"_/osc"
+#define MESGPROP_FAIL	"_/fl"
+#define MESGPROP_OFAIL	"_/ofl"
+#define MESGPROP_DROP	"_/dr"
+#define MESGPROP_ODROP	"_/odr"
+#define MESGPROP_DOING	"_/do"
+#define MESGPROP_OECHO	"_/oecho"
+#define MESGPROP_PECHO	"_/pecho"
+#define MESGPROP_LOCK	"_/lok"
+
 #define GETMESG(x,y)   (get_property_class(x, y))
-#define GETDESC(x)  GETMESG(x, "_/de")
-#define GETIDESC(x) GETMESG(x, "_/ide")
-#define GETSUCC(x)  GETMESG(x, "_/sc")
-#define GETOSUCC(x) GETMESG(x, "_/osc")
-#define GETFAIL(x)  GETMESG(x, "_/fl")
-#define GETOFAIL(x) GETMESG(x, "_/ofl")
-#define GETDROP(x)  GETMESG(x, "_/dr")
-#define GETODROP(x) GETMESG(x, "_/odr")
-#define GETDOING(x) GETMESG(x, "_/do")
-#define GETOECHO(x) GETMESG(x, "_/oecho")
-#define GETPECHO(x) GETMESG(x, "_/pecho")
+#define GETDESC(x)	GETMESG(x, MESGPROP_DESC)
+#define GETIDESC(x)	GETMESG(x, MESGPROP_IDESC)
+#define GETSUCC(x)	GETMESG(x, MESGPROP_SUCC)
+#define GETOSUCC(x)	GETMESG(x, MESGPROP_OSUCC)
+#define GETFAIL(x)	GETMESG(x, MESGPROP_FAIL)
+#define GETOFAIL(x)	GETMESG(x, MESGPROP_OFAIL)
+#define GETDROP(x)	GETMESG(x, MESGPROP_DROP)
+#define GETODROP(x)	GETMESG(x, MESGPROP_ODROP)
+#define GETDOING(x)	GETMESG(x, MESGPROP_DOING)
+#define GETOECHO(x)	GETMESG(x, MESGPROP_OECHO)
+#define GETPECHO(x)	GETMESG(x, MESGPROP_PECHO)
 
 #define SETMESG(x,y,z)    {add_property(x, y, z, 0);}
-#define SETDESC(x,y)   SETMESG(x,"_/de",y)
-#define SETIDESC(x,y)  SETMESG(x,"_/ide",y)
-#define SETSUCC(x,y)   SETMESG(x,"_/sc",y)
-#define SETFAIL(x,y)   SETMESG(x,"_/fl",y)
-#define SETDROP(x,y)   SETMESG(x,"_/dr",y)
-#define SETOSUCC(x,y)  SETMESG(x,"_/osc",y)
-#define SETOFAIL(x,y)  SETMESG(x,"_/ofl",y)
-#define SETODROP(x,y)  SETMESG(x,"_/odr",y)
-#define SETDOING(x,y)  SETMESG(x,"_/do",y)
-#define SETOECHO(x,y)  SETMESG(x,"_/oecho",y)
-#define SETPECHO(x,y)  SETMESG(x,"_/pecho",y)
+#define SETDESC(x,y)	SETMESG(x, MESGPROP_DESC, y)
+#define SETIDESC(x,y)	SETMESG(x, MESGPROP_IDESC, y)
+#define SETSUCC(x,y)	SETMESG(x, MESGPROP_SUCC, y)
+#define SETFAIL(x,y)	SETMESG(x, MESGPROP_FAIL, y)
+#define SETDROP(x,y)	SETMESG(x, MESGPROP_DROP, y)
+#define SETOSUCC(x,y)	SETMESG(x, MESGPROP_OSUCC, y)
+#define SETOFAIL(x,y)	SETMESG(x, MESGPROP_OFAIL, y)
+#define SETODROP(x,y)	SETMESG(x, MESGPROP_ODROP, y)
+#define SETDOING(x,y)	SETMESG(x, MESGPROP_DOING, y)
+#define SETOECHO(x,y)	SETMESG(x, MESGPROP_OECHO, y)
+#define SETPECHO(x,y)	SETMESG(x, MESGPROP_PECHO, y)
 
 #define LOADMESG(x,y,z)    {add_prop_nofetch(x,y,z,0); DBDIRTY(x);}
-#define LOADDESC(x,y)   LOADMESG(x,"_/de",y)
-#define LOADIDESC(x,y)  LOADMESG(x,"_/ide",y)
-#define LOADSUCC(x,y)   LOADMESG(x,"_/sc",y)
-#define LOADFAIL(x,y)   LOADMESG(x,"_/fl",y)
-#define LOADDROP(x,y)   LOADMESG(x,"_/dr",y)
-#define LOADOSUCC(x,y)  LOADMESG(x,"_/osc",y)
-#define LOADOFAIL(x,y)  LOADMESG(x,"_/ofl",y)
-#define LOADODROP(x,y)  LOADMESG(x,"_/odr",y)
+#define LOADDESC(x,y)	LOADMESG(x, MESGPROP_DESC, y)
+#define LOADIDESC(x,y)	LOADMESG(x, MESGPROP_IDESC, y)
+#define LOADSUCC(x,y)	LOADMESG(x, MESGPROP_SUCC, y)
+#define LOADFAIL(x,y)	LOADMESG(x, MESGPROP_FAIL, y)
+#define LOADDROP(x,y)	LOADMESG(x, MESGPROP_DROP, y)
+#define LOADOSUCC(x,y)	LOADMESG(x, MESGPROP_OSUCC, y)
+#define LOADOFAIL(x,y)	LOADMESG(x, MESGPROP_OFAIL, y)
+#define LOADODROP(x,y)	LOADMESG(x, MESGPROP_ODROP, y)
 
-#define SETLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, "_/lok", &mydat);}
-#define LOADLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, "_/lok", &mydat); DBDIRTY(x);}
-#define CLEARLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, "_/lok", &mydat);}
-#define GETLOCK(x)    (get_property_lock(x, "_/lok"))
+#define GETLOCK(x)    (get_property_lock(x, MESGPROP_LOCK))
+#define SETLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_LOCK, &mydat);}
+#define LOADLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_LOCK, &mydat); DBDIRTY(x);}
+#define CLEARLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_LOCK, &mydat);}
 
 #define DB_PARMSINFO     0x0001
 #define DB_COMPRESSED    0x0002
@@ -124,7 +137,7 @@ typedef int dbref;				/* offset into db */
 #define BUILDER           0x200	/* this player can use construction commands */
 #define CHOWN_OK          0x400	/* this player can be @chowned to */
 #define JUMP_OK           0x800	/* A room which can be jumped from, or
-								   * a player who can be jumped to */
+								 * a player who can be jumped to */
 
 #define GENDER_MASK      0x3000	/* 2 bits of gender */
 #define GENDER_SHIFT         12	/* 0x1000 is 12 bits over (for shifting) */
@@ -139,16 +152,15 @@ typedef int dbref;				/* offset into db */
 #define MUCKER          0x40000	/* programmer */
 #define QUELL           0x80000	/* When set, wiz-perms are turned off */
 #define SMUCKER        0x100000	/* second programmer bit.  For levels */
-#define INTERACTIVE    0x200000	/* when this is set, player is either editing
-								   * a program or in a READ. */
-#define OBJECT_CHANGED 0x400000	/* when an object is dbdirty()ed, set this */
-#define SAVED_DELTA    0x800000	/* object last saved to delta file */
+#define INTERACTIVE    0x200000	/* internal: denotes player is in editor, or muf READ. */
+#define OBJECT_CHANGED 0x400000	/* internal: when an object is dbdirty()ed, set this */
+#define SAVED_DELTA    0x800000	/* internal: object last saved to delta file */
 #define VEHICLE       0x1000000	/* Vehicle flag */
 #define ZOMBIE        0x2000000	/* Zombie flag */
-#define LISTENER      0x4000000	/* listener flag */
+#define LISTENER      0x4000000	/* internal: listener flag */
 #define XFORCIBLE     0x8000000	/* externally forcible flag */
-#define READMODE     0x10000000	/* when set, player is in a READ */
-#define SANEBIT      0x20000000	/* used to check db sanity */
+#define READMODE     0x10000000	/* internal: when set, player is in a READ */
+#define SANEBIT      0x20000000	/* internal: used to check db sanity */
 
 
 /* what flags to NOT dump to disk. */
