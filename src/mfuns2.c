@@ -1251,10 +1251,18 @@ mfn_type(MFUNARGS)
 const char *
 mfn_istype(MFUNARGS)
 {
-	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
-
+	dbref obj;
+	if (tp_lazy_mpi_istype_perm) {
+		obj = mesg_dbref_raw(descr, player, what, perms, argv[0]);
+	} else {
+		obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
+	}
 	if (obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN)
 		return (string_compare(argv[1], "Bad") ? "0" : "1");
+	if ((string_compare(argv[1], "Bad") == 0) && 
+		(obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN ||
+		 obj == PERMDENIED ))
+		return "1";
 	if (obj == PERMDENIED)
 		ABORT_MPI("TYPE", "Permission Denied.");
 	if (obj == HOME)

@@ -239,6 +239,9 @@
  * be controlled by the player, or else be set JUMP_OK */
 #define SECURE_TELEPORT 0
 
+/* Is MPI's {istype} and {type} command set to be lazy permission?  1 = yes */
+#define LAZY_MPI_ISTYPE_PERM 0
+
 /* Enable or diable the global 'HOME' command. */
 #define ALLOW_HOME 1
 

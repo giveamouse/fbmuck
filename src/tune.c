@@ -135,7 +135,6 @@ int tp_cmd_log_threshold_msec = CMD_LOG_THRESHOLD_MSEC;
 
 int tp_mcp_muf_mlev = MCP_MUF_MLEV;
 
-
 struct tune_val_entry {
 	const char *name;
 	int *val;
@@ -240,6 +239,7 @@ int tp_thing_movement = SECURE_THING_MOVEMENT;
 int tp_expanded_debug = EXPANDED_DEBUG_TRACE;
 int tp_proplist_int_counter = PROPLIST_INT_COUNTER;
 int tp_log_interactive = LOG_INTERACTIVE;
+int tp_lazy_mpi_istype_perm = LAZY_MPI_ISTYPE_PERM;
 
 struct tune_bool_entry {
 	const char *name;
@@ -286,6 +286,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"secure_thing_movement", &tp_thing_movement, 4},
 	{"expanded_debug_trace", &tp_expanded_debug, 0},
 	{"proplist_int_counter", &tp_proplist_int_counter, 0},
+	{"lazy_mpi_istype_perm", &tp_lazy_mpi_istype_perm, 0},
 
 	{NULL, NULL, 0}
 };
