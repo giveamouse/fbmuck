@@ -4010,7 +4010,6 @@ REGEXP ( str:Text str:Pattern int:Flag -- list:SubMatchVals list:SubMatchIdx )
   The "Flag" argument may be a combination, or none of the following:
  
   $def REG_ICASE    1   (Case insensitive match)
-  $def REG_NEWLINE  2   (Allow $ to match newlines)
 ~
 REGSUB|
 REGSUB ( str:Text str:Pattern str:Replace int:Flag -- str:Result )
@@ -4021,5 +4020,4 @@ REGSUB ( str:Text str:Pattern str:Replace int:Flag -- str:Result )
   The "Flag" argument may be a combination, or none of the following:
  
   $def REG_ICASE    1   (Case insensitive match)
-  $def REG_NEWLINE  2   (Allow $ to match newlines)
-  $def REG_ALL      4   (Substitute all matches, rather than just the first)
+  $def REG_ALL      2   (Substitute all matches, rather than just the first)

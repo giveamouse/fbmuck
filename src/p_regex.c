@@ -115,9 +115,6 @@ prim_regexp(PRIM_PROTOTYPE)
 	if (oper3->data.number & MUF_RE_ICASE)
 		flags |= REG_ICASE;
 
-	if (oper3->data.number & MUF_RE_NEWLINE)
-		flags |= REG_NEWLINE;
-
 	if ((re = muf_re_get(oper2->data.string, flags, &err)) == NULL)
 		abort_interp(muf_re_error(err));
 
@@ -267,9 +264,6 @@ prim_regsub(PRIM_PROTOTYPE)
 
 	if (oper4->data.number & MUF_RE_ICASE)
 		flags |= REG_ICASE;
-
-	if (oper4->data.number & MUF_RE_NEWLINE)
-		flags |= REG_NEWLINE;
 
 	if ((re = muf_re_get(oper2->data.string, flags, &err)) == NULL)
 		abort_interp(muf_re_error(err));

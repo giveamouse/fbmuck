@@ -526,7 +526,6 @@ include_internal_defs(COMPSTATE * cstat)
 
 	/* Regex */
 	insert_def(cstat, "reg_icase",		MUF_RE_ICASE_STR);
-	insert_def(cstat, "reg_newline",	MUF_RE_NEWLINE_STR);
 	insert_def(cstat, "reg_all",		MUF_RE_ALL_STR);
 }
 
