@@ -680,7 +680,7 @@ prim_ftostrc(PRIM_PROTOTYPE)
 	if (oper1->type != PROG_FLOAT)
 		abort_interp("Non-float argument. (1)");
 	sprintf(buf, "%.15lg", oper1->data.fnumber);
-	if (!strchr(buf, '.') && !strchr(buf, 'E') && !strchr(buf, 'e')) {
+	if (!strchr(buf, '.') && !strchr(buf, 'e') && !strchr(buf, 'n')) {
 		strcatn(buf, sizeof(buf), ".0");
 	}
 

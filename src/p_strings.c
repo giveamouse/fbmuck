@@ -1521,7 +1521,7 @@ prim_intostr(PRIM_PROTOTYPE)
 		abort_interp("Invalid argument.");
 	if (oper1->type == PROG_FLOAT) {
 		snprintf(buf, sizeof(buf), "%.15lg", oper1->data.fnumber);
-		if (!strchr(buf, '.') && !strchr(buf, 'E') && !strchr(buf, 'e')) {
+		if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
 			strcatn(buf, sizeof(buf), ".0");
 		}
 		ptr=buf;

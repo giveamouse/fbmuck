@@ -20,6 +20,7 @@ Fixed bug #659864: Preempt MPI descloop
 Fixed crasher re unterminated comments in RFE #782388 nested comments patch.
 Fixed "RFE" #670187: recycling a room sends zombies home quietly
 Fixed crasher in for loops with stack overflow.
+Fixed crasher with Inf in union/diff/intersect prims.
 Changed DESCRDBREF to return #-1 for an invalid or not-logged-in descriptor.
 Changed MUF stack traces to show floats in short format.
 Changed string translations of floats to show only 15 significant digits.

@@ -123,7 +123,9 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 	}
 	/* Indexes are of same type if we reached here. */
 	if (a->type == PROG_FLOAT) {
-		if (fabs((a->data.fnumber - b->data.fnumber) / a->data.fnumber) < DBL_EPSILON) {
+		if (a->data.fnumber == b->data.fnumber) {
+			return 0;
+		} else if (fabs((a->data.fnumber - b->data.fnumber) / a->data.fnumber) < DBL_EPSILON) {
 			return 0;
 		} else if (a->data.fnumber > b->data.fnumber) {
 			return 1;

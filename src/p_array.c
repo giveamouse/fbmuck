@@ -1350,7 +1350,7 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
 				break;
 			case PROG_FLOAT:
 				snprintf(propname, sizeof(propname), "%s%c%.15lg", dir, PROPDIR_DELIMITER, temp1.data.fnumber);
-				if (!strchr(propname, '.') && !strchr(propname, 'E') && !strchr(propname, 'e')) {
+				if (!strchr(propname, '.') && !strchr(propname, 'n') && !strchr(propname, 'e')) {
 					strcatn(propname, sizeof(propname), ".0");
 				}
 				break;
@@ -1949,7 +1949,7 @@ prim_array_join(PRIM_PROTOTYPE)
 				break;
 			case PROG_FLOAT:
 				snprintf(buf, sizeof(buf), "%.15lg", in->data.fnumber);
-				if (!strchr(buf, '.') && !strchr(buf, 'E') && !strchr(buf, 'e')) {
+				if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
 					strcatn(buf, sizeof(buf), ".0");
 				}
 				text = buf;
@@ -2042,7 +2042,7 @@ prim_array_interpret(PRIM_PROTOTYPE)
                 break;
             case PROG_FLOAT:
                 snprintf(buf, sizeof(buf), "%.15g", in->data.fnumber);
-				if (!strchr(buf, '.') && !strchr(buf, 'E') && !strchr(buf, 'e')) {
+				if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
 					strcatn(buf, sizeof(buf), ".0");
 				}
                 text = buf;
