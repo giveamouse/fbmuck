@@ -124,7 +124,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				} else {
 					slen2 = -1;
 				}
-				if ((slen1 > 0) && ((slen1 + result) > BUFFER_LEN))
+				if (slen1 && ((abs(slen1) + result) > BUFFER_LEN))
 					abort_interp("Specified format field width too large.");
 				sfmt[0] = '%';
 				sfmt[1] = '\0';
@@ -453,6 +453,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 	else
 		PushNullStr;
 }
+
 
 void
 prim_array_fmtstrings(PRIM_PROTOTYPE)

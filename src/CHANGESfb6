@@ -14,6 +14,7 @@ Fixed error with ANSI reset codes being sent _after_ CRLFs.
 Fixed crasher bug with null varname in function args declaration.
 Fixed error in FMTSTRING with accepting negative dynamic precision values.
 Fixed error in FMTSTRING with accepting a dynamic fieldwidth of -1.
+Fixed crasher bug in FMTSTRING with dynamic fieldwidths.
 Changed SSL cert/key load failures to just disable SSL, instead of exiting.
 Changed SSL cert/key load failure error reporting to show file path/name.
 Changed commandline to accept -sport with a warning when SSL not supported.
