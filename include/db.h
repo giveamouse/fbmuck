@@ -436,17 +436,18 @@ struct frame {
 	struct localvars* lvars;	/* local variables */
 	vars variables;				/* global variables */
 	struct inst *pc;			/* next executing instruction */
-	int writeonly;				/* This program should not do reads */
-	int multitask;				/* This program's multitasking mode */
+	short writeonly;			/* This program should not do reads */
+	short multitask;			/* This program's multitasking mode */
+	short timercount;			/* How many timers currently exist. */
+	short level;				/* prevent interp call loops */
 	int perms;					/* permissions restrictions on program */
-	int level;					/* prevent interp call loops */
 	short already_created;		/* this prog already created an object */
 	short been_background;		/* this prog has run in the background */
 	short skip_declare;         /* tells interp to skip next scoped var decl */
+	short wantsblanks;          /* specifies program will accept blank READs */
 	dbref trig;					/* triggering object */
 	long started;				/* When this program started. */
 	int instcnt;				/* How many instructions have run. */
-	int timercount;				/* How many timers currently exist. */
 	int pid;					/* what is the process id? */
 	char* errorstr;             /* the error string thrown */
 	int descr;					/* what is the descriptor that started this? */

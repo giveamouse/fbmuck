@@ -1926,8 +1926,10 @@ do_command(struct descriptor_data *d, char *command)
 
 	if (d->connected)
 		ts_lastuseobject(d->player);
-	if (!mcp_frame_process_input(&d->mcpframe, command, cmdbuf, sizeof(cmdbuf)))
+	if (!mcp_frame_process_input(&d->mcpframe, command, cmdbuf, sizeof(cmdbuf))) {
+		d->quota++;
 		return 1;
+	}
 	command = cmdbuf;
 	if (!strcmp(command, QUIT_COMMAND)) {
 		return 0;

@@ -386,6 +386,11 @@ handle_read_event(int descr, dbref player, const char *command)
 	if (ptr) {
 		/* remember our program, and our execution frame. */
 		fr = ptr->fr;
+		if (!fr->brkpt.debugging || fr->brkpt.isread) {
+			if (!fr->wantsblanks && command && !*command) {
+				return;
+			}
+		}
 		typ = ptr->subtyp;
 		prog = ptr->called_prog;
 		if (command) {

@@ -1,3 +1,11 @@
+2.2fb6.00b5
+Fixed infinite loop parenting bug.  I think.
+Fixed a lot of uninitialized struct frame variables in chile of FORK.
+Changed input quotas to not count MCP messages.
+Changed command logging to not list null commands.
+
+
+
 2.2fb6.00b4
 Fixed problem in primitive SETLINK where due to a logic error, objects were
   unable to become the 'home' of other objects.  Also allow setlink to now

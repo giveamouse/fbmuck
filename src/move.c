@@ -2,6 +2,12 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.11  2001/10/28 22:49:00  revar
+ * Fixed infinite loop parenting bug.  I think.
+ * Fixed a lot of uninitialized struct frame variables in chile of FORK.
+ * Changed input quotas to not count MCP messages.
+ * Changed command logging to not list null commands.
+ *
  * Revision 1.10  2001/09/17 13:26:01  points
  * For MUF: Fixed problems with updating last_used on objects when only
  * exits, contents or name was checked.  This was inconsistent use.  MUF
@@ -293,7 +299,7 @@ parent_loop_check(dbref source, dbref dest)
     /* if (Typeof(dest) == TYPE_THING) {
          dest = THING_HOME(dest);
        } */
-    dest = DBFETCH(dest)->location;
+    dest = getparent(dest);
     if (dest == NOTHING) {     /* We should never get this */
       return 1;
     }
@@ -306,7 +312,7 @@ parent_loop_check(dbref source, dbref dest)
     /* Check to see if we've found this item before.. */
     for (place = 0; place < (level+2); place++) {
       if (pstack[place] == dest) {
-	return 1;
+        return 1;
       }
     }
     pstack[level+2] = dest;

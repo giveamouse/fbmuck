@@ -469,6 +469,9 @@ process_command(int descr, dbref player, char *command)
 
 	if ((tp_log_commands || Wizard(OWNER(player)))) {
 		if (!(FLAGS(player) & (INTERACTIVE | READMODE))) {
+			if (!*command) {
+				return; 
+			}
 			log_command("%s%s%s%s(%d) in %s(%d):%s %s\n",
 						Wizard(OWNER(player)) ? "WIZ: " : "",
 						(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",

@@ -294,6 +294,7 @@ prim_fork(PRIM_PROTOTYPE)
 	fr->pc = pc;
 
 	tmpfr = (struct frame *) calloc(1, sizeof(struct frame));
+	tmpfr->next = NULL;
 
 	tmpfr->system.top = fr->system.top;
 	for (i = 0; i < fr->system.top; i++)
@@ -338,18 +339,49 @@ prim_fork(PRIM_PROTOTYPE)
 	tmpfr->already_created = fr->already_created;
 	tmpfr->trig = fr->trig;
 
-	tmpfr->brkpt.debugging = 0;
-	tmpfr->brkpt.count = 0;
-	tmpfr->brkpt.showstack = 0;
-	tmpfr->brkpt.isread = 0;
-	tmpfr->brkpt.bypass = 0;
-	tmpfr->brkpt.lastcmd = NULL;
+	fr->brkpt.debugging = 0;
+	fr->brkpt.bypass = 0;
+	fr->brkpt.isread = 0;
+	fr->brkpt.showstack = 0;
+	fr->brkpt.lastline = 0;
+	fr->brkpt.lastpc = 0;
+	fr->brkpt.lastlisted = 0;
+	fr->brkpt.lastcmd = NULL;
+	fr->brkpt.breaknum = -1;
+
+	fr->brkpt.lastproglisted = NOTHING;
+	fr->brkpt.proglines = NULL;
+
+	fr->brkpt.count = 1;
+	fr->brkpt.temp[0] = 1;
+	fr->brkpt.level[0] = -1;
+	fr->brkpt.line[0] = -1;
+	fr->brkpt.linecount[0] = -2;
+	fr->brkpt.pc[0] = NULL;
+	fr->brkpt.pccount[0] = -2;
+	fr->brkpt.prog[0] = program;
+
+	fr->proftime.tv_sec = 0;
+    fr->proftime.tv_usec = 0;
+    fr->totaltime.tv_sec = 0;
+    fr->totaltime.tv_usec = 0;
+
 
 	tmpfr->pid = top_pid++;
 	tmpfr->multitask = BACKGROUND;
+	tmpfr->been_background = 1;
 	tmpfr->writeonly = 1;
 	tmpfr->started = time(NULL);
 	tmpfr->instcnt = 0;
+	tmpfr->skip_declare = fr->skip_declare;
+	tmpfr->wantsblanks = fr->wantsblanks;
+	tmpfr->perms = fr->perms;
+	tmpfr->descr = fr->descr;
+	tmpfr->events = NULL;
+	tmpfr->waiters = NULL;
+	tmpfr->waitees = NULL;
+	tmpfr->dlogids = NULL;
+	tmpfr->timercount = 0;
 
 	/* child process gets a 0 returned on the stack */
 	result = 0;
@@ -818,6 +850,7 @@ prim_watchpid(PRIM_PROTOTYPE)
 	}
 
 /* Lets see if the batbat catches this one. */
+/* Heh.  - Revar */
 	if (oper1->data.number == fr->pid) {
 		abort_interp("Narcissistic processes not allowed.");
 	}
