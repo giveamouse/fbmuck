@@ -5,6 +5,8 @@ package require opt
 source ./tree.tcl
 
 global HelpData
+global document_file
+set document_file ""
 
 
 proc init {args} {
@@ -12,20 +14,21 @@ proc init {args} {
 init
 
 
+proc item_num {item pos} {
+	set num [lindex $item $pos]
+	set num [string trimleft [string range $num 0 2] 0]
+	if {$num == ""} {
+		set num 0
+	}
+	return $num
+}
+
+
 proc mk_main_window {base} {
     toplevel $base
+    wm withdraw .mw
     wm protocol $base WM_DELETE_WINDOW exit
-
-    #image create photo idir -data {
-	#R0lGODdhEAAQAPIAAAAAAHh4eLi4uPj4APj4+P///wAAAAAAACwAAAAAEAAQAAADPVi63P4w
-	#LkKCtTTnUsXwQqBtAfh910UU4ugGAEucpgnLNY3Gop7folwNOBOeiEYQ0acDpp6pGAFArVqt
-	#hQQAO///
-    #}
-    #image create photo ifile -data {
-	#R0lGODdhEAAQAPIAAAAAAHh4eLi4uPj4+P///wAAAAAAAAAAACwAAAAAEAAQAAADPkixzPOD
-	#yADrWE8qC8WN0+BZAmBq1GMOqwigXFXCrGk/cxjjr27fLtout6n9eMIYMTXsFZsogXRKJf6u
-	#P0kCADv/
-    #}
+	wm title $base "Helpfile Meta-Editor"
 
 	image create photo idir -data {
 	R0lGODdhEAAQAKIAAP////j4+Hh4eLi4uPj4AAAAAP///////ywAAAAAEAAQ
@@ -70,12 +73,22 @@ proc mk_main_window {base} {
     button $base.newsect   -text "New Section" -command "new_section $base"
     button $base.newtopic  -text "New Topic"   -command "new_topic $base"
     button $base.edit      -text "Edit"        -command "edit_item $base"
+    button $base.upsect    -text "^^"          -command "move_item $base -sect"
+    button $base.up        -text "^"           -command "move_item $base -1"
+    button $base.dn        -text "v"           -command "move_item $base +1"
+    button $base.dnsect    -text "vv"          -command "move_item $base +sect"
+    button $base.save      -text "Save"        -command "save_helpfile"
 
     pack $base.treefr -side left -fill both -expand 1
     pack $base.newfile -side top -fill x -padx 10 -pady 5
     pack $base.newsect -side top -fill x -padx 10 -pady 5
     pack $base.newtopic -side top -fill x -padx 10 -pady 5
     pack $base.edit -side top -fill x -padx 10 -pady 5
+    pack $base.save -side bottom -fill x -padx 10 -pady 5
+    pack $base.upsect -side left -fill x -padx 10 -pady 5 -anchor nw
+    pack $base.up -side left -fill x -padx 10 -pady 5 -anchor nw
+    pack $base.dnsect -side right -fill x -padx 10 -pady 5 -anchor ne
+    pack $base.dn -side right -fill x -padx 10 -pady 5 -anchor ne
 }
 
 
@@ -186,9 +199,10 @@ proc new_filegroup {w} {
 	set reqres [requestor -title "New File" "What name do you want to give\nthe new file grouping?"]
 	if {[lindex $reqres 0] == "ok"} {
 		set plainfile [lindex $reqres 1]
-		set fnum [incr HelpData(filenum)]
+		set fnum [incr HelpData(filecount)]
 		set HelpData(file,$fnum) $plainfile
 		lappend HelpData(files) $fnum
+		set HelpData(sections,$fnum) {}
 		tree_add_file $w.treefr.tree $fnum
 		tree_sel_file $w.treefr.tree $fnum
 	}
@@ -200,7 +214,7 @@ proc new_section {w} {
 
 	set item [Tree:getselection $w.treefr.tree]
 	if {[llength $item] >= 1} {
-		set forder [string range [lindex $item 0] 0 2]
+		set forder [item_num $item 0]
 		set fnum [lindex $HelpData(files) $forder]
 	} else {
 		set fnum [lindex $HelpData(files) end]
@@ -213,9 +227,10 @@ proc new_section {w} {
 		if {[lindex $reqres 0] == "ok"} {
 			set shortname [lindex $reqres 1]
 			set section "$fullname|$shortname"
-			set snum [incr HelpData(sectionnum)]
+			set snum [incr HelpData(sectioncount)]
 			set HelpData(section,$snum) $section
 			lappend HelpData(sections,$fnum) $snum
+			set HelpData(sectionentries,$snum) {}
 			tree_add_section $w.treefr.tree $fnum $snum
 			tree_sel_section $w.treefr.tree $fnum $snum
 		}
@@ -227,9 +242,9 @@ proc new_topic {w} {
 	global HelpData
 	set item [Tree:getselection $w.treefr.tree]
 	if {[llength $item] >= 2} {
-		set forder [string range [lindex $item 0] 0 2]
+		set forder [item_num $item 0]
 		set fnum [lindex $HelpData(files) $forder]
-		set sorder [string range [lindex $item 1] 0 2]
+		set sorder [item_num $item 1]
 		set snum [lindex $HelpData(sections,$fnum) $sorder]
 	} else {
 		set fnum [lindex $HelpData(files) end]
@@ -244,7 +259,7 @@ proc new_topic {w} {
 		set topics [lindex $reqres 1]
 		set data [lindex $reqres 2]
 		set xref [lindex $reqres 3]
-		set enum [incr HelpData(entrynum)]
+		set enum [incr HelpData(entrycount)]
 		set HelpData(entrytopics,$entrynum) $topics
 		set HelpData(entrytype,$entrynum) "data"
 		set HelpData(entrydata,$entrynum) $data
@@ -262,7 +277,7 @@ proc edit_item {w} {
 	set item [Tree:getselection $w.treefr.tree]
 	switch -exact -- [llength $item] {
 		1 {
-			set forder [string range [lindex $item 0] 0 2]
+			set forder [item_num $item 0]
 			set fnum [lindex $HelpData(files) $forder]
 			set reqres [requestor -value $HelpData(file,$fnum) -title "Edit File Grouping" "What name do you want to\ngive the file grouping?"]
 			if {[lindex $reqres 0] == "ok"} {
@@ -274,9 +289,9 @@ proc edit_item {w} {
 			}
 		}
 		2 {
-			set forder [string range [lindex $item 0] 0 2]
+			set forder [item_num $item 0]
 			set fnum [lindex $HelpData(files) $forder]
-			set sorder [string range [lindex $item 1] 0 2]
+			set sorder [item_num $item 1]
 			set snum [lindex $HelpData(sections,$fnum) $sorder]
 			set reqres [requestor -value $HelpData(section,$snum) -title "Edit Section" "What name do you want\nto give the section?"]
 			if {[lindex $reqres 0] == "ok"} {
@@ -288,11 +303,11 @@ proc edit_item {w} {
 			}
 		}
 		3 {
-			set forder [string range [lindex $item 0] 0 2]
+			set forder [item_num $item 0]
 			set fnum [lindex $HelpData(files) $forder]
-			set sorder [string range [lindex $item 1] 0 2]
+			set sorder [item_num $item 1]
 			set snum [lindex $HelpData(sections,$fnum) $sorder]
-			set eorder [string range [lindex $item 2] 0 2]
+			set eorder [item_num $item 2]
 			set enum [lindex $HelpData(sectionentries,$snum) $eorder]
 			set reqres [entryedit -data $HelpData(entrydata,$enum) -xref $HelpData(entryxref,$enum) -topics $HelpData(entrytopics,$enum)]
 			if {[lindex $reqres 0] == "ok"} {
@@ -309,6 +324,134 @@ proc edit_item {w} {
 			}
 		}
 	}
+}
+
+
+
+proc move_item {w direction} {
+	global HelpData
+
+	set item [Tree:getselection $w.treefr.tree]
+	if {$direction == "-1" || $direction == "+1"} {
+		switch -exact -- [llength $item] {
+			1 {
+				set forder [item_num $item 0]
+				set fnum [lindex $HelpData(files) $forder]
+				if {[string index $direction 0] == "+"} {
+					set neworder [expr {$forder+1}]
+				} else {
+					set neworder [expr {$forder-1}]
+				}
+				if {$neworder != $forder} {
+					set HelpData(files) [lreplace $HelpData(files) $forder $forder]
+					set HelpData(files) [linsert $HelpData(files) $neworder $fnum]
+					tree_refresh $w.treefr.tree
+					tree_sel_file $w.treefr.tree $fnum
+				}
+			}
+			2 {
+				set forder [item_num $item 0]
+				set fnum [lindex $HelpData(files) $forder]
+				set sorder [item_num $item 1]
+				set snum [lindex $HelpData(sections,$fnum) $sorder]
+				if {[string index $direction 0] == "+"} {
+					set neworder [expr {$sorder+1}]
+				} else {
+					set neworder [expr {$sorder-1}]
+				}
+				if {$neworder != $sorder} {
+					tree_del_file $w.treefr.tree $fnum
+					set HelpData(sections,$fnum) [lreplace $HelpData(sections,$fnum) $sorder $sorder]
+					set HelpData(sections,$fnum) [linsert $HelpData(sections,$fnum) $neworder $snum]
+					tree_add_file $w.treefr.tree $fnum
+					tree_sel_section $w.treefr.tree $fnum $snum
+				}
+			}
+			3 {
+				set forder [item_num $item 0]
+				set fnum [lindex $HelpData(files) $forder]
+				set sorder [item_num $item 1]
+				set snum [lindex $HelpData(sections,$fnum) $sorder]
+				set eorder [item_num $item 2]
+				set enum [lindex $HelpData(sectionentries,$snum) $eorder]
+				if {[string index $direction 0] == "+"} {
+					set neworder [expr {$eorder+1}]
+				} else {
+					set neworder [expr {$eorder-1}]
+				}
+				if {$neworder != $eorder} {
+					tree_del_section $w.treefr.tree $fnum $snum
+					set HelpData(sectionentries,$snum) [lreplace $HelpData(sectionentries,$snum) $eorder $eorder]
+					set HelpData(sectionentries,$snum) [linsert $HelpData(sectionentries,$snum) $neworder $enum]
+					tree_add_section $w.treefr.tree $fnum $snum
+					tree_sel_entry $w.treefr.tree $fnum $snum $enum
+				}
+			}
+		}
+	} elseif {$direction == "-sect" || $direction == "+sect"} {
+		switch -exact -- [llength $item] {
+			1 {
+				bell
+			}
+			2 {
+				set forder [item_num $item 0]
+				set fnum [lindex $HelpData(files) $forder]
+				set sorder [item_num $item 1]
+				set snum [lindex $HelpData(sections,$fnum) $sorder]
+				if {[string index $direction 0] == "+"} {
+					set newforder [expr {$forder+1}]
+					if {$newforder >= [llength $HelpData(files)]} {
+						set newforder [expr {[llength $HelpData(files)] - 1}]
+					}
+				} else {
+					set newforder [expr {$forder-1}]
+					if {$newforder < 0} {
+						set newforder 0
+					}
+				}
+				set newfnum [lindex $HelpData(files) $newforder]
+				if {$newfnum != $fnum} {
+					tree_del_file $w.treefr.tree $fnum
+					tree_del_file $w.treefr.tree $newfnum
+					set HelpData(sections,$fnum) [lreplace $HelpData(sections,$fnum) $sorder $sorder]
+					set HelpData(sections,$newfnum) [linsert $HelpData(sections,$newfnum) end $snum]
+					tree_add_file $w.treefr.tree $fnum
+					tree_add_file $w.treefr.tree $newfnum
+					tree_sel_section $w.treefr.tree $fnum $snum
+				}
+			}
+			3 {
+				set forder [item_num $item 0]
+				set fnum [lindex $HelpData(files) $forder]
+				set sorder [item_num $item 1]
+				set snum [lindex $HelpData(sections,$fnum) $sorder]
+				set eorder [item_num $item 2]
+				set enum [lindex $HelpData(sectionentries,$snum) $eorder]
+				if {[string index $direction 0] == "+"} {
+					set newsorder [expr {$sorder+1}]
+					if {$newsorder >= [llength $HelpData(sections,$fnum)]} {
+						set newsorder [expr {[llength $HelpData(sections,$fnum)] - 1}]
+					}
+				} else {
+					set newsorder [expr {$sorder-1}]
+					if {$newsorder < 0} {
+						set newsorder 0
+					}
+				}
+				set newsnum [lindex $HelpData(sections,$fnum) $newsorder]
+				if {$newsnum != $snum} {
+					tree_del_section $w.treefr.tree $fnum $snum
+					tree_del_section $w.treefr.tree $fnum $newsnum
+					set HelpData(sectionentries,$snum) [lreplace $HelpData(sectionentries,$snum) $eorder $eorder]
+					set HelpData(sectionentries,$newsnum) [linsert $HelpData(sectionentries,$newsnum) end $enum]
+					tree_add_section $w.treefr.tree $fnum $snum
+					tree_add_section $w.treefr.tree $fnum $newsnum
+					tree_sel_entry $w.treefr.tree $fnum $newsnum $enum
+				}
+			}
+		}
+	}
+	update idletasks
 }
 
 
@@ -375,6 +518,7 @@ proc read_helpfile {filename} {
 				incr filenum
 				set HelpData(file,$filenum) $plainfile
 				lappend HelpData(files) $filenum
+				set HelpData(sections,$filenum) {}
 				set fileadded 1
 			} elseif {[string match -nocase "~~section *" $line]} {
 				set mode "meta"
@@ -382,6 +526,7 @@ proc read_helpfile {filename} {
 				incr sectionnum
 				set HelpData(section,$sectionnum) $section
 				lappend HelpData(sections,$filenum) $sectionnum
+				set HelpData(sectionentries,$sectionnum) {}
 				set sectadded 1
 			} elseif {[string match -nocase "~~title *" $line]} {
 				set mode "meta"
@@ -429,13 +574,14 @@ proc read_helpfile {filename} {
 			set HelpData(entrytopics,$entrynum) $topics
 			set HelpData(entrytype,$entrynum) "data"
 			set HelpData(entrydata,$entrynum) $data
+			set HelpData(entryxref,$entrynum) $alsosee
 			lappend HelpData(sectionentries,$sectionnum) $entrynum
 			incr entrynum
 		}
 	}
-	set HelpData(entrynum) $entrynum
-	set HelpData(sectionnum) $sectionnum
-	set HelpData(filenum) $filenum
+	set HelpData(entrycount) $entrynum
+	set HelpData(sectioncount) $sectionnum
+	set HelpData(filecount) $filenum
 }
 
 
@@ -460,10 +606,13 @@ proc write_helpfile {filename} {
 			puts $f "~"
 			puts $f "~"
 			foreach entrynum $HelpData(sectionentries,$sectnum) {
+				set xref $HelpData(entryxref,$entrynum)
 				puts $f $HelpData(entrytopics,$entrynum)
 				puts $f $HelpData(entrydata,$entrynum)
-				puts -nonewline $f "~~alsosee "
-				puts $f [join $HelpData(entryxref,$entrynum) ","]
+				if {$xref != ""} {
+					puts -nonewline $f "~~alsosee "
+					puts $f [join $xref ","]
+				}
 				puts $f "~"
 				puts $f "~"
 			}
@@ -635,11 +784,66 @@ proc tree_refresh {w} {
 }
 
 
+proc open_helpfile {{file ""}} {
+	global document_file
+	if {$file == ""} {
+		set filetypes {
+			{{All Files}                  *        }
+			{{Raw Document Files}         {.raw}   TEXT}
+		}
+		if {$document_file == ""} {
+			set initfile ""
+			set initdir [pwd]
+		} else {
+			set initfile [file tail $document_file]
+			set initdir [file dirname $document_file]
+		}
+        set file [tk_getOpenFile -filetypes $filetypes -title "Open File" \
+					-defaultextension ".raw" -initialdir $initdir \
+					-initialfile $initfile]
+        if {$file == ""} {
+            return
+		}
+	}
+	set document_file $file
+	read_helpfile $file
+	tree_refresh .mw.treefr.tree
+}
+
+
+proc save_helpfile {{file ""}} {
+	global document_file
+	if {$file == {}} {
+		set filetypes {
+			{{All Files}                  *        }
+			{{Raw Document Files}         {.raw}   TEXT}
+		}
+		if {$document_file == ""} {
+			set initfile "Unknown.raw"
+			set initdir [pwd]
+		} else {
+			set initfile [file tail $document_file]
+			set initdir [file dirname $document_file]
+		}
+        set file [tk_getSaveFile -filetypes $filetypes -title "Save File" \
+					-defaultextension ".raw" -initialdir $initdir \
+					-initialfile $initfile]
+        if {$file == ""} {
+            return
+        }
+	}
+	set document_file $file
+	write_helpfile $file
+}
+
+
 proc main {argv} {
     wm withdraw .
     mk_main_window .mw
-	read_helpfile [lindex $argv 0]
-	tree_refresh .mw.treefr.tree
+    wm deiconify .mw
+    update idletasks
+	tkwait visibility .mw
+	open_helpfile [lindex $argv 0]
 }
 main $argv
 
