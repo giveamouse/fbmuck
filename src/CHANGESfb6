@@ -99,6 +99,7 @@ Added @__sys__ propdir for storing system only data, neither users nor wizards
 Added @clone command to allow cloning things (inspired by TinyMUSH).
 Added verbose_clone @tune to control whether @clone is verbose about its
   operations. Defaults to 0.
+Added @force_lock and @chown_lock aliases for @flock and @chlock.
 Removed dead concentrater log code.
 Removed dead LOCKOUT code from include/config.h.
 

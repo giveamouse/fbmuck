@@ -669,8 +669,13 @@ process_command(int descr, dbref player, char *command)
 						break;
 					case 'o':
 					case 'O':
-						Matched("@chown");
-						do_chown(descr, player, arg1, arg2);
+						if(strlen(command) < 7) {
+							Matched("@chown");
+							do_chown(descr, player, arg1, arg2);
+						} else {
+							Matched("@chown_lock");
+							do_chlock(descr, player, arg1, arg2);
+						}
 						break;
 					default:
 						goto bad;
@@ -810,8 +815,13 @@ process_command(int descr, dbref player, char *command)
 					break;
 				case 'o':
 				case 'O':
-					Matched("@force");
-					do_force(descr, player, arg1, arg2);
+					if(strlen(command) < 7) {
+						Matched("@force");
+						do_force(descr, player, arg1, arg2);
+					} else {
+						Matched("@force_lock");
+						do_flock(descr, player, arg1, arg2);
+					}
 					break;
 				default:
 					goto bad;
