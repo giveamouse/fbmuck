@@ -34,7 +34,7 @@ OPTIM= -g
 ROOT= ..
 
 # Where the include files are
-INCLUDE= ${ROOT}/include
+INCLUDE= ${ROOT}/include @INC@
 
 # The root of the directory tree to install to.
 # INSTALL_ROOT= /usr/local/fbmuck

@@ -152,4 +152,5 @@
 /* if your system has an 'allocated' field in it's mallinfo struct in malloc.h */
 #undef HAVE_MALLINFO_ALLOCATED
 
-
+/* if you want to use SSL */
+#undef USE_SSL

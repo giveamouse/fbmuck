@@ -4,15 +4,34 @@
 subdirs='src'
 RM=rm -f
 
+SSLTOP=@SSLTOP@
+
 all:	Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} all; \
 	done
 
-install:	Makefile
+install:	Makefile cert
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} install; \
 	done
+
+cert game/fuzzball.pem:
+	@if grep "^#define USE_SSL" include/autoconf.h > /dev/null; then \
+		echo; \
+		if [ -r game/fuzzball.pem ]; then \
+			echo "Will not overwrite game/fuzzball.pem"; \
+			echo "Remove this file to re-create it"; \
+			echo; \
+		else \
+			if [ ! -r ${HOME}/.rnd ]; then \
+				$(SSLTOP)/bin/openssl rand -rand /etc/hosts:/etc/passwd 0; \
+			fi; \
+			echo "Creating secure certificate. Please answer all the questions"; \
+			echo; \
+			openssl req -x509 -nodes -out game/fuzzball.pem -keyout fuzzball.pem -config fuzzball.cnf -new; \
+		fi; \
+	fi
 
 clean:
 	for d in ${subdirs}; do \

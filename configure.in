@@ -28,6 +28,22 @@ dnl
 AC_ISC_POSIX
 AC_MINIX
 
+AC_ARG_WITH(ssl,
+[  --with-ssl[=ssltop_path]   use ssl encryption and authorization],
+[AC_DEFINE(USE_SSL)
+if test "$withval" = yes; then
+  SSLTOP=/usr/local/ssl
+else
+  SSLTOP=$withval
+fi
+LIBS="-L$SSLTOP/lib -lssl -lcrypto $LIBS"
+INC="-I$SSLTOP/include -I$SSLTOP/include/openssl $INC"
+AC_DEFINE(USE_SSL)
+AC_SUBST(DEFS)
+AC_SUBST(INC)
+AC_SUBST(SSLTOP)
+])
+
 dnl
 dnl Header files
 dnl

@@ -35,6 +35,10 @@
 #endif
 #endif
 
+#ifdef USE_SSL
+#include <ssl.h>
+#endif
+
 #include "db.h"
 #include "interface.h"
 #include "params.h"
@@ -76,6 +80,9 @@ struct descriptor_data {
 	int connected;
 	int con_number;
 	int booted;
+#ifdef USE_SSL
+	SSL *ssl_session;
+#endif
 	dbref player;
 	char *output_prefix;
 	char *output_suffix;
@@ -99,6 +106,13 @@ struct descriptor_data {
 static int numsocks = 0;
 static int listener_port[MAX_LISTEN_SOCKS];
 static int sock[MAX_LISTEN_SOCKS];
+#ifdef USE_SSL
+static int ssl_numsocks = 0;
+static int ssl_listener_port[MAX_LISTEN_SOCKS];
+static int ssl_sock[MAX_LISTEN_SOCKS];
+SSL_CTX *ssl_ctx;
+#endif
+
 static int ndescriptors = 0;
 extern void fork_and_dump(void);
 
@@ -166,6 +180,16 @@ void do_setgid(char *group);
 #ifdef SPAWN_HOST_RESOLVER
 void kill_resolver(void);
 #endif
+
+#ifdef USE_SSL
+ssize_t socket_read(struct descriptor_data *d, void *buf, size_t count);
+ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count);
+#define CERT_FILE "fuzzball.pem"
+#else
+#define socket_write(d, buf, count) write(d->descriptor, buf, count)
+#define socket_read(d, buf, count) read(d->descriptor, buf, count)
+#endif
+ 
 
 void spawn_resolver(void);
 void resolve_hostnames(void);
@@ -277,9 +301,20 @@ main(int argc, char **argv)
 				if (i + 1 >= argc) {
 					show_program_usage(*argv);
 				}
+#ifdef USE_SSL
+				if ( (ssl_numsocks + numsocks) < MAX_LISTEN_SOCKS)
+#else
 				if (numsocks < MAX_LISTEN_SOCKS)
+#endif
 					listener_port[numsocks++] = atoi(argv[++i]);
-
+#ifdef USE_SSL
+			} else if (!strcmp(argv[i], "-sport")) {
+				if (i + 1 >= argc) {
+					show_program_usage(*argv);
+				}
+				if ( (ssl_numsocks + numsocks) < MAX_LISTEN_SOCKS)
+					ssl_listener_port[ssl_numsocks++] = atoi(argv[++i]);
+#endif
 			} else if (!strcmp(argv[i], "-gamedir")) {
 				if (i + 1 >= argc) {
 					show_program_usage(*argv);
@@ -304,7 +339,11 @@ main(int argc, char **argv)
 				if (val < 1 || val > 65535) {
 					show_program_usage(*argv);
 				}
+#ifdef USE_SSL
+				if ( (ssl_numsocks + numsocks) < MAX_LISTEN_SOCKS)
+#else
 				if (numsocks < MAX_LISTEN_SOCKS)
+#endif
 					listener_port[numsocks++] = val;
 			}
 		}
@@ -481,6 +520,15 @@ main(int argc, char **argv)
 				}
 				strcat(portlist, numbuf);
 			}
+#ifdef USE_SSL
+			for (i = 0; i < ssl_numsocks; i++) {
+				sprintf(numbuf, "%d", ssl_listener_port[i]);
+				if (*portlist) {
+					strcat(portlist, " ");
+				}
+				strcat(portlist, numbuf);
+			}
+#endif /* SJP  designate ports are secure */
 			execl("restart", "restart", portlist, (char *) 0);
 		}
 	}
@@ -789,17 +837,17 @@ max_open_files(void)
 void
 goodbye_user(struct descriptor_data *d)
 {
-	write(d->descriptor, "\r\n", 2);
-	write(d->descriptor, tp_leave_mesg, strlen(tp_leave_mesg));
-	write(d->descriptor, "\r\n\r\n", 4);
+	socket_write(d, "\r\n", 2);
+	socket_write(d, tp_leave_mesg, strlen(tp_leave_mesg));
+	socket_write(d, "\r\n\r\n", 4);
 }
 
 void
 idleboot_user(struct descriptor_data *d)
 {
-	write(d->descriptor, "\r\n", 2);
-	write(d->descriptor, tp_idle_mesg, strlen(tp_idle_mesg));
-	write(d->descriptor, "\r\n\r\n", 4);
+	socket_write(d, "\r\n", 2);
+	socket_write(d, tp_idle_mesg, strlen(tp_idle_mesg));
+	socket_write(d, "\r\n\r\n", 4);
 	d->booted = 1;
 }
 
@@ -827,6 +875,29 @@ shovechars()
 		sock[i] = make_socket(listener_port[i]);
 		maxd = sock[i] + 1;
 	}
+#ifdef USE_SSL
+	SSL_load_error_strings ();
+ 	OpenSSL_add_ssl_algorithms (); 
+	ssl_ctx = SSL_CTX_new (SSLv23_server_method ());
+ 
+	if (!SSL_CTX_use_certificate_file (ssl_ctx, CERT_FILE, SSL_FILETYPE_PEM)) {
+		log_status("Could not load certificate file\n");
+		exit(1); /* SJP  handle errors better */
+	}
+	if (!SSL_CTX_use_PrivateKey_file (ssl_ctx, CERT_FILE, SSL_FILETYPE_PEM)) {
+		log_status("Could not load private key file\n");
+		exit(1); /* SJP  handle errors better */
+	}
+	if (!SSL_CTX_check_private_key (ssl_ctx)) {
+		log_status("Private key does not check out\n");
+		exit(1); /* SJP  handle errors better */
+	}
+ 
+	for (i = 0; i < ssl_numsocks; i++) {
+		ssl_sock[i] = make_socket(ssl_listener_port[i]);
+		maxd = ssl_sock[i] + 1;
+	}
+#endif
 	gettimeofday(&last_slice, (struct timezone *) 0);
 
 	avail_descriptors = max_open_files() - 5;
@@ -867,6 +938,11 @@ shovechars()
 			for (i = 0; i < numsocks; i++) {
 				FD_SET(sock[i], &input_set);
 			}
+#ifdef USE_SSL
+			for (i = 0; i < ssl_numsocks; i++) {
+				FD_SET(ssl_sock[i], &input_set);
+			}
+#endif
 		}
 		for (d = descriptor_list; d; d = d->next) {
 			if (d->input.lines > 100)
@@ -875,6 +951,20 @@ shovechars()
 				FD_SET(d->descriptor, &input_set);
 			if (d->output.head)
 				FD_SET(d->descriptor, &output_set);
+#ifdef USE_SSL
+			if (d->ssl_session) {
+			/* SSL may want to write even if the output queue is empty */
+				if ( ! SSL_is_init_finished(d->ssl_session) ) {
+					log_status("SSL : Init not finished.\n", "version");
+					FD_CLR(d->descriptor, &output_set);
+					FD_SET(d->descriptor, &input_set);
+				} 
+				if ( SSL_want_write(d->ssl_session) ) {
+					log_status("SSL : Need write.\n", "version");
+					FD_SET(d->descriptor, &output_set);
+				}
+			}
+#endif
 		}
 #ifdef SPAWN_HOST_RESOLVER
 		FD_SET(resolver_sock[1], &input_set);
@@ -931,6 +1021,29 @@ shovechars()
 					}
 				}
 			}
+#ifdef USE_SSL
+			for (i = 0; i < ssl_numsocks; i++) {
+				if (FD_ISSET(ssl_sock[i], &input_set)) {
+					if (!(newd = new_connection(ssl_listener_port[i], ssl_sock[i]))) {
+						if (errno 
+							&& errno != EINTR 
+							&& errno != EMFILE
+							&& errno != ENFILE
+							) {
+							perror("new_connection");
+							/* return; */
+						}
+					} else {
+						if (newd->descriptor >= maxd)
+							maxd = newd->descriptor + 1;
+						newd->ssl_session  = SSL_new (ssl_ctx);
+						SSL_set_fd(newd->ssl_session, newd->descriptor);
+						cnt = SSL_accept(newd->ssl_session);
+						log_status("SSL accept1: %i\n", cnt );
+					}
+				}
+			}
+#endif
 #ifdef SPAWN_HOST_RESOLVER
 			if (FD_ISSET(resolver_sock[1], &input_set)) {
 				resolve_hostnames();
@@ -1356,6 +1469,9 @@ initializesock(int s, const char *hostname)
 	MALLOC(d, struct descriptor_data, 1);
 
 	d->descriptor = s;
+#ifdef USE_SSL
+	d->ssl_session = NULL;
+#endif
 	d->connected = 0;
 	d->booted = 0;
 	d->con_number = 0;
@@ -1536,7 +1652,7 @@ process_output(struct descriptor_data *d)
 	}
 
 	for (qp = &d->output.head; (cur = *qp);) {
-		cnt = write(d->descriptor, cur->start, cur->nchars);
+		cnt = socket_write(d, cur->start, cur->nchars);
 		if (cnt < 0) {
 			if (errno == EWOULDBLOCK)
 				return 1;
@@ -1642,8 +1758,12 @@ process_input(struct descriptor_data *d)
 	int got;
 	char *p, *pend, *q, *qend;
 
-	got = read(d->descriptor, buf, sizeof buf);
+	got = socket_read(d, buf, sizeof buf);
+#ifdef USE_SSL
+	if ( (got <= 0) && errno != EWOULDBLOCK ) 
+#else
 	if (got <= 0)
+#endif
 		return 0;
 	if (!d->raw_input) {
 		MALLOC(d->raw_input, char, MAX_COMMAND_LEN);
@@ -1989,8 +2109,8 @@ close_sockets(const char *msg)
 
 	for (d = descriptor_list; d; d = dnext) {
 		dnext = d->next;
-		write(d->descriptor, msg, strlen(msg));
-		write(d->descriptor, shutdown_message, strlen(shutdown_message));
+		socket_write(d, msg, strlen(msg));
+		socket_write(d, shutdown_message, strlen(shutdown_message));
 		clearstrings(d);
 		if (shutdown(d->descriptor, 2) < 0)
 			perror("shutdown");
@@ -2009,6 +2129,11 @@ close_sockets(const char *msg)
 	for (i = 0; i < numsocks; i++) {
 		close(sock[i]);
 	}
+#ifdef USE_SSL
+	for (i = 0; i < ssl_numsocks; i++) {
+		close(ssl_sock[i]);
+	}
+#endif
 }
 
 
@@ -3069,3 +3194,51 @@ dump_status(void)
 		log_status(buf, now - d->last_time);
 	}
 }
+
+#ifdef USE_SSL
+ssize_t socket_read(struct descriptor_data *d, void *buf, size_t count) {
+	int i;
+ 
+	if (! d->ssl_session) {
+		return read(d->descriptor, buf, count);
+	} else {
+		i = SSL_read(d->ssl_session, buf, count);
+		if ( i < 0 ) {
+			i = SSL_get_error(d->ssl_session, i);
+			if ( (i == SSL_ERROR_WANT_READ) || (i == SSL_ERROR_WANT_WRITE) ) {
+				log_status("SSL read: Return wouldblock.\n", "version");
+				errno = EWOULDBLOCK;
+				return -1;
+			} else {
+				log_status("SSL read: Return EBADF.\n", "version");
+				errno = EBADF;
+				return -1;
+			}
+		}
+		return i;
+	}
+}
+ 
+ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count) {
+	int i;
+
+	if (! d->ssl_session) {
+		return write(d->descriptor, buf, count);
+	} else {
+		i = SSL_write(d->ssl_session, buf, count);
+		if ( i < 0 ) {
+			i = SSL_get_error(d->ssl_session, i);
+			if ( (i == SSL_ERROR_WANT_READ) || (i == SSL_ERROR_WANT_WRITE) ) {
+				log_status("SSL write: Return wouldblock.\n", "version");
+				errno = EWOULDBLOCK;
+				return -1;
+			} else { 
+				log_status("SSL write: Return EBADF.\n", "version");
+				errno = EBADF;
+				return -1;
+			}
+		}
+		return i;
+	}
+}
+#endif
