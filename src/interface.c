@@ -40,7 +40,7 @@
 #endif
 
 #ifdef USE_SSL
-#include <ssl.h>
+#include <openssl/ssl.h>
 #endif
 
 #include "db.h"
@@ -2264,10 +2264,10 @@ dump_users(struct descriptor_data *e, char *user)
 
 	(void) time(&now);
 	if (wizard) {
-		queue_ansi(e, "Player Name                Location     On For Idle  Host\r\n");
+		queue_ansi(e, "Player Name                Location     On For Idle   Host\r\n");
 	} else {
 		if (tp_who_doing) {
-			queue_ansi(e, "Player Name           On For Idle  Doing...\r\n");
+			queue_ansi(e, "Player Name           On For Idle   Doing...\r\n");
 		} else {
 			queue_ansi(e, "Player Name           On For Idle\r\n");
 		}
@@ -2287,29 +2287,33 @@ dump_users(struct descriptor_data *e, char *user)
 						NAME(d->player), (int) d->player);
 #ifdef GOD_PRIV
 				if (!God(e->player))
-					sprintf(buf, "%-*s [%6d] %10s %4s%s %s\r\n",
+					sprintf(buf, "%-*s [%6d] %10s %4s%c%c %s\r\n",
 							PLAYER_NAME_LIMIT + 10, pbuf,
 							(int) DBFETCH(d->player)->location,
 							time_format_1(now - d->connected_at),
 							time_format_2(now - d->last_time),
-							((FLAGS(d->player) & INTERACTIVE) ? "*" : " "), d->hostname);
+							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
+							(d->ssl_session ? '@' : ' '),
+							d->hostname);
 				else
 #endif
-					sprintf(buf, "%-*s [%6d] %10s %4s%s %s(%s)\r\n",
+					sprintf(buf, "%-*s [%6d] %10s %4s%c%c %s(%s)\r\n",
 							PLAYER_NAME_LIMIT + 10, pbuf,
 							(int) DBFETCH(d->player)->location,
 							time_format_1(now - d->connected_at),
 							time_format_2(now - d->last_time),
-							((FLAGS(d->player) & INTERACTIVE) ? "*" : " "),
+							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
+							(d->ssl_session ? '@' : ' '),
 							d->hostname, d->username);
 			} else {
 				if (tp_who_doing) {
-					sprintf(buf, "%-*s %10s %4s%s %-0.44s\r\n",
+					sprintf(buf, "%-*s %10s %4s%c%c %-0.44s\r\n",
 							PLAYER_NAME_LIMIT + 1,
 							NAME(d->player),
 							time_format_1(now - d->connected_at),
 							time_format_2(now - d->last_time),
-							((FLAGS(d->player) & INTERACTIVE) ? "*" : " "),
+							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
+							(d->ssl_session ? '@' : ' '),
 							GETDOING(d->player) ?
 #ifdef COMPRESS
 							uncompress(GETDOING(d->player))
@@ -2318,12 +2322,13 @@ dump_users(struct descriptor_data *e, char *user)
 #endif
 							: "");
 				} else {
-					sprintf(buf, "%-*s %10s %4s%s\r\n",
+					sprintf(buf, "%-*s %10s %4s%c%c\r\n",
 							PLAYER_NAME_LIMIT + 1,
 							NAME(d->player),
 							time_format_1(now - d->connected_at),
 							time_format_2(now - d->last_time),
-							((FLAGS(d->player) & INTERACTIVE) ? "*" : " "));
+							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
+							(d->ssl_session ? '@' : ' '));
 				}
 			}
 			queue_ansi(e, buf);
