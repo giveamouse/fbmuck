@@ -140,15 +140,15 @@ extern PropPtr delete_prop(PropPtr * list, char *name);
 
 
 extern void set_property(dbref player, const char *pname, PData * dat);
-extern void add_property(dbref player, const char *type, const char *class, int value);
+extern void add_property(dbref player, const char *type, const char *strval, int value);
 
 extern void remove_property_list(dbref player, int all);
 extern void remove_property(dbref player, const char *type);
 
 extern int has_property(int descr, dbref player, dbref what, const char *type,
-						const char *class, int value);
+						const char *strval, int value);
 extern int has_property_strict(int descr, dbref player, dbref what, const char *type,
-							   const char *class, int value);
+							   const char *strval, int value);
 
 extern const char *get_property_class(dbref player, const char *type);
 extern float get_property_fvalue(dbref player, const char *type);
@@ -172,7 +172,7 @@ extern int is_propdir(dbref player, const char *dir);
 
 extern void delete_proplist(PropPtr p);
 extern void set_property_nofetch(dbref player, const char *pname, PData * dat);
-extern void add_prop_nofetch(dbref player, const char *type, const char *class, int value);
+extern void add_prop_nofetch(dbref player, const char *type, const char *strval, int value);
 extern void remove_property_nofetch(dbref player, const char *type);
 extern PropPtr first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name);
 

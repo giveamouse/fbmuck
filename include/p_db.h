@@ -43,6 +43,7 @@ extern void prim_truename(PRIM_PROTOTYPE);
 extern void prim_checkpassword(PRIM_PROTOTYPE);
 extern void prim_nextowned(PRIM_PROTOTYPE);
 extern void prim_movepennies(PRIM_PROTOTYPE);
+extern void prim_findnext(PRIM_PROTOTYPE);
 
 #define PRIMS_DB_FUNCS prim_addpennies, prim_moveto, prim_pennies,       \
     prim_dbcomp, prim_dbref, prim_contents, prim_exits, prim_next,       \
@@ -53,7 +54,7 @@ extern void prim_movepennies(PRIM_PROTOTYPE);
     prim_newroom, prim_newexit, prim_lockedp, prim_recycle,              \
     prim_setlockstr, prim_getlockstr, prim_part_pmatch, prim_controls,   \
     prim_truename, prim_checkpassword, prim_nextowned, prim_getlinks,    \
-    prim_pmatch, prim_movepennies
+    prim_pmatch, prim_movepennies, prim_findnext
 
 #define PRIMS_DB_NAMES "ADDPENNIES", "MOVETO", "PENNIES",  \
     "DBCMP", "DBREF", "CONTENTS", "EXITS", "NEXT",         \
@@ -64,8 +65,9 @@ extern void prim_movepennies(PRIM_PROTOTYPE);
     "NEWROOM", "NEWEXIT", "LOCKED?", "RECYCLE",            \
     "SETLOCKSTR", "GETLOCKSTR", "PART_PMATCH", "CONTROLS", \
     "TRUENAME", "CHECKPASSWORD", "NEXTOWNED", "GETLINKS",  \
-    "PMATCH", "MOVEPENNIES"
+    "PMATCH", "MOVEPENNIES", "FINDNEXT"
 
-#define PRIMS_DB_CNT 42
+#define PRIMS_DB_CNT 43
 
 #endif /* _P_DB_H */
+

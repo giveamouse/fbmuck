@@ -58,7 +58,7 @@ prim_online(PRIM_PROTOTYPE)
 void
 prim_online_array(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 	int i;
 
 	CHECKOP(0);
@@ -71,13 +71,13 @@ prim_online_array(PRIM_PROTOTYPE)
 	temp2.type = PROG_OBJECT;
 	temp1.line = 0;
 	temp2.line = 0;
-	new = new_array_packed(result);
+	nu = new_array_packed(result);
 	for (i = 0; i < result; i++) {
 		temp1.data.number = i;
 		temp2.data.number = pdbref(i + 1);
-		array_setitem(&new, &temp1, &temp2);
+		array_setitem(&nu, &temp1, &temp2);
 	}
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 

@@ -1087,7 +1087,7 @@ prim_explode(PRIM_PROTOTYPE)
 void
 prim_explode_array(PRIM_PROTOTYPE) 
 { 
-	stk_array *new; 
+	stk_array *nu; 
 	char *tempPtr; 
 	char *lastPtr; 
 	CHECKOP(2); 
@@ -1107,7 +1107,7 @@ prim_explode_array(PRIM_PROTOTYPE)
 		const char *delimit = temp1.data.string->data; 
 		int delimlen = temp1.data.string->length;
 
-		new = new_array_packed(0); 
+		nu = new_array_packed(0); 
 		if (!temp2.data.string) { 
 			lastPtr = "";
 		} else { 
@@ -1120,7 +1120,7 @@ prim_explode_array(PRIM_PROTOTYPE)
 
 					temp3.type = PROG_STRING;
 					temp3.data.string = alloc_prog_string(lastPtr);
-					array_appenditem(&new, &temp3);
+					array_appenditem(&nu, &temp3);
 					CLEAR(&temp3);
 
 					lastPtr = tempPtr;
@@ -1133,13 +1133,13 @@ prim_explode_array(PRIM_PROTOTYPE)
 
 	temp3.type = PROG_STRING; 
 	temp3.data.string = alloc_prog_string(lastPtr); 
-	array_appenditem(&new, &temp3); 
+	array_appenditem(&nu, &temp3); 
 
 	CLEAR(&temp1); 
 	CLEAR(&temp2); 
 	CLEAR(&temp3); 
 
-	PushArrayRaw(new); 
+	PushArrayRaw(nu); 
 }
 
 

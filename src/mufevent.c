@@ -321,15 +321,19 @@ muf_event_count(struct frame* fr)
 
 /* int muf_event_exists(struct frame* fr, const char* eventid)
  * Returns how many events of the given event type are waiting to be processed.
+ * The eventid passed can be an smatch string.
  */
 int
 muf_event_exists(struct frame* fr, const char* eventid)
 {
 	struct mufevent *ptr;
 	int count = 0;
+	char pattern[BUFFER_LEN];
+	
+	strcpy(pattern, eventid);
 
 	for (ptr = fr->events; ptr; ptr = ptr->next)
-		if (!strcmp(ptr->event, eventid))
+		if (equalstr(pattern, ptr->event))
 			count++;
 
 	return count;
@@ -404,7 +408,7 @@ muf_event_pop_specific(struct frame *fr, int eventcount, char **events)
 	int i;
 
 	for (i = 0; i < eventcount; i++) {
-		if (fr->events && !strcmp(events[i], fr->events->event)) {
+		if (fr->events && equalstr(events[i], fr->events->event)) {
 			tmp = fr->events;
 			fr->events = tmp->next;
 			return tmp;
@@ -414,7 +418,7 @@ muf_event_pop_specific(struct frame *fr, int eventcount, char **events)
 	ptr = fr->events;
 	while (ptr && ptr->next) {
 		for (i = 0; i < eventcount; i++) {
-			if (!strcmp(events[i], ptr->next->event)) {
+			if (equalstr(events[i], ptr->next->event)) {
 				tmp = ptr->next;
 				ptr->next = tmp->next;
 				return tmp;

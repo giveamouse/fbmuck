@@ -383,6 +383,21 @@ of Permission Denied.  You are only allowed to delete properties from objects
 that are owned by the owner of the trigger object.
 ~
 ~
+BLESS
+{bless:propname}
+{bless:propname,object}
+Blesses a property so that MPI executed from it will run with blessed
+permissions.  This command itself requires blessed permissions to run.
+~
+~
+UNBLESS
+{unbless:propname}
+{unbless:propname,object}
+Removes the blessing of a property so that MPI executed from it will no
+longer run with blessed permissions.  This command itself requires blessed
+permissions to run.
+~
+~
 LIST
 {list:listname}
 {list:listname,obj}
@@ -651,7 +666,14 @@ EVAL
 {eval:string}
     Sort of the exact opposite of {lit:}.  This takes a string, and
 evaluates it for MPI commands embedded within it.  This can be used on
-the output of {list:}, for example.
+the output of {list:}, for example.  Also see the {revoke} command.
+~
+~
+REVOKE
+{revoke:commands}
+Executes the enclosed commands with all blessing permissions revoked.
+This is good to wrap around {eval} statements that may execute user
+supplied code, to prevent security holes.
 ~
 ~
 NULL
@@ -1102,7 +1124,7 @@ this just sees if obj1 is within the locational environment of obj2.
 ONLINE
 {online}
     Returns a list of players who are online.  This function can only be
-executed by wizbitted objects.
+executed with blessed permissions.
 ~
 ~
 AWAKE

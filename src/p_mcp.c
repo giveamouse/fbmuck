@@ -573,6 +573,31 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 
 
 void
+fbgui_muf_error_cb(GUI_ERROR_CB_ARGS)
+{
+	char buf[BUFFER_LEN];
+	struct frame *fr = (struct frame *) context;
+	struct inst temp;
+
+	temp.type = PROG_ARRAY;
+	temp.data.array = new_array_dictionary();
+
+	array_set_strkey_intval(&temp.data.array, "descr",  descr);
+	array_set_strkey_strval(&temp.data.array, "dlogid", dlogid);
+	if (id) {
+		array_set_strkey_strval(&temp.data.array, "id", id);
+	}
+	array_set_strkey_strval(&temp.data.array, "errcode", errcode);
+	array_set_strkey_strval(&temp.data.array, "errtext", errtext);
+
+	sprintf(buf, "GUI.%s", dlogid);
+	muf_event_add(fr, buf, &temp, 0);
+	CLEAR(&temp);
+}
+
+
+
+void
 prim_gui_available(PRIM_PROTOTYPE)
 {
 	McpVer ver;
@@ -629,7 +654,8 @@ prim_gui_dlog_create(PRIM_PROTOTYPE)
 	if (!mfr)
 		abort_interp("Invalid descriptor number. (1)");
 
-	dlogid = gui_dlog_alloc(oper1->data.number, fbgui_muf_event_cb, fr);
+	dlogid = gui_dlog_alloc(oper1->data.number, fbgui_muf_event_cb,
+							fbgui_muf_error_cb, fr);
 	mcp_mesg_init(&msg, GUI_PACKAGE, "dlog-create");
 	mcp_mesg_arg_append(&msg, "title", title);
 
@@ -1007,7 +1033,7 @@ prim_gui_values_get(PRIM_PROTOTYPE)
 {
 	const char *name;
 	char *dlogid;
-	stk_array *new;
+	stk_array *nu;
 	struct inst temp1;
 	array_data temp2;
 
@@ -1020,7 +1046,7 @@ prim_gui_values_get(PRIM_PROTOTYPE)
 		abort_interp("Invalid dialog ID.");
 
 	dlogid = oper1->data.string->data;
-	new = new_array_dictionary();
+	nu = new_array_dictionary();
 	name = GuiValueFirst(oper1->data.string->data);
 	while (name) {
 		int i;
@@ -1046,7 +1072,7 @@ prim_gui_values_get(PRIM_PROTOTYPE)
 			CLEAR(&temp3);
 			CLEAR(&temp4);
 		}
-		array_setitem(&new, &temp1, &temp2);
+		array_setitem(&nu, &temp1, &temp2);
 		CLEAR(&temp1);
 		CLEAR(&temp2);
 
@@ -1054,7 +1080,7 @@ prim_gui_values_get(PRIM_PROTOTYPE)
 	}
 
 	CLEAR(oper1);
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
@@ -1063,7 +1089,7 @@ prim_gui_value_get(PRIM_PROTOTYPE)
 {
 	char *dlogid;
 	char *ctrlid;
-	stk_array *new;
+	stk_array *nu;
 	struct inst temp1;
 	array_data temp2;
 	int lines;
@@ -1087,7 +1113,7 @@ prim_gui_value_get(PRIM_PROTOTYPE)
 	ctrlid = oper2->data.string->data;
 
 	lines = gui_value_linecount(dlogid, ctrlid);
-	new = new_array_packed(lines);
+	nu = new_array_packed(lines);
 
 	for (i = 0; i < lines; i++) {
 		temp1.type = PROG_INTEGER;
@@ -1096,7 +1122,7 @@ prim_gui_value_get(PRIM_PROTOTYPE)
 		temp2.type = PROG_STRING;
 		temp2.data.string = alloc_prog_string(gui_value_get(dlogid, ctrlid, i));
 
-		array_setitem(&new, &temp1, &temp2);
+		array_setitem(&nu, &temp1, &temp2);
 
 		CLEAR(&temp1);
 		CLEAR(&temp2);
@@ -1104,6 +1130,6 @@ prim_gui_value_get(PRIM_PROTOTYPE)
 
 	CLEAR(oper1);
 	CLEAR(oper2);
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 

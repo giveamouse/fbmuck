@@ -101,6 +101,9 @@
 /* if tm_gmtoff is defined in sys/time.h, define this */
 #undef HAVE_SYS_TM_GMTOFF
 
+/* if _timezone is defined in time.h, define this */
+#undef HAVE__TIMEZONE
+
 /* uname -a output for certain local programs. */
 #undef UNAME_VALUE
 
@@ -109,3 +112,19 @@
 
 /* if your system has sys/errno.h */
 #undef HAVE_SYS_ERRNO_H
+
+/* if your system has an hblks field in it's mallinfo struct in malloc.h */
+#undef HAVE_MALLINFO_HBLKS
+
+/* if your system has a keepcost field in it's mallinfo struct in malloc.h */
+#undef HAVE_MALLINFO_KEEPCOST
+
+/* if your system has a treeoverhead field in it's mallinfo struct in malloc.h */
+#undef HAVE_MALLINFO_TREEOVERHEAD
+
+/* if your system has a grain field in it's mallinfo struct in malloc.h */
+#undef HAVE_MALLINFO_GRAIN
+
+/* if your system has an 'allocated' field in it's mallinfo struct in malloc.h */
+#undef HAVE_MALLINFO_ALLOCATED
+

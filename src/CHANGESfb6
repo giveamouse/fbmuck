@@ -9,6 +9,7 @@ Fixed a bug with DESCR_ARRAY returning an array with bad entries.
 Fixed a crasher bug with dequeuing muf programs with TIMERs.
 Fixed a crasher bug in {lmember} when not specifying delimiter.
 Fixed a buffer overwrite error in {parse} when given output delimiters.
+Fixed a crasher bug in ARRAY_NUNION, ARRAY_NDIFF, and ARRAY_NINTERSECT.
 Added @bless and @unbless commands for granting wizbit mpi permissions to
   individual properties.  Syntax is @[un]bless object=propname.
 Added MPI {bless:propname[,object]} command to bless a property.  Requires
@@ -72,7 +73,7 @@ Added TRY-CATCH-ENDCATCH exception handling.
   ENDCATCH ( -- ) denotes the end of the CATCH block.
   The ABORT ( s -- ) primitive can be used to throw arbitrary errors.
   An example of using the TRY-CATCH-ENDCATCH structure is:
-    : get_a_prop ( dbref string -- )
+    : get_a_prop ( d s -- s )
 	    2 TRY
 		    getpropstr
 		catch
@@ -80,12 +81,30 @@ Added TRY-CATCH-ENDCATCH exception handling.
 			""
 		endcatch
 	;
+Added FINDNEXT ( d1 d2 s1 s2 -- d' ) muf primitive.  Searches for the next
+  object in the database _after_ d1 that is owned by d2, whose name matches
+  the wildcard pattern s1, and whose flags match those specified by s2.
+  You can start a search with d1 set to #-1.  If d2 is #-1 then ownership
+  checks will not be performed.  If s1 is an empty string, name checks will
+  not be performed.  If s2 is a null string, flags will not be checked.
+  s2 is a flagslist that is in the same format as that used by the @find,
+  @owned, etc. commands.  ie:  "F3!D" will match all muf program objects in
+  the database that are mucker level 3, and not set debug.  If there are
+  no more objects in the database that might match all the search criteria,
+  then #-1 is returned.  Otherwise, the next matching object is returned.
+  This is used similarly to the NEXT primitive.  Ex:
+	#-1 begin
+		me @ "*.muf" "F" FINDNEXT
+		dup while
+		dup unparseobj .tell
+	repeat
 Changed MPI to not use the trigger's wizbit for permissions.  Instead, if the
   property is itself Blessed, then it gets the permissions that wizbit mpi
   used to have.
 Changed 'examine' command to list properties with either a '-' or a 'B' in
   front, to denote whether the property has been Blessed or not.
 Changed the 'log_reads' @tune to 'log_interactive' to be compatible with fb5.
+Changed EVENT_EXISTS to allow matching by smatch wildcard pattern.
 
 
 2.2fb6.00a33

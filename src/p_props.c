@@ -925,7 +925,7 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 	struct inst *in;
 	struct inst temp1;
 	stk_array *arr;
-	stk_array *new;
+	stk_array *nu;
 	char* pat;
 	char* prop;
 	const char* ptr;
@@ -948,7 +948,7 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 		if (!(*(++ptr)))
 			abort_interp("Cannot access a propdir directly.");
 
-	new = new_array_packed(0);
+	nu = new_array_packed(0);
 	arr = oper1->data.array;
 	prop = DoNullInd(oper2->data.string);
 	pat = DoNullInd(oper3->data.string);
@@ -962,7 +962,7 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 				if (ptr) {
 					strcpy(buf, ptr);
 					if (equalstr(buf, pat)) {
-						array_appenditem(&new, in);
+						array_appenditem(&nu, in);
 					}
 				}
 			}
@@ -973,6 +973,6 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper1);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 

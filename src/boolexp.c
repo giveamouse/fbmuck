@@ -2,6 +2,16 @@
 
 /*
  * $Log: boolexp.c,v $
+ * Revision 1.4  2000/12/28 03:02:08  revar
+ * Fixed support for Linux mallinfo() calls in @memory.
+ * Fixed a crasher bug in ARRAY_NUNION, ARRAY_NDIFF, and ARRAY_NINTERSECT.
+ * Fixed support for catching exceptions thrown in other muf programs.
+ * Fixed some obscure bugs with getting gmt_offset on some systems.
+ * Changed a whole lot of variables from 'new', 'delete', and 'class' to
+ *  possibly allow moving to C++ eventually.
+ * Added FINDNEXT primitive.
+ * Updated TODO list.
+ *
  * Revision 1.3  2000/07/18 18:15:02  winged
  * Various fixes to support warning-free compiling under -Wall -Wstrict-prototypes -Wno-format -- not all warnings fixed or found yet
  *
@@ -410,7 +420,7 @@ static struct boolexp *
 parse_boolprop(char *buf)
 {
 	char *type = alloc_string(buf);
-	char *class = (char *) index(type, PROP_DELIMITER);
+	char *strval = (char *) index(type, PROP_DELIMITER);
 	char *x;
 	struct boolexp *b;
 	PropPtr p;
@@ -430,24 +440,24 @@ parse_boolprop(char *buf)
 		return TRUE_BOOLEXP;
 	}
 	/* get rid of trailing spaces */
-	for (temp = class - 1; isspace(*temp); temp--) ;
+	for (temp = strval - 1; isspace(*temp); temp--) ;
 	temp++;
 	*temp = '\0';
-	class++;
-	while (isspace(*class) && *class)
-		class++;
-	if (!*class) {
+	strval++;
+	while (isspace(*strval) && *strval)
+		strval++;
+	if (!*strval) {
 		/* Oops!  CLEAN UP AND RETURN A TRUE */
 		free((void *) x);
 		free_boolnode(b);
 		return TRUE_BOOLEXP;
 	}
 	/* get rid of trailing spaces */
-	for (temp = class; !isspace(*temp) && *temp; temp++) ;
+	for (temp = strval; !isspace(*temp) && *temp; temp++) ;
 	*temp = '\0';
 
 	b->prop_check = p = alloc_propnode(type);
-	SetPDataStr(p, alloc_string(class));
+	SetPDataStr(p, alloc_string(strval));
 	SetPType(p, PROP_STRTYP);
 	free((void *) x);
 	return b;

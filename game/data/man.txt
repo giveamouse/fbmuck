@@ -281,6 +281,18 @@ array_next ( a @ -- @ i )
 Returns the next index in the array, and a boolean which
 is false if there are no items left.
 ~
+ARRAY_MATCHVAL|
+ARRAY_MATCHVAL (arrStrings strPattern - arrStrings)
+Given an array and an smatch pattern string, returns a dictionary containing
+all the key-value pairs where the value was a string that matched the given
+smatch wildcard pattern.
+~
+ARRAY_MATCHKEY|
+ARRAY_MATCHKEY (arrStrings strPattern - arrStrings)
+Given an array and an smatch wildcard pattern string, returns a dictionary
+containing all the key-value pairs where the key was a string that matched
+the given smatch pattern.
+~
 ARRAY_INTERSECT|
 array_intersect ( a1 a2 -- a )
 Returns an array containing the intersection of the two arrays.
@@ -288,6 +300,39 @@ ie: Only values contained in BOTH the given arrays will be returned.
 Duplicate values will appear only once in the returned list.  Keys will
 be discarded.  Ordering is not preserved.  This is actually an inserver
 macro to '2 array_nintersect'
+~
+ARRAY_EXTRACT|
+ARRAY_EXTRACT (array arrIndexes -- array')
+Takes an array, and returns a dictionary containing every element of the
+original array who's key was in the list indexes given.
+~
+ARRAY_JOIN|
+ARRAY_JOIN ([s] s -- s) Takes a list array and a delimiter string, and
+returns a single string that is the concatenation of all the items in the
+list array, with the delimiter string in between.  For example:
+    { "one" 2 "three" 3.14159 }list "... " array_join
+will result in a single string: "one... 2... three... 3.14159"
+~
+ARRAY_FILTER_PROP|
+ARRAY_FILTER_PROP ([d] s1 s2 -- [d'])
+Takes a homogenous list array of dbrefs, and returns a list array with only
+those dbrefs who have a property specified by s1, set to a value that smatch
+matches s2.
+~
+ARRAY_SORT|
+ARRAY_SORT (arrData intSortType -- arrSorted)
+This sorts all the items in the list array given, based on the given
+sort type.  This can sort strings, integers, floats, dbrefs, or mixes
+of types.  Integers are sorted in with floats, but strings sort after
+all numbers.  Dbrefs sort after the other number types, but before
+string types.  Other stack item types will sort separately, but in
+an undefined consistent order.  The valid sort types are 0 - 3, which
+have the following inserver muf macro $defines: SORTTYPE_CASE_ASCEND
+Case sensitive and ascending order.  SORTTYPE_NOCASE_ASCEND   Case
+insensitive and ascending order.  SORTTYPE_CASE_DESCEND    Case sensitive
+and descending order.  SORTTYPE_NOCASE_DESCEND  Case insensitive and
+descending order.
+
 ~
 ARRAY_NINTERSECT|
 array_nintersect ( {a} -- a )
@@ -324,7 +369,7 @@ Returns the previous index in the array, and a boolean which
 is false if there are no items left.
 ~
 ARRAY_SETITEM|
-arra_setitem ( ? a @ -- a')
+array_setitem ( ? a @ -- a')
 Overwrites a given array item at index @ with new value ?.
 ~
 ARRAY_APPENDITEM|
@@ -826,6 +871,41 @@ correctly, each object owned by that player will be returned exactly once.
 The player object itself will NOT be returned.
 See also NEXT.
 ~
+FINDNEXT|
+FINDNEXT ( d1 d2 s1 s2 -- d' )
+Searches for the next object in the database _after_ d1 that is owned by
+d2, whose name matches the wildcard pattern s1, and whose flags match
+those specified by s2.
+ 
+You can start a search with d1 set to #-1.  If d2 is #-1 then ownership
+checks will not be performed.  However, only programs with a mucker level
+of 3 or better will be allowed to perform non-owner-specific searches, or
+searches with an owner different from the effective UID of the program.
+If s1 is an empty string, name checks will not be performed.  If s2 is a
+null string, then flags will not be checked.
+ 
+The s1 name pattern differs from that used by @find, @owned, etc. in
+that those commands implicitly treat any patterns as if it has a *
+before and after it.  This primitive does NOT.  So for this primitive,
+"*.muf" would match only objects whose name ends in ".muf".
+ 
+The s2 string is a flagslist that is in the same format as that used by
+the @find, @owned, etc. commands.  ie:  "F3!D" will match all muf program
+objects in the database that are mucker level 3, and not set debug.
+ 
+If there are no more objects in the database that might match all the
+search criteria, then #-1 is returned.  Otherwise, the next matching
+object is returned.
+ 
+This primitive is used like this:
+    #-1 begin
+        me @ "*.muf" "F" FINDNEXT
+        dup while
+        dup unparseobj .tell
+    repeat
+
+See also NEXT, NEXTOWNED.
+~
 NOT|
 not ( x -- i )
 Performs the boolean `not' operation on x, returning i as 1 if x is
@@ -1194,8 +1274,45 @@ tread ( i -- s i )
 Acts like a timed READ call.  If the user does not provide input within
 the given number of seconds, the READ call will time-out and return a
 false boolean, otherwise it returns a true boolean and the string value
-entered.
+entered.  This is implemented as an in-server macro as follows:
+    "__tread" timer_start { "TIMER.__tread" "READ" }list event_waitfor
+    swap pop "READ" strcmp if "" 0 else read 1 "__tread" timer_stop then
 See also READ.
+~
+TRY|CATCH|ENDCATCH|EXCEPTION|EXCEPTIONS|EXCEPTION HANDLING|
+TRY ( i -- )
+CATCH ( s -- )
+ENDCATCH ( -- )
+
+The TRY statement marks the start of the TRY-CATCH block, and locks all
+but the top i stack items against removal or alteration.  If code inside
+of a TRY-CATCH block gets an error, or attempts to remove or alter locked
+stack items, then execution immediately jumps to the CATCH statement.
+If, instead, execution reaches the end of the TRY-CATCH block without
+error, then the stack is unlocked, and execution is resumed after the
+ENDCATCH statement.
+
+On an error, the CATCH statement will pop off all stack items that were
+not locked, to return the stack to a known state.  The stack will then
+be unlocked, and the thrown error string will be pushed onto the stack.
+Finally, the code inside the CATCH-ENDCATCH block will then be executed.
+If you have nested TRY-CATCH blocks, then the most recent TRY-CATCH
+block will catch the error thrown.  If the error is thrown in another
+called function or program, then those calls are unwound back to the
+most recent TRY-CATCH block.
+
+The ABORT primitive may be used to throw an arbitrary error anywhere.
+If you need to re-propagate an error, you can use ABORT.
+
+Example code:
+    : get_a_prop ( d s -- s )
+        2 TRY
+            getpropstr
+        CATCH
+            pop (We got an error trying to read the prop.  Ignore it.)
+            ""
+        ENDCATCH
+    ;
 ~
 VAR|
 var <name>
@@ -2806,9 +2923,19 @@ GUI_VALUES_GET (strDlogID -- dictValues)
 Returns a dictionary containing all the control values for the given
 dialog.  The keys are the control ids.
 ~
+GUI_VALUE_GET|
+GUI_VALUE_GET (strDlogID strCtrlID -- arrValue)
+This gets the current value of the given GUI control, and returns it as a
+string list array.
+~
 GUI_VALUE_SET|
 GUI_VALUE_SET (strDlogID strCtrlID strValue -- )
 Sets the value of a given control in a given dialog.
+~
+GUI_CTRL_COMMAND|
+GUI_CTRL_COMMAND (strDlogID strCtrlID strCommand dictArgs -- )
+This is the generic primitive for executing a GUI control specific command.
+The dictionary contains the arguments for the given command.
 ~
 ANSI_MIDSTR|
 ANSI_MIDSTR ( s i i -- s' )
@@ -2890,20 +3017,28 @@ EVENT_WAIT|
 EVENT_WAIT ( -- ? s )
 This is an inserver muf macro, that expands to '0 array_make event_waitfor'
 ~
+EVENT_EXISTS|
+EVENT_EXISTS ( s -- i )
+Returns the number of pending events that have the given eventid type.
+The given eventid type can be an smatch wildcard pattern.
+~
 EVENT_WAITFOR|
 EVENT_WAITFOR (a -- ? s )
 Waits for an event to occur that matches one of the eventIDs given in the
-string list array.  The comparison is case sensitive.  If a matching
-event isn't in the event queue already, this will pause the MUF process
-until a matching event is added to the queue.  The first matching event
-to become available will be removed from the event queue.  This returns
-an event-specific context data item, and the matching eventID string.
-If an empty list array is passed to this primitive, then it will match
-any and all events, and return the first one pending.
+string list array.  The comparison is NOT case sensitive, and you may use
+smatch wildcard patterns.  If a matching event isn't in the event queue
+already, this will pause the MUF process until a matching event is added
+to the queue.  The first matching event to become available will be removed
+from the event queue.  This returns an event-specific context data item,
+and the matching eventID string.  If an empty list array is passed to this
+primitive, then it will match any and all events, and return the first one
+pending.
 
-Timer events have eventID strings that are created by prepending "TIMER." to
-the id string passed to the TIMER_START call.  The context for Timer events
-is an integer systime value, specifying when the timer was scheduled for.
+Timer events have eventID strings that are created by prepending "TIMER."
+to the timerID passed to the TIMER_START primitive.  The context for Timer
+events is an integer, representing the systime that the timer event was
+scheduled to occur at.  This might not be the time that the event is actually
+processed at, due to system delays.
 
 GUI events have eventID strings that are created by prepending "GUI." to
 the dlogID of the dialog that generated the event.  The context for GUI
@@ -2913,11 +3048,6 @@ events is a dictionary contains the following keys:
   id         Holds the ID of the control that generated the event.
   dismissed  Holds 1 if the dialog was dismissed, 0 otherwise.
   event      Holds the type of gui event.  ie: buttonpress, menuselect.
-
-Timer events have eventID strings that are created by prepending "TIMER."
-to the timerID passed to the TIMER_START primitive.  The context for Timer
-events is an integer, representing the systime that the timer was really
-scheduled to occur at.
 
 User events have eventID strings that are created by prepending "USER." to
 the eventID given to the EVENT_SEND muf primitive.  The context for User
@@ -2936,7 +3066,7 @@ MCP eventIDs are:
 The context for MCP events is a dictionary containing the following keys:
   descr     Holds the integer descriptor of the sending connection.
   package   Holds the string package name the MCP mesg is sent for.
-  package   Holds the string message name within that package.
+  message   Holds the string message name within that package.
   args      Holds a dictionary, containing the message arguments.
               Each mesg arg has an array list of strings as a value.
 
@@ -2944,8 +3074,16 @@ Read events have eventID strings of just "READ".  The context of Read events
   is the integer descriptor of the first waiting line to be READ.  To get the
   actual line sent by the user you need to use the READ primitive.
 ~
-C_DATUM
-C_DATUM
+BLESSPROP|
+BLESSPROP (dbrefObject strPropname -- )
+Blesses the given property for MPI.  Requires Wizbit perms.
+~
+UNBLESSPROP|
+UNBLESSPROP (dbrefObject strPropname -- )
+Unblesses the given property for MPI.  Requires Wizbit perms.
+~
+C_DATUM|
+C_DATUM ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Datum control in a GUI dialog.
 The Datum control is a non-visible control that just holds a value.  It's
@@ -2953,8 +3091,8 @@ useful for keeping program state information.
 The only control arguments that this control type can use are:
     value    Holds the value of the control.
 ~
-C_LABEL
-C_LABEL
+C_LABEL|
+C_LABEL ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a text label control in a GUI dialog.
 The label control is just a text label, nothing more.
@@ -2987,8 +3125,8 @@ The only control arguments that this control type can use are:
     toppad   Number of pixels padding to add above this control.
     leftpad  Number of pixels padding to add to the left of this control.
 ~
-C_HRULE
-C_HRULE
+C_HRULE|
+C_HRULE ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Horizontal Rule control in a GUI dialog.
 The hrule control is just a horizontal line, nothing more.
@@ -3021,8 +3159,8 @@ The only control arguments that this control type can use are:
     toppad   Number of pixels padding to add above this control.
     leftpad  Number of pixels padding to add to the left of this control.
 ~
-C_VRULE
-C_VRULE
+C_VRULE|
+C_VRULE ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Vertical Rule control in a GUI dialog.
 The vrule control is just a vertical line, nothing more.
@@ -3055,8 +3193,8 @@ The only control arguments that this control type can use are:
     toppad   Number of pixels padding to add above this control.
     leftpad  Number of pixels padding to add to the left of this control.
 ~
-C_BUTTON
-C_BUTTON
+C_BUTTON|
+C_BUTTON ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Button control in a GUI dialog.
 The Button control is a simple button the user can press.
@@ -3092,8 +3230,8 @@ The only control arguments that this control type can use are:
     toppad   Number of pixels padding to add above this control.
     leftpad  Number of pixels padding to add to the left of this control.
 ~
-C_CHECKBOX
-C_CHECKBOX
+C_CHECKBOX|
+C_CHECKBOX ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a CheckBox control in a GUI dialog.
 The CheckBox control is used for indicating simple "on/off" boolean settings.
@@ -3130,8 +3268,8 @@ The only control arguments that this control type can use are:
     toppad   Number of pixels padding to add above this control.
     leftpad  Number of pixels padding to add to the left of this control.
 ~
-C_EDIT
-C_EDIT
+C_EDIT|
+C_EDIT ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a single-line text Edit control in a GUI dialog.
 The Edit control is used for single-line text string editing.
@@ -3174,8 +3312,8 @@ The only control arguments that this control type can use are:
     toppad   Number of pixels padding to add above this control.
     leftpad  Number of pixels padding to add to the left of this control.
 ~
-C_MULTIEDIT
-C_MULTIEDIT
+C_MULTIEDIT|
+C_MULTIEDIT ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Multi-line text Edit control in a GUI dialog.
 The MultiEdit control is used for multi-line text string editing.
@@ -3212,8 +3350,8 @@ The only control arguments that this control type can use are:
     toppad   Number of pixels padding to add above this control.
     leftpad  Number of pixels padding to add to the left of this control.
 ~
-C_COMBOBOX
-C_COMBOBOX
+C_COMBOBOX|
+C_COMBOBOX ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Win95 style combobox with a pulldown menu of options.
 The ComboBox control is used for selecting from multiple standard options
@@ -3259,8 +3397,8 @@ The only control arguments that this control type can use are:
     toppad   Number of pixels padding to add above this control.
     leftpad  Number of pixels padding to add to the left of this control.
 ~
-C_LISTBOX
-C_LISTBOX
+C_LISTBOX|
+C_LISTBOX ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a ListBox control in a GUI dialog.  The ListBox control is used
 for selecting one or more entries from a list of options.
@@ -3302,15 +3440,133 @@ The only control arguments that this control type can use are:
     toppad   Number of pixels padding to add above this control.
     leftpad  Number of pixels padding to add to the left of this control.
 ~
-C_SPINNER
-C_SPINNER
+C_SPINNER|
+C_SPINNER ( -- s )
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a Spinner control in a GUI dialog.  The Spinner control is used
+for setting an integer value, that can be incremented and decremented via
+up and down buttons.  The only control arguments that this control type
+can use are:
+    value    The current integer value of the control.
+    text     If given, makes a label with the given text next to the spinner.
+    minval   The minimum integer value that this control can be set to.
+    maxval   The maximum integer value that this control can be set to.
+    width    Number of digits that this control should be able to hold.
+             Defaults to 12 digits.
+    pane     The pane in which to place this control.  Some controls, like
+             the notebook or frame controls, create new panes in which you
+             can place controls.
+    newline  If 1, next control will be at the beginning of the next row.
+             If 0, next control will be in the next column to the right.
+             Defaults to 1.
+    sticky   Which sides of the cell this control sticks to.  This is a
+             string with any or all of the letters 'n', 's', 'e', or 'w'.
+    colspan  Number of columns this control spans across.  Defaults to 1.
+    rowspan  Number of rows this control spans across.  Defaults to 1.
+    colskip  Number of columns to skip before placing this control.
+             Defaults to 0.
+    hweight  How much the starting column of this control should expand.
+             When filling unused space, if there are two columns, one with
+             hweight 2 and the other with hweight 1, then the column with
+             hweight 2 will be expanded twice as much as the other column.
+             The default hweight is 0.  Note that the last control in the
+             given column sets the hweight for the column.
+    vweight  How much the starting row of this control should expand.
+             When filling unused space, if there are two rows, one with
+             vweight 2 and the other with vweight 1, then the row with
+             vweight 2 will be expanded twice as much as the other row.
+             The default hweight is 0.  Note that the last control in the
+             given row sets the vweight for the row.
+    toppad   Number of pixels padding to add above this control.
+    leftpad  Number of pixels padding to add to the left of this control.
 ~
-C_SCALE
-C_SCALE
+C_SCALE|
+C_SCALE ( -- s )
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a Scale control in a GUI dialog.  The Scale control is used for
+setting a floating point value, that can be changed by moving a slider.
+The only control arguments that this control type
+can use are:
+    value      The current floating point value of the control.
+    text       If given, makes a label with the given text next to the scale.
+    minval     The minimum value that this control can be set to.
+    maxval     The maximum value that this control can be set to.
+    resolution This is the smallest change available via the slider.
+                Defaults to 1.
+    bigincrement  How much to change the value when the user clicks in the
+                bar on either side of the slider.  Defaults to 10.
+    digits     The number of significant digits of resolution for the value.
+    orient     The orientation, "horiz" or "vert".  (Defaults to horiz.)
+    length     The length of the long axis of the scale, in pixels.
+               Defaults to 100 pixels.
+    width      The length of the short axis of the scale, in pixels.
+               Defaults to 15 pixels.
+    pane       The pane in which to place this control.  Some controls, like
+               the notebook or frame controls, create new panes in which you
+               can place controls.
+    newline    If 1, next control will be at the beginning of the next row.
+               If 0, next control will be in the next column to the right.
+               Defaults to 1.
+    sticky     Which sides of the cell this control sticks to.  This is a
+               string with any or all of the letters 'n', 's', 'e', or 'w'.
+    colspan    Number of columns this control spans across.  Defaults to 1.
+    rowspan    Number of rows this control spans across.  Defaults to 1.
+    colskip    Number of columns to skip before placing this control.
+               Defaults to 0.
+    hweight    How much the starting column of this control should expand.
+               When filling unused space, if there are two columns, one with
+               hweight 2 and the other with hweight 1, then the column with
+               hweight 2 will be expanded twice as much as the other column.
+               The default hweight is 0.  Note that the last control in the
+               given column sets the hweight for the column.
+    vweight    How much the starting row of this control should expand.
+               When filling unused space, if there are two rows, one with
+               vweight 2 and the other with vweight 1, then the row with
+               vweight 2 will be expanded twice as much as the other row.
+               The default hweight is 0.  Note that the last control in the
+               given row sets the vweight for the row.
+    toppad     Number of pixels padding to add above this control.
+    leftpad    Number of pixels padding to add to the left of this control.
 ~
-C_FRAME
-C_FRAME
+C_FRAME|
+C_FRAME ( -- s )
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a frame control in a GUI dialog.  Frame controls are used to
+contain and organize other controls.  Frames can be either invisible
+containers that just organize the positions of other controls, or they
+can be visible groupboxes with borders and labels.
+The only control arguments that this control type can use are:
+    text        If set, the frame, as a groupbox, will have the given label.
+    visible     If set to 1, causes a border to be drawn around the frame.
+    collapsible This, is set to 1, allows the group box to be collapsed.
+    collapsed   If the frame is collapsible, this sets the state to collapsed.
+    pane        The pane in which to place this control.  Some controls, like
+                the notebook or frame controls, create new panes in which you
+                can place controls.
+    newline     If 1, next control will be at the beginning of the next row.
+                If 0, next control will be in the next column to the right.
+                Defaults to 1.
+    sticky      Which sides of the cell this control sticks to.  This is a
+                string with any or all of the letters 'n', 's', 'e', or 'w'.
+    colspan     Number of columns this control spans across.  Defaults to 1.
+    rowspan     Number of rows this control spans across.  Defaults to 1.
+    colskip     Number of columns to skip before placing this control.
+                Defaults to 0.
+    hweight     How much the starting column of this control should expand.
+                When filling unused space, if there are two columns, one with
+                hweight 2 and the other with hweight 1, then the column with
+                hweight 2 will be expanded twice as much as the other column.
+                The default hweight is 0.  Note that the last control in the
+                given column sets the hweight for the column.
+    vweight     How much the starting row of this control should expand.
+                When filling unused space, if there are two rows, one with
+                vweight 2 and the other with vweight 1, then the row with
+                vweight 2 will be expanded twice as much as the other row.
+                The default hweight is 0.  Note that the last control in the
+                given row sets the vweight for the row.
+    toppad      Number of pixels padding to add above this control.
+    leftpad     Number of pixels padding to add to the left of this control.
 ~
-C_NOTEBOOK
-C_NOTEBOOK
+C_NOTEBOOK|
+C_NOTEBOOK ( -- s )
 

@@ -270,7 +270,7 @@ remove_propnode(char *key, PropPtr * root)
 
 
 static PropPtr
-delete(char *key, PropPtr avl)
+delnode(char *key, PropPtr avl)
 {
 	PropPtr save;
 
@@ -307,7 +307,7 @@ new_prop(PropPtr * list, char *name)
 PropPtr
 delete_prop(PropPtr * list, char *name)
 {
-	*list = delete(name, *list);
+	*list = delnode(name, *list);
 	return (*list);
 }
 
@@ -355,7 +355,7 @@ next_node(PropPtr ptr, char *name)
 
 /* copies properties */
 void
-copy_proplist(dbref obj, PropPtr * new, PropPtr old)
+copy_proplist(dbref obj, PropPtr * nu, PropPtr old)
 {
 	PropPtr p;
 
@@ -363,7 +363,7 @@ copy_proplist(dbref obj, PropPtr * new, PropPtr old)
 #ifdef DISKBASE
 		propfetch(obj, old);
 #endif
-		p = new_prop(new, PropName(old));
+		p = new_prop(nu, PropName(old));
 		SetPFlagsRaw(p, PropFlagsRaw(old));
 		switch (PropType(old)) {
 		case PROP_STRTYP:
@@ -391,8 +391,8 @@ copy_proplist(dbref obj, PropPtr * new, PropPtr old)
 		copy_proplist(obj, &AVL_LF(p), AVL_LF(old));
 		copy_proplist(obj, &AVL_RT(p), AVL_RT(old));
 		/*
-		   copy_proplist(obj, new, AVL_LF(old));
-		   copy_proplist(obj, new, AVL_RT(old));
+		   copy_proplist(obj, nu, AVL_LF(old));
+		   copy_proplist(obj, nu, AVL_RT(old));
 		 */
 	}
 }

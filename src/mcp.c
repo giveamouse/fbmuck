@@ -91,19 +91,19 @@ void
 mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_CB callback,
 					 void *context, ContextCleanup_CB cleanup)
 {
-	McpPkg *new = (McpPkg *) malloc(sizeof(McpPkg));
+	McpPkg *nu = (McpPkg *) malloc(sizeof(McpPkg));
 
-	new->pkgname = (char *) malloc(strlen(pkgname) + 1);
-	strcpy(new->pkgname, pkgname);
-	new->minver = minver;
-	new->maxver = maxver;
-	new->callback = callback;
-	new->context = context;
-	new->cleanup = cleanup;
+	nu->pkgname = (char *) malloc(strlen(pkgname) + 1);
+	strcpy(nu->pkgname, pkgname);
+	nu->minver = minver;
+	nu->maxver = maxver;
+	nu->callback = callback;
+	nu->context = context;
+	nu->cleanup = cleanup;
 
 	mcp_package_deregister(pkgname);
-	new->next = mcp_PackageList;
-	mcp_PackageList = new;
+	nu->next = mcp_PackageList;
+	mcp_PackageList = nu;
 }
 
 
@@ -1565,6 +1565,16 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.9  2000/12/28 03:02:08  revar
+* Fixed support for Linux mallinfo() calls in @memory.
+* Fixed a crasher bug in ARRAY_NUNION, ARRAY_NDIFF, and ARRAY_NINTERSECT.
+* Fixed support for catching exceptions thrown in other muf programs.
+* Fixed some obscure bugs with getting gmt_offset on some systems.
+* Changed a whole lot of variables from 'new', 'delete', and 'class' to
+*  possibly allow moving to C++ eventually.
+* Added FINDNEXT primitive.
+* Updated TODO list.
+*
 * Revision 1.8  2000/11/23 10:30:22  revar
 * Changes for BSD compatability.
 * Changes to correct various sprintf format strings.

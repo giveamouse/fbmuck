@@ -307,9 +307,11 @@ get_tz_offset(void)
 
 	time(&now);
 	return (localtime(&now)->tm_gmtoff);
+#elif defined(HAVE__TIMEZONE)
+	/* CygWin uses _timezone instead of timezone. */
+	return _timezone;
 #else
-	extern long timezone;
-
+	/* extern long timezone; */
 	return timezone;
 #endif
 }

@@ -2,6 +2,7 @@ dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl TinyMUCK fb5.x auto-config script writen by: Peter "WhiteFire" Torkelson
+dnl Revised for fb6.x by revar@belfry.com
 dnl
 AC_REVISION($Revision$)dnl
 AC_INIT(src/game.c)
@@ -19,6 +20,7 @@ dnl Find the compiler first.
 dnl
 AC_PROG_CC
 AC_PROG_CPP
+dnl AC_PROG_CXX for finding the C++ compiler.
 
 dnl
 dnl Specific systems tests.
@@ -35,9 +37,10 @@ AC_HEADER_STDC
 AC_HEADER_DIRENT
 AC_HEADER_TIME
 AC_CHECK_HEADERS(errno.h sys/errno.h)
-echo "Checking for tm_gmtoff"
+echo "checking for tm_gmtoff"
 AC_EGREP_HEADER([[^_a-zA-Z]]tm_gmtoff;, time.h, AC_DEFINE(HAVE_TM_GMTOFF))
 AC_EGREP_HEADER([[^_a-zA-Z]]tm_gmtoff;, sys/time.h, AC_DEFINE(HAVE_SYS_TM_GMTOFF))
+AC_EGREP_HEADER([[^_a-zA-Z]]_timezone;, time.h, AC_DEFINE(HAVE__TIMEZONE))
 
 dnl
 dnl Libraries and functions.
@@ -50,6 +53,11 @@ AC_CHECK_LIB(socket, shutdown)
 AC_CHECK_LIB(nsl, gethostbyname)
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(mallinfo getrlimit getrusage random)
+AC_EGREP_HEADER([[^_a-zA-Z]]hblks;, malloc.h, AC_DEFINE(HAVE_MALLINFO_HBLKS))
+AC_EGREP_HEADER([[^_a-zA-Z]]keepcost;, malloc.h, AC_DEFINE(HAVE_MALLINFO_KEEPCOST))
+AC_EGREP_HEADER([[^_a-zA-Z]]treeoverhead;, malloc.h, AC_DEFINE(HAVE_MALLINFO_TREEOVERHEAD))
+AC_EGREP_HEADER([[^_a-zA-Z]]grain;, malloc.h, AC_DEFINE(HAVE_MALLINFO_GRAIN))
+AC_EGREP_HEADER([[^_a-zA-Z]]allocated;, malloc.h, AC_DEFINE(HAVE_MALLINFO_ALLOCATED))
 
 dnl
 dnl Types and structures
@@ -72,7 +80,7 @@ echo "Checking value of uname -a"
 AC_DEFINE_UNQUOTED(UNAME_VALUE, "`uname -a`")
 
 dnl
-dnl An in the end, there was no more.
+dnl And in the end, there was no more.
 dnl
 AC_OUTPUT(
 	Makefile

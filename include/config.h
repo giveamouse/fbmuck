@@ -294,7 +294,6 @@
 # define LINUX
 # define SYSV
 # define SYS_POSIX		/* Linux is POSIX */
-# define NO_MEMORY_COMMAND
 #endif
 
 #ifdef sgi

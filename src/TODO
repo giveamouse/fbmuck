@@ -1,33 +1,32 @@
 These items are mandatory for FB6 release.  The number prefix is priority.
+  1 Fix security of {lexec} by requiring all listprops to be blessed, to
+	  run blessed.
+  1 Change @bless and @unbless to allow specifying possible multiple props via
+	  an smatch wildcard argument.  Should list all props thusly blessed.
 
-1 Fix security of {lexec} by requiring all listprops to be blessed, to
-    run blessed.
-1 Change @bless and @unbless to allow specifying possible multiple props via
-    an smatch wildcard argument.  Should list all props thusly blessed.
+  2 Add memory usage based limits on MUF progs.
+  2 Update documentation.
 
-2 Add memory usage based limits on MUF progs.
-2 Update documentation.
+  3 Integrate multiple listener ports mods.
+  3 Fix compression bugs, or implement new compression schema.
+  3 REFLIST_ADD ( ref:ToAdd ref:Object str:PropName -- ) Adds a dbref to a
+	  reflist if it is not already in the list.
+  3 REFLIST_DELETE ( ref:ToDel ref:Object str:PropName -- ) Removed a dbref
+	  from a reflist if it is in it.
+  3 REFLIST_FIND ( ref:ToFind ref:Object str:PropName -- int:Position ) Finds
+	  a given dbref in a reflist, and returns its position.  Returns 0 if not
+	  found.  The first dbref in the reflist is 1.
 
-3 Integrate multiple listener ports mods.
-3 Fix compression bugs, or implement new compression schema.
-3 REFLIST_ADD ( ref:ToAdd ref:Object str:PropName -- ) Adds a dbref to a
-    reflist if it is not already in the list.
-3 REFLIST_DELETE ( ref:ToDel ref:Object str:PropName -- ) Removed a dbref
-    from a reflist if it is in it.
-3 REFLIST_FIND ( ref:ToFind ref:Object str:PropName -- int:Position ) Finds
-    a given dbref in a reflist, and returns its position.  Returns 0 if not
-    found.  The first dbref in the reflist is 1.
+  4 Modify array code to allow floats and dbrefs as indexes.
+  4 WATCHPROP (d s -- ) Specifies that this process wants to recieve an event
+	  when the given property on the given object is set, deleted, or changed.
+	  The event recieved will have an ID of "PROPCHANGE.#dbref.propname" where
+	  the dbref and the property name will be replaced by those of the property
+	  you specified.
 
-4 Modify array code to allow floats and dbrefs as indexes.
-4 WATCHPROP (d s -- ) Specifies that this process wants to recieve an event
-    when the given property on the given object is set, deleted, or changed.
-    The event recieved will have an ID of "PROPCHANGE.#dbref.propname" where
-    the dbref and the property name will be replaced by those of the property
-    you specified.
-
-5 CORD_OPEN  (          intDescr strType -- strCordID)
-5 CORD_SEND  (strCordID strName dictData -- )
-5 CORD_CLOSE (                 strCordID -- )
+  5 CORD_OPEN  (          intDescr strType -- strCordID)
+  5 CORD_SEND  (strCordID strName dictData -- )
+  5 CORD_CLOSE (                 strCordID -- )
 
 
 These items may be considered to be optional for release:
@@ -46,12 +45,6 @@ These items may be considered to be optional for release:
   ARRAY_FILTER_LOCK ([d] l -- [d']) As per ARRAY_FILTER_PROP, except only
     those dbrefs that would pass the given lock are returned.
 
-  FINDNEXT (d s1 s2 -- d) Finds the next object that matches the name pattern
-    s2, and the flag pattern s1.  The flag pattern is the same as that used in
-    @find or @owned.  A dbref of #-1 is returned when no more items match.
-    The search is debug with a dbref of #-1.  (Note - should this be broken down
-    into a FIND command and then just have a FINDNEXT ( d -- d ) portion?)
-
 
 These items may be considered to be a wishlist:
   In-server gagging based on lock-style structures.  This would ensure that
@@ -63,5 +56,5 @@ These items may be considered to be a wishlist:
     'receive' lock on the target (in the case of players/objects/rooms).
   TCP/IP socket communications layer.
   Matrix math.
-  3-d manipulation primitives.
+  3D manipulation primitives.
 

@@ -447,19 +447,19 @@ int already_created;
 struct forvars *
 push_for(struct forvars *forstack)
 {
-	struct forvars *new;
+	struct forvars *nu;
 
 	if (!for_pool) {
-		new = malloc(sizeof(struct forvars));
+		nu = malloc(sizeof(struct forvars));
 	} else {
-		new = for_pool;
+		nu = for_pool;
 		if (*last_for == for_pool->next) {
 			last_for = &for_pool;
 		}
-		for_pool = new->next;
+		for_pool = nu->next;
 	}
-	new->next = forstack;
-	return new;
+	nu->next = forstack;
+	return nu;
 }
 
 struct forvars *
@@ -480,19 +480,19 @@ pop_for(struct forvars *forstack)
 struct tryvars *
 push_try(struct tryvars *trystack)
 {
-	struct tryvars *new;
+	struct tryvars *nu;
 
 	if (!try_pool) {
-		new = malloc(sizeof(struct tryvars));
+		nu = malloc(sizeof(struct tryvars));
 	} else {
-		new = try_pool;
+		nu = try_pool;
 		if (*last_try == try_pool->next) {
 			last_try = &try_pool;
 		}
-		try_pool = new->next;
+		try_pool = nu->next;
 	}
-	new->next = trystack;
-	return new;
+	nu->next = trystack;
+	return nu;
 }
 
 struct tryvars *
@@ -1162,22 +1162,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 						fr->fors.st = pop_for(fr->fors.st);
 					}
 
-					while (fr->trys.st->call_level-->stop) {
-						if (stop > 1 && program != sys[stop - 1].progref) {
-							if (sys[stop - 1].progref > db_top ||
-								sys[stop - 1].progref < 0 ||
-								(Typeof(sys[stop - 1].progref) != TYPE_PROGRAM))
-										abort_loop_hard("Internal error.  Invalid address.", NULL, NULL);
-							calc_profile_timing(program,fr);
-							gettimeofday(&fr->proftime, NULL);
-							PROGRAM_DEC_INSTANCES(program);
-							program = sys[stop - 1].progref;
-							mlev = ProgMLevel(program);
-							fr->caller.top--;
-						}
-						scopedvar_poplevel(fr);
-					}
-
 					fr->trys.top--;
 					fr->trys.st = pop_try(fr->trys.st);
 
@@ -1298,6 +1282,23 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		}						/* switch */
 		if (err) {
 			if (fr->trys.top) {
+				while (fr->trys.st->call_level < stop) {
+					if (stop > 1 && program != sys[stop - 1].progref) {
+						if (sys[stop - 1].progref > db_top ||
+							sys[stop - 1].progref < 0 ||
+							(Typeof(sys[stop - 1].progref) != TYPE_PROGRAM))
+									abort_loop_hard("Internal error.  Invalid address.", NULL, NULL);
+						calc_profile_timing(program,fr);
+						gettimeofday(&fr->proftime, NULL);
+						PROGRAM_DEC_INSTANCES(program);
+						program = sys[stop - 1].progref;
+						mlev = ProgMLevel(program);
+						fr->caller.top--;
+					}
+					scopedvar_poplevel(fr);
+					stop--;
+				}
+
 				pc = fr->trys.st->addr;
 				err = 0;
 			} else {

@@ -154,13 +154,13 @@ set_lock_property(dbref player, const char *pname, const char *lok)
 
 /* adds a new property to an object */
 void
-add_prop_nofetch(dbref player, const char *pname, const char *class, int value)
+add_prop_nofetch(dbref player, const char *pname, const char *strval, int value)
 {
 	PData mydat;
 
-	if (class && *class) {
+	if (strval && *strval) {
 		mydat.flags = PROP_STRTYP;
-		mydat.data.str = (char *) class;
+		mydat.data.str = (char *) strval;
 	} else if (value) {
 		mydat.flags = PROP_INTTYP;
 		mydat.data.val = value;
@@ -174,15 +174,15 @@ add_prop_nofetch(dbref player, const char *pname, const char *class, int value)
 
 /* adds a new property to an object */
 void
-add_property(dbref player, const char *pname, const char *class, int value)
+add_property(dbref player, const char *pname, const char *strval, int value)
 {
 
 #ifdef DISKBASE
 	fetchprops(player, propdir_name(pname));
-	add_prop_nofetch(player, pname, class, value);
+	add_prop_nofetch(player, pname, strval, value);
 	dirtyprops(player);
 #else
-	add_prop_nofetch(player, pname, class, value);
+	add_prop_nofetch(player, pname, strval, value);
 #endif
 	DBDIRTY(player);
 }
@@ -293,21 +293,21 @@ get_property(dbref player, const char *pname)
 /* checks if object has property, returning 1 if it or any of it's contents has
    the property stated                                                      */
 int
-has_property(int descr, dbref player, dbref what, const char *pname, const char *class,
+has_property(int descr, dbref player, dbref what, const char *pname, const char *strval,
 			 int value)
 {
 	dbref things;
 
-	if (has_property_strict(descr, player, what, pname, class, value))
+	if (has_property_strict(descr, player, what, pname, strval, value))
 		return 1;
 	for (things = DBFETCH(what)->contents; things != NOTHING; things = DBFETCH(things)->next) {
-		if (has_property(descr, player, things, pname, class, value))
+		if (has_property(descr, player, things, pname, strval, value))
 			return 1;
 	}
 	if (tp_lock_envcheck) {
 		things = getparent(what);
 		while (things != NOTHING) {
-			if (has_property_strict(descr, player, things, pname, class, value))
+			if (has_property_strict(descr, player, things, pname, strval, value))
 				return 1;
 			things = getparent(things);
 		}
@@ -318,7 +318,7 @@ has_property(int descr, dbref player, dbref what, const char *pname, const char 
 
 /* checks if object has property, returns 1 if it has the property */
 int
-has_property_strict(int descr, dbref player, dbref what, const char *pname, const char *class,
+has_property_strict(int descr, dbref player, dbref what, const char *pname, const char *strval,
 					int value)
 {
 	PropPtr p;
@@ -342,7 +342,7 @@ has_property_strict(int descr, dbref player, dbref what, const char *pname, cons
 			ptr = do_parse_mesg(descr, player, what, str, "(Lock)", buf,
 								(MPI_ISPRIVATE | MPI_ISLOCK |
 								 ((PropFlags(p) & PROP_BLESSED)? MPI_ISBLESSED : 0)));
-			return (equalstr((char *) class, ptr));
+			return (equalstr((char *) strval, ptr));
 		} else if (PropType(p) == PROP_LOKTYP) {
 			return 0;
 		} else if (PropType(p) == PROP_INTTYP) {
@@ -354,7 +354,7 @@ has_property_strict(int descr, dbref player, dbref what, const char *pname, cons
 	return 0;
 }
 
-/* return class (string value) of property */
+/* return string value of property */
 const char *
 get_property_class(dbref player, const char *pname)
 {
@@ -414,11 +414,11 @@ get_property_fvalue(dbref player, const char *pname)
 
 /* return boolexp lock of property */
 dbref
-get_property_dbref(dbref player, const char *class)
+get_property_dbref(dbref player, const char *pname)
 {
 	PropPtr p;
 
-	p = get_property(player, class);
+	p = get_property(player, pname);
 	if (!p)
 		return NOTHING;
 #ifdef DISKBASE
@@ -432,11 +432,11 @@ get_property_dbref(dbref player, const char *class)
 
 /* return boolexp lock of property */
 struct boolexp *
-get_property_lock(dbref player, const char *class)
+get_property_lock(dbref player, const char *pname)
 {
 	PropPtr p;
 
-	p = get_property(player, class);
+	p = get_property(player, pname);
 	if (!p)
 		return TRUE_BOOLEXP;
 #ifdef DISKBASE

@@ -456,75 +456,75 @@ array_tree_next_node(array_tree * ptr, array_iter * key)
 stk_array *
 new_array(void)
 {
-	stk_array *new;
+	stk_array *nu;
 
-	new = (stk_array *) malloc(sizeof(stk_array));
-	new->links = 1;
-	new->items = 0;
-	new->type = ARRAY_UNDEFINED;
-	new->data.packed = NULL;
+	nu = (stk_array *) malloc(sizeof(stk_array));
+	nu->links = 1;
+	nu->items = 0;
+	nu->type = ARRAY_UNDEFINED;
+	nu->data.packed = NULL;
 
-	return new;
+	return nu;
 }
 
 
 stk_array *
 new_array_packed(int size)
 {
-	stk_array *new;
+	stk_array *nu;
 	int i;
 
 	if (size < 0) {
 		return NULL;
 	}
 
-	new = new_array();
-	new->items = size;
-	new->type = ARRAY_PACKED;
+	nu = new_array();
+	nu->items = size;
+	nu->type = ARRAY_PACKED;
 	if (size < 1)
 		size = 1;
-	new->data.packed = (array_data *) malloc(sizeof(array_data) * size);
+	nu->data.packed = (array_data *) malloc(sizeof(array_data) * size);
 	for (i = size; i-- > 0;) {
-		new->data.packed[i].type = PROG_INTEGER;
-		new->data.packed[i].line = 0;
-		new->data.packed[i].data.number = 0;
+		nu->data.packed[i].type = PROG_INTEGER;
+		nu->data.packed[i].line = 0;
+		nu->data.packed[i].data.number = 0;
 	}
-	return new;
+	return nu;
 }
 
 
 stk_array *
 new_array_dictionary(void)
 {
-	stk_array *new;
+	stk_array *nu;
 
-	new = new_array();
-	new->type = ARRAY_DICTIONARY;
-	return new;
+	nu = new_array();
+	nu->type = ARRAY_DICTIONARY;
+	return nu;
 }
 
 
 stk_array *
 array_clone(stk_array * arr)
 {
-	stk_array *new;
+	stk_array *nu;
 
 	if (!arr) {
 		return NULL;
 	}
 
-	new = new_array();
-	new->type = arr->type;
+	nu = new_array();
+	nu->type = arr->type;
 	switch (arr->type) {
 	case ARRAY_PACKED:{
 			int i;
 
-			new->items = arr->items;
-			new->data.packed = (array_data *) malloc(sizeof(array_data) * arr->items);
+			nu->items = arr->items;
+			nu->data.packed = (array_data *) malloc(sizeof(array_data) * arr->items);
 			for (i = arr->items; i-- > 0;) {
-				copyinst(&arr->data.packed[i], &new->data.packed[i]);
+				copyinst(&arr->data.packed[i], &nu->data.packed[i]);
 			}
-			return new;
+			return nu;
 			break;
 		}
 
@@ -533,10 +533,10 @@ array_clone(stk_array * arr)
 
 			if (array_first(arr, &idx)) {
 				do {
-					array_setitem(&new, &idx, array_getitem(arr, &idx));
+					array_setitem(&nu, &idx, array_getitem(arr, &idx));
 				} while (array_next(arr, &idx));
 			}
-			return new;
+			return nu;
 			break;
 		}
 
@@ -550,7 +550,7 @@ array_clone(stk_array * arr)
 stk_array *
 array_promote(stk_array * arr)
 {
-	stk_array *new;
+	stk_array *nu;
 	int i;
 	array_iter idx;
 
@@ -561,16 +561,16 @@ array_promote(stk_array * arr)
 		return NULL;
 	}
 
-	new = new_array_dictionary();
+	nu = new_array_dictionary();
 
 	idx.type = PROG_INTEGER;
 	for (i = 0; i < arr->items; i++) {
 		idx.data.number = i;
-		array_setitem(&new, &idx, array_getitem(arr, &idx));
+		array_setitem(&nu, &idx, array_getitem(arr, &idx));
 	}
 	array_free(arr);
 
-	return new;
+	return nu;
 }
 
 
@@ -1043,7 +1043,7 @@ array_appenditem(stk_array ** harr, array_data * item)
 stk_array *
 array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 {
-	stk_array *new;
+	stk_array *nu;
 	array_data *tmp;
 	int sidx, eidx;
 
@@ -1080,49 +1080,49 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 			idx.data.number = sidx;
 			didx.type = PROG_INTEGER;
 			didx.data.number = 0;
-			new = new_array_packed(eidx - sidx + 1);
+			nu = new_array_packed(eidx - sidx + 1);
 			while (idx.data.number <= eidx) {
 				tmp = array_getitem(arr, &idx);
 				if (!tmp)
 					break;
-				array_setitem(&new, &didx, tmp);
+				array_setitem(&nu, &didx, tmp);
 				didx.data.number++;
 				idx.data.number++;
 			}
-			return new;
+			return nu;
 			break;
 		}
 
 	case ARRAY_DICTIONARY:{
-			stk_array *new;
+			stk_array *nu;
 			array_tree *s;
 			array_tree *e;
 
-			new = new_array_dictionary();
+			nu = new_array_dictionary();
 			s = array_tree_find(arr->data.dict, start);
 			if (!s) {
 				s = array_tree_next_node(arr->data.dict, start);
 				if (!s) {
-					return new;
+					return nu;
 				}
 			}
 			e = array_tree_find(arr->data.dict, end);
 			if (!e) {
 				e = array_tree_prev_node(arr->data.dict, end);
 				if (!e) {
-					return new;
+					return nu;
 				}
 			}
 			if (array_tree_compare(&s->key, &e->key, 0) > 0) {
-				return new;
+				return nu;
 			}
 			while (s) {
-				array_setitem(&new, &s->key, &s->data);
+				array_setitem(&nu, &s->key, &s->data);
 				if (s == e)
 					break;
 				s = array_tree_next_node(arr->data.dict, &s->key);
 			}
-			return new;
+			return nu;
 			break;
 		}
 

@@ -237,9 +237,9 @@ static Header rover = &root;
     root.       next =  (m);		\
     }
 
-/* Macro to delete block m from 'root' linklist: */
-#undef  DELETE
-#define DELETE(m) {			\
+/* Macro to remove block m from 'root' linklist: */
+#undef  REMOVE
+#define REMOVE(m) {			\
    (m)->next->prev = (m)->prev;		\
    (m)->prev->next = (m)->next;		\
     }
@@ -782,7 +782,7 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
 		rover = rover->next;
 	}
 	/* Remove m from linklist of allocated blocks: */
-	DELETE(m);
+	REMOVE(m);
 	/* Remove m from just_touched[], if present: */
 	{
 		int i = CRT_NEW_TO_CHECK;
@@ -854,7 +854,7 @@ CrT_free(void *p, const char *file, int line)
 		rover = rover->next;
 	}
 	/* Remove m from linklist of allocated blocks: */
-	DELETE(m);
+	REMOVE(m);
 	/* Remove m from just_touched[], if present: */
 	{
 		int i = CRT_NEW_TO_CHECK;

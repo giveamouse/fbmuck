@@ -3,6 +3,16 @@
 
 /*
  * $Log: set.c,v $
+ * Revision 1.3  2000/12/28 03:02:08  revar
+ * Fixed support for Linux mallinfo() calls in @memory.
+ * Fixed a crasher bug in ARRAY_NUNION, ARRAY_NDIFF, and ARRAY_NINTERSECT.
+ * Fixed support for catching exceptions thrown in other muf programs.
+ * Fixed some obscure bugs with getting gmt_offset on some systems.
+ * Changed a whole lot of variables from 'new', 'delete', and 'class' to
+ *  possibly allow moving to C++ eventually.
+ * Added FINDNEXT primitive.
+ * Updated TODO list.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -796,7 +806,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	if (index(flag, PROP_DELIMITER)) {
 		/* copy the string so we can muck with it */
 		char *type = alloc_string(flag);	/* type */
-		char *class = (char *) index(type, PROP_DELIMITER);	/* class */
+		char *pname = (char *) index(type, PROP_DELIMITER);	/* propname */
 		char *x;				/* to preserve string location so we can free it */
 		char *temp;
 		int ival = 0;
@@ -818,21 +828,21 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 			return;
 		}
 		/* get rid of trailing spaces and slashes */
-		for (temp = class - 1; temp >= type && isspace(*temp); temp--) ;
+		for (temp = pname - 1; temp >= type && isspace(*temp); temp--) ;
 		while (temp >= type && *temp == '/')
 			temp--;
 		*(++temp) = '\0';
 
-		class++;				/* move to next character */
-		/* while (isspace(*class) && *class) class++; */
-		if (*class == '^' && number(class + 1))
-			ival = atoi(++class);
+		pname++;				/* move to next character */
+		/* while (isspace(*pname) && *pname) pname++; */
+		if (*pname == '^' && number(pname + 1))
+			ival = atoi(++pname);
 
 		if (!Wizard(OWNER(player)) && (Prop_SeeOnly(type) || Prop_Hidden(type))) {
 			notify(player, "Permission denied.");
 			return;
 		}
-		if (!(*class)) {
+		if (!(*pname)) {
 			ts_modifyobject(thing);
 			remove_property(thing, type);
 			notify(player, "Property removed.");
@@ -841,7 +851,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 			if (ival) {
 				add_property(thing, type, NULL, ival);
 			} else {
-				add_property(thing, type, class, 0);
+				add_property(thing, type, pname, 0);
 			}
 			notify(player, "Property set.");
 		}

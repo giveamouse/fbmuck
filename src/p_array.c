@@ -29,7 +29,7 @@ static char buf[BUFFER_LEN];
 void
 prim_array_make(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 	int i;
 
 	CHECKOP(1);
@@ -47,15 +47,15 @@ prim_array_make(PRIM_PROTOTYPE)
 
 	temp1.type = PROG_INTEGER;
 	temp1.line = 0;
-	new = new_array_packed(result);
+	nu = new_array_packed(result);
 	for (i = result; i-- > 0;) {
 		temp1.data.number = i;
 		oper1 = POP();
-		array_setitem(&new, &temp1, oper1);
+		array_setitem(&nu, &temp1, oper1);
 		CLEAR(oper1);
 	}
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
@@ -63,7 +63,7 @@ prim_array_make(PRIM_PROTOTYPE)
 void
 prim_array_make_dict(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 	int i;
 
 	CHECKOP(1);
@@ -80,20 +80,20 @@ prim_array_make_dict(PRIM_PROTOTYPE)
 		abort_interp("Stack underflow.");
 	nargs = 2;
 
-	new = new_array_dictionary();
+	nu = new_array_dictionary();
 	for (i = result; i-- > 0;) {
 		oper1 = POP();			/* val */
 		oper2 = POP();			/* key */
 		if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING) {
-			array_free(new);
+			array_free(nu);
 			abort_interp("Keys must be integers or strings.");
 		}
-		array_setitem(&new, oper2, oper1);
+		array_setitem(&nu, oper2, oper1);
 		CLEAR(oper1);
 		CLEAR(oper2);
 	}
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
@@ -346,7 +346,7 @@ prim_array_getitem(PRIM_PROTOTYPE)
 void
 prim_array_setitem(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(3);
 	oper1 = POP();				/* ???  index to store at */
@@ -362,20 +362,20 @@ prim_array_setitem(PRIM_PROTOTYPE)
 	if (result < 0)
 		abort_interp("Index out of array bounds. (3)");
 
-	new = oper2->data.array;
+	nu = oper2->data.array;
 	oper2->data.array = NULL;
 
 	CLEAR(oper1);
 	CLEAR(oper2);
 	CLEAR(oper3);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 void
 prim_array_appenditem(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(2);
 	oper2 = POP();				/* arr  Array to store in */
@@ -390,19 +390,19 @@ prim_array_appenditem(PRIM_PROTOTYPE)
 	if (result == -1)
 		abort_interp("Internal Error!");
 
-	new = oper2->data.array;
+	nu = oper2->data.array;
 	oper2->data.array = NULL;
 
 	CLEAR(oper1);
 	CLEAR(oper2);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 void
 prim_array_insertitem(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(3);
 	oper1 = POP();				/* ???  index to store at */
@@ -417,14 +417,14 @@ prim_array_insertitem(PRIM_PROTOTYPE)
 	if (result < 0)
 		abort_interp("Index out of array bounds. (3)");
 
-	new = oper2->data.array;
+	nu = oper2->data.array;
 	oper2->data.array = NULL;
 
 	CLEAR(oper1);
 	CLEAR(oper2);
 	CLEAR(oper3);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
@@ -432,7 +432,7 @@ prim_array_insertitem(PRIM_PROTOTYPE)
 void
 prim_array_getrange(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(3);
 	oper1 = POP();				/* int  range end item */
@@ -445,15 +445,15 @@ prim_array_getrange(PRIM_PROTOTYPE)
 	if (oper3->type != PROG_ARRAY)
 		abort_interp("Argument not an array. (1)");
 
-	new = array_getrange(oper3->data.array, oper2, oper1);
-	if (!new)
-		new = new_array_packed(0);
+	nu = array_getrange(oper3->data.array, oper2, oper1);
+	if (!nu)
+		nu = new_array_packed(0);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
 	CLEAR(oper3);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
@@ -461,7 +461,7 @@ prim_array_getrange(PRIM_PROTOTYPE)
 void
 prim_array_setrange(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(3);
 	oper1 = POP();				/* arr  array to insert */
@@ -478,21 +478,21 @@ prim_array_setrange(PRIM_PROTOTYPE)
 	if (result < 0)
 		abort_interp("Index out of array bounds. (2)");
 
-	new = oper3->data.array;
+	nu = oper3->data.array;
 	oper3->data.array = NULL;;
 
 	CLEAR(oper1);
 	CLEAR(oper2);
 	CLEAR(oper3);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
 void
 prim_array_insertrange(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(3);
 	oper1 = POP();				/* arr  array to insert */
@@ -509,14 +509,14 @@ prim_array_insertrange(PRIM_PROTOTYPE)
 	if (result < 0)
 		abort_interp("Index out of array bounds. (2)");
 
-	new = oper3->data.array;
+	nu = oper3->data.array;
 	oper3->data.array = NULL;
 
 	CLEAR(oper1);
 	CLEAR(oper2);
 	CLEAR(oper3);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
@@ -524,7 +524,7 @@ prim_array_insertrange(PRIM_PROTOTYPE)
 void
 prim_array_delitem(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(2);
 	oper1 = POP();				/* int  item to delete */
@@ -538,13 +538,13 @@ prim_array_delitem(PRIM_PROTOTYPE)
 	if (result < 0)
 		abort_interp("Bad array index specified.");
 
-	new = oper2->data.array;
+	nu = oper2->data.array;
 	oper2->data.array = NULL;
 
 	CLEAR(oper1);
 	CLEAR(oper2);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
@@ -552,7 +552,7 @@ prim_array_delitem(PRIM_PROTOTYPE)
 void
 prim_array_delrange(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(3);
 	oper1 = POP();				/* int  range end item */
@@ -569,14 +569,14 @@ prim_array_delrange(PRIM_PROTOTYPE)
 	if (result < 0)
 		abort_interp("Bad array range specified.");
 
-	new = oper3->data.array;
+	nu = oper3->data.array;
 	oper3->data.array = NULL;
 
 	CLEAR(oper1);
 	CLEAR(oper2);
 	CLEAR(oper3);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
@@ -608,7 +608,10 @@ prim_array_n_union(PRIM_PROTOTYPE)
 	if (result > 0) {
 		new_mash = new_array_dictionary();
 		for (num_arrays = 0; num_arrays < result; num_arrays++) {
+			CHECKOP(1);
 			oper1 = POP();
+			if (oper1->type != PROG_ARRAY)
+				abort_interp("Argument not an array.");
 			array_mash(oper1->data.array, &new_mash, 1);
 			CLEAR(oper1);
 		}
@@ -645,6 +648,8 @@ prim_array_n_intersection(PRIM_PROTOTYPE)
 		new_mash = new_array_dictionary();
 		for (num_arrays = 0; num_arrays < result; num_arrays++) {
 			oper1 = POP();
+			if (oper1->type != PROG_ARRAY)
+				abort_interp("Argument not an array.");
 			array_mash(oper1->data.array, &new_mash, 1);
 			CLEAR(oper1);
 		}
@@ -686,6 +691,8 @@ prim_array_n_difference(PRIM_PROTOTYPE)
 
 		for (num_arrays = 1; num_arrays < result; num_arrays++) {
 			oper1 = POP();
+			if (oper1->type != PROG_ARRAY)
+				abort_interp("Argument not an array.");
 			array_mash(oper1->data.array, &new_mash, -1);
 			CLEAR(oper1);
 		}
@@ -760,7 +767,7 @@ void
 prim_array_reverse(PRIM_PROTOTYPE)
 {
 	stk_array *arr;
-	stk_array *new;
+	stk_array *nu;
 	int i;
 
 	CHECKOP(1);
@@ -772,18 +779,18 @@ prim_array_reverse(PRIM_PROTOTYPE)
 		abort_interp("Argument must be a list type array.");
 
 	result = array_count(arr);
-	new = new_array_packed(result);
+	nu = new_array_packed(result);
 
 	temp1.type = PROG_INTEGER;
 	temp2.type = PROG_INTEGER;
 	for (i = 0; i < result; i++) {
 		temp1.data.number = i;
 		temp2.data.number = (result - i) - 1;
-		array_setitem(&new, &temp1, array_getitem(arr, &temp2));
+		array_setitem(&nu, &temp1, array_getitem(arr, &temp2));
 	}
 
 	CLEAR(oper1);
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
@@ -822,7 +829,7 @@ void
 prim_array_sort(PRIM_PROTOTYPE)
 {
 	stk_array *arr;
-	stk_array *new;
+	stk_array *nu;
 	int count, i;
 	int (*comparator)(const void*, const void*);
 	struct inst** tmparr = NULL;
@@ -858,7 +865,7 @@ prim_array_sort(PRIM_PROTOTYPE)
 
 	temp1.type = PROG_INTEGER;
 	count = array_count(arr);
-	new = new_array_packed(count);
+	nu = new_array_packed(count);
 	tmparr = (struct inst**)malloc(count * sizeof(struct inst*));
 
 	for (i = 0; i < count; i++) {
@@ -870,19 +877,19 @@ prim_array_sort(PRIM_PROTOTYPE)
 
 	for (i = 0; i < count; i++) {
 		temp1.data.number = i;
-		array_setitem(&new, &temp1, tmparr[i]);
+		array_setitem(&nu, &temp1, tmparr[i]);
 	}
 
 	CLEAR(oper1);
 	CLEAR(oper2);
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
 void
 prim_array_get_propdirs(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 	char propname[BUFFER_LEN];
 	char dir[BUFFER_LEN];
 	PropPtr propadr, pptr;
@@ -907,7 +914,7 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 	if (!*dir)
 		strcpy(dir, "/");
 
-	new = new_array_packed(0);
+	nu = new_array_packed(0);
 	propadr = first_prop(ref, dir, &pptr, propname);
 	while (propadr) {
 		sprintf(buf, "%s%c%s", dir, PROPDIR_DELIMITER, propname);
@@ -919,7 +926,7 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 #endif
 				if (PropDir(prptr)) {
 					if (count >= 511) {
-						array_free(new);
+						array_free(nu);
 						abort_interp("Too many propdirs to put in an array!");
 					}
 
@@ -929,7 +936,7 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 					temp1.type = PROG_INTEGER;
 					temp1.data.number = count++;
 
-					array_setitem(&new, &temp1, &temp2);
+					array_setitem(&nu, &temp1, &temp2);
 					CLEAR(&temp1);
 					CLEAR(&temp2);
 				}
@@ -938,14 +945,14 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 		propadr = next_prop(pptr, propadr, propname);
 	}
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
 void
 prim_array_get_propvals(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 	char propname[BUFFER_LEN];
 	char dir[BUFFER_LEN];
 	PropPtr propadr, pptr;
@@ -970,7 +977,7 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 	if (!*dir)
 		strcpy(dir, "/");
 
-	new = new_array_dictionary();
+	nu = new_array_dictionary();
 	propadr = first_prop(ref, dir, &pptr, propname);
 	while (propadr) {
 		sprintf(buf, "%s%c%s", dir, PROPDIR_DELIMITER, propname);
@@ -1014,12 +1021,12 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 
 				if (goodflag) {
 					if (count++ >= 511) {
-						array_free(new);
+						array_free(nu);
 						abort_interp("Too many properties to put in an array!");
 					}
 					temp1.type = PROG_STRING;
 					temp1.data.string = alloc_prog_string(propname);
-					array_setitem(&new, &temp1, &temp2);
+					array_setitem(&nu, &temp1, &temp2);
 					CLEAR(&temp1);
 					CLEAR(&temp2);
 				}
@@ -1028,14 +1035,14 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 		propadr = next_prop(pptr, propadr, propname);
 	}
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
 void
 prim_array_get_proplist(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 	const char *strval;
 	char dir[BUFFER_LEN];
 	char propname[BUFFER_LEN];
@@ -1081,7 +1088,7 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 		maxcount = 511;
 	}
 
-	new = new_array_packed(0);
+	nu = new_array_packed(0);
 	while (1) {
 		sprintf(propname, "%s#%c%d", dir, PROPDIR_DELIMITER, count);
 		prptr = get_property(ref, propname);
@@ -1131,7 +1138,7 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 				break;
 			}
 
-			array_appenditem(&new, &temp2);
+			array_appenditem(&nu, &temp2);
 
 			CLEAR(&temp2);
 		} else {
@@ -1140,7 +1147,7 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 		count++;
 	}
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
@@ -1382,7 +1389,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 void
 prim_array_get_reflist(PRIM_PROTOTYPE)
 {
-	stk_array *new;
+	stk_array *nu;
 	const char *rawstr;
 	char dir[BUFFER_LEN];
 	int count = 0;
@@ -1406,7 +1413,7 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 	if (!prop_read_perms(ProgUID, ref, dir, mlev))
 		abort_interp("Permission denied.");
 
-	new = new_array_packed(0);
+	nu = new_array_packed(0);
 	rawstr = get_property_class(ref, dir);
 	rawstr = get_uncompress(rawstr);
 
@@ -1430,7 +1437,7 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 			temp2.type = PROG_OBJECT;
 			temp2.data.number = result;
 
-			array_setitem(&new, &temp1, &temp2);
+			array_setitem(&nu, &temp1, &temp2);
 			count++;
 
 			CLEAR(&temp1);
@@ -1438,7 +1445,7 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 		}
 	}
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
@@ -1513,7 +1520,7 @@ prim_array_findval(PRIM_PROTOTYPE)
 {
 	struct inst *in;
 	stk_array *arr;
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(2);
 	oper2 = POP();				/* ???  index */
@@ -1521,13 +1528,13 @@ prim_array_findval(PRIM_PROTOTYPE)
 	if (oper1->type != PROG_ARRAY)
 		abort_interp("Argument not an array. (1)");
 
-	new = new_array_packed(0);
+	nu = new_array_packed(0);
 	arr = oper1->data.array;
 	if (array_first(arr, &temp1)) {
 		do {
 			in = array_getitem(arr, &temp1);
 			if (!array_idxcmp(in, oper2)) {
-				array_appenditem(&new, &temp1);
+				array_appenditem(&nu, &temp1);
 			}
 		} while (array_next(arr, &temp1));
 	}
@@ -1535,7 +1542,7 @@ prim_array_findval(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper1);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 void
@@ -1543,7 +1550,7 @@ prim_array_matchkey(PRIM_PROTOTYPE)
 {
 	struct inst *in;
 	stk_array *arr;
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(2);
 	oper2 = POP();				/* str  pattern */
@@ -1553,14 +1560,14 @@ prim_array_matchkey(PRIM_PROTOTYPE)
 	if (oper2->type != PROG_STRING)
 		abort_interp("Argument not a string pattern. (2)");
 
-	new = new_array_dictionary();
+	nu = new_array_dictionary();
 	arr = oper1->data.array;
 	if (array_first(arr, &temp1)) {
 		do {
 			if (temp1.type == PROG_STRING) {
 				if (equalstr(DoNullInd(oper2->data.string), DoNullInd(temp1.data.string))) {
 					in = array_getitem(arr, &temp1);
-					array_setitem(&new, &temp1, in);
+					array_setitem(&nu, &temp1, in);
 				}
 			}
 		} while (array_next(arr, &temp1));
@@ -1569,7 +1576,7 @@ prim_array_matchkey(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper1);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 void
@@ -1577,7 +1584,7 @@ prim_array_matchval(PRIM_PROTOTYPE)
 {
 	struct inst *in;
 	stk_array *arr;
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(2);
 	oper2 = POP();				/* str  pattern */
@@ -1587,14 +1594,14 @@ prim_array_matchval(PRIM_PROTOTYPE)
 	if (oper2->type != PROG_STRING)
 		abort_interp("Argument not a string pattern. (2)");
 
-	new = new_array_dictionary();
+	nu = new_array_dictionary();
 	arr = oper1->data.array;
 	if (array_first(arr, &temp1)) {
 		do {
 			in = array_getitem(arr, &temp1);
 			if (in->type == PROG_STRING) {
 				if (equalstr(DoNullInd(oper2->data.string), DoNullInd(in->data.string))) {
-					array_setitem(&new, &temp1, in);
+					array_setitem(&nu, &temp1, in);
 				}
 			}
 		} while (array_next(arr, &temp1));
@@ -1603,7 +1610,7 @@ prim_array_matchval(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper1);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 void
@@ -1613,7 +1620,7 @@ prim_array_extract(PRIM_PROTOTYPE)
 	struct inst *key;
 	stk_array *arr;
 	stk_array *karr;
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(2);
 	oper2 = POP();				/* arr  indexes */
@@ -1623,7 +1630,7 @@ prim_array_extract(PRIM_PROTOTYPE)
 	if (oper2->type != PROG_ARRAY)
 		abort_interp("Argument not an array. (2)");
 
-	new = new_array_dictionary();
+	nu = new_array_dictionary();
 	arr = oper1->data.array;
 	karr = oper2->data.array;
 	if (array_first(karr, &temp1)) {
@@ -1632,7 +1639,7 @@ prim_array_extract(PRIM_PROTOTYPE)
 			if (key) {
 				in = array_getitem(arr, key);
 				if (in) {
-					array_setitem(&new, key, in);
+					array_setitem(&nu, key, in);
 				}
 			}
 		} while (array_next(karr, &temp1));
@@ -1641,7 +1648,7 @@ prim_array_extract(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper1);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 void
@@ -1649,7 +1656,7 @@ prim_array_excludeval(PRIM_PROTOTYPE)
 {
 	struct inst *in;
 	stk_array *arr;
-	stk_array *new;
+	stk_array *nu;
 
 	CHECKOP(2);
 	oper2 = POP();				/* ???  index */
@@ -1657,13 +1664,13 @@ prim_array_excludeval(PRIM_PROTOTYPE)
 	if (oper1->type != PROG_ARRAY)
 		abort_interp("Argument not an array. (1)");
 
-	new = new_array_packed(0);
+	nu = new_array_packed(0);
 	arr = oper1->data.array;
 	if (array_first(arr, &temp1)) {
 		do {
 			in = array_getitem(arr, &temp1);
 			if (array_idxcmp(in, oper2)) {
-				array_appenditem(&new, &temp1);
+				array_appenditem(&nu, &temp1);
 			}
 		} while (array_next(arr, &temp1));
 	}
@@ -1671,7 +1678,7 @@ prim_array_excludeval(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper1);
 
-	PushArrayRaw(new);
+	PushArrayRaw(nu);
 }
 
 
