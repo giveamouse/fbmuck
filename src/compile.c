@@ -3161,7 +3161,7 @@ quoted(COMPSTATE * cstat, const char *token)
 int
 object(const char *token)
 {
-	if (*token == '#' && number(token + 1))
+	if (*token == NUMBER_TOKEN && number(token + 1))
 		return 1;
 	else
 		return 0;

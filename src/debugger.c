@@ -402,7 +402,7 @@ push_arg(dbref player, struct frame *fr, const char *arg)
 		inum = (float) atof(arg);
 		push(fr->argument.st, &fr->argument.top, PROG_FLOAT, MIPSCAST & inum);
 		notify_nolisten(player, "Float pushed.", 1);
-	} else if (*arg == '#') {
+	} else if (*arg == NUMBER_TOKEN) {
 		/* push a dbref */
 		if (!number(arg + 1)) {
 			notify_nolisten(player, "I don't understand that dbref.", 1);

@@ -669,7 +669,7 @@ getref(FILE * f)
 	 * Compiled in with or without timestamps, Sep 1, 1990 by Fuzzy, added to
 	 * Muck by Kinomon.  Thanks Kino!
 	 */
-	if ((peekch = do_peek(f)) == '#' || peekch == '*') {
+	if ((peekch = do_peek(f)) == NUMBER_TOKEN || peekch == LOOKUP_TOKEN) {
 		return (0);
 	}
 	fgets(buf, sizeof(buf), f);
@@ -1546,7 +1546,7 @@ db_read(FILE * f)
 	}
 	for (i = 0;; i++) {
 		switch (c) {
-		case '#':
+		case NUMBER_TOKEN:
 			/* another entry, yawn */
 			thisref = getref(f);
 
@@ -1584,7 +1584,7 @@ db_read(FILE * f)
 				add_player(thisref);
 			}
 			break;
-		case '*':
+		case LOOKUP_TOKEN:
 			special = getstring(f);
 			if (strcmp(special, "**END OF DUMP***")) {
 				free((void *) special);

@@ -129,7 +129,7 @@ find_registered_obj(dbref player, const char *name)
 #ifdef COMPRESS
 		p = uncompress(p);
 #endif
-		if (*p == '#')
+		if (*p == NUMBER_TOKEN)
 			p++;
 		if (number(p)) {
 			match = (dbref) atoi(p);

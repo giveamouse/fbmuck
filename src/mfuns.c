@@ -1130,7 +1130,7 @@ mfn_isdbref(MFUNARGS)
 
 	while (isspace(*ptr))
 		ptr++;
-	if (*ptr++ != '#')
+	if (*ptr++ != NUMBER_TOKEN)
 		return "0";
 	if (!number(ptr))
 		return "0";

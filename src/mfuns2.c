@@ -301,7 +301,7 @@ mfn_ref(MFUNARGS)
 	char *p;
 
 	for (p = argv[0]; *p && isspace(*p); p++) ;
-	if (*p == '#' && number(p + 1)) {
+	if (*p == NUMBER_TOKEN && number(p + 1)) {
 		obj = atoi(p + 1);
 	} else {
 		obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);

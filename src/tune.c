@@ -811,7 +811,7 @@ tune_setparm(const char *parmname, const char *val)
 		if (!string_compare(parmname, tref->name)) {
 			dbref obj;
 
-			if (*parmval != '#')
+			if (*parmval != NUMBER_TOKEN)
 				return 2;
 			if (!number(parmval + 1))
 				return 2;

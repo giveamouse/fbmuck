@@ -48,6 +48,7 @@ Fixed @omessage bug where player names would not be prefixed on additional
 Fixed a few typos in README and README.ssl.
 Fixed fbmuck.spec to use current version number (6.00rc7) and changed
   Source url to reflect sourceforge changes.
+Fixed uses of '#' and '*' instead of NUMBER_TOKEN and LOOKUP_TOKEN.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.

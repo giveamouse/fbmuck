@@ -1227,9 +1227,9 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 			if (tmpchar) {
 				if (*tmpchar == '&') {
 					the_prog = AMBIGUOUS;
-				} else if (*tmpchar == '#' && number(tmpchar + 1)) {
+				} else if (*tmpchar == NUMBER_TOKEN && number(tmpchar + 1)) {
 					the_prog = (dbref) atoi(++tmpchar);
-				} else if (*tmpchar == '$') {
+				} else if (*tmpchar == REGISTERED_TOKEN) {
 					the_prog = find_registered_obj(what, tmpchar);
 				} else if (number(tmpchar)) {
 					the_prog = (dbref) atoi(tmpchar);
@@ -1374,9 +1374,9 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
 			if (tmpchar) {
 				if (*tmpchar == '&') {
 					the_prog = AMBIGUOUS;
-				} else if (*tmpchar == '#' && number(tmpchar + 1)) {
+				} else if (*tmpchar == NUMBER_TOKEN && number(tmpchar + 1)) {
 					the_prog = (dbref) atoi(++tmpchar);
-				} else if (*tmpchar == '$') {
+				} else if (*tmpchar == REGISTERED_TOKEN) {
 					the_prog = find_registered_obj(what, tmpchar);
 				} else if (number(tmpchar)) {
 					the_prog = (dbref) atoi(tmpchar);

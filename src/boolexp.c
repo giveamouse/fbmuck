@@ -255,7 +255,7 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
 				return b;
 			}
 		} else {
-			if (*buf != '#' || !number(buf + 1)) {
+			if (*buf != NUMBER_TOKEN || !number(buf + 1)) {
 				free_boolnode(b);
 				return TRUE_BOOLEXP;
 			}
