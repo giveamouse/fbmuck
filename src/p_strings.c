@@ -771,10 +771,9 @@ prim_strncmp(PRIM_PROTOTYPE)
 		abort_interp("Non-string argument.");
 	if (oper2->data.string == oper3->data.string)
 		result = 0;
-	else if (!(oper3->data.string && oper2->data.string))
-		result = oper2->data.string ? -1 : 1;
 	else
-		result = strncmp(oper3->data.string->data, oper2->data.string->data,
+		result = strncmp(DoNullInd(oper3->data.string),
+		                 DoNullInd(oper2->data.string),
 						 oper1->data.number);
 	CLEAR(oper1);
 	CLEAR(oper2);
