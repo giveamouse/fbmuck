@@ -555,12 +555,13 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 	struct inst temp1;
 	struct inst temp2;
 	stk_array *nu;
+	int i;
+	int lines;
 
 	nu = new_array_dictionary();
 	name = GuiValueFirst(dlogid);
 	while (name) {
-		int i;
-		int lines = gui_value_linecount(dlogid, name);
+		lines = gui_value_linecount(dlogid, name);
 
 		temp1.type = PROG_STRING;
 		temp1.data.string = alloc_prog_string(name);
@@ -598,12 +599,31 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 	array_set_strkey_strval(&temp.data.array, "dlogid", dlogid);
 	array_set_strkey_strval(&temp.data.array, "id", id);
 	array_set_strkey_strval(&temp.data.array, "event", event);
-	if (data) {
-		array_set_strkey_strval(&temp.data.array, "data", data);
-	}
+
 	temp2.type = PROG_ARRAY;
 	temp2.data.array = nu;
 	array_set_strkey(&temp.data.array, "values", &temp2);
+
+	lines = mcp_mesg_arg_linecount(msg, "data");
+	if (lines > 0) {
+		temp2.type = PROG_ARRAY;
+		temp2.data.array = new_array_packed(lines);
+		for (i = 0; i < lines; i++) {
+			struct inst temp3;
+			array_data temp4;
+
+			temp3.type = PROG_INTEGER;
+			temp3.data.number = i;
+
+			temp4.type = PROG_STRING;
+			temp4.data.string = alloc_prog_string(mcp_mesg_arg_getline(msg, "data", i));
+
+			array_setitem(&temp2.data.array, &temp3, &temp4);
+			CLEAR(&temp4);
+		}
+		array_set_strkey(&temp.data.array, "data", &temp2);
+		CLEAR(&temp2);
+	}
 
 	/*
 	if (did_dismiss) {

@@ -251,7 +251,6 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	} else if (!string_compare(msg->mesgname, "ctrl-event")) {
 		const char *evt = mcp_mesg_arg_getline(msg, "event", 0);
 		const char *dismissed = mcp_mesg_arg_getline(msg, "dismissed", 0);
-		const char *data = mcp_mesg_arg_getline(msg, "data", 0);
 		int did_dismiss = 1;
 
 		if (!id || !*id) {
@@ -272,7 +271,7 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 			dat->dismissed = 1;
 		}
 		if (dat->callback) {
-			dat->callback(dat->descr, dlogid, id, evt, data, did_dismiss, dat->context);
+			dat->callback(dat->descr, dlogid, id, evt, msg, did_dismiss, dat->context);
 		}
 	} else if (!string_compare(msg->mesgname, "error")) {
 		const char *err  = mcp_mesg_arg_getline(msg, "errcode", 0);
