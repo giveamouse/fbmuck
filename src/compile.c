@@ -1665,9 +1665,16 @@ do_directive(COMPSTATE * cstat, char *direct)
 		holder = tmpname;
 		if (!tmpname)
 			v_abort_compile(cstat, "Unexpected end of file looking for $pubdef name.");
-		if (string_compare(tmpname, ":") ? index(tmpname, '/') || index(tmpname, ':') : 0) {
+
+		if (string_compare(tmpname, ":") &&
+			(index(tmpname, '/') ||
+			index(tmpname, ':') ||
+			Prop_SeeOnly(tmpname) ||
+			Prop_Hidden(tmpname) ||
+			Prop_System(tmpname)))
+		{
 			free(tmpname);
-			v_abort_compile(cstat, "Invalid $pubdef name.  No / nor : are allowed.");
+			v_abort_compile(cstat, "Invalid $pubdef name.  No /, :, @ nor ~ are allowed.");
 		} else {
 			if (!string_compare(tmpname, ":")) {
 				remove_property(cstat->program, "/_defs");
@@ -1708,6 +1715,61 @@ do_directive(COMPSTATE * cstat, char *direct)
 		advance_line(cstat);
 		free(holder);
 
+    } else if (!string_compare(temp, "libdef")) {
+		char *holder = NULL;
+
+		tmpname = (char *) next_token_raw(cstat);
+		holder = tmpname;
+
+		if (!tmpname)
+			v_abort_compile(cstat, "Unexpected end of file looking for $libdef name.");
+
+		if (index(tmpname, '/') ||
+			index(tmpname, ':') ||
+			Prop_SeeOnly(tmpname) ||
+			Prop_Hidden(tmpname) ||
+			Prop_System(tmpname))
+		{
+			free(tmpname);
+			v_abort_compile(cstat, "Invalid $libdef name.  No /, :, @, nor ~ are allowed.");
+		} else {
+			char propname[BUFFER_LEN];
+			char defstr[BUFFER_LEN];
+			int doitset = 1;
+
+			while(*cstat->next_char && isspace(*cstat->next_char))
+				cstat->next_char++; /* eating leading spaces */
+
+			if (*tmpname == '\\') {
+				char *temppropstr = NULL;
+
+				(void) *tmpname++;
+				sprintf(propname, "/_defs/%s", tmpname);
+				temppropstr = (char *) get_property_class(cstat->program, propname);
+				if (temppropstr ) {
+					doitset = 0;
+				}
+			} else {
+				sprintf(propname, "/_defs/%s", tmpname);
+			}
+
+			snprintf(defstr, sizeof(defstr), "#%i \"%s\" call", cstat->program, tmpname);
+
+			if (doitset) {
+				if (defstr && *defstr) {
+					add_property(cstat->program, propname, defstr, 0);
+				} else {
+					remove_property(cstat->program, propname);
+				}
+			}
+		}
+
+		while (*cstat->next_char)
+			cstat->next_char++;
+
+		advance_line(cstat);
+
+		free(holder);		
 	} else if (!string_compare(temp, "include")) {
 		struct match_data md;
 
