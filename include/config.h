@@ -304,7 +304,6 @@
 # define SYS_TYPE "SUN"
 # define SUN_OS
 # define BSD43
-# define ptrdiff_t int
 #endif
 
 #ifdef ultrix
