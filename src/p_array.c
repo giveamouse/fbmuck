@@ -995,7 +995,7 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 		maxcount = 511;
 	}
 
-	new = new_array_dictionary();
+	new = new_array_packed(0);
 	while (1) {
 		sprintf(propname, "%s#%c%d", dir, PROPDIR_DELIMITER, count);
 		prptr = get_property(ref, propname);
