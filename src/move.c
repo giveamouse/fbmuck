@@ -2,6 +2,9 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.5  2000/08/20 19:15:09  winged
+ * Fixed non-static declaration of parent_loop_check_int, as well as lack of function prototype before it was called
+ *
  * Revision 1.4  2000/08/19 06:33:33  points
  * Added infloop protection and fixed split/rsplit primitive return problem.
  *
@@ -106,6 +109,9 @@
 #include "interface.h"
 #include "match.h"
 #include "externs.h"
+
+/* Static declaration for this file... */
+static int parent_loop_check_int(dbref source, dbref dest, unsigned int level);
 
 void
 moveto(dbref what, dbref where)
@@ -214,7 +220,7 @@ parent_loop_check(dbref source, dbref dest)
 
 #define MAX_PARENT_RECURSE_LEVEL 256
 
-int
+static int
 parent_loop_check_int(dbref source, dbref dest, unsigned int level)
 {   
     if (level > MAX_PARENT_RECURSE_LEVEL)
