@@ -423,6 +423,7 @@ do_restrict(dbref player, const char *arg)
 #define Matched(string) { if(!string_prefix((string), command)) goto bad; }
 
 int force_level = 0;
+dbref force_prog = NOTHING; /* Set when a program is the source of FORCE */
 
 void
 process_command(int descr, dbref player, char *command)

@@ -299,6 +299,7 @@ extern int equalstr(char *s, char *t);
 extern void CrT_summarize(dbref player);
 
 extern int force_level;
+extern dbref force_prog;
 
 extern void do_credits(dbref player);
 

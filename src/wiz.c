@@ -397,9 +397,11 @@ do_force(int descr, dbref player, const char *what, char *command)
 	log_status("FORCED: %s(%d) by %s(%d): %s\n", NAME(victim),
 			   victim, NAME(player), player, command);
 	/* force victim to do command */
+	force_prog=NOTHING;
 	force_level++;
 	process_command(dbref_first_descr(victim), victim, command);
 	force_level--;
+	force_prog=NOTHING;
 }
 
 void

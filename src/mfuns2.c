@@ -1539,10 +1539,12 @@ mfn_force(MFUNARGS)
 		nxt = index(ptr, '\r');
 		if (nxt)
 			*nxt++ = '\0';
+		force_prog = what;
 		force_level++;
 		if (*ptr)
 			process_command(dbref_first_descr(obj), obj, ptr);
 		force_level--;
+		force_prog = NOTHING;
 		ptr = nxt;
 	} while (ptr);
 	*buf = '\0';

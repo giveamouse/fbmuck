@@ -2,6 +2,9 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.8  2001/06/25 07:48:55  winged
+ * Adding additional checks for trying to @recycle running programs from FORCE.
+ *
  * Revision 1.7  2001/06/20 09:10:20  winged
  * Bugfix #201633: Now no referenced programs can be @recycled from force_level.
  *
@@ -894,6 +897,18 @@ recycle(int descr, dbref player, dbref thing)
 	int looplimit;
 
 	depth++;
+	if (force_level) {
+		if(thing == force_prog) {
+			log_status("SANITYCHECK: Was about to recycle FORCEing object #%d!", thing);
+			notify(player, "ERROR: Cannot recycle an object FORCEing you!");
+			return;
+		}
+		if((TYPEOF(thing) == TYPE_PROGRAM) && (PROGRAM_INSTANCES(thing) != 0)) {
+			log_status("SANITYCHECK: Trying to recycle a running program (#%d) from FORCE!", thing);
+			notify(player, "ERROR: Cannot recycle a running program from FORCE.");
+			return;
+		}
+	}
 	/* dequeue any MUF or MPI events for the given object */
 	dequeue_prog(thing, 0);
 	switch (Typeof(thing)) {
