@@ -1,6 +1,4 @@
 These items are mandatory for FB6 release.  The number prefix is priority.
-  1 Fix security of {lexec} by requiring all listprops to be blessed, to
-      run blessed.
   1 Change @bless and @unbless to allow specifying possible multiple props via
       an smatch wildcard argument.  Should list all props thusly blessed.
 

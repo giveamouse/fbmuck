@@ -10,6 +10,8 @@ Fixed a crasher bug with dequeuing muf programs with TIMERs.
 Fixed a crasher bug in {lmember} when not specifying delimiter.
 Fixed a buffer overwrite error in {parse} when given output delimiters.
 Fixed a crasher bug in ARRAY_NUNION, ARRAY_NDIFF, and ARRAY_NINTERSECT.
+Fixed a security hole in {lexec}.  All props in list must be blessed for
+  blessed permissions to be in effect.
 Added @bless and @unbless commands for granting wizbit mpi permissions to
   individual properties.  Syntax is @[un]bless object=propname.
 Added MPI {bless:propname[,object]} command to bless a property.  Requires
