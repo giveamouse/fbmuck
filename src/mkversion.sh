@@ -70,7 +70,7 @@ const char *infotext[] =
     "  Points:                            Bug Finder/Lead/Developer",
     " ",
     "  Our Sourceforge developers (http://sourceforge.net/projects/fbmuck/):",
-    "  Akari, Arcticwolf (Schneelocke), Caspian, Cerilus, Fentonator, Ferretbun",
+    "  Akari, Arcticwolf (Schneelocke), Caspian, Cerilus, Fentonator, Ferretbun,",
     "  Foxbird, Jenora, McClure, Sombre, Tiger, Winged and Wog.",
     " ",
     "The following people helped out a lot along the way:",
