@@ -1455,7 +1455,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				if (stop >= STACK_SIZE)
 					abort_loop("System Stack Overflow", temp1, temp2);
 				sys[stop].progref = program;
-				sys[stop++].offset = pc + 1;
+				sys[stop].offset = pc + 1;
 				if (!temp2) {
 					pc = PROGRAM_START(temp1->data.objref);
 				} else {
@@ -1476,6 +1476,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 								   temp2, temp2);
 					pc = pbs->addr.ptr;
 				}
+				stop++;
 				if (temp1->data.objref != program) {
 					calc_profile_timing(program,fr);
 					gettimeofday(&fr->proftime, NULL);
