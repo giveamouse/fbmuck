@@ -9,20 +9,20 @@
 #define HTML_PAGE_HEAD     	"<html><head><title>%s</title></head>\n<body><div align=\"center\"><h1>%s</h1>\n<h3>by %s</h3></div>\n<ul><li><a href=\"#AlphaList\">Alphabetical List of Topics</a></li>\n<li><a href=\"#SectList\">List of Topics by Category</a></li></ul>\n"
 #define HTML_PAGE_FOOT     	"</body></html>\n"
 
-#define HTML_SECTION     	"<p><hr size=6>\n<h3 align=center><a name=\"%s\">%s</a></h3>\n"
-#define HTML_SECTLIST_HEAD  "<p><hr size=\"6\"><h3 align=\"center\"><a name=\"SectList\">List of Topics by Category</a></h3>\n<h4>You can get more help on the following topics:</h4>\n<ul>"
+#define HTML_SECTION     	"<p><hr size=6>\n<h3><a name=\"%s\">%s</a></h3>\n"
+#define HTML_SECTLIST_HEAD  "<p><hr size=\"6\"><h3><a name=\"SectList\">List of Topics by Category</a></h3>\n<h4>You can get more help on the following topics:</h4>\n<ul>"
 #define HTML_SECTLIST_ENTRY "  <li><a href=\"#%s\">%s</a></li>\n"
 #define HTML_SECTLIST_FOOT  "</ul>\n\n"
 
-#define HTML_SECTIDX_BEGIN	"<table width=\"100%%\" align=center border=0>\n  <tr>\n"
+#define HTML_SECTIDX_BEGIN	"<blockquote><table border=0>\n  <tr>\n"
 #define HTML_SECTIDX_ENTRY	"    <td width=\"%d%%\"><a href=\"#%s\">%s</a>\n"
 #define HTML_SECTIDX_NEWROW	"  </tr>\n  <tr>\n"
-#define HTML_SECTIDX_END	"  </tr>\n</table>\n\n"
+#define HTML_SECTIDX_END	"  </tr>\n</table></blockquote>\n\n"
 
-#define HTML_INDEX_BEGIN	"<p><hr size=\"6\"><h3 align=\"center\"><a name=\"AlphaList\">Alphabetical List of Topics</a></h3><table width=\"100%%\" align=center border=0>\n  <tr>\n"
+#define HTML_INDEX_BEGIN	"<p><hr size=\"6\"><h3><a name=\"AlphaList\">Alphabetical List of Topics</a></h3><blockquote><table border=0>\n  <tr>\n"
 #define HTML_INDEX_ENTRY	"    <td width=\"%d%%\"><a href=\"#%s\">%s</a>\n"
 #define HTML_INDEX_NEWROW	"  </tr>\n  <tr>\n"
-#define HTML_INDEX_END		"  </tr>\n</table>\n\n"
+#define HTML_INDEX_END		"  </tr>\n</table></blockquote>\n\n"
 
 #define HTML_TOPICHEAD		"<hr><h4><a name=\"%s\">"
 #define HTML_TOPICHEAD_BREAK	"<br>\n"
