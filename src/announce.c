@@ -103,7 +103,9 @@ main(int argc, char *argv[])
 #endif
 		_exit(0);
 	} else {
+#ifdef PRIO_PROCESS
 		setpriority(PRIO_PROCESS, getpid(), 10);
+#endif
 	}
 	if (listen(s, 1) < 0) {		/* start listening on port */
 		perror("announce: listen");
