@@ -2,6 +2,9 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.4  2000/08/19 06:33:33  points
+ * Added infloop protection and fixed split/rsplit primitive return problem.
+ *
  * Revision 1.3  2000/07/29 08:02:16  revar
  * Changed 'get' to disable zombie thievery.
  *
@@ -206,15 +209,26 @@ maybe_dropto(int descr, dbref loc, dbref dropto)
 int
 parent_loop_check(dbref source, dbref dest)
 {
-	if (source == dest)
-		return 1;				/* That's an easy one! */
-	if (dest == NOTHING)
-		return 0;
-	if (dest == HOME)
-		return 0;
-	if (Typeof(dest) == TYPE_THING && parent_loop_check(source, THING_HOME(dest)))
-		return 1;
-	return parent_loop_check(source, DBFETCH(dest)->location);
+    return parent_loop_check_int(source, dest, 0);
+}
+
+#define MAX_PARENT_RECURSE_LEVEL 256
+
+int
+parent_loop_check_int(dbref source, dbref dest, unsigned int level)
+{   
+    if (level > MAX_PARENT_RECURSE_LEVEL)
+        return 0;               /* This is an error event. */
+    if (source == dest)
+	return 1;               /* That's an easy one! */
+    if (dest == NOTHING)
+	return 0;
+    if (dest == HOME)
+	return 0;
+    if (Typeof(dest) == TYPE_THING &&
+          parent_loop_check_int(source, THING_HOME(dest), (level+1)))
+	return 1;
+    return parent_loop_check_int(source, DBFETCH(dest)->location, (level+1));
 }
 
 static int donelook = 0;

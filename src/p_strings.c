@@ -498,7 +498,7 @@ prim_split(PRIM_PROTOTYPE)
 			PushNullStr;
 		}
 	} else {
-		PushNullStr;
+		PushString(buf);
 		PushNullStr;
 	}
 }
@@ -560,7 +560,7 @@ prim_rsplit(PRIM_PROTOTYPE)
 			PushNullStr;
 		}
 	} else {
-		PushNullStr;
+		PushString(buf);
 		PushNullStr;
 	}
 }
