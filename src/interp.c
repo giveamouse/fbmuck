@@ -458,6 +458,41 @@ static int err;
 int already_created;
 
 struct forvars *
+copy_fors(struct forvars *forstack)
+{
+	struct forvars *in;
+	struct forvars *out = NULL;
+	struct forvars *nu;
+	struct forvars *last = NULL;
+
+	for (in = forstack; in; in = in->next) {
+		if (!for_pool) {
+			nu = malloc(sizeof(struct forvars));
+		} else {
+			nu = for_pool;
+			if (*last_for == for_pool->next) {
+				last_for = &for_pool;
+			}
+			for_pool = nu->next;
+		}
+
+		nu->didfirst = in->didfirst;
+		copyinst(&in->cur, &nu->cur);
+		copyinst(&in->end, &nu->end);
+		nu->step = in->step;
+		nu->next = NULL;
+
+		if (!out) {
+			last = out = nu;
+		} else {
+			last->next = nu;
+			last = nu;
+		}
+	}
+	return out;
+}
+
+struct forvars *
 push_for(struct forvars *forstack)
 {
 	struct forvars *nu;
@@ -492,6 +527,41 @@ pop_for(struct forvars *forstack)
 	return newstack;
 }
 
+
+struct tryvars *
+copy_trys(struct tryvars *trystack)
+{
+	struct tryvars *in;
+	struct tryvars *out = NULL;
+	struct tryvars *nu;
+	struct tryvars *last = NULL;
+
+	for (in = trystack; in; in = in->next) {
+		if (!try_pool) {
+			nu = malloc(sizeof(struct tryvars));
+		} else {
+			nu = try_pool;
+			if (*last_try == try_pool->next) {
+				last_try = &try_pool;
+			}
+			try_pool = nu->next;
+		}
+
+		nu->depth      = in->depth;
+		nu->call_level = in->call_level;
+		nu->for_count  = in->for_count;
+		nu->addr       = in->addr;
+		nu->next = NULL;
+
+		if (!out) {
+			last = out = nu;
+		} else {
+			last->next = nu;
+			last = nu;
+		}
+	}
+	return out;
+}
 
 struct tryvars *
 push_try(struct tryvars *trystack)
