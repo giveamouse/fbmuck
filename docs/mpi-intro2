@@ -287,7 +287,7 @@ to the contents of the given 'object'.  This is actually a very useful
 thing, and I'll explain the uses of this more in the next section.
   
 You can do a fair bit with stringlists.  There are commands to sort them,
-remove duplicate items from them, get the union of two lists, get the
+remove duplicate items from them, get the union of two lists,
 remove the items of one list from another, and a lot more.
   
 {luniq:stringlist} will return a copy of the given stringlist, with all
