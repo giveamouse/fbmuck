@@ -1754,7 +1754,7 @@ initializesock(int s, const char *hostname)
 	d->raw_input_at = 0;
 	d->inIAC = 0;
 	d->quota = tp_command_burst_size;
-	d->last_time = 0;
+	d->last_time = d->connected_at;
 	mcp_frame_init(&d->mcpframe, d);
 	strcpy(buf, hostname);
 	ptr = index(buf, ')');
