@@ -540,7 +540,6 @@ main(int argc, char **argv)
 				}
 			}
 		}
-
 #ifdef WIN32
 		wVersionRequested = MAKEWORD(2, 0);
 
