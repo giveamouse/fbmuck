@@ -15,6 +15,7 @@ Fixed compilation warnings under GCC 3.1 with -Wall.
 Fixed bug #744385: MPI list funcs LREMOVE doesn't act on single item {null:}
 Fixed bug #789414: Catching a failed CALL breaks scoped variables
 Fixed bug #659197: array_join truncates quietly
+Fixed bug #785968: "man =" doesn't work
 Changed DESCRDBREF to return #-1 for an invalid or not-logged-in descriptor.
 Added docs for ARRAY_FMTSTRINGS to muf manual.
 Added ARRAY_FILTER_FLAGS ( list:dbrefs str:flags -- list:dbrefsout ) MUF prim.
