@@ -237,6 +237,7 @@ array_tree_balance_node(array_tree * a)
 	return a;
 }
 
+/*@-nullret -mustfreeonly@*/
 /*@null@*/
 array_tree *
 array_tree_alloc_node(array_iter * key)
@@ -1634,6 +1635,9 @@ array_get_intkey_strval(stk_array * arr, int key)
 
 /*
  * $Log: array.c,v $
+ * Revision 1.21  2002/02/17 01:52:11  winged
+ * even more stuff for splint
+ *
  * Revision 1.20  2002/02/17 01:01:29  winged
  * More changes for splint
  *
