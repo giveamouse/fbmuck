@@ -327,19 +327,20 @@ object does not own the object that the property is found on, then
 the MPI script stops with a Permission denied error.
 ~
 ~
-INDEX
+INDEX|{INDEX
 {index:propname}
 {index:propname,obj}
     Returns the string value of the property whose name is stored in the
 given property.  This sounds confusing, but it's basically just the same
-as {prop:{prop:propname}}.  If no object parameter is passed to it, it
+as {exec:{prop:propname}}.  If no object parameter is passed to it, it
 looks for both the index property and the referenced property somewhere
 down the environment from the trigger object.  Otherwise, it looks down
 the environment from the object specified for both of them.  If either
 property is not found, this returns an empty string.  If the property
 that it tries to access is read restricted, and the owner of the trigger
 object does not own the object that the properties are found on, then
-the MPI script stops with a Permission denied error.
+the MPI script stops with a Permission denied error.  Any MPI code in
+the target property is evaluated and the result is returned.
 ~
 ~
 INDEX!
@@ -347,13 +348,14 @@ INDEX!
 {index!:propname,obj}
     Returns the string value of the property whose name is stored in the
 given property.  This sounds confusing, but it's basically just the same
-as {prop!:{prop!:propname}}.  If no object parameter is passed to it, it
+as {exec!:{prop!:propname}}.  If no object parameter is passed to it, it
 looks for both the index property and the referenced property on the trigger
 object.  Otherwise, it looks on the specified object for both of them.
 If either property is not found, this returns an empty string.  If the
 property that it tries to access is read restricted, and the owner of the
 trigger object does not own the object that the properties are found on,
-then the MPI script stops with a Permission denied error.
+then the MPI script stops with a Permission denied error.  Any MPI code in
+the target property is evaluated and the result is returned.
 ~
 ~
 STORE
@@ -449,7 +451,8 @@ RAND
     Returns the value of a randomly picked list item from a property
 based list.  If no obj parameter is given, then it looks down the
 environment from the trigger object for the list.  Otherwise, it looks
-down the environment from the given object.
+down the environment from the given object.  Any MPI code in the target
+property is evaluated and the result is returned.
 ~
 ~
 SELECT
@@ -476,7 +479,8 @@ TIMESUB
 {timesub:period,offset,listname,object}
     This is sort of like {list}, except that it will only return one line
 of the given named property list.  The line it chooses depends on the
-time.  The period is the length of time, in seconds, that it takes for
+time.  Any MPI code in the target line is evaluated and the result is
+returned.  The period is the length of time, in seconds, that it takes for
 {timesub} to cycle through the entire list.  The offset is the number of
 seconds to offset into the time period, if you actually need to synchronize
 the {timesub} with something.  The offset usually is just left at zero.
@@ -666,7 +670,17 @@ EVAL
 {eval:string}
     Sort of the exact opposite of {lit:}.  This takes a string, and
 evaluates it for MPI commands embedded within it.  This can be used on
-the output of {list:}, for example.  Also see the {revoke} command.
+the output of {list:}, for example.  The evaluated mpi commands will
+be run unblessed.  Also see the {eval!} command.
+~
+~
+EVAL!
+{eval!:string}
+    Sort of the exact opposite of {lit:}.  This takes a string, and
+evaluates it for MPI commands embedded within it.  This can be used on
+the output of {list:}, for example.  Unlike the {eval} command, the
+evaluated mpi commands will be run with the same blessings as the code
+that executed the {eval!}.  Also see the {eval} and {revoke} commands.
 ~
 ~
 REVOKE
@@ -728,7 +742,7 @@ to eight attributes, though this shouldn't ever be neccesary.  The supported
 attributes are: null, reset, bold, dim, flash, underline, reverse, black,
 red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, 
 bg_green, bg_cyan, bg_blue, bg_magenta, and bg_white.
-	Not all clients will display all these attributes, and those that do 
+    Not all clients will display all these attributes, and those that do 
 won't always show them the same way.  Players who do not have their Color 
 flag set will not see the ANSI codes or colors at all.  Nesting {attr}
 commands probably just won't work.
@@ -1497,15 +1511,15 @@ arguments:
   
 ~~code
     {func:names,list,numsp,flagsp,
-	{parse:v,{&list},
-	    {name:{&v}}
-	    {if:{or:{&numsp},{&flagsp}},
-		{lit:(}
-		{if:{&numsp},{ref:{&v}}}
-		{if:{&flagsp},{flags:{&v}}}
-		{lit:)}
-	    }
-	}
+        {parse:v,{&list},
+            {name:{&v}}
+            {if:{or:{&numsp},{&flagsp}},
+                {lit:(}
+                {if:{&numsp},{ref:{&v}}}
+                {if:{&flagsp},{flags:{&v}}}
+                {lit:)}
+            }
+        }
     }
     {names:{contents:here},1,1}
 ~~endcode

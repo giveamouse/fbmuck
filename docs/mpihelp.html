@@ -1,433 +1,230 @@
 <html>
-<head><title>MPI Manual for TinyMUCK 2.2fb5.50</title></head>
-<body><div align=center><h1>MPI Manual for TinyMUCK 2.2fb5.50</h1>
-<h3>Written by <a href=http://www.belfry.com/>Foxen/Revar</a><br>
+<head><title>MPI Manual for TinyMUCK 2.2fb5.51</title></head>
+<body><div align=center><h1>MPI Manual for TinyMUCK 2.2fb5.51</h1>
+<h3>Written by <a href="http://www.belfry.com/">Foxen/Revar</a><br>
 (email: <a href="mailto:foxen@belfry.com">foxen@belfry.com</a>)</h3></div>
-<ul><li><a href="#AlphaIndex">Alphabetical Index of Topics</a>
-<li><a href="#SectIndex">Index of Topics by Category</a></ul>
-<p><hr><h3 align=center><a name=AlphaIndex>Alphabetical Index of Topics</a></h3>
-<table width=100% align=center border=0>
-  <tr>
-    <td><a href="#abs">abs</a>
-    <td><a href="#add">add</a>
-    <td><a href="#and">and</a>
-    <td><a href="#arg">arg</a>
-    <td><a href="#awake">awake</a>
-    <td><a href="#center">center</a>
-  </tr>
-  <tr>
-    <td><a href="#cmd">cmd</a>
-    <td><a href="#commas">commas</a>
-    <td><a href="#comments">comments</a>
-    <td><a href="#concat">concat</a>
-    <td><a href="#contains">contains</a>
-    <td><a href="#contents">contents</a>
-  </tr>
-  <tr>
-    <td><a href="#controls">controls</a>
-    <td><a href="#convsecs">convsecs</a>
-    <td><a href="#convtime">convtime</a>
-    <td><a href="#count">count</a>
-    <td><a href="#created">created</a>
-    <td><a href="#date">date</a>
-  </tr>
-  <tr>
-    <td><a href="#dbeq">dbeq</a>
-    <td><a href="#debug">debug</a>
-    <td><a href="#debugif">debugif</a>
-    <td><a href="#dec">dec</a>
-    <td><a href="#definitions">definitions</a>
-    <td><a href="#delay">delay</a>
-  </tr>
-  <tr>
-    <td><a href="#delprop">delprop</a>
-    <td><a href="#dice">dice</a>
-    <td><a href="#dist">dist</a>
-    <td><a href="#div">div</a>
-    <td><a href="#eq">eq</a>
-    <td><a href="#eval">eval</a>
-  </tr>
-  <tr>
-    <td><a href="#exec">exec</a>
-    <td><a href="#exec!">exec!</a>
-    <td><a href="#exits">exits</a>
-    <td><a href="#filter">filter</a>
-    <td><a href="#flags">flags</a>
-    <td><a href="#fold">fold</a>
-  </tr>
-  <tr>
-    <td><a href="#for">for</a>
-    <td><a href="#force">force</a>
-    <td><a href="#foreach">foreach</a>
-    <td><a href="#ftime">ftime</a>
-    <td><a href="#fullname">fullname</a>
-    <td><a href="#func">func</a>
-  </tr>
-  <tr>
-    <td><a href="#ge">ge</a>
-    <td><a href="#gt">gt</a>
-    <td><a href="#holds">holds</a>
-    <td><a href="#how">how</a>
-    <td><a href="#idle">idle</a>
-    <td><a href="#if">if</a>
-  </tr>
-  <tr>
-    <td><a href="#inc">inc</a>
-    <td><a href="#index">index</a>
-    <td><a href="#index!">index!</a>
-    <td><a href="#instr">instr</a>
-    <td><a href="#isdbref">isdbref</a>
-    <td><a href="#isnum">isnum</a>
-  </tr>
-  <tr>
-    <td><a href="#istype">istype</a>
-    <td><a href="#kill">kill</a>
-    <td><a href="#lastused">lastused</a>
-    <td><a href="#lcommon">lcommon</a>
-    <td><a href="#le">le</a>
-    <td><a href="#left">left</a>
-  </tr>
-  <tr>
-    <td><a href="#lexec">lexec</a>
-    <td><a href="#links">links</a>
-    <td><a href="#list">list</a>
-    <td><a href="#listprops">listprops</a>
-    <td><a href="#lit">lit</a>
-    <td><a href="#lmember">lmember</a>
-  </tr>
-  <tr>
-    <td><a href="#loc">loc</a>
-    <td><a href="#locked">locked</a>
-    <td><a href="#lrand">lrand</a>
-    <td><a href="#lremove">lremove</a>
-    <td><a href="#lsort">lsort</a>
-    <td><a href="#lt">lt</a>
-  </tr>
-  <tr>
-    <td><a href="#ltimestr">ltimestr</a>
-    <td><a href="#lunion">lunion</a>
-    <td><a href="#lunique">lunique</a>
-    <td><a href="#macros">macros</a>
-    <td><a href="#max">max</a>
-    <td><a href="#midstr">midstr</a>
-  </tr>
-  <tr>
-    <td><a href="#min">min</a>
-    <td><a href="#mklist">mklist</a>
-    <td><a href="#mod">mod</a>
-    <td><a href="#modified">modified</a>
-    <td><a href="#money">money</a>
-    <td><a href="#muckname">muckname</a>
-  </tr>
-  <tr>
-    <td><a href="#muf">muf</a>
-    <td><a href="#mult">mult</a>
-    <td><a href="#name">name</a>
-    <td><a href="#ne">ne</a>
-    <td><a href="#nearby">nearby</a>
-    <td><a href="#nl">nl</a>
-  </tr>
-  <tr>
-    <td><a href="#not">not</a>
-    <td><a href="#null">null</a>
-    <td><a href="#online">online</a>
-    <td><a href="#ontime">ontime</a>
-    <td><a href="#or">or</a>
-    <td><a href="#otell">otell</a>
-  </tr>
-  <tr>
-    <td><a href="#owner">owner</a>
-    <td><a href="#parse">parse</a>
-    <td><a href="#pronouns">pronouns</a>
-    <td><a href="#prop">prop</a>
-    <td><a href="#prop!">prop!</a>
-    <td><a href="#propdir">propdir</a>
-  </tr>
-  <tr>
-    <td><a href="#rand">rand</a>
-    <td><a href="#ref">ref</a>
-    <td><a href="#right">right</a>
-    <td><a href="#secs">secs</a>
-    <td><a href="#select">select</a>
-    <td><a href="#set">set</a>
-  </tr>
-  <tr>
-    <td><a href="#sign">sign</a>
-    <td><a href="#smatch">smatch</a>
-    <td><a href="#stimestr">stimestr</a>
-    <td><a href="#store">store</a>
-    <td><a href="#strip">strip</a>
-    <td><a href="#strlen">strlen</a>
-  </tr>
-  <tr>
-    <td><a href="#sublist">sublist</a>
-    <td><a href="#subst">subst</a>
-    <td><a href="#subt">subt</a>
-    <td><a href="#tell">tell</a>
-    <td><a href="#testlock">testlock</a>
-    <td><a href="#time">time</a>
-  </tr>
-  <tr>
-    <td><a href="#timestr">timestr</a>
-    <td><a href="#timesub">timesub</a>
-    <td><a href="#tolower">tolower</a>
-    <td><a href="#toupper">toupper</a>
-    <td><a href="#type">type</a>
-    <td><a href="#tzoffset">tzoffset</a>
-  </tr>
-  <tr>
-    <td><a href="#usecount">usecount</a>
-    <td><a href="#v">v</a>
-    <td><a href="#version">version</a>
-    <td><a href="#while">while</a>
-    <td><a href="#with">with</a>
-    <td><a href="#xor">xor</a>
-  </tr>
-</table>
-<p><hr><h3 align=center><a name=SectIndex>Index of Topics by Category</a></h3>
-<p><br><h3>Definitions and Details</h3>
-<table width=100% align=center border=0>
-  <tr>
-    <td><a href="#comments">comments</a>
-    <td><a href="#definitions">definitions</a>
-  </tr>
-</table>
+<ul><li><a href="#AlphaList">Alphabetical List of Topics</a>
+<li><a href="#SectList">List of Topics by Category</a></ul>
+<p><hr size=6><h3 align=center><a name=SectList>List of Topics by Category</a></h3>
+<h4>You can get more help on the following topics:</h4>
+<ul>  <li><a href="#DefDets">Definitions and Details</a></li>
+  <li><a href="#TimeFuncs">Time Functions</a></li>
+  <li><a href="#LogicFuncs">Logical Functions</a></li>
+  <li><a href="#PropFuncs">Property Handling</a></li>
+  <li><a href="#StringFuncs">String Functions</a></li>
+  <li><a href="#MathFuncs">Math Functions</a></li>
+  <li><a href="#Looping">Looping Functions</a></li>
+  <li><a href="#DBFuncs">Database Related Functions</a></li>
+  <li><a href="#ConnFuncs">Connection Related Functions</a></li>
+  <li><a href="#VarFuncs">Variable Handling Functions</a></li>
+  <li><a href="#ListFuncs">List Handling Functions</a></li>
+  <li><a href="#MiscFuncs">Miscellaneous Functions</a></li>
+  <li><a href="#Functions">Macros and Functions</a></li>
+</ul>
 
-<p><br><h3>Time Functions</h3>
-<table width=100% align=center border=0>
+<p><hr size=6><h3 align=center><a name=AlphaList>Alphabetical List of Topics</a></h3>
+<table width="100%" align=center border=0>
   <tr>
-    <td><a href="#convsecs">convsecs</a>
-    <td><a href="#convtime">convtime</a>
-    <td><a href="#date">date</a>
-    <td><a href="#delay">delay</a>
-    <td><a href="#ftime">ftime</a>
-    <td><a href="#kill">kill</a>
+    <td width="16%"><a href="#&arg">&arg</a>
+    <td width="16%"><a href="#&cmd">&cmd</a>
+    <td width="16%"><a href="#&how">&how</a>
+    <td width="16%"><a href="#abs">abs</a>
+    <td width="16%"><a href="#add">add</a>
+    <td width="16%"><a href="#and">and</a>
   </tr>
   <tr>
-    <td><a href="#ltimestr">ltimestr</a>
-    <td><a href="#secs">secs</a>
-    <td><a href="#stimestr">stimestr</a>
-    <td><a href="#time">time</a>
-    <td><a href="#timestr">timestr</a>
-    <td><a href="#tzoffset">tzoffset</a>
+    <td width="16%"><a href="#attr">attr</a>
+    <td width="16%"><a href="#awake">awake</a>
+    <td width="16%"><a href="#bless">bless</a>
+    <td width="16%"><a href="#center">center</a>
+    <td width="16%"><a href="#commas">commas</a>
+    <td width="16%"><a href="#comments">comments</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#concat">concat</a>
+    <td width="16%"><a href="#contains">contains</a>
+    <td width="16%"><a href="#contents">contents</a>
+    <td width="16%"><a href="#controls">controls</a>
+    <td width="16%"><a href="#convsecs">convsecs</a>
+    <td width="16%"><a href="#convtime">convtime</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#count">count</a>
+    <td width="16%"><a href="#created">created</a>
+    <td width="16%"><a href="#date">date</a>
+    <td width="16%"><a href="#dbeq">dbeq</a>
+    <td width="16%"><a href="#debug">debug</a>
+    <td width="16%"><a href="#debugif">debugif</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#dec">dec</a>
+    <td width="16%"><a href="#default">default</a>
+    <td width="16%"><a href="#definitions">definitions</a>
+    <td width="16%"><a href="#delay">delay</a>
+    <td width="16%"><a href="#delprop">delprop</a>
+    <td width="16%"><a href="#dice">dice</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#dist">dist</a>
+    <td width="16%"><a href="#div">div</a>
+    <td width="16%"><a href="#eq">eq</a>
+    <td width="16%"><a href="#eval">eval</a>
+    <td width="16%"><a href="#eval!">eval!</a>
+    <td width="16%"><a href="#exec">exec</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#exec!">exec!</a>
+    <td width="16%"><a href="#exits">exits</a>
+    <td width="16%"><a href="#filter">filter</a>
+    <td width="16%"><a href="#flags">flags</a>
+    <td width="16%"><a href="#fold">fold</a>
+    <td width="16%"><a href="#for">for</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#force">force</a>
+    <td width="16%"><a href="#foreach">foreach</a>
+    <td width="16%"><a href="#ftime">ftime</a>
+    <td width="16%"><a href="#fullname">fullname</a>
+    <td width="16%"><a href="#func">func</a>
+    <td width="16%"><a href="#ge">ge</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#gt">gt</a>
+    <td width="16%"><a href="#holds">holds</a>
+    <td width="16%"><a href="#idle">idle</a>
+    <td width="16%"><a href="#if">if</a>
+    <td width="16%"><a href="#inc">inc</a>
+    <td width="16%"><a href="#index">index</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#index!">index!</a>
+    <td width="16%"><a href="#instr">instr</a>
+    <td width="16%"><a href="#isdbref">isdbref</a>
+    <td width="16%"><a href="#isnum">isnum</a>
+    <td width="16%"><a href="#istype">istype</a>
+    <td width="16%"><a href="#kill">kill</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#lastused">lastused</a>
+    <td width="16%"><a href="#lcommon">lcommon</a>
+    <td width="16%"><a href="#le">le</a>
+    <td width="16%"><a href="#left">left</a>
+    <td width="16%"><a href="#lexec">lexec</a>
+    <td width="16%"><a href="#links">links</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#list">list</a>
+    <td width="16%"><a href="#listprops">listprops</a>
+    <td width="16%"><a href="#lit">lit</a>
+    <td width="16%"><a href="#lmember">lmember</a>
+    <td width="16%"><a href="#loc">loc</a>
+    <td width="16%"><a href="#locked">locked</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#lrand">lrand</a>
+    <td width="16%"><a href="#lremove">lremove</a>
+    <td width="16%"><a href="#lsort">lsort</a>
+    <td width="16%"><a href="#lt">lt</a>
+    <td width="16%"><a href="#ltimestr">ltimestr</a>
+    <td width="16%"><a href="#lunion">lunion</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#lunique">lunique</a>
+    <td width="16%"><a href="#macros">macros</a>
+    <td width="16%"><a href="#max">max</a>
+    <td width="16%"><a href="#midstr">midstr</a>
+    <td width="16%"><a href="#min">min</a>
+    <td width="16%"><a href="#mklist">mklist</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#mod">mod</a>
+    <td width="16%"><a href="#modified">modified</a>
+    <td width="16%"><a href="#money">money</a>
+    <td width="16%"><a href="#muckname">muckname</a>
+    <td width="16%"><a href="#muf">muf</a>
+    <td width="16%"><a href="#mult">mult</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#name">name</a>
+    <td width="16%"><a href="#ne">ne</a>
+    <td width="16%"><a href="#nearby">nearby</a>
+    <td width="16%"><a href="#nl">nl</a>
+    <td width="16%"><a href="#not">not</a>
+    <td width="16%"><a href="#null">null</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#online">online</a>
+    <td width="16%"><a href="#ontime">ontime</a>
+    <td width="16%"><a href="#or">or</a>
+    <td width="16%"><a href="#otell">otell</a>
+    <td width="16%"><a href="#owner">owner</a>
+    <td width="16%"><a href="#parse">parse</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#pronouns">pronouns</a>
+    <td width="16%"><a href="#prop">prop</a>
+    <td width="16%"><a href="#prop!">prop!</a>
+    <td width="16%"><a href="#propdir">propdir</a>
+    <td width="16%"><a href="#rand">rand</a>
+    <td width="16%"><a href="#ref">ref</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#revoke">revoke</a>
+    <td width="16%"><a href="#right">right</a>
+    <td width="16%"><a href="#secs">secs</a>
+    <td width="16%"><a href="#select">select</a>
+    <td width="16%"><a href="#set">set</a>
+    <td width="16%"><a href="#sign">sign</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#smatch">smatch</a>
+    <td width="16%"><a href="#stimestr">stimestr</a>
+    <td width="16%"><a href="#store">store</a>
+    <td width="16%"><a href="#strip">strip</a>
+    <td width="16%"><a href="#strlen">strlen</a>
+    <td width="16%"><a href="#sublist">sublist</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#subst">subst</a>
+    <td width="16%"><a href="#subt">subt</a>
+    <td width="16%"><a href="#tell">tell</a>
+    <td width="16%"><a href="#testlock">testlock</a>
+    <td width="16%"><a href="#time">time</a>
+    <td width="16%"><a href="#timestr">timestr</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#timesub">timesub</a>
+    <td width="16%"><a href="#tolower">tolower</a>
+    <td width="16%"><a href="#toupper">toupper</a>
+    <td width="16%"><a href="#type">type</a>
+    <td width="16%"><a href="#tzoffset">tzoffset</a>
+    <td width="16%"><a href="#unbless">unbless</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#usecount">usecount</a>
+    <td width="16%"><a href="#v">v</a>
+    <td width="16%"><a href="#version">version</a>
+    <td width="16%"><a href="#while">while</a>
+    <td width="16%"><a href="#with">with</a>
+    <td width="16%"><a href="#xor">xor</a>
   </tr>
 </table>
 
-<p><br><h3>Logical Functions</h3>
-<table width=100% align=center border=0>
+<p>
+
+
+<p><hr size=6>
+<h3 align=center><a name="DefDets">Definitions and Details</a></h3>
+<table width="100%" align=center border=0>
   <tr>
-    <td><a href="#and">and</a>
-    <td><a href="#eq">eq</a>
-    <td><a href="#ge">ge</a>
-    <td><a href="#gt">gt</a>
-    <td><a href="#if">if</a>
-    <td><a href="#le">le</a>
-  </tr>
-  <tr>
-    <td><a href="#lt">lt</a>
-    <td><a href="#ne">ne</a>
-    <td><a href="#not">not</a>
-    <td><a href="#or">or</a>
-    <td><a href="#xor">xor</a>
+    <td width="16%"><a href="#comments">comments</a>
+    <td width="16%"><a href="#definitions">definitions</a>
   </tr>
 </table>
 
-<p><br><h3>Property Handling</h3>
-<table width=100% align=center border=0>
-  <tr>
-    <td><a href="#concat">concat</a>
-    <td><a href="#delprop">delprop</a>
-    <td><a href="#exec">exec</a>
-    <td><a href="#exec!">exec!</a>
-    <td><a href="#index">index</a>
-    <td><a href="#index!">index!</a>
-  </tr>
-  <tr>
-    <td><a href="#lexec">lexec</a>
-    <td><a href="#list">list</a>
-    <td><a href="#listprops">listprops</a>
-    <td><a href="#prop">prop</a>
-    <td><a href="#prop!">prop!</a>
-    <td><a href="#propdir">propdir</a>
-  </tr>
-  <tr>
-    <td><a href="#rand">rand</a>
-    <td><a href="#select">select</a>
-    <td><a href="#store">store</a>
-    <td><a href="#timesub">timesub</a>
-  </tr>
-</table>
-
-<p><br><h3>String Functions</h3>
-<table width=100% align=center border=0>
-  <tr>
-    <td><a href="#center">center</a>
-    <td><a href="#eval">eval</a>
-    <td><a href="#instr">instr</a>
-    <td><a href="#left">left</a>
-    <td><a href="#lit">lit</a>
-    <td><a href="#midstr">midstr</a>
-  </tr>
-  <tr>
-    <td><a href="#nl">nl</a>
-    <td><a href="#null">null</a>
-    <td><a href="#otell">otell</a>
-    <td><a href="#pronouns">pronouns</a>
-    <td><a href="#right">right</a>
-    <td><a href="#smatch">smatch</a>
-  </tr>
-  <tr>
-    <td><a href="#strip">strip</a>
-    <td><a href="#strlen">strlen</a>
-    <td><a href="#subst">subst</a>
-    <td><a href="#tell">tell</a>
-    <td><a href="#tolower">tolower</a>
-    <td><a href="#toupper">toupper</a>
-  </tr>
-</table>
-
-<p><br><h3>Math Functions</h3>
-<table width=100% align=center border=0>
-  <tr>
-    <td><a href="#abs">abs</a>
-    <td><a href="#add">add</a>
-    <td><a href="#dec">dec</a>
-    <td><a href="#dice">dice</a>
-    <td><a href="#dist">dist</a>
-    <td><a href="#div">div</a>
-  </tr>
-  <tr>
-    <td><a href="#inc">inc</a>
-    <td><a href="#max">max</a>
-    <td><a href="#min">min</a>
-    <td><a href="#mod">mod</a>
-    <td><a href="#mult">mult</a>
-    <td><a href="#sign">sign</a>
-  </tr>
-  <tr>
-    <td><a href="#subt">subt</a>
-  </tr>
-</table>
-
-<p><br><h3>Looping Functions</h3>
-<table width=100% align=center border=0>
-  <tr>
-    <td><a href="#filter">filter</a>
-    <td><a href="#fold">fold</a>
-    <td><a href="#for">for</a>
-    <td><a href="#foreach">foreach</a>
-    <td><a href="#parse">parse</a>
-    <td><a href="#while">while</a>
-  </tr>
-</table>
-
-<p><br><h3>Database Related Functions</h3>
-<table width=100% align=center border=0>
-  <tr>
-    <td><a href="#contains">contains</a>
-    <td><a href="#contents">contents</a>
-    <td><a href="#controls">controls</a>
-    <td><a href="#created">created</a>
-    <td><a href="#dbeq">dbeq</a>
-    <td><a href="#exits">exits</a>
-  </tr>
-  <tr>
-    <td><a href="#flags">flags</a>
-    <td><a href="#force">force</a>
-    <td><a href="#fullname">fullname</a>
-    <td><a href="#holds">holds</a>
-    <td><a href="#istype">istype</a>
-    <td><a href="#lastused">lastused</a>
-  </tr>
-  <tr>
-    <td><a href="#links">links</a>
-    <td><a href="#loc">loc</a>
-    <td><a href="#locked">locked</a>
-    <td><a href="#modified">modified</a>
-    <td><a href="#money">money</a>
-    <td><a href="#name">name</a>
-  </tr>
-  <tr>
-    <td><a href="#nearby">nearby</a>
-    <td><a href="#owner">owner</a>
-    <td><a href="#ref">ref</a>
-    <td><a href="#testlock">testlock</a>
-    <td><a href="#type">type</a>
-    <td><a href="#usecount">usecount</a>
-  </tr>
-</table>
-
-<p><br><h3>Connection Related Functions</h3>
-<table width=100% align=center border=0>
-  <tr>
-    <td><a href="#awake">awake</a>
-    <td><a href="#idle">idle</a>
-    <td><a href="#online">online</a>
-    <td><a href="#ontime">ontime</a>
-  </tr>
-</table>
-
-<p><br><h3>Variable Handling Functions</h3>
-<table width=100% align=center border=0>
-  <tr>
-    <td><a href="#arg">arg</a>
-    <td><a href="#cmd">cmd</a>
-    <td><a href="#how">how</a>
-    <td><a href="#set">set</a>
-    <td><a href="#v">v</a>
-    <td><a href="#with">with</a>
-  </tr>
-</table>
-
-<p><br><h3>List Handling Functions</h3>
-<table width=100% align=center border=0>
-  <tr>
-    <td><a href="#commas">commas</a>
-    <td><a href="#count">count</a>
-    <td><a href="#lcommon">lcommon</a>
-    <td><a href="#lmember">lmember</a>
-    <td><a href="#lrand">lrand</a>
-    <td><a href="#lremove">lremove</a>
-  </tr>
-  <tr>
-    <td><a href="#lsort">lsort</a>
-    <td><a href="#lunion">lunion</a>
-    <td><a href="#lunique">lunique</a>
-    <td><a href="#mklist">mklist</a>
-    <td><a href="#sublist">sublist</a>
-  </tr>
-</table>
-
-<p><br><h3>Miscellaneous Functions</h3>
-<table width=100% align=center border=0>
-  <tr>
-    <td><a href="#debug">debug</a>
-    <td><a href="#debugif">debugif</a>
-    <td><a href="#isdbref">isdbref</a>
-    <td><a href="#isnum">isnum</a>
-    <td><a href="#muckname">muckname</a>
-    <td><a href="#muf">muf</a>
-  </tr>
-  <tr>
-    <td><a href="#version">version</a>
-  </tr>
-</table>
-
-<p><br><h3>Macros and Functions</h3>
-<table width=100% align=center border=0>
-  <tr>
-    <td><a href="#func">func</a>
-    <td><a href="#macros">macros</a>
-  </tr>
-</table>
-
-<br><p>
 
 
-<hr><h3 align=center>Definitions and Details</h3>
-
-
-<br><p><h4><a name="comments">Comments:
+<hr><h4><a name="comments">Comments:
 <br>
 </a></h4>
   Only 26 levels of recursion are allowed, so funcs that deep return literally.
@@ -443,11 +240,11 @@ to the triggering player, if nothing was matched in the first pass.
 <p>
   The 'me' and 'here' keywords always are relative to the triggering player.
 The trigger object is referred to by 'this'.
-<br><p>
+<p>
 
 
 
-<br><p><h4><a name="definitions">Definitions:
+<hr><h4><a name="definitions">Definitions:
 <br>
 </a></h4>
     A Trigger object is the object that the MPI script is evaluated from.
@@ -470,21 +267,41 @@ matter.
 <p>
     For logical constructs, a string value of "0", or a null string ("") are
 both considered false.  Any other value is considered true.
-<br><p>
+<p>
 
 
 
-<hr><h3 align=center>Time Functions</h3>
+<p><hr size=6>
+<h3 align=center><a name="TimeFuncs">Time Functions</a></h3>
+<table width="100%" align=center border=0>
+  <tr>
+    <td width="16%"><a href="#convsecs">convsecs</a>
+    <td width="16%"><a href="#convtime">convtime</a>
+    <td width="16%"><a href="#date">date</a>
+    <td width="16%"><a href="#delay">delay</a>
+    <td width="16%"><a href="#ftime">ftime</a>
+    <td width="16%"><a href="#kill">kill</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#ltimestr">ltimestr</a>
+    <td width="16%"><a href="#secs">secs</a>
+    <td width="16%"><a href="#stimestr">stimestr</a>
+    <td width="16%"><a href="#time">time</a>
+    <td width="16%"><a href="#timestr">timestr</a>
+    <td width="16%"><a href="#tzoffset">tzoffset</a>
+  </tr>
+</table>
 
 
-<br><p><h4><a name="tzoffset">{tzoffset}
+
+<hr><h4><a name="tzoffset">{tzoffset}
 <br>
 </a></h4>
     Returns local time zone offset from GMT in seconds.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="time">{time}
+<hr><h4><a name="time">{time}
 <br>
 {time:timezone}
 <br>
@@ -492,10 +309,10 @@ both considered false.  Any other value is considered true.
     Returns a time string in the 24hr form hh:mm:ss.  If the timezone
 argument is given, then it offsets the time returned by that number
 of seconds.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="date">{date}
+<hr><h4><a name="date">{date}
 <br>
 {date:timezone}
 <br>
@@ -503,10 +320,10 @@ of seconds.
     Returns a date string in the form mm/dd/yy.  If the timezone
 argument is given, then it offsets the date returned by that number
 of seconds.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="ftime">{ftime:format}
+<hr><h4><a name="ftime">{ftime:format}
 <br>
 {ftime:format,tz}
 <br>
@@ -518,59 +335,59 @@ the %subs that you can use in the format string.  If specified, tz is the
 number of seconds offset from GMT.  If specified, secs is the systime to
 use, instead of the current time.  {ftime:%x %X %Y,{tzoffset},0} will return
 the date and time for systime 0, for the local time zone of the server.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="timestr">{timestr:secs}
+<hr><h4><a name="timestr">{timestr:secs}
 <br>
 </a></h4>
     Given a time period in seconds, this will return a concise abbreviated
 string representation of how long that time was.  This might return a value
 like "9d 12:56" for 9 days, 12 hours, and 56 minutes.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="ltimestr">{ltimestr:secs}
+<hr><h4><a name="ltimestr">{ltimestr:secs}
 <br>
 </a></h4>
     Given a time period, in seconds, this will return a string, including a
 breakdown of all the time units of that period.  For example, given a number
 of seconds, it might return "1 week, 2 days, 10 mins, 52 secs".
-<br><p>
+<p>
 
 
-<br><p><h4><a name="stimestr">{stimestr:secs}
+<hr><h4><a name="stimestr">{stimestr:secs}
 <br>
 </a></h4>
     Given a time period, in seconds, this will return the most significant
 time unit of that time period.  For example, a number of seconds, that is
 equivalent to 9 days, 23 hours, 10 minutes, and 52 seconds, will be have
 the value "9d" returned, as the abbreviated most significant time unit.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="secs">{secs}
+<hr><h4><a name="secs">{secs}
 <br>
 </a></h4>
     Returns system time: the number of second since midnight 1/1/70 GMT
-<br><p>
+<p>
 
 
-<br><p><h4><a name="convtime">{convtime:string}
+<hr><h4><a name="convtime">{convtime:string}
 <br>
 </a></h4>
     Converts "HH:MM:SS Mo/Dy/Yr" format time string to systime seconds.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="convsecs">{convsecs:systime}
+<hr><h4><a name="convsecs">{convsecs:systime}
 <br>
 </a></h4>
     Converts systime seconds into a readable time string.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="delay">{delay:secs,expr}
+<hr><h4><a name="delay">{delay:secs,expr}
 <br>
 </a></h4>
     Evaluates the given expression, then puts the result of that on the
@@ -582,10 +399,10 @@ before and after being delayed, you need to put MPI code that is to run
 after the delay within a {lit:expr} command.  If a {delay} evaluation is
 a null string, then the notify or notify_except will not be done.  {delay}
 will return the process ID of the event it puts on the timequeue.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="kill">{kill:0}
+<hr><h4><a name="kill">{kill:0}
 <br>
 {kill:processID}
 <br>
@@ -598,14 +415,34 @@ owns, then this will error out with Permission denied.  If no process is
 found, this returns 0.  If a process was found, and the permissions were
 okay, then the process is killed, and {kill} returns the number of processes
 killed.  Usually 1.
-<br><p>
+<p>
 
 
 
-<hr><h3 align=center>Logical Functions</h3>
+<p><hr size=6>
+<h3 align=center><a name="LogicFuncs">Logical Functions</a></h3>
+<table width="100%" align=center border=0>
+  <tr>
+    <td width="16%"><a href="#and">and</a>
+    <td width="16%"><a href="#default">default</a>
+    <td width="16%"><a href="#eq">eq</a>
+    <td width="16%"><a href="#ge">ge</a>
+    <td width="16%"><a href="#gt">gt</a>
+    <td width="16%"><a href="#if">if</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#le">le</a>
+    <td width="16%"><a href="#lt">lt</a>
+    <td width="16%"><a href="#ne">ne</a>
+    <td width="16%"><a href="#not">not</a>
+    <td width="16%"><a href="#or">or</a>
+    <td width="16%"><a href="#xor">xor</a>
+  </tr>
+</table>
 
 
-<br><p><h4><a name="if">{if:check,true}
+
+<hr><h4><a name="if">{if:check,true}
 <br>
 {if:check,true,false}
 <br>
@@ -616,66 +453,77 @@ returns it's result.  If 'check' does not evaluate as true, then it will
 evaluate the 'false' argument, if there is one, and returns it's result.
 If there is no false argument, and 'check' evaluated false, then it
 returns a null string.  Example:
-<p>
+<pre>
     Your computer is {if:{eq:2,3},broken!,all right.}
-<br><p>
+</pre>
+<p>
 
 
-<br><p><h4><a name="eq">{eq:expr1,expr2}
+<hr><h4><a name="default">{default:value1,value2}
+<br>
+</a></h4>
+    Returns value2 if value1 is null or 0, otherwise returns value1.  Example:
+<pre>
+    You entered {default:{&arg},nothing}.
+</pre>
+<p>
+
+
+<hr><h4><a name="eq">{eq:expr1,expr2}
 <br>
 </a></h4>
     If expr1 and expr2 evaluate out to the same value, then this returns
 true.  Otherwise, this returns false.  If both expressions evaluate out
 to numbers, then this compares them numerically.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="ne">{ne:expr1,expr2}
+<hr><h4><a name="ne">{ne:expr1,expr2}
 <br>
 </a></h4>
     If expr1 and expr2 evaluate out to the same value, then this returns
 false.  Otherwise, this returns true.  If both expressions evaluate out
 to numbers, then this compares them numerically.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="gt">{gt:expr1,expr2}
+<hr><h4><a name="gt">{gt:expr1,expr2}
 <br>
 </a></h4>
     Evaluates expr1 and expr2, then returns true if expr1 was larger.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="ge">{ge:expr1,expr2}
+<hr><h4><a name="ge">{ge:expr1,expr2}
 <br>
 </a></h4>
     Evals expr1 and expr2, then returns true if expr1 was larger or equal.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="lt">{lt:expr1,expr2}
+<hr><h4><a name="lt">{lt:expr1,expr2}
 <br>
 </a></h4>
     Evaluates expr1 and expr2, then returns true if expr1 was smaller.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="le">{le:expr1,expr2}
+<hr><h4><a name="le">{le:expr1,expr2}
 <br>
 </a></h4>
     Evals expr1 and expr2, then returns true if expr1 was smaller or equal.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="not">{not:expr}
+<hr><h4><a name="not">{not:expr}
 <br>
 </a></h4>
     Returns the logical NOT of expr.  If expr was true, this returns false.
 If expr was false, this returns true.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="or">{or:expr1,expr2...}
+<hr><h4><a name="or">{or:expr1,expr2...}
 <br>
 </a></h4>
     Returns true if expr1 or expr2 evaluate as true.  Otherwise, this
@@ -684,10 +532,10 @@ as it does C-style shortcutting.  If there are more than two arguments,
 then this will evaluate them until either one returns true, or until it
 has evaluated all the expressions.  This returns false only if all of the
 expressions return false.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="and">{and:expr1,expr2...}
+<hr><h4><a name="and">{and:expr1,expr2...}
 <br>
 </a></h4>
     Returns true if expr1 and expr2 evaluate as true.  Otherwise, this
@@ -697,22 +545,50 @@ arguments, then this will evaluate all of them until either one returns
 false, in which case this function returns false, or until it has evaluated
 all of the arguments.  This function returns true only if all the arguments
 evaluate as true.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="xor">{xor:expr1,expr2}
+<hr><h4><a name="xor">{xor:expr1,expr2}
 <br>
 </a></h4>
     Returns true if expr1 or expr2 evaluate as true, but false if both do.
 Otherwise, this returns false.
-<br><p>
+<p>
 
 
 
-<hr><h3 align=center>Property Handling</h3>
+<p><hr size=6>
+<h3 align=center><a name="PropFuncs">Property Handling</a></h3>
+<table width="100%" align=center border=0>
+  <tr>
+    <td width="16%"><a href="#bless">bless</a>
+    <td width="16%"><a href="#concat">concat</a>
+    <td width="16%"><a href="#delprop">delprop</a>
+    <td width="16%"><a href="#exec">exec</a>
+    <td width="16%"><a href="#exec!">exec!</a>
+    <td width="16%"><a href="#index">index</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#index!">index!</a>
+    <td width="16%"><a href="#lexec">lexec</a>
+    <td width="16%"><a href="#list">list</a>
+    <td width="16%"><a href="#listprops">listprops</a>
+    <td width="16%"><a href="#prop">prop</a>
+    <td width="16%"><a href="#prop!">prop!</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#propdir">propdir</a>
+    <td width="16%"><a href="#rand">rand</a>
+    <td width="16%"><a href="#select">select</a>
+    <td width="16%"><a href="#store">store</a>
+    <td width="16%"><a href="#timesub">timesub</a>
+    <td width="16%"><a href="#unbless">unbless</a>
+  </tr>
+</table>
 
 
-<br><p><h4><a name="prop">{prop:propname}
+
+<hr><h4><a name="prop">{prop:propname}
 <br>
 {prop:propname,obj}
 <br>
@@ -725,10 +601,10 @@ this returns an empty string.  If the property that it tries to access is
 read restricted and the owner of the trigger object does not own the
 object that the property is found on, then the MPI script stops with a
 Permission denied error.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="prop!">{prop!:propname}
+<hr><h4><a name="prop!">{prop!:propname}
 <br>
 {prop!:propname,obj}
 <br>
@@ -740,10 +616,10 @@ property is not found, this returns an empty string.  If the property that
 it tries to access is read restricted and the owner of the trigger object
 does not own the object that the property is found on, then the MPI
 script stops with a Permission denied error.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="exec">{exec:propname}
+<hr><h4><a name="exec">{exec:propname}
 <br>
 {exec:propname,obj}
 <br>
@@ -757,10 +633,10 @@ this returns an empty string.  If the property that it tries to access is
 read restricted and the owner of the trigger object does not own the
 object that the property is found on, then the MPI script stops with a
 Permission denied error.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="exec!">{exec!:propname}
+<hr><h4><a name="exec!">{exec!:propname}
 <br>
 {exec!:propname,obj}
 <br>
@@ -773,45 +649,47 @@ property is not found, this returns an empty string.  If the property
 that it tries to access is read restricted and the owner of the trigger
 object does not own the object that the property is found on, then
 the MPI script stops with a Permission denied error.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="index">{index:propname}
+<hr><h4><a name="index">{index:propname}
 <br>
 {index:propname,obj}
 <br>
 </a></h4>
     Returns the string value of the property whose name is stored in the
 given property.  This sounds confusing, but it's basically just the same
-as {prop:{prop:propname}}.  If no object parameter is passed to it, it
+as {exec:{prop:propname}}.  If no object parameter is passed to it, it
 looks for both the index property and the referenced property somewhere
 down the environment from the trigger object.  Otherwise, it looks down
 the environment from the object specified for both of them.  If either
 property is not found, this returns an empty string.  If the property
 that it tries to access is read restricted, and the owner of the trigger
 object does not own the object that the properties are found on, then
-the MPI script stops with a Permission denied error.
-<br><p>
+the MPI script stops with a Permission denied error.  Any MPI code in
+the target property is evaluated and the result is returned.
+<p>
 
 
-<br><p><h4><a name="index!">{index!:propname}
+<hr><h4><a name="index!">{index!:propname}
 <br>
 {index!:propname,obj}
 <br>
 </a></h4>
     Returns the string value of the property whose name is stored in the
 given property.  This sounds confusing, but it's basically just the same
-as {prop!:{prop!:propname}}.  If no object parameter is passed to it, it
+as {exec!:{prop!:propname}}.  If no object parameter is passed to it, it
 looks for both the index property and the referenced property on the trigger
 object.  Otherwise, it looks on the specified object for both of them.
 If either property is not found, this returns an empty string.  If the
 property that it tries to access is read restricted, and the owner of the
 trigger object does not own the object that the properties are found on,
-then the MPI script stops with a Permission denied error.
-<br><p>
+then the MPI script stops with a Permission denied error.  Any MPI code in
+the target property is evaluated and the result is returned.
+<p>
 
 
-<br><p><h4><a name="store">{store:val,prop}
+<hr><h4><a name="store">{store:val,prop}
 <br>
 {store:val,prop,obj}
 <br>
@@ -826,10 +704,10 @@ the MPI commands.  This function returns the string that is stored as the
 prop value.  If you store a null value in the property, then it will remove
 the property if it is not a propdir.  It will clear the value of the prop
 if it IS a propdir.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="delprop">{delprop:propname}
+<hr><h4><a name="delprop">{delprop:propname}
 <br>
 {delprop:propname,object}
 <br>
@@ -841,10 +719,34 @@ will delete the property on that given object.  This function returns a null
 string.  If you specify a propname that is protected, you will get an error
 of Permission Denied.  You are only allowed to delete properties from objects
 that are owned by the owner of the trigger object.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="list">{list:listname}
+<hr><h4><a name="bless">{bless:propname}
+<br>
+{bless:propname,object}
+<br>
+Blesses a property so that MPI executed from it will run with blessed
+<br>
+permissions.  This command itself requires blessed permissions to run.
+<br>
+<p>
+
+
+<hr><h4><a name="unbless">{unbless:propname}
+<br>
+{unbless:propname,object}
+<br>
+Removes the blessing of a property so that MPI executed from it will no
+<br>
+longer run with blessed permissions.  This command itself requires blessed
+<br>
+permissions to run.
+<br>
+<p>
+
+
+<hr><h4><a name="list">{list:listname}
 <br>
 {list:listname,obj}
 <br>
@@ -858,10 +760,10 @@ NOT evaluate the contents of the list for embedded MPI commands.  If no
 obj argument is supplied, then it looks for the list somewhere down the
 environment from the trigger object.  Otherwise, it looks for the list
 down the environment from the given object.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="concat">{concat:listname}
+<hr><h4><a name="concat">{concat:listname}
 <br>
 {concat:listname,obj}
 <br>
@@ -877,10 +779,10 @@ format.  It does NOT evaluate the contents of the list for embedded MPI
 commands.  If no obj argument is supplied, then it looks for the list
 somewhere down the environment from the trigger object.  Otherwise, it
 looks for the list down the environment from the given object.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="lexec">{lexec:listname}
+<hr><h4><a name="lexec">{lexec:listname}
 <br>
 {lexec:listname,obj}
 <br>
@@ -895,10 +797,10 @@ format, or the propname#/X format.  If no obj argument is supplied, then
 it looks for the list somewhere down the environment from the trigger
 object.  Otherwise, it looks for the list down the environment from the
 given object.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="rand">{rand:listname}
+<hr><h4><a name="rand">{rand:listname}
 <br>
 {rand:listname,obj}
 <br>
@@ -906,11 +808,12 @@ given object.
     Returns the value of a randomly picked list item from a property
 based list.  If no obj parameter is given, then it looks down the
 environment from the trigger object for the list.  Otherwise, it looks
-down the environment from the given object.
-<br><p>
+down the environment from the given object.  Any MPI code in the target
+property is evaluated and the result is returned.
+<p>
 
 
-<br><p><h4><a name="select">{select:value,listname}
+<hr><h4><a name="select">{select:value,listname}
 <br>
 {select:value,listname,object}
 <br>
@@ -929,17 +832,18 @@ following entries:
 </pre>
 Then {select:9,_junk} will return "two", {select:16,_junk} will return
 "three", and {select:25,_junk} will return "four".
-<br><p>
+<p>
 
 
-<br><p><h4><a name="timesub">{timesub:period,offset,listname}
+<hr><h4><a name="timesub">{timesub:period,offset,listname}
 <br>
 {timesub:period,offset,listname,object}
 <br>
 </a></h4>
     This is sort of like {list}, except that it will only return one line
 of the given named property list.  The line it chooses depends on the
-time.  The period is the length of time, in seconds, that it takes for
+time.  Any MPI code in the target line is evaluated and the result is
+returned.  The period is the length of time, in seconds, that it takes for
 {timesub} to cycle through the entire list.  The offset is the number of
 seconds to offset into the time period, if you actually need to synchronize
 the {timesub} with something.  The offset usually is just left at zero.
@@ -957,10 +861,10 @@ This example will show different property list lines, depending on the
 time of day.  The period is 86400 seconds, which is one day.  If the
 property list has 24 items in it, then a different line will be returned
 for each hour of the day.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="propdir">{propdir:propname}
+<hr><h4><a name="propdir">{propdir:propname}
 <br>
 {propdir:propname,object}
 <br>
@@ -969,10 +873,10 @@ for each hour of the day.
 Otherwise, this returns false.  If no object parameter is passed to it, it
 looks for the property on the trigger object.  Otherwise, it looks on the
 object specified.  If the property is not found, this returns false.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="listprops">{listprops:propdir}
+<hr><h4><a name="listprops">{listprops:propdir}
 <br>
 {listprops:propdir,object}
 <br>
@@ -986,17 +890,50 @@ propdir are each compared against the smatch wildcard pattern, and only those
 that match are returned in the list.  This comparison is only done on the last
 part of the property name after the last /.
 Also refer to PROPDIR and SMATCH.
-<br><p>
+<p>
 
 
 
-<hr><h3 align=center>String Functions</h3>
+<p><hr size=6>
+<h3 align=center><a name="StringFuncs">String Functions</a></h3>
+<table width="100%" align=center border=0>
+  <tr>
+    <td width="16%"><a href="#attr">attr</a>
+    <td width="16%"><a href="#center">center</a>
+    <td width="16%"><a href="#eval">eval</a>
+    <td width="16%"><a href="#eval!">eval!</a>
+    <td width="16%"><a href="#instr">instr</a>
+    <td width="16%"><a href="#left">left</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#lit">lit</a>
+    <td width="16%"><a href="#midstr">midstr</a>
+    <td width="16%"><a href="#nl">nl</a>
+    <td width="16%"><a href="#null">null</a>
+    <td width="16%"><a href="#otell">otell</a>
+    <td width="16%"><a href="#pronouns">pronouns</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#revoke">revoke</a>
+    <td width="16%"><a href="#right">right</a>
+    <td width="16%"><a href="#smatch">smatch</a>
+    <td width="16%"><a href="#strip">strip</a>
+    <td width="16%"><a href="#strlen">strlen</a>
+    <td width="16%"><a href="#subst">subst</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#tell">tell</a>
+    <td width="16%"><a href="#tolower">tolower</a>
+    <td width="16%"><a href="#toupper">toupper</a>
+  </tr>
+</table>
+
 
 
 String functions generally don't strip spaces in their arguments.
 
 
-<br><p><h4><a name="nl">{nl}  or  \r
+<hr><h4><a name="nl">{nl}  or  \r
 <br>
 </a></h4>
     Returns a carriage return character.  This can be used to seperate
@@ -1011,27 +948,27 @@ would print out like:
     an example
     of using newlines.
 </pre>
-<br><p>
+<p>
 
 
-<br><p><h4><a name="subst">{subst:str,old,new}
+<hr><h4><a name="subst">{subst:str,old,new}
 <br>
 </a></h4>
     Returns a copy of 'str' with all substring instances of 'old' replaced
 by the text specified by 'new'.  Basically just substitutes the new text
 for the old text in str.  example: {subst:Hello World!,l,r} would return
 "Herro Worrd!"
-<br><p>
+<p>
 
 
-<br><p><h4><a name="strlen">{strlen:string}
+<hr><h4><a name="strlen">{strlen:string}
 <br>
 </a></h4>
     Returns an integer that is the number of character in string.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="smatch">{smatch:str,pattern}
+<hr><h4><a name="smatch">{smatch:str,pattern}
 <br>
 </a></h4>
     Matches 'str' against the wildcard pattern.  If there is a match,
@@ -1048,32 +985,32 @@ the following meanings:
     {^word1|word2}  matches one word, if it is NOT word1 or word2.
     \               escapes any of the prev chars, making it not special.
 </pre>
-<br><p>
+<p>
 
 
-<br><p><h4><a name="strip">{strip:string}
+<hr><h4><a name="strip">{strip:string}
 <br>
 </a></h4>
     Returns a copy of string with all the spaces stripped from the beginning
 and the end.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="tolower">{tolower:string}
+<hr><h4><a name="tolower">{tolower:string}
 <br>
 </a></h4>
     Returns a copy of string, with all uppercase chars converted to lowercase.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="toupper">{toupper:string}
+<hr><h4><a name="toupper">{toupper:string}
 <br>
 </a></h4>
     Returns a copy of string, with all lowercase chars converted to uppercase.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="right">{right:string}
+<hr><h4><a name="right">{right:string}
 <br>
 {right:string,fieldwidth}
 <br>
@@ -1083,12 +1020,15 @@ and the end.
     Takes a string and pads it to fit the given fieldwidth, with the string
 right justified.  If no padstring is given, it assumes that it will pad the
 string with spaces.  If no fieldwidth is given, it assumes that the field
-width is 78 characters.  Example:  {right:Hello,10,_.} would return the
-string "_._._Hello"
-<br><p>
+width is 78 characters.  Example:
+<pre>
+    {right:Hello,10,_.}
+</pre>
+would return the string "_._._Hello"
+<p>
 
 
-<br><p><h4><a name="left">{left:string}
+<hr><h4><a name="left">{left:string}
 <br>
 {left:string,fieldwidth}
 <br>
@@ -1098,12 +1038,15 @@ string "_._._Hello"
     Takes a string and pads it to fit the given fieldwidth, with the string
 left justified.  If no padstring is given, it assumes that it will pad the
 string with spaces.  If no fieldwidth is given, it assumes that the field
-width is 78 characters.  Example:  {left:Hello,10,_.} would return the
-string "Hello_._._"
-<br><p>
+width is 78 characters.  Example:
+<pre>
+    {left:Hello,10,_.}
+</pre>
+would return the string "Hello_._._"
+<p>
 
 
-<br><p><h4><a name="center">{center:string}
+<hr><h4><a name="center">{center:string}
 <br>
 {center:string,fieldwidth}
 <br>
@@ -1113,20 +1056,23 @@ string "Hello_._._"
     Takes a string and pads it to fit the given fieldwidth, with the string
 center justified.  If no padstring is given, it assumes that it will pad the
 string with spaces.  If no fieldwidth is given, it assumes that the field
-width is 78 characters.  Example:  {center:Hello,10,1234567890} would return
-the string "123Hello12"
-<br><p>
+width is 78 characters.  Example:
+<pre>
+    {center:Hello,10,1234567890}
+</pre>
+would return the string "123Hello12"
+<p>
 
 
-<br><p><h4><a name="instr">{instr:str1,str2}
+<hr><h4><a name="instr">{instr:str1,str2}
 <br>
 </a></h4>
     Lists the position of the first substring within str1 that matches str2.
 If no such substring exists, then this returns a 0.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="midstr">{midstr:str,pos}
+<hr><h4><a name="midstr">{midstr:str,pos}
 <br>
 {midstr:str,pos1,pos2}
 <br>
@@ -1144,37 +1090,60 @@ is assumed to be at the last character. If the starting position is later
 in the string than the ending position, then the returned string has the
 characters in reverse order.  If either pos1 or pos2 are 0, then this
 returns a null string.  ("")
-<br><p>
+<p>
 
 
-<br><p><h4><a name="lit">{lit:string}
+<hr><h4><a name="lit">{lit:string}
 <br>
 </a></h4>
     Returns the literal string given as its parameter.  This means you can
 have things that look like MPI commands within it, and it will not evaluate
 them, but will rather just treat them as a string.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="eval">{eval:string}
+<hr><h4><a name="eval">{eval:string}
 <br>
 </a></h4>
     Sort of the exact opposite of {lit:}.  This takes a string, and
 evaluates it for MPI commands embedded within it.  This can be used on
-the output of {list:}, for example.
-<br><p>
+the output of {list:}, for example.  The evaluated mpi commands will
+be run unblessed.  Also see the {eval!} command.
+<p>
 
 
-<br><p><h4><a name="null">{null:expr...}
+<hr><h4><a name="eval!">{eval!:string}
+<br>
+</a></h4>
+    Sort of the exact opposite of {lit:}.  This takes a string, and
+evaluates it for MPI commands embedded within it.  This can be used on
+the output of {list:}, for example.  Unlike the {eval} command, the
+evaluated mpi commands will be run with the same blessings as the code
+that executed the {eval!}.  Also see the {eval} and {revoke} commands.
+<p>
+
+
+<hr><h4><a name="revoke">{revoke:commands}
+<br>
+Executes the enclosed commands with all blessing permissions revoked.
+<br>
+This is good to wrap around {eval} statements that may execute user
+<br>
+supplied code, to prevent security holes.
+<br>
+<p>
+
+
+<hr><h4><a name="null">{null:expr...}
 <br>
 </a></h4>
     Returns a null string, no matter what the expressions within it return.
 This can take up to nine arguments, though you could pass the output of
 several commands as one argument.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="pronouns">{pronouns:string}
+<hr><h4><a name="pronouns">{pronouns:string}
 <br>
 {pronouns:string,object}
 <br>
@@ -1182,10 +1151,10 @@ several commands as one argument.
     If passed one argument, evaluates the string and does pronoun substitution
 with regards to the using player.  If given two args, it does the pronoun
 substitution with regards to the given object.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="tell">{tell:string}
+<hr><h4><a name="tell">{tell:string}
 <br>
 {tell:string,player}
 <br>
@@ -1198,10 +1167,10 @@ user's name, then the user's name will be prepended to the message.  The
 two exceptions to this are that if the messages is being sent to the
 owner of the trigger, or to the user, then the user's name will not be
 prepended.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="otell">{otell:string}
+<hr><h4><a name="otell">{otell:string}
 <br>
 {otell:string,room}
 <br>
@@ -1216,16 +1185,60 @@ If you pass it a player of #-1, it will send the message to all the players
 in the room.  This returns the message that was sent.  If the trigger isn't
 a room, or an exit on a room, and if the message doesn't already begin with
 the user's name, then the user's name will be prepended to the message.
-<br><p>
+<p>
+
+
+<hr><h4><a name="attr">{attr:attribute,string}
+<br>
+{attr:attribute,attribute,string}
+<br>
+{attr:attribute,...,attribute,string}
+<br>
+</a></h4>
+    This will surround the given string with the neccesary ANSI escape codes
+to cause the text to display with the given attributes.  You may specify up
+to eight attributes, though this shouldn't ever be neccesary.  The supported
+attributes are: null, reset, bold, dim, flash, underline, reverse, black,
+red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, 
+bg_green, bg_cyan, bg_blue, bg_magenta, and bg_white.
+<p>
+    Not all clients will display all these attributes, and those that do 
+won't always show them the same way.  Players who do not have their Color 
+flag set will not see the ANSI codes or colors at all.  Nesting {attr}
+commands probably just won't work.
+<p>
 
 
 
-<hr><h3 align=center>Math Functions</h3>
+<p><hr size=6>
+<h3 align=center><a name="MathFuncs">Math Functions</a></h3>
+<table width="100%" align=center border=0>
+  <tr>
+    <td width="16%"><a href="#abs">abs</a>
+    <td width="16%"><a href="#add">add</a>
+    <td width="16%"><a href="#dec">dec</a>
+    <td width="16%"><a href="#dice">dice</a>
+    <td width="16%"><a href="#dist">dist</a>
+    <td width="16%"><a href="#div">div</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#inc">inc</a>
+    <td width="16%"><a href="#max">max</a>
+    <td width="16%"><a href="#min">min</a>
+    <td width="16%"><a href="#mod">mod</a>
+    <td width="16%"><a href="#mult">mult</a>
+    <td width="16%"><a href="#sign">sign</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#subt">subt</a>
+  </tr>
+</table>
+
 
 
 All math functions deal with integer numbers.
 
-<br><p><h4><a name="inc">{inc:var}
+<hr><h4><a name="inc">{inc:var}
 <br>
 {inc:var,val}
 <br>
@@ -1233,10 +1246,10 @@ All math functions deal with integer numbers.
     Increments the value of the given variable by one, returning the result.
 If a value argument is given, then it will add that value to the variable,
 instead of the value 1.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="dec">{dec:var}
+<hr><h4><a name="dec">{dec:var}
 <br>
 {dec:var,val}
 <br>
@@ -1244,20 +1257,20 @@ instead of the value 1.
     Decrements the value of the given variable by one, returning the result.
 If a value argument is given, then it will subtract that from the variable,
 instead of the value 1.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="add">{add:expr1,expr2}
+<hr><h4><a name="add">{add:expr1,expr2}
 <br>
 {add:expr1,expr2,expr3...}
 <br>
 </a></h4>
     Returns the sum of the values of expr1 and expr2.  If more than two args
 are given, then this will add all the args together and return the result.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="subt">{subt:expr1,expr2}
+<hr><h4><a name="subt">{subt:expr1,expr2}
 <br>
 {subt:expr1,expr2,expr3...}
 <br>
@@ -1266,20 +1279,20 @@ are given, then this will add all the args together and return the result.
 args are given, all values are subtracted from the first value in sequence.
 For example: {subt:10,3,2,4} would be read as 10 - 3 - 2 - 4, and it would
 return a result of 1.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="mult">{mult:expr1,expr2}
+<hr><h4><a name="mult">{mult:expr1,expr2}
 <br>
 {mult:expr1,expr2,expr3...}
 <br>
 </a></h4>
     Returns the product of the values expr1 and expr2.  If more than two args
 are given, then they are all multiplied together to get the result.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="div">{div:expr1,expr2}
+<hr><h4><a name="div">{div:expr1,expr2}
 <br>
 {div:expr1,expr2,expr3...}
 <br>
@@ -1289,10 +1302,10 @@ return zero.  If more than two arguments are given, then the first argument
 is divided by the second, and the result is divided by the third, etc, for
 all of the arguments.  For example:  {div:180,6,3,5} would be read like
 180 / 6 / 3 / 5, and a result of 2 would be returned.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="mod">{mod:expr1,expr2}
+<hr><h4><a name="mod">{mod:expr1,expr2}
 <br>
 </a></h4>
     Returns the leftover remainder of expr1 divided by expr2.  If more than
@@ -1300,10 +1313,10 @@ two arguments are given, then the first arguments is modded by the second,
 then the result of that would be modded by the third, and so on and so forth.
 For example: {mod:91,20,3} would be read as 91 % 20 % 3, and a result of 2
 would be returned.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="dice">{dice:X}
+<hr><h4><a name="dice">{dice:X}
 <br>
 {dice:X,Y}
 <br>
@@ -1314,39 +1327,39 @@ would be returned.
 Given two parameters, it randomly generates Y numbers between 1 and X,
 and adds them together. (YdX) A third parameter, if given, is just added
 to this sum as a modifier. (YdX+Z)
-<br><p>
+<p>
 
 
-<br><p><h4><a name="min">{min:expr1,expr2}
+<hr><h4><a name="min">{min:expr1,expr2}
 <br>
 </a></h4>
     Returns the lesser of the values of expr1 and expr2.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="max">{max:expr1,expr2}
+<hr><h4><a name="max">{max:expr1,expr2}
 <br>
 </a></h4>
     Returns the greater of the values of expr1 and expr2.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="abs">{abs:expr}
+<hr><h4><a name="abs">{abs:expr}
 <br>
 </a></h4>
     Returns the absolute value of expr.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="sign">{sign:expr}
+<hr><h4><a name="sign">{sign:expr}
 <br>
 </a></h4>
     Returns -1 if expr is negative.  Returns 1 if expr is positive.
 If expr is 0, then it returns 0.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="dist">{dist:x,y}              Returns distance from 0,0 that x,y is.
+<hr><h4><a name="dist">{dist:x,y}              Returns distance from 0,0 that x,y is.
 <br>
 {dist:x,y,z}            Returns distance from 0,0,0 that x,y,z is.
 <br>
@@ -1360,7 +1373,7 @@ the origin.  Given three arguments, this calculates the distance of a 3D
 point from the origin.  Given four arguments, this calculates the distance
 between a pair of 2D points.  Given six arguments, this calculates the
 distance between a pair of 3D points.
-<br><p>
+<p>
 
 
 
@@ -1369,10 +1382,22 @@ distance between a pair of 3D points.
 
 
 
-<hr><h3 align=center>Looping Functions</h3>
+<p><hr size=6>
+<h3 align=center><a name="Looping">Looping Functions</a></h3>
+<table width="100%" align=center border=0>
+  <tr>
+    <td width="16%"><a href="#filter">filter</a>
+    <td width="16%"><a href="#fold">fold</a>
+    <td width="16%"><a href="#for">for</a>
+    <td width="16%"><a href="#foreach">foreach</a>
+    <td width="16%"><a href="#parse">parse</a>
+    <td width="16%"><a href="#while">while</a>
+  </tr>
+</table>
 
 
-<br><p><h4><a name="for">{for:varname,start,end,increment,command}
+
+<hr><h4><a name="for">{for:varname,start,end,increment,command}
 <br>
 </a></h4>
     Acts as a counting loop, like BASIC's for loops.  The varname is the name
@@ -1386,20 +1411,20 @@ For example:
     {null:{for:i,10,1,-1,{tell:{&i}}}}
 </pre>
 will echo a countdown from ten to one, inclusive, to the user.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="while">{while:check,expr}
+<hr><h4><a name="while">{while:check,expr}
 <br>
 </a></h4>
     This is a looping structure.  It evaluates the 'check' argument, and
 if it evaluates true, then it evaluates the expr argument, and repeats
 the process.  If 'check' evaluates false, then the loop is exited.
 This returns the result of the last evaluation of expr.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="foreach">{foreach:var,list,expr}
+<hr><h4><a name="foreach">{foreach:var,list,expr}
 <br>
 {foreach:var,list,expr,sep}
 <br>
@@ -1413,12 +1438,14 @@ the usual carriage return character.  sep can be multiple characters
 long.  This structure returns the result of the last evaluation of expr.
 Example:
 <pre>
-    {foreach:thing,{contents:here},{store:1,_seen}}
+    {foreach:thing,{contents:here},{tell:{name:{&thing}}}}
 </pre>
-<br><p>
+This will display the name of every object in the room, then it will return
+the name of the last object it displayed.
+<p>
 
 
-<br><p><h4><a name="filter">{filter:var,list,expr}
+<hr><h4><a name="filter">{filter:var,list,expr}
 <br>
 {filter:var,list,exp,sep}
 <br>
@@ -1435,10 +1462,10 @@ as the item seperator in the input list, instead of the usual carriage
 return character.  If s2 is defined, then it will use that string to
 seperate the items in the list it returns, instead of the normal carriage
 return.  sep and s2 can be multiple characters long.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="parse">{parse:var,list,expr}
+<hr><h4><a name="parse">{parse:var,list,expr}
 <br>
 {parse:var,list,expr,sep}
 <br>
@@ -1456,10 +1483,10 @@ as the item seperator in the input list, instead of the usual carriage
 return character.  If s2 is defined, then it will use that string to
 seperate the items in the list it returns, instead of the normal carriage
 return.  sep and s2 can be multiple characters long.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="fold">{fold:var1,var2,list,expr}
+<hr><h4><a name="fold">{fold:var1,var2,list,expr}
 <br>
 {fold:var1,var2,lst,expr,sep}
 <br>
@@ -1470,97 +1497,133 @@ list item is put in var2.  Expr keeps being evaluated in this way until there
 are no more list items left.  This returns the last value returned by expr.
 If a sep argument is given, the input list is assumed to have its individual
 items delimited by that string, otherwise it assumes a carriage return.
-<br><p>
+<p>
 
 
 
-<hr><h3 align=center>Database Related Functions</h3>
+<p><hr size=6>
+<h3 align=center><a name="DBFuncs">Database Related Functions</a></h3>
+<table width="100%" align=center border=0>
+  <tr>
+    <td width="16%"><a href="#contains">contains</a>
+    <td width="16%"><a href="#contents">contents</a>
+    <td width="16%"><a href="#controls">controls</a>
+    <td width="16%"><a href="#created">created</a>
+    <td width="16%"><a href="#dbeq">dbeq</a>
+    <td width="16%"><a href="#exits">exits</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#flags">flags</a>
+    <td width="16%"><a href="#force">force</a>
+    <td width="16%"><a href="#fullname">fullname</a>
+    <td width="16%"><a href="#holds">holds</a>
+    <td width="16%"><a href="#istype">istype</a>
+    <td width="16%"><a href="#lastused">lastused</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#links">links</a>
+    <td width="16%"><a href="#loc">loc</a>
+    <td width="16%"><a href="#locked">locked</a>
+    <td width="16%"><a href="#modified">modified</a>
+    <td width="16%"><a href="#money">money</a>
+    <td width="16%"><a href="#name">name</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#nearby">nearby</a>
+    <td width="16%"><a href="#owner">owner</a>
+    <td width="16%"><a href="#ref">ref</a>
+    <td width="16%"><a href="#testlock">testlock</a>
+    <td width="16%"><a href="#type">type</a>
+    <td width="16%"><a href="#usecount">usecount</a>
+  </tr>
+</table>
 
 
-<br><p><h4><a name="ref">{ref:obj}
+
+<hr><h4><a name="ref">{ref:obj}
 <br>
 </a></h4>
     Returns the dbref of the given object in the form #xxxx.  The object
 must be in the vicinity, or controlled by the owner of the trigger object.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="name">{name:obj}
+<hr><h4><a name="name">{name:obj}
 <br>
 </a></h4>
     Returns the name of the given object.  If the object is an exit, the
 name returned is the first exit name it has before the first ';'.  The object
 must be in the vicinity, or controlled by the owner of the trigger object.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="fullname">{fullname:obj}
+<hr><h4><a name="fullname">{fullname:obj}
 <br>
 </a></h4>
     Returns the name of the given object.  In the case where the object
 is an exit, then the full name of the exit is given, including all the ;
 aliases.  The object must be in the immediate vicinity, or be controlled
 by the owner of the trigger object.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="owner">{owner:obj}
+<hr><h4><a name="owner">{owner:obj}
 <br>
 </a></h4>
     Returns the owner of the given object.  The object must be in the
 vicinity, or be controlled by the trigger object's owner.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="loc">{loc:obj}
+<hr><h4><a name="loc">{loc:obj}
 <br>
 </a></h4>
     Returns the location of the given object.  The object must either be in
 the vicinity, or it must be controlled by the owner of the trigger object.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="flags">{flags:obj}
+<hr><h4><a name="flags">{flags:obj}
 <br>
 </a></h4>
     Returns a flaglist string from obj. ie: PM2J.  The object must either
 be in the vicinity, or it must be controlled by the owner of the trigger
 object.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="created">{created:obj}
+<hr><h4><a name="created">{created:obj}
 <br>
 </a></h4>
     Returns the time and date that obj was created.  The number returned is
 suitable for use with {convsecs}.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="modified">{modified:obj}
+<hr><h4><a name="modified">{modified:obj}
 <br>
 </a></h4>
     Returns the time and date that obj was last modified.  The number returned
 is suitable for use with {convsecs}.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="lastused">{lastused:obj}
+<hr><h4><a name="lastused">{lastused:obj}
 <br>
 </a></h4>
     Returns the time and date that obj was last used.  The number returned is
 suitable for use with {convsecs}.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="usecount">{usecount:obj}
+<hr><h4><a name="usecount">{usecount:obj}
 <br>
 </a></h4>
     Returns the usage count that obj has incurred since it was created.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="controls">{controls:obj}
+<hr><h4><a name="controls">{controls:obj}
 <br>
 {controls:obj,player}
 <br>
@@ -1569,10 +1632,10 @@ suitable for use with {convsecs}.
 object's owner controls the given object.  If two arguments are given, then
 it returns true if the given player controls the given object.  Otherwise,
 this returns false.  ("0")  Wizards control everything.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="nearby">{nearby:obj}
+<hr><h4><a name="nearby">{nearby:obj}
 <br>
 {nearby:obj,obj2}
 <br>
@@ -1583,34 +1646,34 @@ it returns true if the two objects are nearby one another.  Otherwise,
 this returns false. ("0")  Nearby is defined as: 1) The two objects are
 in the same location, or 2) One object contains the other, or 3) the two
 objects are in fact the same object.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="money">{money:obj}
+<hr><h4><a name="money">{money:obj}
 <br>
 </a></h4>
     This returns the value of an object of TYPE_THING, or returns how many
 pennies a player has.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="type">{type:obj}
+<hr><h4><a name="type">{type:obj}
 <br>
 </a></h4>
     Returns the type of an object.  The possible values are:  Bad, Room,
 Exit, Thing, Player, and Program.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="istype">{istype:obj,typ}
+<hr><h4><a name="istype">{istype:obj,typ}
 <br>
 </a></h4>
     Returns true if the given object if of the given type.  Valid types are:
 Bad, Room, Exit, Thing, Player, and Program.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="contents">{contents:obj}
+<hr><h4><a name="contents">{contents:obj}
 <br>
 {contents:obj,type}
 <br>
@@ -1628,29 +1691,29 @@ object type you want.  ie:
     {mklist:{contents:here,player},{contents:here,thing}}    or
     {contents:here,player}{nl}{contents:here,thing}
 </pre>
-<br><p>
+<p>
 
 
-<br><p><h4><a name="exits">{exits:obj}
+<hr><h4><a name="exits">{exits:obj}
 <br>
 </a></h4>
     Returns a list of all the exits on the given object.  The owner of
 the trigger object has to control obj, or else this errors out with
 Permission Denied.  Programs and exits never have exits attached to them.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="links">{links:obj}
+<hr><h4><a name="links">{links:obj}
 <br>
 </a></h4>
     Returns the object reference of what the given object if linked to.
 Since exits can be meta-links, linked to multiple exits, if there is more
 than one link, then this function returns a list of all the destinations,
 seperated by carriage return characters.  (\r)
-<br><p>
+<p>
 
 
-<br><p><h4><a name="force">{force:object,command}
+<hr><h4><a name="force">{force:object,command}
 <br>
 </a></h4>
     Forces the given player or thing to do the given command.  The thing
@@ -1659,26 +1722,26 @@ owner, and it must be set XFORCIBLE, or else this function will get a
 Permission Denied error.  This function returns a null string.  {Force}
 cannot force a thing-object to do something, if it is set Dark, is in a
 room set Zombie, or is owned by a player set Zombie.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="dbeq">{dbeq:obj1,obj2}
+<hr><h4><a name="dbeq">{dbeq:obj1,obj2}
 <br>
 </a></h4>
     Returns true if obj1 and obj2 refer to the same object.  This does
 name matching, so {dbeq:*Wizard,#1} will return true if #1 is named Wizard.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="locked">{locked:player,obj}
+<hr><h4><a name="locked">{locked:player,obj}
 <br>
 </a></h4>
     Tests the _/lok (@lock) standard lock property on obj against the given
 player.  Returns true if the lock is locked against the player.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="testlock">{testlock:obj,prop}
+<hr><h4><a name="testlock">{testlock:obj,prop}
 <br>
 {testlock:obj,prop,who}
 <br>
@@ -1690,20 +1753,20 @@ If no 'who' argument is given, then it checks the lock against the using
 player.  If a def argument is given, then the lock will default to that
 value, if there is no lock property of the given name on the given object.
 Returns true if the lock is locked against the player.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="holds">{holds:obj1}
+<hr><h4><a name="holds">{holds:obj1}
 <br>
 {holds:obj1,obj2}
 <br>
 </a></h4>
     Returns true if the location of obj1 is obj2.  If no obj2 argument is
 given, then this will return true if the location of obj1 is the player.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="contains">{contains:obj1}
+<hr><h4><a name="contains">{contains:obj1}
 <br>
 {contains:obj1,obj2}
 <br>
@@ -1712,80 +1775,102 @@ given, then this will return true if the location of obj1 is the player.
 within anything they contain.  If obj2 is not given, then it checks to see
 is obj1 is held by the player, or by anything they hold, etc.  Basically,
 this just sees if obj1 is within the locational environment of obj2.
-<br><p>
+<p>
 
 
 
-<hr><h3 align=center>Connection Related Functions</h3>
+<p><hr size=6>
+<h3 align=center><a name="ConnFuncs">Connection Related Functions</a></h3>
+<table width="100%" align=center border=0>
+  <tr>
+    <td width="16%"><a href="#awake">awake</a>
+    <td width="16%"><a href="#idle">idle</a>
+    <td width="16%"><a href="#online">online</a>
+    <td width="16%"><a href="#ontime">ontime</a>
+  </tr>
+</table>
 
 
-<br><p><h4><a name="online">{online}
+
+<hr><h4><a name="online">{online}
 <br>
 </a></h4>
     Returns a list of players who are online.  This function can only be
-executed by wizbitted objects.
-<br><p>
+executed with blessed permissions.
+<p>
 
 
-<br><p><h4><a name="awake">{awake:player}
+<hr><h4><a name="awake">{awake:player}
 <br>
 </a></h4>
     Returns how many times player is connected.  This means that it will
 returns 0 if the player is not connected.  If the given object is NOT a
 player, it will return 0.  In all other cases, it will return a positive
 number, being how many times the given player is connected to the server.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="ontime">{ontime:player}
+<hr><h4><a name="ontime">{ontime:player}
 <br>
 </a></h4>
     Returns player online time in seconds.  If the given player is not
 connected, or is not a player object at all, then this will return -1.
 This returns the online time for the most recently connected connection,
 if there are multiple connects.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="idle">{idle:player}
+<hr><h4><a name="idle">{idle:player}
 <br>
 </a></h4>
     Returns player idle time in seconds.  If the given player is not
 connected, or is not a player object at all, then this will return -1.
 This returns the idle time for the most recently connected connection,
 if there are multiple connects.
-<br><p>
+<p>
 
 
 
-<hr><h3 align=center>Variable Handling Functions</h3>
+<p><hr size=6>
+<h3 align=center><a name="VarFuncs">Variable Handling Functions</a></h3>
+<table width="100%" align=center border=0>
+  <tr>
+    <td width="16%"><a href="#&arg">&arg</a>
+    <td width="16%"><a href="#&cmd">&cmd</a>
+    <td width="16%"><a href="#&how">&how</a>
+    <td width="16%"><a href="#set">set</a>
+    <td width="16%"><a href="#v">v</a>
+    <td width="16%"><a href="#with">with</a>
+  </tr>
+</table>
 
 
-<br><p><h4><a name="v">{v:var}
+
+<hr><h4><a name="v">{&VAR}
 <br>
-{&var}
+{v:VAR}
 <br>
 </a></h4>
     These are two ways of trying to do the same thing.  They return the
-value of the named variable var.  If there is no variable with the given
+value of the named variable VAR.  If there is no variable with the given
 name currently defined, then this gives an error stating as much.  Variables
 can be defined either with the {with:} function or within a looping command.
-<br><p>
+<p>
 
 
 There are three standard variables that every MPI program can read:
 
-<br><p><h4><a name="how">{&how}  
+<hr><h4><a name="&how">{&how}  
 <br>
 </a></h4>
     The {&how} variable is a short string telling what ran the MPI command.
 It can have the values "(@desc)", "(@succ)", "(@osucc)", etc. for when it
 is run from an @desc, an @succ, an @osucc, or whatever.  It can also have
 the value "(@lock)" for when it is run from a lock test.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="cmd">{&cmd}
+<hr><h4><a name="&cmd">{&cmd}
 <br>
 </a></h4>
     The {&cmd} variable contains the command name the user used, that
@@ -1793,10 +1878,10 @@ caused the MPI to run.  This is generally the exit name that the player
 triggered.  For example, if the player typed 'east', and triggered the exit
 named 'east;e;out', which ran some MPI commands, the {&cmd} variable would
 have a value of "east".
-<br><p>
+<p>
 
 
-<br><p><h4><a name="arg">{&arg}
+<hr><h4><a name="&arg">{&arg}
 <br>
 </a></h4>
     The {&arg} variable contains a string with the value of the command
@@ -1805,21 +1890,21 @@ MPI in the fail of an exit, and when the user triggers the exit, and has
 some extra text on the line they entered, other than the exitname, the
 MPI can take that extra stuff as arguments for use.  Note that you need
 to set an action HAVEN to get it to accept command line arguments.
-<br><p>
+<p>
 
 
 Other MPI functions used to work with variables are:
 
-<br><p><h4><a name="set">{set:var,value}
+<hr><h4><a name="set">{set:var,value}
 <br>
 </a></h4>
     This sets the value of the given named variable to the given value.
 If no variable with that given name is currently defined, then this gives
 an error message complaining about that.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="with">{with:var,val,expr..}
+<hr><h4><a name="with">{with:var,val,expr..}
 <br>
 </a></h4>
     This defines a new variable with the given name, and sets it's value
@@ -1834,6 +1919,7 @@ more than 32 variables defined at any one time, total.  This includes
 variables that are defined within macros, or properties or lists that are
 executed with {exec:} or {lexec:}.   Here's an example to illustrate the
 scope of variables inside of {with:} commands:
+
 <pre>
     {prop:_mydesc}                           <- {&people} not defined.
     {with:people,{contents:here,players},    <- Defining.  Not available yet.
@@ -1846,14 +1932,33 @@ scope of variables inside of {with:} commands:
         }
     }                                        <- {&people} no longer defined.
 </pre>
-<br><p>
+<p>
 
 
 
-<hr><h3 align=center>List Handling Functions</h3>
+<p><hr size=6>
+<h3 align=center><a name="ListFuncs">List Handling Functions</a></h3>
+<table width="100%" align=center border=0>
+  <tr>
+    <td width="16%"><a href="#commas">commas</a>
+    <td width="16%"><a href="#count">count</a>
+    <td width="16%"><a href="#lcommon">lcommon</a>
+    <td width="16%"><a href="#lmember">lmember</a>
+    <td width="16%"><a href="#lrand">lrand</a>
+    <td width="16%"><a href="#lremove">lremove</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#lsort">lsort</a>
+    <td width="16%"><a href="#lunion">lunion</a>
+    <td width="16%"><a href="#lunique">lunique</a>
+    <td width="16%"><a href="#mklist">mklist</a>
+    <td width="16%"><a href="#sublist">sublist</a>
+  </tr>
+</table>
 
 
-<br><p><h4><a name="count">{count:list}
+
+<hr><h4><a name="count">{count:list}
 <br>
 {count:list,sep}
 <br>
@@ -1862,21 +1967,27 @@ scope of variables inside of {with:} commands:
 This is effectively a list item count.  If the sep argument if given, then
 it counts the number of sep delimited substrings in list.  ie: The default
 sep is \r. (A carriage return.)
-<br><p>
+<p>
 
 
-<br><p><h4><a name="mklist">{mklist:value...}       Returns a list with all given values.
+<hr><h4><a name="mklist">{mklist:value...}       Returns a list with all given values.
 <br>
 </a></h4>
     This returns a list with all the given values as list items, seperated
-by carriage returns.  ('\r's) Example:  {mklist:Tom,Dick,Harry} returns
-"Tom\rDick\rHarry".  Note:  A maximum of nine items can be passed to the
-{mklist} function.  If you need more, you can chain {mklist}s together.
-Example:  {mklist:{mklist:a,b,c,d,e,f,g,h,i},j,k,l,m,n,o,p}
-<br><p>
+by carriage returns.  ('\r's) Example:
+<pre>
+    {mklist:Tom,Dick,Harry}
+</pre>
+returns "Tom\rDick\rHarry".  Note:  A maximum of nine items can be passed to
+the {mklist} function.  If you need more, you can chain {mklist}s together.
+Example:
+<pre>
+    {mklist:{mklist:a,b,c,d,e,f,g,h,i},j,k,l,m,n,o,p}
+</pre>
+<p>
 
 
-<br><p><h4><a name="sublist">{sublist:list,pos1}
+<hr><h4><a name="sublist">{sublist:list,pos1}
 <br>
 {sublist:list,pos1,pos2}
 <br>
@@ -1892,10 +2003,10 @@ it counts that many list items back from the end of the list, so -1 is the
 last list item, and -5 would be the fifth from last list item.  The input
 list is assumed to be delimited by carriage returns (\r) unless the sep
 argument is given.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="lrand">{lrand:list}
+<hr><h4><a name="lrand">{lrand:list}
 <br>
 {lrand:list,seperator}
 <br>
@@ -1903,40 +2014,40 @@ argument is given.
     Returns a randomly picked stringlist item from the given list.  If the
 seperator argument is given, then it will assume that the stringlist has it's
 items delimited by the given seperator string, instead of by carriage returns.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="lunique">{lunique:list}
+<hr><h4><a name="lunique">{lunique:list}
 <br>
 </a></h4>
     Returns list with all duplicate items removed.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="lunion">{lunion:list1,list2}
+<hr><h4><a name="lunion">{lunion:list1,list2}
 <br>
 </a></h4>
     Combines the contents of list1 and list2, removing any duplicates.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="lcommon">{lcommon:list1,list2}
+<hr><h4><a name="lcommon">{lcommon:list1,list2}
 <br>
 </a></h4>
     Creates a list containing every item that appears in BOTH list1 and
 list2.  Any duplicate items in the resulting list are removed.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="lremove">{lremove:list1,list2}
+<hr><h4><a name="lremove">{lremove:list1,list2}
 <br>
 </a></h4>
     Returns the contents of list1, with any items that match an item in
 list2 removed.  The resulting list has all duplicate items removed.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="lmember">{lmember:list,item}
+<hr><h4><a name="lmember">{lmember:list,item}
 <br>
 {lmember:list,item,delimiter}
 <br>
@@ -1946,11 +2057,15 @@ returns the item's position in the list.  The first list item in the list
 would return 1, and the third would return 3, for example.  If the delimiter
 argument is given, then it treats the list as if it were delimited by that
 string, instead of by carriage returns. (\r's)
-Example:  {lmember:{mklist:a,b,c,d,e,f},d} would return 4.
-<br><p>
+Example:
+<pre>
+    {lmember:{mklist:a,b,c,d,e,f},d}
+</pre>
+would return 4.
+<p>
 
 
-<br><p><h4><a name="lsort">{lsort:list}
+<hr><h4><a name="lsort">{lsort:list}
 <br>
 {lsort:list,var1,var2,expr}
 <br>
@@ -1961,11 +2076,13 @@ returns true, then it will swap the positions of the two values in the
 list.  It runs this comparison on every pair of items in the list, so it
 will be evaluated N*N times, where N is the number of items in the list.
 This method can also be used to randomize a list.  Example:
-{lsort:{&list},v1,v2,{gt:{dice:100},50}}
-<br><p>
+<pre>
+    {lsort:{&list},v1,v2,{gt:{dice:100},50}}
+</pre>
+<p>
 
 
-<br><p><h4><a name="commas">{commas:list}
+<hr><h4><a name="commas">{commas:list}
 <br>
 {commas:list,lastsep}
 <br>
@@ -1977,7 +2094,10 @@ the items in it.  For example, {commas:{mklist:Tom,Dick,Harry}} will return
 "Tom, Dick and Harry".  If you specify the lastsep argument, you can replace
 the "and" with something else, such as "or" to get a result like "a, b or c".
 Note:  You need to be careful to include spaces around the "or" or else you
-might get a result like "a, borc".  Example:  {commas:{mklist:a,b,c}, or }
+might get a result like "a, borc".  Example:
+<pre>
+    {commas:{mklist:a,b,c}, or }
+</pre>
 If the var and expr arguments are passed, then for every item in the list,
 it will set the value of the given variable name (which it will declare)
 to the item, then evaluate expr, and use the result in the string it outputs.
@@ -1988,60 +2108,80 @@ Example:
 will return the name of every object in the room in a comma separated list,
 using ", or " as the final conjunction.  ie:  "Tom, Can of SPAM, Dick, or
 Harry."
-<br><p>
+<p>
 
 
-<hr><h3 align=center>Miscellaneous Functions</h3>
+<p><hr size=6>
+<h3 align=center><a name="MiscFuncs">Miscellaneous Functions</a></h3>
+<table width="100%" align=center border=0>
+  <tr>
+    <td width="16%"><a href="#debug">debug</a>
+    <td width="16%"><a href="#debugif">debugif</a>
+    <td width="16%"><a href="#isdbref">isdbref</a>
+    <td width="16%"><a href="#isnum">isnum</a>
+    <td width="16%"><a href="#muckname">muckname</a>
+    <td width="16%"><a href="#muf">muf</a>
+  </tr>
+  <tr>
+    <td width="16%"><a href="#version">version</a>
+  </tr>
+</table>
 
 
-<br><p><h4><a name="isnum">{isnum:number}
+
+<hr><h4><a name="isnum">{isnum:number}
 <br>
 </a></h4>
     Returns true if the string passed to it is a valid number.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="isdbref">{isdbref:dbref}
+<hr><h4><a name="isdbref">{isdbref:dbref}
 <br>
 </a></h4>
     Returns true if the string passed to it is a valid dbref.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="version">{version}
+<hr><h4><a name="version">{version}
 <br>
 </a></h4>
     Returns the version string for the server.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="muckname">{muckname}
+<hr><h4><a name="muckname">{muckname}
 <br>
 </a></h4>
-    Returns the muck name string.  Example: FurryMUCK
-<br><p>
+    Returns the muck name string.  For example, it might return: "FurryMUCK"
+<p>
 
 
-<br><p><h4><a name="muf">{muf:prog,arg}
+<hr><h4><a name="muf">{muf:prog,arg}
 <br>
 </a></h4>
     Runs the given MUF prog with the string arg on the stack.  This returns
 the top stack value when the prog exits.  If the MPI code was run from a
 propqueue like _listen, or _connect, then {muf} cannot run a MUF program
 with a mucker level of less than 3 
-<br><p>
+<p>
 
 
-<br><p><h4><a name="debug">{debug:expr}
+<hr><h4><a name="debug">{debug:expr}
 <br>
 </a></h4>
     This will show MPI debugging information for all the commands within the
 given expression.  This is useful for seeing why something isn't working.
 This returns the result of the evaluation of expr.
-<br><p>
+
+<p><h5>Also see:
+    <a href="#debugif">debugif</a> and
+    <a href="#if">if</a>
+</h5>
+<p>
 
 
-<br><p><h4><a name="debugif">{debugif:cond,expr}
+<hr><h4><a name="debugif">{debugif:cond,expr}
 <br>
 </a></h4>
     This will evaluate the conditional cond, and, if the result is true,
@@ -2057,14 +2197,22 @@ Example:
 </pre>
 to only debug the running of the command {dostuff} when the argument will
 be the player who is running the MPI.
-<br><p>
+<p>
 
 
 
-<hr><h3 align=center>Macros and Functions</h3>
+<p><hr size=6>
+<h3 align=center><a name="Functions">Macros and Functions</a></h3>
+<table width="100%" align=center border=0>
+  <tr>
+    <td width="16%"><a href="#func">func</a>
+    <td width="16%"><a href="#macros">macros</a>
+  </tr>
+</table>
 
 
-<br><p><h4><a name="macros">Macros:
+
+<hr><h4><a name="macros">Macros:
 <br>
 </a></h4>
     If the MPI interpreter comes across a function name that it does not
@@ -2086,10 +2234,10 @@ Then the macro would expand out to:
     {add:{div:160,10},{dice:22}}
 </pre>
 After the macro argment substitution is complete, it is then evaluated.
-<br><p>
+<p>
 
 
-<br><p><h4><a name="func">{func:name,vars...,def}
+<hr><h4><a name="func">{func:name,vars...,def}
 <br>
 </a></h4>
     This effectively defines a function in MPI, with the given name, that
@@ -2127,17 +2275,17 @@ arguments:
   
 <pre>
     {func:names,list,numsp,flagsp,
-	{parse:v,{&list},
-	    {name:{&v}}
-	    {if:{or:{&numsp},{&flagsp}},
-		{lit:(}
-		{if:{&numsp},{ref:{&v}}}
-		{if:{&flagsp},{flags:{&v}}}
-		{lit:)}
-	    }
-	}
+        {parse:v,{&list},
+            {name:{&v}}
+            {if:{or:{&numsp},{&flagsp}},
+                {lit:(}
+                {if:{&numsp},{ref:{&v}}}
+                {if:{&flagsp},{flags:{&v}}}
+                {lit:)}
+            }
+        }
     }
     {names:{contents:here},1,1}
 </pre>
-</pre></body></html>
+</body></html>
 

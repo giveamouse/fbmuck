@@ -253,7 +253,7 @@ this just sees if obj1 is within the locational environment of obj2.
 
 {online}
     Returns a list of players who are online.  This function can only be
-executed by wizbitted objects.
+executed with blessed permissions.
 
 
 {awake:player}
@@ -551,15 +551,15 @@ number of args you can pass to the function is seven.  Example of multiple
 arguments:
   
     {func:names,list,numsp,flagsp,
-	{parse:v,{&list},
-	    {name:{&v}}
-	    {if:{or:{&numsp},{&flagsp}},
-		{lit:(}
-		{if:{&numsp},{ref:{&v}}}
-		{if:{&flagsp},{flags:{&v}}}
-		{lit:)}
-	    }
-	}
+        {parse:v,{&list},
+            {name:{&v}}
+            {if:{or:{&numsp},{&flagsp}},
+                {lit:(}
+                {if:{&numsp},{ref:{&v}}}
+                {if:{&flagsp},{flags:{&v}}}
+                {lit:)}
+            }
+        }
     }
     {names:{contents:here},1,1}
 
