@@ -226,6 +226,7 @@ int tp_playermax                = PLAYERMAX;
 int tp_allow_home               = ALLOW_HOME;
 int tp_enable_prefix            = ENABLE_PREFIX;
 int tp_thing_movement           = SECURE_THING_MOVEMENT;
+int tp_expanded_debug           = EXPANDED_DEBUG_TRACE;
 
 struct tune_bool_entry {
     const char *name;
@@ -271,6 +272,7 @@ struct tune_bool_entry tune_bool_list[] =
     {"enable_home",             &tp_allow_home,                 4},
     {"enable_prefix",           &tp_enable_prefix,              4},
     {"secure_thing_movement",   &tp_thing_movement,             4},
+    {"expanded_debug_trace",   &tp_expanded_debug,             0},
 
     {NULL, NULL, 0}
 };

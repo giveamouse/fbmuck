@@ -1,7 +1,10 @@
 2.2fb6.00a30
 Added MAX_VARIABLE_COUNT $define to let MUF programs know what the highest
   variable number can be for Vars, Local Vars, and Scoped Vars.
+Added an EXPANDED_DEBUG_TRACE @tune option to allow display of expanded
+  array contents in MUF debug trace output.
 Fixed crasher bug with MCP-GUI and players logging out and back in.
+Fixed a nasty bug where ARRAY_GETITEM was retrieving CLEARed values.
 
 
 

@@ -69,42 +69,47 @@ insttotext(struct inst* theinst, char* buffer, int buflen, int strmax, dbref pro
                 strcpy(buffer, "1:0{}");
                 break;
             }
+			if (tp_expanded_debug) {
 #ifdef DEBUGARRAYS
-            sprintf(buffer, "%d:%d{",
-			        theinst->data.array->links,
-					theinst->data.array->items);
-			length = buflen - 10;
-			firstflag = 1;
-			if (array_first(theinst->data.array, &temp1)) {
-				do {
-					char* inststr;
-					if (!firstflag) {
-						strcat(buffer, " ");
-						length--;
-					}
-					firstflag = 0;
-					oper2 = array_getitem(theinst->data.array, &temp1);
-
-					inststr = insttotext(&temp1, buf2, length, strmax, program);
-					strcat(buffer, inststr);
-					strcat(buffer, ":");
-					length -= strlen(inststr) + 1;
-
-					inststr = insttotext(oper2, buf2, length, strmax, program);
-					strcat(buffer, inststr);
-					length -= strlen(inststr);
-
-					if (length < 1) {
-						strcat(buffer, "_");
-						length--;
-						break;
-					}
-				} while (array_next(theinst->data.array, &temp1));
-			}
-			strcat(buffer, "}");
+				sprintf(buffer, "R%dC%d{",
+						theinst->data.array->links,
+						theinst->data.array->items);
 #else
-            sprintf(buffer, "{%d item array}", theinst->data.array->items);
+				sprintf(buffer, "%d{",
+						theinst->data.array->items);
 #endif
+				length = buflen - 10;
+				firstflag = 1;
+				if (array_first(theinst->data.array, &temp1)) {
+					do {
+						char* inststr;
+						if (!firstflag) {
+							strcat(buffer, " ");
+							length--;
+						}
+						firstflag = 0;
+						oper2 = array_getitem(theinst->data.array, &temp1);
+
+						inststr = insttotext(&temp1, buf2, length, strmax, program);
+						strcat(buffer, inststr);
+						strcat(buffer, ":");
+						length -= strlen(inststr) + 1;
+
+						inststr = insttotext(oper2, buf2, length, strmax, program);
+						strcat(buffer, inststr);
+						length -= strlen(inststr);
+
+						if (length < 1) {
+							strcat(buffer, "_");
+							length--;
+							break;
+						}
+					} while (array_next(theinst->data.array, &temp1));
+				}
+				strcat(buffer, "}");
+			} else {
+				sprintf(buffer, "{%d item array}", theinst->data.array->items);
+			}
             break;
         case PROG_INTEGER:
             sprintf(buffer, "%d", theinst->data.number);

@@ -311,6 +311,7 @@ void
 prim_array_getitem(PRIM_PROTOTYPE)
 {
     struct inst *in;
+	struct inst temp;
 
     CHECKOP(2);
     oper1 = POP();  /* ???  index */
@@ -321,15 +322,20 @@ prim_array_getitem(PRIM_PROTOTYPE)
         abort_interp("Argument not an array. (1)");
     in = array_getitem(oper2->data.array, oper1);
 
+	/* copy data to a temp inst before clearing the containing array */
+	if (in) {
+		copyinst(in, &temp);
+	} else {
+		temp.type = PROG_INTEGER;
+		temp.data.number = 0;
+	}
+
     CLEAR(oper1);
     CLEAR(oper2);
 
-	if (in) {
-		copyinst(in, &arg[(*top)++]);
-	} else {
-		result = 0;
-		PushInt(result);
-	}
+	/* copy data to stack, then clear temp inst */
+	copyinst(&temp, &arg[(*top)++]);
+	CLEAR(&temp);
 }
 
 
