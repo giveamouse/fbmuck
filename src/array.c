@@ -116,7 +116,7 @@ array_tree_find(array_tree * avl, array_iter * key)
 	return avl;
 }
 
-static int
+static short 
 array_tree_height_of(array_tree * node)
 {
 	if (node != NULL)
@@ -144,8 +144,9 @@ static void
 array_tree_fixup_height(array_tree * node)
 {
 	if (node)
-		node->height = 1 + max(array_tree_height_of(AVL_LF(node)),
-							   array_tree_height_of(AVL_RT(node)));
+		node->height = (short)(1 +
+			max(array_tree_height_of(AVL_LF(node)),
+			array_tree_height_of(AVL_RT(node))));
 }
 
 static array_tree *
@@ -1631,6 +1632,9 @@ array_get_intkey_strval(stk_array * arr, int key)
 
 /*
  * $Log: array.c,v $
+ * Revision 1.19  2002/02/17 00:39:36  winged
+ * Updates for lint output
+ *
  * Revision 1.18  2002/02/17 00:24:02  winged
  * changes to use FLT_EPSILON
  *
