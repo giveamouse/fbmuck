@@ -503,7 +503,9 @@ main(int argc, char **argv)
 		free_old_macros();
 		purge_all_free_frames();
 		purge_for_pool();
+		purge_for_pool(); /* have to do this a second time to purge all */
 		purge_try_pool();
+		purge_try_pool(); /* have to do this a second time to purge all */
 		purge_mfns();
 		cleanup_game();
 		tune_freeparms();
