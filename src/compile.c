@@ -1621,9 +1621,10 @@ do_comment(COMPSTATE * cstat, int depth)
 				if(!cstat->curr_line)
 					v_abort_compile(cstat, "Unterminated comment.");
 			} while(!(*cstat->next_char));
-		} else if(*cstat->next_char == BEGINCOMMENT)
+		} else if(*cstat->next_char == BEGINCOMMENT) {
 			do_comment(cstat, depth+1);
-		else
+			if(cstat->compile_err) return;  /* EOF w/unterminated */
+		} else
 			cstat->next_char++;
 	};
 
