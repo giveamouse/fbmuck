@@ -1224,8 +1224,10 @@ backwards.  ie: '"a" "b" "c" "d" -4 rotate'  would leave "d" "a" "b" "c" on
 the stack.
 ~
 ROUND|
-round ( f -- f )
-Rounds to the nearest integer, and returns as a floating point value.
+round ( f i -- f )
+Rounds the floating point number to the precision requested, given as the
+number of places to the right of the decimal point.  ie: '1.11 1 round' would
+leave '1.1' on the stack, while '1.11 0 round' would leave '1.0'.
 ~
 RSPLIT|
 rsplit ( s1 s2 -- s1' s2' )
