@@ -312,6 +312,8 @@ check_exit(dbref player, dbref obj)
 {
 	int i;
 
+	if (DBFETCH(obj)->sp.exit.ndest < 0)
+		violate(player, obj, "has a negative link count.");
 	for (i = 0; i < DBFETCH(obj)->sp.exit.ndest; i++) {
 		if (!valid_ref((DBFETCH(obj)->sp.exit.dest)[i]) &&
 			(DBFETCH(obj)->sp.exit.dest)[i] != HOME) {

@@ -1321,7 +1321,7 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		break;
 	case TYPE_EXIT:
 		o->sp.exit.ndest = prop_flag ? getref(f) : j;
-		if (o->sp.exit.ndest)	/* only allocate space for linked exits */
+		if (o->sp.exit.ndest > 0)	/* only allocate space for linked exits */
 			o->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * (o->sp.exit.ndest));
 		for (j = 0; j < o->sp.exit.ndest; j++) {
 			(o->sp.exit.dest)[j] = getref(f);
