@@ -127,7 +127,9 @@ struct descriptor_data {
 	struct descriptor_data *next;
 	struct descriptor_data **prev;
 	McpFrame mcpframe;
-} *descriptor_list = 0;
+};
+
+struct descriptor_data *descriptor_list = NULL;
 
 #define MAX_LISTEN_SOCKS 16
 
@@ -2218,6 +2220,8 @@ do_command(struct descriptor_data *d, char *command)
 		ts_lastuseobject(d->player);
 
 	if (!string_compare(command, BREAK_COMMAND)) {
+	        if (!d->connected)
+		        return 0;
 		if (dequeue_prog(d->player, 2)) {
 			if (d->output_prefix) {
 				queue_ansi(d, d->output_prefix);
