@@ -299,11 +299,19 @@ match_exits(dbref first, struct match_data *md)
 		}
 		exitname = NAME(exit);
 		while (*exitname) {		/* for all exit aliases */
+			int notnull = 0;
 			for (p = md->match_name;	/* check out 1 alias */
-				 *p && DOWNCASE(*p) == DOWNCASE(*exitname)
-				 && *exitname != EXIT_DELIMITER; p++, exitname++) ;
+				 *p &&
+				 DOWNCASE(*p) == DOWNCASE(*exitname) &&
+				 *exitname != EXIT_DELIMITER;
+				 p++, exitname++)
+			{
+				if (!isspace(*p)) {
+					notnull = 1;
+				}
+			}
 			/* did we get a match on this alias? */
-			if ((partial) || ((*p == '\0') || (*p == ' ' && exitprog))) {
+			if ((partial && notnull) || ((*p == '\0') || (*p == ' ' && exitprog))) {
 				/* make sure there's nothing afterwards */
 				while (isspace(*exitname))
 					exitname++;
@@ -323,8 +331,8 @@ match_exits(dbref first, struct match_data *md)
 							}
 							md->exact_match = exit;
 							md->longest_match = strlen(md->match_name) - strlen(p);
-							if ((*p == ' ') || partial) {
-								strcpy(match_args, partial ? p : (p + 1));
+							if ((*p == ' ') || (partial && notnull)) {
+								strcpy(match_args, (partial && notnull)? p : (p + 1));
 								{
 									char *pp;
 									int ip;
@@ -351,8 +359,8 @@ match_exits(dbref first, struct match_data *md)
 													 md);
 							}
 							if (md->exact_match == exit) {
-								if ((*p == ' ') || partial) {
-									strcpy(match_args, partial ? p : (p + 1));
+								if ((*p == ' ') || (partial && notnull)) {
+									strcpy(match_args, (partial && notnull) ? p : (p + 1));
 									{
 										char *pp;
 										int ip;

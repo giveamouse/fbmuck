@@ -38,11 +38,7 @@ index1
 @pcreate        @program        @ps             @recycle        @set
 @shutdown       @stats          @success        @teleport       @toad
 @unlink         @unlock         @usage          @wall           @idescribe
-@propset
-  
-Local MUF additions
-@exits          @purge          @when
-  
+@propset        @mcpedit        @mcpprogram     @bless          @unbless
 ~~~
 index2
 drop            gripe           look            page            score
@@ -151,7 +147,14 @@ to that file, and save any subsequent dumps to it as well.
 ~~~
 @edit
 @edit <program>.  Searches for a program and if a match is found, puts
-the player into edit mode.  Programs must be created with @PROGRAM.
+the player into edit mode.  Programs must be created with @PROGRAM or
+@MCPPROGRAM.
+~~~
+@mcpedit
+@mcpedit <program>.  Searches for a program and if a match is found,
+pops up an editor window if the client supports the MCP edit package,
+otherwise puts the player into text edit mode.  Programs must be
+created with @PROGRAM or @MCPPROGRAM.
 ~~~
 @fail
 @fail <object> [=<message>]. <object> can be a thing, player, exit, or room,
@@ -251,6 +254,12 @@ creates a new player. It may only be used if REGISTRATION is enabled.
 @program
 @program <program>.  Create a new program, or enter edit mode on an
 existing one.  See @EDIT and Programmer's Reference.
+~~~
+@mcpprogram
+@mcpprogram <program>.  Create a new program, or enter edit mode on an
+existing one.  If the client supports the MCP edit package, an editor
+window will appear instead of using the text edit mode.
+See @EDIT, @MCPEDIT and Programmer's Reference.
 ~~~
 @ps
 @ps.  Lists the status of the currently running MUF program processes.
@@ -466,15 +475,25 @@ the room is STICKY, the drop-to will be delayed until the last person in the
 room has left.
 ~~~
 examine
-examine <object>[=propdir].  If you control <object>, examine will give
-you a complete breakdown of all fields, flags, &c that are associated
-with the object.  If the optional propdir field is supplied, then it
-instead lists out all the properties directly under that propdir.  To
-list the base propdir of an object, use 'ex <object>=/'.
-Program-executing fields are displayed as their true text, rather than
-executing the program in question.  If you do not control <object>,
-however, it prints the owner of the object in question, and, again,
-displays the true text of the description.
+examine <object>[=proppattern]
+  
+If you do not control <object>, it prints the owner of the object.
+  
+If you control <object>, examine will give you a complete breakdown of
+all standard fields, flags, etc that are associated with the object.
+MPI in the the displayed fields will be shown raw, without executing it.
+  
+If the optional proppattern field is supplied, then it instead lists
+out all the properties that matches the given wildcard pattern.  If the
+pattern ends with '/' then all the sub-properties in the matching propdirs
+will be listed.  If the pattern ends with **, then all sub-propdirs of
+the matching properties will be shown recursively.
+  
+  ex obj=/        list all root properties on obj.
+  ex obj=/**      list ALL properties on obj.
+  ex obj=foo/     list all properties in the foo propdir on obj.
+  ex obj=foo/**   list all props in the foo/ propdir, and all contained dirs.
+  ex obj=foo*bar  list root props whose name start with foo and end with bar.
 ~~~
 failure
 You fail to use a thing when you cannot take it (because it's lock fails). You
@@ -1247,18 +1266,58 @@ Example:  @contents here=DE=owner
 owner of each one.
   
 See also @FIND, @OWNED, @ENTRANCES
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~~~   LOCAL MUF COMMANDS                                         ~~~
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-@when
-@when <object>. If you control the object, this will display the
-flags, ownership, and timestamps associated with that object. If you
-do not control it, you are only told the object type and ownership
-information. This command works with either a dbref or an object name.
-~~~
-@purge
-@purge <player>=yes. Recycles all objects owned by that player, but
-leaves the player. You must specify 'yes' in order for this to take.
-WARNING: Make sure the player owns no public rooms or areas.  Only a
-wizard may use this command.
+~~~~~
+@unbless
+@unbless <obj>=<proppattern>
+  
+This is a wizard-only command.
+  
+Unblesses all properties on <obj> that match the given <proppattern> wildcard
+pattern.  The wildcard pattern works similarly to how the examine patterns
+work.  ie:
+
+  @unbless obj=/**      unblesses ALL properties on obj.
+  @unbless obj=foo/**   unblesses all props in the foo/ propdir, and all
+                         propdirs under the foo/ propdir, recursively.
+  @unbless obj=foo*bar  unblesses all root props whose name start with foo
+                         and end with bar.
+
+The @unbless command will list all properties that it unblesses.
+
+Blessed properties can execute MPI code with elevated permissions, allowing
+scripts that can alter remote objects, and those objects not controlled by
+the trigger owner.  Blessed MPI can also use {force} on anyone.
+
+Blessed _msgmacs properties don't execute with blessed permissions when they
+are referenced from other MPI code.  Instead, the bless bit on _msgmacs props
+indicates only that that macro is available to scripts up the environment,
+even if the script's trigger is not the same as the owner of the environment
+room the _msgmacs prop is on.
+~~~~~
+@bless
+@bless <obj>=<proppattern>
+  
+This is a wizard-only command.
+  
+Blesses all properties on <obj> that match the given <proppattern> wildcard
+pattern.  The wildcard pattern works similarly to how the examine patterns
+work.  ie:
+
+  @bless obj=/**      blesses ALL properties on obj.
+  @bless obj=foo/**   blesses all props in the foo/ propdir, and all propdirs
+                       under the foo/ propdir, recursively.
+  @bless obj=foo*bar  blesses all root props whose name start with foo and end
+                       with bar.
+
+The @bless command will list all properties that it blesses.
+
+Blessed properties can execute MPI code with elevated permissions, allowing
+scripts that can alter remote objects, and those objects not controlled by
+the trigger owner.  Blessed MPI can also use {force} on anyone.
+
+Blessed _msgmacs properties don't execute with blessed permissions when they
+are referenced from other MPI code.  Instead, the bless bit on _msgmacs props
+indicates only that that macro is available to scripts up the environment,
+even if the script's trigger is not the same as the owner of the environment
+room the _msgmacs prop is on.
 

@@ -528,6 +528,9 @@ process_command(int descr, dbref player, char *command)
 		} else if (*command == POSE_TOKEN) {
 			snprintf(pbuf, sizeof(pbuf), "pose %s", command + 1);
 			command = &pbuf[0];
+		} else if (*command == EXIT_DELIMITER) {
+			snprintf(pbuf, sizeof(pbuf), "delimiter %s", command + 1);
+			command = &pbuf[0];
 		}
 	}
 
@@ -548,6 +551,9 @@ process_command(int descr, dbref player, char *command)
 					command = &pbuf[0];
 				} else if (*command == POSE_TOKEN) {
 					snprintf(pbuf, sizeof(pbuf), "pose %s", command + 1);
+					command = &pbuf[0];
+				} else if (*command == EXIT_DELIMITER) {
+					snprintf(pbuf, sizeof(pbuf), "delimiter %s", command + 1);
 					command = &pbuf[0];
 				} else {
 					goto bad_pre_command;
@@ -839,9 +845,15 @@ process_command(int descr, dbref player, char *command)
 				switch (command[2]) {
 				case 'c':
 				case 'C':
-					Matched("@mcpedit");
-					do_mcpedit(descr, player, arg1);
-					break;
+					if (string_prefix("@mcpedit", command)) {
+						Matched("@mcpedit");
+						do_mcpedit(descr, player, arg1);
+						break;
+					} else {
+						Matched("@mcpprogram");
+						do_mcpprogram(descr, player, arg1);
+						break;
+					}
 				case 'e':
 				case 'E':
 					Matched("@memory");

@@ -2,6 +2,10 @@
 Changed spawn_resolver behavior -- now prints to status log if it can't spawn
   the resolver properly.  Previously used perror(), and didn't send it to
   error.log properly if it failed.
+Changed FMTSTRING and ARRAY_FMTSTRINGS MUF prims to be ANSI-aware.
+Changed all sprintf()s in the code to snprintf()s.
+Changed parsing so commands starting with ';' exit delimiters will now trigger
+  actions named 'delimiter', similar to how ':' triggers pose actions.
 Fixed bug with non-DISKBASE mucks where third save message wouldn't get sent.
 Fixed bug with non-DISKBASE mucks where @dump would drop SSL users.
 Fixed bug with reporting of incorrect line numbers in muf backtraces.
@@ -40,8 +44,8 @@ Added USERLOG (str:mesg -- ) MUF prim.  Logs an arbitrary message to the user
 Added timestamps to stderr warnings for double-CLEARs and double prog_cleans.
 Added pcreate_flags @tune to specify what flags players are created with.
 Added and merged Windows specific winfuzz4 changes.
-Changed FMTSTRING and ARRAY_FMTSTRINGS MUF prims to be ANSI-aware.
-Changed all sprintf()s in the code to snprintf()s.
+Added @mcpprogram PROGNAME command, like @mcpedit, except it creates the
+  program if it doesn't already exist.
 
 
 

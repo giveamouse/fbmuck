@@ -20,7 +20,6 @@ void do_doing(int descr, dbref player, const char *name, const char *mesg);
 void do_edit(int descr, dbref player, const char *name);
 void do_flock(int descr, dbref player, const char *name, const char *keyname);
 void do_leave(int descr, dbref player);
-void do_mcpedit(int descr, dbref player, const char *name);
 void do_memory(dbref who);
 void do_move(int descr, dbref player, const char *direction, int lev);
 void do_newpassword(dbref player, const char *name, const char *password);
