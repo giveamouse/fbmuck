@@ -2231,7 +2231,7 @@ prim_getpidinfo(PRIM_PROTOTYPE)
 	if (oper1->type != PROG_INTEGER)
 		abort_interp("Non-integer argument (1)");
 
-	if (oper1->data.objref == fr->pid)
+	if (oper1->data.number == fr->pid)
 	{
 		if ((nu = new_array_dictionary()) == NULL)
 			abort_interp("Out of memory");
