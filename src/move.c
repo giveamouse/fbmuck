@@ -840,7 +840,10 @@ do_recycle(int descr, dbref player, const char *name)
 	}
 	if ((thing = noisy_match_result(&md)) != NOTHING) {
 		if (!controls(player, thing)) {
-			notify(player, "Permission denied.");
+			if(Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
+				notify(player, "That's already garbage!");
+			else
+				notify(player, "Permission denied.");
 		} else {
 			switch (Typeof(thing)) {
 			case TYPE_ROOM:
