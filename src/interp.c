@@ -294,11 +294,18 @@ RCLEAR(struct inst *oper, char *file, int line)
 	int varcnt, j;
 
 	switch (oper->type) {
-	case PROG_CLEARED:
+	case PROG_CLEARED: {
+		time_t lt;
+		char buf[40];
+
+		lt = time(NULL);
+		format_time(buf, 32, "%c", localtime(&lt));
+		fprintf(stderr, "%.32s: ", buf);
 		fprintf(stderr, "Attempt to re-CLEAR() instruction from %s:%hd "
 				"previously CLEAR()ed at %s:%d\n", file, line, (char *) oper->data.addr,
 				oper->line);
 		return;
+		}
 	case PROG_ADD:
 		PROGRAM_DEC_INSTANCES(oper->data.addr->progref);
 		oper->data.addr->links--;
@@ -735,6 +742,12 @@ prog_clean(struct frame *fr)
 
 	for (ptr = free_frames_list; ptr; ptr = ptr->next) {
 		if (ptr == fr) {
+			time_t lt;
+			char buf[40];
+
+			lt = time(NULL);
+			format_time(buf, 32, "%c", localtime(&lt));
+			fprintf(stderr, "%.32s: ", buf);
 			fprintf(stderr, "prog_clean(): Tried to free an already freed program frame!\n");
 			abort();
 		}
@@ -759,6 +772,8 @@ prog_clean(struct frame *fr)
 		struct forvars **loop = &(fr->fors.st);
 
 		while (*loop) {
+			CLEAR(&((*loop)->cur));
+			CLEAR(&((*loop)->end));
 			loop = &((*loop)->next);
 		}
 		*loop = for_pool;

@@ -10,6 +10,8 @@ Fixed crasher bug with @killing invalid pids.
 Fixed crasher bug with prim_moveto where dest was #-3.
 Fixed double-freeing of source array contents in ARRAY_FMTSTRINGS.
 Fixed potential crasher buffer overrun bug with MPI variables.
+Fixed reference count leak in muf progs that error out with active for loops.
+Fixed restart script to use 'df -kP' for posix df is available.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.
@@ -22,6 +24,7 @@ Added USERLOG (str:mesg -- ) MUF prim.  Logs an arbitrary message to the user
 	Winged(#4023) [newaction.muf(#666)] 06/11/02 03:09:31: <string>
   The program must be running at a mucker level at least equal to the @tune
   value 'userlog_mlev' (defaults to 3) to write this log entry.
+Added timestamps to stderr warnings for double-CLEARs and double prog_cleans.
 Changed FMTSTRING and ARRAY_FMTSTRINGS MUF prims to be ANSI-aware.
 Changed all sprintf()s in the code to snprintf()s.
 
