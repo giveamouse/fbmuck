@@ -377,10 +377,13 @@ safegetprop_limited(dbref player, dbref what, dbref whom, dbref perms, const cha
 	const char *ptr;
 
 	while (what != NOTHING) {
-		if (OWNER(what) == whom) {
-			ptr = safegetprop_strict(player, what, perms, inbuf, mesgtyp, blessed);
-			if (!ptr || *ptr)
+		ptr = safegetprop_strict(player, what, perms, inbuf, mesgtyp, blessed);
+		if (!ptr)
+			return ptr;
+		if (*ptr) {
+			if (OWNER(what) == whom || *blessed) {
 				return ptr;
+			}
 		}
 		what = getparent(what);
 	}
