@@ -1553,24 +1553,23 @@ do_sweep(int descr, dbref player, const char *name)
 	flag = 0;
 	loc = thing;
 	while (loc != NOTHING) {
-		if (controls(player, loc)) {
-			if (!flag) {
-				notify(player, "Listening rooms down the environment:");
-				flag = 1;
-			}
-
-			if ((FLAGS(loc) & LISTENER) &&
-				(get_property(loc, "_listen") ||
-				 get_property(loc, "~listen") || get_property(loc, "~olisten"))) {
-				snprintf(buf, sizeof(buf), "  %s is a listening room.", unparse_object(player, loc));
-				notify(player, buf);
-			}
-
-			exit_match_exists(player, loc, "page");
-			exit_match_exists(player, loc, "whisper");
-			exit_match_exists(player, loc, "pose");
-			exit_match_exists(player, loc, "say");
+		if (!flag) {
+			notify(player, "Listening rooms down the environment:");
+			flag = 1;
 		}
+
+		if ((FLAGS(loc) & LISTENER) &&
+			(get_property(loc, "_listen") ||
+				get_property(loc, "~listen") || get_property(loc, "~olisten"))) {
+			snprintf(buf, sizeof(buf), "  %s is a listening room.", unparse_object(player, loc));
+			notify(player, buf);
+		}
+
+		exit_match_exists(player, loc, "page");
+		exit_match_exists(player, loc, "whisper");
+		exit_match_exists(player, loc, "pose");
+		exit_match_exists(player, loc, "say");
+
 		loc = getparent(loc);
 	}
 	notify(player, "**End of list**");
