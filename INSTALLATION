@@ -1,19 +1,53 @@
-Installation is fairly simple:
+Installation in a non-shared environment is fairly simple:
 
 	Edit include/config.h to fit your preferences and your system.
 	Edit include/params.h also.
 
-		./configure     # This configures the source for your system.
-		make            # This compiles the binaries.
+	Then do the following:
+		./configure --prefix=$HOME/fbmuck
+		make
+	(The argument to --prefix is the name of the directory you want
+	all the fbmuck program and support files to be installed to.  If
+	you do not include it, it will default to /usr/local; if you do not
+	specify a directory that you have write access to, the next step
+	will fail.)
 
-	If you have root access on your system, do the following as root:
-		make install    # This puts the binaries in /usr/local/fbmuck/bin
+	Then:
+		make install    
 
-	If you do NOT have root access on your system, do this instead:
-		cp src/netmuck src/resolver game
-
-	Edit game/restart to refer to the apropriate paths and database files.
-	To start the muck, do the following:
+	Go to the directory you named in the --prefix, then edit
+	game/restart to refer to the apropriate paths and database files.
+	After doing this, to start the muck, do the following:
 		cd game
 		./restart
 
+Installation in a shared environment is a little trickier:
+
+	Edit include/config.h to fit your preferences and system.  Remember
+	that these will affect ALL servers that use these binaries.
+	Edit include/params.h as well.
+
+	Do the following:
+		./configure
+	(If you want your MUCKs to have the capability to use SSL, ensure
+	you have the OpenSSL headers and libraries installed on your system
+	and add '--enable-ssl' to that command line.)
+
+	Then, type:
+		make
+	This should give you no errors, unless you chose to enable SSL, and
+	don't have the OpenSSL libraries and headers installed.  (If you do
+	come across an error, feel free to contact us on SourceForge at
+	http://sf.net/projects/fbmuck !)  If it comes out okay, type:
+		make install
+	to install the binaries to /usr/local/bin and the shared help files
+	to /usr/local/share/fbmuck.
+
+	If you wish to use the provided System-V or RedHat startup scripts,
+	you can type:
+		make install-inits
+	This will copy the appropriate script to the appropriate place on
+	your system, and use chkconfig(8) to install the appropriate links
+	into your /etc/rc.d directories.  Please see the file
+	scripts/fbmuck-sysvinit for more information on configuration.
+	(The RedHat startup script works the same way.)
