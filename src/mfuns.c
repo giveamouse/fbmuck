@@ -1795,6 +1795,8 @@ mfn_money(MFUNARGS)
 		ABORT_MPI("MONEY", "Match failed.");
 	if (obj == PERMDENIED)
 		ABORT_MPI("MONEY", "Permission denied.");
+	if (tp_pennies_muf_mlev > 1)
+		ABORT_MPI("MONEY", "Permission denied.");
 	switch (Typeof(obj)) {
 	case TYPE_THING:
 		snprintf(buf, BUFFER_LEN, "%d", THING_VALUE(obj));

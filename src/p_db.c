@@ -63,8 +63,8 @@ prim_addpennies(PRIM_PROTOTYPE)
 	CHECKOP(2);
 	oper1 = POP();
 	oper2 = POP();
-	if (mlev < 2)
-		abort_interp("Requires Mucker Level 2 or better.");
+	if (mlev < tp_addpennies_muf_mlev)
+		abort_interp("Permission Denied (mlev < tp_addpennies_muf_mlev)");
 	if (!valid_object(oper2))
 		abort_interp("Invalid object.");
 	if (oper1->type != PROG_INTEGER)
@@ -236,6 +236,8 @@ prim_pennies(PRIM_PROTOTYPE)
 	oper1 = POP();
 	if (!valid_object(oper1))
 		abort_interp("Invalid argument.");
+	if (mlev < tp_pennies_muf_mlev)
+		abort_interp("Permission Denied (mlev < tp_pennies_muf_mlev)");
 	CHECKREMOTE(oper1->data.objref);
 	switch (Typeof(oper1->data.objref)) {
 	case TYPE_PLAYER:
@@ -1512,8 +1514,8 @@ prim_movepennies(PRIM_PROTOTYPE)
 	oper1 = POP();
 	oper2 = POP();
 	oper3 = POP();
-	if (mlev < 2)
-		abort_interp("Requires Mucker Level 2 or better.");
+	if (mlev < tp_movepennies_muf_mlev)
+		abort_interp("Permission Denied (mlev < tp_movepennies_muf_mlev)");
 	if (!valid_object(oper3))
 		abort_interp("Invalid object. (1)");
 	if (!valid_object(oper2))

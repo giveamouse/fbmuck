@@ -1,4 +1,6 @@
 2.2fb6.02
+Added @tunables for addpennies, movepennies, and pennies. MPI {money} is disabled if pennies MLEV>1.
+Moved pennies from a thing/player-only trait to a global property, @/value.
 Cleaned up compression-related #defines, removing redundancy.
 Removed remaining Anonymity code fragments and defines due to non-use and non-function.
 Fixed bug with array_nintersection allowing multiple occurances in a single array to influence final output.

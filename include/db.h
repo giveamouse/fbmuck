@@ -105,6 +105,7 @@ typedef int dbref;				/* offset into db */
 #define MESGPROP_FLOCK		"@/flk"
 #define MESGPROP_CONLOCK	"_/clk"
 #define MESGPROP_CHLOCK		"_/chlk"
+#define MESGPROP_VALUE		"@/value"
 
 #define GETMESG(x,y)   (get_property_class(x, y))
 #define GETDESC(x)	GETMESG(x, MESGPROP_DESC)
@@ -161,6 +162,10 @@ typedef int dbref;				/* offset into db */
 #define SETCHLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_CHLOCK, &mydat);}
 #define LOADCHLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_CHLOCK, &mydat); DBDIRTY(x);}
 #define CLEARCHLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_CHLOCK, &mydat); DBDIRTY(x);}
+
+#define GETVALUE(x)	(get_property_value(x, MESGPROP_VALUE))
+#define SETVALUE(x,y)	{add_property(x, MESGPROP_VALUE, NULL, y);}
+#define LOADVALUE(x,y)	{add_prop_nofetch(x, MESGPROP_VALUE, NULL, y); DBDIRTY(x);}
 
 #define DB_PARMSINFO     0x0001
 #define DB_COMPRESSED    0x0002
@@ -599,7 +604,6 @@ struct program_specific {
 
 struct player_specific {
 	dbref home;
-	int pennies;
 	dbref curr_prog;			/* program I'm currently editing */
 	short insert_mode;			/* in insert mode? */
 	short block;
@@ -616,10 +620,10 @@ struct player_specific {
 #define FREE_THING_SP(x)        { dbref foo = x; free(PLAYER_SP(foo)); PLAYER_SP(foo) = NULL; }
 
 #define THING_HOME(x)		(PLAYER_SP(x)->home)
-#define THING_VALUE(x)		(PLAYER_SP(x)->pennies)
+#define THING_VALUE(x)		(GETVALUE(x))
 
 #define THING_SET_HOME(x,y)	(PLAYER_SP(x)->home = y)
-#define THING_SET_VALUE(x,y)	(PLAYER_SP(x)->pennies = y)
+#define THING_SET_VALUE(x,y)	(SETVALUE(x,y))
 
 
 #define PLAYER_SP(x)		(DBFETCH(x)->sp.player.sp)
@@ -627,7 +631,7 @@ struct player_specific {
 #define FREE_PLAYER_SP(x)       { dbref foo = x; free(PLAYER_SP(foo)); PLAYER_SP(foo) = NULL; }
 
 #define PLAYER_HOME(x)		(PLAYER_SP(x)->home)
-#define PLAYER_PENNIES(x)	(PLAYER_SP(x)->pennies)
+#define PLAYER_PENNIES(x)	(GETVALUE(x))
 #define PLAYER_CURR_PROG(x)	(PLAYER_SP(x)->curr_prog)
 #define PLAYER_INSERT_MODE(x)	(PLAYER_SP(x)->insert_mode)
 #define PLAYER_BLOCK(x)		(PLAYER_SP(x)->block)
@@ -639,8 +643,8 @@ struct player_specific {
 #define PLAYER_IGNORE_LAST(x)   (PLAYER_SP(x)->ignore_last)
 
 #define PLAYER_SET_HOME(x,y)		(PLAYER_SP(x)->home = y)
-#define PLAYER_SET_PENNIES(x,y)		(PLAYER_SP(x)->pennies = y)
-#define PLAYER_ADD_PENNIES(x,y)		(PLAYER_SP(x)->pennies += y)
+#define PLAYER_SET_PENNIES(x,y)		(SETVALUE(x,y))
+#define PLAYER_ADD_PENNIES(x,y)		(SETVALUE(x,(GETVALUE(x)+y)))
 #define PLAYER_SET_CURR_PROG(x,y)	(PLAYER_SP(x)->curr_prog = y)
 #define PLAYER_SET_INSERT_MODE(x,y)	(PLAYER_SP(x)->insert_mode = y)
 #define PLAYER_SET_BLOCK(x,y)		(PLAYER_SP(x)->block = y)
@@ -659,7 +663,6 @@ union specific {				/* I've been railroaded! */
 	} room;
 /*    struct {		*//* THING-specific fields */
 /*	dbref   home;   */
-/*	int     value;  */
 /*    }       thing;    */
 	struct {					/* EXIT-specific fields */
 		int ndest;

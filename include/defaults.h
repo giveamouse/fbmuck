@@ -91,6 +91,13 @@
 /* amount of object endowment, based on cost */
 #define MAX_OBJECT_ENDOWMENT 100
 
+/* Block various penny-related functions at less than given mucker level. */
+/* 1 = M1, 2 = M2, 3 = M3, 4 = Wiz */
+#define MOVEPENNIES_MUF_MLEV 2
+#define ADDPENNIES_MUF_MLEV 2
+/* This define affects the {money:} MPI function as well. */
+#define PENNIES_MUF_MLEV 1
+
 /* minimum costs for various things */
 #define OBJECT_COST 10			/* Amount it costs to make an object    */
 #define EXIT_COST 1				/* Amount it costs to make an exit      */

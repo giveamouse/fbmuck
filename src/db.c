@@ -532,7 +532,6 @@ db_write_object(FILE * f, dbref i)
 		putref(f, THING_HOME(i));
 		putref(f, o->exits);
 		putref(f, OWNER(i));
-		putref(f, THING_VALUE(i));
 		break;
 
 	case TYPE_ROOM:
@@ -552,7 +551,6 @@ db_write_object(FILE * f, dbref i)
 	case TYPE_PLAYER:
 		putref(f, PLAYER_HOME(i));
 		putref(f, o->exits);
-		putref(f, PLAYER_PENNIES(i));
 		putstring(f, PLAYER_PASSWORD(i));
 		break;
 
@@ -600,7 +598,7 @@ db_write_list(FILE * f, int mode)
 dbref
 db_write(FILE * f)
 {
-	putstring(f, "***Foxen7 TinyMUCK DUMP Format***");
+	putstring(f, "***Foxen8 TinyMUCK DUMP Format***");
 
 	putref(f, db_top);
 	putref(f, DB_PARMSINFO
@@ -633,7 +631,7 @@ dbref
 db_write_deltas(FILE * f)
 {
 	fseek(f, 0L, 2);			/* seek end of file */
-	putstring(f, "***Foxen7 Deltas Dump Extention***");
+	putstring(f, "***Foxen8 Deltas Dump Extention***");
 	db_write_list(f, 0);
 
 	fseek(f, 0L, 2);
@@ -1234,7 +1232,7 @@ db_read_object_new(FILE * f, struct object *o, dbref objno)
 	}
 }
 
-/* Reads in Foxen, Foxen[23456], WhiteFire, Mage or Lachesis DB Formats */
+/* Reads in Foxen, Foxen[2-8], WhiteFire, Mage or Lachesis DB Formats */
 void
 db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int read_before)
 {
@@ -1357,7 +1355,8 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 			THING_SET_HOME(objno, home);
 			o->exits = getref(f);
 			OWNER(objno) = getref(f);
-			THING_SET_VALUE(objno, getref(f));
+			if (dtype < 10)
+				THING_SET_VALUE(objno, getref(f));
 			break;
 		}
 	case TYPE_ROOM:
@@ -1378,7 +1377,8 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		ALLOC_PLAYER_SP(objno);
 		PLAYER_SET_HOME(objno, (prop_flag ? getref(f) : j));
 		o->exits = getref(f);
-		PLAYER_SET_PENNIES(objno, getref(f));
+		if (dtype < 10)
+			PLAYER_SET_PENNIES(objno, getref(f));
 		password = getstring(f);
 		if (dtype <= 8 && password) {
 			set_password_raw(objno, NULL);
@@ -1537,6 +1537,23 @@ db_read(FILE * f)
 #endif
 			}
 			db_grow(i);
+		} else if (!strcmp(special, "**Foxen8 TinyMUCK DUMP Format***")) {
+			db_load_format = 10;
+			i = getref(f);
+			dbflags = getref(f);
+			if (dbflags & DB_PARMSINFO) {
+				parmcnt = getref(f);
+				tune_load_parms_from_file(f, NOTHING, parmcnt);
+			}
+			if (dbflags & DB_COMPRESSED) {
+#ifdef COMPRESS
+				init_compress_from_file(f);
+#else
+				fprintf(stderr, "This server is not compiled to read compressed databases.\n");
+				return -1;
+#endif
+			}
+			db_grow(i);
 		} else if (!strcmp(special, "***Foxen Deltas Dump Extention***")) {
 			db_load_format = 4;
 			doing_deltas = 1;
@@ -1554,6 +1571,9 @@ db_read(FILE * f)
 			doing_deltas = 1;
 		} else if (!strcmp(special, "***Foxen7 Deltas Dump Extention***")) {
 			db_load_format = 9;
+			doing_deltas = 1;
+		} else if (!strcmp(special, "***Foxen8 Deltas Dump Extention***")) {
+			db_load_format = 10;
 			doing_deltas = 1;
 		}
 		if (doing_deltas && !db) {
@@ -1636,6 +1656,10 @@ db_read(FILE * f)
 				} else if (special && !strcmp(special, "***Foxen7 Deltas Dump Extention***")) {
 					free((void *) special);
 					db_load_format = 9;
+					doing_deltas = 1;
+				} else if (special && !strcmp(special, "***Foxen8 Deltas Dump Extention***")) {
+					free((void *) special);
+					db_load_format = 10;
 					doing_deltas = 1;
 				} else {
 					if (special)

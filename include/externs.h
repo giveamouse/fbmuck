@@ -276,10 +276,10 @@ extern const char *unparse_boolexp(dbref player, struct boolexp *b, int fullname
 
 /* From compress.c */
 #ifdef COMPRESS
-extern void save_compress_words_to_file(FILE * f);
-extern void init_compress_from_file(FILE * dicto);
 extern const char *compress(const char *);
 extern const char *uncompress(const char *);
+extern void save_compress_words_to_file(FILE * f);
+extern void init_compress_from_file(FILE * dicto);
 extern void init_compress(void);
 #else
 static inline const char *compress(const char *x) { return x; }
