@@ -17,6 +17,9 @@ Fixed potential crasher buffer overrun bug with MPI variables.
 Fixed reference count leak in muf progs that error out with active for loops.
 Fixed restart script to use 'df -kP' for posix df is available.
 Fixed MPI snprintf() issues with incorrectly short buffer lengths.
+Fixed bug with bad PCREATE_FLAGS @tune settings causing corrupted objects.
+Fixed compile error with #undef DETACH.
+Fixed crasher bug with infinite disconnect and descr_set_user loop.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.

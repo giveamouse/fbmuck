@@ -229,17 +229,21 @@ RETSIGTYPE sig_reap(int i)
 	reapedpid = waitpid(-1, &status, WNOHANG);
 	if(!reapedpid)
 	{
+#ifdef DETACH
 		log2file(LOG_ERR_FILE,"SIG_CHILD signal handler called with no pid!");
+#else
+		fprintf(stderr, "SIG_CHILD signal handler called with no pid!\n");
+#endif
 	} else {
 		if (reapedpid == global_resolver_pid) {
 			log_status("resolver exited with status %d\n", status);
 #ifndef DISKBASE
 		} else if(reapedpid == global_dumper_pid) {
-			log_status("dumper task exited with status %d\n", status);
+			log_status("forked DB dump task exited with status %d", status);
 			global_dumpdone = 1;
 #endif
 		} else {
-			log_status("unknown child process (pid %d) exited with status %d", reapedpid, status);
+			fprintf(stderr, "unknown child process (pid %d) exited with status %d", reapedpid, status);
 		}
 	}
 	return RETSIGVAL;

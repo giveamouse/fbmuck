@@ -3347,6 +3347,13 @@ int
 pset_user(int c, dbref who)
 {
 	struct descriptor_data *d;
+	static int setuser_depth = 0;
+
+	if (++setuser_depth > 8) {
+		/* Prevent infinite loops */
+		setuser_depth--;
+		return 0;
+	}
 
     d = descrdata_by_descr(c);
 	if (d && d->connected) {
@@ -3358,8 +3365,10 @@ pset_user(int c, dbref who)
             remember_player_descr(who, d->descriptor);
 			announce_connect(d->descriptor, who);
 		}
+		setuser_depth--;
 		return 1;
 	}
+	setuser_depth--;
 	return 0;
 }
 

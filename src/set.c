@@ -1016,7 +1016,7 @@ void
 set_flags_from_tunestr(dbref obj, const char* tunestr)
 {
 	const char *p = tunestr;
-	object_flag_type f;
+	object_flag_type f = 0;
 
 	for (;;) {
 		char pcc = toupper(*p);
