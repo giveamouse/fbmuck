@@ -2321,10 +2321,9 @@ prim_program_getlines(PRIM_PROTOTYPE)
 
 	if (start == 0 && end != 0)
 		start = end;
-	else if (start == 0)
+	else if (start == 0) /* and thus end == 0 */
 		start = 1;
-
-	if (end == 0 && start != 0)
+	else if (end == 0) /* and thus start != 0 */
 		end = start;
 
 	if (end && start > end)
