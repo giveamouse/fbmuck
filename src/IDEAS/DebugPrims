@@ -1,0 +1,51 @@
++ ++ - and -- will have to be altered to work with addresses.
+
+ADDRESS_DBREF       (addr:address -- ref:program)
+ADDRESS_INSTR_NUM   (addr:address -- int:instrnum)
+ADDRESS_INSTR_NAME  (addr:address -- str:name)
+ADDRESS_FROM_LINE   (ref:prog int:line -- addr:address)
+ADDRESS_FROM_INSTR  (ref:prog int:instrnum -- addr:address)
+
+DEBUG_EXEC_CONTINUE  (int:pid -- )
+DEBUG_EXEC_PRIMITIVE (int:pid str:instname -- )
+DEBUG_EXEC_FUNCTION  (int:pid addr:function -- )
+
+DEBUG_FUNCTION_NAMES  (ref:prog -- strlist:names)
+DEBUG_FUNCTION_LOOKUP (ref:prog str:funcname -- addr:funcaddr)
+DEBUG_FUNCTION_LIST   (ref:prog str:funcname -- strlist:source)
+
+DEBUG_TRACE_ON      (int:pid -- )
+DEBUG_TRACE_OFF     (int:pid -- )
+
+DEBUG_BREAK_CURRENT     (int:pid -- int:breaknum)
+DEBUG_BREAK_COUNT       (int:pid -- int:count)
+DEBUG_BREAK_INFO        (int:pid int:breaknum -- dict:info)
+DEBUG_BREAK_AT_ADDR     (int:pid addr:address -- int:breaknum)
+DEBUG_BREAK_AFTER_INSTS (int:pid int:count -- int:breaknum)
+DEBUG_BREAK_AFTER_LINES (int:pid int:count -- int:breaknum)
+DEBUG_BREAK_FINISH      (int:pid int:count -- int:breaknum)
+DEBUG_BREAK_DELETE      (int:pid int:breaknum -- )
+
+DEBUG_SYSTEM_COUNT  (int:pid -- int:count)
+DEBUG_SYSTEM_READ   (int:pid int:level -- addr:address)
+
+DEBUG_STACK_COUNT   (int:pid -- int:count)
+DEBUG_STACK_READ    (int:pid int:itemnum -- any:value )
+DEBUG_STACK_INSERT  (int:pid int:itemnum any:value -- )
+DEBUG_STACK_REMOVE  (int:pid int:itemnum -- any:value)
+
+DEBUG_GLOBAL_NAMES  (int:pid -- list:names)
+DEBUG_GLOBAL_LOOKUP (int:pid str:varname -- int:varnum)
+DEBUG_GLOBAL_READ   (int:pid int:varnum -- any:value)
+DEBUG_GLOBAL_WRITE  (int:pid int:varnum any:value -- )
+
+DEBUG_LOCAL_NAMES   (int:pid ref:prog -- list:names)
+DEBUG_LOCAL_LOOKUP  (int:pid ref:prog str:varname -- int:varnum)
+DEBUG_LOCAL_READ    (int:pid ref:prog int:varnum -- any:value)
+DEBUG_LOCAL_WRITE   (int:pid ref:prog int:varnum any:value -- )
+
+DEBUG_SCOPED_NAMES  (int:pid int:level -- list:names)
+DEBUG_SCOPED_LOOKUP (int:pid int:level str:varname -- int:varnum)
+DEBUG_SCOPED_READ   (int:pid int:level int:varnum -- any:value)
+DEBUG_SCOPED_WRITE  (int:pid int:level int:varnum any:value -- )
+
