@@ -9,6 +9,7 @@ Fixed configure script to auto-find ssl.h location.
 Fixed crasher bug with @killing invalid pids.
 Fixed crasher bug with prim_moveto where dest was #-3.
 Fixed double-freeing of source array contents in ARRAY_FMTSTRINGS.
+Fixed potential crasher buffer overrun bug with MPI variables.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.
