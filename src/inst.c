@@ -328,7 +328,8 @@ debug_inst(struct inst *pc, struct inst *stack, char *buffer, int buflen, int sp
 	length -= prepend_string(&bend, bstart, ") ");
 	
 	count = sp - 1;
-	for(;;) {
+	if (count >= 0) {
+	    for(;;) {
 		if (count && length <= 5) {
 			length -= prepend_string(&bend, bstart, "...");
 			break;
@@ -350,6 +351,7 @@ debug_inst(struct inst *pc, struct inst *stack, char *buffer, int buflen, int sp
 			break; /* all done! */
 		}
 		count--;
+	    }
 	}
 
 	/* we don't use bstart, because it's compensated for the length of this. */
