@@ -19,6 +19,7 @@ Added ARRAY_FILTER_FLAGS ( list:dbrefs str:flags -- list:dbrefsout ) MUF prim.
   Takes a homogenous list array of dbrefs, and filters them for those objects
   that pass the given flag test.  See 'help @find' for flags test info.
 Added RFE #498330: For "recycle" [success] message, put the #dbref.
+Added RFE #788992: Allow @recycle by dbref
 
 
 

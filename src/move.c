@@ -835,9 +835,7 @@ do_recycle(int descr, dbref player, const char *name)
 	match_possession(&md);
 	match_registered(&md);
 	match_here(&md);
-	if (Wizard(OWNER(player))) {
-		match_absolute(&md);
-	}
+	match_absolute(&md);
 	if ((thing = noisy_match_result(&md)) != NOTHING) {
 		if (!controls(player, thing)) {
 			if(Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
