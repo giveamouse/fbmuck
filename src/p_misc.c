@@ -204,6 +204,8 @@ prim_force(PRIM_PROTOTYPE)
 {
     struct inst *oper1, *oper2;
 
+    int i;
+
     /* d s -- */
     CHECKOP(2);
     oper1 = POP();                /* string to @force */
@@ -607,4 +609,43 @@ prim_cancallp(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
+void
+prim_setsysparm(PRIM_PROTOTYPE)
+{
+    CHECKOP(2);
+    oper1 = POP();	/* string: new parameter value */
+    oper2 = POP();	/* string: parameter to tune */	
+
+    if (mlev < 4)
+        abort_interp("Wizbit only primitive.");
+    if (oper2->type != PROG_STRING)
+        abort_interp("Invalid argument. (1)");
+    if (!oper2->data.string)
+        abort_interp("Null string argument. (1)");
+    if (oper1->type != PROG_STRING)
+        abort_interp("Invalid argument. (2)");
+    if (!oper1->data.string)
+        abort_interp("Null string argument. (2)");
+
+    result = tune_setparm(oper2->data.string->data, oper1->data.string->data);
+
+    switch (result) {
+        case 0: /* TUNESET_SUCCESS */
+            log_status("TUNED (MUF): %s(%d) tuned %s to %s\n",
+                        NAME(player), player, oper2->data.string->data,
+                        oper1->data.string->data);
+            break;
+        case 1: /* TUNESET_UNKNOWN */
+            abort_interp("Unknown parameter. (1)");
+            break;
+        case 2: /* TUNESET_SYNTAX */
+            abort_interp("Bad parameter syntax. (2)");
+            break;
+        case 3: /* TUNESET_BADVAL */
+            abort_interp("Bad parameter value. (2)");
+            break;
+    }
+    CLEAR(oper1);
+    CLEAR(oper2);
+}
 
