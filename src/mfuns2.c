@@ -1326,7 +1326,7 @@ mfn_fox(MFUNARGS)
 const char *
 mfn_debugif(MFUNARGS)
 {
-	char *ptr = MesgParse(argv[0], argv[0]);
+	char *ptr = MesgParse(argv[0], buf);
 
 	CHECKRETURN(ptr, "DEBUGIF", "arg 1");
 	if (truestr(argv[0])) {
