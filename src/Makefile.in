@@ -85,7 +85,7 @@ ANNSRC= announce.c
 
 ANNOBJ= announce.o
 
-MISCSRC= Makefile ChangeLog COPYING mkversion.sh
+MISCSRC= Makefile.in ChangeLog COPYING mkversion.sh
 
 CSRC= array.c boolexp.c compile.c compress.c create.c db.c \
 	debugger.c disassem.c diskprop.c edit.c events.c game.c hashtab.c \
@@ -130,30 +130,30 @@ OLDTARGETS = netmuck~ resolver~ olddecompress~ topwords~ announce~
 
 all:    ${TARGETS} 
 
-netmuck:        ${P} ${COBJ} interface.o ${LOBJ} mkversion.sh
+netmuck:        ${P} ${COBJ} interface.o ${LOBJ} mkversion.sh Makefile
 	sh mkversion.sh
 	${PRE} ${CC} ${CFLAGS} -c version.c
 	${MV} netmuck netmuck~
 	${PRE} ${CC} ${CFLAGS} -o netmuck ${COBJ} interface.o version.o \
 	 ${LIBR} ${LOBJ}
 
-resolver:	resolver.o ${LOBJ}
+resolver:	resolver.o ${LOBJ} Makefile
 	${PRE} ${CC} ${CFLAGS} -o resolver resolver.o ${LIBR} ${LOBJ}
 
-extract: ${P} extract.o ${EOBJ} ${LOBJ}
+extract: ${P} extract.o ${EOBJ} ${LOBJ} Makefile
 	 ${RM} extract
 	 ${CC} ${CFLAGS} -o extract ${EOBJ} extract.o ${LIBR} ${LOBJ}
 
-topwords: topwords.o hashtab.o
+topwords: topwords.o hashtab.o Makefile
 	${RM} topwords
 	${CC} ${CFLAGS} -o topwords topwords.o hashtab.o ${LIBR}
 
-olddecompress: olddecomp.o oldcompress.o ${LOBJ}
+olddecompress: olddecomp.o oldcompress.o ${LOBJ} Makefile
 	${RM} olddecompress
 	${CC} ${CFLAGS} -o olddecompress olddecomp.o oldcompress.o ${LIBR} \
 	 ${LOBJ}
 
-announce: ${ANNOBJ} ${LOBJ}
+announce: ${ANNOBJ} ${LOBJ} Makefile
 	${MV} announce announce~
 	${CC} ${ANNOBJ} -o announce ${LIBR} ${LOBJ}
 
@@ -187,6 +187,10 @@ depend:
 	echo chmod -w Makefile
 	chmod -w Makefile
 
+Makefile: Makefile.in
+	./configure
+	@echo Please re-run Make, as the Makefile was re-generated.
+	false
 
 ########################################################
 # Cleanup stuff.
