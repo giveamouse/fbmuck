@@ -356,6 +356,13 @@ init_defs(COMPSTATE *cstat)
     insert_def(cstat, "foreground", "fg_mode setmode");
     insert_def(cstat, "notify_except", "1 swap notify_exclude");
 
+    /* MUF Error defines */
+    insert_def(cstat, "err_divzero?",   "0 is_set?");
+    insert_def(cstat, "err_nan?",       "1 is_set?");
+    insert_def(cstat, "err_imaginary?", "2 is_set?");
+    insert_def(cstat, "err_fbounds?",   "3 is_set?");
+    insert_def(cstat, "err_ibounds?",   "4 is_set?");
+
     /* array convenience defines */
     insert_def(cstat, "}list", "} array_make");
     insert_def(cstat, "}dict", "}  2 / array_make_dict");
@@ -380,6 +387,7 @@ init_defs(COMPSTATE *cstat)
     insert_def(cstat, "c_listbox",   "\"listbox\"");
     insert_def(cstat, "c_frame",     "\"frame\"");
     insert_def(cstat, "c_notebook",  "\"notebook\"");
+    /* insert_def(cstat, "ctrl_image",     "\"image\""); */
     /* insert_def(cstat, "ctrl_radiobtn",  "\"radio\""); */
 
     /* include any defines set in #0's _defs/ propdir. */

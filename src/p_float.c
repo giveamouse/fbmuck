@@ -304,13 +304,20 @@ prim_xyz_to_polar(PRIM_PROTOTYPE)
  y = oper2->data.fnumber;
  z = oper3->data.fnumber;
 
- dist  = (float)sqrt((x * x) + (y * y) + (z * z));
- if (dist > 0.0) {
-   theta = (float)atan2(y, x);
-   phi   = (float)acos(z / dist);
- } else {
+ if (no_good(x) || no_good(y) || no_good(z)) {
+   dist  = 0.0;
    theta = 0.0;
-   phi = 0.0;
+   phi   = 0.0;
+   fr->error.error_flags.nan = 1;
+ } else {
+   dist  = (float)sqrt((x * x) + (y * y) + (z * z));
+   if (dist > 0.0) {
+     theta = (float)atan2(y, x);
+     phi   = (float)acos(z / dist);
+   } else {
+     theta = 0.0;
+     phi   = 0.0;
+   }
  }
 
  CLEAR(oper1);
@@ -325,30 +332,38 @@ prim_xyz_to_polar(PRIM_PROTOTYPE)
 void
 prim_polar_to_xyz(PRIM_PROTOTYPE)
 {
- float x, y, z;
- double dist, theta, phi;
+  float x, y, z;
+  double dist, theta, phi;
 
- CHECKOP(3);
- oper3 = POP();
- oper2 = POP();
- oper1 = POP();
- if (oper1->type != PROG_FLOAT) abort_interp("Non-float argument. (1)");
- if (oper2->type != PROG_FLOAT) abort_interp("Non-float argument. (2)");
- if (oper3->type != PROG_FLOAT) abort_interp("Non-float argument. (3)");
+  CHECKOP(3);
+  oper3 = POP();
+  oper2 = POP();
+  oper1 = POP();
+  if (oper1->type != PROG_FLOAT) abort_interp("Non-float argument. (1)");
+  if (oper2->type != PROG_FLOAT) abort_interp("Non-float argument. (2)");
+  if (oper3->type != PROG_FLOAT) abort_interp("Non-float argument. (3)");
 
- dist = oper1->data.fnumber;
- theta = oper2->data.fnumber;
- phi = oper3->data.fnumber;
- x = (float)(dist * cos(theta) * sin(phi));
- y = (float)(dist * sin(theta) * sin(phi));
- z = (float)(dist * cos(phi));
+  dist = oper1->data.fnumber;
+  theta = oper2->data.fnumber;
+  phi = oper3->data.fnumber;
 
- CLEAR(oper1);
- CLEAR(oper2);
- CLEAR(oper3);
- PushFloat(x);
- PushFloat(y);
- PushFloat(z);
+  if (no_good(dist) || no_good(theta) || no_good(phi)) {
+    x = 0.0;
+    y = 0.0;
+    z = 0.0;
+    fr->error.error_flags.nan = 1;
+  } else {
+    x = (float)(dist * cos(theta) * sin(phi));
+    y = (float)(dist * sin(theta) * sin(phi));
+    z = (float)(dist * cos(phi));
+  }
+
+  CLEAR(oper1);
+  CLEAR(oper2);
+  CLEAR(oper3);
+  PushFloat(x);
+  PushFloat(y);
+  PushFloat(z);
 }
 
 void
