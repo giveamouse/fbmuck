@@ -37,7 +37,9 @@ Robert Earl
 
 The authors of the 2.2fb mods have added and changed so much code that
 more than 2/3rds of the code is now original.  The Fuzzball team's
-contributions to this code are covered by the GNU General Public License.
+contributions to this code are covered by the GNU General Public License,
+with explicit permission granted to distribute when linked against OpenSSL.
+
 See below for the GPL text.
 
 The team lead for the Fuzzball Muck server may be reached at:
