@@ -2,8 +2,11 @@
 
 /*
  * $Log: create.c,v $
- * Revision 1.1  1999/12/16 03:23:29  revar
- * Initial revision
+ * Revision 1.2  2000/02/10 07:08:05  winged
+ * Fix bug #101632, first @program fails to show 'Entering insert mode' message
+ *
+ * Revision 1.1.1.1  1999/12/16 03:23:29  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:27:42  foxen
  * Initial FB6 CVS checkin.
@@ -640,7 +643,8 @@ do_prog(int descr, dbref player, const char *name)
 	DBDIRTY(player);
 	sprintf(buf, "Program %s created with number %d.", name, newprog);
 	notify(player, buf);
-	notify(player, "Entering editor.");
+	sprintf(buf, "Entering editor.");
+	notify(player, buf);
     } else if (i == AMBIGUOUS) {
 	notify(player, "I don't know which one you mean!");
 	return;
