@@ -3276,6 +3276,18 @@ those dbrefs who have a property specified by s1, set to a value that smatch
 matches s2.
 ~
 ~
+ARRAY_FILTER_FLAGS
+ARRAY_FILTER_FLAGS ( list:dbrefs str:flags -- list:matchingdbrefs )
+
+  Takes a homogenous list array of dbrefs and a flags test string, and
+returns a list array with only those dbrefs whose flags matched the flag
+test string.  A flags test string is a list of flag letters or object type
+letters to require, and a list of flags to specifically reject preceeded
+by exclamation marks (!).  ie: "TD!C!V" would match Things set Dark, which
+did not have their Chown_ok or Vehicle flags set.  See 'help @find' for
+more info on flag test strings.
+~
+~
 ARRAY_GET_PROPDIRS
 ARRAY_GET_PROPDIRS( d s -- a )
 

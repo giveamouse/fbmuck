@@ -17,6 +17,7 @@
 #include "fbstrings.h"
 #include "interp.h"
 #include "props.h"
+#include "dbsearch.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static struct inst temp1, temp2;
@@ -658,8 +659,10 @@ prim_array_n_union(PRIM_PROTOTYPE)
 		for (num_arrays = 0; num_arrays < result; num_arrays++) {
 			CHECKOP(1);
 			oper1 = POP();
-			if (oper1->type != PROG_ARRAY)
+			if (oper1->type != PROG_ARRAY) {
+				array_free(new_mash);
 				abort_interp("Argument not an array.");
+			}
 			array_mash(oper1->data.array, &new_mash, 1);
 			CLEAR(oper1);
 		}
@@ -696,8 +699,10 @@ prim_array_n_intersection(PRIM_PROTOTYPE)
 		new_mash = new_array_dictionary();
 		for (num_arrays = 0; num_arrays < result; num_arrays++) {
 			oper1 = POP();
-			if (oper1->type != PROG_ARRAY)
+			if (oper1->type != PROG_ARRAY) {
+				array_free(new_mash);
 				abort_interp("Argument not an array.");
+			}
 			array_mash(oper1->data.array, &new_mash, 1);
 			CLEAR(oper1);
 		}
@@ -734,13 +739,19 @@ prim_array_n_difference(PRIM_PROTOTYPE)
 		new_mash = new_array_dictionary();
 
 		oper1 = POP();
+		if (oper1->type != PROG_ARRAY) {
+			array_free(new_mash);
+			abort_interp("Argument not an array.");
+		}
 		array_mash(oper1->data.array, &new_mash, 1);
 		CLEAR(oper1);
 
 		for (num_arrays = 1; num_arrays < result; num_arrays++) {
 			oper1 = POP();
-			if (oper1->type != PROG_ARRAY)
+			if (oper1->type != PROG_ARRAY) {
+				array_free(new_mash);
 				abort_interp("Argument not an array.");
+			}
 			array_mash(oper1->data.array, &new_mash, -1);
 			CLEAR(oper1);
 		}
@@ -1210,14 +1221,18 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 	if (!maxcount) {
 		strval = get_property_class(ref, propname);
 		if (strval) {
-			maxcount = atoi(strval);
+			strval = get_uncompress(strval);
+			if (strval && number(strval)) {
+				maxcount = atoi(strval);
+			}
 		}
 		if (!maxcount) {
 			snprintf(propname, sizeof(propname), "%s%c#", dir, PROPDIR_DELIMITER);
 			maxcount = get_property_value(ref, propname);
 			if (!maxcount) {
 				strval = get_property_class(ref, propname);
-				if (strval) {
+				strval = get_uncompress(strval);
+				if (strval && number(strval)) {
 					maxcount = atoi(strval);
 				}
 			}
@@ -1225,7 +1240,7 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 	}
 
 	nu = new_array_packed(0);
-	while (1) {
+	while (maxcount > 0) {
 		snprintf(propname, sizeof(propname), "%s#%c%d", dir, PROPDIR_DELIMITER, count);
 		prptr = get_property(ref, propname);
 		if (!prptr) {
@@ -2278,4 +2293,39 @@ prim_array_nested_del(PRIM_PROTOTYPE)
 }
 
 
+void
+prim_array_filter_flags(PRIM_PROTOTYPE)
+{
+    struct flgchkdat check;
+    stk_array *nw, *arr;
+    struct inst *in;
+
+    CHECKOP(2);
+    oper2 = POP();              /* str:flags */
+    oper1 = POP();              /* arr:refs */
+
+    if (oper1->type != PROG_ARRAY)
+        abort_interp("Argument not an array. (1)");
+    if (!array_is_homogenous(oper1->data.array, PROG_OBJECT))
+        abort_interp("Argument not an array of dbrefs. (1)");
+    if (oper2->type != PROG_STRING || !oper2->data.string)
+        abort_interp("Argument not a non-null string. (2)");
+
+    arr = oper1->data.array;
+    nw = new_array_packed(0);
+
+    init_checkflags(player, DoNullInd(oper2->data.string), &check);
+
+    if (array_first(arr, &temp1)) {
+        do {
+            in = array_getitem(arr, &temp1);
+            if (valid_object(in) && checkflags(in->data.objref, check))
+                array_appenditem(&nw, in);
+        } while (array_next(arr, &temp1));
+    }
+
+    CLEAR(oper1);
+    CLEAR(oper2);
+    PushArrayRaw(nw);
+}
 
