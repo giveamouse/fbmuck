@@ -189,17 +189,6 @@ pronoun_substitute(int descr, dbref player, const char *str)
 	strcpy(orig, str);
 	str = orig;
 
-	sex = GENDER_UNASSIGNED;
-	if (has_property_strict(descr, player, player, "sex", "male", 0))
-		sex = GENDER_MALE;
-	else if (has_property_strict(descr, player, player, "sex", "female", 0))
-		sex = GENDER_FEMALE;
-	else if (has_property_strict(descr, player, player, "sex", "hermaphrodite", 0))
-		sex = GENDER_HERM;
-	else if (has_property_strict(descr, player, player, "sex", "herm", 0))
-		sex = GENDER_HERM;
-	else if (has_property_strict(descr, player, player, "sex", "neuter", 0))
-		sex = GENDER_NEUTER;
 	sexstr = get_property_class(player, "sex");
 	if (sexstr) {
 		sexstr = do_parse_mesg(descr, player, player, sexstr, "(Lock)", sexbuf,
@@ -207,9 +196,36 @@ pronoun_substitute(int descr, dbref player, const char *str)
 							(Prop_Blessed(player, "sex")? MPI_ISBLESSED : 0)));
 	}
 	while (sexstr && isspace(*sexstr)) sexstr++;
+
+	sex = GENDER_UNASSIGNED;
+
 	if (!sexstr || !*sexstr) {
 		sexstr = "_default";
 	}
+	else
+	{
+		char* last_non_space = sexbuf;
+		char* ptr = sexbuf;
+
+		for(; *ptr; ptr++)
+			if (!isspace(*ptr))
+				last_non_space = ptr;
+		
+		if (*last_non_space)
+			*(last_non_space + 1) = '\0';
+
+		if (string_compare(sexstr, "male") == 0)
+			sex = GENDER_MALE;
+		else if (string_compare(sexstr, "female") == 0)
+			sex = GENDER_FEMALE;
+		else if (string_compare(sexstr, "hermaphrodite") == 0)
+			sex = GENDER_HERM;
+		else if (string_compare(sexstr, "herm") == 0)
+			sex = GENDER_HERM;
+		else if (string_compare(sexstr, "neuter") == 0)
+			sex = GENDER_NEUTER;
+	}
+
 	result = buf;
 	while (*str) {
 		if (*str == '%') {
