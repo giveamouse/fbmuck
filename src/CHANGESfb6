@@ -8,6 +8,7 @@ Fixed fbmuck.spec to do an additional 'make install-inits'.
 Fixed configure script to auto-find ssl.h location.
 Fixed crasher bug with @killing invalid pids.
 Fixed crasher bug with prim_moveto where dest was #-3.
+Fixed double-freeing of source array contents in ARRAY_FMTSTRINGS.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.
@@ -15,8 +16,8 @@ Added DESCRBUFSIZE ( int:dscr -- int:bytes ) muf prim.  Returns the number of
   bytes of free space remaining in the output buffer before it will get
   the <output flushed> message.
 Added USERLOG (str:mesg -- ) MUF prim.  Logs an arbitrary message to the user
-  log file.  (#defined in config.h as USER_LOG, defaults to the "logs/user"
-  file.)  The log entry will be formatted like:
+  log file.  (#defined in config.h as USER_LOG, defaults to "logs/user".)
+  The log entry will be formatted like:
 	Winged(#4023) [newaction.muf(#666)] 06/11/02 03:09:31: <string>
   The program must be running at a mucker level at least equal to the @tune
   value 'userlog_mlev' (defaults to 3) to write this log entry.
