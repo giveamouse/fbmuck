@@ -1250,7 +1250,7 @@ prim_newobject(PRIM_PROTOTYPE)
 		abort_interp("An object was already created this program run.");
 	CHECKOFLOW(1);
 	ref = oper2->data.objref;
-	if (!(valid_object(oper2) || valid_player(oper2) || (Typeof(ref) == TYPE_ROOM)))
+	if (!valid_object(oper2) || !(valid_player(oper2) || (Typeof(ref) == TYPE_ROOM)))
 		abort_interp("Invalid argument (1)");
 	if (oper1->type != PROG_STRING)
 		abort_interp("Invalid argument (2)");
