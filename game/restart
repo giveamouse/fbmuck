@@ -1,0 +1,164 @@
+#!/bin/csh -f
+#
+# Sole argument is a port number, if desired,
+# if none is given defaults to 4321.
+#
+
+#
+# You'll want to edit this to match the base directory of your muck's files.
+# This should be the directory containing the 'data' amd 'muf' directories.
+#
+#set GAMEDIR = $HOME/muck
+set GAMEDIR = $HOME/CR/FB/game
+
+
+#
+# The following are the paths to the db files to load, save to, and archive to.
+# DBOLD is the path and filename of the the previous database archive.
+# DBIN is the path and filename of the database to read in.
+# DBOUT is the path and filename of the database that the muck should save to.
+#
+# On a successful restart, DBIN is moved to DBOLD, and DBOUT is moved to DBIN,
+# then the server is started.  The server will save it's db to DBOUT.
+#
+set DBOLD = data/std-db.old
+set DBIN = data/std-db.db
+set DBOUT = data/std-db.new
+
+
+#
+# The port that the MUCK server should listen to.  This will be overridden if
+# this script is called with a port number argument.
+#
+set PORT = 4201
+
+
+#
+# It's doubtful you will want to change this, unless you compile a different
+# path and filename into the server.  This is the file that deltadumps are
+# saved to.  After a successful restart, these deltas will be appended to the
+# end of the DBIN file.
+#
+set DELTAS = data/deltas-file
+
+
+#
+# This is the name of the netmuck program to run.  You probably don't want to
+# change this unless you renamed the server program to something other than
+# netmuck.
+#
+set SERVER = ./netmuck
+
+
+#
+# This is the name of the file that the netmuck program creates that contains
+# the process ID of the server currently running in this game directory.
+# You probably don't want to change this unless you change the PID_FILE
+# #define in include/config.h
+#
+set PIDFILE = ./netmuck.pid
+
+
+#
+# You probably won't need to edit anything after this line.
+#
+#############################################################################
+#############################################################################
+
+
+echo "Restarting at: `date`"
+
+umask 077
+unlimit
+
+touch $PIDFILE
+set muckpid = `cat $PIDFILE`
+if ("$muckpid" != "") then
+    set muck = `ps x | grep '^ *'${muckpid}' ' | wc -l`
+    set datestamp = `date +%m%d%y%H%M`
+    if ($muck > 0) then
+	echo "This server is already running.  Restart aborted."
+	exit 0
+    endif
+endif
+
+
+cd $GAMEDIR
+
+touch logs/restarts
+echo "`date` - `who am i`" >> logs/restarts
+
+if (-r $DBOUT.PANIC) then
+    set end = "`tail -1 $DBOUT.PANIC`"
+    if ("$end" == "***END OF DUMP***" ) then
+	mv $DBOUT.PANIC $DBOUT
+	rm -f $DELTAS
+    else
+	rm $DBOUT.PANIC
+	echo "Warning: PANIC dump failed on "`date` | mail `whoami`
+    endif
+endif
+
+# rm -f $DBOLD $DBOLD.gz
+if (-r $DBOUT) then
+    # mv $DBOLD $DBOLD.$datestamp
+    mv -f $DBIN $DBOLD
+    mv $DBOUT $DBIN
+endif
+
+if (! -r $DBIN) then
+	echo "Hey\!  You gotta have a "$DBIN" file to restart the server\!"
+	echo "Restart attempt aborted."
+	exit
+endif
+
+set end = "`tail -1 $DBIN`"
+if ("$end" != '***END OF DUMP***' ) then
+	echo "WARNING\!  The "$DBIN" file is incomplete and therefore corrupt\!"
+	echo "Restart attempt aborted."
+	exit
+endif
+
+
+# nice -20 gzip -9 $DBOLD.$datestamp &
+
+if (-r $DELTAS) then
+        echo "Restoring from delta."
+        set end = "`tail -1 $DELTAS`"
+        if ("$end" == "***END OF DUMP***" ) then
+                cat $DELTAS >> $DBIN
+        else
+                echo "Last delta is incomplete.  Truncating to previous dump."
+                grep -n '^***END OF DUMP***' $DELTAS|tail -1 >! .ftmp$$
+                set llinum = "`cut -d: -f1 < .ftmp$$`"
+                set llcnt = "`wc -l < .ftmp$$`"
+                if ($llcnt > 0) then
+                        head -$llinum $DELTAS >> $DBIN
+		else
+			echo "Hmm.  No previous delta dump."
+                endif
+		rm .ftmp$$
+        endif
+	rm -f $DELTAS
+endif
+
+set dbsiz=`ls -1s $DBIN | awk '{print $1}'`
+set diskfree=`df -k . | tail -1 | awk '{print $4}'`
+
+@ diskneeded = $dbsiz * 3
+@ spacediff = $diskneeded - $diskfree
+
+if ($diskfree < $diskneeded) then
+    echo "WARNING: you have insufficient disk space."
+    echo "The server is starting anyways, but you should immediately clear out old log"
+    echo "files, etc. to free up approximately $spacediff more K of disk space."
+endif
+
+if ($1"x" != "x") then
+    set PORT = $1
+endif
+
+# echo "Server started at: `date`"
+$SERVER $DBIN $DBOUT $PORT >& logs/stdouterr.log &
+# echo "Server stopped at: `date`"
+
