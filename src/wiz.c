@@ -2,6 +2,9 @@
 
 /*
  * $Log: wiz.c,v $
+ * Revision 1.6  2000/07/20 20:21:40  winged
+ * Fixes to not have uninitialized pointers floating around anymore
+ *
  * Revision 1.5  2000/07/19 01:33:18  revar
  * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
  * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
@@ -417,7 +420,7 @@ do_stats(dbref player, const char *name)
 	int changed = 0;
 	time_t currtime = time(NULL);
 	dbref i;
-	dbref owner;
+	dbref owner=NOTHING;
 	char buf[BUFFER_LEN];
 
 	if (!Wizard(OWNER(player)) && (!name || !*name)) {

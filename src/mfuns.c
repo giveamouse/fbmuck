@@ -21,11 +21,11 @@ const char *
 mfn_func(MFUNARGS)
 {
 	char *funcname;
-	char *ptr, *def;
+	char *ptr=NULL, *def;
 	int i;
 
 	funcname = MesgParse(argv[0], argv[0]);
-	CHECKRETURN(ptr, "FUNC", "name argument (1)");
+	CHECKRETURN(funcname, "FUNC", "name argument (1)");
 
 	def = argv[argc - 1];
 	for (i = 1; i < argc - 1; i++) {

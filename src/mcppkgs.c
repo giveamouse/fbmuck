@@ -235,7 +235,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 
 		} else if (!string_compare(category, "prog")) {
 			struct line *tmpline;
-			struct line *curr;
+			struct line *curr = NULL;
 			struct line *new_line;
 
 			if (obj < 0 || obj >= db_top || Typeof(obj) == TYPE_GARBAGE) {

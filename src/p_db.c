@@ -104,7 +104,7 @@ prim_addpennies(PRIM_PROTOTYPE)
 void
 prim_moveto(PRIM_PROTOTYPE)
 {
-	struct inst *oper1, *oper2, *oper3, *oper4;
+	struct inst *oper1=NULL, *oper2=NULL, *oper3=NULL, *oper4=NULL;
 
 	CHECKOP(2);
 	oper1 = POP();
@@ -505,7 +505,7 @@ prim_pmatch(PRIM_PROTOTYPE)
 void
 prim_match(PRIM_PROTOTYPE)
 {
-	struct inst *oper1, *oper2, *oper3, *oper4;
+	struct inst *oper1=NULL, *oper2=NULL, *oper3=NULL, *oper4=NULL;
 	dbref ref;
 
 	CHECKOP(1);
@@ -547,7 +547,7 @@ prim_match(PRIM_PROTOTYPE)
 void
 prim_rmatch(PRIM_PROTOTYPE)
 {
-	struct inst *oper1, *oper2, *oper3, *oper4;
+	struct inst *oper1=NULL, *oper2=NULL, *oper3=NULL, *oper4=NULL;
 	dbref ref;
 
 	CHECKOP(2);

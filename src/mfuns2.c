@@ -1337,7 +1337,7 @@ const char *
 mfn_muf(MFUNARGS)
 {
 	char *ptr;
-	struct inst *rv;
+	struct inst *rv=NULL;
 	struct frame *tmpfr;
 	dbref obj = mesg_dbref_raw(descr, player, what, perms, argv[0]);
 

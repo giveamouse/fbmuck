@@ -640,7 +640,7 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 {
 	char buf[BUFFER_LEN];
 	char *c, *p;
-	int result;
+	int result=0;
 
 	while (!feof(f) && (cnt < 0 || cnt--)) {
 		fgets(buf, sizeof(buf), f);

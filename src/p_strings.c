@@ -455,7 +455,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 void
 prim_split(PRIM_PROTOTYPE)
 {
-	char *temp;
+	char *temp=NULL;
 
 	CHECKOP(2);
 	oper1 = POP();
@@ -481,7 +481,7 @@ prim_split(PRIM_PROTOTYPE)
 	}
 	CLEAR(oper1);
 	CLEAR(oper2);
-	if (result) {
+	if (result > 0) {
 		if (result == 1) {
 			if (buf[0] == '\0') {
 				PushNullStr;
@@ -506,7 +506,7 @@ prim_split(PRIM_PROTOTYPE)
 void
 prim_rsplit(PRIM_PROTOTYPE)
 {
-	char *temp, *hold;
+	char *temp=NULL, *hold=NULL;
 
 	CHECKOP(2);
 	oper1 = POP();
@@ -550,7 +550,7 @@ prim_rsplit(PRIM_PROTOTYPE)
 			} else {
 				PushString(buf);
 			}
-			if (hold[0] == '\0') {
+			if (hold && hold[0] == '\0') {
 				PushNullStr;
 			} else {
 				PushString(hold);
@@ -1001,7 +1001,7 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 void
 prim_intostr(PRIM_PROTOTYPE)
 {
-	char *ptr;
+	char *ptr=NULL;
 	int val;
 	int negflag;
 
@@ -1011,6 +1011,7 @@ prim_intostr(PRIM_PROTOTYPE)
 		abort_interp("Invalid argument.");
 	if (oper1->type == PROG_FLOAT) {
 		sprintf(buf, "%g", oper1->data.fnumber);
+		ptr=buf;
 	} else {
 		val = oper1->data.number;
 		ptr = &buf[BUFFER_LEN];

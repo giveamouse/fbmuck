@@ -2,6 +2,9 @@
 
 /*
  * $Log: property.c,v $
+ * Revision 1.6  2000/07/20 20:21:40  winged
+ * Fixes to not have uninitialized pointers floating around anymore
+ *
  * Revision 1.5  2000/07/19 01:33:18  revar
  * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
  * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
@@ -851,7 +854,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 	char getprop_buf[BUFFER_LEN * 3];
 	char *name, *flags, *value, *p;
 	int flg;
-	long tpos;
+	long tpos=0L;
 	struct boolexp *lok;
 	short do_diskbase_propvals;
 	PData mydat;
@@ -1078,7 +1081,9 @@ int
 db_dump_props_rec(dbref obj, FILE * f, const char *dir, PropPtr p)
 {
 	char buf[BUFFER_LEN];
-	long tpos;
+#ifdef DISKBASE
+	long tpos=0L;
+#endif
 	int flg;
 	short wastouched = 0;
 	int count = 0;
