@@ -197,7 +197,7 @@ prim_regexp(PRIM_PROTOTYPE)
 			idx.type		= PROG_INTEGER;
 			idx.data.number	= 0;
 			val.type		= PROG_INTEGER;
-			val.data.number	= cm->rm_so;
+			val.data.number	= cm->rm_so + 1;
 
 			array_setitem(&nu, &idx, &val);
 
@@ -207,7 +207,7 @@ prim_regexp(PRIM_PROTOTYPE)
 			idx.type		= PROG_INTEGER;
 			idx.data.number	= 1;
 			val.type		= PROG_INTEGER;
-			val.data.number	= cm->rm_eo;
+			val.data.number	= cm->rm_eo - cm->rm_so;
 
 			array_setitem(&nu, &idx, &val);
 
