@@ -20,6 +20,9 @@
 
 /*
  * $Log: compress.c,v $
+ * Revision 1.3  2000/07/20 20:38:52  winged
+ * Let's clean up some REALLY pedantic warnings, shall we?
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -80,7 +83,7 @@ static char *dict[4096], *dict2[4096], line[80], buffer[40], chksum_buf[80];
 static int seconds[43][43], special_case = 5;
 static int c_index, repeats;
 static int lastmatch, completematch, maxmatch;
-static char *to;
+static unsigned char *to=NULL;
 
 static const char copyright[] = "Copyright 1995 by Dragon's Eye Productions.";
 
@@ -348,7 +351,7 @@ pawprint(void)
 const char *
 uncompress(const char *s)
 {
-	static char buf[BUFFER_LEN];
+	static unsigned char buf[BUFFER_LEN];
 	unsigned int i, j, mode, c;
 	int limit = 4095;
 
@@ -406,7 +409,7 @@ uncompress(const char *s)
 	}
 	*to++ = '\0';
 	limit--;
-	return buf;
+	return (char *)buf;
 }
 
 extern short db_decompression_flag;
@@ -414,7 +417,7 @@ extern short db_decompression_flag;
 const char *
 compress(const char *s)
 {
-	static char buf[BUFFER_LEN];
+	static unsigned char buf[BUFFER_LEN];
 	int a, b, c, d, e;
 	char buffer2[40];
 	int done = 0;
@@ -594,5 +597,5 @@ compress(const char *s)
 	while ((*to++ = buffer[c_index++])) ;
 	clear_buffer();
 
-	return buf;
+	return (char *)buf;
 }
