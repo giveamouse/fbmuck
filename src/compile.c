@@ -598,7 +598,7 @@ free_unused_programs()
 #define IMMFLAG_REFERENCED	1	/* Referenced by a jump */
 
 void
-MaybeOptimizeSvarAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int BangNo)
+MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int BangNo)
 {
 	struct INTERMEDIATE* curr = first->next;
 	struct INTERMEDIATE* ptr;
@@ -618,23 +618,60 @@ MaybeOptimizeSvarAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 				}
 				break;
 
+			case PROG_LVAR_AT:
+			case PROG_LVAR_AT_CLEAR:
+				if (first->in.type == PROG_LVAR_AT || 
+					first->in.type == PROG_LVAR_AT_CLEAR
+				) {
+					if (curr->in.data.number == first->in.data.number) {
+						/* Can't optimize if references to the variable found before a var! */
+						return;
+					}
+				}
+				break;
+
 			case PROG_SVAR_AT:
 			case PROG_SVAR_AT_CLEAR:
-				if (curr->in.data.number == first->in.data.number) {
-					/* Can't optimize if references to the variable found before a var! */
-					return;
+				if (first->in.type == PROG_SVAR_AT || 
+					first->in.type == PROG_SVAR_AT_CLEAR
+				) {
+					if (curr->in.data.number == first->in.data.number) {
+						/* Can't optimize if references to the variable found before a var! */
+						return;
+					}
+				}
+				break;
+
+			case PROG_LVAR_BANG:
+				if (first->in.type == PROG_LVAR_AT || 
+					first->in.type == PROG_LVAR_AT_CLEAR
+				) {
+					if (first->in.data.number == curr->in.data.number) {
+						if (curr->no <= farthest) {
+							/* cannot optimize as we are within a branch */
+							return;
+						} else {
+							/* Optimize it! */
+							first->in.type = PROG_LVAR_AT_CLEAR;
+							return;
+						}
+					}
 				}
 				break;
 
 			case PROG_SVAR_BANG:
-				if (first->in.data.number == curr->in.data.number) {
-					if (curr->no <= farthest) {
-						/* cannot optimize as we are within a branch */
-						return;
-					} else {
-						/* Optimize it! */
-						first->in.type = PROG_SVAR_AT_CLEAR;
-						return;
+				if (first->in.type == PROG_SVAR_AT || 
+					first->in.type == PROG_SVAR_AT_CLEAR
+				) {
+					if (first->in.data.number == curr->in.data.number) {
+						if (curr->no <= farthest) {
+							/* cannot optimize as we are within a branch */
+							return;
+						} else {
+							/* Optimize it! */
+							first->in.type = PROG_SVAR_AT_CLEAR;
+							return;
+						}
 					}
 				}
 				break;
@@ -827,9 +864,32 @@ OptimizeIntermediate(COMPSTATE * cstat)
 	for(curr = cstat->first_word; curr; ) {
 		int advance = 1;
 		switch(curr->in.type) {
+			case PROG_LVAR:
+				/* lvar !  ==>  lvar! */
+				/* lvar @  ==>  lvar@ */
+				if (curr->next && curr->next->in.type == PROG_PRIMITIVE) {
+					if (curr->next->in.data.number == AtNo) {
+						if (ContiguousIntermediates(Flags, curr->next, 1)) {
+							curr->in.type = PROG_LVAR_AT;
+							RemoveNextIntermediate(cstat, curr);
+							advance = 0;
+							break;
+						}
+					}
+					if (curr->next->in.data.number == BangNo) {
+						if (ContiguousIntermediates(Flags, curr->next, 1)) {
+							curr->in.type = PROG_LVAR_BANG;
+							RemoveNextIntermediate(cstat, curr);
+							advance = 0;
+							break;
+						}
+					}
+				}
+				break;
+
 			case PROG_SVAR:
-				/* var !  ==>  var! */
-				/* var @  ==>  var@ */
+				/* svar !  ==>  svar! */
+				/* svar @  ==>  svar@ */
 				if (curr->next && curr->next->in.type == PROG_PRIMITIVE) {
 					if (curr->next->in.data.number == AtNo) {
 						if (ContiguousIntermediates(Flags, curr->next, 1)) {
@@ -1003,8 +1063,8 @@ OptimizeIntermediate(COMPSTATE * cstat)
 	/* Turn all var@'s which have a following var! into a var@-clear */
 
 	for(curr = cstat->first_word; curr; curr = curr->next)
-		if (curr->in.type == PROG_SVAR_AT)
-				MaybeOptimizeSvarAt(cstat, curr, AtNo, BangNo);
+		if (curr->in.type == PROG_SVAR_AT || curr->in.type == PROG_LVAR_AT)
+				MaybeOptimizeVarsAt(cstat, curr, AtNo, BangNo);
 
 	free(Flags);
 	return (old_instr_count - cstat->nowords);
@@ -1012,7 +1072,7 @@ OptimizeIntermediate(COMPSTATE * cstat)
 
 /* Genericized Optimizer ideas:
  *
- * const int OI_ANY = -121314; // arbitrary unlikely-to-be-needed value.
+ * const int OI_ANY = -121314;   // arbitrary unlikely-to-be-needed value.
  *
  * typedef enum {
  *     OI_KEEP,
@@ -1475,8 +1535,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 	} else if (!string_compare(temp, "cleardefs")) {
 		char nextToken[BUFFER_LEN];
 
-		purge_defs(cstat);//Get rid of all defs first.
-		include_internal_defs(cstat);//Always include internal defs.
+		purge_defs(cstat); /* Get rid of all defs first. */
+		include_internal_defs(cstat); /* Always include internal defs. */
 		while(*cstat->next_char && isspace(*cstat->next_char))
 			cstat->next_char++; /* eating leading spaces */
 		strcpy(nextToken, cstat->next_char);
@@ -1968,7 +2028,6 @@ process_special(COMPSTATE * cstat, const char *token)
 
 	if (!string_compare(token, ":")) {
 		const char *proc_name;
-/*FIXME		struct INTERMEDIATE *new2; */
 		int argsflag = 0;
 
 		if (cstat->curr_proc)
@@ -2520,7 +2579,6 @@ process_special(COMPSTATE * cstat, const char *token)
 	} else if (!string_compare(token, "VAR!")) {
 		if (cstat->curr_proc) {
 			struct INTERMEDIATE *nu;
-/*FIXME			struct INTERMEDIATE *curr; */
 
 			tok = next_token(cstat);
 			if (!tok)
@@ -3273,6 +3331,9 @@ copy_program(COMPSTATE * cstat)
 		case PROG_SVAR_AT_CLEAR:
 		case PROG_SVAR_BANG:
 		case PROG_LVAR:
+		case PROG_LVAR_AT:
+		case PROG_LVAR_AT_CLEAR:
+		case PROG_LVAR_BANG:
 		case PROG_VAR:
 			code[i].data.number = curr->in.data.number;
 			break;

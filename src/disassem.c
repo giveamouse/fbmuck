@@ -96,11 +96,20 @@ disassemble(dbref player, dbref program)
 		case PROG_LVAR:
 			sprintf(buf, "%d: (line %d) LOCALVAR: %d", i, curr->line, curr->data.number);
 			break;
+		case PROG_LVAR_AT:
+			sprintf(buf, "%d: (line %d) GET LOCALVAR: %d", i, curr->line, curr->data.number);
+			break;
+		case PROG_LVAR_AT_CLEAR:
+			sprintf(buf, "%d: (line %d) GET LOCALVAR (clear optim): %d", i, curr->line, curr->data.number);
+			break;
+		case PROG_LVAR_BANG:
+			sprintf(buf, "%d: (line %d) SET LOCALVAR: %d", i, curr->line, curr->data.number);
+			break;
 		case PROG_CLEARED:
-			sprintf(buf, "%d: (line ???) CLEARED INST AT %s:%d", i, (char *) curr->data.addr,
+			sprintf(buf, "%d: (line ?) CLEARED INST AT %s:%d", i, (char *) curr->data.addr,
 					curr->line);
 		default:
-			sprintf(buf, "%d: (line ???) UNKNOWN INST", i);
+			sprintf(buf, "%d: (line ?) UNKNOWN INST", i);
 		}
 		notify(player, buf);
 	}

@@ -282,6 +282,9 @@ struct line {
 #define PROG_SVAR_AT_CLEAR 19	/* @ for scoped vars, with var clear optim */
 #define PROG_SVAR_BANG   20		/* ! shortcut for scoped vars */
 #define PROG_TRY         21		/* TRY shortcut */
+#define PROG_LVAR_AT     22		/* @ shortcut for local vars */
+#define PROG_LVAR_AT_CLEAR 23	/* @ for local vars, with var clear optim */
+#define PROG_LVAR_BANG   24		/* ! shortcut for local vars */
 
 #define MAX_VAR         54		/* maximum number of variables including the
 								   * basic ME, LOC, TRIGGER, and COMMAND vars */

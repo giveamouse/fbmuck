@@ -246,6 +246,13 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 	case PROG_LVAR:
 		length = snprintf(buffer, buflen, "LV%d", theinst->data.number);
 		break;
+	case PROG_LVAR_AT:
+	case PROG_LVAR_AT_CLEAR:
+		length = snprintf(buffer, buflen, "LV%d @", theinst->data.number);
+		break;
+	case PROG_LVAR_BANG:
+		length = snprintf(buffer, buflen, "LV%d !", theinst->data.number);
+		break;
 	case PROG_FUNCTION:
 		length =
 			snprintf(buffer, buflen, "INIT FUNC: %s (%d arg%s)",
@@ -270,11 +277,11 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 		break;
 	case PROG_CLEARED:
 		length =
-			snprintf(buffer, buflen, "???<%s:%d>", (char *) theinst->data.addr, theinst->line);
+			snprintf(buffer, buflen, "?<%s:%d>", (char *) theinst->data.addr, theinst->line);
 		break;
 	default:
 		if (buflen > 3)
-			strcpy(buffer, "???");
+			strcpy(buffer, "?");
 		else
 			*buffer = '\0';
 		break;
