@@ -18,7 +18,7 @@
 #include "interp.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
-static struct inst temp1, temp2;
+static struct inst temp1, temp2, temp3;
 static int tmp, result;
 static dbref ref;
 static char buf[BUFFER_LEN];
@@ -1080,6 +1080,66 @@ prim_explode(PRIM_PROTOTYPE)
 	CLEAR(&temp2);
 	PushInt(result);
 }
+
+
+void
+prim_explode_array(PRIM_PROTOTYPE) 
+{ 
+	stk_array *new; 
+	char *tempPtr; 
+	char *lastPtr; 
+	CHECKOP(2); 
+	temp1 = *(oper1 = POP()); 
+	temp2 = *(oper2 = POP()); 
+	oper1 = &temp1; 
+	oper2 = &temp2; 
+	if (temp1.type != PROG_STRING) 
+		abort_interp("Non-string argument (2)"); 
+	if (temp2.type != PROG_STRING) 
+		abort_interp("Non-string argument (1)"); 
+	if (!temp1.data.string) 
+		abort_interp("Empty string argument (2)"); 
+	CHECKOFLOW(1); 
+
+	{ 
+		const char *delimit = temp1.data.string->data; 
+		int delimlen = temp1.data.string->length;
+
+		new = new_array_packed(0); 
+		if (!temp2.data.string) { 
+			lastPtr = "";
+		} else { 
+			strcpy(buf, temp2.data.string->data);
+			tempPtr = lastPtr = buf;
+			while (*tempPtr) {
+				if (!strncmp(tempPtr, delimit, delimlen)) {
+					*tempPtr = '\0';
+					tempPtr += delimlen;
+
+					temp3.type = PROG_STRING;
+					temp3.data.string = alloc_prog_string(lastPtr);
+					array_appenditem(&new, &temp3);
+					CLEAR(&temp3);
+
+					lastPtr = tempPtr;
+				} else {
+					tempPtr++;
+				}
+			}
+		} 
+	} 
+
+	temp3.type = PROG_STRING; 
+	temp3.data.string = alloc_prog_string(lastPtr); 
+	array_appenditem(&new, &temp3); 
+
+	CLEAR(&temp1); 
+	CLEAR(&temp2); 
+	CLEAR(&temp3); 
+
+	PushArrayRaw(new); 
+}
+
 
 void
 prim_subst(PRIM_PROTOTYPE)

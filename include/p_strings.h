@@ -17,6 +17,7 @@ extern void prim_notify(PRIM_PROTOTYPE);
 extern void prim_notify_exclude(PRIM_PROTOTYPE);
 extern void prim_intostr(PRIM_PROTOTYPE);
 extern void prim_explode(PRIM_PROTOTYPE);
+extern void prim_explode_array(PRIM_PROTOTYPE);
 extern void prim_subst(PRIM_PROTOTYPE);
 extern void prim_instr(PRIM_PROTOTYPE);
 extern void prim_rinstr(PRIM_PROTOTYPE);
@@ -45,7 +46,7 @@ extern void prim_ansi_midstr(PRIM_PROTOTYPE);
 	prim_stringpfx, prim_strencrypt, prim_strdecrypt, prim_textattr,          \
 	prim_midstr, prim_ctoi, prim_itoc, prim_stod, prim_split, prim_rsplit,    \
 	prim_fmtstring, prim_tokensplit, prim_ansi_strlen, prim_ansi_strcut,      \
-	prim_ansi_strip, prim_ansi_midstr
+	prim_ansi_strip, prim_ansi_midstr, prim_explode_array
 
 #define PRIMS_STRINGS_NAMES "NUMBER?", "STRINGCMP", "STRCMP",  \
     "STRNCMP", "STRCUT", "STRLEN", "STRCAT", "ATOI",           \
@@ -55,7 +56,7 @@ extern void prim_ansi_midstr(PRIM_PROTOTYPE);
 	"STRINGPFX", "STRENCRYPT", "STRDECRYPT", "TEXTATTR",       \
 	"MIDSTR", "CTOI", "ITOC", "STOD", "SPLIT", "RSPLIT",       \
 	"FMTSTRING", "TOKENSPLIT", "ANSI_STRLEN", "ANSI_STRCUT",   \
-	"ANSI_STRIP", "ANSI_MIDSTR"
+	"ANSI_STRIP", "ANSI_MIDSTR", "EXPLODE_ARRAY"
 
-#define PRIMS_STRINGS_CNT 38
+#define PRIMS_STRINGS_CNT 39
 
