@@ -106,6 +106,7 @@ mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_C
 	mcp_package_deregister(pkgname);
 	nu->next = mcp_PackageList;
 	mcp_PackageList = nu;
+	mcp_frame_package_renegotiate(pkgname);
 }
 
 
@@ -156,6 +157,7 @@ mcp_package_deregister(const char *pkgname)
 			ptr = ptr->next;
 		}
 	}
+	mcp_frame_package_renegotiate(pkgname);
 }
 
 
@@ -236,6 +238,12 @@ mcp_negotiation_start(McpFrame * mfr)
 /***                       ***************************************/
 /*****************************************************************/
 
+struct McpFrameList_t {
+	McpFrame* mfr;
+	struct McpFrameList_t* next;
+};
+typedef struct McpFrameList_t McpFrameList;
+McpFrameList* mcp_frame_list;
 
 
 /*****************************************************************
@@ -251,6 +259,8 @@ mcp_negotiation_start(McpFrame * mfr)
 void
 mcp_frame_init(McpFrame * mfr, connection_t con)
 {
+	McpFrameList* mfrl;
+
 	mfr->descriptor = con;
 	mfr->version.verminor = 0;
 	mfr->version.vermajor = 0;
@@ -258,6 +268,11 @@ mcp_frame_init(McpFrame * mfr, connection_t con)
 	mfr->packages = NULL;
 	mfr->messages = NULL;
 	mfr->enabled = 0;
+
+	mfrl = (McpFrameList*)malloc(sizeof(McpFrameList));
+	mfrl->mfr = mfr;
+	mfrl->next = mcp_frame_list;
+	mcp_frame_list = mfrl;
 }
 
 
@@ -278,6 +293,8 @@ mcp_frame_clear(McpFrame * mfr)
 {
 	McpPkg *tmp = mfr->packages;
 	McpMesg *tmp2 = mfr->messages;
+	McpFrameList* mfrl = mcp_frame_list;
+	McpFrameList* prev;
 
 	while (tmp) {
 		mfr->packages = tmp->next;
@@ -292,7 +309,97 @@ mcp_frame_clear(McpFrame * mfr)
 		free(tmp2);
 		tmp2 = mfr->messages;
 	}
+
+	while (mfrl && mfrl->mfr == mfr) {
+		mcp_frame_list = mfrl->next;
+		free(mfrl);
+		mfrl = mcp_frame_list;
+	}
+	if (!mcp_frame_list) {
+		return;
+	}
+	prev = mcp_frame_list;
+	mfrl = prev->next;
+	while (mfrl) {
+		if (mfrl->mfr == mfr) {
+			prev->next = mfrl->next;
+			free(mfrl);
+			mfrl = prev->next;
+		} else {
+			prev = mfrl;
+			mfrl = mfrl->next;
+		}
+	}
 }
+
+
+
+
+
+/*****************************************************************
+ *
+ * void mcp_frame_package_renegotiate(
+ *              McpFrame* mfr,
+ *              char* package
+ *          );
+ *
+ *   Removes a package from the list of supported packages
+ *   for all McpFrames, and initiates renegotiation of that
+ *   package.
+ *
+ *****************************************************************/
+
+void
+mcp_frame_package_renegotiate(const char* package)
+{
+	McpVer nullver = { 0, 0 };
+	McpFrameList* mfrl = mcp_frame_list;
+	McpFrame* mfr;
+	McpMesg cando;
+	char verbuf[32];
+	McpPkg *p;
+
+	p = mcp_PackageList;
+	while (p) {
+		if (!strcmp_nocase(p->pkgname, package)) {
+			break;
+		}
+		p = p->next;
+	}
+
+	if (!p) {
+		mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
+		mcp_mesg_arg_append(&cando, "package", package);
+		mcp_mesg_arg_append(&cando, "min-version", "0.0");
+		mcp_mesg_arg_append(&cando, "max-version", "0.0");
+	} else {
+		mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
+		mcp_mesg_arg_append(&cando, "package", p->pkgname);
+		sprintf(verbuf, "%d.%d", p->minver.vermajor, p->minver.verminor);
+		mcp_mesg_arg_append(&cando, "min-version", verbuf);
+		sprintf(verbuf, "%d.%d", p->maxver.vermajor, p->maxver.verminor);
+		mcp_mesg_arg_append(&cando, "max-version", verbuf);
+	}
+
+	while (mfrl) {
+		mfr = mfrl->mfr;
+		if (mfr->enabled) {
+			if (mcp_version_compare(mfr->version, nullver) > 0) {
+				mcp_frame_package_remove(mfr, package);
+				mcp_frame_output_mesg(mfr, &cando);
+			}
+		}
+		mfrl = mfrl->next;
+	}
+	mcp_mesg_clear(&cando);
+
+	/*
+	mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
+	mcp_frame_output_mesg(mfr, &cando);
+	mcp_mesg_clear(&cando);
+	*/
+}
+
 
 
 
@@ -366,13 +473,11 @@ mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer
  *
  * void mcp_frame_package_remove(
  *              McpFrame* mfr,
- *              char* package,
- *              McpVer minver,
- *              McpVer maxver
+ *              char* package
  *          );
  *
- *   Cleans up an McpFrame for a closing connection.
- *   You MUST call this when you are done using an McpFrame.
+ *   Removes a package from the list of supported packages
+ *   for this McpFrame.
  *
  *****************************************************************/
 
@@ -391,12 +496,16 @@ mcp_frame_package_remove(McpFrame * mfr, const char *package)
 	}
 
 	prev = mfr->packages;
-	while (prev && prev->next && !strcmp_nocase(prev->next->pkgname, package)) {
-		tmp = prev->next;
-		prev->next = tmp->next;
-		if (tmp->pkgname)
-			free(tmp->pkgname);
-		free(tmp);
+	while (prev && prev->next) {
+		if (!strcmp_nocase(prev->next->pkgname, package)) {
+			tmp = prev->next;
+			prev->next = tmp->next;
+			if (tmp->pkgname)
+				free(tmp->pkgname);
+			free(tmp);
+		} else {
+			prev = prev->next;
+		}
 	}
 }
 
@@ -1164,7 +1273,6 @@ mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2)
 
 
 
-
 /*****************************************************************/
 /***                       ***************************************/
 /***  MCP PACKAGE HANDLER  ***************************************/
@@ -1622,6 +1730,18 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.15  2001/10/09 06:57:12  revar
+* Fixed a bug where MCP packages weren't renegotiating on a program recompile.
+* Added $pubdef muf preprocessor directive.  Sets a _defs/XXX prop on the prog.
+* Added $version muf directive.  Sets the _version prop on the program.
+* Added $lib-version muf directive.  Sets the _lib-version prop on the program.
+* Added $author muf directive.  Sets the _author prop on the program.
+* Added $note muf directive.  Sets the _note prop on the program.
+* Added $abort muf directive.  Aborts the compile, giving a message.
+* Added $cleardefs muf directive.  Resets macro definitions to default set.
+* Added $ifver, $ifnver, $iflibver, $ifnlibver muf directives.  Like $ifdef.
+* Added $iflib, $ifnlib, $ifcancall, $ifncancall muf directives.  Like $ifdef.
+*
 * Revision 1.14  2001/09/18 18:23:38  revar
 * Fixed SSL connections that were broken by the MCP flush changes.
 *

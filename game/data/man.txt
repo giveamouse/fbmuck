@@ -2189,6 +2189,40 @@ __version
   A pre$defined macro that contains the current server version.
   Contains the same string that the VERSION primitive returns.
   
+$version <float>
+	Sets the _version string property on the program to <float>.
+
+$lib-version <float>
+	Sets the _lib-version string property on the program to <float>.
+
+$author <string>
+	Sets the _author string property on the program to <string>.
+
+$note <rest_of_line>
+	Sets the _note string property on the program to <rest_of_line>.
+
+$abort [<message>]
+    Aborts compiling and prints out the error message.
+
+$pubdef :
+$pubdef <defname>
+$pubdef <defname> <rest_of_line>
+$pubdef \<defname> <rest_of_line>
+    By using this directive, the _defs/ directory on a MUF program can
+    be set at compile time. 
+    $pubdef :   == Removes the _defs/ directory on the program object.
+    $pubdef <def name> = Removes only that _def/ from program object.
+    $pubdef <def name> <definition> = Sets that public _def/
+    $pubdef \<def name> <definition> = Only sets _def/ if not already set.
+    E.g.: $pubdef tell me @ swap notify
+       would put a _defs/tell:me @ swap notify prop on the program object.
+    Def names cannot have ':' nor '/' in them.
+
+$cleardefs [ALL]
+    Ignores program _defs/ when compiling the program. Wizards can use
+    $cleardefs ALL to also ignore #0 _defs/ when compiling. This does
+    not affect macros, and internal _defs/ are always loaded no matter what.
+
 $ifdef <condition> <compile this if true> $else <compile if false> $endif
 $ifndef <condition> <compile this if true> $else <compile if false> $endif
   where <condition> is either a $defined name, or a test that consists of
@@ -2198,6 +2232,18 @@ $ifndef <condition> <compile this if true> $else <compile if false> $endif
   $ifndef __version>Muck2.2fb3.5 $define envprop .envprop $enddef $endif
   $define ploc $ifdef proplocs .proploc $else $endif $enddef
   
+In the following directives, you can replace <library/prog dbref> with
+  the word "this" to indicate the program being compiled. These are all
+  $if $else $endif type constructions.
+$ifver      <library/dbref> <float>    <...> $else <...> $endif
+$ifnver     <library/dbref> <integer>  <...> $else <...> $endif
+$iflibver   <library/dbref> <float>    <...> $else <...> $endif
+$ifnlibver  <library/dbref> <float>    <...> $else <...> $endif
+$iflib      <library to check for>     <...> $else <...> $endif
+$ifnlib     <library to check for>     <...> $else <...> $endif
+$ifcancall  <library/dbref> <function> <...> $else <...> $endif
+$ifncancall <library/dbref> <function> <...> $else <...> $endif
+
 $include <dbref|progreg>
   Sets a bunch of $defines from the properties in the /_defs/ propdir.
   For example, if object #345 had the following properties:

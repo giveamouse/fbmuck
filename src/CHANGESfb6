@@ -47,6 +47,16 @@ Fixed various minor memory leaks.  Cleaned up freeing of non-leak allocations
 Fixed bad macro definition of gui_dlog_simple.
 Fixed error with FORK muf prim not duplicating forstack and trystacks.
 Fixed erroneous handling of proplists in simpleedit MCP package.
+Fixed a bug where MCP packages weren't renegotiating on a program recompile.
+Added $pubdef muf preprocessor directive.  Sets a _defs/XXX prop on the prog.
+Added $version muf directive.  Sets the _version prop on the program.
+Added $lib-version muf directive.  Sets the _lib-version prop on the program.
+Added $author muf directive.  Sets the _author prop on the program.
+Added $note muf directive.  Sets the _note prop on the program.
+Added $abort muf directive.  Aborts the compile, giving a message.
+Added $cleardefs muf directive.  Resets macro definitions to default set.
+Added $ifver, $ifnver, $iflibver, $ifnlibver muf directives.  Like $ifdef.
+Added $iflib, $ifnlib, $ifcancall, $ifncancall muf directives.  Like $ifdef.
 Added the ability to allow wizards to use the OVERIDE_TOKEN on WHO.
 Added new @tune -- lazy_mpi_istype_perm.  This changes the permissions for
   {istype} to be the lazy, pre-5.56 method, allowing {istype} to reference

@@ -430,15 +430,8 @@ include_defs(COMPSTATE * cstat, dbref i)
 
 
 void
-init_defs(COMPSTATE * cstat)
+include_internal_defs(COMPSTATE * cstat)
 {
-	/* initialize hash table */
-	int i;
-
-	for (i = 0; i < DEFHASHSIZE; i++) {
-		cstat->defhash[i] = NULL;
-	}
-
 	/* Create standard server defines */
 	insert_def(cstat, "__version", VERSION);
 	insert_def(cstat, "__muckname", tp_muckname);
@@ -523,6 +516,21 @@ init_defs(COMPSTATE * cstat)
 	insert_def(cstat, "gui_dlog_simple", "d_simple 0 array_make_dict gui_dlog_create");
     insert_def(cstat, "gui_dlog_tabbed", "d_tabbed swap \"panes\" over array_keys array_make \"names\" 4 rotate array_vals array_make 2 array_make_dict gui_dlog_create");
     insert_def(cstat, "gui_dlog_helper", "d_helper swap \"panes\" over array_keys array_make \"names\" 4 rotate array_vals array_make 2 array_make_dict gui_dlog_create");
+}
+
+
+void
+init_defs(COMPSTATE * cstat)
+{
+	/* initialize hash table */
+	int i;
+
+	for (i = 0; i < DEFHASHSIZE; i++) {
+		cstat->defhash[i] = NULL;
+	}
+
+	/* Create standard server defines */
+	include_internal_defs(cstat);
 
 	/* Include any defines set in #0's _defs/ propdir. */
 	include_defs(cstat, (dbref) 0);
@@ -870,6 +878,34 @@ do_comment(COMPSTATE * cstat)
 	}
 }
 
+int
+is_preprocessor_conditional(const char* tmpptr)
+{
+	if (!string_compare(tmpptr, "$ifdef"))
+		return 1;
+	else if (!string_compare(tmpptr, "$ifndef"))
+		return 1;
+	else if (!string_compare(tmpptr, "$iflib"))
+		return 1;
+	else if (!string_compare(tmpptr, "$ifnlib"))
+		return 1;
+	else if (!string_compare(tmpptr, "$ifver"))
+		return 1;
+	else if (!string_compare(tmpptr, "$iflibver"))
+		return 1;
+	else if (!string_compare(tmpptr, "$ifnver"))
+		return 1;
+	else if (!string_compare(tmpptr, "$ifnlibver"))
+		return 1;
+	else if (!string_compare(tmpptr, "$ifcancall"))
+		return 1;
+	else if (!string_compare(tmpptr, "$ifncancall"))
+		return 1;
+
+	return 0;
+}
+
+
 /* handle compiler directives */
 void
 do_directive(COMPSTATE * cstat, char *direct)
@@ -917,6 +953,24 @@ do_directive(COMPSTATE * cstat, char *direct)
 		(void) insert_def(cstat, tmpname, temp);
 		free(tmpname);
 
+	} else if (!string_compare(temp, "cleardefs")) {
+		char nextToken[BUFFER_LEN];
+
+		purge_defs(cstat);//Get rid of all defs first.
+		include_internal_defs(cstat);//Always include internal defs.
+		while(*cstat->next_char && isspace(*cstat->next_char))
+			cstat->next_char++; /* eating leading spaces */
+		strcpy(nextToken, cstat->next_char);
+		tmpname = nextToken;
+		while (*cstat->next_char)
+			cstat->next_char++;
+		advance_line(cstat);
+		if (!tmpname || !*tmpname || MLevel(OWNER(cstat->program)) < 4)
+		{
+			include_defs(cstat, OWNER(cstat->program));
+			include_defs(cstat, (dbref) 0);
+		}
+
 	} else if (!string_compare(temp, "enddef")) {
 		v_abort_compile(cstat, "$enddef without a previous matching $define.");
 
@@ -929,6 +983,56 @@ do_directive(COMPSTATE * cstat, char *direct)
 			cstat->next_char++;
 		advance_line(cstat);
 		free(tmpname);
+
+	} else if (!string_compare(temp, "pubdef")) {
+		char *holder = NULL;
+
+		tmpname = (char *) next_token_raw(cstat);
+		holder = tmpname;
+		if (!tmpname)
+			v_abort_compile(cstat, "Unexpected end of file looking for $pubdef name.");
+		if (string_compare(tmpname, ":") ? index(tmpname, '/') || index(tmpname, ':') : 0) {
+			free(tmpname);
+			v_abort_compile(cstat, "Invalid $pubdef name.  No / nor : are allowed.");
+		} else {
+			if (!string_compare(tmpname, ":")) {
+				remove_property(cstat->program, "/_defs");
+			} else {
+				const char *defstr = NULL;
+				char propname[BUFFER_LEN];
+				int doitset = 1;
+
+				while(*cstat->next_char && isspace(*cstat->next_char))
+					cstat->next_char++; /* eating leading spaces */
+				defstr = cstat->next_char;
+
+				if (*tmpname == '\\') {
+					char *temppropstr = NULL;
+
+					(void) *tmpname++;
+					sprintf(propname, "/_defs/%s", tmpname);
+					temppropstr = (char *) get_property_class(cstat->program, propname);
+					if (temppropstr ) {
+						doitset = 0;
+					}
+				} else {
+					sprintf(propname, "/_defs/%s", tmpname);
+				}
+
+				if (doitset) {
+					if (defstr && *defstr) {
+						add_property(cstat->program, propname, defstr, 0);
+					} else {
+						remove_property(cstat->program, propname);
+					}
+				}
+			}
+
+		}
+		while (*cstat->next_char)
+			cstat->next_char++;
+		advance_line(cstat);
+		free(holder);
 
 	} else if (!string_compare(temp, "include")) {
 		struct match_data md;
@@ -968,10 +1072,59 @@ do_directive(COMPSTATE * cstat, char *direct)
 			cstat->next_char++;
 		advance_line(cstat);
 
-	} else if (!string_compare(temp, "ifdef")) {
+	} else if (!string_compare(temp, "abort")) {
+		while(*cstat->next_char && isspace(*cstat->next_char))
+			cstat->next_char++; /* eating leading spaces */
+		tmpname = (char *) cstat->next_char;
+		if (tmpname && *tmpname) {
+			v_abort_compile(cstat, tmpname);
+		} else {
+			v_abort_compile(cstat, "Forced abort for the compile.");
+		}
+
+	} else if (!string_compare(temp, "version")) {
+		tmpname = (char *) next_token_raw(cstat); 
+		if (!ifloat(tmpname))
+			v_abort_compile(cstat, "Not a floating point number for the version.");
+		add_property(cstat->program, "_version", tmpname, 0);
+		while (*cstat->next_char)
+				cstat->next_char++;
+		advance_line(cstat);
+		free(tmpname);
+
+	} else if (!string_compare(temp, "lib-version")) {
 		tmpname = (char *) next_token_raw(cstat);
-		if (!tmpname)
+		if (!ifloat(tmpname))
+			v_abort_compile(cstat, "Not a floating point number for the version.");
+		while (*cstat->next_char)
+			cstat->next_char++;
+		advance_line(cstat);
+		add_property(cstat->program, "_lib-version", tmpname, 0);
+
+	} else if (!string_compare(temp, "author")) {
+		while(*cstat->next_char && isspace(*cstat->next_char))
+			cstat->next_char++; /* eating leading spaces */
+		tmpname = (char *) cstat->next_char;
+		while (*cstat->next_char)
+			cstat->next_char++;
+		advance_line(cstat);
+		add_property(cstat->program, "_author", tmpname, 0);
+
+	} else if (!string_compare(temp, "note")) {
+		while(*cstat->next_char && isspace(*cstat->next_char))
+			cstat->next_char++; /* eating leading spaces */
+		tmpname = (char *) cstat->next_char;
+		while (*cstat->next_char)
+			cstat->next_char++;
+		advance_line(cstat);
+		add_property(cstat->program, "_note", tmpname, 0);
+
+	} else if (!string_compare(temp, "ifdef") || !string_compare(temp, "ifndef")) {
+		int invert_flag = !string_compare(temp, "ifndef");
+		tmpname = (char *) next_token_raw(cstat);
+		if (!tmpname) {
 			v_abort_compile(cstat, "Unexpected end of file looking for $ifdef condition.");
+		}
 		strcpy(temp, tmpname);
 		free(tmpname);
 		for (i = 1; temp[i] && (temp[i] != '=') && (temp[i] != '>') && (temp[i] != '<'); i++) ;
@@ -993,14 +1146,15 @@ do_directive(COMPSTATE * cstat, char *direct)
 				free(tmpptr);
 			}
 		}
+		if (invert_flag) {
+			j = !j;
+		}
 		if (j) {
 			i = 0;
 			while ((tmpptr = (char *) next_token_raw(cstat)) &&
 				   (i || ((string_compare(tmpptr, "$else"))
 						  && (string_compare(tmpptr, "$endif"))))) {
-				if (!string_compare(tmpptr, "$ifdef"))
-					i++;
-				else if (!string_compare(tmpptr, "$ifndef"))
+				if (is_preprocessor_conditional(tmpptr))
 					i++;
 				else if (!string_compare(tmpptr, "$endif"))
 					i--;
@@ -1011,57 +1165,221 @@ do_directive(COMPSTATE * cstat, char *direct)
 			}
 			free(tmpptr);
 		}
-	} else if (!string_compare(temp, "ifndef")) {
+
+	} else if (!string_compare(temp, "ifcancall") || !string_compare(temp, "ifncancall")) {
+		struct match_data md;
+
 		tmpname = (char *) next_token_raw(cstat);
-		if (!tmpname) {
-			v_abort_compile(cstat, "Unexpected end of file looking for $ifndef condition.");
-		}
-		strcpy(temp, tmpname);
-		free(tmpname);
-		for (i = 1; temp[i] && (temp[i] != '=') && (temp[i] != '>') && (temp[i] != '<'); i++) ;
-		tmpname = &(temp[i]);
-		i = (temp[i] == '>') ? 1 : ((temp[i] == '=') ? 0 : ((temp[i] == '<') ? -1 : -2));
-		*tmpname = '\0';
-		tmpname++;
-		tmpptr = (char *) expand_def(cstat, temp);
-		if (i == -2) {
-			j = (!tmpptr);
-			if (tmpptr)
-				free(tmpptr);
+		if (!tmpname)
+			v_abort_compile(cstat, "Unexpected end of file for ifcancall.");
+		if (string_compare(tmpname, "this"))
+		{
+			char tempa[BUFFER_LEN], tempb[BUFFER_LEN];
+
+			strcpy(tempa, match_args);
+			strcpy(tempb, match_cmdname);
+			init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
+			match_registered(&md);
+			match_absolute(&md);
+			match_me(&md);
+			i = (int) match_result(&md);
+			strcpy(match_args, tempa);
+			strcpy(match_cmdname, tempb);
 		} else {
-			if (!tmpptr) {
-				j = 1;
-			} else {
-				j = string_compare(tmpptr, tmpname);
-				j = !((!i && !j) || ((i * j) > 0));
-				free(tmpptr);
+			i = cstat->program;
+		}
+		free(tmpname);
+		if (((dbref) i == NOTHING) || (i < 0) || (i > db_top) || (Typeof(i) == TYPE_GARBAGE))
+			v_abort_compile(cstat, "I don't understand what program you want to check in ifcancall.");
+		tmpname = (char *) next_token_raw(cstat);
+		if (!tmpname || !*tmpname)
+		{
+			free(tmpptr);
+		        v_abort_compile(cstat, "I don't understand what function you want to check for.");
+		}
+		while (*cstat->next_char)
+			cstat->next_char++;
+		advance_line(cstat);
+		if (!PROGRAM_CODE(i)) {
+			struct line *tmpline;
+
+			tmpline = PROGRAM_FIRST(i);
+			PROGRAM_SET_FIRST(i, ((struct line *) read_program(i)));
+			do_compile(cstat->descr, OWNER(i), i, 0);
+			free_prog_text(PROGRAM_FIRST(i));
+			PROGRAM_SET_FIRST(i, tmpline);
+		}
+		j = 0;
+		if (MLevel(OWNER(i)) > 0 &&
+			(MLevel(OWNER(cstat->program)) >= 4 || OWNER(i) == OWNER(cstat->program) || Linkable(i))
+		) {
+			struct publics *pbs;
+	
+			pbs = PROGRAM_PUBS(i);
+			while (pbs) {
+				if (!string_compare(tmpname, pbs->subname))
+					break;
+				pbs = pbs->next;
 			}
+			if (pbs && MLevel(OWNER(cstat->program)) >= pbs->mlev)
+				j = 1;
+		}
+		free(tmpname);
+		if (!string_compare(temp, "ifncancall")) {
+			j = !j;
 		}
 		if (!j) {
 			i = 0;
 			while ((tmpptr = (char *) next_token_raw(cstat)) &&
 				   (i || ((string_compare(tmpptr, "$else"))
 						  && (string_compare(tmpptr, "$endif"))))) {
-				if (!string_compare(tmpptr, "$ifdef"))
-					i++;
-				else if (!string_compare(tmpptr, "$ifndef"))
+				if (is_preprocessor_conditional(tmpptr))
 					i++;
 				else if (!string_compare(tmpptr, "$endif"))
 					i--;
 				free(tmpptr);
 			}
 			if (!tmpptr) {
-				v_abort_compile(cstat, "Unexpected end of file in $ifndef clause.");
+				v_abort_compile(cstat, "Unexpected end of file in $ifcancall clause.");
 			}
 			free(tmpptr);
 		}
+
+	} else if (!string_compare(temp, "ifver")  || !string_compare(temp, "iflibver") ||
+			   !string_compare(temp, "ifnver") || !string_compare(temp, "ifnlibver")) {
+		struct match_data md;
+		float verflt = 0;
+		float checkflt = 0;
+		int needFree = 0;
+
+		tmpname = (char *) next_token_raw(cstat);
+		if (!tmpname)
+			v_abort_compile(cstat, "Unexpected end of file while doing $ifver.");
+		if (string_compare(tmpname, "this"))
+		{
+			char tempa[BUFFER_LEN], tempb[BUFFER_LEN];
+
+			strcpy(tempa, match_args);
+			strcpy(tempb, match_cmdname);
+			init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
+			match_registered(&md);
+			match_absolute(&md);
+			match_me(&md);
+			i = (int) match_result(&md);
+			strcpy(match_args, tempa);
+			strcpy(match_cmdname, tempb);
+		} else {
+			i = cstat->program;
+		}
+		free(tmpname);
+		if (((dbref) i == NOTHING) || (i < 0) || (i > db_top) || (Typeof(i) == TYPE_GARBAGE))
+			v_abort_compile(cstat, "I don't understand what object you want to check with $ifver.");
+		if (!string_compare(temp, "ifver") || !string_compare(temp, "ifnver")) {
+			tmpptr = (char *) get_property_class(i, "_version");
+		} else {
+			tmpptr = (char *) get_property_class(i, "_lib-version");
+		}
+		if (!tmpptr || !*tmpptr) {
+			tmpptr = malloc(4);
+			strcpy(tmpptr, "0.0");
+			needFree = 1;
+		} else { 
+			uncompress(tmpptr);	
+		}
+		tmpname = (char *) next_token_raw(cstat);
+		if (!tmpname || !*tmpname) {
+			free(tmpptr);
+			free(tmpname);
+			v_abort_compile(cstat, "I don't understand what version you want to compare to with $ifver.");
+		}
+		if (!tmpptr || !ifloat(tmpptr)) {
+			verflt = 0.0;
+		} else {
+			sscanf(tmpptr, "%g", &verflt);
+		}
+		if ( needFree )
+			free(tmpptr);
+		if (!tmpname || !ifloat(tmpname)) {
+			checkflt = 0.0;
+		} else {
+			sscanf(tmpname, "%g", &checkflt);
+		}
+		free(tmpname);
+		while (*cstat->next_char)
+			cstat->next_char++;
+		advance_line(cstat);
+		j = checkflt <= verflt;
+		if (!string_compare(temp, "ifnver") || !string_compare(temp, "ifnlibver")) {
+			j = !j;
+		}
+		if (!j) {
+			i = 0;
+			while ((tmpptr = (char *) next_token_raw(cstat)) &&
+				   (i || ((string_compare(tmpptr, "$else"))
+						  && (string_compare(tmpptr, "$endif"))))) {
+				if (is_preprocessor_conditional(tmpptr))
+					i++;
+				else if (!string_compare(tmpptr, "$endif"))
+					i--;
+				free(tmpptr);
+			}
+			if (!tmpptr) {
+				v_abort_compile(cstat, "Unexpected end of file in $ifver clause.");
+			}
+			free(tmpptr);
+		}
+
+	} else if (!string_compare(temp, "iflib") || !string_compare(temp, "ifnlib")) {
+		struct match_data md;
+		char tempa[BUFFER_LEN], tempb[BUFFER_LEN];
+
+		tmpname = (char *) next_token_raw(cstat);
+		if (!tmpname)
+			v_abort_compile(cstat, "Unexpected end of file in $iflib/$ifnlib clause.");
+
+		strcpy(tempa, match_args);
+		strcpy(tempb, match_cmdname);
+		init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
+		match_registered(&md);
+		match_absolute(&md);
+		match_me(&md);
+		i = (int) match_result(&md);
+		strcpy(match_args, tempa);
+		strcpy(match_cmdname, tempb);
+
+		free(tmpname);
+		if ((((dbref) i == NOTHING) || (i < 0) || (i > db_top)
+			|| (Typeof(i) == TYPE_GARBAGE)) ? 0 : (Typeof(i) == TYPE_PROGRAM)
+		) {
+			j = 1;
+		} else {
+			j = 0;
+		}
+		if (!string_compare(temp, "ifnlib")) {
+			j = !j;
+		}
+		if (!j) {
+			i = 0;
+			while ((tmpptr = (char *) next_token_raw(cstat)) &&
+				   (i || ((string_compare(tmpptr, "$else"))
+						  && (string_compare(tmpptr, "$endif"))))) {
+				if (is_preprocessor_conditional(tmpptr))
+					i++;
+				else if (!string_compare(tmpptr, "$endif"))
+					i--;
+				free(tmpptr);
+			}
+			if (!tmpptr) {
+				v_abort_compile(cstat, "Unexpected end of file in $iflib clause.");
+			}
+			free(tmpptr);
+		}
+
 	} else if (!string_compare(temp, "else")) {
 		i = 0;
 		while ((tmpptr = (char *) next_token_raw(cstat)) &&
 			   (i || (string_compare(tmpptr, "$endif")))) {
-			if (!string_compare(tmpptr, "$ifdef"))
-				i++;
-			else if (!string_compare(tmpptr, "$ifndef"))
+			if (is_preprocessor_conditional(tmpptr))
 				i++;
 			else if (!string_compare(tmpptr, "$endif"))
 				i--;
