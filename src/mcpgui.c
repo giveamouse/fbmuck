@@ -332,6 +332,9 @@ gui_dlog_freeall_descr(int descr)
 
 		ptr->next = NULL;
 		ptr->prev = NULL;
+		if (dialog_last_accessed == ptr) {
+			dialog_last_accessed = NULL;
+		}
 		free(ptr->id);
 
 		valptr = ptr->values;
