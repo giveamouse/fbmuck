@@ -2097,7 +2097,7 @@ process_special(COMPSTATE * cstat, const char *token)
 			do {
 				varspec = next_token(cstat);
 				if (!varspec)
-					abort_compile(cstat, "Unexpected end of file within procedure.");
+					abort_compile(cstat, "Unexpected end of file within procedure arguments declaration.");
 
 				if (!strcmp(varspec, "]")) {
 					argsdone = 1;
@@ -2110,11 +2110,13 @@ process_special(COMPSTATE * cstat, const char *token)
 					} else {
 						varname = varspec;
 					}
-					if (add_scopedvar(cstat, varname, PROG_UNTYPED) < 0)
-						abort_compile(cstat, "Variable limit exceeded.");
+					if (*varname) {
+						if (add_scopedvar(cstat, varname, PROG_UNTYPED) < 0)
+							abort_compile(cstat, "Variable limit exceeded.");
 
-					nu->in.data.mufproc->vars++;
-					nu->in.data.mufproc->args++;
+						nu->in.data.mufproc->vars++;
+						nu->in.data.mufproc->args++;
+					}
 				}
 				if (varspec) {
 					free((void *) varspec);
