@@ -22,9 +22,9 @@
    data structures and other such which are not found in other
    parts of TinyMUCK.                                       */
 
-/* The IF_STACK is a stack for holding previous IF statements.
-   Everytime a THEN is encountered, the next address is inserted
-   into the code before the most recent IF.  */
+/* The CONTROL_STACK is a stack for holding previous control statements.
+   This is used to resolve forward references for IF/THEN and loops, as well
+   as a placeholder for back references for loops. */
 
 #define CTYPE_IF    1
 #define CTYPE_ELSE  2
@@ -45,10 +45,11 @@ static int IN_FOR;
 
 static hash_tab primitive_list[COMP_HASH_SIZE];
 
-struct IF_STACK {
+struct CONTROL_STACK {
 	short type;
 	struct INTERMEDIATE *place;
-	struct IF_STACK *next;
+	struct CONTROL_STACK *next;
+	struct CONTROL_STACK *extra;
 };
 
 /* This structure is an association list that contains both a procedure
@@ -82,8 +83,7 @@ struct INTERMEDIATE {
 
 /* The state structure for a compile. */
 typedef struct COMPILE_STATE_T {
-	struct IF_STACK *if_stack;
-	struct IF_STACK *loop_stack;	/* WORK: Need to merge if_stack and loop_stack. */
+	struct CONTROL_STACK *control_stack;
 	struct PROC_LIST *procs;
 
 	int nowords;				/* number of words compiled */
@@ -149,7 +149,6 @@ void do_directive(COMPSTATE *, char *direct);
 struct prog_addr *alloc_addr(COMPSTATE *, int, struct inst *);
 struct INTERMEDIATE *prealloc_inst(COMPSTATE * cstat);
 struct INTERMEDIATE *new_inst(COMPSTATE *);
-struct INTERMEDIATE *locate_if(COMPSTATE *);
 struct INTERMEDIATE *find_if(COMPSTATE *);
 struct INTERMEDIATE *find_else(COMPSTATE *);
 struct INTERMEDIATE *locate_begin(COMPSTATE *);
@@ -583,8 +582,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	/* set all compile state variables */
 	cstat.force_err_display = force_err_display;
 	cstat.descr = descr;
-	cstat.if_stack = 0;
-	cstat.loop_stack = 0;
+	cstat.control_stack = 0;
 	cstat.procs = 0;
 	cstat.nowords = 0;
 	cstat.curr_word = cstat.first_word = NULL;
@@ -1184,7 +1182,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	} else if (!string_compare(token, ";")) {
 		int i;
 
-		if (cstat->if_stack || cstat->loop_stack)
+		if (cstat->control_stack)
 			abort_compile(cstat, "Unexpected end of procedure definition.");
 		if (!cstat->curr_proc)
 			abort_compile(cstat, "Procedure end without body.");
@@ -1209,14 +1207,10 @@ process_special(COMPSTATE * cstat, const char *token)
 		return new;
 	} else if (!string_compare(token, "ELSE")) {
 		struct INTERMEDIATE *eef;
-		struct INTERMEDIATE *beef;
 
 		eef = find_if(cstat);
-		beef = locate_begin(cstat);
 		if (!eef)
 			abort_compile(cstat, "ELSE without IF.");
-		if (beef && eef->no < beef->no)
-			abort_compile(cstat, "Unexpected end of loop.");
 
 		new = new_inst(cstat);
 		new->no = cstat->nowords++;
@@ -1287,7 +1281,6 @@ process_special(COMPSTATE * cstat, const char *token)
 	} else if (!string_compare(token, "UNTIL")) {
 		/* can't use 'if' because it's a reserved word */
 		struct INTERMEDIATE *eef;
-		struct INTERMEDIATE *beef;
 		struct INTERMEDIATE *curr;
 
 		prealloc_inst(cstat);
@@ -1297,9 +1290,6 @@ process_special(COMPSTATE * cstat, const char *token)
 		eef = find_begin(cstat);
 		if (!eef)
 			abort_compile(cstat, "UNTIL without BEGIN.");
-		beef = locate_if(cstat);
-		if (beef && (beef->no > eef->no))
-			abort_compile(cstat, "Unexpected end of loop.");
 		new = new_inst(cstat);
 		new->no = cstat->nowords++;
 		new->in.type = PROG_IF;
@@ -1361,7 +1351,6 @@ process_special(COMPSTATE * cstat, const char *token)
 	} else if (!string_compare(token, "REPEAT")) {
 		/* can't use 'if' because it's a reserved word */
 		struct INTERMEDIATE *eef;
-		struct INTERMEDIATE *beef;
 		struct INTERMEDIATE *curr;
 
 		prealloc_inst(cstat);
@@ -1371,9 +1360,6 @@ process_special(COMPSTATE * cstat, const char *token)
 		eef = find_begin(cstat);
 		if (!eef)
 			abort_compile(cstat, "REPEAT without BEGIN.");
-		beef = locate_if(cstat);
-		if (beef && (beef->no > eef->no))
-			abort_compile(cstat, "Unexpected end of loop.");
 		new = new_inst(cstat);
 		new->no = cstat->nowords++;
 		new->in.type = PROG_JMP;
@@ -1713,87 +1699,91 @@ add_proc(COMPSTATE * cstat, const char *proc_name, struct INTERMEDIATE *place, i
 	cstat->procs = new;
 }
 
-/* add if to if stack */
+/* add if to control stack */
 void
 addif(COMPSTATE * cstat, struct INTERMEDIATE *place)
 {
-	struct IF_STACK *new;
+	struct CONTROL_STACK *new;
 
-	new = (struct IF_STACK *) malloc(sizeof(struct IF_STACK));
+	new = (struct CONTROL_STACK *) malloc(sizeof(struct CONTROL_STACK));
 
 	new->place = place;
 	new->type = CTYPE_IF;
-	new->next = cstat->if_stack;
-	cstat->if_stack = new;
+	new->next = cstat->control_stack;
+	new->extra = 0;
+	cstat->control_stack = new;
 }
 
-/* add else to if stack */
+/* add else to control stack */
 void
 addelse(COMPSTATE * cstat, struct INTERMEDIATE *place)
 {
-	struct IF_STACK *new;
+	struct CONTROL_STACK *new;
 
-	new = (struct IF_STACK *) malloc(sizeof(struct IF_STACK));
+	new = (struct CONTROL_STACK *) malloc(sizeof(struct CONTROL_STACK));
 
 	new->place = place;
 	new->type = CTYPE_ELSE;
-	new->next = cstat->if_stack;
-	cstat->if_stack = new;
+	new->next = cstat->control_stack;
+	new->extra = 0;
+	cstat->control_stack = new;
 }
 
-/* add begin to if stack */
+/* add begin to control stack */
 void
 addbegin(COMPSTATE * cstat, struct INTERMEDIATE *place)
 {
-	struct IF_STACK *new;
+	struct CONTROL_STACK *new;
 
-	new = (struct IF_STACK *) malloc(sizeof(struct IF_STACK));
+	new = (struct CONTROL_STACK *) malloc(sizeof(struct CONTROL_STACK));
 
 	new->place = place;
 	new->type = CTYPE_BEGIN;
-	new->next = cstat->loop_stack;
-	cstat->loop_stack = new;
+	new->next = cstat->control_stack;
+	new->extra = 0;
+	cstat->control_stack = new;
 }
 
-/* add for to LOOP stack, get it right */
+/* add for to control stack */
 void
 addfor(COMPSTATE * cstat, struct INTERMEDIATE *place)
 {
-	struct IF_STACK *new;
+	struct CONTROL_STACK *new;
 
-	new = (struct IF_STACK *) malloc(sizeof(struct IF_STACK));
+	new = (struct CONTROL_STACK *) malloc(sizeof(struct CONTROL_STACK));
 
 	new->place = place;
 	new->type = CTYPE_FOR;
-	new->next = cstat->loop_stack;
-	cstat->loop_stack = new;
+	new->next = cstat->control_stack;
+	new->extra = 0;
+	cstat->control_stack = new;
 	cstat->nested_fors++;
 }
 
-/* add while to if stack */
+/* add while to control stack */
 void
 addwhile(COMPSTATE * cstat, struct INTERMEDIATE *place)
 {
-	struct IF_STACK *new;
+	struct CONTROL_STACK *new;
+	struct CONTROL_STACK *loop;
 
-	new = (struct IF_STACK *) malloc(sizeof(struct IF_STACK));
+	loop = cstat->control_stack;
+
+	while (loop && loop->type != CTYPE_BEGIN && loop->type != CTYPE_FOR) {
+		loop = loop->next;
+	}
+
+/* Should this abort? */
+	if (!loop)
+		return;
+
+	new = (struct CONTROL_STACK *) malloc(sizeof(struct CONTROL_STACK));
 
 	new->place = place;
 	new->type = CTYPE_WHILE;
-	new->next = cstat->loop_stack;
-	cstat->loop_stack = new;
-}
-
-/* finds topmost else or if off the stack */
-struct INTERMEDIATE *
-locate_if(COMPSTATE * cstat)
-{
-	if (!cstat->if_stack)
-		return 0;
-	if ((cstat->if_stack->type != CTYPE_IF) && (cstat->if_stack->type != CTYPE_ELSE))
-		return 0;
-
-	return (cstat->if_stack->place);
+	new->next = 0;
+	new->extra = loop->extra;
+	loop->extra = new;
 }
 
 /* pops topmost if off the stack */
@@ -1801,16 +1791,16 @@ struct INTERMEDIATE *
 find_if(COMPSTATE * cstat)
 {
 	struct INTERMEDIATE *temp;
-	struct IF_STACK *tofree;
+	struct CONTROL_STACK *tofree;
 
-	if (!cstat->if_stack)
+	if (!cstat->control_stack)
 		return 0;
-	if (cstat->if_stack->type != CTYPE_IF)
+	if (cstat->control_stack->type != CTYPE_IF)
 		return 0;
 
-	temp = cstat->if_stack->place;
-	tofree = cstat->if_stack;
-	cstat->if_stack = cstat->if_stack->next;
+	temp = cstat->control_stack->place;
+	tofree = cstat->control_stack;
+	cstat->control_stack = cstat->control_stack->next;
 	free((void *) tofree);
 	return temp;
 }
@@ -1820,16 +1810,16 @@ struct INTERMEDIATE *
 find_else(COMPSTATE * cstat)
 {
 	struct INTERMEDIATE *temp;
-	struct IF_STACK *tofree;
+	struct CONTROL_STACK *tofree;
 
-	if (!cstat->if_stack)
+	if (!cstat->control_stack)
 		return 0;
-	if ((cstat->if_stack->type != CTYPE_IF) && (cstat->if_stack->type != CTYPE_ELSE))
+	if ((cstat->control_stack->type != CTYPE_IF) && (cstat->control_stack->type != CTYPE_ELSE))
 		return 0;
 
-	temp = cstat->if_stack->place;
-	tofree = cstat->if_stack;
-	cstat->if_stack = cstat->if_stack->next;
+	temp = cstat->control_stack->place;
+	tofree = cstat->control_stack;
+	cstat->control_stack = cstat->control_stack->next;
 	free((void *) tofree);
 	return temp;
 }
@@ -1838,30 +1828,27 @@ find_else(COMPSTATE * cstat)
 struct INTERMEDIATE *
 locate_begin(COMPSTATE * cstat)
 {
-	struct IF_STACK *tempeef;
+	struct CONTROL_STACK *loop;
 
-	tempeef = cstat->loop_stack;
-	while (tempeef && (tempeef->type == CTYPE_WHILE))
-		tempeef = tempeef->next;
-	if (!tempeef)
-		return 0;
-	if (tempeef->type != CTYPE_BEGIN && tempeef->type != CTYPE_FOR)
-		return 0;
+	loop = cstat->control_stack;
 
-	return tempeef->place;
+	while (loop) {
+		if (loop->type == CTYPE_FOR || loop->type == CTYPE_BEGIN) {
+			return loop->place;
+		}
+		loop = loop->next;
+	}
+
+	return 0;
 }
 
 /* checks if topmost loop stack item is a for */
 struct INTERMEDIATE *
 locate_for(COMPSTATE * cstat)
 {
-	struct IF_STACK *tempeef;
+	struct CONTROL_STACK *tempeef;
 
-	tempeef = cstat->loop_stack;
-	while (tempeef && (tempeef->type == CTYPE_WHILE))
-		tempeef = tempeef->next;
-	if (!tempeef)
-		return 0;
+	tempeef = cstat->control_stack;
 	if (tempeef->type != CTYPE_FOR)
 		return 0;
 
@@ -1873,19 +1860,19 @@ struct INTERMEDIATE *
 find_begin(COMPSTATE * cstat)
 {
 	struct INTERMEDIATE *temp;
-	struct IF_STACK *tofree;
+	struct CONTROL_STACK *tofree;
 
-	if (!cstat->loop_stack)
+	if (!cstat->control_stack)
 		return 0;
-	if (cstat->loop_stack->type != CTYPE_BEGIN && cstat->loop_stack->type != CTYPE_FOR)
+	if (cstat->control_stack->type != CTYPE_BEGIN && cstat->control_stack->type != CTYPE_FOR)
 		return 0;
 
-	if (cstat->loop_stack->type == CTYPE_FOR)
+	if (cstat->control_stack->type == CTYPE_FOR)
 		cstat->nested_fors--;
 
-	temp = cstat->loop_stack->place;
-	tofree = cstat->loop_stack;
-	cstat->loop_stack = cstat->loop_stack->next;
+	temp = cstat->control_stack->place;
+	tofree = cstat->control_stack;
+	cstat->control_stack = cstat->control_stack->next;
 	free((void *) tofree);
 	return temp;
 }
@@ -1895,16 +1882,23 @@ struct INTERMEDIATE *
 find_while(COMPSTATE * cstat)
 {
 	struct INTERMEDIATE *temp;
-	struct IF_STACK *tofree;
+	struct CONTROL_STACK *tofree;
+	struct CONTROL_STACK *parent;
 
-	if (!cstat->loop_stack)
+	parent = cstat->control_stack;
+
+	if (!parent)
 		return 0;
-	if (cstat->loop_stack->type != CTYPE_WHILE)
+	if (parent->type != CTYPE_BEGIN && parent->type != CTYPE_FOR)
+		return 0;
+	if (!parent->extra)
+		return 0;
+	if (parent->extra->type != CTYPE_WHILE)
 		return 0;
 
-	temp = cstat->loop_stack->place;
-	tofree = cstat->loop_stack;
-	cstat->loop_stack = cstat->loop_stack->next;
+	temp = parent->extra->place;
+	tofree = parent->extra;
+	parent->extra = parent->extra->extra;
 	free((void *) tofree);
 	return temp;
 }
@@ -2163,24 +2157,18 @@ void
 cleanup(COMPSTATE * cstat)
 {
 	struct INTERMEDIATE *wd, *tempword;
-	struct IF_STACK *eef, *tempif;
+	struct CONTROL_STACK *eef, *tempif;
 	struct PROC_LIST *p, *tempp;
 	int i;
 
 	free_intermediate_chain(cstat->first_word);
 	cstat->first_word = 0;
 
-	for (eef = cstat->if_stack; eef; eef = tempif) {
+	for (eef = cstat->control_stack; eef; eef = tempif) {
 		tempif = eef->next;
 		free((void *) eef);
 	}
-	cstat->if_stack = 0;
-
-	for (eef = cstat->loop_stack; eef; eef = tempif) {
-		tempif = eef->next;
-		free((void *) eef);
-	}
-	cstat->loop_stack = 0;
+	cstat->control_stack = 0;
 
 	for (p = cstat->procs; p; p = tempp) {
 		tempp = p->next;
