@@ -32,11 +32,16 @@ check_password(dbref player, const char* password)
 	const char *processed = password;
 	const char *pword = PLAYER_PASSWORD(player);
 
-	if (*password) {
-		MD5base64(md5buf, password, strlen(password));
+	if (password == NULL) {
+		MD5base64(md5buf, "", 0);
 		processed = md5buf;
+	} else {
+		if (*password) {
+			MD5base64(md5buf, password, strlen(password));
+			processed = md5buf;
+		}
 	}
-	
+
 	if (!pword || !*pword)
 		return 1;
 
