@@ -557,7 +557,7 @@ main(int argc, char **argv)
 		return 1; 
 	}
 
-	set_console(); // Setup the console to handle CTRL+C
+	set_console(); /* Setup the console to handle CTRL+C */
 #endif
 
 		/* go do it */
@@ -1113,7 +1113,7 @@ shovechars()
 		process_commands();
 		muf_event_process();
 #ifdef WIN32
-		check_console(); // Handle possible CTRL+C
+		check_console(); /* Handle possible CTRL+C */
 #endif
 
 		for (d = descriptor_list; d; d = dnext) {
@@ -3005,7 +3005,7 @@ int sethash_descr(int d) {
    for (int i = 0; i < FD_SETSIZE; i++) {
       if (descr_hash_table[i] == -1) { descr_hash_table[i] = d; return i; }
    }
-   fprintf(stderr,"descr hash table full!", NULL); // Should NEVER happen
+   fprintf(stderr,"descr hash table full!", NULL); /* Should NEVER happen */
    return -1;
 }
 
@@ -3013,7 +3013,7 @@ int gethash_descr(int d) {
    for (int i = 0; i < FD_SETSIZE; i++) {
       if (descr_hash_table[i] == d) return i;
    }
-   fprintf(stderr,"descr hash value missing!", NULL); // Should NEVER happen
+   fprintf(stderr,"descr hash value missing!", NULL); /* Should NEVER happen */
    return -1;
  
 }
@@ -3025,7 +3025,7 @@ void unsethash_descr(int d) {
          return;
       }
    }
-   fprintf(stderr,"descr hash value missing!", NULL); // Should NEVER happen
+   fprintf(stderr,"descr hash value missing!", NULL); /* Should NEVER happen */
 }
 #endif
 
