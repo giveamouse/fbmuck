@@ -1,3 +1,5 @@
+/* mcp.c: MUD Client Protocol.
+   Part of the FuzzBall distribution. */
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -1484,4 +1486,9 @@ mcp_internal_parse(McpFrame* mfr, const char* in)
 }
 
 
-
+/*
+* $Log: mcp.c,v $
+* Revision 1.2  2000/02/10 06:11:55  winged
+* Added log to bottom and comment to top
+*
+*/
