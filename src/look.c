@@ -118,7 +118,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
 			strcpy(match_args, p);
 			strcpy(match_cmdname, whatcalled);
 			tmpfr = interp(descr, player, DBFETCH(player)->location, i, thing,
-						   PREEMPT, STD_HARDUID);
+						   PREEMPT, STD_HARDUID, 0);
 			if (tmpfr) {
 				interp_loop(player, i, tmpfr, 0);
 			}

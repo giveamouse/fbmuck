@@ -1444,7 +1444,7 @@ mfn_muf(MFUNARGS)
 	ptr = get_mvar("how");
 	strcpy(match_cmdname, ptr);
 	strcat(match_cmdname, "(MPI)");
-	tmpfr = interp(descr, player, DBFETCH(player)->location, obj, perms, PREEMPT, STD_HARDUID);
+	tmpfr = interp(descr, player, DBFETCH(player)->location, obj, perms, PREEMPT, STD_HARDUID, 0);
 	if (tmpfr) {
 		rv = interp_loop(player, obj, tmpfr, 1);
 	}

@@ -756,7 +756,7 @@ prim_interp(PRIM_PROTOTYPE)
 	strcpy(buf, match_args);
 	strcpy(match_args, oper3->data.string ? oper3->data.string->data : "");
 	tmpfr = interp(fr->descr, player, DBFETCH(player)->location, oper1->data.objref,
-				   oper2->data.objref, PREEMPT, STD_HARDUID);
+				   oper2->data.objref, PREEMPT, STD_HARDUID, 0);
 	if (tmpfr) {
 		rv = interp_loop(player, oper1->data.objref, tmpfr, 1);
 	}

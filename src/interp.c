@@ -421,7 +421,7 @@ purge_try_pool(void)
 
 struct frame *
 interp(int descr, dbref player, dbref location, dbref program,
-	   dbref source, int nosleeps, int whichperms)
+	   dbref source, int nosleeps, int whichperms, int forced_pid)
 {
 	struct frame *fr;
 	int i;
@@ -439,7 +439,7 @@ interp(int descr, dbref player, dbref location, dbref program,
 		fr = (struct frame *) malloc(sizeof(struct frame));
 	}
 	fr->next = NULL;
-	fr->pid = top_pid++;
+	fr->pid = forced_pid ? forced_pid : top_pid++;
 	fr->descr = descr;
 	fr->multitask = nosleeps;
 	fr->perms = whichperms;

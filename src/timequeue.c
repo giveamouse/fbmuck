@@ -526,6 +526,7 @@ next_timequeue_event(void)
 	int tmpbl, tmpfg;
 	timequeue lastevent, event;
 	int maxruns = 0;
+	int forced_pid = 0;
 	time_t rtime;
 
 	time(&rtime);
@@ -543,6 +544,7 @@ next_timequeue_event(void)
 		event = tqhead;
 		tqhead = tqhead->next;
 		process_count--;
+		forced_pid = event->eventnum;
 		event->eventnum = 0;
 		if (event->typ == TQ_MPI_TYP) {
 			char cbuf[BUFFER_LEN];
@@ -606,7 +608,7 @@ next_timequeue_event(void)
 					strcpy(match_args, event->called_data ? event->called_data : "");
 					strcpy(match_cmdname, event->command ? event->command : "");
 					tmpfr = interp(event->descr, event->uid, event->loc, event->called_prog,
-								   event->trig, BACKGROUND, STD_HARDUID);
+								   event->trig, BACKGROUND, STD_HARDUID, forced_pid);
 					if (tmpfr) {
 						interp_loop(event->uid, event->called_prog, tmpfr, 0);
 					}
@@ -1290,7 +1292,7 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 					strcpy(match_args, toparg ? toparg : "");
 					strcpy(match_cmdname, "Queued event.");
 					tmpfr = interp(descr, player, where, the_prog, trigger,
-								   BACKGROUND, STD_HARDUID);
+								   BACKGROUND, STD_HARDUID, 0);
 					if (tmpfr) {
 						interp_loop(player, the_prog, tmpfr, 0);
 					}

@@ -292,7 +292,7 @@ extern void init_primitives(void);
 /* From interp.c */
 extern struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);
 extern struct frame *interp(int descr, dbref player, dbref location, dbref program,
-							dbref source, int nosleeping, int whichperms);
+							dbref source, int nosleeping, int whichperms, int forced_pid);
 extern void purge_for_pool(void);
 extern void purge_try_pool(void);
 
