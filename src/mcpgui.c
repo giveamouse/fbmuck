@@ -1,13 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 #include <sys/time.h>
 #include "interface.h"
 #include "mcp.h"
 #include "mcpgui.h"
 #include "externs.h"
-
+#ifdef HAVE_MALLOC_H
+#include <malloc.h>
+#endif /* HAVE_MALLOC_H */
 
 typedef struct DlogValue_t {
 	struct DlogValue_t *next;

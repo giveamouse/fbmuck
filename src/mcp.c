@@ -3,14 +3,15 @@
 
 #include <stdlib.h>
 #include <ctype.h>
-#include <malloc.h>
 #include <string.h>
 #include <sys/time.h>
 #include "db.h"
 #include "externs.h"
 #include "mcp.h"
 #include "mcppkg.h"
-
+#ifdef HAVE_MALLOC_H
+#include <malloc.h>
+#endif /* HAVE_MALLOC_H */
 
 
 #define MCP_MESG_PREFIX		"#$#"
@@ -1602,6 +1603,9 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.12  2001/08/21 23:39:05  winged
+* Wrapped <malloc.h> includes in mcp.c and mcpgui.c with #ifdef HAVE_MALLOC_H.
+*
 * Revision 1.11  2001/02/02 05:03:44  revar
 * Added descr, trigger, player, and prog_uid datums to SEND_EVENT context.
 * Updated man.txt docs for SEND_EVENT changes and WATCHPID.
