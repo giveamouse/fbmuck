@@ -571,7 +571,7 @@ main(int argc, char **argv)
 
 		if (restart_flag) {
 			char **argslist;
-			char numbuf[16];
+			char numbuf[32];
 			int argcnt = numsocks + 2;
 			int argnum = 1;
 
@@ -1322,7 +1322,7 @@ spawn_resolver()
 		dup(resolver_sock[0]);
 #ifdef BINDIR
 		{
-			char resolverpath[1025];
+			char resolverpath[BUFFER_LEN];
 			snprintf(resolverpath, sizeof(resolverpath), "%s/fb-resolver", BINDIR);
 			execl(resolverpath, "fb-resolver", NULL);
 			snprintf(resolverpath, sizeof(resolverpath), "%s/resolver", BINDIR);

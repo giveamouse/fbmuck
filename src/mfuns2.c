@@ -29,7 +29,7 @@ mfn_owner(MFUNARGS)
 		ABORT_MPI("OWNER", "Permission denied.");
 	if (obj == HOME)
 		obj = PLAYER_HOME(player);
-	return ref2str(OWNER(obj), buf);
+	return ref2str(OWNER(obj), buf, BUFFER_LEN);
 }
 
 
@@ -98,7 +98,7 @@ mfn_links(MFUNARGS)
 
 			for (i = 0; i < cnt; i++) {
 				obj2 = DBFETCH(obj)->sp.exit.dest[i];
-				ref2str(obj2, buf2);
+				ref2str(obj2, buf2, sizeof(buf2));
 				if (strlen(buf) + strlen(buf2) + 2 < BUFFER_LEN) {
 					if (*buf)
 						strcat(buf, "\r");
@@ -115,7 +115,7 @@ mfn_links(MFUNARGS)
 		return "#-1";
 		break;
 	}
-	return ref2str(obj, buf);
+	return ref2str(obj, buf, BUFFER_LEN);
 }
 
 
@@ -213,7 +213,7 @@ mfn_contents(MFUNARGS)
 			 !((FLAGS(obj) & DARK) || (FLAGS(getloc(obj)) & DARK) ||
 			   (Typeof(obj) == TYPE_PROGRAM && !(FLAGS(obj) & LINK_OK)))) &&
 			!(Typeof(obj) == TYPE_ROOM && typchk != TYPE_ROOM)) {
-			ref2str(obj, buf2);
+			ref2str(obj, buf2, sizeof(buf2));
 			nextlen = strlen(buf2);
 			if ((outlen + nextlen) >= (BUFFER_LEN - 3))
 				break;
@@ -256,7 +256,7 @@ mfn_exits(MFUNARGS)
 	*buf = '\0';
 	outlen = 0;
 	while (obj != NOTHING && list_limit) {
-		ref2str(obj, buf2);
+		ref2str(obj, buf2, sizeof(buf2));
 		nextlen = strlen(buf2);
 		if ((outlen + nextlen) >= (BUFFER_LEN - 3))
 			break;
@@ -1473,7 +1473,7 @@ mfn_muf(MFUNARGS)
 		return buf;
 		break;
 	case PROG_OBJECT:
-		ptr = ref2str(rv->data.objref, buf);
+		ptr = ref2str(rv->data.objref, buf, BUFFER_LEN);
 		CLEAR(rv);
 		return ptr;
 		break;

@@ -693,17 +693,17 @@ mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf, in
 
 
 char *
-ref2str(dbref obj, char *buf)
+ref2str(dbref obj, char *buf, size_t buflen)
 {
 	if (obj < -3 || obj >= db_top) {
-		snprintf(buf, sizeof(buf), "Bad");
+		snprintf(buf, buflen, "Bad");
 		return buf;
 	}
 
 	if (obj >= 0 && Typeof(obj) == TYPE_PLAYER) {
-		snprintf(buf, sizeof(buf), "*%s", RNAME(obj));
+		snprintf(buf, buflen, "*%s", RNAME(obj));
 	} else {
-		snprintf(buf, sizeof(buf), "#%d", obj);
+		snprintf(buf, buflen, "#%d", obj);
 	}
 	return buf;
 }

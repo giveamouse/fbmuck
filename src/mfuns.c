@@ -927,7 +927,7 @@ mfn_online(MFUNARGS)
 	while (count && list_limit--) {
 		if (*buf)
 			strcat(buf, "\r");
-		ref2str(pdbref(count), buf2);
+		ref2str(pdbref(count), buf2, sizeof(buf2));
 		if ((strlen(buf) + strlen(buf2)) >= (BUFFER_LEN - 3))
 			break;
 		strcat(buf, buf2);
@@ -1742,7 +1742,7 @@ mfn_loc(MFUNARGS)
 		ABORT_MPI("LOC", "Match failed.");
 	if (obj == PERMDENIED)
 		ABORT_MPI("LOC", "Permission denied.");
-	return ref2str(getloc(obj), buf);
+	return ref2str(getloc(obj), buf, BUFFER_LEN);
 }
 
 

@@ -654,6 +654,8 @@ prim_checkargs(PRIM_PROTOTYPE)
 	CLEAR(oper1);				/* clear link to shared string */
 }
 
+#undef ABORT_CHECKARGS
+
 
 void
 prim_mode(PRIM_PROTOTYPE)
