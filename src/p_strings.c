@@ -625,14 +625,22 @@ prim_stod(PRIM_PROTOTYPE)
 		ref = NOTHING;
 	} else {
 		const char *ptr = oper1->data.string->data;
+		const char *nptr = NULL;
 
 		while (isspace(*ptr)) ptr++;
 		if (*ptr == '#') ptr++;
-		if (number(ptr)) {
-			ref = (dbref) atoi(ptr);
+		if (*ptr == '+') ptr++;
+		nptr = ptr;
+		if (*nptr == '-') nptr++;
+		while (*nptr && !isspace(*nptr) &&
+		       (*nptr < '0' || *nptr > '9')) {
+		        nptr++;
+		} /* while */
+		if (*nptr && !isspace(*nptr)) {
+		        ref = NOTHING;
 		} else {
-			ref = NOTHING;
-		}
+		        ref = (dbref) atoi(ptr);
+		} /* if */
 	}
 	CLEAR(oper1);
 	PushObject(ref);
