@@ -47,6 +47,9 @@ Added 'fbhelp' compile target, to allow unix users to get FB help, man, and
   mpi documentation from the command line, without having to log in.  This
   only works if you did a 'make install', which copies the helpfiles to a
   useful place in the filesystem.  (/usr/local/fbmuck/help/*)
+Added SORTTYPE_SHUFFLE inserver muf define for use with ARRAY_SORT, to
+  randomize a list.
+Added ->[] inserver muf define as a shortcut for array_setitem.
 
 
 

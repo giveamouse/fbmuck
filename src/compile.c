@@ -454,6 +454,7 @@ init_defs(COMPSTATE * cstat)
 	insert_intdef(cstat, "sorttype_nocase_ascend", SORTTYPE_NOCASE_ASCEND);
 	insert_intdef(cstat, "sorttype_case_descend", SORTTYPE_CASE_DESCEND);
 	insert_intdef(cstat, "sorttype_nocase_descend", SORTTYPE_NOCASE_DESCEND);
+	insert_intdef(cstat, "sorttype_shuffle", SORTTYPE_SHUFFLE);
 
 	/* Make defines for compatability to removed primitives */
 	insert_def(cstat, "desc", "\"_/de\" getpropstr");
@@ -488,6 +489,7 @@ init_defs(COMPSTATE * cstat)
 	insert_def(cstat, "}list", "} array_make");
 	insert_def(cstat, "}dict", "}  2 / array_make_dict");
 	insert_def(cstat, "[]", "array_getitem");
+	insert_def(cstat, "->[]", "array_setitem");
 	insert_def(cstat, "[..]", "array_getrange");
 	insert_def(cstat, "array_diff", "2 array_ndiff");
 	insert_def(cstat, "array_union", "2 array_nunion");
