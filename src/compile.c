@@ -616,13 +616,26 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 			case PROG_PRIMITIVE:
 				/* Don't trust any physical @ or !'s in the code, someone
 					may be indirectly referencing the scoped variable */
-				/* Don't trust any exit's in the code for lvars. */
+				/* Don't trust any explicit jmp's in the code. */
 
 				if ((curr->in.data.number == AtNo) || 
 					(curr->in.data.number == BangNo) ||
-					(curr->in.data.number == IN_RET && lvarflag))
+					(curr->in.data.number == IN_JMP))
 				{
 					return;
+				}
+
+				if (lvarflag) {
+					/* For lvars, don't trust the following prims... */
+					/*   EXITs escape the code path without leaving lvar scope. */
+					/*   EXECUTEs escape the code path without leaving lvar scope. */
+					/*   CALLs cause re-entrancy problems. */
+					if (curr->in.data.number == IN_RET ||
+						curr->in.data.number == IN_EXECUTE ||
+						curr->in.data.number == IN_CALL)
+					{
+						return;
+					}
 				}
 				break;
 
@@ -673,6 +686,13 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 							return;
 						}
 					}
+				}
+				break;
+
+			case PROG_EXEC:
+				if (lvarflag) {
+					/* Don't try to optimize lvars over execs */
+					return;
 				}
 				break;
 
