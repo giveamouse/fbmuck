@@ -104,3 +104,8 @@
 /* uname -a output for certain local programs. */
 #undef UNAME_VALUE
 
+/* if your system has errno.h */
+#undef HAVE_ERRNO_H
+
+/* if your system has sys/errno.h */
+#undef HAVE_SYS_ERRNO_H

@@ -26,7 +26,13 @@
 #endif
 
 extern char **environ;
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#elsif HAVE_SYS_ERRNO_H
+#incldue <sys/errno.h>
+#else
 extern int errno;
+#endif
 char *Name;						/* name of this program for error messages */
 char msg[32768];
 

@@ -2,6 +2,9 @@
 
 /*
  * $Log: interface.c,v $
+ * Revision 1.9  2000/07/22 10:39:58  winged
+ * Changes for autodetecting errno
+ *
  * Revision 1.8  2000/07/19 01:33:18  revar
  * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
  * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
@@ -64,7 +67,15 @@
 #include <sys/ioctl.h>
 #include <sys/wait.h>
 #include <fcntl.h>
-#include <sys/errno.h>
+#if defined (HAVE_ERRNO_H)
+# include <errno.h>
+#else
+#if defined (HAVE_SYS_ERRNO_H)
+# include <sys/errno.h>
+#else
+  extern int errno;
+#endif
+#endif
 #include <ctype.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
