@@ -1711,17 +1711,20 @@ process_commands(void)
 					if (!strncmp(tmp, "#$\"", 3)) {
 						tmp += 3;
 					}
-					if (strncmp(t->start, WHO_COMMAND, sizeof(WHO_COMMAND) - 1) &&
-						strcmp(t->start, QUIT_COMMAND) &&
-						strncmp(t->start, PREFIX_COMMAND, sizeof(PREFIX_COMMAND) - 1) &&
-						strncmp(t->start, SUFFIX_COMMAND, sizeof(SUFFIX_COMMAND) - 1) &&
+					if (strncmp(tmp, WHO_COMMAND, sizeof(WHO_COMMAND) - 1) &&
+						strcmp(tmp, QUIT_COMMAND) &&
+						strncmp(tmp, PREFIX_COMMAND, sizeof(PREFIX_COMMAND) - 1) &&
+						strncmp(tmp, SUFFIX_COMMAND, sizeof(SUFFIX_COMMAND) - 1) &&
 						strncmp(t->start, "#$#", 3) /* MCP mesg. */ )
 					{
 						/* WORK: send player's foreground/preempt programs an exclusive READ mufevent */
 						read_event_notify(d->descriptor, d->player);
 					}
 				} else {
-					d->quota--;
+					if (strncmp(t->start, "#$#", 3)) {
+						/* Not an MCP mesg. */
+						d->quota--;
+					}
 					nprocessed++;
 					if (!do_command(d, t->start)) {
 						d->booted = 2;
