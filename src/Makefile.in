@@ -93,7 +93,7 @@ SRC_PREFIX=
 MKDEPEND= makedepend
 MAKE= make
 LINT= @LINT@
-MKTAGS= ctags
+MKTAGS= ctags --c-types=-m
 # for RCS only
 GET= co
 CLEAN= rcsclean
