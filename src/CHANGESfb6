@@ -27,20 +27,26 @@ Added GUI_CTRL_COMMAND (strDlogID strCtrlID strCommand dictArgs -- ) muf prim.
 Added GUI_VALUE_GET (strDlogID strCtrlID -- arrValue) muf primitive.  This
   gets the current value of the given GUI control, and returns it as a string
   list array.
-ARRAY_MATCHVAL (arrStrings strPattern - arrStrings) Given an array and an
-  smatch pattern string, returns a dictionary containing all the key-value
-  pairs where the value was a string that matched the given smatch pattern.
-ARRAY_MATCHKEY (arrStrings strPattern - arrStrings) Given an array and an
-  smatch pattern string, returns a dictionary containing all the key-value
-  pairs where the key was a string that matched the given smatch pattern.
-ARRAY_EXTRACT (array arrIndexes -- array') Takes an array, and returns
-  a dictionary containing every element of the original array who's key
-  was in the list indexes given.
-ARRAY_JOIN ([s] s -- s) Takes a list array and a delimiter string, and
-  returns a single string that is the concatenation of all the items in
-  the list array, with the delimiter string in between.  For example:
-	{ "one" 2 "three" 3.14159 }list "... " array_join
+Added ARRAY_MATCHVAL (arrStrings strPattern - arrStrings) muf primitive.
+  Given an array and an smatch pattern string, returns a dictionary containing
+  all the key-value pairs where the value was a string that matched the given
+  smatch pattern.
+Added ARRAY_MATCHKEY (arrStrings strPattern - arrStrings) muf primitive.
+  Given an array and an smatch pattern string, returns a dictionary containing
+  all the key-value pairs where the key was a string that matched the given
+  smatch pattern.
+Added ARRAY_EXTRACT (array arrIndexes -- array') muf primitive.  Takes an
+  array, and returns a dictionary containing every element of the original
+  array who's key was in the list indexes given.
+Added ARRAY_JOIN ([s] s -- s) muf primitive.  Takes a list array and a
+  delimiter string, and returns a single string that is the concatenation
+  of all the items in the list array, with the delimiter string in between.
+  For example:   { "one" 2 "three" 3.14159 }list "... " array_join
   will result in a single string: "one... 2... three... 3.14159"
+Added ARRAY_FILTER_PROP ([d] s1 s2 -- [d']) muf primitive.  Takes a
+  homogenous list array of dbrefs, and returns a list array with only
+  those dbrefs who have a property specified by s1, set to a value that
+  smatch matches s2.
 Added ARRAY_SORT (arrData intSortType -- arrSortedData) muf primitive.  This
   sorts all the items in the list array given, based on the given sort type.
   This can sort strings, integers, floats, dbrefs, or mixes of types.  Integers

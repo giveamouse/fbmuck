@@ -1,14 +1,14 @@
 These items are mandatory for FB6 release.
+  Fix security of {lexec} by requiring all listprops to be blessed, to
+    run blessed.
+  Change @bless and @unbless to allow specifying possible multiple props via
+    an smatch wildcard argument.  Should list all props thusly blessed.
   Integrate multiple listener ports mods.
   Fix compression bugs, or implement new compression schema.
   Separate MPI perms away from Builder bit a la ProtoMUCK.
   Implement Viewable flag for MUF program @listing.
-  Integrate time() speedups.
 
   Modify array code to allow floats and dbrefs as indexes.
-  ARRAY_FILTER_PROP ([d] s1 s2 -- [d']) Takes a homogenous list array of
-    dbrefs, and returns a list array with only those dbrefs who have a
-    property specified by s1, set to a value that smatch matches s2.
   ARRAY_FILTER_LOCK ([d] l -- [d']) As per ARRAY_FILTER_PROP, except only
     those dbrefs that would pass the given lock are returned.
 
@@ -26,9 +26,9 @@ These items are mandatory for FB6 release.
 
   WATCHPROP (d s -- ) Specifies that this process wants to recieve an event
     when the given property on the given object is set, deleted, or changed.
-	The event recieved will have an ID of "PROPCHANGE.#dbref.propname" where
-	the dbref and the property name will be replaced by those of the property
-	you specified.
+    The event recieved will have an ID of "PROPCHANGE.#dbref.propname" where
+    the dbref and the property name will be replaced by those of the property
+    you specified.
   FINDNEXT (d s1 s2 -- d) Finds the next object that matches the name pattern
     s2, and the flag pattern s1.  The flag pattern is the same as that used in
     @find or @owned.  A dbref of #-1 is returned when no more items match.
@@ -43,6 +43,7 @@ These items may be considered to be optional for release:
   Hashed passwords in database.  If this is implemented, there _must_ exist a
     command line option to reset #1's password.
   MUF ability to call in-server commands acting as player (ie: WHO, or @dig).
+  Integrate time() speedups.
 
 
 These items may be considered to be a wishlist:

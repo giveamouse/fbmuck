@@ -15,17 +15,18 @@ extern void prim_getprop(PRIM_PROTOTYPE);
 extern void prim_setprop(PRIM_PROTOTYPE);
 extern void prim_blessprop(PRIM_PROTOTYPE);
 extern void prim_unblessprop(PRIM_PROTOTYPE);
+extern void prim_array_filter_prop(PRIM_PROTOTYPE);
 
 #define PRIMS_PROPS_FUNCS prim_getpropval, prim_getpropstr, prim_remove_prop, \
    prim_envprop, prim_envpropstr, prim_addprop, prim_nextprop, prim_propdirp, \
    prim_parseprop, prim_getprop, prim_setprop, prim_getpropfval, \
-   prim_blessprop, prim_unblessprop
+   prim_blessprop, prim_unblessprop, prim_array_filter_prop
 
 #define PRIMS_PROPS_NAMES "GETPROPVAL", "GETPROPSTR", "REMOVE_PROP",  \
     "ENVPROP", "ENVPROPSTR", "ADDPROP", "NEXTPROP", "PROPDIR?", \
     "PARSEPROP", "GETPROP", "SETPROP", "GETPROPFVAL", \
-	"BLESSPROP", "UNBLESSPROP"
+	"BLESSPROP", "UNBLESSPROP", "ARRAY_FILTER_PROP"
 
-#define PRIMS_PROPS_CNT 14
+#define PRIMS_PROPS_CNT 15
 
 #endif /* _P_PROPS_H */
