@@ -1,6 +1,9 @@
 /* $Header$
  * 
  * $Log: externs.h,v $
+ * Revision 1.5  2000/07/07 01:30:06  revar
+ * 64 bit compile cleanups.
+ *
  * Revision 1.4  2000/04/29 10:01:01  revar
  * Fixed bug with ISPID? and {ispid} failing to correctly deal with muf progs
  *   that are in EVENT_WAIT.
@@ -131,6 +134,7 @@ extern void macroload();
 extern void free_prog_text(struct line *l);
 extern struct line *read_program(dbref i);
 extern void write_program(struct line *first, dbref i);
+extern char *show_line_prims(dbref program, struct inst *pc, int maxprims, int markpc);
 
 /* From create.c */
 extern void do_open(int descr, dbref player, const char *direction, const char *linkto);
