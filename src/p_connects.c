@@ -702,10 +702,10 @@ prim_descr_securep(PRIM_PROTOTYPE)
 
 	CHECKOP(1);
 	oper1 = POP();
-	if (mlev < 4)
-		abort_interp("Primitive is a wizbit only command.");
-        if (oper1->type != PROG_INTEGER)
-                abort_interp("Integer descriptor number expected.");
+	if (mlev < 3)
+		abort_interp("Requires Mucker Level 3.");
+	if (oper1->type != PROG_INTEGER)
+			abort_interp("Integer descriptor number expected.");
 
 	result = pdescrsecure(oper1->data.number);
 	PushInt(result);

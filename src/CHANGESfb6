@@ -1,6 +1,8 @@
 2.2fb6.00b5
 Fixed infinite loop parenting bug.  I think.
 Fixed a lot of uninitialized struct frame variables in chile of FORK.
+Fixed two-byte buffer overrun in {listprops}
+Changed DESCRSECURE? to be ML3, not wizbit.
 Changed input quotas to not count MCP messages.
 Changed command logging to not list null commands.
 Changed READ to _not_ return blank lines unless the process asked for them.
