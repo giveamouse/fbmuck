@@ -1012,12 +1012,17 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'r':
 			case 'R':
-				/* @recycle, @restart, @restrict */
+				/* @recycle, @relink, @restart, @restrict */
 				switch (command[3]) {
 				case 'c':
 				case 'C':
 					Matched("@recycle");
 					do_recycle(descr, player, arg1);
+					break;
+				case 'l':
+				case 'L':
+					Matched("@relink");
+					do_relink(descr, player, arg1, arg2);
 					break;
 				case 's':
 				case 'S':

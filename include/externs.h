@@ -191,7 +191,9 @@ extern void do_odrop(int descr, dbref player, const char *name, const char *mess
 extern int setlockstr(int descr, dbref player, dbref thing, const char *keyname);
 extern void do_lock(int descr, dbref player, const char *name, const char *keyname);
 extern void do_unlock(int descr, dbref player, const char *name);
+extern void do_relink(int descr, dbref player, const char *thing_name, const char *dest_name);
 extern void do_unlink(int descr, dbref player, const char *name);
+extern void do_unlink_quiet(int descr, dbref player, const char *name);
 extern void do_chown(int descr, dbref player, const char *name, const char *newobj);
 extern void do_set(int descr, dbref player, const char *name, const char *flag);
 extern void do_chlock(int descr, dbref player, const char *name, const char *keyname);

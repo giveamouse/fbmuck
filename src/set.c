@@ -560,8 +560,10 @@ controls_link(dbref who, dbref what)
 	}
 }
 
+/* like do_unlink, but if quiet is true, then only error messages are
+   printed. */
 void
-do_unlink(int descr, dbref player, const char *name)
+_do_unlink(int descr, dbref player, const char *name, int quiet)
 {
 	dbref exit;
 	struct match_data md;
@@ -593,29 +595,34 @@ do_unlink(int descr, dbref player, const char *name)
 					free((void *) DBFETCH(exit)->sp.exit.dest);
 					DBSTORE(exit, sp.exit.dest, NULL);
 				}
-				notify(player, "Unlinked.");
+				if(!quiet)
+					notify(player, "Unlinked.");
 				if (MLevRaw(exit)) {
 					SetMLevel(exit, 0);
 					DBDIRTY(exit);
-					notify(player, "Action priority Level reset to 0.");
+					if(!quiet)
+						notify(player, "Action priority Level reset to 0.");
 				}
 				break;
 			case TYPE_ROOM:
 				ts_modifyobject(exit);
 				DBSTORE(exit, sp.room.dropto, NOTHING);
-				notify(player, "Dropto removed.");
+				if(!quiet)
+					notify(player, "Dropto removed.");
 				break;
 			case TYPE_THING:
 				ts_modifyobject(exit);
 				THING_SET_HOME(exit, OWNER(exit));
 				DBDIRTY(exit);
-				notify(player, "Thing's home reset to owner.");
+				if(!quiet)
+					notify(player, "Thing's home reset to owner.");
 				break;
 			case TYPE_PLAYER:
 				ts_modifyobject(exit);
 				PLAYER_SET_HOME(exit, tp_player_start);
 				DBDIRTY(exit);
-				notify(player, "Player's home reset to default player start room.");
+				if(!quiet)
+					notify(player, "Player's home reset to default player start room.");
 				break;
 			default:
 				notify(player, "You can't unlink that!");
@@ -623,6 +630,136 @@ do_unlink(int descr, dbref player, const char *name)
 			}
 		}
 	}
+}
+
+void
+do_unlink(int descr, dbref player, const char *name)
+{
+	/* do a regular, non-quiet unlink. */
+	_do_unlink(descr, player, name, 0);
+}
+
+void
+do_unlink_quiet(int descr, dbref player, const char *name)
+{
+	_do_unlink(descr, player, name, 1);
+}
+
+/*
+ * do_relink()
+ *
+ * re-link an exit object. FIXME: this shares some code with do_link() which
+ * should probably be moved into a separate function (is_link_ok() or
+ * something like that).
+ *
+ */
+void
+do_relink(int descr, dbref player, const char *thing_name, const char *dest_name)
+{
+	dbref thing;
+	dbref dest;
+	dbref good_dest[MAX_LINKS];
+	struct match_data md;
+	int ndest, i;
+
+	init_match(descr, player, thing_name, TYPE_EXIT, &md);
+	match_all_exits(&md);
+	match_neighbor(&md);
+	match_possession(&md);
+	match_me(&md);
+	match_here(&md);
+	match_absolute(&md);
+	match_registered(&md);
+	if (Wizard(OWNER(player))) {
+		match_player(&md);
+	}
+	if ((thing = noisy_match_result(&md)) == NOTHING)
+		return;
+
+	/* first of all, check if the new target would be valid, so we can
+	   avoid breaking the old link if it isn't. */
+	   
+	switch (Typeof(thing)) {
+		case TYPE_EXIT:
+			/* we're ok, check the usual stuff */
+			if (DBFETCH(thing)->sp.exit.ndest != 0)
+				if(!controls(player, thing)) {
+					notify(player, "Permission denied.");
+					return;
+				}
+			else {
+				if(!Wizard(OWNER(player)) && (PLAYER_PENNIES(player) < (tp_link_cost + tp_exit_cost))) {
+					notify_fmt(player, "It costs %d %s to link this exit.",
+							   (tp_link_cost + tp_exit_cost),
+							   (tp_link_cost + tp_exit_cost == 1) ? tp_penny : tp_pennies);
+					return;
+				} else if (!Builder(player)) {
+					notify(player, "Only authorized builders may seize exits.");
+					return;
+				}					
+			}
+			
+			/* be anal: each and every new links destination has
+			   to be ok. Detailed error messages are given by
+			   link_exit_dry(). */
+			   
+			ndest = link_exit_dry(descr, player, thing, (char *) dest_name, good_dest);
+			if(ndest == 0) {
+				notify(player, "Invalid target.");
+				return;
+			}
+			
+			break;
+		case TYPE_THING:
+		case TYPE_PLAYER:
+			init_match(descr, player, dest_name, TYPE_ROOM, &md);
+			match_neighbor(&md);
+			match_absolute(&md);
+			match_registered(&md);
+			match_me(&md);
+			match_here(&md);
+			if (Typeof(thing) == TYPE_THING)
+				match_possession(&md);
+			if ((dest = noisy_match_result(&md)) == NOTHING)
+				return;
+			if (!controls(player, thing)
+				|| !can_link_to(player, Typeof(thing), dest)) {
+				notify(player, "Permission denied.");
+				return;
+			}
+			if (parent_loop_check(thing, dest)) {
+				notify(player, "That would cause a parent paradox.");
+				return;
+			}
+			break;
+		case TYPE_ROOM:			/* room dropto's */
+			init_match(descr, player, dest_name, TYPE_ROOM, &md);
+			match_neighbor(&md);
+			match_possession(&md);
+			match_registered(&md);
+			match_absolute(&md);
+			match_home(&md);
+			if ((dest = noisy_match_result(&md)) == NOTHING)
+				return;
+			if (!controls(player, thing) || !can_link_to(player, Typeof(thing), dest)
+				|| (thing == dest)) {
+				notify(player, "Permission denied.");
+				return;
+			}
+			break;
+		case TYPE_PROGRAM:
+			notify(player, "You can't link programs to things!");
+			return;
+		default:
+			notify(player, "Internal error: weird object type.");
+			log_status("PANIC: weird object: Typeof(%d) = %d\n", thing, Typeof(thing));
+			return;
+	}
+
+	do_unlink_quiet(descr, player, thing_name);
+	notify(player, "Attempting to relink...");
+	do_link(descr, player, thing_name, dest_name);
+
 }
 
 void

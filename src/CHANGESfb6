@@ -100,6 +100,7 @@ Added @clone command to allow cloning things (inspired by TinyMUSH).
 Added verbose_clone @tune to control whether @clone is verbose about its
   operations. Defaults to 0.
 Added @force_lock and @chown_lock aliases for @flock and @chlock.
+Added @relink command to complement @link and @unlink.
 Removed dead concentrater log code.
 Removed dead LOCKOUT code from include/config.h.
 

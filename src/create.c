@@ -211,14 +211,33 @@ int
 link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list)
 #endif							/* mips */
 {
+	return _link_exit(descr, player, exit, dest_name, dest_list, 0);
+}
+
+/*
+ * link_exit_dry()
+ *
+ * like link_exit(), but only checks whether the link would be ok or not.
+ * error messages are still output.
+ */
+int
+link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list)
+{
+	return _link_exit(descr, player, exit, dest_name, dest_list, 1);
+}
+
+int
+_link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list, int dryrun)
+{
 	char *p, *q;
 	int prdest;
 	dbref dest;
-	int ndest;
+	int ndest, error;
 	char buf[BUFFER_LEN], qbuf[BUFFER_LEN];
 
 	prdest = 0;
 	ndest = 0;
+	error = 0;
 
 	while (*dest_name) {
 		while (isspace(*dest_name))
@@ -243,6 +262,10 @@ link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_lis
 						"Only one player, room, or program destination allowed. Destination %s ignored.",
 						unparse_object(player, dest));
 				notify(player, buf);
+
+				if(dryrun)
+					error = 1;
+
 				continue;
 			}
 			dest_list[ndest++] = dest;
@@ -257,6 +280,10 @@ link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_lis
 						"Destination %s would create a loop, ignored.",
 						unparse_object(player, dest));
 				notify(player, buf);
+				
+				if(dryrun)
+					error = 1;
+
 				continue;
 			}
 			dest_list[ndest++] = dest;
@@ -264,19 +291,34 @@ link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_lis
 		default:
 			notify(player, "Internal error: weird object type.");
 			log_status("PANIC: weird object: Typeof(%d) = %d\n", dest, Typeof(dest));
+
+			if(dryrun)
+				error = 1;
+				
 			break;
 		}
-		if (dest == HOME) {
-			notify(player, "Linked to HOME.");
-		} else {
-			snprintf(buf, sizeof(buf), "Linked to %s.", unparse_object(player, dest));
-			notify(player, buf);
+		if(!dryrun)
+			if (dest == HOME) {
+				notify(player, "Linked to HOME.");
+			} else {
+				snprintf(buf, sizeof(buf), "Linked to %s.", unparse_object(player, dest));
+				notify(player, buf);
+			}
 		}
+		
 		if (ndest >= MAX_LINKS) {
 			notify(player, "Too many destinations, rest ignored.");
+
+			if(dryrun)
+				error = 1;
+
 			break;
 		}
 	}
+	
+	if(dryrun && error)
+		return 0;
+		
 	return ndest;
 }
 
