@@ -4,6 +4,7 @@ Fixed compilation issue with socklen_t on OS X 10.3 Panther.
 Fixed possible crasher with dequeueing of tasks from a mufevent run process.
 Fixed lost process bug with mufevent queue.
 Fixed hang in regsub primitive.  Still wrongly handling null length matches.
+Fixed possible stack information leak in pronoun_substitute.
 Changed regexp code to use PCRE regexp package, so we'll have consistency.
 
 
