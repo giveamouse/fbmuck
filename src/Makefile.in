@@ -178,7 +178,7 @@ clean:
 	${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} resolver.o
 
 cleaner: clean
-	${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS}
+	${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c
 	cp Makefile.cfg Makefile
 
 clobber: cleaner
