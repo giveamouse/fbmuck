@@ -1586,6 +1586,7 @@ mfn_ltimestr(MFUNARGS)
 {
 	int tm = atol(argv[0]);
 	int wk, dy, hr, mn;
+	char buf2[BUFFER_LEN];
 
 	wk = dy = hr = mn = 0;
 	if (tm >= 86400 * 7) {
@@ -1610,32 +1611,32 @@ mfn_ltimestr(MFUNARGS)
 		snprintf(buf, BUFFER_LEN, "%d week%s", wk, (wk == 1) ? "" : "s");
 	}
 	if (dy) {
+		snprintf(buf2, BUFFER_LEN, "%d day%s", dy, (dy == 1) ? "" : "s");
 		if (*buf) {
-			snprintf(buf, BUFFER_LEN, "%s, %d day%s", buf, dy, (dy == 1) ? "" : "s");
-		} else {
-			snprintf(buf, BUFFER_LEN, "%d day%s", dy, (dy == 1) ? "" : "s");
+			strcat(buf, ", ");
 		}
+		strcat(buf, buf2);
 	}
 	if (hr) {
+		snprintf(buf2, BUFFER_LEN, "%d hour%s", hr, (hr == 1) ? "" : "s");
 		if (*buf) {
-			snprintf(buf, BUFFER_LEN, "%s, %d hour%s", buf, hr, (hr == 1) ? "" : "s");
-		} else {
-			snprintf(buf, BUFFER_LEN, "%d hour%s", hr, (hr == 1) ? "" : "s");
+			strcat(buf, ", ");
 		}
+		strcat(buf, buf2);
 	}
 	if (mn) {
+		snprintf(buf2, BUFFER_LEN, "%d min%s", mn, (mn == 1) ? "" : "s");
 		if (*buf) {
-			snprintf(buf, BUFFER_LEN, "%s, %d min%s", buf, mn, (mn == 1) ? "" : "s");
-		} else {
-			snprintf(buf, BUFFER_LEN, "%d min%s", mn, (mn == 1) ? "" : "s");
+			strcat(buf, ", ");
 		}
+		strcat(buf, buf2);
 	}
 	if (tm || !*buf) {
+		snprintf(buf2, BUFFER_LEN, "%d sec%s", tm, (tm == 1) ? "" : "s");
 		if (*buf) {
-			snprintf(buf, BUFFER_LEN, "%s, %d sec%s", buf, tm, (tm == 1) ? "" : "s");
-		} else {
-			snprintf(buf, BUFFER_LEN, "%d sec%s", tm, (tm == 1) ? "" : "s");
+			strcat(buf, ", ");
 		}
+		strcat(buf, buf2);
 	}
 	return buf;
 }

@@ -20,7 +20,11 @@ Fixed MPI snprintf() issues with incorrectly short buffer lengths.
 Fixed bug with bad PCREATE_FLAGS @tune settings causing corrupted objects.
 Fixed compile error with #undef DETACH.
 Fixed crasher bug with infinite disconnect and descr_set_user loop.
-Fixed bug 573142: mcp_frame_output_mesg stack corruption.
+Fixed bug #573142: mcp_frame_output_mesg stack corruption.
+Fixed bug #579119: ltimestr now works right with snprintf.
+Fixed bug #576552: Telnet keepalives no longer reset player's idletime.
+Fixed bug #568297: @sweep will list all listener env rooms.
+Fixed bug #577291: 'configure --with-ssl' checks for SSL header/lib existence.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.
