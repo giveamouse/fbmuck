@@ -490,9 +490,9 @@ mfn_select(MFUNARGS)
 		obj = mesg_dbref(descr, player, what, perms, argv[2], mesgtyp);
 	}
 	if (obj == PERMDENIED)
-		ABORT_MPI("LIST", "Permission denied.");
+		ABORT_MPI("SELECT", "Permission denied.");
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
-		ABORT_MPI("LIST", "Match failed.");
+		ABORT_MPI("SELECT", "Match failed.");
 
 	/*
 	 * Search contiguously for a bit, looking for a best match.
@@ -1410,13 +1410,13 @@ mfn_default(MFUNARGS)
 
 	*buf = '\0';
 	ptr = MesgParse(argv[0], buf);
-	CHECKRETURN(ptr, "IF", "arg 1");
+	CHECKRETURN(ptr, "DEFAULT", "arg 1");
 	if (ptr && truestr(buf)) {
 		if (!ptr)
 			ptr = "";
 	} else {
 		ptr = MesgParse(argv[1], buf);
-		CHECKRETURN(ptr, "IF", "arg 2");
+		CHECKRETURN(ptr, "DEFAULT", "arg 2");
 	}
 	return ptr;
 }
@@ -1949,10 +1949,10 @@ mfn_left(MFUNARGS)
 
 	len = (argc > 1) ? atoi(argv[1]) : 78;
 	if (len + 1 > BUFFER_LEN)
-		ABORT_MPI("RIGHT", "Fieldwidth too big.");
+		ABORT_MPI("LEFT", "Fieldwidth too big.");
 	fillstr = (argc > 2) ? argv[2] : " ";
 	if (!*fillstr)
-		ABORT_MPI("RIGHT", "Null pad string.");
+		ABORT_MPI("LEFT", "Null pad string.");
 	strcpy(buf, argv[0]);
 	for (i = strlen(argv[0]), ptr = &buf[i], fptr = fillstr; i < len; i++) {
 		*ptr++ = *fptr++;
@@ -1977,12 +1977,12 @@ mfn_center(MFUNARGS)
 
 	len = (argc > 1) ? atoi(argv[1]) : 78;
 	if (len + 1 > BUFFER_LEN)
-		ABORT_MPI("RIGHT", "Fieldwidth too big.");
+		ABORT_MPI("CENTER", "Fieldwidth too big.");
 	halflen = len / 2;
 
 	fillstr = (argc > 2) ? argv[2] : " ";
 	if (!*fillstr)
-		ABORT_MPI("RIGHT", "Null pad string.");
+		ABORT_MPI("CENTER", "Null pad string.");
 
 	for (ptr = buf, fptr = fillstr, i = strlen(argv[0]) / 2; i < halflen; i++) {
 		*ptr++ = *fptr++;

@@ -1353,7 +1353,7 @@ mfn_timing(MFUNARGS)
 
 	ptr = mesg_parse(descr, player, what, perms, argv[0],
 						   buf, BUFFER_LEN, mesgtyp);
-	CHECKRETURN(ptr, "DEBUG", "arg 1");
+	CHECKRETURN(ptr, "TIMING", "arg 1");
 
 	gettimeofday(&end_time, (struct timezone *) 0);
 	secs = end_time.tv_sec - start_time.tv_sec;
