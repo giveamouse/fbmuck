@@ -871,6 +871,10 @@ db_free_object(dbref i)
 
 #ifdef DISKBASE
 	unloadprops_with_prejudice(i);
+#else
+	if (o->properties) {
+		delete_proplist(o->properties);
+	}
 #endif
 
 	if (Typeof(i) == TYPE_EXIT && o->sp.exit.dest) {
