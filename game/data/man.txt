@@ -3071,7 +3071,10 @@ Sends a "USER." event to the process referred to by the given pid.
 The target process will receive an event that can be read with EVENT_WAIT.
 The event type will be "USER." with the given event id string appended
 to it.  The given event id string will be truncated at 32 characters.
-The given arbitrary stack element will be passed on to the new process.
+The receiving process will be passed a dictionary with items "data" for
+the given arbitrary stack element, "caller_pid" with the pid of the
+process calling EVENT_SEND, and "caller_prog" with the dbref of the
+program calling EVENT_SEND.
 ie: '23 "foobar" 3.1416 event_send' will send an event to process 23, with
 an eventid of "USER.foobar", and a floating point data value of 3.1416.
 This primitive requires at least Mucker Level 3.
