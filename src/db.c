@@ -935,7 +935,7 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int read_before)
 		break;
 	case TYPE_PROGRAM:
 		ALLOC_PROGRAM_SP(objno);
-		OWNER(objno) = getref(f);
+		OWNER(objno) = (prop_flag ? getref(f) : j);
 		FLAGS(objno) &= ~INTERNAL;
 		PROGRAM_SET_CURR_LINE(objno, 0);
 		PROGRAM_SET_FIRST(objno, 0);
