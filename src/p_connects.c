@@ -704,3 +704,23 @@ prim_descr_securep(PRIM_PROTOTYPE)
 	result = pdescrsecure(oper1->data.number);
 	PushInt(result);
 }
+
+void
+prim_descr_bufsize(PRIM_PROTOTYPE)
+{
+	/* int -- int */
+	CHECKOP(1);
+	oper1 = POP();
+	if (mlev < 3)
+		abort_interp("Mucker level 3 primitive.");
+	if (oper1->type != PROG_INTEGER)
+		abort_interp("Argument not an integer. (1)");
+	result = pdescrbufsize(oper1->data.number);
+	if (result < 0)
+		abort_interp("Invalid descriptor number. (1)");
+	CHECKOFLOW(1);
+	CLEAR(oper1);
+	PushInt(result);
+}
+
+

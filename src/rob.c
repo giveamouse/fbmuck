@@ -1,73 +1,5 @@
 /* $Header$ */
 
-/*
- * $Log: rob.c,v $
- * Revision 1.5  2000/11/22 10:01:58  revar
- * Changed MPI from using Wizbit objects to give special permissions, to using
- * 'Blessed' properties.  Blessed props have few permissions restrictions.
- * Added @bless and @unbless wizard commands.
- * Added BLESSPROP and UNBLESSPROP muf primitives.
- * Added {bless} {unbless} and {revoke} MPI commands.
- * Fixed {listprops} crasher bug.
- *
- * Revision 1.4  2000/07/19 01:33:18  revar
- * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
- * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
- *
- * Revision 1.3  2000/07/07 15:37:30  revar
- * Made rob give pennies to owner of robber puppet.
- * This is more consistent with the way give works for puppets.
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:44  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 02:58:27  foxen
- * Initial revision
- *
- * Revision 5.14  1994/03/21  11:00:42  foxen
- * Autoconfiguration mods.
- *
- * Revision 5.13  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.12  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.11  1993/12/20  06:22:51  foxen
- * *** empty log message ***
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.5  90/09/16  04:42:51  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.4  90/08/15  03:10:13  rearl
- * Fiddled with do_kill() and put in pronoun subs for it.
- *
- * Revision 1.3  90/08/05  03:19:55  rearl
- * Redid matching routines.
- *
- * Revision 1.2  90/08/02  02:16:20  rearl
- * Odrop and x killed y! messages now come before y has left.
- * Pronoun substitution added for player odrop.
- *
- * Revision 1.1  90/07/19  23:04:05  casie
- * Initial revision
- *
- *
- */
 
 #include "copyright.h"
 #include "config.h"
@@ -109,9 +41,9 @@ do_rob(int descr, dbref player, const char *what)
 		if (Typeof(thing) != TYPE_PLAYER) {
 			notify(player, "Sorry, you can only rob other players.");
 		} else if (PLAYER_PENNIES(thing) < 1) {
-			sprintf(buf, "%s has no %s.", NAME(thing), tp_pennies);
+			snprintf(buf, sizeof(buf), "%s has no %s.", NAME(thing), tp_pennies);
 			notify(player, buf);
-			sprintf(buf,
+			snprintf(buf, sizeof(buf),
 					"%s tried to rob you, but you have no %s to take.",
 					NAME(player), tp_pennies);
 			notify(thing, buf);
@@ -122,7 +54,7 @@ do_rob(int descr, dbref player, const char *what)
 			PLAYER_ADD_PENNIES(thing, -1);
 			DBDIRTY(thing);
 			notify_fmt(player, "You stole a %s.", tp_penny);
-			sprintf(buf, "%s stole one of your %s!", NAME(player), tp_pennies);
+			snprintf(buf, sizeof(buf), "%s stole one of your %s!", NAME(player), tp_pennies);
 			notify(thing, buf);
 		}
 		break;
@@ -186,24 +118,24 @@ do_kill(int descr, dbref player, const char *what, int cost)
 					/* give him the drop message */
 					notify(player, GETDROP(victim));
 				else {
-					sprintf(buf, "You killed %s!", NAME(victim));
+					snprintf(buf, sizeof(buf), "You killed %s!", NAME(victim));
 					notify(player, buf);
 				}
 
 				/* now notify everybody else */
 				if (GETODROP(victim)) {
-					sprintf(buf, "%s killed %s! ", PNAME(player), PNAME(victim));
+					snprintf(buf, sizeof(buf), "%s killed %s! ", PNAME(player), PNAME(victim));
 					parse_oprop(descr, player, getloc(player), victim,
 								   MESGPROP_ODROP, buf, "(@Odrop)");
 				} else {
-					sprintf(buf, "%s killed %s!", NAME(player), NAME(victim));
+					snprintf(buf, sizeof(buf), "%s killed %s!", NAME(player), NAME(victim));
 				}
 				notify_except(DBFETCH(DBFETCH(player)->location)->contents, player, buf,
 							  player);
 
 				/* maybe pay off the bonus */
 				if (PLAYER_PENNIES(victim) < tp_max_pennies) {
-					sprintf(buf, "Your insurance policy pays %d %s.",
+					snprintf(buf, sizeof(buf), "Your insurance policy pays %d %s.",
 							tp_kill_bonus, tp_pennies);
 					notify(victim, buf);
 					PLAYER_ADD_PENNIES(victim, tp_kill_bonus);
@@ -217,7 +149,7 @@ do_kill(int descr, dbref player, const char *what, int cost)
 			} else {
 				/* notify player and victim only */
 				notify(player, "Your murder attempt failed.");
-				sprintf(buf, "%s tried to kill you!", NAME(player));
+				snprintf(buf, sizeof(buf), "%s tried to kill you!", NAME(player));
 				notify(victim, buf);
 			}
 			break;
@@ -276,16 +208,16 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 		switch (Typeof(who)) {
 		case TYPE_PLAYER:
 			PLAYER_ADD_PENNIES(who, amount);
-			sprintf(buf, "You give %d %s to %s.",
+			snprintf(buf, sizeof(buf), "You give %d %s to %s.",
 					amount, amount == 1 ? tp_penny : tp_pennies, NAME(who));
 			notify(player, buf);
-			sprintf(buf, "%s gives you %d %s.",
+			snprintf(buf, sizeof(buf), "%s gives you %d %s.",
 					NAME(player), amount, amount == 1 ? tp_penny : tp_pennies);
 			notify(who, buf);
 			break;
 		case TYPE_THING:
 			THING_SET_VALUE(who, (THING_VALUE(who) + amount));
-			sprintf(buf, "You change the value of %s to %d %s.",
+			snprintf(buf, sizeof(buf), "You change the value of %s to %d %s.",
 					NAME(who),
 					THING_VALUE(who), THING_VALUE(who) == 1 ? tp_penny : tp_pennies);
 			notify(player, buf);

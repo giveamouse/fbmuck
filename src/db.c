@@ -454,7 +454,7 @@ write_program(struct line *first, dbref i)
 	FILE *f;
 	char fname[BUFFER_LEN];
 
-	sprintf(fname, "muf/%d.m", (int) i);
+	snprintf(fname, sizeof(fname), "muf/%d.m", (int) i);
 	f = fopen(fname, "w");
 	if (!f) {
 		log_status("Couldn't open file %s!\n", fname);
@@ -941,7 +941,7 @@ read_program(dbref i)
 	int len;
 
 	first = NULL;
-	sprintf(buf, "muf/%d.m", (int) i);
+	snprintf(buf, sizeof(buf), "muf/%d.m", (int) i);
 	f = fopen(buf, "r");
 	if (!f)
 		return 0;

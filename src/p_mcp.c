@@ -188,9 +188,9 @@ muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *con
 		argval.type = PROG_ARRAY;
 		argval.data.array = contarr;
 		if (msgname && *msgname) {
-			sprintf(buf, "MCP.%.128s-%.128s", pkgname, msgname);
+			snprintf(buf, sizeof(buf), "MCP.%.128s-%.128s", pkgname, msgname);
 		} else {
-			sprintf(buf, "MCP.%.128s", pkgname);
+			snprintf(buf, sizeof(buf), "MCP.%.128s", pkgname);
 		}
 		muf_event_add(destfr, buf, &argval, 0);
 		CLEAR(&argval);
@@ -230,15 +230,15 @@ stuff_dict_in_mesg(stk_array* arr, McpMesg* msg)
 											DoNullInd(subval->data.string));
 						break;
 					case PROG_INTEGER:
-						sprintf(buf, "%d", subval->data.number);
+						snprintf(buf, sizeof(buf), "%d", subval->data.number);
 						mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 						break;
 					case PROG_OBJECT:
-						sprintf(buf, "#%d", subval->data.number);
+						snprintf(buf, sizeof(buf), "#%d", subval->data.number);
 						mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 						break;
 					case PROG_FLOAT:
-						sprintf(buf, "%g", subval->data.fnumber);
+						snprintf(buf, sizeof(buf), "%g", subval->data.fnumber);
 						mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 						break;
 					default:
@@ -255,17 +255,17 @@ stuff_dict_in_mesg(stk_array* arr, McpMesg* msg)
 								DoNullInd(argval->data.string));
 			break;
 		case PROG_INTEGER:
-			sprintf(buf, "%d", argval->data.number);
+			snprintf(buf, sizeof(buf), "%d", argval->data.number);
 			mcp_mesg_arg_remove(msg, argname.data.string->data);
 			mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 			break;
 		case PROG_OBJECT:
-			sprintf(buf, "#%d", argval->data.number);
+			snprintf(buf, sizeof(buf), "#%d", argval->data.number);
 			mcp_mesg_arg_remove(msg, argname.data.string->data);
 			mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 			break;
 		case PROG_FLOAT:
-			sprintf(buf, "%g", argval->data.fnumber);
+			snprintf(buf, sizeof(buf), "%g", argval->data.fnumber);
 			mcp_mesg_arg_remove(msg, argname.data.string->data);
 			mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 			break;
@@ -633,7 +633,7 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 	}
 	*/
 
-	sprintf(buf, "GUI.%s", dlogid);
+	snprintf(buf, sizeof(buf), "GUI.%s", dlogid);
 	muf_event_add(fr, buf, &temp, 0);
 	CLEAR(&temp);
 }
@@ -658,7 +658,7 @@ fbgui_muf_error_cb(GUI_ERROR_CB_ARGS)
 	array_set_strkey_strval(&temp.data.array, "errcode", errcode);
 	array_set_strkey_strval(&temp.data.array, "errtext", errtext);
 
-	sprintf(buf, "GUI.%s", dlogid);
+	snprintf(buf, sizeof(buf), "GUI.%s", dlogid);
 	muf_event_add(fr, buf, &temp, 0);
 	CLEAR(&temp);
 }
@@ -870,7 +870,7 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
 	if (!GuiSupported(descr))
 		abort_interp("Internal error: The given dialog's descriptor doesn't support the GUI package. (1)");
 
-	sprintf(cmdname, "ctrl-%.55s", ctrltype);
+	snprintf(cmdname, sizeof(cmdname), "ctrl-%.55s", ctrltype);
 	mcp_mesg_init(&msg, GUI_PACKAGE, cmdname);
 
 	result = stuff_dict_in_mesg(arr, &msg);
@@ -1073,15 +1073,15 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 				value = DoNullInd(temp2->data.string);
 				break;
 			case PROG_INTEGER:
-				sprintf(buf, "%d", temp2->data.number);
+				snprintf(buf, sizeof(buf), "%d", temp2->data.number);
 				value = buf;
 				break;
 			case PROG_OBJECT:
-				sprintf(buf, "#%d", temp2->data.number);
+				snprintf(buf, sizeof(buf), "#%d", temp2->data.number);
 				value = buf;
 				break;
 			case PROG_FLOAT:
-				sprintf(buf, "%g", temp2->data.fnumber);
+				snprintf(buf, sizeof(buf), "%g", temp2->data.fnumber);
 				value = buf;
 				break;
 			default:

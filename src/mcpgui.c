@@ -299,7 +299,7 @@ gui_dlog_alloc(int descr, Gui_CB callback, GuiErr_CB error_cb, void *context)
 	DlogData *ptr;
 
 	while (1) {
-		sprintf(tmpid, "%08lX", (unsigned long)random());
+		snprintf(tmpid, sizeof(tmpid), "%08lX", (unsigned long)random());
 		if (!gui_dlog_find(tmpid)) {
 			break;
 		}
@@ -655,7 +655,7 @@ GuiListInsert(const char *dlogid, const char *id, int after, int lines, const ch
 		mcp_mesg_arg_append(&msg, "dlogid", dlogid);
 		mcp_mesg_arg_append(&msg, "id", id);
 		if (after > 0) {
-			sprintf(numbuf, "%d", after);
+			snprintf(numbuf, sizeof(numbuf), "%d", after);
 			mcp_mesg_arg_append(&msg, "after", numbuf);
 		}
 		for (i = 0; i < lines; i++) {
@@ -689,13 +689,13 @@ GuiListDel(const char *dlogid, const char *id, int from, int to)
 		if (from == GUI_LIST_END) {
 			mcp_mesg_arg_append(&msg, "from", "end");
 		} else {
-			sprintf(numbuf, "%d", from);
+			snprintf(numbuf, sizeof(numbuf), "%d", from);
 			mcp_mesg_arg_append(&msg, "from", numbuf);
 		}
 		if (to == GUI_LIST_END) {
 			mcp_mesg_arg_append(&msg, "to", "end");
 		} else {
-			sprintf(numbuf, "%d", to);
+			snprintf(numbuf, sizeof(numbuf), "%d", to);
 			mcp_mesg_arg_append(&msg, "to", numbuf);
 		}
 		mcp_frame_output_mesg(mfr, &msg);
@@ -780,27 +780,27 @@ gui_ctrl_process_layout(McpMesg * msg, int layout)
 		mcp_mesg_arg_append(msg, "sticky", buf);
 
 
-	sprintf(buf, "%d", GET_COLSKIP(layout));
+	snprintf(buf, sizeof(buf), "%d", GET_COLSKIP(layout));
 	if (strcmp(buf, "0"))
 		mcp_mesg_arg_append(msg, "colskip", buf);
 
 
-	sprintf(buf, "%d", GET_COLSPAN(layout));
+	snprintf(buf, sizeof(buf), "%d", GET_COLSPAN(layout));
 	if (strcmp(buf, "1"))
 		mcp_mesg_arg_append(msg, "colspan", buf);
 
 
-	sprintf(buf, "%d", GET_ROWSPAN(layout));
+	snprintf(buf, sizeof(buf), "%d", GET_ROWSPAN(layout));
 	if (strcmp(buf, "1"))
 		mcp_mesg_arg_append(msg, "rowspan", buf);
 
 
-	sprintf(buf, "%d", GET_LEFTPAD(layout));
+	snprintf(buf, sizeof(buf), "%d", GET_LEFTPAD(layout));
 	if (strcmp(buf, "0"))
 		mcp_mesg_arg_append(msg, "leftpad", buf);
 
 
-	sprintf(buf, "%d", GET_TOPPAD(layout));
+	snprintf(buf, sizeof(buf), "%d", GET_TOPPAD(layout));
 	if (strcmp(buf, "0"))
 		mcp_mesg_arg_append(msg, "toppad", buf);
 
@@ -841,7 +841,7 @@ gui_ctrl_make_v(const char *dlogid, const char *type, const char *pane,
 	if (GuiSupported(descr)) {
 		char cmdname[64];
 
-		sprintf(cmdname, "ctrl-%.55s", type);
+		snprintf(cmdname, sizeof(cmdname), "ctrl-%.55s", type);
 		mcp_mesg_init(&msg, GUI_PACKAGE, cmdname);
 		gui_ctrl_process_layout(&msg, layout);
 		mcp_mesg_arg_append(&msg, "dlogid", dlogid);
@@ -896,7 +896,7 @@ gui_ctrl_make_l(const char *dlogid, const char *type, const char *pane, const ch
 	if (GuiSupported(descr)) {
 		char cmdname[64];
 
-		sprintf(cmdname, "ctrl-%.55s", type);
+		snprintf(cmdname, sizeof(cmdname), "ctrl-%.55s", type);
 		mcp_mesg_init(&msg, GUI_PACKAGE, cmdname);
 		gui_ctrl_process_layout(&msg, layout);
 		mcp_mesg_arg_append(&msg, "dlogid", dlogid);
@@ -939,7 +939,7 @@ GuiEdit(const char *dlogid, const char *pane, const char *id, const char *text, 
 {
 	char buf[32];
 
-	sprintf(buf, "%d", width);
+	snprintf(buf, sizeof(buf), "%d", width);
 	return gui_ctrl_make_l(dlogid, "edit", pane, id, text, value, layout, "width", buf, NULL);
 }
 
@@ -949,7 +949,7 @@ GuiText(const char *dlogid, const char *pane, const char *id, const char *value,
 {
 	char widthbuf[32];
 
-	sprintf(widthbuf, "%d", width);
+	snprintf(widthbuf, sizeof(widthbuf), "%d", width);
 	return gui_ctrl_make_l(dlogid, "text", pane, id, NULL, value, layout, "width", widthbuf, NULL);
 }
 
@@ -963,10 +963,10 @@ GuiSpinner(const char *dlogid, const char *pane, const char *id, const char *tex
 	char minbuf[32];
 	char maxbuf[32];
 
-	sprintf(widthbuf, "%d", width);
-	sprintf(valbuf, "%d", value);
-	sprintf(minbuf, "%d", min);
-	sprintf(maxbuf, "%d", max);
+	snprintf(widthbuf, sizeof(widthbuf), "%d", width);
+	snprintf(valbuf, sizeof(valbuf), "%d", value);
+	snprintf(minbuf, sizeof(minbuf), "%d", min);
+	snprintf(maxbuf, sizeof(maxbuf), "%d", max);
 	return gui_ctrl_make_l(dlogid, "spinner", pane, id, text, valbuf, layout,
 					"width", widthbuf, "min", minbuf, "max", maxbuf, NULL);
 }
@@ -978,7 +978,7 @@ GuiCombo(const char *dlogid, const char *pane, const char *id, const char *text,
 {
 	char buf[32];
 
-	sprintf(buf, "%d", width);
+	snprintf(buf, sizeof(buf), "%d", width);
 	return gui_ctrl_make_l(dlogid, "combobox", pane, id, text, value, layout,
 					"width", buf, "editable", editable ? "1" : "0", NULL);
 }
@@ -991,8 +991,8 @@ GuiMulti(const char *dlogid, const char *pane, const char *id, const char *value
 	char widthbuf[32];
 	char heightbuf[32];
 
-	sprintf(widthbuf, "%d", width);
-	sprintf(heightbuf, "%d", height);
+	snprintf(widthbuf, sizeof(widthbuf), "%d", width);
+	snprintf(heightbuf, sizeof(heightbuf), "%d", height);
 	return gui_ctrl_make_l(dlogid, "multiedit", pane, id, NULL, value, layout,
 					"width", widthbuf,
 					"height", heightbuf, "font", (fixed ? "fixed" : "variable"), NULL);
@@ -1004,7 +1004,7 @@ GuiHRule(const char *dlogid, const char *pane, const char *id, int height, int l
 {
 	char heightbuf[32];
 
-	sprintf(heightbuf, "%d", height);
+	snprintf(heightbuf, sizeof(heightbuf), "%d", height);
 	return gui_ctrl_make_l(dlogid, "hrule", pane, id, NULL, NULL, layout, "height", heightbuf, NULL);
 }
 
@@ -1014,7 +1014,7 @@ GuiVRule(const char *dlogid, const char *pane, const char *id, int thickness, in
 {
 	char widthbuf[32];
 
-	sprintf(widthbuf, "%d", thickness);
+	snprintf(widthbuf, sizeof(widthbuf), "%d", thickness);
 	return gui_ctrl_make_l(dlogid, "vrule", pane, id, NULL, NULL, layout, "width", widthbuf, NULL);
 }
 
@@ -1042,7 +1042,7 @@ GuiButton(const char *dlogid, const char *pane, const char *id, const char *text
 {
 	char widthbuf[32];
 
-	sprintf(widthbuf, "%d", width);
+	snprintf(widthbuf, sizeof(widthbuf), "%d", width);
 	return gui_ctrl_make_l(dlogid, "button", pane, id, text, NULL, layout,
 					"width", widthbuf, "dismiss", dismiss ? "1" : "0", NULL);
 }
@@ -1115,9 +1115,9 @@ post_dlog_cb(GUI_EVENT_CB_ARGS)
 		const char *keywords = gui_value_get(dlogid, "keywd", 0);
 		/* int bodycnt = gui_value_linecount(dlogid, "body"); */
 
-		sprintf(buf, "Subject: %s", subject);
+		snprintf(buf, sizeof(buf), "Subject: %s", subject);
 		pnotify(pdescrcon(descr), buf);
-		sprintf(buf, "Keywords: %s", keywords);
+		snprintf(buf, sizeof(buf), "Keywords: %s", keywords);
 		pnotify(pdescrcon(descr), buf);
 	} else if (!string_compare(id, "cancel")) {
 		pnotify(pdescrcon(descr), "Posting cancelled.");

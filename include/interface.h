@@ -1,6 +1,14 @@
 
 /* $Header$
  * $Log: interface.h,v $
+ * Revision 1.6  2002/06/12 04:14:11  revar
+ * Added internal MUF primitives for pinning/unpinning arrays.  These are for the
+ *   future planned MUV to MUF-bytecode compiler, and are not available from MUF.
+ * Added DESCRBUFSIZE ( int:dscr -- int:bytes ) muf prim.  Returns the number of
+ *   bytes of free space remaining in the output buffer before it will get
+ *   the <output flushed> message.
+ * Changed all sprintf()s in the code to snprintf()s.
+ *
  * Revision 1.5  2001/01/10 07:35:26  revar
  * Ported a bunch of DESCR* connection muf prims from ProtoMuck.
  * Ported PNAME-OK? and NAME-OK? muf prims from ProtoMuck.
@@ -91,6 +99,7 @@ extern int pdescrcon(int c);
 extern McpFrame *descr_mcpframe(int c);
 extern int pnextdescr(int c);
 extern int pdescrflush(int c);
+extern int pdescrbufsize(int c);
 extern dbref partial_pmatch(const char *name);
 
 /* the following symbols are provided by game.c */

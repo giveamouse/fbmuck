@@ -169,9 +169,9 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect, int cols)
 					}
 					fprintf(hf, HTML_INDEX_ENTRY, (100 / cols), ptr->topic, ptr->topic);
 					if (cnt == cols) {
-						sprintf(buf2, "%-0.*s", width - 1, ptr->topic);
+						snprintf(buf2, sizeof(buf2), "%-0.*s", width - 1, ptr->topic);
 					} else {
-						sprintf(buf2, "%-*.*s", width, width - 1, ptr->topic);
+						snprintf(buf2, sizeof(buf2), "%-*.*s", width, width - 1, ptr->topic);
 					}
 					strcat(buf, buf2);
 					if (cnt >= cols) {
@@ -268,9 +268,9 @@ print_topics(FILE * f, FILE * hf, int cols)
 		}
 		fprintf(hf, HTML_INDEX_ENTRY, (100 / cols), ptr->topic, ptr->topic);
 		if (cnt == cols) {
-			sprintf(buf2, "%-0.*s", width - 1, ptr->topic);
+			snprintf(buf2, sizeof(buf2), "%-0.*s", width - 1, ptr->topic);
 		} else {
-			sprintf(buf2, "%-*.*s", width, width - 1, ptr->topic);
+			snprintf(buf2, sizeof(buf2), "%-*.*s", width, width - 1, ptr->topic);
 		}
 		strcat(buf, buf2);
 		if (cnt >= cols) {

@@ -34,7 +34,7 @@ mfn_func(MFUNARGS)
 	for (i = 1; i < argc - 1; i++) {
 		ptr = MesgParse(argv[i], argbuf);
 		CHECKRETURN(ptr, "FUNC", "variable name argument");
-		sprintf(defbuf, "{with:%.*s,{:%d},%.*s}", MAX_MFUN_NAME_LEN, ptr, i,
+		snprintf(defbuf, sizeof(defbuf), "{with:%.*s,{:%d},%.*s}", MAX_MFUN_NAME_LEN, ptr, i,
 				(BUFFER_LEN - MAX_MFUN_NAME_LEN - 20), def);
 	}
 	i = new_mfunc(funcname, defbuf);
@@ -889,7 +889,7 @@ mfn_ontime(MFUNARGS)
 	conn = least_idle_player_descr(obj);
 	if (!conn)
 		return "-1";
-	sprintf(buf, "%d", pontime(conn));
+	snprintf(buf, sizeof(buf), "%d", pontime(conn));
 	return buf;
 }
 
@@ -909,7 +909,7 @@ mfn_idle(MFUNARGS)
 	conn = least_idle_player_descr(obj);
 	if (!conn)
 		return "-1";
-	sprintf(buf, "%d", pidle(conn));
+	snprintf(buf, sizeof(buf), "%d", pidle(conn));
 	return buf;
 }
 
@@ -1154,7 +1154,7 @@ mfn_inc(MFUNARGS)
 		ABORT_MPI("INC", "No such variable currently defined.");
 	if (argc > 1)
 		x = atoi(argv[1]);
-	sprintf(buf, "%d", (atoi(ptr) + x));
+	snprintf(buf, sizeof(buf), "%d", (atoi(ptr) + x));
 	strcpy(ptr, buf);
 	return (buf);
 }
@@ -1170,7 +1170,7 @@ mfn_dec(MFUNARGS)
 		ABORT_MPI("DEC", "No such variable currently defined.");
 	if (argc > 1)
 		x = atoi(argv[1]);
-	sprintf(buf, "%d", (atoi(ptr) - x));
+	snprintf(buf, sizeof(buf), "%d", (atoi(ptr) - x));
 	strcpy(ptr, buf);
 	return (buf);
 }
@@ -1183,7 +1183,7 @@ mfn_add(MFUNARGS)
 
 	for (j = 1; j < argc; j++)
 		i += atoi(argv[j]);
-	sprintf(buf, "%d", i);
+	snprintf(buf, sizeof(buf), "%d", i);
 	return (buf);
 }
 
@@ -1195,7 +1195,7 @@ mfn_subt(MFUNARGS)
 
 	for (j = 1; j < argc; j++)
 		i -= atoi(argv[j]);
-	sprintf(buf, "%d", i);
+	snprintf(buf, sizeof(buf), "%d", i);
 	return (buf);
 }
 
@@ -1207,7 +1207,7 @@ mfn_mult(MFUNARGS)
 
 	for (j = 1; j < argc; j++)
 		i *= atoi(argv[j]);
-	sprintf(buf, "%d", i);
+	snprintf(buf, sizeof(buf), "%d", i);
 	return (buf);
 }
 
@@ -1225,7 +1225,7 @@ mfn_div(MFUNARGS)
 			i /= k;
 		}
 	}
-	sprintf(buf, "%d", i);
+	snprintf(buf, sizeof(buf), "%d", i);
 	return (buf);
 }
 
@@ -1243,7 +1243,7 @@ mfn_mod(MFUNARGS)
 			i %= k;
 		}
 	}
-	sprintf(buf, "%d", i);
+	snprintf(buf, sizeof(buf), "%d", i);
 	return (buf);
 }
 
@@ -1260,7 +1260,7 @@ mfn_abs(MFUNARGS)
 	if (val < 0) {
 		val = -val;
 	}
-	sprintf(buf, "%d", val);
+	snprintf(buf, sizeof(buf), "%d", val);
 	return (buf);
 }
 
@@ -1310,7 +1310,7 @@ mfn_dist(MFUNARGS)
 	c -= c2;
 	result = sqrt((double) (a * a) + (double) (b * b) + (double) (c * c));
 
-	sprintf(buf, "%.0f", floor(result + 0.5));
+	snprintf(buf, sizeof(buf), "%.0f", floor(result + 0.5));
 	return buf;
 }
 
@@ -1335,7 +1335,7 @@ mfn_or(MFUNARGS)
 
 	for (i = 0; i < argc; i++) {
 		ptr = MesgParse(argv[i], buf);
-		sprintf(buf2, "arg %d", i + 1);
+		snprintf(buf2, sizeof(buf2), "arg %d", i + 1);
 		CHECKRETURN(ptr, "OR", buf2);
 		if (truestr(ptr)) {
 			return "1";
@@ -1367,7 +1367,7 @@ mfn_and(MFUNARGS)
 
 	for (i = 0; i < argc; i++) {
 		ptr = MesgParse(argv[i], buf);
-		sprintf(buf2, "arg %d", i + 1);
+		snprintf(buf2, sizeof(buf2), "arg %d", i + 1);
 		CHECKRETURN(ptr, "AND", buf2);
 		if (!truestr(ptr)) {
 			return "0";
@@ -1396,7 +1396,7 @@ mfn_dice(MFUNARGS)
 		return "0";
 	while (num-- > 0)
 		total += (((RANDOM() / 256) % sides) + 1);
-	sprintf(buf, "%d", (total + offset));
+	snprintf(buf, sizeof(buf), "%d", (total + offset));
 	return buf;
 }
 
@@ -1478,7 +1478,7 @@ mfn_null(MFUNARGS)
 const char *
 mfn_tzoffset(MFUNARGS)
 {
-	sprintf(buf, "%ld", get_tz_offset());
+	snprintf(buf, sizeof(buf), "%ld", get_tz_offset());
 	return buf;
 }
 
@@ -1568,9 +1568,9 @@ mfn_convtime(MFUNARGS)
 	otm.tm_sec = sc;
 	otm.tm_year = (yr >= 70) ? yr : (yr + 100);
 #ifdef SUNOS
-	sprintf(buf, "%ld", timelocal(&otm));
+	snprintf(buf, sizeof(buf), "%ld", timelocal(&otm));
 #else
-	sprintf(buf, "%ld", mktime(&otm));
+	snprintf(buf, sizeof(buf), "%ld", mktime(&otm));
 #endif
 	return buf;
 }
@@ -1602,34 +1602,34 @@ mfn_ltimestr(MFUNARGS)
 
 	*buf = '\0';
 	if (wk) {
-		sprintf(buf, "%d week%s", wk, (wk == 1) ? "" : "s");
+		snprintf(buf, sizeof(buf), "%d week%s", wk, (wk == 1) ? "" : "s");
 	}
 	if (dy) {
 		if (*buf) {
-			sprintf(buf, "%s, %d day%s", buf, dy, (dy == 1) ? "" : "s");
+			snprintf(buf, sizeof(buf), "%s, %d day%s", buf, dy, (dy == 1) ? "" : "s");
 		} else {
-			sprintf(buf, "%d day%s", dy, (dy == 1) ? "" : "s");
+			snprintf(buf, sizeof(buf), "%d day%s", dy, (dy == 1) ? "" : "s");
 		}
 	}
 	if (hr) {
 		if (*buf) {
-			sprintf(buf, "%s, %d hour%s", buf, hr, (hr == 1) ? "" : "s");
+			snprintf(buf, sizeof(buf), "%s, %d hour%s", buf, hr, (hr == 1) ? "" : "s");
 		} else {
-			sprintf(buf, "%d hour%s", hr, (hr == 1) ? "" : "s");
+			snprintf(buf, sizeof(buf), "%d hour%s", hr, (hr == 1) ? "" : "s");
 		}
 	}
 	if (mn) {
 		if (*buf) {
-			sprintf(buf, "%s, %d min%s", buf, mn, (mn == 1) ? "" : "s");
+			snprintf(buf, sizeof(buf), "%s, %d min%s", buf, mn, (mn == 1) ? "" : "s");
 		} else {
-			sprintf(buf, "%d min%s", mn, (mn == 1) ? "" : "s");
+			snprintf(buf, sizeof(buf), "%d min%s", mn, (mn == 1) ? "" : "s");
 		}
 	}
 	if (tm || !*buf) {
 		if (*buf) {
-			sprintf(buf, "%s, %d sec%s", buf, tm, (tm == 1) ? "" : "s");
+			snprintf(buf, sizeof(buf), "%s, %d sec%s", buf, tm, (tm == 1) ? "" : "s");
 		} else {
-			sprintf(buf, "%d sec%s", tm, (tm == 1) ? "" : "s");
+			snprintf(buf, sizeof(buf), "%d sec%s", tm, (tm == 1) ? "" : "s");
 		}
 	}
 	return buf;
@@ -1658,9 +1658,9 @@ mfn_timestr(MFUNARGS)
 
 	*buf = '\0';
 	if (dy) {
-		sprintf(buf, "%dd %02d:%02d", dy, hr, mn);
+		snprintf(buf, sizeof(buf), "%dd %02d:%02d", dy, hr, mn);
 	} else {
-		sprintf(buf, "%02d:%02d", hr, mn);
+		snprintf(buf, sizeof(buf), "%02d:%02d", hr, mn);
 	}
 	return buf;
 }
@@ -1688,18 +1688,18 @@ mfn_stimestr(MFUNARGS)
 
 	*buf = '\0';
 	if (dy) {
-		sprintf(buf, "%dd", dy);
+		snprintf(buf, sizeof(buf), "%dd", dy);
 		return buf;
 	}
 	if (hr) {
-		sprintf(buf, "%dh", hr);
+		snprintf(buf, sizeof(buf), "%dh", hr);
 		return buf;
 	}
 	if (mn) {
-		sprintf(buf, "%dm", mn);
+		snprintf(buf, sizeof(buf), "%dm", mn);
 		return buf;
 	}
-	sprintf(buf, "%ds", tm);
+	snprintf(buf, sizeof(buf), "%ds", tm);
 	return buf;
 }
 
@@ -1710,7 +1710,7 @@ mfn_secs(MFUNARGS)
 	time_t lt;
 
 	time(&lt);
-	sprintf(buf, "%ld", lt);
+	snprintf(buf, sizeof(buf), "%ld", lt);
 	return buf;
 }
 
@@ -1721,7 +1721,7 @@ mfn_convsecs(MFUNARGS)
 	time_t lt;
 
 	lt = atol(argv[0]);
-	sprintf(buf, "%s", ctime(&lt));
+	snprintf(buf, sizeof(buf), "%s", ctime(&lt));
 	buf[strlen(buf) - 1] = '\0';
 	return buf;
 }
@@ -1789,10 +1789,10 @@ mfn_money(MFUNARGS)
 		ABORT_MPI("MONEY", "Permission denied.");
 	switch (Typeof(obj)) {
 	case TYPE_THING:
-		sprintf(buf, "%d", THING_VALUE(obj));
+		snprintf(buf, sizeof(buf), "%d", THING_VALUE(obj));
 		break;
 	case TYPE_PLAYER:
-		sprintf(buf, "%d", PLAYER_PENNIES(obj));
+		snprintf(buf, sizeof(buf), "%d", PLAYER_PENNIES(obj));
 		break;
 	default:
 		strcpy(buf, "0");
@@ -1841,10 +1841,10 @@ mfn_tell(MFUNARGS)
 		if (Typeof(what) == TYPE_ROOM || OWNER(what) == obj || player == obj ||
 			(Typeof(what) == TYPE_EXIT && Typeof(getloc(what)) == TYPE_ROOM) ||
 			string_prefix(argv[0], NAME(player))) {
-			sprintf(buf, "%s%.4093s",
+			snprintf(buf, sizeof(buf), "%s%.4093s",
 					((obj == OWNER(perms) || obj == player) ? "" : "> "), ptr);
 		} else {
-			sprintf(buf, "%s%.16s%s%.4078s",
+			snprintf(buf, sizeof(buf), "%s%.16s%s%.4078s",
 					((obj == OWNER(perms) || obj == player) ? "" : "> "),
 					NAME(player), ((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
 		}
@@ -1886,7 +1886,7 @@ mfn_otell(MFUNARGS)
 			string_prefix(argv[0], NAME(player))) {
 			strcpy(buf, ptr);
 		} else {
-			sprintf(buf, "%.16s%s%.4078s", NAME(player),
+			snprintf(buf, sizeof(buf), "%.16s%s%.4078s", NAME(player),
 					((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
 		}
 		thing = DBFETCH(obj)->contents;
@@ -2003,7 +2003,7 @@ mfn_created(MFUNARGS)
 	if (obj == PERMDENIED)
 		ABORT_MPI("CREATED", "Permission denied.");
 
-	sprintf(buf, "%ld", DBFETCH(obj)->ts.created);
+	snprintf(buf, sizeof(buf), "%ld", DBFETCH(obj)->ts.created);
 
 	return buf;
 }
@@ -2020,7 +2020,7 @@ mfn_lastused(MFUNARGS)
 	if (obj == PERMDENIED)
 		ABORT_MPI("LASTUSED", "Permission denied.");
 
-	sprintf(buf, "%ld", DBFETCH(obj)->ts.lastused);
+	snprintf(buf, sizeof(buf), "%ld", DBFETCH(obj)->ts.lastused);
 
 	return buf;
 }
@@ -2037,7 +2037,7 @@ mfn_modified(MFUNARGS)
 	if (obj == PERMDENIED)
 		ABORT_MPI("MODIFIED", "Permission denied.");
 
-	sprintf(buf, "%ld", DBFETCH(obj)->ts.modified);
+	snprintf(buf, sizeof(buf), "%ld", DBFETCH(obj)->ts.modified);
 
 	return buf;
 }
@@ -2054,7 +2054,7 @@ mfn_usecount(MFUNARGS)
 	if (obj == PERMDENIED)
 		ABORT_MPI("USECOUNT", "Permission denied.");
 
-	sprintf(buf, "%d", DBFETCH(obj)->ts.usecount);
+	snprintf(buf, sizeof(buf), "%d", DBFETCH(obj)->ts.usecount);
 
 	return buf;
 }

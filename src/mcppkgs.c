@@ -187,10 +187,10 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 			if (!string_compare(valtype, "string-list")) {
 
 				if (lines == 0) {
-					sprintf(buf, "%s#", reference);
+					snprintf(buf, sizeof(buf), "%s#", reference);
 					remove_property(obj, buf);
 				} else {
-					sprintf(buf, "%s#", reference);
+					snprintf(buf, sizeof(buf), "%s#", reference);
 					remove_property(obj, buf);
 					add_property(obj, buf, "", lines);
 					for (line = 0; line < lines; line++) {
@@ -198,7 +198,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 						if (!content || !*content) {
 							content = " ";
 						}
-						sprintf(buf, "%s#/%d", reference, line + 1);
+						snprintf(buf, sizeof(buf), "%s#/%d", reference, line + 1);
 						add_property(obj, buf, content, 0);
 					}
 				}

@@ -36,6 +36,68 @@
 #define AVL_KEY(x) (&(x->key))
 #define AVL_COMPARE(x,y) array_tree_compare(x,y,0)
 
+static int array_tree_compare(array_iter * a, array_iter * b, int case_sens);
+
+/*
+** This function compares two arrays in struct insts (array_iter's).
+** The arrays are compared in order until the first difference.
+** If the key is the difference, the comparison result is based on the key.
+** If the value is the difference, the comparison result is based on the value.
+** Comparison of keys and values is done by array_tree_compare().
+*/
+static int
+array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
+{
+	int more1, more2, res;
+	array_iter idx1;
+	array_iter idx2;
+	array_data *val1;
+	array_data *val2;
+
+	if (a->type != PROG_ARRAY || b->type != PROG_ARRAY) {
+		return array_tree_compare(a, b, case_sens);
+	}
+
+	if (a->data.array == b->data.array) {
+		return 0;
+	}
+
+	more1 = array_first(a->data.array, &idx1);
+	more2 = array_first(b->data.array, &idx2);
+	for(;;) {
+		if (more1 && more2) {
+			val1 = array_getitem(a->data.array, &idx1);
+			val2 = array_getitem(b->data.array, &idx2);
+			res = array_tree_compare(&idx1, &idx2, case_sens);
+			if (res) {
+				return res;
+			}
+			res = array_tree_compare(val1, val2, case_sens);
+			if (res) {
+				return res;
+			}
+		} else if (more1) {
+			return 1;
+		} else if (more2) {
+			return -1;
+		} else {
+			return 0;
+		}
+		more1 = array_next(a->data.array, &idx1);
+		more2 = array_next(b->data.array, &idx2);
+	}
+	return 0;
+}
+
+
+/*
+** Compares two array_iter's (struct insts)
+** If they are both either floats or ints, compare to see which is greater.
+** If they are both strings, compare string values with given case sensitivity.
+** If not, but they are both the same type, compare their values logicly.
+** If not, then compare based on an arbitrary ordering of types.
+** Returns -1 is a < b.  Returns 1 is a > b.  Returns 0 if a == b.
+*/
 static int
 array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 {
@@ -78,10 +140,7 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 			return string_compare(astr, bstr);
 		}
 	} else if (a->type == PROG_ARRAY) {
-		/* Sort arrays by memory address. */
-		/* This is a bug, really. */
-		/* in a perfect world, we'd compare the array elements recursively. */
-		return (a->data.array - b->data.array);
+		return array_tree_compare_arrays(a, b, case_sens);
 	} else if (a->type == PROG_LOCK) {
 		/* Sort locks by memory address. */
 		/* This is a bug, really. */
@@ -472,8 +531,9 @@ new_array(void)
 
 	nu = (stk_array *) malloc(sizeof(stk_array));
 	nu->links = 1;
-	nu->items = 0;
 	nu->type = ARRAY_UNDEFINED;
+	nu->items = 0;
+	nu->pinned = 0;
 	nu->data.packed = NULL;
 
 	return nu;
@@ -491,7 +551,7 @@ new_array_packed(int size)
 	}
 
 	nu = new_array();
-	nu->items = (short int)size;
+	nu->items = size;
 	nu->type = ARRAY_PACKED;
 	if (size < 1)
 		size = 1;
@@ -516,6 +576,15 @@ new_array_dictionary(void)
 }
 
 
+void
+array_set_pinned(stk_array* arr, int pinned)
+{
+	if (arr) {
+		arr->pinned = pinned;
+	}
+}
+
+
 stk_array *
 array_decouple(stk_array * arr)
 {
@@ -526,6 +595,7 @@ array_decouple(stk_array * arr)
 	}
 
 	nu = new_array();
+	nu->pinned = arr->pinned;
 	nu->type = arr->type;
 	switch (arr->type) {
 	case ARRAY_PACKED:{
@@ -928,7 +998,7 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 				return -1;
 			}
 			if (idx->data.number >= 0 && idx->data.number < arr->items) {
-				if (arr->links > 1) {
+				if (arr->links > 1 && !arr->pinned) {
 					arr->links--;
 					arr = *harr = array_decouple(arr);
 				}
@@ -936,7 +1006,7 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 				copyinst(item, &arr->data.packed[idx->data.number]);
 				return arr->items;
 			} else if (idx->data.number == arr->items) {
-				if (arr->links > 1) {
+				if (arr->links > 1 && !arr->pinned) {
 					arr->links--;
 					arr = *harr = array_decouple(arr);
 				}
@@ -953,7 +1023,7 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 	case ARRAY_DICTIONARY:{
 			array_tree *p;
 
-			if (arr->links > 1) {
+			if (arr->links > 1 && !arr->pinned) {
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
@@ -995,7 +1065,7 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 			if (idx->data.number < 0 || idx->data.number > arr->items) {
 				return -1;
 			}
-			if (arr->links > 1) {
+			if (arr->links > 1 && !arr->pinned) {
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
@@ -1013,7 +1083,7 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 	case ARRAY_DICTIONARY:{
 			array_tree *p;
 
-			if (arr->links > 1) {
+			if (arr->links > 1 && !arr->pinned) {
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
@@ -1171,7 +1241,7 @@ array_setrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 			if (start->data.number < 0 || start->data.number > arr->items) {
 				return -1;
 			}
-			if (arr->links > 1) {
+			if (arr->links > 1 && !arr->pinned) {
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
@@ -1186,7 +1256,7 @@ array_setrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 		}
 
 	case ARRAY_DICTIONARY:{
-			if (arr->links > 1) {
+			if (arr->links > 1 && !arr->pinned) {
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
@@ -1232,7 +1302,7 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 			if (start->data.number < 0 || start->data.number > arr->items) {
 				return -1;
 			}
-			if (arr->links > 1) {
+			if (arr->links > 1 && !arr->pinned) {
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
@@ -1263,7 +1333,7 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 		}
 
 	case ARRAY_DICTIONARY:{
-			if (arr->links > 1) {
+			if (arr->links > 1 && !arr->pinned) {
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
@@ -1322,7 +1392,7 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 			if (sidx > eidx) {
 				return -1;
 			}
-			if (arr->links > 1) {
+			if (arr->links > 1 && !arr->pinned) {
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
@@ -1365,7 +1435,7 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 			if (array_tree_compare(&s->key, &e->key, 0) > 0) {
 				return arr->items;
 			}
-			if (arr->links > 1) {
+			if (arr->links > 1 && !arr->pinned) {
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
@@ -1642,6 +1712,14 @@ array_get_intkey_strval(stk_array * arr, int key)
 
 /*
  * $Log: array.c,v $
+ * Revision 1.26  2002/06/12 04:14:11  revar
+ * Added internal MUF primitives for pinning/unpinning arrays.  These are for the
+ *   future planned MUV to MUF-bytecode compiler, and are not available from MUF.
+ * Added DESCRBUFSIZE ( int:dscr -- int:bytes ) muf prim.  Returns the number of
+ *   bytes of free space remaining in the output buffer before it will get
+ *   the <output flushed> message.
+ * Changed all sprintf()s in the code to snprintf()s.
+ *
  * Revision 1.25  2002/03/17 07:55:25  winged
  * Fixing pedantic warnings
  *

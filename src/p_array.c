@@ -1051,7 +1051,7 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 	nu = new_array_packed(0);
 	propadr = first_prop(ref, dir, &pptr, propname);
 	while (propadr) {
-		sprintf(buf, "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+		snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 		if (prop_read_perms(ProgUID, ref, buf, mlev)) {
 			prptr = get_property(ref, propname);
 			if (prptr) {
@@ -1114,7 +1114,7 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 	nu = new_array_dictionary();
 	propadr = first_prop(ref, dir, &pptr, propname);
 	while (propadr) {
-		sprintf(buf, "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+		snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 		if (prop_read_perms(ProgUID, ref, buf, mlev)) {
 			prptr = get_property(ref, buf);
 			if (prptr) {
@@ -1203,7 +1203,7 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 	if (!*dir)
 		strcpy(dir, "/");
 
-	sprintf(propname, "%s#", dir);
+	snprintf(propname, sizeof(propname), "%s#", dir);
 	maxcount = get_property_value(ref, propname);
 	if (!maxcount) {
 		strval = get_property_class(ref, propname);
@@ -1211,7 +1211,7 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 			maxcount = atoi(strval);
 		}
 		if (!maxcount) {
-			sprintf(propname, "%s%c#", dir, PROPDIR_DELIMITER);
+			snprintf(propname, sizeof(propname), "%s%c#", dir, PROPDIR_DELIMITER);
 			maxcount = get_property_value(ref, propname);
 			if (!maxcount) {
 				strval = get_property_class(ref, propname);
@@ -1224,13 +1224,13 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 
 	nu = new_array_packed(0);
 	while (1) {
-		sprintf(propname, "%s#%c%d", dir, PROPDIR_DELIMITER, count);
+		snprintf(propname, sizeof(propname), "%s#%c%d", dir, PROPDIR_DELIMITER, count);
 		prptr = get_property(ref, propname);
 		if (!prptr) {
-			sprintf(propname, "%s%c%d", dir, PROPDIR_DELIMITER, count);
+			snprintf(propname, sizeof(propname), "%s%c%d", dir, PROPDIR_DELIMITER, count);
 			prptr = get_property(ref, propname);
 			if (!prptr) {
-				sprintf(propname, "%s%d", dir, count);
+				snprintf(propname, sizeof(propname), "%s%d", dir, count);
 				prptr = get_property(ref, propname);
 			}
 		}
@@ -1328,14 +1328,14 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
 			oper4 = array_getitem(arr, &temp1);
 			switch (temp1.type) {
 			case PROG_STRING:
-				sprintf(propname, "%s%c%s", dir, PROPDIR_DELIMITER,
+				snprintf(propname, sizeof(propname), "%s%c%s", dir, PROPDIR_DELIMITER,
 						DoNullInd(temp1.data.string));
 				break;
 			case PROG_INTEGER:
-				sprintf(propname, "%s%c%d", dir, PROPDIR_DELIMITER, temp1.data.number);
+				snprintf(propname, sizeof(propname), "%s%c%d", dir, PROPDIR_DELIMITER, temp1.data.number);
 				break;
 			case PROG_FLOAT:
-				sprintf(propname, "%s%c%g", dir, PROPDIR_DELIMITER, temp1.data.fnumber);
+				snprintf(propname, sizeof(propname), "%s%c%g", dir, PROPDIR_DELIMITER, temp1.data.fnumber);
 				break;
 			default:
 				*propname = '\0';
@@ -1435,7 +1435,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 		propdat.flags = PROP_INTTYP;
 		propdat.data.val = array_count(arr);
 	} else {
-		sprintf(buf, "%d", array_count(arr));
+		snprintf(buf, sizeof(buf), "%d", array_count(arr));
 		propdat.flags = PROP_STRTYP;
 		propdat.data.str = buf;
 	}
@@ -1451,7 +1451,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 				if (*fmtin == 'N') {
 					if ((fmtout + 18) - propname > sizeof(propname))
 						break;
-					sprintf(fmtout, "%d", temp1.data.number + 1);
+					snprintf(fmtout, sizeof(propname) - (fmtout - propname), "%d", temp1.data.number + 1);
 					fmtout = &fmtout[strlen(fmtout)];
 				} else if (*fmtin == 'P') {
 					if ((fmtout + dirlen) - propname > sizeof(propname))
@@ -1506,7 +1506,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 			if (*fmtin == 'N') {
 				if ((fmtout + 18) - propname > sizeof(propname))
 					break;
-				sprintf(fmtout, "%d", count + 1);
+				snprintf(fmtout, sizeof(propname) - (fmtout - propname), "%d", count + 1);
 				fmtout = &fmtout[strlen(fmtout)];
 			} else if (*fmtin == 'P') {
 				if ((fmtout + dirlen) - propname > sizeof(propname))
@@ -1637,7 +1637,11 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 	if (array_first(arr, &temp1)) {
 		do {
 			oper4 = array_getitem(arr, &temp1);
-			len = sprintf(buf2, "#%d", oper4->data.objref);
+			len = snprintf(buf2, sizeof(buf2), "#%d", oper4->data.objref);
+			if (len == -1) {
+				buf2[sizeof(buf2)-1] = '\0';
+				len = sizeof(buf2) - 1;
+			}
 
 			if (out + len - buf >= BUFFER_LEN - 3)
 				abort_interp("Operation would result in string length overflow.");
@@ -1917,15 +1921,15 @@ prim_array_join(PRIM_PROTOTYPE)
 				text = DoNullInd(in->data.string);
 				break;
 			case PROG_INTEGER:
-				sprintf(buf, "%d", in->data.number);
+				snprintf(buf, sizeof(buf), "%d", in->data.number);
 				text = buf;
 				break;
 			case PROG_OBJECT:
-				sprintf(buf, "#%d", in->data.number);
+				snprintf(buf, sizeof(buf), "#%d", in->data.number);
 				text = buf;
 				break;
 			case PROG_FLOAT:
-				sprintf(buf, "%g", in->data.fnumber);
+				snprintf(buf, sizeof(buf), "%g", in->data.fnumber);
 				text = buf;
 				break;
 			case PROG_LOCK:
@@ -1963,4 +1967,52 @@ prim_array_join(PRIM_PROTOTYPE)
 
 	PushString(outbuf);
 }
+
+void
+prim_array_pin(PRIM_PROTOTYPE)
+{
+	stk_array *arr;
+	stk_array *nu;
+
+	CHECKOP(1);
+	oper1 = POP();				/* arr  Array */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array.");
+
+	arr = oper1->data.array;
+	if (!arr) {
+		nu = new_array_packed(0);
+	} else if (arr->links > 1) {
+		nu = array_decouple(arr);
+	} else {
+		arr->links++;
+		nu = arr;
+	}
+	array_set_pinned(nu, 1);
+
+	CLEAR(oper1);
+	PushArrayRaw(nu);
+}
+
+
+void
+prim_array_unpin(PRIM_PROTOTYPE)
+{
+	stk_array *arr;
+
+	CHECKOP(1);
+	oper1 = POP();				/* arr  Array */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array.");
+
+	arr = oper1->data.array;
+	if (arr) {
+		arr->links++;
+		array_set_pinned(arr, 0);
+	}
+
+	CLEAR(oper1);
+	PushArrayRaw(arr);
+}
+
 

@@ -1,70 +1,5 @@
 /* $Header$ */
 
-/*
- * $Log: match.c,v $
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:43  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 02:42:13  foxen
- * Initial revision
- *
- * Revision 5.15  1994/03/21  11:00:42  foxen
- * Autoconfiguration mods.
- *
- * Revision 5.14  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.13  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.12  1994/01/06  04:17:44  foxen
- * Tried to fix bug with reftype props for registerd objs.
- *
- * Revision 5.11  1993/12/20  06:22:51  foxen
- * *** empty log message ***
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.8  90/09/18  08:00:31  rearl
- * Changed upper/lowercase lookup.
- *
- * Revision 1.7  90/09/16  04:42:29  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.6  90/09/05  02:33:24  rearl
- * Fixed room exit matching so everything in the room is checked before
- * checking parent rooms.
- *
- * Revision 1.5  90/08/27  03:31:25  rearl
- * Added environment support.
- *
- * Revision 1.4  90/08/11  04:05:55  rearl
- * *** empty log message ***
- *
- * Revision 1.3  90/08/05  03:19:41  rearl
- * Redid matching routines.
- *
- * Revision 1.2  90/07/29  17:40:53  rearl
- * match_rmatch (for MUF programs) checks exits/actions on
- * rooms/players/objects.
- *
- * Revision 1.1  90/07/19  23:03:54  casie
- * Initial revision
- *
- *
- */
 
 #include "copyright.h"
 #include "config.h"
@@ -181,7 +116,7 @@ find_registered_obj(dbref player, const char *name)
 	for (p = name + 1; *p && isspace(*p); p++) ;
 	if (!*p)
 		return (NOTHING);
-	sprintf(buf, "_reg/%s", p);
+	snprintf(buf, sizeof(buf), "_reg/%s", p);
 	ptr = envprop(&player, buf, 0);
 	if (!ptr)
 		return NOTHING;

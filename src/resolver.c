@@ -360,7 +360,7 @@ get_username(long a, int prt, int myprt)
 		goto bad;
 	}
 
-	sprintf(buf, "%d,%d\n", prt, myprt);
+	snprintf(buf, sizeof(buf), "%d,%d\n", prt, myprt);
 	do {
 		result = write(fd, buf, strlen(buf));
 		lasterr = errno;
@@ -448,9 +448,9 @@ addrout(long a, unsigned short prt, unsigned short myprt)
 	if (ptr) {
 		ptr2 = get_username(a, prt, myprt);
 		if (ptr2) {
-			sprintf(buf, "%s(%s)", ptr, ptr2);
+			snprintf(buf, sizeof(buf), "%s(%s)", ptr, ptr2);
 		} else {
-			sprintf(buf, "%s(%d)", ptr, prt);
+			snprintf(buf, sizeof(buf), "%s(%d)", ptr, prt);
 		}
 		return buf;
 	}
@@ -469,9 +469,9 @@ addrout(long a, unsigned short prt, unsigned short myprt)
 #endif
 		ptr = get_username(a, prt, myprt);
 		if (ptr) {
-			sprintf(buf, "%s(%s)", tmpbuf, ptr);
+			snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
 		} else {
-			sprintf(buf, "%s(%d)", tmpbuf, prt);
+			snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
 		}
 		return buf;
 	}
@@ -482,16 +482,16 @@ addrout(long a, unsigned short prt, unsigned short myprt)
 #else
 
 	a = ntohl(a);
-	sprintf(tmpbuf, "%ld.%ld.%ld.%ld",
+	snprintf(tmpbuf, sizeof(tmpbuf), "%ld.%ld.%ld.%ld",
 			(a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff);
 	hostadd_timestamp(a, tmpbuf);
 	ptr = get_username(htonl(a), prt, myprt);
 #endif
 
 	if (ptr) {
-		sprintf(buf, "%s(%s)", tmpbuf, ptr);
+		snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
 	} else {
-		sprintf(buf, "%s(%d)", tmpbuf, prt);
+		snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
 	}
 	return buf;
 }

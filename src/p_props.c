@@ -272,12 +272,12 @@ prim_getpropstr(PRIM_PROTOTYPE)
 				break;
 				/*
 				 *case PROP_INTTYP:
-				 *    sprintf(buf, "%d", PropDataVal(ptr));
+				 *    snprintf(buf, sizeof(buf), "%d", PropDataVal(ptr));
 				 *    temp = buf;
 				 *    break;
 				 */
 			case PROP_REFTYP:
-				sprintf(buf, "#%d", PropDataRef(ptr));
+				snprintf(buf, sizeof(buf), "#%d", PropDataRef(ptr));
 				temp = buf;
 				break;
 			case PROP_LOKTYP:
@@ -464,12 +464,12 @@ prim_envpropstr(PRIM_PROTOTYPE)
 				break;
 				/*
 				 *case PROP_INTTYP:
-				 *    sprintf(buf, "%d", PropDataVal(ptr));
+				 *    snprintf(buf, sizeof(buf), "%d", PropDataVal(ptr));
 				 *    temp = buf;
 				 *    break;
 				 */
 			case PROP_REFTYP:
-				sprintf(buf, "#%d", PropDataRef(ptr));
+				snprintf(buf, sizeof(buf), "#%d", PropDataRef(ptr));
 				temp = buf;
 				break;
 			case PROP_LOKTYP:

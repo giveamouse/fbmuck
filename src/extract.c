@@ -1,43 +1,6 @@
 
 /* $Header$ */
 
-/*
- * $Log: extract.c,v $
- * Revision 1.3  2002/04/15 10:25:44  revar
- * Changed database format to Foxen7 format, which uses MD5 hashed passwords.
- * Added -godpasswd option to reset the God character's password.
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:43  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 02:21:00  foxen
- * Initial revision
- *
- * Revision 5.3  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.2  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.0  91/22/09  21:00:00  lynx
- * Initial revision
- *
- *
- */
 
 #include "copyright.h"
 #include "config.h"
@@ -145,7 +108,7 @@ check_program(dbref obj)
 	char buf[BUFFER_LEN];
 	FILE *f;
 
-	sprintf(buf, "muf/%d.m", (int) obj);
+	snprintf(buf, sizeof(buf), "muf/%d.m", (int) obj);
 	f = fopen(buf, "r");
 	if (!f) {
 		printf("No program source file found.\n");

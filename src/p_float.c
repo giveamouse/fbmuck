@@ -660,7 +660,7 @@ prim_ftostr(PRIM_PROTOTYPE)
 	oper1 = POP();
 	if (oper1->type != PROG_FLOAT)
 		abort_interp("Non-float argument. (1)");
-	sprintf(buf, "%#g", oper1->data.fnumber);
+	snprintf(buf, sizeof(buf), "%#g", oper1->data.fnumber);
 	CLEAR(oper1);
 	PushString(buf);
 }

@@ -1,94 +1,5 @@
 /* $header: /belch_a/users/rearl/tm/src/RCS/edit.c,v 1.3 90/07/29 17:33:10 rearl Exp $ */
 
-/*
- * $Log: edit.c,v $
- * Revision 1.4  2001/02/08 14:37:53  mcclure
- * Added VIEWABLE "flag" - actually setting a program VEHICLE -
- * to enable program @listing.
- *
- * Updated helpfiles.
- *
- * Revision 1.3  2000/07/13 01:13:12  winged
- *
- * Added feedback for leaving insert mode, in insert().
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:43  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 02:20:17  foxen
- * Initial revision
- *
- * Revision 5.15  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.14  1994/02/11  05:52:41  foxen
- * Memory cleanup and monitoring code mods.
- *
- * Revision 5.13  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.12  1994/01/06  03:12:12  foxen
- * version 5.12
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.14  90/10/06  16:32:43  rearl
- * Fixes for 2.2 distribution.
- *
- * Revision 1.13  90/09/28  12:20:39  rearl
- * Fixed macro function declarations.
- *
- * Revision 1.12  90/09/18  07:56:03  rearl
- * Added number toggling in source listing.
- *
- * Revision 1.11  90/09/16  04:42:05  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.10  90/09/15  22:18:58  rearl
- * Made "show" and "abridged" a little more friendly.
- *
- * Revision 1.9  90/09/13  06:22:08  rearl
- * Took out some tabs so the server agrees with more clients.
- *
- * Revision 1.8  90/09/10  02:22:15  rearl
- * Fixed a NULL string bug in program listing.
- *
- * Revision 1.7  90/09/01  05:57:37  rearl
- * Fixed bug with program header listing.
- *
- * Revision 1.6  90/08/27  03:24:06  rearl
- * Disk-based MUF source code, added necessary locking.
- *
- * Revision 1.5  90/08/17  03:42:35  rearl
- * Fixed @list once and for all.  Default is now to list all lines of a program
- * if no arguments are given.
- *
- * Revision 1.4  90/08/05  03:19:15  rearl
- * Redid match routines.
- *
- * Revision 1.3  90/07/29  17:33:10  rearl
- * Got rid of some unused variables.
- *
- * Revision 1.2  90/07/23  03:12:35  casie
- * Cleaned up various gcc warnings.
- *
- * Revision 1.1  90/07/19  23:03:31  casie
- * Initial revision
- *
- *
- */
 
 #include "copyright.h"
 #include "config.h"
@@ -230,12 +141,14 @@ do_list_tree(struct macrotable *node, const char *first, const char *last,
 		if ((strncmp(node->name, first, strlen(first)) >= 0) &&
 			(strncmp(node->name, last, strlen(last)) <= 0)) {
 			if (length) {
-				sprintf(buf, "%-16s %-16s  %s", node->name,
+				snprintf(buf, sizeof(buf), "%-16s %-16s  %s", node->name,
 						NAME(node->implementor), node->definition);
 				notify(player, buf);
 				buf[0] = '\0';
 			} else {
-				sprintf(buf + strlen(buf), "%-16s", node->name);
+				int blen = strlen(buf);
+				snprintf(buf + blen, sizeof(buf) - blen, "%-16s", node->name);
+				buf[sizeof(buf)-1] = '\0';
 				if (strlen(buf) > 70) {
 					notify(player, buf);
 					buf[0] = '\0';
@@ -527,7 +440,7 @@ do_delete(dbref player, dbref program, int arg[], int argc)
 				free_line(temp);
 				i--;
 			}
-			sprintf(buf, "%d lines deleted", arg[1] - arg[0] - i + 1);
+			snprintf(buf, sizeof(buf), "%d lines deleted", arg[1] - arg[0] - i + 1);
 			notify(player, buf);
 		} else
 			notify(player, "No line to delete!");
@@ -662,15 +575,15 @@ do_list(dbref player, dbref program, int oarg[], int argc)
 			/* display n lines */
 			for (count = arg[0]; curr && (i || (arg[1] == -1)); i--) {
 				if (FLAGS(player) & INTERNAL)
-					sprintf(buf, "%3d: %s", count, DoNull(curr->this_line));
+					snprintf(buf, sizeof(buf), "%3d: %s", count, DoNull(curr->this_line));
 				else
-					sprintf(buf, "%s", DoNull(curr->this_line));
+					snprintf(buf, sizeof(buf), "%s", DoNull(curr->this_line));
 				notify_nolisten(player, buf, 1);
 				count++;
 				curr = curr->next;
 			}
 			if (count - arg[0] > 1) {
-				sprintf(buf, "%d lines displayed.", count - arg[0]);
+				snprintf(buf, sizeof(buf), "%d lines displayed.", count - arg[0]);
 				notify_nolisten(player, buf, 1);
 			}
 		} else

@@ -322,7 +322,7 @@ timestr_full(long dtime)
 	minutes = dtime / 60;
 	seconds = dtime % 60;
 
-	sprintf(buf, "%3dd %2d:%02d:%02d", days, hours, minutes, seconds);
+	snprintf(buf, sizeof(buf), "%3dd %2d:%02d:%02d", days, hours, minutes, seconds);
 
 	return buf;
 }
@@ -366,7 +366,7 @@ tune_display_parms(dbref player, char *name)
 	while (tstr->name) {
 		strcpy(buf, tstr->name);
 		if (!*name || equalstr(name, buf)) {
-			sprintf(buf, "(str)  %-20s = %.4096s", tstr->name, *tstr->str);
+			snprintf(buf, sizeof(buf), "(str)  %-20s = %.4096s", tstr->name, *tstr->str);
 			notify(player, buf);
 		}
 		tstr++;
@@ -375,7 +375,7 @@ tune_display_parms(dbref player, char *name)
 	while (ttim->name) {
 		strcpy(buf, ttim->name);
 		if (!*name || equalstr(name, buf)) {
-			sprintf(buf, "(time) %-20s = %s", ttim->name, timestr_full(*ttim->tim));
+			snprintf(buf, sizeof(buf), "(time) %-20s = %s", ttim->name, timestr_full(*ttim->tim));
 			notify(player, buf);
 		}
 		ttim++;
@@ -384,7 +384,7 @@ tune_display_parms(dbref player, char *name)
 	while (tval->name) {
 		strcpy(buf, tval->name);
 		if (!*name || equalstr(name, buf)) {
-			sprintf(buf, "(int)  %-20s = %d", tval->name, *tval->val);
+			snprintf(buf, sizeof(buf), "(int)  %-20s = %d", tval->name, *tval->val);
 			notify(player, buf);
 		}
 		tval++;
@@ -393,7 +393,7 @@ tune_display_parms(dbref player, char *name)
 	while (tref->name) {
 		strcpy(buf, tref->name);
 		if (!*name || equalstr(name, buf)) {
-			sprintf(buf, "(ref)  %-20s = %s", tref->name, unparse_object(player, *tref->ref));
+			snprintf(buf, sizeof(buf), "(ref)  %-20s = %s", tref->name, unparse_object(player, *tref->ref));
 			notify(player, buf);
 		}
 		tref++;
@@ -402,7 +402,7 @@ tune_display_parms(dbref player, char *name)
 	while (tbool->name) {
 		strcpy(buf, tbool->name);
 		if (!*name || equalstr(name, buf)) {
-			sprintf(buf, "(bool) %-20s = %s", tbool->name, ((*tbool->bool) ? "yes" : "no"));
+			snprintf(buf, sizeof(buf), "(bool) %-20s = %s", tbool->name, ((*tbool->bool) ? "yes" : "no"));
 			notify(player, buf);
 		}
 		tbool++;
@@ -638,7 +638,7 @@ tune_get_parmstring(const char *name, int mlev)
 		if (!string_compare(name, ttim->name)) {
 			if (ttim->security > mlev)
 				return "";
-			sprintf(buf, "%d", *ttim->tim);
+			snprintf(buf, sizeof(buf), "%d", *ttim->tim);
 			return (buf);
 		}
 		ttim++;
@@ -648,7 +648,7 @@ tune_get_parmstring(const char *name, int mlev)
 		if (!string_compare(name, tval->name)) {
 			if (tval->security > mlev)
 				return "";
-			sprintf(buf, "%d", *tval->val);
+			snprintf(buf, sizeof(buf), "%d", *tval->val);
 			return (buf);
 		}
 		tval++;
@@ -658,7 +658,7 @@ tune_get_parmstring(const char *name, int mlev)
 		if (!string_compare(name, tref->name)) {
 			if (tref->security > mlev)
 				return "";
-			sprintf(buf, "#%d", *tref->ref);
+			snprintf(buf, sizeof(buf), "#%d", *tref->ref);
 			return (buf);
 		}
 		tref++;
@@ -668,7 +668,7 @@ tune_get_parmstring(const char *name, int mlev)
 		if (!string_compare(name, tbool->name)) {
 			if (tbool->security > mlev)
 				return "";
-			sprintf(buf, "%s", ((*tbool->bool) ? "yes" : "no"));
+			snprintf(buf, sizeof(buf), "%s", ((*tbool->bool) ? "yes" : "no"));
 			return (buf);
 		}
 		tbool++;

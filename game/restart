@@ -83,6 +83,12 @@ else
 	PS="ps -e"
 fi
 
+if df -kP >> /dev/null 2>&1 ; then
+	DF="df -kP"
+else
+	DF="df -k"
+fi
+
 cd $GAMEDIR
 # echo "Restarting at: `date`"
 
@@ -161,7 +167,7 @@ if [ -r $DELTAS ]; then
 fi
 
 dbsiz=`ls -1s $DBIN | awk '{print $1}'`
-diskfree=`df -k . | tail -1 | awk '{print $4}'`
+diskfree=`${DF} . | tail -1 | awk '{print $4}'`
 
 diskneeded=`expr $dbsiz \* 3`
 spacediff=`expr $diskneeded - $diskfree`

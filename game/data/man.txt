@@ -111,7 +111,7 @@ Connection Management:
   descrtime     descridle      descrnotify     descrboot
   descriptors   nextdescr      firstdescr      lastdescr
   descrflush    descr_setuser  descrleastidle  descrmostidle
-  descrsecure?
+  descrsecure?  descrbufsize
   
 Process Management:
   preempt  background  foreground  pr_mode  bg_mode  fg_mode  setmode  mode
@@ -3954,4 +3954,22 @@ that process. The information returned is:
     TYPE        - What type of process it is. MUF/MPI.
 
 Also see: GETPIDS
+~
+DESCRBUFSIZE|
+DESCRBUFSIZE ( int:dscr -- int:bytes )
+Returns the number of bytes of free space in the given descriptor's output
+buffer.  If more data is written to the buffer than it has space for, the
+data at the beginning of the buffer gets erased with an <output flushed>.
+Remember that each NOTIFY adds a CR LF byte pair at the end of each line.
+Also note that \r in lines gets translated to CR LF byte pairs.
+~
+USERLOG|
+USERLOG ( str:mesg -- )
+Logs an arbitrary message to the user log file.  (#defined in config.h
+as USER_LOG, defaults to the "logs/user" file.)  The log entry will be
+formatted like:
+  Winged(#4023) [newaction.muf(#666)] 06/11/02 03:09:31: <string>
+The program must be running at a mucker level at least equal to the @tune
+value 'userlog_mlev' (defaults to 3) to write this log entry.
+
 

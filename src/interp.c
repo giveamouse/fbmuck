@@ -704,7 +704,7 @@ watchpid_process(struct frame *fr)
 	while (fr->waiters) {
 		char buf[64];
 
-		sprintf (buf, "PROC.EXIT.%d", fr->pid);
+		snprintf (buf, sizeof(buf), "PROC.EXIT.%d", fr->pid);
 
 		cur = fr->waiters;
 		fr->waiters = cur->next;
@@ -1114,7 +1114,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					list_proglines(player, program, fr, pc->line, 0);
 				} else {
 					m = show_line_prims(fr, program, pc, 15, 1);
-					sprintf(buf, "     %s", m);
+					snprintf(buf, sizeof(buf), "     %s", m);
 					notify_nolisten(player, buf, 1);
 				}
 				calc_profile_timing(program,fr);
@@ -1686,12 +1686,12 @@ interp_err(dbref player, dbref program, struct inst *pc,
 	if (OWNER(origprog) == OWNER(player)) {
 		strcpy(buf, "\033[1;31;40mProgram Error.  Your program just got the following error.\033[0m");
 	} else {
-		sprintf(buf, "\033[1;31;40mProgrammer Error.  Please tell %s what you typed, and the following message.\033[0m",
+		snprintf(buf, sizeof(buf), "\033[1;31;40mProgrammer Error.  Please tell %s what you typed, and the following message.\033[0m",
 				NAME(OWNER(origprog)));
 	}
 	notify_nolisten(player, buf, 1);
 
-	sprintf(buf, "\033[1m%s(#%d), line %d; %s: %s\033[0m", NAME(program), program, pc->line, msg1, msg2);
+	snprintf(buf, sizeof(buf), "\033[1m%s(#%d), line %d; %s: %s\033[0m", NAME(program), program, pc->line, msg1, msg2);
 	notify_nolisten(player, buf, 1);
 
 	lt = time(NULL);

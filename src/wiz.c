@@ -213,17 +213,17 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild
 	propadr = first_prop(thing, (char *) dir, &pptr, propname);
 	while (propadr) {
 		if (equalstr(wldcrd, propname)) {
-			sprintf(buf, "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+			snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 			if ((!Prop_Hidden(buf) && !(PropFlags(propadr) & PROP_SYSPERMS))
 				|| Wizard(OWNER(player))) {
 				if (!*ptr || recurse) {
 					cnt++;
 					if (blessp) {
 						set_property_flags(thing, buf, PROP_BLESSED);
-						sprintf(buf2, "Blessed %s", buf);
+						snprintf(buf2, sizeof(buf2), "Blessed %s", buf);
 					} else {
 						clear_property_flags(thing, buf, PROP_BLESSED);
-						sprintf(buf2, "Unblessed %s", buf);
+						snprintf(buf2, sizeof(buf2), "Unblessed %s", buf);
 					}
 					notify(player, buf2);
 				}
@@ -269,7 +269,7 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
 	}
 
 	cnt = blessprops_wildcard(player, victim, "", propname, 0);
-	sprintf(buf, "%d propert%s unblessed.", cnt, (cnt == 1)? "y" : "ies");
+	snprintf(buf, sizeof(buf), "%d propert%s unblessed.", cnt, (cnt == 1)? "y" : "ies");
 	notify(player, buf);
 }
 
@@ -310,7 +310,7 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 	}
 
 	cnt = blessprops_wildcard(player, victim, "", propname, 1);
-	sprintf(buf, "%d propert%s blessed.", cnt, (cnt == 1)? "y" : "ies");
+	snprintf(buf, sizeof(buf), "%d propert%s blessed.", cnt, (cnt == 1)? "y" : "ies");
 	notify(player, buf);
 }
 
@@ -428,7 +428,7 @@ do_stats(dbref player, const char *name)
 	char buf[BUFFER_LEN];
 
 	if (!Wizard(OWNER(player)) && (!name || !*name)) {
-		sprintf(buf, "The universe contains %d objects.", db_top);
+		snprintf(buf, sizeof(buf), "The universe contains %d objects.", db_top);
 		notify(player, buf);
 	} else {
 		total = rooms = exits = things = players = programs = 0;
@@ -601,11 +601,11 @@ do_boot(dbref player, const char *name)
 			log_status("BOOTED: %s(%d) by %s(%d)\n", NAME(victim),
 					   victim, NAME(player), player);
 			if (player != victim) {
-				sprintf(buf, "You booted %s off!", PNAME(victim));
+				snprintf(buf, sizeof(buf), "You booted %s off!", PNAME(victim));
 				notify(player, buf);
 			}
 		} else {
-			sprintf(buf, "%s is not connected.", PNAME(victim));
+			snprintf(buf, sizeof(buf), "%s is not connected.", PNAME(victim));
 			notify(player, buf);
 		}
 	}
@@ -673,13 +673,13 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 
 		/* notify people */
 		notify(victim, "You have been turned into a toad.");
-		sprintf(buf, "You turned %s into a toad!", PNAME(victim));
+		snprintf(buf, sizeof(buf), "You turned %s into a toad!", PNAME(victim));
 		notify(player, buf);
 		log_status("TOADED: %s(%d) by %s(%d)\n", NAME(victim), victim, NAME(player), player);
 
 		/* reset name */
 		delete_player(victim);
-		sprintf(buf, "A slimy toad named %s", unmangle(victim, PNAME(victim)));
+		snprintf(buf, sizeof(buf), "A slimy toad named %s", unmangle(victim, PNAME(victim)));
 		free((void *) NAME(victim));
 		NAME(victim) = alloc_string(buf);
 		DBDIRTY(victim);
@@ -728,7 +728,7 @@ do_newpassword(dbref player, const char *name, const char *password)
 		set_password(victim, password);
 		DBDIRTY(victim);
 		notify(player, "Password changed.");
-		sprintf(buf, "Your password has been changed by %s.", NAME(player));
+		snprintf(buf, sizeof(buf), "Your password has been changed by %s.", NAME(player));
 		notify(victim, buf);
 		log_status("NEWPASS'ED: %s(%d) by %s(%d)\n", NAME(victim), victim,
 				   NAME(player), player);
@@ -750,7 +750,7 @@ do_pcreate(dbref player, const char *user, const char *password)
 		notify(player, "Create failed.");
 	} else {
 		log_status("PCREATED %s(%d) by %s(%d)\n", NAME(newguy), newguy, NAME(player), player);
-		sprintf(buf, "Player %s created as object #%d.", user, newguy);
+		snprintf(buf, sizeof(buf), "Player %s created as object #%d.", user, newguy);
 		notify(player, buf);
 	}
 }
@@ -932,12 +932,12 @@ do_muf_topprofs(dbref player, char *arg1)
 	notify(player, "     %CPU   TotalTime  UseCount  Program");
 	while (tops) {
 		curr = tops;
-		sprintf(buf, "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
+		snprintf(buf, sizeof(buf), "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
 		notify(player, buf);
 		tops = tops->next;
 		free(curr);
 	}
-	sprintf(buf, "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
+	snprintf(buf, sizeof(buf), "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
 			(current_systime-sel_prof_start_time),
 			((double)(sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
 			(double)((current_systime-sel_prof_start_time)+0.01),
@@ -1042,12 +1042,12 @@ do_mpi_topprofs(dbref player, char *arg1)
 	notify(player, "     %CPU   TotalTime  UseCount  Object");
 	while (tops) {
 		curr = tops;
-		sprintf(buf, "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
+		snprintf(buf, sizeof(buf), "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
 		notify(player, buf);
 		tops = tops->next;
 		free(curr);
 	}
-	sprintf(buf, "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
+	snprintf(buf, sizeof(buf), "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
 			(current_systime-sel_prof_start_time),
 			(((double)sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
 			(double)((current_systime-sel_prof_start_time)+0.01),
@@ -1214,12 +1214,12 @@ do_all_topprofs(dbref player, char *arg1)
 	notify(player, "     %CPU   TotalTime  UseCount  Type  Object");
 	while (tops) {
 		curr = tops;
-		sprintf(buf, "%10.3f %10.3f %9ld%5s   %s", curr->pcnt, curr->proftime, curr->usecount, curr->type?"MUF":"MPI",unparse_object(player, curr->prog));
+		snprintf(buf, sizeof(buf), "%10.3f %10.3f %9ld%5s   %s", curr->pcnt, curr->proftime, curr->usecount, curr->type?"MUF":"MPI",unparse_object(player, curr->prog));
 		notify(player, buf);
 		tops = tops->next;
 		free(curr);
 	}
-	sprintf(buf, "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
+	snprintf(buf, sizeof(buf), "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
 			(current_systime-sel_prof_start_time),
 			((double)(sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
 			(double)((current_systime-sel_prof_start_time)+0.01),

@@ -1,127 +1,6 @@
 
 /* $Header$ */
 
-/*
- * $Log: set.c,v $
- * Revision 1.6  2002/04/15 10:25:44  revar
- * Changed database format to Foxen7 format, which uses MD5 hashed passwords.
- * Added -godpasswd option to reset the God character's password.
- *
- * Revision 1.5  2002/04/03 01:47:22  mcclure
- *
- * Added float type information to @propset error message.
- *
- * Revision 1.4  2001/04/06 00:10:00  wog
- * Made @set and the FLAG? and SET primitives know that VIEWABLE is a valid
- * alias for the VEHICLE flag.
- *
- * Revision 1.3  2000/12/28 03:02:08  revar
- * Fixed support for Linux mallinfo() calls in @memory.
- * Fixed a crasher bug in ARRAY_NUNION, ARRAY_NDIFF, and ARRAY_NINTERSECT.
- * Fixed support for catching exceptions thrown in other muf programs.
- * Fixed some obscure bugs with getting gmt_offset on some systems.
- * Changed a whole lot of variables from 'new', 'delete', and 'class' to
- *  possibly allow moving to C++ eventually.
- * Added FINDNEXT primitive.
- * Updated TODO list.
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:43  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 02:59:15  foxen
- * Initial revision
- *
- * Revision 5.9  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.8  1994/02/27  21:19:38  foxen
- * Made @set just ignore trailing slashes in a propertyname.
- *
- * Revision 5.7  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.6  1994/01/15  02:55:22  foxen
- * Changes @chlock and @conlock to allow unlocking with no key value.
- *
- * Revision 5.5  1994/01/15  02:04:18  foxen
- * bugfix for @chlock test.
- *
- * Revision 5.4  1994/01/15  01:23:00  foxen
- * Added @conlock and @chlock comands for container and @chown locks.
- *
- * Revision 5.3  1994/01/15  01:03:08  foxen
- * Added @chlock support.
- *
- * Revision 5.2  1994/01/15  00:31:07  foxen
- * @doing mods.
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.1  91/02/12  11:42:45  11:42:45  tygryss
- * Initial revision
- *
- * Revision 1.1  91/01/24  00:44:29  cks
- * changes for QUELL.
- *
- * Revision 1.0  91/01/22  20:36:57  cks
- * Initial revision
- *
- * Revision 1.13  90/09/18  08:02:06  rearl
- * Player hash table mods, took out FILTER.
- *
- * Revision 1.12  90/09/16  04:42:56  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.11  90/09/10  02:23:11  rearl
- * Took out get_string call.
- *
- * Revision 1.10  90/08/27  03:33:18  rearl
- * Fixed bug involving NULL player password entries.
- *
- * Revision 1.9  90/08/11  04:10:15  rearl
- * *** empty log message ***
- *
- * Revision 1.8  90/08/06  03:51:35  rearl
- * Redid @chown thing = me, the easy way...
- *
- * Revision 1.7  90/08/06  02:51:18  rearl
- * Added restricted() routine from predicates.c, any restricted
- * flags should be checked in there from now on.
- *
- * Revision 1.6  90/08/05  03:20:01  rearl
- * Redid matching routines.
- *
- * Revision 1.5  90/08/02  18:51:26  rearl
- * Enabled @chown <thing> = me in addition to @chown <thing>.
- *
- * Revision 1.4  90/07/29  17:43:30  rearl
- * Allows players to capitalize/decapitalize their names, added support
- * for setting programs DEBUG (DARK).
- *
- *
- * Revision 1.3  90/07/21  16:31:50  casie
- * added log_misc
- *
- * Revision 1.2  90/07/21  05:32:41  casie
- * Changed player chown to allow rooms and exits as well as things.
- *
- * Revision 1.1  90/07/19  23:04:09  casie
- * Initial revision
- *
- *
- */
 
 #include "copyright.h"
 #include "config.h"
@@ -778,7 +657,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 	else {
 		char buf[BUFFER_LEN];
 
-		sprintf(buf, "Owner changed to %s.", unparse_object(player, owner));
+		snprintf(buf, sizeof(buf), "Owner changed to %s.", unparse_object(player, owner));
 		notify(player, buf);
 	}
 	DBDIRTY(thing);

@@ -168,11 +168,11 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				if (spad2)
 					strcat(sfmt, "0");
 				if (slen1 != 0) {
-					sprintf(tbuf, "%d", slen1);
+					snprintf(tbuf, sizeof(tbuf), "%d", slen1);
 					strcat(sfmt, tbuf);
 				}
 				if (slen2 != -1) {
-					sprintf(tbuf, ".%d", slen2);
+					snprintf(tbuf, sizeof(tbuf), ".%d", slen2);
 					strcat(sfmt, tbuf);
 				}
 
@@ -203,7 +203,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					strcat(sfmt, "d");
 					if (oper2->type != PROG_INTEGER)
 						abort_interp("Format specified integer argument not found.");
-					sprintf(tbuf, sfmt, oper2->data.number);
+					snprintf(tbuf, sizeof(tbuf), sfmt, oper2->data.number);
 					tlen = strlen(tbuf);
 					if (slrj == 2) {
 						tnum = 0;
@@ -229,7 +229,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					strcat(sfmt, "s");
 					if (oper2->type != PROG_STRING)
 						abort_interp("Format specified string argument not found.");
-					sprintf(tbuf, sfmt,
+					snprintf(tbuf, sizeof(tbuf), sfmt,
 							((oper2->data.string) ? oper2->data.string->data : ""));
 					tlen = strlen(tbuf);
 					if (slrj == 2) {
@@ -302,7 +302,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					default:
 						strcpy(hold, "UNKNOWN");
 					}
-					sprintf(tbuf, sfmt, hold);
+					snprintf(tbuf, sizeof(tbuf), sfmt, hold);
 					tlen = strlen(tbuf);
 					if (slrj == 2) {
 						tnum = 0;
@@ -327,8 +327,8 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					strcat(sfmt, "s");
 					if (oper2->type != PROG_OBJECT)
 						abort_interp("Format specified object not found.");
-					sprintf(hold, "#%d", oper2->data.objref);
-					sprintf(tbuf, sfmt, hold);
+					snprintf(hold, sizeof(hold), "#%d", oper2->data.objref);
+					snprintf(tbuf, sizeof(tbuf), sfmt, hold);
 					tlen = strlen(tbuf);
 					if (slrj == 2) {
 						tnum = 0;
@@ -364,7 +364,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					} else {
 						hold[0] = '\0';
 					}
-					sprintf(tbuf, sfmt, hold);
+					snprintf(tbuf, sizeof(tbuf), sfmt, hold);
 					tlen = strlen(tbuf);
 					if (slrj == 2) {
 						tnum = 0;
@@ -390,7 +390,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					if (oper2->type != PROG_LOCK)
 						abort_interp("Format specified lock not found.");
 					strcpy(hold, unparse_boolexp(ProgUID, oper2->data.lock, 1));
-					sprintf(tbuf, sfmt, hold);
+					snprintf(tbuf, sizeof(tbuf), sfmt, hold);
 					tlen = strlen(tbuf);
 					if (slrj == 2) {
 						tnum = 0;
@@ -415,11 +415,11 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				case 'e':
 				case 'g':
 					strcat(sfmt, "h");
-					sprintf(hold, "%c", sstr[scnt]);
+					snprintf(hold, sizeof(hold), "%c", sstr[scnt]);
 					strcat(sfmt, hold);
 					if (oper2->type != PROG_FLOAT)
 						abort_interp("Format specified float not found.");
-					sprintf(tbuf, sfmt, oper2->data.fnumber);
+					snprintf(tbuf, sizeof(tbuf), sfmt, oper2->data.fnumber);
 					tlen = strlen(tbuf);
 					if (slrj == 2) {
 						tnum = 0;
@@ -649,11 +649,11 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 						if (spad2)
 							strcat(sfmt, "0");
 						if (slen1 != -1) {
-							sprintf(tbuf, "%d", slen1);
+							snprintf(tbuf, sizeof(tbuf), "%d", slen1);
 							strcat(sfmt, tbuf);
 						}
 						if (slen2 != -1) {
-							sprintf(tbuf, ".%d", slen2);
+							snprintf(tbuf, sizeof(tbuf), ".%d", slen2);
 							strcat(sfmt, tbuf);
 						}
 						if (sstr[scnt] == '~') {
@@ -683,7 +683,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							strcat(sfmt, "d");
 							if (oper3->type != PROG_INTEGER)
 								abort_interp("Format specified integer argument not found.");
-							sprintf(tbuf, sfmt, oper3->data.number);
+							snprintf(tbuf, sizeof(tbuf), sfmt, oper3->data.number);
 							tlen = strlen(tbuf);
 							if (slrj == 2) {
 								tnum = 0;
@@ -708,7 +708,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							strcat(sfmt, "s");
 							if (oper3->type != PROG_STRING)
 								abort_interp("Format specified string argument not found.");
-							sprintf(tbuf, sfmt, DoNullInd(oper3->data.string));
+							snprintf(tbuf, sizeof(tbuf), sfmt, DoNullInd(oper3->data.string));
 							tlen = strlen(tbuf);
 							if (slrj == 2) {
 								tnum = 0;
@@ -779,7 +779,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							default:
 								strcpy(hold, "UNKNOWN");
 							}
-							sprintf(tbuf, sfmt, hold);
+							snprintf(tbuf, sizeof(tbuf), sfmt, hold);
 							tlen = strlen(tbuf);
 							if (slrj == 2) {
 								tnum = 0;
@@ -803,8 +803,8 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							strcat(sfmt, "s");
 							if (oper3->type != PROG_OBJECT)
 								abort_interp("Format specified object not found.");
-							sprintf(hold, "#%d", oper3->data.objref);
-							sprintf(tbuf, sfmt, hold);
+							snprintf(hold, sizeof(hold), "#%d", oper3->data.objref);
+							snprintf(tbuf, sizeof(tbuf), sfmt, hold);
 							tlen = strlen(tbuf);
 							if (slrj == 2) {
 								tnum = 0;
@@ -837,7 +837,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							} else {
 								hold[0] = '\0';
 							}
-							sprintf(tbuf, sfmt, hold);
+							snprintf(tbuf, sizeof(tbuf), sfmt, hold);
 							tlen = strlen(tbuf);
 							if (slrj == 2) {
 								tnum = 0;
@@ -862,7 +862,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							if (oper3->type != PROG_LOCK)
 								abort_interp("Format specified lock not found.");
 							strcpy(hold, unparse_boolexp(ProgUID, oper3->data.lock, 1));
-							sprintf(tbuf, sfmt, hold);
+							snprintf(tbuf, sizeof(tbuf), sfmt, hold);
 							tlen = strlen(tbuf);
 							if (slrj == 2) {
 								tnum = 0;
@@ -886,11 +886,11 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 						case 'e':
 						case 'g':
 							strcat(sfmt, "h");
-							sprintf(hold, "%c", sstr[scnt]);
+							snprintf(hold, sizeof(hold), "%c", sstr[scnt]);
 							strcat(sfmt, hold);
 							if (oper3->type != PROG_FLOAT)
 								abort_interp("Format specified float not found.");
-							sprintf(tbuf, sfmt, oper3->data.fnumber);
+							snprintf(tbuf, sizeof(tbuf), sfmt, oper3->data.fnumber);
 							tlen = strlen(tbuf);
 							if (slrj == 2) {
 								tnum = 0;
@@ -1521,7 +1521,7 @@ prim_intostr(PRIM_PROTOTYPE)
 	if (oper1->type == PROG_STRING)
 		abort_interp("Invalid argument.");
 	if (oper1->type == PROG_FLOAT) {
-		sprintf(buf, "%g", oper1->data.fnumber);
+		snprintf(buf, sizeof(buf), "%g", oper1->data.fnumber);
 		ptr=buf;
 	} else {
 		val = oper1->data.number;
@@ -1541,7 +1541,7 @@ prim_intostr(PRIM_PROTOTYPE)
 		if (negflag) {
 			*(--ptr) = '-';
 		}
-		/* sprintf(buf, "%d", oper1->data.number); */
+		/* snprintf(buf, sizeof(buf), "%d", oper1->data.number); */
 	}
 	CLEAR(oper1);
 	PushString(ptr);
@@ -1841,16 +1841,16 @@ prim_unparseobj(PRIM_PROTOTYPE)
 		result = oper1->data.objref;
 		switch (result) {
 		case NOTHING:
-			sprintf(buf, "*NOTHING*");
+			snprintf(buf, sizeof(buf), "*NOTHING*");
 			break;
 		case HOME:
-			sprintf(buf, "*HOME*");
+			snprintf(buf, sizeof(buf), "*HOME*");
 			break;
 		default:
 			if (result < 0 || result > db_top)
-				sprintf(buf, "*INVALID*");
+				snprintf(buf, sizeof(buf), "*INVALID*");
 			else
-				sprintf(buf, "%s(#%d%s)", RNAME(result), result, unparse_flags(result));
+				snprintf(buf, sizeof(buf), "%s(#%d%s)", RNAME(result), result, unparse_flags(result));
 		}
 		CLEAR(oper1);
 		PushString(buf);

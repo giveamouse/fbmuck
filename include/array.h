@@ -20,8 +20,9 @@ typedef struct array_tree_t {
 
 typedef struct stk_array_t {
 	int links;					/* number of pointers  to array */
-	short items;				/* number of items in array */
+	int items;					/* number of items in array */
 	short type;					/* type of array */
+	short pinned;				/* if pinned, don't dup array on changes */
 	union {
 		array_data *packed;		/* pointer to packed array */
 		array_tree *dict;		/* pointer to dictionary AVL tree */
@@ -32,6 +33,8 @@ stk_array *new_array_dictionary(void);
 stk_array *new_array_packed(int size);
 void array_free(stk_array * arr);
 stk_array *array_promote(stk_array * arr);
+stk_array *array_decouple(stk_array * arr);
+void array_set_pinned(stk_array * arr, int pinned);
 
 int array_count(stk_array * arr);
 int array_idxcmp(array_iter * a, array_iter * b);

@@ -1,83 +1,5 @@
 /* $Header$ */
 
-/*
- * $Log: create.c,v $
- * Revision 1.7  2002/03/24 12:33:53  points
- * Moved money check to after all source/dest and name checks to make sure a
- * player is not charged for an exit until after it will actually be created.
- *
- * Revision 1.6  2001/11/09 17:56:05  revar
- * Fixed uninitialized program instance count in @prog.
- * Changed ANSI code handling to use ^[[0m instead of ^[[m at EOL for resetting.
- *
- * Revision 1.5  2001/10/29 19:36:15  fentonator
- *
- * Resolution for feature request #476091 (Tuneable room parent default).
- *
- * Revision 1.4  2000/08/23 10:00:02  revar
- * Added @tops, @muftops, and @mpitops profiling commands.
- * Changed examine to show a program's cumulative runtimes.
- * Changes @ps to show process' %CPU usage.
- *
- * Revision 1.3  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.2  2000/02/10 07:08:05  winged
- * Fix bug #101632, first @program fails to show 'Entering insert mode' message
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:42  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 02:15:14  foxen
- * Initial revision
- *
- * Revision 5.3  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.2  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.9  90/09/28  12:19:26  rearl
- * Added MUCKER check to @edit command.
- *
- * Revision 1.8  90/09/18  07:54:22  rearl
- * Miscellaneous stuff -- moved .sp.program.locked to the new INTERNAL flag.
- *
- * Revision 1.7  90/09/16  04:41:50  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.6  90/08/27  03:21:46  rearl
- * Changes in link parsing, disk-based MUF source code.
- *
- * Revision 1.5  90/08/15  02:57:42  rearl
- * Removed some extraneous stuff, consolidated others, general cleanup.
- *
- * Revision 1.4  90/08/05  03:19:08  rearl
- * Redid matching routines.
- *
- * Revision 1.3  90/08/02  18:48:52  rearl
- * Fixed some calls to logging functions.
- *
- * Revision 1.2  90/08/02  02:15:29  rearl
- * Fixed JUMP_OK player <-> room correlations.  JUMP_OK players now
- * create JUMP_OK rooms when they @dig.
- *
- * Revision 1.1  90/07/19  23:03:22  casie
- * Initial revision
- *
- *
- */
 
 #include "copyright.h"
 #include "config.h"
@@ -116,14 +38,14 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
 	match_home(&md);
 
 	if ((dobj = match_result(&md)) == NOTHING || dobj == AMBIGUOUS) {
-		sprintf(buf, "I couldn't find '%s'.", dest_name);
+		snprintf(buf, sizeof(buf), "I couldn't find '%s'.", dest_name);
 		notify(player, buf);
 		return NOTHING;
 
 	}
 
 	if (!tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
-		sprintf(buf, "You can't link to players.  Destination %s ignored.",
+		snprintf(buf, sizeof(buf), "You can't link to players.  Destination %s ignored.",
 				unparse_object(player, dobj));
 		notify(player, buf);
 		return NOTHING;
@@ -134,7 +56,7 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
 		return NOTHING;
 	}
 	if (!can_link_to(player, Typeof(exit), dobj)) {
-		sprintf(buf, "You can't link to %s.", unparse_object(player, dobj));
+		snprintf(buf, sizeof(buf), "You can't link to %s.", unparse_object(player, dobj));
 		notify(player, buf);
 		return NOTHING;
 	} else {
@@ -230,7 +152,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 		DBDIRTY(loc);
 
 		/* and we're done */
-		sprintf(buf, "Exit opened with number %d.", exit);
+		snprintf(buf, sizeof(buf), "Exit opened with number %d.", exit);
 		notify(player, buf);
 
 		/* check second arg to see if we should do a link */
@@ -253,9 +175,9 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	if (*rname) {
 		PData mydat;
 
-		sprintf(buf, "Registered as $%s", rname);
+		snprintf(buf, sizeof(buf), "Registered as $%s", rname);
 		notify(player, buf);
-		sprintf(buf, "_reg/%s", rname);
+		snprintf(buf, sizeof(buf), "_reg/%s", rname);
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = exit;
 		set_property(player, buf, &mydat);
@@ -317,7 +239,7 @@ link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_lis
 		case TYPE_ROOM:
 		case TYPE_PROGRAM:
 			if (prdest) {
-				sprintf(buf,
+				snprintf(buf, sizeof(buf),
 						"Only one player, room, or program destination allowed. Destination %s ignored.",
 						unparse_object(player, dest));
 				notify(player, buf);
@@ -331,7 +253,8 @@ link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_lis
 			break;
 		case TYPE_EXIT:
 			if (exit_loop_check(exit, dest)) {
-				sprintf(buf, "Destination %s would create a loop, ignored.",
+				snprintf(buf, sizeof(buf),
+						"Destination %s would create a loop, ignored.",
 						unparse_object(player, dest));
 				notify(player, buf);
 				continue;
@@ -346,7 +269,7 @@ link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_lis
 		if (dest == HOME) {
 			notify(player, "Linked to HOME.");
 		} else {
-			sprintf(buf, "Linked to %s.", unparse_object(player, dest));
+			snprintf(buf, sizeof(buf), "Linked to %s.", unparse_object(player, dest));
 			notify(player, buf);
 		}
 		if (ndest >= MAX_LINKS) {
@@ -553,7 +476,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	DBDIRTY(room);
 	DBDIRTY(newparent);
 
-	sprintf(buf, "%s created with room number %d.", name, room);
+	snprintf(buf, sizeof(buf), "%s created with room number %d.", name, room);
 	notify(player, buf);
 
 	strcpy(buf, pname);
@@ -581,7 +504,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 				notify(player, "Permission denied.  Parent set to default.");
 			} else {
 				moveto(room, parent);
-				sprintf(buf, "Parent set to %s.", unparse_object(player, parent));
+				snprintf(buf, sizeof(buf), "Parent set to %s.", unparse_object(player, parent));
 				notify(player, buf);
 			}
 		}
@@ -590,11 +513,11 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	if (*rname) {
 		PData mydat;
 
-		sprintf(buf, "_reg/%s", rname);
+		snprintf(buf, sizeof(buf), "_reg/%s", rname);
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = room;
 		set_property(player, buf, &mydat);
-		sprintf(buf, "Room registered as $%s", rname);
+		snprintf(buf, sizeof(buf), "Room registered as $%s", rname);
 		notify(player, buf);
 	}
 }
@@ -637,7 +560,7 @@ do_prog(int descr, dbref player, const char *name)
 		newprog = new_object();
 
 		NAME(newprog) = alloc_string(name);
-		sprintf(buf, "A scroll containing a spell called %s", name);
+		snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
 		SETDESC(newprog, buf);
 		DBFETCH(newprog)->location = player;
 		FLAGS(newprog) = TYPE_PROGRAM;
@@ -667,9 +590,9 @@ do_prog(int descr, dbref player, const char *name)
 		PUSH(newprog, DBFETCH(player)->contents);
 		DBDIRTY(newprog);
 		DBDIRTY(player);
-		sprintf(buf, "Program %s created with number %d.", name, newprog);
+		snprintf(buf, sizeof(buf), "Program %s created with number %d.", name, newprog);
 		notify(player, buf);
-		sprintf(buf, "Entering editor.");
+		snprintf(buf, sizeof(buf), "Entering editor.");
 		notify(player, buf);
 	} else if (i == AMBIGUOUS) {
 		notify(player, "I don't know which one you mean!");
@@ -801,8 +724,8 @@ do_mcpedit(int descr, dbref player, const char *name)
 	PROGRAM_SET_FIRST(i, read_program(i));
 	PLAYER_SET_CURR_PROG(player, i);
 
-	sprintf(refstr, "%d.prog.", i);
-	sprintf(namestr, "a program named %s(%d)", NAME(i), i);
+	snprintf(refstr, sizeof(refstr), "%d.prog.", i);
+	snprintf(namestr, sizeof(namestr), "a program named %s(%d)", NAME(i), i);
 	mcp_mesg_init(&msg, "dns-org-mud-moo-simpleedit", "content");
 	mcp_mesg_arg_append(&msg, "reference", refstr);
 	mcp_mesg_arg_append(&msg, "type", "muf-code");
@@ -893,16 +816,16 @@ do_create(dbref player, char *name, char *acost)
 		DBDIRTY(player);
 
 		/* and we're done */
-		sprintf(buf, "%s created with number %d.", name, thing);
+		snprintf(buf, sizeof(buf), "%s created with number %d.", name, thing);
 		notify(player, buf);
 		DBDIRTY(thing);
 	}
 	if (*rname) {
 		PData mydat;
 
-		sprintf(buf, "Registered as $%s", rname);
+		snprintf(buf, sizeof(buf), "Registered as $%s", rname);
 		notify(player, buf);
-		sprintf(buf, "_reg/%s", rname);
+		snprintf(buf, sizeof(buf), "_reg/%s", rname);
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = thing;
 		set_property(player, buf, &mydat);
@@ -1067,16 +990,16 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 	FLAGS(action) = TYPE_EXIT;
 
 	set_source(player, action, source);
-	sprintf(buf, "Action created with number %d and attached.", action);
+	snprintf(buf, sizeof(buf), "Action created with number %d and attached.", action);
 	notify(player, buf);
 	DBDIRTY(action);
 
 	if (*rname) {
 		PData mydat;
 
-		sprintf(buf, "Registered as $%s", rname);
+		snprintf(buf, sizeof(buf), "Registered as $%s", rname);
 		notify(player, buf);
-		sprintf(buf, "_reg/%s", rname);
+		snprintf(buf, sizeof(buf), "_reg/%s", rname);
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = action;
 		set_property(player, buf, &mydat);

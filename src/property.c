@@ -754,7 +754,7 @@ envpropstr(dbref * where, const char *propname)
 
 
 char *
-displayprop(dbref player, dbref obj, const char *name, char *buf)
+displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 {
 	char mybuf[BUFFER_LEN];
 	int pdflag;
@@ -762,7 +762,7 @@ displayprop(dbref player, dbref obj, const char *name, char *buf)
 	PropPtr p = get_property(obj, name);
 
 	if (!p) {
-		sprintf(buf, "%s: No such property.", name);
+		snprintf(buf, bufsiz, "%s: No such property.", name);
 		return buf;
 	}
 #ifdef DISKBASE
@@ -771,30 +771,30 @@ displayprop(dbref player, dbref obj, const char *name, char *buf)
 	if (PropFlags(p) & PROP_BLESSED)
 		blesschar = 'B';
 	pdflag = (PropDir(p) != NULL);
-	sprintf(mybuf, "%.*s%c", (BUFFER_LEN / 4), name, (pdflag) ? PROPDIR_DELIMITER : '\0');
+	snprintf(mybuf, bufsiz, "%.*s%c", (BUFFER_LEN / 4), name, (pdflag) ? PROPDIR_DELIMITER : '\0');
 	switch (PropType(p)) {
 	case PROP_STRTYP:
-		sprintf(buf, "%c str %s:%.*s", blesschar, mybuf, (BUFFER_LEN / 2), PropDataStr(p));
+		snprintf(buf, bufsiz, "%c str %s:%.*s", blesschar, mybuf, (BUFFER_LEN / 2), PropDataStr(p));
 		break;
 	case PROP_REFTYP:
-		sprintf(buf, "%c ref %s:%s", blesschar, mybuf, unparse_object(player, PropDataRef(p)));
+		snprintf(buf, bufsiz, "%c ref %s:%s", blesschar, mybuf, unparse_object(player, PropDataRef(p)));
 		break;
 	case PROP_INTTYP:
-		sprintf(buf, "%c int %s:%d", blesschar, mybuf, PropDataVal(p));
+		snprintf(buf, bufsiz, "%c int %s:%d", blesschar, mybuf, PropDataVal(p));
 		break;
 	case PROP_FLTTYP:
-		sprintf(buf, "%c flt %s:%g", blesschar, mybuf, PropDataFVal(p));
+		snprintf(buf, bufsiz, "%c flt %s:%g", blesschar, mybuf, PropDataFVal(p));
 		break;
 	case PROP_LOKTYP:
 		if (PropFlags(p) & PROP_ISUNLOADED) {
-			sprintf(buf, "%c lok %s:*UNLOCKED*", blesschar, mybuf);
+			snprintf(buf, bufsiz, "%c lok %s:*UNLOCKED*", blesschar, mybuf);
 		} else {
-			sprintf(buf, "%c lok %s:%.*s", blesschar, mybuf, (BUFFER_LEN / 2),
+			snprintf(buf, bufsiz, "%c lok %s:%.*s", blesschar, mybuf, (BUFFER_LEN / 2),
 					unparse_boolexp(player, PropDataLok(p), 1));
 		}
 		break;
 	case PROP_DIRTYP:
-		sprintf(buf, "%c dir %s:(no value)", blesschar, mybuf);
+		snprintf(buf, bufsiz, "%c dir %s:(no value)", blesschar, mybuf);
 		break;
 	}
 	return buf;
@@ -998,7 +998,7 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
 	case PROP_FLTTYP:
 		if (!PropDataFVal(p))
 			return;
-		sprintf(tbuf, "%g", PropDataFVal(p));
+		snprintf(tbuf, sizeof(tbuf), "%g", PropDataFVal(p));
 		ptr2 = tbuf;
 		break;
 	case PROP_REFTYP:
@@ -1161,7 +1161,7 @@ reflist_add(dbref obj, const char* propname, dbref toadd)
 		case PROP_STRTYP:
 			*outbuf = '\0';
 			list = temp = uncompress(PropDataStr(ptr));
-			sprintf(buf, "%d", toadd);
+			snprintf(buf, sizeof(buf), "%d", toadd);
 			while (*temp) {
 				if (*temp == '#') {
 					pat = buf;
@@ -1190,7 +1190,7 @@ reflist_add(dbref obj, const char* propname, dbref toadd)
 			} else {
 				strcpy(outbuf, list);
 			}
-			sprintf(buf, " #%d", toadd);
+			snprintf(buf, sizeof(buf), " #%d", toadd);
 			if (strlen(outbuf) + strlen(buf) < BUFFER_LEN) {
 				strcat(outbuf, buf);
 				for (temp = outbuf; isspace(*temp); temp++);
@@ -1199,17 +1199,17 @@ reflist_add(dbref obj, const char* propname, dbref toadd)
 			break;
 		case PROP_REFTYP:
 			if (PropDataRef(ptr) != toadd) {
-				sprintf(outbuf, "#%d #%d", PropDataRef(ptr), toadd);
+				snprintf(outbuf, sizeof(outbuf), "#%d #%d", PropDataRef(ptr), toadd);
 				add_property(obj, propname, outbuf, 0);
 			}
 			break;
 		default:
-			sprintf(outbuf, "#%d", toadd);
+			snprintf(outbuf, sizeof(outbuf), "#%d", toadd);
 			add_property(obj, propname, outbuf, 0);
 			break;
 		}
 	} else {
-		sprintf(outbuf, "#%d", toadd);
+		snprintf(outbuf, sizeof(outbuf), "#%d", toadd);
 		add_property(obj, propname, outbuf, 0);
 	}
 }
@@ -1237,7 +1237,7 @@ reflist_del(dbref obj, const char* propname, dbref todel)
 		case PROP_STRTYP:
 			*outbuf = '\0';
 			list = temp = uncompress(PropDataStr(ptr));
-			sprintf(buf, "%d", todel);
+			snprintf(buf, sizeof(buf), "%d", todel);
 			while (*temp) {
 				if (*temp == '#') {
 					pat = buf;
@@ -1298,7 +1298,7 @@ reflist_find(dbref obj, const char* propname, dbref tofind)
 		switch (PropType(ptr)) {
 		case PROP_STRTYP:
 			temp = uncompress(PropDataStr(ptr));
-			sprintf(buf, "%d", tofind);
+			snprintf(buf, sizeof(buf), "%d", tofind);
 			while (*temp) {
 				if (*temp == '#') {
 					pat = buf;

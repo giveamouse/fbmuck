@@ -39,7 +39,7 @@ SanPrint(dbref player, const char *format, ...)
 
 	va_start(args, format);
 
-	vsprintf(buf, format, args);
+	vsnprintf(buf, sizeof(buf), format, args);
 	if (player == NOTHING) {
 		fprintf(stdout, "%s\n", buf);
 		fflush(stdout);
@@ -724,7 +724,7 @@ create_lostandfound(dbref * player, dbref * room)
 	SanFixed(*room, "Using %s to resolve unknown location");
 
 	while (lookup_player(player_name) != NOTHING && strlen(player_name) < PLAYER_NAME_LIMIT) {
-		sprintf(player_name, "lost+found%d", ++temp);
+		snprintf(player_name, sizeof(player_name), "lost+found%d", ++temp);
 	}
 	if (strlen(player_name) >= PLAYER_NAME_LIMIT) {
 		log2file("logs/sanfixed", "WARNING: Unable to get lost+found player, "
@@ -863,7 +863,7 @@ find_misplaced_objects(void)
 					int temp = 0;
 
 					while (lookup_player(name) != NOTHING && strlen(name) < PLAYER_NAME_LIMIT) {
-						sprintf(name, "Unnamed%d", ++temp);
+						snprintf(name, sizeof(name), "Unnamed%d", ++temp);
 					}
 					NAME(loop) = alloc_string(name);
 					add_player(loop);
@@ -1220,7 +1220,7 @@ extract_prop(FILE * f, const char *dir, PropPtr p)
 	case PROP_FLTTYP:
 		if ((PropDataFVal(p) < SMALL_NUM) && (PropDataFVal(p) > NSMALL_NUM))
 			return;
-		sprintf(tbuf, "%g", PropDataFVal(p));
+		snprintf(tbuf, sizeof(tbuf), "%g", PropDataFVal(p));
 		ptr2 = tbuf;
 		break;
 	case PROP_REFTYP:
@@ -1262,7 +1262,7 @@ extract_props_rec(FILE * f, dbref obj, const char *dir, PropPtr p)
 	extract_props_rec(f, obj, dir, AVL_LF(p));
 	extract_prop(f, dir, p);
 	if (PropDir(p)) {
-		sprintf(buf, "%s%s%c", dir, PropName(p), PROPDIR_DELIMITER);
+		snprintf(buf, sizeof(buf), "%s%s%c", dir, PropName(p), PROPDIR_DELIMITER);
 		extract_props_rec(f, obj, buf, PropDir(p));
 	}
 	extract_props_rec(f, obj, dir, AVL_RT(p));
@@ -1282,7 +1282,7 @@ extract_program(FILE * f, dbref obj)
 	FILE *pf;
 	int c = 0;
 
-	sprintf(buf, "muf/%d.m", obj);
+	snprintf(buf, sizeof(buf), "muf/%d.m", obj);
 	pf = fopen(buf, "r");
 	if (!pf) {
 		fprintf(f, "  (No listing found)\n");

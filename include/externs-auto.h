@@ -13,7 +13,7 @@ void clear_propnode(PropPtr p);
 void copy_proplist(dbref obj, PropPtr * newer, PropPtr old);
 int dequeue_prog(dbref program, int sleeponly);
 void diskbase_debug(dbref player);
-char * displayprop(dbref player, dbref obj, const char *name, char *buf);
+char * displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz);
 void do_abort_silent(void);
 void do_dequeue(int descr, dbref player, const char *arg1);
 void do_doing(int descr, dbref player, const char *name, const char *mesg);

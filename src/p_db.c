@@ -1919,7 +1919,7 @@ prim_toadplayer(PRIM_PROTOTYPE)
 		   victim, NAME(player), player);
 
 	delete_player(victim);
-	sprintf(buf, "A slimy toad named %s", unmangle(victim, PNAME(victim)));
+	snprintf(buf, sizeof(buf), "A slimy toad named %s", unmangle(victim, PNAME(victim)));
 	free((void *) NAME(victim));
 	NAME(victim) = alloc_string(buf);
 	DBDIRTY(victim);
@@ -2042,7 +2042,7 @@ prim_newprogram(PRIM_PROTOTYPE)
 	newprog = new_object();
 
 	NAME(newprog) = alloc_string(oper1->data.string->data);
-	sprintf(buf, "A scroll containing a spell called %s", oper1->data.string->data);
+	snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", oper1->data.string->data);
 	SETDESC(newprog, buf);
 	DBFETCH(newprog)->location = player;
 	FLAGS(newprog) = TYPE_PROGRAM;

@@ -576,14 +576,14 @@ main(int argc, char **argv)
 			argslist = (char**)calloc(argcnt, sizeof(char*));
 
 			for (i = 0; i < numsocks; i++) {
-				sprintf(numbuf, "%d", listener_port[i]);
+				snprintf(numbuf, sizeof(numbuf), "%d", listener_port[i]);
 				argslist[argnum] = (char*)malloc(strlen(numbuf)+1);
 				strcpy(argslist[argnum++], numbuf);
 			}
 
 #ifdef USE_SSL
 			for (i = 0; i < ssl_numsocks; i++) {
-				sprintf(numbuf, "-sport %d", ssl_listener_port[i]);
+				snprintf(numbuf, sizeof(numbuf), "-sport %d", ssl_listener_port[i]);
 				argslist[argnum] = (char*)malloc(strlen(numbuf)+1);
 				strcpy(argslist[argnum++], numbuf);
 			}
@@ -688,10 +688,10 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 
 						if (!prefix || !*prefix) {
 							prefix = NAME(player);
-							sprintf(buf2, "%s> %.*s", prefix,
+							snprintf(buf2, sizeof(buf2), "%s> %.*s", prefix,
 									(int)(BUFFER_LEN - (strlen(prefix) + 3)), buf);
 						} else {
-							sprintf(buf2, "%s %.*s", prefix,
+							snprintf(buf2, sizeof(buf2), "%s %.*s", prefix,
 									(int)(BUFFER_LEN - (strlen(prefix) + 2)), buf);
 						}
 
@@ -759,7 +759,7 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 
 				if (!prefix || !*prefix)
 					prefix = "Outside>";
-				sprintf(buf, "%s %.*s", prefix, (int)(BUFFER_LEN - (strlen(prefix) + 2)), msg);
+				snprintf(buf, sizeof(buf), "%s %.*s", prefix, (int)(BUFFER_LEN - (strlen(prefix) + 2)), msg);
 				ref = DBFETCH(player)->contents;
 				while (ref != NOTHING) {
 					notify_nolisten(ref, buf, isprivate);
@@ -1313,9 +1313,9 @@ spawn_resolver()
 #ifdef BINDIR
 		{
 			char resolverpath[1025];
-			sprintf(resolverpath, "%s/fb-resolver", BINDIR);
+			snprintf(resolverpath, sizeof(resolverpath), "%s/fb-resolver", BINDIR);
 			execl(resolverpath, "fb-resolver", NULL);
-			sprintf(resolverpath, "%s/resolver", BINDIR);
+			snprintf(resolverpath, sizeof(resolverpath), "%s/resolver", BINDIR);
 			execl(resolverpath, "resolver", NULL);
 		}
 #endif
@@ -1469,7 +1469,7 @@ addrout(int lport, long a, unsigned short prt)
 
 			}
 			if (he) {
-				sprintf(buf, "%s(%u)", he->h_name, prt);
+				snprintf(buf, sizeof(buf), "%s(%u)", he->h_name, prt);
 				return buf;
 			}
 		}
@@ -1479,18 +1479,18 @@ addrout(int lport, long a, unsigned short prt)
 #ifdef USE_IPV6
 	inet_ntop(AF_INET6, a, ip6addr, 128);
 #ifdef SPAWN_HOST_RESOLVER
-	sprintf(buf, "%s(%u)%u\n", ip6addr, prt, lport);
+	snprintf(buf, sizeof(buf), "%s(%u)%u\n", ip6addr, prt, lport);
 	if (tp_hostnames) {
 		write(resolver_sock[1], buf, strlen(buf));
 	}
 #endif
-	sprintf(buf, "%s(%u)\n", ip6addr, prt);
+	snprintf(buf, sizeof(buf), "%s(%u)\n", ip6addr, prt);
 
 #else
 	a = ntohl(a);
 
 #ifdef SPAWN_HOST_RESOLVER
-	sprintf(buf, "%ld.%ld.%ld.%ld(%u)%u\n",
+	snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)%u\n",
 			(a >> 24) & 0xff,
 			(a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt, lport);
 	if (tp_hostnames) {
@@ -1498,7 +1498,7 @@ addrout(int lport, long a, unsigned short prt)
 	}
 #endif
 
-	sprintf(buf, "%ld.%ld.%ld.%ld(%u)",
+	snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)",
 			(a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt);
 #endif
 	return buf;
@@ -2061,7 +2061,7 @@ interact_warn(dbref player)
 	if (FLAGS(player) & INTERACTIVE) {
 		char buf[BUFFER_LEN];
 
-		sprintf(buf, "***  %s  ***",
+		snprintf(buf, sizeof(buf), "***  %s  ***",
 				(FLAGS(player) & READMODE) ?
 				"You are currently using a program.  Use \"@Q\" to return to a more reasonable state of control."
 				: (PLAYER_INSERT_MODE(player) ?
@@ -2277,7 +2277,7 @@ do_armageddon(dbref player, const char *msg)
 		notify(player, "Sorry, but you don't look like the god of War to me.");
 		return;
 	}
-	sprintf(buf, "\r\nImmediate shutdown initiated by %s.\r\n", NAME(player));
+	snprintf(buf, sizeof(buf), "\r\nImmediate shutdown initiated by %s.\r\n", NAME(player));
 	if (msg || *msg)
 		strcat(buf, msg);
 	log_status("ARMAGEDDON initiated by %s(%d): %s\n", NAME(player), player, msg);
@@ -2365,14 +2365,14 @@ dump_users(struct descriptor_data *e, char *user)
 				) {
 			if (wizard) {
 				/* don't print flags, to save space */
-				sprintf(pbuf, "%.*s(#%d)", PLAYER_NAME_LIMIT + 1,
+				snprintf(pbuf, sizeof(pbuf), "%.*s(#%d)", PLAYER_NAME_LIMIT + 1,
 						NAME(d->player), (int) d->player);
 #ifdef GOD_PRIV
 				if (!God(e->player))
 #ifdef USE_SSL
-					sprintf(buf, "%-*s [%6d] %10s %4s%c%c %s\r\n",
+					snprintf(buf, sizeof(buf), "%-*s [%6d] %10s %4s%c%c %s\r\n",
 #else
-					sprintf(buf, "%-*s [%6d] %10s%4s%c  %s\r\n",
+					snprintf(buf, sizeof(buf), "%-*s [%6d] %10s%4s%c  %s\r\n",
 #endif
 							PLAYER_NAME_LIMIT + 10, pbuf,
 							(int) DBFETCH(d->player)->location,
@@ -2386,9 +2386,9 @@ dump_users(struct descriptor_data *e, char *user)
 				else
 #endif
 #ifdef USE_SSL
-					sprintf(buf, "%-*s [%6d] %10s %4s%c%c %s(%s)\r\n",
+					snprintf(buf, sizeof(buf), "%-*s [%6d] %10s %4s%c%c %s(%s)\r\n",
 #else
-					sprintf(buf, "%-*s [%6d] %10s %4s%c  %s(%s)\r\n",
+					snprintf(buf, sizeof(buf), "%-*s [%6d] %10s %4s%c  %s(%s)\r\n",
 #endif
 							PLAYER_NAME_LIMIT + 10, pbuf,
 							(int) DBFETCH(d->player)->location,
@@ -2403,9 +2403,9 @@ dump_users(struct descriptor_data *e, char *user)
 				if (tp_who_doing) {
 					/* Modified to take into account PLAYER_NAME_LIMIT changes */
 #ifdef USE_SSL
-					sprintf(buf, "%-*s %10s %4s%c%c %*s\r\n",
+					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c%c %*s\r\n",
 #else
-					sprintf(buf, "%-*s %10s %4s%c  %*s\r\n",
+					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c  %*s\r\n",
 #endif
 							PLAYER_NAME_LIMIT + 1,
 							NAME(d->player),
@@ -2425,9 +2425,9 @@ dump_users(struct descriptor_data *e, char *user)
 							: "");
 				} else {
 #ifdef USE_SSL
-					sprintf(buf, "%-*s %10s %4s%c%c\r\n",
+					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c%c\r\n",
 #else
-					sprintf(buf, "%-*s %10s %4s%c\r\n",
+					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c\r\n",
 #endif
 							(int)(PLAYER_NAME_LIMIT + 1),
 							NAME(d->player),
@@ -2446,7 +2446,7 @@ dump_users(struct descriptor_data *e, char *user)
 	}
 	if (players > con_players_max)
 		con_players_max = players;
-	sprintf(buf, "%d player%s %s connected.  (Max was %d)\r\n", players,
+	snprintf(buf, sizeof(buf), "%d player%s %s connected.  (Max was %d)\r\n", players,
 			(players == 1) ? "" : "s", (players == 1) ? "is" : "are", con_players_max);
 	queue_ansi(e, buf);
 }
@@ -2459,9 +2459,9 @@ time_format_1(long dt)
 
 	delta = gmtime(&dt);
 	if (delta->tm_yday > 0)
-		sprintf(buf, "%dd %02d:%02d", delta->tm_yday, delta->tm_hour, delta->tm_min);
+		snprintf(buf, sizeof(buf), "%dd %02d:%02d", delta->tm_yday, delta->tm_hour, delta->tm_min);
 	else
-		sprintf(buf, "%02d:%02d", delta->tm_hour, delta->tm_min);
+		snprintf(buf, sizeof(buf), "%02d:%02d", delta->tm_hour, delta->tm_min);
 	return buf;
 }
 
@@ -2473,13 +2473,13 @@ time_format_2(long dt)
 
 	delta = gmtime(&dt);
 	if (delta->tm_yday > 0)
-		sprintf(buf, "%dd", delta->tm_yday);
+		snprintf(buf, sizeof(buf), "%dd", delta->tm_yday);
 	else if (delta->tm_hour > 0)
-		sprintf(buf, "%dh", delta->tm_hour);
+		snprintf(buf, sizeof(buf), "%dh", delta->tm_hour);
 	else if (delta->tm_min > 0)
-		sprintf(buf, "%dm", delta->tm_min);
+		snprintf(buf, sizeof(buf), "%dm", delta->tm_min);
 	else
-		sprintf(buf, "%ds", delta->tm_sec);
+		snprintf(buf, sizeof(buf), "%ds", delta->tm_sec);
 	return buf;
 }
 
@@ -2499,7 +2499,7 @@ announce_puppets(dbref player, const char *msg, const char *prop)
 					msg2 = msg;
 					if ((ptr = (char *) get_property_class(what, prop)) && *ptr)
 						msg2 = ptr;
-					sprintf(buf, "%.512s %.3000s", PNAME(what), msg2);
+					snprintf(buf, sizeof(buf), "%.512s %.3000s", PNAME(what), msg2);
 					notify_except(DBFETCH(where)->contents, what, buf, what);
 				}
 			}
@@ -2521,12 +2521,12 @@ announce_connect(int descr, dbref player)
 
 	if (tp_rwho) {
 		time(&tt);
-		sprintf(buf, "%d@%s", player, tp_muckname);
+		snprintf(buf, sizeof(buf), "%d@%s", player, tp_muckname);
 		rwhocli_userlogin(buf, NAME(player), tt);
 	}
 
 	if ((!Dark(player)) && (!Dark(loc))) {
-		sprintf(buf, "%s has connected.", PNAME(player));
+		snprintf(buf, sizeof(buf), "%s has connected.", PNAME(player));
 		notify_except(DBFETCH(loc)->contents, player, buf, player);
 	}
 
@@ -2584,7 +2584,7 @@ announce_disconnect(struct descriptor_data *d)
 		return;
 
 	if (tp_rwho) {
-		sprintf(buf, "%d@%s", player, tp_muckname);
+		snprintf(buf, sizeof(buf), "%d@%s", player, tp_muckname);
 		rwhocli_userlogout(buf);
 	}
 
@@ -2593,7 +2593,7 @@ announce_disconnect(struct descriptor_data *d)
 		notify(player, "Foreground program aborted.");
 
 	if ((!Dark(player)) && (!Dark(loc))) {
-		sprintf(buf, "%s has disconnected.", PNAME(player));
+		snprintf(buf, sizeof(buf), "%s has disconnected.", PNAME(player));
 		notify_except(DBFETCH(loc)->contents, player, buf, player);
 	}
 
@@ -3280,6 +3280,20 @@ pdescrsecure(int c)
 #endif
 }
 
+int
+pdescrbufsize(int c)
+{
+	struct descriptor_data *d;
+
+	d = descrdata_by_descr(c);
+
+	if (d) {
+		return (tp_max_output - d->output_size);
+	}
+
+	return -1;
+}
+
 dbref
 partial_pmatch(const char *name)
 {
@@ -3311,7 +3325,7 @@ update_rwho(void)
 	d = descriptor_list;
 	while (d) {
 		if (d->connected) {
-			sprintf(buf, "%d@%s", d->player, tp_muckname);
+			snprintf(buf, sizeof(buf), "%d@%s", d->player, tp_muckname);
 			rwhocli_userlogin(buf, NAME(d->player), d->connected_at);
 		}
 		d = d->next;
@@ -3364,11 +3378,11 @@ dump_status(void)
 	log_status("STATUS REPORT:\n");
 	for (d = descriptor_list; d; d = d->next) {
 		if (d->connected) {
-			sprintf(buf, "PLAYING descriptor %d player %s(%d) from host %s(%s), %s.\n",
+			snprintf(buf, sizeof(buf), "PLAYING descriptor %d player %s(%d) from host %s(%s), %s.\n",
 					d->descriptor, NAME(d->player), d->player, d->hostname, d->username,
 					(d->last_time) ? "idle %d seconds" : "never used");
 		} else {
-			sprintf(buf, "CONNECTING descriptor %d from host %s(%s), %s.\n",
+			snprintf(buf, sizeof(buf), "CONNECTING descriptor %d from host %s(%s), %s.\n",
 					d->descriptor, d->hostname, d->username,
 					(d->last_time) ? "idle %d seconds" : "never used");
 		}

@@ -178,7 +178,8 @@ notify_fmt(dbref player, char *format, ...)
 	char bufr[BUFFER_LEN];
 
 	va_start(args, format);
-	vsprintf(bufr, format, args);
+	vsnprintf(bufr, sizeof(bufr), format, args);
+	bufr[sizeof(bufr)-1] = '\0';
 	notify(player, bufr);
 	va_end(args);
 }

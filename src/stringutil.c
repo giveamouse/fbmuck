@@ -214,7 +214,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
 				d = (isupper(c)) ? c : toupper(c);
 
 #ifdef COMPRESS
-				sprintf(globprop, "_pronouns/%.64s/%s", uncompress(sexstr), prn);
+				snprintf(globprop, sizeof(globprop), "_pronouns/%.64s/%s", uncompress(sexstr), prn);
 				if (d == 'A' || d == 'S' || d == 'O' || d == 'P' || d == 'R' || d == 'N') {
 					self_sub = uncompress(get_property_class(mywhere, prn));
 				} else {
@@ -227,7 +227,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
 					self_sub = uncompress(get_property_class(0, globprop));
 				}
 #else
-				sprintf(globprop, "_pronouns/%.64s/%s", sexstr, prn);
+				snprintf(globprop, sizeof(globprop), "_pronouns/%.64s/%s", sexstr, prn);
 				if (d == 'A' || d == 'S' || d == 'O' || d == 'P' || d == 'R' || d == 'N') {
 					self_sub = get_property_class(mywhere, prn);
 				} else {
@@ -433,7 +433,7 @@ name_mangle(dbref obj)
 
 	if (!(p = get_property(obj, "@fakename")) || PropType(p) != PROP_STRTYP)
 		return db[obj].name;
-	sprintf(pad, "\001%s\002", l64a(obj));
+	snprintf(pad, sizeof(pad), "\001%s\002", l64a(obj));
 	return pad;
 #else
 	return db[obj].name;

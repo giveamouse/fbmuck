@@ -467,7 +467,7 @@ CrT_timestr(time_t when)
 	struct tm *da_time;
 
 	da_time = localtime(&when);
-	sprintf(buf, "%02d%02d%02d%02d",
+	snprintf(buf, sizeof(buf), "%02d%02d%02d%02d",
 			da_time->tm_mday, da_time->tm_hour, da_time->tm_min, da_time->tm_sec);
 	return buf;
 }
@@ -504,7 +504,7 @@ summarize(void (*fn) (char *)
 		sum_totblks += b->tot_allocs_done;
 		sum_totbyts += b->tot_bytes_alloc;
 
-		sprintf(buf,
+		snprintf(buf, sizeof(buf),
 				"%13s%5d:%7d %8d %7d %8d %8s %7d %8d",
 				b->file,
 				b->line,
@@ -515,8 +515,7 @@ summarize(void (*fn) (char *)
 				CrT_timestr(b->max_bytes_time), b->tot_allocs_done, b->tot_bytes_alloc);
 		X(buf);
 	}
-	sprintf(buf,
-			" Cumulative totals:%7d %8d                           %7d %8d",
+	snprintf(buf, sizeof(buf), " Cumulative totals:%7d %8d                           %7d %8d",
 			sum_blks, sum_byts, sum_totblks, sum_totbyts);
 	X(buf);
 }
@@ -583,7 +582,7 @@ crash(char *err, Header m, const char *file, int line)
 {
 	char buf[256];
 
-	sprintf(buf, "Err found at %s:%d in block from %s:%d", file, line, m->b->file, m->b->line);
+	snprintf(buf, sizeof(buf), "Err found at %s:%d in block from %s:%d", file, line, m->b->file, m->b->line);
 	crash2(buf);				/* Makes above easy to read from dbx 'where'.   */
 }
 

@@ -821,7 +821,7 @@ prim_event_send(PRIM_PROTOTYPE)
 		temp1.type = PROG_ARRAY;
 		temp1.data.array = arr;
 
-		sprintf(buf, "USER.%.32s", DoNullInd(oper2->data.string));
+		snprintf(buf, sizeof(buf), "USER.%.32s", DoNullInd(oper2->data.string));
 		muf_event_add(destfr, buf, &temp1, 0);
 		CLEAR(&temp1);
 	}
@@ -921,7 +921,7 @@ prim_watchpid(PRIM_PROTOTYPE)
 	} else {
 		char buf[64];
 
-		sprintf (buf, "PROC.EXIT.%d", oper1->data.number);
+		snprintf (buf, sizeof(buf), "PROC.EXIT.%d", oper1->data.number);
 		muf_event_add(fr, buf, oper1, 0);
 	}
 

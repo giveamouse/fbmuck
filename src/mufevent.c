@@ -298,11 +298,11 @@ muf_event_list(dbref player, const char *pat)
 				pcnt = 0.0;
 			}
 		}
-		sprintf(pidstr, "%d", proc->fr->pid);
-		sprintf(inststr, "%d", (proc->fr->instcnt / 1000));
-		sprintf(cpustr, "%4.1f", pcnt);
-		sprintf(progstr, "#%d", proc->prog);
-		sprintf(buf, pat, pidstr, "--",
+		snprintf(pidstr, sizeof(pidstr), "%d", proc->fr->pid);
+		snprintf(inststr, sizeof(inststr), "%d", (proc->fr->instcnt / 1000));
+		snprintf(cpustr, sizeof(cpustr), "%4.1f", pcnt);
+		snprintf(progstr, sizeof(progstr), "#%d", proc->prog);
+		snprintf(buf, sizeof(buf), pat, pidstr, "--",
 				time_format_2((long) (rtime - proc->fr->started)),
 				inststr, cpustr, progstr, NAME(proc->prog), NAME(proc->player),
 				"EVENT_WAITFOR");

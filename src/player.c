@@ -1,64 +1,5 @@
 /* $Header$ */
 
-/*
- * $Log: player.c,v $
- * Revision 1.4  2002/04/15 10:25:44  revar
- * Changed database format to Foxen7 format, which uses MD5 hashed passwords.
- * Added -godpasswd option to reset the God character's password.
- *
- * Revision 1.3  2001/04/02 10:42:49  winged
- * Making the change-password error messages more informative -- "Sorry"
- * doesn't quite cut it. :P
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:43  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 02:46:29  foxen
- * Initial revision
- *
- * Revision 5.14  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.13  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.12  1994/01/06  03:12:12  foxen
- * version 5.12
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.6  90/09/28  12:24:42  rearl
- * Added check for NULL in add_hash().
- *
- * Revision 1.5  90/09/18  08:01:03  rearl
- * Hash functions introduced for player lookup.
- *
- * Revision 1.4  90/09/16  04:42:39  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.3  90/08/27  03:32:10  rearl
- * Minor initialization stuff for newly created players.
- *
- * Revision 1.2  90/08/11  04:07:12  rearl
- * *** empty log message ***
- *
- * Revision 1.1  90/07/19  23:03:57  casie
- * Initial revision
- *
- *
- */
 
 #include "copyright.h"
 #include "config.h"
@@ -245,10 +186,10 @@ delete_player(dbref who)
 					ren = (i == who) ? found : i;
 					j = 0;
 					do {
-						sprintf(namebuf, "%s%d", NAME(ren), ++j);
+						snprintf(namebuf, sizeof(namebuf), "%s%d", NAME(ren), ++j);
 					} while (lookup_player(namebuf) != NOTHING);
 
-					sprintf(buf,
+					snprintf(buf, sizeof(buf),
 							"## Renaming %s(#%d) to %s to prevent name collision.",
 							NAME(ren), ren, namebuf);
 					wall_wizards(buf);

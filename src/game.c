@@ -42,9 +42,9 @@ do_dump(dbref player, const char *newfile)
 			if (dumpfile)
 				free((void *) dumpfile);
 			dumpfile = alloc_string(newfile);
-			sprintf(buf, "Dumping to file %s...", dumpfile);
+			snprintf(buf, sizeof(buf), "Dumping to file %s...", dumpfile);
 		} else {
-			sprintf(buf, "Dumping...");
+			snprintf(buf, sizeof(buf), "Dumping...");
 		}
 		notify(player, buf);
 		dump_db_now();
@@ -104,10 +104,10 @@ dump_database_internal(void)
 	char tmpfile[2048];
 	FILE *f;
 
-	sprintf(tmpfile, "%s.#%d#", dumpfile, epoch - 1);
+	snprintf(tmpfile, sizeof(tmpfile), "%s.#%d#", dumpfile, epoch - 1);
 	(void) unlink(tmpfile);		/* nuke our predecessor */
 
-	sprintf(tmpfile, "%s.#%d#", dumpfile, epoch);
+	snprintf(tmpfile, sizeof(tmpfile), "%s.#%d#", dumpfile, epoch);
 
 	if ((f = fopen(tmpfile, "w")) != NULL) {
 		db_write(f);
@@ -146,10 +146,10 @@ dump_database_internal(void)
 
 	/* Write out the macros */
 
-	sprintf(tmpfile, "%s.#%d#", MACRO_FILE, epoch - 1);
+	snprintf(tmpfile, sizeof(tmpfile), "%s.#%d#", MACRO_FILE, epoch - 1);
 	(void) unlink(tmpfile);
 
-	sprintf(tmpfile, "%s.#%d#", MACRO_FILE, epoch);
+	snprintf(tmpfile, sizeof(tmpfile), "%s.#%d#", MACRO_FILE, epoch);
 
 	if ((f = fopen(tmpfile, "w")) != NULL) {
 		macrodump(macrotop, f);
@@ -186,7 +186,7 @@ panic(const char *message)
 	emergency_shutdown();
 
 	/* dump panic file */
-	sprintf(panicfile, "%s.PANIC", dumpfile);
+	snprintf(panicfile, sizeof(panicfile), "%s.PANIC", dumpfile);
 	if ((f = fopen(panicfile, "w")) == NULL) {
 		perror("CANNOT OPEN PANIC FILE, YOU LOSE");
 		sync();
@@ -210,7 +210,7 @@ panic(const char *message)
 	}
 
 	/* Write out the macros */
-	sprintf(panicfile, "%s.PANIC", MACRO_FILE);
+	snprintf(panicfile, sizeof(panicfile), "%s.PANIC", MACRO_FILE);
 	if ((f = fopen(panicfile, "w")) != NULL) {
 		macrodump(macrotop, f);
 		fclose(f);
@@ -513,10 +513,10 @@ process_command(int descr, dbref player, char *command)
 	/* check for single-character commands */
 	if (!tp_enable_prefix) {
 		if (*command == SAY_TOKEN) {
-			sprintf(pbuf, "say %s", command + 1);
+			snprintf(pbuf, sizeof(pbuf), "say %s", command + 1);
 			command = &pbuf[0];
 		} else if (*command == POSE_TOKEN) {
-			sprintf(pbuf, "pose %s", command + 1);
+			snprintf(pbuf, sizeof(pbuf), "pose %s", command + 1);
 			command = &pbuf[0];
 		}
 	}
@@ -534,10 +534,10 @@ process_command(int descr, dbref player, char *command)
 		} else {
 			if (tp_enable_prefix) {
 				if (*command == SAY_TOKEN) {
-					sprintf(pbuf, "say %s", command + 1);
+					snprintf(pbuf, sizeof(pbuf), "say %s", command + 1);
 					command = &pbuf[0];
 				} else if (*command == POSE_TOKEN) {
-					sprintf(pbuf, "pose %s", command + 1);
+					snprintf(pbuf, sizeof(pbuf), "pose %s", command + 1);
 					command = &pbuf[0];
 				} else {
 					goto bad_pre_command;

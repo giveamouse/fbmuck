@@ -95,7 +95,7 @@ spit_file_segment(dbref player, const char *filename, const char *seg)
 		}
 	}
 	if ((f = fopen(filename, "r")) == NULL) {
-		sprintf(buf, "Sorry, %s is missing.  Management has been notified.", filename);
+		snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.", filename);
 		notify(player, buf);
 		fputs("spit_file:", stderr);
 		perror(filename);
@@ -142,7 +142,7 @@ index_file(dbref player, const char *onwhat, const char *file)
 	}
 
 	if ((f = fopen(file, "r")) == NULL) {
-		sprintf(buf, "Sorry, %s is missing.  Management has been notified.", file);
+		snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.", file);
 		notify(player, buf);
 		fprintf(stderr, "help: No file %s!\n", file);
 	} else {
@@ -151,7 +151,7 @@ index_file(dbref player, const char *onwhat, const char *file)
 			do {
 				do {
 					if (!(fgets(buf, sizeof buf, f))) {
-						sprintf(buf, "Sorry, no help available on topic \"%s\"", onwhat);
+						snprintf(buf, sizeof(buf), "Sorry, no help available on topic \"%s\"", onwhat);
 						notify(player, buf);
 						fclose(f);
 						return;
@@ -159,7 +159,7 @@ index_file(dbref player, const char *onwhat, const char *file)
 				} while (*buf != '~');
 				do {
 					if (!(fgets(buf, sizeof buf, f))) {
-						sprintf(buf, "Sorry, no help available on topic \"%s\"", onwhat);
+						snprintf(buf, sizeof(buf), "Sorry, no help available on topic \"%s\"", onwhat);
 						notify(player, buf);
 						fclose(f);
 						return;
@@ -229,7 +229,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 			if ((partial && string_prefix(dp->d_name, topic)) ||
 				(!partial && !string_compare(dp->d_name, topic))
 					) {
-				sprintf(buf, "%s/%s", dir, dp->d_name);
+				snprintf(buf, sizeof(buf), "%s/%s", dir, dp->d_name);
 				break;
 			}
 		}
@@ -240,7 +240,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 		return 0;				/* no such file or directory */
 	}
 #else							/* !DIR_AVALIBLE */
-	sprintf(buf, "%s/%s", dir, topic);
+	snprintf(buf, sizeof(buf), "%s/%s", dir, topic);
 #endif							/* !DIR_AVALIBLE */
 
 	if (stat(buf, &st)) {
@@ -421,9 +421,9 @@ main(int argc, char**argv)
 		helpfile = rindex(helpfile, '/');
 		helpfile++;
 #ifdef HELPFILE_DIR
-		sprintf(buf, "%s/%s", HELPFILE_DIR, helpfile);
+		snprintf(buf, sizeof(buf), "%s/%s", HELPFILE_DIR, helpfile);
 #else
-		sprintf(buf, "%s/%s", "/usr/local/fbmuck/help", helpfile);
+		snprintf(buf, sizeof(buf), "%s/%s", "/usr/local/fbmuck/help", helpfile);
 #endif
 
 		index_file(1, topic, buf);

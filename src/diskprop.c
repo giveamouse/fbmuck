@@ -189,7 +189,7 @@ report_fetchstats(dbref player)
 			maxv = fetchstats[i];
 		i = ((i + FETCHSTATS_SLOTS - 1) % FETCHSTATS_SLOTS);
 	}
-	sprintf(buf, "Disk Fetches %2g minute min/ave/max: %.2f/%.2f/%.2f",
+	snprintf(buf, sizeof(buf), "Disk Fetches %2g minute min/ave/max: %.2f/%.2f/%.2f",
 			(FETCHSTATS_INTERVAL1 / 60.0),
 			(minv * 60.0 / FETCHSTATS_SLOT_TIME),
 			(sum * 60.0 / (FETCHSTATS_SLOT_TIME * count)),
@@ -207,7 +207,7 @@ report_fetchstats(dbref player)
 			maxv = fetchstats[i];
 		i = ((i + FETCHSTATS_SLOTS - 1) % FETCHSTATS_SLOTS);
 	}
-	sprintf(buf, "Disk Fetches %2g minute min/ave/max: %.2f/%.2f/%.2f",
+	snprintf(buf, sizeof(buf), "Disk Fetches %2g minute min/ave/max: %.2f/%.2f/%.2f",
 			(FETCHSTATS_INTERVAL2 / 60.0),
 			(minv * 60.0 / FETCHSTATS_SLOT_TIME),
 			(sum * 60.0 / (FETCHSTATS_SLOT_TIME * count)),
@@ -225,7 +225,7 @@ report_fetchstats(dbref player)
 			maxv = fetchstats[i];
 		i = ((i + FETCHSTATS_SLOTS - 1) % FETCHSTATS_SLOTS);
 	}
-	sprintf(buf, "Disk Fetches %2g minute min/ave/max: %.2f/%.2f/%.2f",
+	snprintf(buf, sizeof(buf), "Disk Fetches %2g minute min/ave/max: %.2f/%.2f/%.2f",
 			(FETCHSTATS_INTERVAL3 / 60.0),
 			(minv * 60.0 / FETCHSTATS_SLOT_TIME),
 			(sum * 60.0 / (FETCHSTATS_SLOT_TIME * count)),
@@ -266,7 +266,7 @@ report_cachestats(dbref player)
 		if (count) {
 			if (gap)
 				notify(player, "[gap]");
-			sprintf(buf, "%3ld:%6d (%5.2f%%) %*s", ((now - when) / 60), count, pct, ipct, "*");
+			snprintf(buf, sizeof(buf), "%3ld:%6d (%5.2f%%) %*s", ((now - when) / 60), count, pct, ipct, "*");
 			notify(player, buf);
 			gap = 0;
 		} else {
@@ -284,7 +284,8 @@ diskbase_debug(dbref player)
 
 	ph = propcache_hits;
 	pm = propcache_misses;
-	sprintf(buf, "Propcache hit ratio: %.3f%% (%ld hits / %ld fetches)",
+	snprintf(buf, sizeof(buf),
+			"Propcache hit ratio: %.3f%% (%ld hits / %ld fetches)",
 			(100.0 * ph / (ph + pm)), propcache_hits, propcache_misses);
 	notify(player, buf);
 	report_fetchstats(player);

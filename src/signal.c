@@ -162,7 +162,7 @@ RETSIGTYPE bailout(int sig)
 	/* turn off signals */
 	set_sigs_intern(TRUE);
 
-	sprintf(message, "BAILOUT: caught signal %d", sig);
+	snprintf(message, sizeof(message), "BAILOUT: caught signal %d", sig);
 
 	panic(message);
 	_exit(7);

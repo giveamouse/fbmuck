@@ -325,7 +325,7 @@ int
 add_muf_timer_event(int descr, dbref player, dbref prog, struct frame *fr, int delay, char *id)
 {
 	char buf[40];
-	sprintf(buf, "TIMER.%.32s", id);
+	snprintf(buf, sizeof(buf), "TIMER.%.32s", id);
 	fr->timercount++;
 	return add_event(TQ_MUF_TYP, TQ_MUF_TIMER, delay, descr, player, -1, fr->trig,
 					 prog, fr, buf, NULL, NULL);
@@ -572,7 +572,7 @@ next_timequeue_event(void)
 					char bbuf[BUFFER_LEN];
 					dbref plyr;
 
-					sprintf(bbuf, ">> %.4000s %.*s",
+					snprintf(bbuf, sizeof(bbuf), ">> %.4000s %.*s",
 							NAME(event->uid),
 							(int)(4000 - strlen(NAME(event->uid))),
 							pronoun_substitute(event->descr, event->uid, cbuf));
@@ -723,16 +723,16 @@ list_events(dbref player)
 	double pcnt;
 	const char* strfmt = "%10s %4s %4s %6s %4s %7s %-10.10s %-12s %.512s";
 
-	(void)sprintf(buf, strfmt, "PID", "Next", "Run", "KInst", "%CPU", "Prog#", "ProgName", "Player", "");
+	(void)snprintf(buf, sizeof(buf), strfmt, "PID", "Next", "Run", "KInst", "%CPU", "Prog#", "ProgName", "Player", "");
 	notify_nolisten(player, buf, 1);
 
 	while (ptr) {
-		sprintf(pidstr, "%d", ptr->eventnum);
+		snprintf(pidstr, sizeof(pidstr), "%d", ptr->eventnum);
 		strcpy(duestr, ((ptr->when - rtime) > 0) ?
 				time_format_2((long) (ptr->when - rtime)) : "Due");
 		strcpy(runstr, ptr->fr ?
 				time_format_2((long) (rtime - ptr->fr->started)): "0s");
-		sprintf(inststr, "%d", ptr->fr? (ptr->fr->instcnt / 1000) : 0);
+		snprintf(inststr, sizeof(inststr), "%d", ptr->fr? (ptr->fr->instcnt / 1000) : 0);
 
 		if (ptr->fr) {
 			etime = rtime - ptr->fr->started;
@@ -749,20 +749,20 @@ list_events(dbref player)
 		} else {
 			pcnt = 0.0;
 		}
-		sprintf(cpustr, "%4.1f", pcnt);
-		sprintf(progstr, "#%d", ptr->called_prog);
-		sprintf(prognamestr, "%s", NAME(ptr->called_prog));
+		snprintf(cpustr, sizeof(cpustr), "%4.1f", pcnt);
+		snprintf(progstr, sizeof(progstr), "#%d", ptr->called_prog);
+		snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(ptr->called_prog));
 
 		if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ) {
 			strcpy(duestr, "--");
 		} else if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_TIMER) {
-			sprintf(pidstr, "(%d)", ptr->eventnum);
+			snprintf(pidstr, sizeof(pidstr), "(%d)", ptr->eventnum);
 		} else if (ptr->typ == TQ_MPI_TYP) {
 			strcpy(runstr, "--");
 			strcpy(inststr, "MPI");
 			strcpy(cpustr, "--");
 		}
-		(void) sprintf(buf, strfmt, pidstr, duestr, runstr, inststr,
+		(void) snprintf(buf, sizeof(buf), strfmt, pidstr, duestr, runstr, inststr,
 					                cpustr, progstr, prognamestr, NAME(ptr->uid), 
 									ptr->called_data? ptr->called_data : "");
 		if (Wizard(OWNER(player)) || ptr->uid == player) {
@@ -774,7 +774,7 @@ list_events(dbref player)
 		count++;
 	}
 	count += muf_event_list(player, strfmt);
-	sprintf(buf, "%d events.", count);
+	snprintf(buf, sizeof(buf), "%d events.", count);
 	notify_nolisten(player, buf, 1);
 }
 
@@ -1058,7 +1058,7 @@ dequeue_timers(int pid, char* id)
 		return 0;
 
 	if (id)
-		sprintf(buf, "TIMER.%.30s", id);
+		snprintf(buf, sizeof(buf), "TIMER.%.30s", id);
 
 	tmp = ptr = tqhead;
 	while (ptr) {
@@ -1143,9 +1143,9 @@ do_dequeue(int descr, dbref player, const char *arg1)
 					return;
 				}
 				if (count > 1) {
-					sprintf(buf, "%d processes dequeued.", count);
+					snprintf(buf, sizeof(buf), "%d processes dequeued.", count);
 				} else {
-					sprintf(buf, "Process dequeued.");
+					snprintf(buf, sizeof(buf), "Process dequeued.");
 				}
 				notify_nolisten(player, buf, 1);
 			} else {
@@ -1269,7 +1269,7 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 							char bbuf[BUFFER_LEN];
 							dbref plyr;
 
-							sprintf(bbuf, ">> %.4000s",
+							snprintf(bbuf, sizeof(bbuf), ">> %.4000s",
 									pronoun_substitute(descr, player, cbuf));
 							plyr = DBFETCH(where)->contents;
 							while (plyr != NOTHING) {

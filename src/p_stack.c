@@ -411,7 +411,7 @@ prim_lockp(PRIM_PROTOTYPE)
 }
 
 
-#define ABORT_CHECKARGS(msg) { if (*top == stackpos+1) sprintf(zbuf, "%s (top)", msg); else sprintf(zbuf, "%s (top-%d)", msg, ((*top)-stackpos-1));  abort_interp(zbuf); }
+#define ABORT_CHECKARGS(msg) { if (*top == stackpos+1) snprintf(zbuf, sizeof(zbuf), "%s (top)", msg); else snprintf(zbuf, sizeof(zbuf), "%s (top-%d)", msg, ((*top)-stackpos-1));  abort_interp(zbuf); }
 
 #define MaxComplexity 18		/* A truly ridiculously high number! */
 

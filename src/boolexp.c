@@ -1,84 +1,5 @@
 /* $Header$ */
 
-/*
- * $Log: boolexp.c,v $
- * Revision 1.4  2000/12/28 03:02:08  revar
- * Fixed support for Linux mallinfo() calls in @memory.
- * Fixed a crasher bug in ARRAY_NUNION, ARRAY_NDIFF, and ARRAY_NINTERSECT.
- * Fixed support for catching exceptions thrown in other muf programs.
- * Fixed some obscure bugs with getting gmt_offset on some systems.
- * Changed a whole lot of variables from 'new', 'delete', and 'class' to
- *  possibly allow moving to C++ eventually.
- * Added FINDNEXT primitive.
- * Updated TODO list.
- *
- * Revision 1.3  2000/07/18 18:15:02  winged
- * Various fixes to support warning-free compiling under -Wall -Wstrict-prototypes -Wno-format -- not all warnings fixed or found yet
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:42  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 02:12:35  foxen
- * Initial revision
- *
- * Revision 5.5  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.4  1994/03/14  12:08:46  foxen
- * Initial portability mods and bugfixes.
- *
- * Revision 5.3  1994/02/11  01:52:17  foxen
- * Changed property struct to contain name, instead of pointer to seperately
- * allocated propname.
- *
- * Revision 5.2  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.1  91/02/12  12:05:55  12:05:55  tygryss (Karen Rivers)
- * Initial revision
- *
- * Revision 1.8  90/09/16  04:40:58  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.7  90/09/10  02:19:08  rearl
- * Introduced string compression of properties, for the
- * COMPRESS compiler option.
- *
- * Revision 1.6  90/08/27  03:19:28  rearl
- * Added match_here to key match routines.
- *
- * Revision 1.5  90/08/11  03:49:51  rearl
- * *** empty log message ***
- *
- * Revision 1.4  90/08/05  03:18:56  rearl
- * Redid matching routines.
- *
- * Revision 1.3  90/08/02  18:49:20  rearl
- * Fixed some calls to logging functions.
- *
- * Revision 1.2  90/07/29  17:30:37  rearl
- * Added support for ROOM locks to programs.
- *
- * Revision 1.1  90/07/19  23:01:56  casie
- * Initial revision
- *
- *
- */
-
 #include "copyright.h"
 #include "config.h"
 
@@ -321,12 +242,12 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
 			b->thing = match_result(&md);
 
 			if (b->thing == NOTHING) {
-				sprintf(msg, "I don't see %s here.", buf);
+				snprintf(msg, sizeof(msg), "I don't see %s here.", buf);
 				notify(player, msg);
 				free_boolnode(b);
 				return TRUE_BOOLEXP;
 			} else if (b->thing == AMBIGUOUS) {
-				sprintf(msg, "I don't know which %s you mean!", buf);
+				snprintf(msg, sizeof(msg), "I don't know which %s you mean!", buf);
 				notify(player, msg);
 				free_boolnode(b);
 				return TRUE_BOOLEXP;

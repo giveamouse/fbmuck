@@ -127,7 +127,7 @@ check_common(dbref obj)
 
 	/* check name */
 	if (!db[obj].name) {
-		sprintf(buf, "Unknown%d", obj);
+		snprintf(buf, sizeof(buf), "Unknown%d", obj);
 		db[obj].name = alloc_string(buf);
 	}
 

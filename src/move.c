@@ -306,7 +306,7 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 				 ((Typeof(player) == TYPE_THING) && (FLAGS(player) & (ZOMBIE | VEHICLE))))
 				&& (Typeof(exit) != TYPE_EXIT || !Dark(exit))) {
 #if !defined(QUIET_MOVES)
-				sprintf(buf, "%s has left.", PNAME(player));
+				snprintf(buf, sizeof(buf), "%s has left.", PNAME(player));
 				notify_except(DBFETCH(old)->contents, player, buf, player);
 #endif
 			}
@@ -324,7 +324,7 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 			 ((Typeof(player) == TYPE_THING) && (FLAGS(player) & (ZOMBIE | VEHICLE))))
 			&& (Typeof(exit) != TYPE_EXIT || !Dark(exit))) {
 #if !defined(QUIET_MOVES)
-			sprintf(buf, "%s has arrived.", PNAME(player));
+			snprintf(buf, sizeof(buf), "%s has arrived.", PNAME(player));
 			notify_except(DBFETCH(loc)->contents, player, buf, player);
 #endif
 		}
@@ -567,7 +567,7 @@ do_move(int descr, dbref player, const char *direction, int lev)
 		/* but steal all his possessions */
 		if ((loc = DBFETCH(player)->location) != NOTHING) {
 			/* tell everybody else */
-			sprintf(buf, "%s goes home.", PNAME(player));
+			snprintf(buf, sizeof(buf), "%s goes home.", PNAME(player));
 			notify_except(DBFETCH(loc)->contents, player, buf, player);
 		}
 		/* give the player the messages */
@@ -808,7 +808,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 			parse_oprop(descr, player, loc, thing, MESGPROP_ODROP,
 						   PNAME(player), "(@Odrop)");
 		} else {
-			sprintf(buf, "%s drops %s.", PNAME(player), PNAME(thing));
+			snprintf(buf, sizeof(buf), "%s drops %s.", PNAME(player), PNAME(thing));
 			notify_except(DBFETCH(loc)->contents, player, buf, player);
 		}
 
@@ -859,7 +859,7 @@ do_recycle(int descr, dbref player, const char *name)
 					return;
 				}
 				if (thing == player) {
-					sprintf(buf,
+					snprintf(buf, sizeof(buf),
 							"%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks it's legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
 							PNAME(thing));
 					notify_except(DBFETCH(getloc(thing))->contents, thing, buf, player);
@@ -962,7 +962,7 @@ recycle(int descr, dbref player, dbref thing)
 		DBDIRTY(OWNER(thing));
 		break;
 	case TYPE_PROGRAM:
-		sprintf(buf, "muf/%d.m", (int) thing);
+		snprintf(buf, sizeof(buf), "muf/%d.m", (int) thing);
 		unlink(buf);
 		break;
 	}

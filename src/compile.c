@@ -196,7 +196,7 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
 {
 	static char _buf[BUFFER_LEN];
 
-	sprintf(_buf, "Error in line %d: %s", cstat->lineno, c);
+	snprintf(_buf, sizeof(_buf), "Error in line %d: %s", cstat->lineno, c);
 	if (cstat->line_copy) {
 		free((void *) cstat->line_copy);
 		cstat->line_copy = NULL;
@@ -397,7 +397,7 @@ insert_intdef(COMPSTATE * cstat, const char *defname, int deff)
 {
 	char buf[sizeof(int) * 3];
 
-	sprintf(buf, "%d", deff);
+	snprintf(buf, sizeof(buf), "%d", deff);
 	insert_def(cstat, defname, buf);
 }
 
@@ -1287,7 +1287,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 
 		if (force_err_display && optimcount > 0) {
 			char buf[BUFFER_LEN];
-			sprintf(buf, "Program optimized by %d instructions in %d passes.", optimcount, passcount);
+			snprintf(buf, sizeof(buf), "Program optimized by %d instructions in %d passes.", optimcount, passcount);
 			notify_nolisten(cstat.player, buf, 1);
 		}
 	}
@@ -1358,7 +1358,7 @@ next_word(COMPSTATE * cstat, const char *token)
 	else if (quoted(cstat, token))
 		new_word = quoted_word(cstat, token + 1);
 	else {
-		sprintf(buf, "Unrecognized word %s.", token);
+		snprintf(buf, sizeof(buf), "Unrecognized word %s.", token);
 		abort_compile(cstat, buf);
 	}
 	return new_word;
@@ -1617,13 +1617,13 @@ do_directive(COMPSTATE * cstat, char *direct)
 					char *temppropstr = NULL;
 
 					(void) *tmpname++;
-					sprintf(propname, "/_defs/%s", tmpname);
+					snprintf(propname, sizeof(propname), "/_defs/%s", tmpname);
 					temppropstr = (char *) get_property_class(cstat->program, propname);
 					if (temppropstr ) {
 						doitset = 0;
 					}
 				} else {
-					sprintf(propname, "/_defs/%s", tmpname);
+					snprintf(propname, sizeof(propname), "/_defs/%s", tmpname);
 				}
 
 				if (doitset) {
@@ -2646,7 +2646,7 @@ process_special(COMPSTATE * cstat, const char *token)
 			free((void *) tok);
 		return 0;
 	} else {
-		sprintf(buf, "Unrecognized special form %s found. (%d)", token, cstat->lineno);
+		snprintf(buf, sizeof(buf), "Unrecognized special form %s found. (%d)", token, cstat->lineno);
 		abort_compile(cstat, buf);
 	}
 }

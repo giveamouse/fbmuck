@@ -375,9 +375,9 @@ mcp_frame_package_renegotiate(const char* package)
 	} else {
 		mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
 		mcp_mesg_arg_append(&cando, "package", p->pkgname);
-		sprintf(verbuf, "%d.%d", p->minver.vermajor, p->minver.verminor);
+		snprintf(verbuf, sizeof(verbuf), "%d.%d", p->minver.vermajor, p->minver.verminor);
 		mcp_mesg_arg_append(&cando, "min-version", verbuf);
-		sprintf(verbuf, "%d.%d", p->maxver.vermajor, p->maxver.verminor);
+		snprintf(verbuf, sizeof(verbuf), "%d.%d", p->maxver.vermajor, p->maxver.verminor);
 		mcp_mesg_arg_append(&cando, "max-version", verbuf);
 	}
 
@@ -814,7 +814,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 		strcat(out, MCP_ARG_DELIMITER);
 		strcat(out, MCP_SEPARATOR);
 		out += strlen(out);
-		sprintf(datatag, "%.8lX", (unsigned long)(random() ^ random()));
+		snprintf(datatag, sizeof(datatag), "%.8lX", (unsigned long)(random() ^ random()));
 		strcat(out, datatag);
 	}
 
@@ -1303,7 +1303,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 			mcp_mesg_init(&reply, MCP_INIT_PKG, "");
 			mcp_mesg_arg_append(&reply, "version", "2.1");
 			mcp_mesg_arg_append(&reply, "to", "2.1");
-			sprintf(authval, "%.8lX", (unsigned long)(random() ^ random()));
+			snprintf(authval, sizeof(authval), "%.8lX", (unsigned long)(random() ^ random()));
 			mcp_mesg_arg_append(&reply, "authentication-key", authval);
 			mfr->authkey = (char *) malloc(strlen(authval) + 1);
 			strcpy(mfr->authkey, authval);
@@ -1344,9 +1344,9 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 				if (strcmp_nocase(p->pkgname, MCP_INIT_PKG)) {
 					mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
 					mcp_mesg_arg_append(&cando, "package", p->pkgname);
-					sprintf(verbuf, "%d.%d", p->minver.vermajor, p->minver.verminor);
+					snprintf(verbuf, sizeof(verbuf), "%d.%d", p->minver.vermajor, p->minver.verminor);
 					mcp_mesg_arg_append(&cando, "min-version", verbuf);
-					sprintf(verbuf, "%d.%d", p->maxver.vermajor, p->maxver.verminor);
+					snprintf(verbuf, sizeof(verbuf), "%d.%d", p->maxver.vermajor, p->maxver.verminor);
 					mcp_mesg_arg_append(&cando, "max-version", verbuf);
 					mcp_frame_output_mesg(mfr, &cando);
 					mcp_mesg_clear(&cando);
@@ -1729,81 +1729,3 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 }
 
 
-/*
-* $Log: mcp.c,v $
-* Revision 1.17  2002/03/17 07:55:25  winged
-* Fixing pedantic warnings
-*
-* Revision 1.16  2002/02/26 06:58:32  revar
-* Fixed bug in MCP where _datatag wasn't being preceeded by a separator space.
-*
-* Revision 1.15  2001/10/09 06:57:12  revar
-* Fixed a bug where MCP packages weren't renegotiating on a program recompile.
-* Added $pubdef muf preprocessor directive.  Sets a _defs/XXX prop on the prog.
-* Added $version muf directive.  Sets the _version prop on the program.
-* Added $lib-version muf directive.  Sets the _lib-version prop on the program.
-* Added $author muf directive.  Sets the _author prop on the program.
-* Added $note muf directive.  Sets the _note prop on the program.
-* Added $abort muf directive.  Aborts the compile, giving a message.
-* Added $cleardefs muf directive.  Resets macro definitions to default set.
-* Added $ifver, $ifnver, $iflibver, $ifnlibver muf directives.  Like $ifdef.
-* Added $iflib, $ifnlib, $ifcancall, $ifncancall muf directives.  Like $ifdef.
-*
-* Revision 1.14  2001/09/18 18:23:38  revar
-* Fixed SSL connections that were broken by the MCP flush changes.
-*
-* Revision 1.13  2001/09/17 08:48:18  revar
-* Changed MCP code to flush long messages periodically to try to bypass
-*   '<Output Flushed>' events.
-*
-* Revision 1.12  2001/08/21 23:39:05  winged
-* Wrapped <malloc.h> includes in mcp.c and mcpgui.c with #ifdef HAVE_MALLOC_H.
-*
-* Revision 1.11  2001/02/02 05:03:44  revar
-* Added descr, trigger, player, and prog_uid datums to SEND_EVENT context.
-* Updated man.txt docs for SEND_EVENT changes and WATCHPID.
-* Added MCP message size limit.  Defaults to half a meg.
-*
-* Revision 1.10  2001/01/06 23:01:17  revar
-* Fixed bug with \r's in MCP arguments.
-*
-* Revision 1.9  2000/12/28 03:02:08  revar
-* Fixed support for Linux mallinfo() calls in @memory.
-* Fixed a crasher bug in ARRAY_NUNION, ARRAY_NDIFF, and ARRAY_NINTERSECT.
-* Fixed support for catching exceptions thrown in other muf programs.
-* Fixed some obscure bugs with getting gmt_offset on some systems.
-* Changed a whole lot of variables from 'new', 'delete', and 'class' to
-*  possibly allow moving to C++ eventually.
-* Added FINDNEXT primitive.
-* Updated TODO list.
-*
-* Revision 1.8  2000/11/23 10:30:22  revar
-* Changes for BSD compatability.
-* Changes to correct various sprintf format strings.
-*
-* Revision 1.7  2000/08/23 10:00:02  revar
-* Added @tops, @muftops, and @mpitops profiling commands.
-* Changed examine to show a program's cumulative runtimes.
-* Changes @ps to show process' %CPU usage.
-*
-* Revision 1.6  2000/07/18 18:12:40  winged
-* Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
-*
-* Revision 1.5  2000/07/07 09:23:11  revar
-* Fixed microscopic memory leak with re-registering MCP package handlers.
-*
-* Revision 1.4  2000/04/30 11:03:30  revar
-* Fixed MCP crasher bug when client fails to send authentication key.
-*
-* Revision 1.3  2000/03/29 12:21:02  revar
-* Reformatted all code into consistent format.
-* 	Tabs are 4 spaces.
-* 	Indents are one tab.
-* 	Braces are generally K&R style.
-* Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
-* Rewrote restart script as a bourne shell script.
-*
-* Revision 1.2  2000/02/10 06:11:55  winged
-* Added log to bottom and comment to top
-*
-*/

@@ -1,95 +1,5 @@
 /* $Header$ */
 
-/*
- * $Log: speech.c,v $
- * Revision 1.6  2002/03/17 09:54:28  winged
- * Fixes for -Wall -Wall-pedantic -pedantic.  Also fixed a formatting bug in interface.c when tp_who_doing was set and MAX_PLAYER_LEN had been changed from its default setting.
- *
- * Revision 1.5  2002/03/17 07:55:25  winged
- * Fixing pedantic warnings
- *
- * Revision 1.4  2000/11/22 10:01:58  revar
- * Changed MPI from using Wizbit objects to give special permissions, to using
- * 'Blessed' properties.  Blessed props have few permissions restrictions.
- * Added @bless and @unbless wizard commands.
- * Added BLESSPROP and UNBLESSPROP muf primitives.
- * Added {bless} {unbless} and {revoke} MPI commands.
- * Fixed {listprops} crasher bug.
- *
- * Revision 1.3  2000/07/19 01:33:18  revar
- * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
- * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:44  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 03:04:09  foxen
- * Initial revision
- *
- * Revision 5.14  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.13  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.12  1994/01/17  03:26:16  foxen
- * Changed gripe to allow wizards to list the gripefile via 'gripe' with no args.
- *
- * Revision 5.11  1993/12/20  06:22:51  foxen
- * *** empty log message ***
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.12  90/09/16  04:43:00  rearl
- *
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.11  90/09/15  22:28:08  rearl
- * Fixed bug in @wall.
- *
- * Revision 1.10  90/09/10  02:21:23  rearl
- * Put quotes around the page format.
- *
- * Revision 1.9  90/08/27  03:34:21  rearl
- * Changed page format (yet again)
- *
- * Revision 1.8  90/08/11  04:10:47  rearl
- * *** empty log message ***
- *
- * Revision 1.7  90/08/09  21:07:44  rearl
- * Removed notify_except2().
- *
- * Revision 1.6  90/08/05  03:21:36  rearl
- * Redid matching routines.
- *
- * Revision 1.5  90/08/02  18:54:29  rearl
- * Fixed some calls to logging functions.
- *
- * Revision 1.4  90/07/29  17:44:45  rearl
- * Took out reconstruct_message() braindamage.
- *
- * Revision 1.3  90/07/21  16:30:04  casie
- * removed fflush(stderr); call
- *
- * Revision 1.2  90/07/21  13:04:18  casie
- * modified for logging handling
- *
- * Revision 1.1  90/07/19  23:04:11  casie
- * Initial revision
- *
- */
 
 #include "copyright.h"
 #include "config.h"
@@ -117,9 +27,9 @@ do_say(dbref player, const char *message)
 		return;
 
 	/* notify everybody */
-	sprintf(buf, "You say, \"%s\"", message);
+	snprintf(buf, sizeof(buf), "You say, \"%s\"", message);
 	notify(player, buf);
-	sprintf(buf, "%s says, \"%s\"", PNAME(player), message);
+	snprintf(buf, sizeof(buf), "%s says, \"%s\"", PNAME(player), message);
 	notify_except(DBFETCH(loc)->contents, player, buf, player);
 }
 
@@ -145,13 +55,13 @@ do_whisper(int descr, dbref player, const char *arg1, const char *arg2)
 		notify(player, "I don't know who you mean!");
 		break;
 	default:
-		sprintf(buf, "%s whispers, \"%s\"", PNAME(player), arg2);
+		snprintf(buf, sizeof(buf), "%s whispers, \"%s\"", PNAME(player), arg2);
 		if (!notify_from(player, who, buf)) {
-			sprintf(buf, "%s is not connected.", PNAME(who));
+			snprintf(buf, sizeof(buf), "%s is not connected.", PNAME(who));
 			notify(player, buf);
 			break;
 		}
-		sprintf(buf, "You whisper, \"%s\" to %s.", arg2, PNAME(who));
+		snprintf(buf, sizeof(buf), "You whisper, \"%s\" to %s.", arg2, PNAME(who));
 		notify(player, buf);
 		break;
 	}
@@ -167,7 +77,7 @@ do_pose(dbref player, const char *message)
 		return;
 
 	/* notify everybody */
-	sprintf(buf, "%s %s", PNAME(player), message);
+	snprintf(buf, sizeof(buf), "%s %s", PNAME(player), message);
 	notify_except(DBFETCH(loc)->contents, NOTHING, buf, player);
 }
 
@@ -179,7 +89,7 @@ do_wall(dbref player, const char *message)
 
 	if (Wizard(player) && Typeof(player) == TYPE_PLAYER) {
 		log_status("WALL from %s(%d): %s\n", NAME(player), player, message);
-		sprintf(buf, "%s shouts, \"%s\"", NAME(player), message);
+		snprintf(buf, sizeof(buf), "%s shouts, \"%s\"", NAME(player), message);
 		for (i = 0; i < db_top; i++) {
 			if (Typeof(i) == TYPE_PLAYER) {
 				notify_from(player, i, buf);
@@ -211,7 +121,7 @@ do_gripe(dbref player, const char *message)
 
 	notify(player, "Your complaint has been duly noted.");
 
-	sprintf(buf, "## GRIPE from %s: %s", NAME(player), message);
+	snprintf(buf, sizeof(buf), "## GRIPE from %s: %s", NAME(player), message);
 	wall_wizards(buf);
 }
 
@@ -235,15 +145,15 @@ do_page(dbref player, const char *arg1, const char *arg2)
 		return;
 	}
 	if (blank(arg2))
-		sprintf(buf, "You sense that %s is looking for you in %s.",
+		snprintf(buf, sizeof(buf), "You sense that %s is looking for you in %s.",
 				PNAME(player), NAME(DBFETCH(player)->location));
 	else
-		sprintf(buf, "%s pages from %s: \"%s\"", PNAME(player),
+		snprintf(buf, sizeof(buf), "%s pages from %s: \"%s\"", PNAME(player),
 				NAME(DBFETCH(player)->location), arg2);
 	if (notify_from(player, target, buf))
 		notify(player, "Your message has been sent.");
 	else {
-		sprintf(buf, "%s is not connected.", PNAME(target));
+		snprintf(buf, sizeof(buf), "%s is not connected.", PNAME(target));
 		notify(player, buf);
 	}
 }
@@ -275,7 +185,7 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
 										"(@Oecho)", pbuf, MPI_ISPRIVATE);
 				if (!prefix || !*prefix)
 					prefix = "Outside>";
-				sprintf(buf, "%s %.*s", prefix, (int)(BUFFER_LEN - 2 - strlen(prefix)), msg);
+				snprintf(buf, sizeof(buf), "%s %.*s", prefix, (int)(BUFFER_LEN - 2 - strlen(prefix)), msg);
 				ref = DBFETCH(obj)->contents;
 				while (ref != NOTHING) {
 					notify_nolisten(ref, buf, isprivate);
