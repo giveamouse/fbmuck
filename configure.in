@@ -100,6 +100,7 @@ dnl
 AC_OUTPUT(
 	Makefile
 	src/Makefile
+	game/restart
 )
 echo " "
 echo "You should review the options in include/config.h, and"

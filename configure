@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# From configure.in Revision: 1.6 # Guess values for system-dependent variables and create Makefiles.
+# From configure.in Revision: 1.7 # Guess values for system-dependent variables and create Makefiles.
 # Generated automatically using autoconf version 2.13 
 # Copyright (C) 1992, 93, 94, 95, 96 Free Software Foundation, Inc.
 #
@@ -2258,6 +2258,7 @@ ac_given_srcdir=$srcdir
 
 trap 'rm -fr `echo "Makefile
 	src/Makefile
+	game/restart
  include/autoconf.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
@@ -2337,6 +2338,7 @@ cat >> $CONFIG_STATUS <<EOF
 
 CONFIG_FILES=\${CONFIG_FILES-"Makefile
 	src/Makefile
+	game/restart
 "}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
