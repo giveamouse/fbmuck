@@ -3,6 +3,8 @@ Changed the restart script to look for netmuck in /usr/local/fbmuck/bin/
 Changed netmuck to also look in /usr/local/fbmuck/bin/ for the resolver.
 Changed 'make install' to install the binaries to /usr/local/fbmuck/bin/
 Changed 'get' command to disable zombie thieving of player/container contents.
+Optimized {select} MPI command to make it fast on very sparse lists.
+Added {timing} MPI command to show how long a command takes to execute.
 
 
 

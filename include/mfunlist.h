@@ -141,6 +141,7 @@ MFNDAT mfun_list[] = {
 	{"TESTLOCK", mfn_testlock, 1, 0, 1, 2, 4},
 	{"TELL", mfn_tell, 1, 0, 0, 1, 2},
 	{"TIME", mfn_time, 1, 0, 1, 0, 1},
+	{"TIMING", mfn_timing, 0, 0, 0, 1, 1},
 	{"TIMESTR", mfn_timestr, 1, 0, 1, 1, 1},
 	{"TIMESUB", mfn_timesub, 1, 1, 1, 3, 4},
 	{"TOLOWER", mfn_tolower, 1, 0, 0, 1, 1},
