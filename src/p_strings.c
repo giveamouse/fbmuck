@@ -593,7 +593,7 @@ prim_itoc(PRIM_PROTOTYPE)
 		abort_interp("Argument must be a positive integer. (1)");
 	if (oper1->data.number > 127 || (!isprint((char) oper1->data.number) &&
 									 ((char) oper1->data.number != '\r') &&
-									 ((char) oper1->data.number != '\['))) {
+									 ((char) oper1->data.number != ESCAPE_CHAR))) {
 		result = 0;
 	} else {
 		result = 1;
