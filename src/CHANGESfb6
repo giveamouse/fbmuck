@@ -1,4 +1,4 @@
-2.2fb6.00a34
+2.2fb6.00b1
 Fixed STOD to allow for trailing spaces after a number argument.
 Fixed a bunch of minor FreeBSD compatability issues.
 Fixed a permissions error in muf's SET primitive, with setting vehicle's bits.
