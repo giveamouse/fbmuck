@@ -1349,28 +1349,26 @@ prim_unparseobj(PRIM_PROTOTYPE)
 void
 prim_smatch(PRIM_PROTOTYPE)
 {
+	char xbuf[BUFFER_LEN];
+
 	CHECKOP(2);
 	oper1 = POP();
 	oper2 = POP();
 	if (oper1->type != PROG_STRING || oper2->type != PROG_STRING)
 		abort_interp("Non-string argument.");
-	if (!oper1->data.string || !oper2->data.string)
-		abort_interp("Null string argument.");
-	{
-		char xbuf[BUFFER_LEN];
 
 #if defined(ANONYMITY)
-		strcpy(buf, unmangle(player, oper1->data.string->data));
-		strcpy(xbuf, unmangle(player, oper2->data.string->data));
+	strcpy(buf, unmangle(player, DoNullInd(oper1->data.string)));
+	strcpy(xbuf, unmangle(player, DoNullInd(oper2->data.string)));
 #else
-		strcpy(buf, oper1->data.string->data);
-		strcpy(xbuf, oper2->data.string->data);
+	strcpy(buf, DoNullInd(oper1->data.string));
+	strcpy(xbuf, DoNullInd(oper2->data.string));
 #endif
-		CLEAR(oper1);
-		CLEAR(oper2);
-		result = equalstr(buf, xbuf);
-		PushInt(result);
-	}
+	result = equalstr(buf, xbuf);
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+	PushInt(result);
 }
 
 void

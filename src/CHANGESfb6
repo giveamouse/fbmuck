@@ -4,6 +4,10 @@ Fixed a lot of uninitialized struct frame variables in child of FORK.
 Fixed two-byte buffer overrun in {listprops}
 Fixed uninitialized program instance count in @prog.
 Fixed an MCP-GUI crasher bug with programs exiting with live dialogs.
+Fixed bug #477633: {with:v,{&v},{&v}} displays garbage.
+Fixed bug #478325: Arrays with 0s for values don't serialize properly.
+Fixed bug #479093: smatches, array_filter_prop disagree.
+Fixed bug where FOREGROUND muf progs didn't process MCP messages.
 Changed DESCRSECURE? to be ML3, not wizbit.
 Changed input quotas to not count MCP messages.
 Changed command logging to not list null commands.

@@ -1143,9 +1143,6 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 			}
 		}
 	}
-	if (!maxcount) {
-		maxcount = 511;
-	}
 
 	nu = new_array_packed(0);
 	while (1) {
@@ -1159,46 +1156,55 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 				prptr = get_property(ref, propname);
 			}
 		}
-		if (!prptr || count > maxcount) {
+		if (maxcount > 1023) {
+			maxcount = 1023;
+		}
+		if (maxcount) {
+			if (count > maxcount)
+				break;
+		} else if (!prptr) {
 			break;
 		}
 		if (prop_read_perms(ProgUID, ref, propname, mlev)) {
-#ifdef DISKBASE
-			propfetch(ref, prptr);
-#endif
-			switch (PropType(prptr)) {
-			case PROP_STRTYP:
-				temp2.type = PROG_STRING;
-				temp2.data.string = alloc_prog_string(get_uncompress(PropDataStr(prptr)));
-				break;
-			case PROP_LOKTYP:
-				temp2.type = PROG_LOCK;
-				if (PropFlags(prptr) & PROP_ISUNLOADED) {
-					temp2.data.lock = TRUE_BOOLEXP;
-				} else {
-					temp2.data.lock = PropDataLok(prptr);
-				}
-				break;
-			case PROP_REFTYP:
-				temp2.type = PROG_OBJECT;
-				temp2.data.number = PropDataRef(prptr);
-				break;
-			case PROP_INTTYP:
-				temp2.type = PROG_INTEGER;
-				temp2.data.number = PropDataVal(prptr);
-				break;
-			case PROP_FLTTYP:
-				temp2.type = PROG_FLOAT;
-				temp2.data.fnumber = PropDataFVal(prptr);
-				break;
-			default:
+			if (!prptr) {
 				temp2.type = PROG_INTEGER;
 				temp2.data.number = 0;
-				break;
+			} else {
+#ifdef DISKBASE
+				propfetch(ref, prptr);
+#endif
+				switch (PropType(prptr)) {
+				  case PROP_STRTYP:
+					temp2.type = PROG_STRING;
+					temp2.data.string = alloc_prog_string(get_uncompress(PropDataStr(prptr)));
+					break;
+				  case PROP_LOKTYP:
+					temp2.type = PROG_LOCK;
+					if (PropFlags(prptr) & PROP_ISUNLOADED) {
+						temp2.data.lock = TRUE_BOOLEXP;
+					} else {
+						temp2.data.lock = PropDataLok(prptr);
+					}
+					break;
+				  case PROP_REFTYP:
+					temp2.type = PROG_OBJECT;
+					temp2.data.number = PropDataRef(prptr);
+					break;
+				  case PROP_INTTYP:
+					temp2.type = PROG_INTEGER;
+					temp2.data.number = PropDataVal(prptr);
+					break;
+				  case PROP_FLTTYP:
+					temp2.type = PROG_FLOAT;
+					temp2.data.fnumber = PropDataFVal(prptr);
+					break;
+				  default:
+					temp2.type = PROG_INTEGER;
+					temp2.data.number = 0;
+					break;
+				}
 			}
-
 			array_appenditem(&nu, &temp2);
-
 			CLEAR(&temp2);
 		} else {
 			break;

@@ -961,9 +961,11 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 				ptr = get_property_class(ref, prop);
 				if (ptr) {
 					strcpy(buf, ptr);
-					if (equalstr(pattern, buf)) {
-						array_appenditem(&nu, in);
-					}
+				} else {
+					strcpy(buf, "");
+				}
+				if (equalstr(pattern, buf)) {
+					array_appenditem(&nu, in);
 				}
 			}
 		} while (array_next(arr, &temp1));

@@ -1800,6 +1800,12 @@ save_command(struct descriptor_data *d, const char *command)
 		if (!(FLAGS(d->player) & INTERACTIVE))
 			return;
 	}
+	if (d->connected && PLAYER_BLOCK(d->player)) {
+		char cmdbuf[BUFFER_LEN];
+		if (!mcp_frame_process_input(&d->mcpframe, command, cmdbuf, sizeof(cmdbuf))) {
+			return;
+		}
+	}
 	add_to_queue(&d->input, command, strlen(command) + 1);
 }
 
