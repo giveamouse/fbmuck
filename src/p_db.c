@@ -1875,25 +1875,28 @@ prim_toadplayer(PRIM_PROTOTYPE)
     oper1 = POP();
     oper2 = POP();
 
-    victim = oper1->data.objref;
     if (mlev < 4)
 		abort_interp("Permission denied.  Requires Wizbit.");
-    if ((ref != NOTHING && !valid_player(oper1)) || ref == NOTHING)
-		abort_interp("Player dbref expected for player to be toaded (1)");
+
+	victim = oper1->data.objref;
+
+    if (!valid_player(oper1))
+		abort_interp("Player dbref expected for player to be toaded (2)");
+
     recipient = oper2->data.objref;
-    if ((recipient != NOTHING && !valid_player(oper2)) || ref == NOTHING)
-		abort_interp("Player dbref expected for recipient (2)");
-    CHECKREMOTE(ref);
+
+    if (!valid_player(oper2))
+		abort_interp("Player dbref expected for recipient (1)");
+
+    CHECKREMOTE(victim);
     CHECKREMOTE(recipient);
 
-    if (Typeof(victim) != TYPE_PLAYER) {
-		abort_interp("You can only toad players.");
+	if (victim == recipient)
+	{
+		abort_interp("Victim and recipient must be different players.");
 		return;
-    }
-    if (Typeof(recipient) != TYPE_PLAYER) {
-		abort_interp("Only players can receive the objects.");
-		return;
-    }
+	}
+
     if (get_property_class( victim, "@/precious" )) {
 		abort_interp("That player is precious.");
 		return;
@@ -1904,7 +1907,7 @@ prim_toadplayer(PRIM_PROTOTYPE)
     }
 
     /* we're ok, do it */
-	send_contents(fr->descr, player, HOME);
+	send_contents(fr->descr, victim, HOME);
 	for (stuff = 0; stuff < db_top; stuff++) {
 	    if (OWNER(stuff) == victim) {
 			switch (Typeof(stuff)) {

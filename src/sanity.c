@@ -737,6 +737,7 @@ create_lostandfound(dbref * player, dbref * room)
 		LOCATION(*player) = *room;
 		FLAGS(*player) = TYPE_PLAYER |  SANEBIT;
 		OWNER(*player) = *player;
+		ALLOC_PLAYER_SP(*player);
 		PLAYER_SET_HOME(*player, *room);
 		EXITS(*player) = NOTHING;
 		PLAYER_SET_PENNIES(*player, tp_start_pennies);

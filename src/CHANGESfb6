@@ -6,6 +6,8 @@ Fixed lost process bug with mufevent queue.
 Fixed hang in regsub primitive.  Still wrongly handling null length matches.
 Fixed possible stack information leak in pronoun_substitute.
 Fixed bug #857360: regexp related crasher.
+Fixed bug #863396: dup toadplayer sets ownership wrong.
+Fixed bug with sanity not allocating player specific data for lost+found player.
 Changed regexp code to use PCRE regexp package, so we'll have consistency.
 
 
