@@ -1,4 +1,13 @@
 2.2fb6.00a32
+Fixed more minor 64-bit compatability bugs with regards to time() calls.
+Fixed problem with loading an older db leaving users in insert mode.
+Fixed bug with ARRAY_GETRANGE returning a non-empty array when given a range
+ that starts one beyond the end of the list array's content.
+Fixed bug with ARRAY_VALS CLEAR()ing garbage when passed an empty array.
+Added message to confirm exiting of insert mode in muf editor.
+Added preliminary code to support READ mufevents.  This is incomplete.
+Changed the MUF compiler to use a single control_stack instead of separate
+  if_stack and loop_stacks.
 
 
 
