@@ -5,6 +5,8 @@ These items are mandatory for FB6 release:
 These items are deferred:
   Fix compression bugs, or implement new compression schema.
   Add memory usage based limits on MUF progs.
+  Add CONTENTS_ARRAY muf primitive.  (Hmm.  On #0 this could be bad.)
+  Add ISBLESSED? prim to muf.
 
   Separate MPI perms away from Builder bit a la ProtoMUCK.
   Implement Viewable flag for MUF program @listing.
