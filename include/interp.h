@@ -153,6 +153,7 @@ extern dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
 #define SORTTYPE_NOCASE_ASCEND  1
 #define SORTTYPE_CASE_DESCEND   2
 #define SORTTYPE_NOCASE_DESCEND 3
+#define SORTTYPE_SHUFFLE        4
 
 extern int nargs;				/* DO NOT TOUCH THIS VARIABLE */
 
