@@ -96,6 +96,8 @@ Added @proginfo command (backported from glowmuck).
 Added @__sys__ propdir for storing system only data, neither users nor wizards
   may read or write any properties contained within this propdir.
 Added @clone command to allow cloning things (inspired by TinyMUSH).
+Added verbose_clone @tune to control whether @clone is verbose about its
+  operations. Defaults to 0.
 Removed dead concentrater log code.
 Removed dead LOCKOUT code from include/config.h.
 

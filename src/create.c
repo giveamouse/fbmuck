@@ -912,11 +912,8 @@ copy_props(dbref player, dbref source, dbref destination, const char *dir)
 {
 	char propname[BUFFER_LEN];
 	char buf[BUFFER_LEN];
-	PropPtr propadr, pptr;
-
-#ifdef VERBOSE_CLONE
 	char buf2[BUFFER_LEN];
-#endif /* VERBOSE_CLONE */
+	PropPtr propadr, pptr;
 
 	/* loop through all properties in the current propdir */
 	propadr = first_prop(source, (char *) dir, &pptr, propname);
@@ -925,13 +922,11 @@ copy_props(dbref player, dbref source, dbref destination, const char *dir)
 		/* generate name for current property */
 		snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 
-#ifdef VERBOSE_CLONE
 		/* notify player */
-		if(Wizard(OWNER(player))) {
-			snprintf(buf2, sizeof(buf2), "now copying property %s", buf);
+		if(tp_verbose_clone && Wizard(OWNER(player))) {
+			snprintf(buf2, sizeof(buf2), "copying property %s", buf);
 			notify(player, buf2);
 		}
-#endif /* VERBOSE_CLONE */
 
 		/* copy this property */
 		copy_one_prop(player, source, destination, buf);
@@ -1023,6 +1018,11 @@ do_clone(int descr, dbref player, char *name)
 		notify_fmt(player, "Sorry, you don't have enough %s.", tp_pennies);
 		return;
 	} else {
+		if(tp_verbose_clone) {
+			snprintf(buf, sizeof(buf), "Now cloning %s...", unparse_object(player, thing));
+			notify(player, buf);
+		}
+		
 		/* create the object */
 		clonedthing = new_object();
 

@@ -264,6 +264,7 @@ int tp_log_interactive = LOG_INTERACTIVE;
 int tp_lazy_mpi_istype_perm = LAZY_MPI_ISTYPE_PERM;
 int tp_optimize_muf = OPTIMIZE_MUF;
 int tp_ignore_support = IGNORE_SUPPORT;
+int tp_verbose_clone = VERBOSE_CLONE;
 
 struct tune_bool_entry {
 	const char *group;
@@ -276,6 +277,7 @@ struct tune_bool_entry {
 struct tune_bool_entry tune_bool_list[] = {
 	{"Commands",   "enable_home", &tp_allow_home, 4, "Enable 'home' command"},
 	{"Commands",   "enable_prefix", &tp_enable_prefix, 4, "Enable prefix actions"},
+	{"Commands",   "verbose_clone", &tp_verbose_clone, 4, "Verbose @clone command"},
 	{"Dark",       "exit_darking", &tp_exit_darking, 0, "Allow setting exits dark"},
 	{"Dark",       "thing_darking", &tp_thing_darking, 0, "Allow setting things dark"},
 	{"Dark",       "dark_sleepers", &tp_dark_sleepers, 0, "Make sleeping players dark"},
