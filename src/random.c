@@ -250,6 +250,7 @@ xMD5Transform(word32 buf[4], word32 const in[16])
 }
 
 
+/* dest buffer MUST be at least 16 bytes long. */
 void
 MD5(void *dest, const void *orig, int len)
 {
@@ -261,6 +262,57 @@ MD5(void *dest, const void *orig, int len)
 }
 
 
+/*
+ * outbuf MUST be at least (((strlen(inbuf)+3)/4)*3)+1 chars long to read
+ * the full set of base64 encoded data in the string.
+ */
+size_t
+Base64Decode(void* outbuf, size_t outbuflen, const char* inbuf)
+{
+	unsigned char* outb = (unsigned char*)outbuf;
+	const char *in = inbuf;
+	unsigned int acc = 0;
+	unsigned int val = 0;
+	size_t bytcnt = 0;
+	int bitcnt = 0;
+	int bnum = 0;
+	int i;
+
+	while (*in || bitcnt) {
+		if (!*in || *in == '=') {
+			val = 0;
+		} else if (*in >= 'A' && *in <= 'Z') {
+			val = *in - 'A';
+		} else if (*in >= 'a' && *in <= 'z') {
+			val = *in - 'a' + 26;
+		} else if (*in >= '0' && *in <= '9') {
+			val = *in - '0' + 52;
+		} else if (*in == '+') {
+			val = 62;
+		} else if (*in == '/') {
+			val = 63;
+		} else {
+			in++;
+			continue;
+		}
+		acc = (acc << 6) | (val & 0x3f);
+		bitcnt += 6;
+		if (bitcnt >= 8) {
+			if (bytcnt >= outbuflen) {
+				break;
+			}
+			bytcnt++;
+			bitcnt -= 8;
+			*outb++ = (acc >> bitcnt) & 0xff;
+			acc &= ~(0xff << bitcnt);
+		}
+		if (*in) in++;
+	}
+	return bytcnt;
+}
+
+
+/* outbuf MUST be at least (((inlen+2)/3)*4)+1 chars long. */
 void
 Base64Encode(char* outbuf, const void* inbuf, size_t inlen)
 {
@@ -322,6 +374,7 @@ Base64Encode(char* outbuf, const void* inbuf, size_t inlen)
 }
 
 
+/* dest buffer MUST be at least 24 chars long. */
 void
 MD5base64(char *dest, const void *orig, int len)
 {
