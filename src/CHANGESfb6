@@ -41,6 +41,7 @@ Changed the compiler so that under default conditions (comment_loose),
   not covered by this recompile code.
 Changed $ifdef to allow for syntax like: $ifdef "__muckname=Foo Bar Muck"
 Changed forked dump process to make it not do a pointless panic() on signals.
+Changed forked dump to make it not allow overlapping dumps.
 Added docs for ARRAY_FMTSTRINGS to muf manual.
 Added ARRAY_FILTER_FLAGS ( list:dbrefs str:flags -- list:dbrefsout ) MUF prim.
   Takes a homogenous list array of dbrefs, and filters them for those objects
