@@ -29,15 +29,16 @@ immediately change your password with the command
 %setup
 
 %build
-./configure --prefix=/usr/fbmuck
+./configure --prefix=/usr
 make CFLAGS="$RPM_OPT_FLAGS"
 
 %install
-make prefix=$RPM_BUILD_ROOT/usr/fbmuck install
+make prefix=$RPM_BUILD_ROOT/usr install
 
 %files
 %defattr(-,root,root)
 %doc docs/COPYING INSTALL README
+/etc/fbmucks
 /etc/rc.d/init.d/fbmuck
 /etc/rc.d/rc0.d/K20fbmuck
 /etc/rc.d/rc1.d/K20fbmuck
@@ -46,19 +47,19 @@ make prefix=$RPM_BUILD_ROOT/usr/fbmuck install
 /etc/rc.d/rc4.d/S82fbmuck
 /etc/rc.d/rc5.d/S82fbmuck
 /etc/rc.d/rc6.d/K20fbmuck
-/usr/libexec/fbmuck/fbmuck
-/usr/libexec/fbmuck/resolver
-/usr/libexec/fbmuck/topwords
+/usr/bin/fbmuck
+/usr/bin/fb-resolver
+/usr/bin/fb-topwords
 /usr/bin/fb-olddecompress
 /usr/bin/fbhelp
 /usr/bin/fb-announce
-/usr/sbin/fb-addmuck
+#/usr/sbin/fb-addmuck
 /usr/share/fbmuck/help.txt
 /usr/share/fbmuck/man.txt
 /usr/share/fbmuck/mpihelp.txt
 /usr/share/fbmuck/restart-script
-/usr/share/fbmuck/starter_dbs/basedb.tar.gz
-/usr/share/fbmuck/starter_dbs/minimaldb.tar.gz
+#/usr/share/fbmuck/starter_dbs/basedb.tar.gz
+#/usr/share/fbmuck/starter_dbs/minimaldb.tar.gz
 
 
 %changelog
