@@ -549,8 +549,46 @@ void
 fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 {
 	char buf[BUFFER_LEN];
+	const char *name;
 	struct frame *fr = (struct frame *) context;
 	struct inst temp;
+	struct inst temp1;
+	struct inst temp2;
+	stk_array *nu;
+
+	nu = new_array_dictionary();
+	name = GuiValueFirst(dlogid);
+	while (name) {
+		int i;
+		int lines = gui_value_linecount(dlogid, name);
+
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string(name);
+
+		temp2.type = PROG_ARRAY;
+		temp2.data.array = new_array_packed(lines);
+
+		for (i = 0; i < lines; i++) {
+			struct inst temp3;
+			array_data temp4;
+
+			temp3.type = PROG_INTEGER;
+			temp3.data.number = i;
+
+			temp4.type = PROG_STRING;
+			temp4.data.string = alloc_prog_string(gui_value_get(dlogid, name, i));
+
+			array_setitem(&temp2.data.array, &temp3, &temp4);
+			CLEAR(&temp3);
+			CLEAR(&temp4);
+		}
+
+		array_setitem(&nu, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+
+		name = GuiValueNext(dlogid, name);
+	}
 
 	temp.type = PROG_ARRAY;
 	temp.data.array = new_array_dictionary();
@@ -560,10 +598,19 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 	array_set_strkey_strval(&temp.data.array, "dlogid", dlogid);
 	array_set_strkey_strval(&temp.data.array, "id", id);
 	array_set_strkey_strval(&temp.data.array, "event", event);
+	if (data) {
+		array_set_strkey_strval(&temp.data.array, "data", data);
+	}
+	temp2.type = PROG_ARRAY;
+	temp2.data.array = nu;
+	array_set_strkey(&temp.data.array, "values", &temp2);
 
+	/*
 	if (did_dismiss) {
 		muf_dlog_remove(fr, dlogid);
+		GuiFree(dlogid);
 	}
+	*/
 
 	sprintf(buf, "GUI.%s", dlogid);
 	muf_event_add(fr, buf, &temp, 0);
@@ -736,6 +783,7 @@ prim_gui_dlog_close(PRIM_PROTOTYPE)
 		abort_interp("Invalid dialog ID.");
 
 	muf_dlog_remove(fr, oper1->data.string->data);
+	GuiFree(oper1->data.string->data);
 
 	CLEAR(oper1);
 }

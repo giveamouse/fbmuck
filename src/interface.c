@@ -2310,7 +2310,7 @@ announce_disconnect(struct descriptor_data *d)
 		}
 		announce_puppets(player, "falls asleep.", "_/pdcon");
 	}
-	gui_dlog_freeall_descr(d->descriptor);
+	gui_dlog_closeall_descr(d->descriptor);
 
 	d->connected = 0;
 	d->player = NOTHING;

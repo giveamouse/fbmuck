@@ -5,6 +5,13 @@ Fixed a bug in GUI_VALUE_SET that checked for 2 args, but popped 3.
 Fixed arg ordering bug in the REFLIST_* muf primitives.  Now matches docs.
 Fixed crasher with large arrays, DEBUG output, eith expanded_debug on.
 Fixed a crasher bug with CLEARing uninitialized variables if CHECKOP fails.
+Fixed a crasher bug with using '@kill all' when muf timers are present.
+  This is also the cause of the dequeue_timers() crashes on @shutdown.
+Fixed MCP GUI to send _closed events for open dlogs, when a descr disconnects.
+Fixed a couple memory leaks with MCP GUI dialogs.
+Fixed 'make clean' to remove the fbhelp.o file.
+Fixed the 'fbhelp' program to look for its files in /usr/local/fbhelp/
+Fixed some tiny buffer overrun errors with muf debugging.
 Added docs of supported MCP GUI ctrl-commands to the GUI_CTRL_COMMAND muf
   manual entry.
 Changed @list to view only muf programs set VIEWABLE, as opposed to LINK_OK.
