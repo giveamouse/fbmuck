@@ -1,5 +1,5 @@
 #!/bin/make -f
-# $Header$
+# @configure_input@
 
 # #######################################################################
 #                  Makefile for TinyMUCK 2.2fb5.x
@@ -34,15 +34,18 @@ OPTIM= -g
 ROOT= ..
 
 # Where the include files are
-INCLUDE= ${ROOT}/include @INC@
+INCLUDE= ${ROOT}/include
 
 # The root of the directory tree to install to.
-# INSTALL_ROOT= /usr/local/fbmuck
-INSTALL_ROOT=@prefix@
-# Destination for binaries
-INSTALL_BINDIR= ${INSTALL_ROOT}/bin
-# Destination for binaries
-INSTALL_HELPDIR= ${INSTALL_ROOT}/help
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+# Destinations for binaries
+INSTALL_BINDIR=@bindir@
+INSTALL_SBINDIR=@sbindir@
+# Destination for helpfiles
+INSTALL_HELPDIR=@datadir@/fbmuck
+# Destination for starter databases
+INSTALL_DBSDIR=@datadir@/fbmuck/starter_dbs
 
 # ${DESTDIR} is used by the Debian packaging system to build the .debs
 # and is defined by the debian/rules file.
@@ -72,14 +75,15 @@ LIBR=@LIBS@
 #
 # Include path, Cflags...
 #
-CFLAGS= ${OPTIM} ${DEFS} -I${INCLUDE} -DBINDIR=\"${INSTALL_BINDIR}\"
+CFLAGS= ${OPTIM} ${DEFS} -I${INCLUDE} @INC@ -DBINDIR=\"${INSTALL_BINDIR}\" \
+	-DINSTALL_HELPDIR=\"${INSTALL_HELPDIR}\"
 
 #
 # for saving old copies.
 #
-MV= -mv -f
-CP= -cp -f
-RM= -rm -f
+MV= mv -f
+CP= cp -f
+RM= rm -f
 CHMOD= chmod
 
 #
@@ -93,27 +97,29 @@ MKTAGS= ctags
 # for RCS only
 GET= co
 CLEAN= rcsclean
-LINTFLAGS= -I${INCLUDE}
+LINTFLAGS= -I${INCLUDE} @INC@
 
 ##########################################################################
 #            You should not have to change anything below here           #
 ##########################################################################
 
-ANNSRC= announce.c
+MALLSRC= crt_malloc.c
+MALLOBJ= crt_malloc.o
 
+ANNSRC= announce.c
 ANNOBJ= announce.o
 
 MISCSRC= Makefile.in ChangeLog COPYING mkversion.sh
 
-CSRC= array.c boolexp.c compile.c compress.c create.c db.c \
-	debugger.c disassem.c diskprop.c edit.c events.c game.c hashtab.c \
-	help.c inst.c interp.c log.c look.c match.c mcp.c mcpgui.c mcppkgs.c mfuns.c \
-	mfuns2.c msgparse.c move.c mufevent.c crt_malloc.c oldcompress.c player.c \
-	predicates.c p_array.c p_connects.c p_db.c p_error.c p_float.c \
-	p_math.c p_mcp.c p_misc.c p_props.c p_stack.c p_strings.c property.c \
-	propdirs.c props.c random.c rob.c rwho.c sanity.c set.c signal.c \
-	smatch.c speech.c strftime.c stringutil.c timequeue.c timestamp.c \
-	tune.c unparse.c utils.c wiz.c snprintf.c
+CSRC= array.c boolexp.c compile.c compress.c create.c db.c debugger.c \
+	disassem.c diskprop.c edit.c events.c game.c hashtab.c help.c inst.c \
+	interp.c log.c look.c match.c mcp.c mcpgui.c mcppkgs.c mfuns2.c \
+	mfuns.c move.c msgparse.c mufevent.c oldcompress.c p_array.c \
+	p_connects.c p_db.c p_error.c p_float.c player.c p_math.c p_mcp.c \
+	p_misc.c p_props.c predicates.c propdirs.c property.c props.c \
+	p_stack.c p_strings.c random.c rob.c rwho.c sanity.c set.c signal.c \
+	smatch.c snprintf.c speech.c strftime.c stringutil.c timequeue.c \
+	timestamp.c tune.c unparse.c utils.c wiz.c
 
 LSRC= copyright.c
 MSRC= olddecomp.c reconst.c interface.c
@@ -121,25 +127,25 @@ MSRC= olddecomp.c reconst.c interface.c
 SRC= ${MISCSRC} ${CSRC} ${LSRC} ${MSRC}
 
 
-COBJ= array.o boolexp.o compile.o compress.o create.o db.o \
-	debugger.o disassem.o diskprop.o edit.o events.o game.o hashtab.o \
-	help.o inst.o interp.o log.o look.o match.o mcp.o mcpgui.o mcppkgs.o mfuns.o \
-	mfuns2.o msgparse.o move.o mufevent.o crt_malloc.o oldcompress.o player.o \
-	predicates.o p_array.o p_connects.o p_db.o p_error.o p_float.o \
-	p_math.o p_mcp.o p_misc.o p_props.o p_stack.o p_strings.o property.o \
-	propdirs.o props.o random.o rob.o rwho.o sanity.o signal.o set.o \
-	smatch.o speech.o strftime.o stringutil.o timequeue.o timestamp.o \
-	tune.o unparse.o utils.o wiz.o snprintf.o
+COBJ= array.o boolexp.o compile.o compress.o create.o db.o debugger.o \
+	disassem.o diskprop.o edit.o events.o game.o hashtab.o help.o inst.o \
+	interp.o log.o look.o match.o mcpgui.o mcp.o mcppkgs.o mfuns2.o \
+	mfuns.o move.o msgparse.o mufevent.o oldcompress.o p_array.o \
+	p_connects.o p_db.o p_error.o p_float.o player.o p_math.o p_mcp.o \
+	p_misc.o p_props.o predicates.o propdirs.o property.o props.o \
+	p_stack.o p_strings.o random.o rob.o rwho.o sanity.o set.o signal.o \
+	smatch.o snprintf.o speech.o strftime.o stringutil.o timequeue.o \
+	timestamp.o tune.o unparse.o utils.o wiz.o
 
 LOBJ= copyright.o
 MOBJ= olddecomp.o sanity.o reconst.o interface.o resolver.o topwords.o
-EOBJ= oldcompress.o diskprop.o property.o propdirs.o props.o stringutil.o \
-	unparse.o utils.o predicates.o db.o boolexp.o log.o
+EOBJ= boolexp.o db.o diskprop.o log.o oldcompress.o predicates.o propdirs.o \
+	property.o props.o stringutil.o unparse.o utils.o
 
 OBJ= ${COBJ} ${ROBJ} ${LOBJ} ${MOBJ}
-TARGETS= netmuck resolver olddecompress topwords announce fbhelp
-OLDTARGETS = netmuck~ resolver~ olddecompress~ topwords~ announce~ fbhelp~
-HELPFILES= ../game/data/man.txt ../game/data/help.txt ../game/data/mpihelp.txt
+TARGETS= fbmuck fbhelp fb-resolver fb-olddecompress fb-topwords fb-announce
+OLDTARGETS = fbmuck~ fbhelp~ fb-resolver~ fb-olddecompress~ fb-topwords~ fb-announce~
+HELPFILES= man.txt help.txt mpihelp.txt
 
 .c.o:
 	${PRE} ${CC} ${CFLAGS} -c $*.c
@@ -147,41 +153,33 @@ HELPFILES= ../game/data/man.txt ../game/data/help.txt ../game/data/mpihelp.txt
 .c.cpp:
 	${PRE} ${CPP} ${CFLAGS} -c $*.c -o $*.cpp
 
-all:    ${TARGETS} 
+all: ${TARGETS} 
 
-netmuck:        ${P} ${COBJ} interface.o ${LOBJ} mkversion.sh Makefile
+fbmuck: ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversion.sh Makefile
 	sh mkversion.sh
 	${PRE} ${CC} ${CFLAGS} -c version.c
-	${MV} netmuck netmuck~
-	${PRE} ${CC} ${CFLAGS} -o netmuck ${COBJ} interface.o version.o \
-	 ${LIBR} ${LOBJ}
+	-${MV} fbmuck fbmuck~
+	${PRE} ${CC} ${CFLAGS} -o fbmuck ${COBJ} ${MALLOBJ} interface.o version.o \
+	  ${LIBR} ${LOBJ}
 
-resolver:	resolver.o ${LOBJ} Makefile
-	${PRE} ${CC} ${CFLAGS} -o resolver resolver.o ${LIBR} ${LOBJ}
+fb-resolver: resolver.o ${LOBJ} ${MALLOBJ} Makefile
+	${PRE} ${CC} ${CFLAGS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} ${LOBJ}
 
-extract: ${P} extract.o ${EOBJ} ${LOBJ} Makefile
-	 ${RM} extract
-	 ${CC} ${CFLAGS} -o extract ${EOBJ} extract.o ${LIBR} ${LOBJ}
+fb-topwords: topwords.o hashtab.o ${MALLOBJ} Makefile
+	${CC} ${CFLAGS} -o fb-topwords topwords.o hashtab.o ${MALLOBJ} ${LIBR}
 
-topwords: topwords.o hashtab.o Makefile
-	${RM} topwords
-	${CC} ${CFLAGS} -o topwords topwords.o hashtab.o ${LIBR}
+fb-olddecompress: olddecomp.o oldcompress.o ${LOBJ} ${MALLOBJ} Makefile
+	${CC} ${CFLAGS} -o fb-olddecompress olddecomp.o oldcompress.o ${LIBR} \
+	  ${MALLOBJ} ${LOBJ}
 
-olddecompress: olddecomp.o oldcompress.o ${LOBJ} Makefile
-	${RM} olddecompress
-	${CC} ${CFLAGS} -o olddecompress olddecomp.o oldcompress.o ${LIBR} \
-	 ${LOBJ}
-
-announce: ${ANNOBJ} ${LOBJ} Makefile
-	${MV} announce announce~
-	${CC} ${ANNOBJ} -o announce ${LIBR} ${LOBJ}
+fb-announce: ${ANNOBJ} ${LOBJ} ${MALLOBJ} Makefile
+	${CC} ${ANNOBJ} -o fb-announce ${MALLOBJ} ${LIBR} ${LOBJ}
 
 fbhelp.o: help.c
 	${CC} ${CFLAGS} -c help.c -o fbhelp.o -DSTANDALONE_HELP -DHELPFILE_DIR='"${INSTALL_HELPDIR}"'
 
-fbhelp: fbhelp.o Makefile
-	${MV} fbhelp fbhelp~
-	${CC} ${CFLAGS} fbhelp.o -o fbhelp
+fbhelp: fbhelp.o ${MALLOBJ} Makefile
+	${CC} ${CFLAGS} fbhelp.o -o fbhelp ${MALLOBJ}
 
 #############################################################
 # Funky stuff for debugging and coding work.
@@ -193,23 +191,26 @@ saber_src:
 saber_obj: ${CSRC} interface.o
 	#load ${OBJ} interface.o
 
-tags: ${CSRC} ${MSRC}
-	${MKTAGS} ${CSRC} interface.c ../include/*.h
+tags: ${CSRC} ${MSRC} ${MALLOBJ}
+	${MKTAGS} ${CSRC} interface.c ../include/*.h ${MALLOBJ}
 
-lint: ${CSRC} ${MSRC}
-	${RM} netmuck.lint
-	${LINT} ${LINTFLAGS} ${CSRC} ${MSRC} > netmuck.lint
+lint: ${CSRC} ${MSRC} ${MALLOBJ}
+	-${RM} netmuck.lint
+	${LINT} ${LINTFLAGS} ${CSRC} ${MSRC} ${MALLOBJ} > netmuck.lint
 
 ${SRC}:
 	${GET} $@
 
-sources: ${SRC}
+${MALLSRC}:
+	${GET} $@
+
+sources: ${MALLSRC} ${SRC}
 
 names:
-	@for i in ${SRC}; do echo ${SRC_PREFIX}$$i; done
+	@for i in ${SRC} ${MALLSRC}; do echo ${SRC_PREFIX}$$i; done
 
 depend:
-	${MKDEPEND} -- ${CFLAGS} -- ${CSRC} ${MSRC} ${LSRC}
+	${MKDEPEND} -- ${CFLAGS} -- ${CSRC} ${MALLSRC} ${MSRC} ${LSRC}
 	echo chmod -w Makefile
 	chmod -w Makefile
 
@@ -223,39 +224,56 @@ Makefile: Makefile.in
 #
 
 clean:
-	${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${ANNOBJ} resolver.o ${TARGETS} ${OLDTARGETS}
+	-${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${MALLOBJ} ${ANNOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o
 
 cleaner: clean
-	${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp
+	-${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp
 
 clobber: cleaner
-	${RM} tags *~ *.bak *.orig
+	-${RM} tags *~ *.bak *.orig
 
 nuke:
-	${RM} ${OBJ} core version.o
-	${RM} ${TARGETS} tags *~ *.bak *.orig
-	${RM} Makefile config.status ${INCLUDE}/autoconf.h
+	-${RM} ${OBJ} core version.o
+	-${RM} ${TARGETS} tags *~ *.bak *.orig
+	-${RM} Makefile config.status ${INCLUDE}/autoconf.h
 	-${CLEAN} *
 
-install: all
-	if [ ! -d "${INSTALL_ROOT}" ] ; then \
-		mkdir ${INSTALL_ROOT} ; \
-		${CHMOD} 755 ${INSTALL_ROOT} ; \
-	fi
-	if [ ! -d "${INSTALL_BINDIR}" ] ; then \
-		mkdir ${INSTALL_BINDIR} ; \
-		${CHMOD} 755 ${INSTALL_BINDIR} ; \
-	fi
-	if [ ! -d "${INSTALL_HELPDIR}" ] ; then \
-		mkdir ${INSTALL_HELPDIR} ; \
-		${CHMOD} 755 ${INSTALL_HELPDIR} ; \
-	fi
-	${CHMOD} 755 ${TARGETS}
-	${MV} ${TARGETS} ${INSTALL_BINDIR}
-	${CP} ${HELPFILES} ${INSTALL_HELPDIR}
+# FIXME: Implement fbmuck-sysvinit and fb-addmuck
+# FIXME: check base and minimal dbs into CVS as unpacked file trees under dbs/
+# FIXME: Create man pages for fbmuck, fbhelp, fb-addmuck, fb-announce, topwords
 
-# Err, what the heck is this following line?
-#	 ${INSTALL} ${TARGETS} ${DESTDIR}/${bindir}
+install: all
+	../mkdir_recursive ${INSTALL_BINDIR}
+	for f in ${TARGETS}; do \
+		${CP} $$f ${INSTALL_BINDIR} ; \
+		${CHMOD} 755 ${INSTALL_BINDIR}/$$f ; \
+	done
+	../mkdir_recursive ${INSTALL_HELPDIR}
+	for f in ${HELPFILES}; do \
+		${CP} ../game/data/$$f ${INSTALL_HELPDIR} ; \
+		${CHMOD} 644 ${INSTALL_HELPDIR}/$$f ; \
+	done
+	${CP} ../game/restart ${INSTALL_HELPDIR}/restart-script
+	${CHMOD} 755 ${INSTALL_HELPDIR}/restart-script
+	-[ -f /etc/fbmucks ] || echo "#MUCKNAME   USERNAME    MUCK_ROOT_PATH           SCRIPTNAME  PORTS" > /etc/fbmucks
+	${CP} ../scripts/fbmuck-sysvinit /etc/rc.d/init.d/fbmuck
+	${CHMOD} 755 /etc/rc.d/init.d/fbmuck
+	-chkconfig --add fbmuck || ( \
+		for d in 0 1 2 3 4 5 6; do rm -f /etc/rc.d/rc$$d.d/S??fbmuck; done ; \
+		for d in 0 1 2 3 4 5 6; do rm -f /etc/rc.d/rc$$d.d/K??fbmuck; done ; \
+		for d in 0 1         6; do ln -s ../init.d/fbmuck /etc/rc.d/rc$$d.d/K20fbmuck; done ; \
+		for d in     2 3 4 5  ; do ln -s ../init.d/fbmuck /etc/rc.d/rc$$d.d/S82fbmuck; done ; \
+	)
+
+#	${CHMOD} 755 ../scripts/fb-addmuck
+#	../mkdir_recursive ${INSTALL_SBINDIR}
+#	${CP} ../scripts/fb-addmuck ${INSTALL_SBINDIR}
+#
+#	../mkdir_recursive ${INSTALL_DBSDIR}
+#	for d in minimal base; do \
+#		cd dbs/${d} && tar cf ${INSTALL_DBSDIR}/${d}db.tar *; \
+#		gzip ${INSTALL_DBSDIR}/${d}db.tar; \
+#	done
 
 # #######################################################################
 # #######################################################################
