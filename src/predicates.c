@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.3  2000/06/15 18:35:11  revar
+ * Prettified some code formatting slightly.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -412,7 +415,9 @@ ok_name(const char *name)
 			&& *name
 			&& *name != LOOKUP_TOKEN
 			&& *name != REGISTERED_TOKEN
-			&& *name != NUMBER_TOKEN && !index(name, ARG_DELIMITER) && !index(name, AND_TOKEN)
+			&& *name != NUMBER_TOKEN
+			&& !index(name, ARG_DELIMITER)
+			&& !index(name, AND_TOKEN)
 			&& !index(name, OR_TOKEN)
 			&& !index(name, '\r')
 			&& !index(name, ESCAPE_CHAR)
