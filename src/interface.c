@@ -503,6 +503,7 @@ main(int argc, char **argv)
 		db_free();
 		free_old_macros();
 		purge_all_free_frames();
+		purge_timenode_free_pool();
 		purge_for_pool();
 		purge_for_pool(); /* have to do this a second time to purge all */
 		purge_try_pool();

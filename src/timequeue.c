@@ -157,6 +157,21 @@ free_timenode(timequeue ptr)
 	}
 }
 
+void
+purge_timenode_free_pool()
+{
+	timequeue ptr = free_timenode_list;
+	timequeue nxt = NULL;
+
+	while (ptr) {
+		nxt = ptr->next;
+		free((void*)ptr);
+		ptr = nxt;
+	}
+	free_timenode_count = 0;
+	free_timenode_list = NULL;
+}
+
 int
 control_process(dbref player, int pid)
 {

@@ -40,6 +40,7 @@ extern void list_events(dbref program);
 extern int dequeue_prog(dbref program, int sleeponly);
 extern int dequeue_process(int procnum);
 extern int dequeue_timers(int procnum, char* timerid);
+extern void purge_timenode_free_pool();
 extern int control_process(dbref player, int procnum);
 extern void do_dequeue(int descr, dbref player, const char *arg1);
 extern void propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
