@@ -1583,7 +1583,7 @@ array_is_homogenous(stk_array * arr, int typ)
 
 
 
-
+/**** STRKEY ****/
 
 int
 array_set_strkey(stk_array ** harr, const char *key, struct inst *val)
@@ -1601,26 +1601,6 @@ array_set_strkey(stk_array ** harr, const char *key, struct inst *val)
 	return result;
 }
 
-
-
-int
-array_set_intkey(stk_array ** harr, int key, struct inst *val)
-{
-	struct inst name;
-	int result;
-
-	name.type = PROG_INTEGER;
-	name.data.number = key;
-
-	result = array_setitem(harr, &name, val);
-
-	CLEAR(&name);
-
-	return result;
-}
-
-
-
 int
 array_set_strkey_intval(stk_array ** arr, const char *key, int val)
 {
@@ -1637,7 +1617,21 @@ array_set_strkey_intval(stk_array ** arr, const char *key, int val)
 	return result;
 }
 
+int
+array_set_strkey_fltval(stk_array ** arr, const char *key, float val)
+{
+	struct inst value;
+	int result;
 
+	value.type = PROG_FLOAT;
+	value.data.fnumber = val;
+
+	result = array_set_strkey(arr, key, &value);
+
+	CLEAR(&value);
+
+	return result;
+}
 
 int
 array_set_strkey_strval(stk_array ** harr, const char *key, const char *val)
@@ -1655,7 +1649,6 @@ array_set_strkey_strval(stk_array ** harr, const char *key, const char *val)
 	return result;
 }
 
-
 int
 array_set_strkey_refval(stk_array ** harr, const char *key, dbref val)
 {
@@ -1672,6 +1665,89 @@ array_set_strkey_refval(stk_array ** harr, const char *key, dbref val)
 	return result;
 }
 
+int
+array_set_strkey_arrval(stk_array ** harr, const char *key, stk_array* val)
+{
+	struct inst value;
+	int result;
+
+	value.type = PROG_ARRAY;
+	value.data.array = val;
+
+	result = array_set_strkey(harr, key, &value);
+
+	CLEAR(&value);
+
+	return result;
+}
+
+
+
+/**** INTKEY ****/
+
+int
+array_set_intkey(stk_array ** harr, int key, struct inst *val)
+{
+	struct inst name;
+	int result;
+
+	name.type = PROG_INTEGER;
+	name.data.number = key;
+
+	result = array_setitem(harr, &name, val);
+
+	CLEAR(&name);
+
+	return result;
+}
+
+int
+array_set_intkey_intval(stk_array ** harr, int key, int val)
+{
+	struct inst value;
+	int result;
+
+	value.type = PROG_INTEGER;
+	value.data.number = val;
+
+	result = array_set_intkey(harr, key, &value);
+
+	CLEAR(&value);
+
+	return result;
+}
+
+int
+array_set_intkey_fltval(stk_array ** harr, int key, float val)
+{
+	struct inst value;
+	int result;
+
+	value.type = PROG_FLOAT;
+	value.data.fnumber = val;
+
+	result = array_set_intkey(harr, key, &value);
+
+	CLEAR(&value);
+
+	return result;
+}
+
+int
+array_set_intkey_refval(stk_array ** harr, int key, dbref val)
+{
+	struct inst value;
+	int result;
+
+	value.type = PROG_OBJECT;
+	value.data.objref = val;
+
+	result = array_set_intkey(harr, key, &value);
+
+	CLEAR(&value);
+
+	return result;
+}
 
 int
 array_set_intkey_strval(stk_array ** harr, int key, const char *val)
@@ -1681,6 +1757,22 @@ array_set_intkey_strval(stk_array ** harr, int key, const char *val)
 
 	value.type = PROG_STRING;
 	value.data.string = alloc_prog_string(val);
+
+	result = array_set_intkey(harr, key, &value);
+
+	CLEAR(&value);
+
+	return result;
+}
+
+int
+array_set_intkey_arrval(stk_array ** harr, int key, stk_array* val)
+{
+	struct inst value;
+	int result;
+
+	value.type = PROG_ARRAY;
+	value.data.array = val;
 
 	result = array_set_intkey(harr, key, &value);
 
@@ -1712,3 +1804,87 @@ array_get_intkey_strval(stk_array * arr, int key)
 	}
 }
 
+
+
+
+/**** KEY-VAL ****/
+
+int
+array_set_strval(stk_array ** harr, struct inst* key, const char *val)
+{
+	struct inst value;
+	int result;
+
+	value.type = PROG_STRING;
+	value.data.string = alloc_prog_string(val);
+
+	result = array_setitem(harr, key, &value);
+
+	CLEAR(&value);
+
+	return result;
+}
+
+int
+array_set_intval(stk_array ** harr, struct inst* key, int val)
+{
+	struct inst value;
+	int result;
+
+	value.type = PROG_INTEGER;
+	value.data.number = val;
+
+	result = array_setitem(harr, key, &value);
+
+	CLEAR(&value);
+
+	return result;
+}
+
+int
+array_set_fltval(stk_array ** harr, struct inst* key, float val)
+{
+	struct inst value;
+	int result;
+
+	value.type = PROG_FLOAT;
+	value.data.fnumber = val;
+
+	result = array_setitem(harr, key, &value);
+
+	CLEAR(&value);
+
+	return result;
+}
+
+int
+array_set_refval(stk_array ** harr, struct inst* key, dbref val)
+{
+	struct inst value;
+	int result;
+
+	value.type = PROG_OBJECT;
+	value.data.objref = val;
+
+	result = array_setitem(harr, key, &value);
+
+	CLEAR(&value);
+
+	return result;
+}
+
+int
+array_set_arrval(stk_array ** harr, struct inst* key, stk_array* val)
+{
+	struct inst value;
+	int result;
+
+	value.type = PROG_ARRAY;
+	value.data.array = val;
+
+	result = array_setitem(harr, key, &value);
+
+	CLEAR(&value);
+
+	return result;
+}
