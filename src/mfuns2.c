@@ -1679,8 +1679,9 @@ mfn_toupper(MFUNARGS)
 const char *
 mfn_commas(MFUNARGS)
 {
-	int v, i, count;
+	int v, i, count, itemlen;
 	char *ptr;
+	char *out;
 	char listbuf[BUFFER_LEN];
 	char sepbuf[BUFFER_LEN];
 	char buf2[BUFFER_LEN];
@@ -1713,6 +1714,7 @@ mfn_commas(MFUNARGS)
 	}
 
 	*buf = '\0';
+	out = buf;
 	for (i = 1; i <= count; i++) {
 		ptr = getlitem(buf2, listbuf, "\r", i);
 		if (argc > 2) {
@@ -1720,7 +1722,14 @@ mfn_commas(MFUNARGS)
 			ptr = MesgParse(argv[3], buf2);
 			CHECKRETURN(ptr, "COMMAS", "arg 3");
 		}
-		strcat(buf, ptr);
+		itemlen = strlen(ptr);
+		if ((out - buf) + itemlen >= BUFFER_LEN) {
+			if (argc > 2)
+				free_top_mvar();
+			return buf;
+		}
+		strcat(out, ptr);
+		out += itemlen;
 		switch (count - i) {
 		case 0:
 			if (argc > 2)
@@ -1728,10 +1737,23 @@ mfn_commas(MFUNARGS)
 			return buf;
 			break;
 		case 1:
-			strcat(buf, sepbuf);
+			itemlen = strlen(sepbuf);
+			if ((out - buf) + itemlen >= BUFFER_LEN) {
+				if (argc > 2)
+					free_top_mvar();
+				return buf;
+			}
+			strcat(out, sepbuf);
+			out += itemlen;
 			break;
 		default:
-			strcat(buf, ", ");
+			if ((out - buf) + 2 >= BUFFER_LEN) {
+				if (argc > 2)
+					free_top_mvar();
+				return buf;
+			}
+			strcat(out, ", ");
+			out += strlen(out);
 			break;
 		}
 	}
