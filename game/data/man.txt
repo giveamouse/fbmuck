@@ -4038,7 +4038,7 @@ This primitives requires at least mucker level 3.
 PROGRAM_SETLINES|
 PROGRAM_SETLINES ( ref:Program list:Lines -- )
 Sets all the lines of the given program to the lines in the array.
-This primitives requires at least mucker level 4.
+This primitive requires at least mucker level 4.
 ~
 DEBUG_ON|
 DEBUG_ON ( -- )

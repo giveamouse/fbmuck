@@ -2560,8 +2560,15 @@ prim_program_setlines(PRIM_PROTOTYPE)
 
 	write_program(lines, oper1->data.objref);
 
+	log_status("PROGRAM SAVED: %s by %s(%d)\n", unparse_object(player, oper1->data.objref), NAME(player), player);
+
+	if (tp_log_programs)
+		log_program_text(lines, player, oper1->data.objref);
+
 	free_prog_text(lines);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
+
+	DBDIRTY(program);
 }
