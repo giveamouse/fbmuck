@@ -85,6 +85,8 @@ Changed database format to Foxen6.  Programs in earlier databases that are
   set LINK_OK will also get their VIEWABLE flag set.
 Changed 'resolver' spawning behavior to first try to spawn from the
   installation's bin/ directory, then from the standard locations.
+Changed MCP code to flush long messages periodically to try to bypass
+  '<Output Flushed>' events.
 
 
 

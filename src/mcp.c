@@ -34,6 +34,7 @@
 
 /* Defined elsewhere.  Used to send text to a connection */
 void SendText(McpFrame * mfr, const char *mesg);
+void FlushText(McpFrame * mfr);
 
 
 McpPkg *mcp_PackageList = NULL;
@@ -582,6 +583,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 	int mlineflag = 0;
 	char *p;
 	char *out;
+	int flushcount = 8;
 
 	if (!mfr->enabled && strcmp_nocase(msg->package, MCP_INIT_PKG)) {
 		return EMCP_NOMCP;
@@ -717,6 +719,10 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 					strcat(outbuf, ap->value);
 					strcat(outbuf, "\r\n");
 					SendText(mfr, outbuf);
+					if (!--flushcount) {
+						FlushText(mfr);
+						flushcount = 8;
+					}
 					ap = ap->next;
 				}
 			}
@@ -729,6 +735,8 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 		strcat(outbuf, "\r\n");
 		SendText(mfr, outbuf);
 	}
+	FlushText(mfr);
+
 	return EMCP_SUCCESS;
 }
 
@@ -1603,6 +1611,10 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.13  2001/09/17 08:48:18  revar
+* Changed MCP code to flush long messages periodically to try to bypass
+*   '<Output Flushed>' events.
+*
 * Revision 1.12  2001/08/21 23:39:05  winged
 * Wrapped <malloc.h> includes in mcp.c and mcpgui.c with #ifdef HAVE_MALLOC_H.
 *

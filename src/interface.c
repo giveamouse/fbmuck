@@ -1486,6 +1486,15 @@ SendText(McpFrame * mfr, const char *text)
 	queue_string((struct descriptor_data *) mfr->descriptor, text);
 }
 
+void
+FlushText(McpFrame * mfr)
+{
+	struct descriptor_data *d = (struct descriptor_data *)mfr->descriptor;
+	if (d && !process_output(d)) {
+		d->booted = 1;
+	}
+}
+
 int
 mcpframe_to_descr(McpFrame * ptr)
 {
