@@ -278,8 +278,8 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 #define DEBUG_DEPTH 8 /* how far to give a stack list, at most */
 
 char *
-debug_inst(struct inst *pc, struct inst *stack, char *buffer, int buflen, int sp,
-		   dbref program)
+debug_inst(struct inst *pc, int pid, struct inst *stack,
+		   char *buffer, int buflen, int sp, dbref program)
 {
 	char* bend;
 	char* bstart;
@@ -288,7 +288,7 @@ debug_inst(struct inst *pc, struct inst *stack, char *buffer, int buflen, int sp
 
 	char buf2[BUFFER_LEN];
 	/* To hold Debug> ... at the beginning */
-	char buf3[32];
+	char buf3[64];
 	int count;
 	
 	assert(buflen > 1);
@@ -296,14 +296,13 @@ debug_inst(struct inst *pc, struct inst *stack, char *buffer, int buflen, int sp
 	buffer[buflen - 1] = '\0';
 
 #ifdef DEBUGARRAYS
-	length = snprintf(buf3, 32, "Debug> %d #%d %d (", PROGRAM_INSTANCES(2), program, pc->line);
+	length = snprintf(buf3, 64, "Debug> (%d Insts.) #%d %d (", PROGRAM_INSTANCES(2), program, pc->line);
 #else
-	length = snprintf(buf3, 32, "Debug> #%d %d (", program, pc->line);
+	length = snprintf(buf3, 64, "Debug> Pid %d: #%d %d (", pid, program, pc->line);
 #endif
 	bstart = buffer + length; /* start far enough away so we can fit Debug> #xxx xxx ( thingy. */
-	length = buflen - length - 1; 
-	/* - 1 for the '\0' above, -2 below because also buflen is 1-based, not 0-based like buffer indexes are. */
-	bend = buffer + (buflen - 2);
+	length = buflen - length - 1; /* - 1 for the '\0' */
+	bend = buffer + (buflen - 1); /* - 1 for the '\0' */
 
 	/* + 10 because we must at least be able to store " ... ) ..." after that. */
 	if (bstart + 10 > bend) { /* we have no room. Eeek! */
@@ -330,27 +329,27 @@ debug_inst(struct inst *pc, struct inst *stack, char *buffer, int buflen, int sp
 	count = sp - 1;
 	if (count >= 0) {
 	    for(;;) {
-		if (count && length <= 5) {
-			length -= prepend_string(&bend, bstart, "...");
-			break;
-		}
-		/* we use length - 5 to leave room for "..., "
-		 * ... except if we're outputing the last item (count == 0) */
-		ptr = insttotext(stack + count, buf2, (count) ? length - 5 : length, 30, program);
-		if (*ptr) {
-			length -= prepend_string(&bend, bstart, ptr);
-		} else {
-			length -= prepend_string(&bend, bstart, "...");
-			break; /* done because we couldn't display all that */
-		}
-		if (count > 0 && count > sp - 8) {
-			length -= prepend_string(&bend, bstart, ", ");
-		} else {
-			if (count)
-				length -= prepend_string(&bend, bstart, "..., ");
-			break; /* all done! */
-		}
-		count--;
+			if (count && length <= 5) {
+				length -= prepend_string(&bend, bstart, "...");
+				break;
+			}
+			/* we use length - 5 to leave room for "..., "
+			* ... except if we're outputing the last item (count == 0) */
+			ptr = insttotext(stack + count, buf2, (count) ? length - 5 : length, 30, program);
+			if (*ptr) {
+				length -= prepend_string(&bend, bstart, ptr);
+			} else {
+				length -= prepend_string(&bend, bstart, "...");
+				break; /* done because we couldn't display all that */
+			}
+			if (count > 0 && count > sp - 8) {
+				length -= prepend_string(&bend, bstart, ", ");
+			} else {
+				if (count)
+					length -= prepend_string(&bend, bstart, "..., ");
+				break; /* all done! */
+			}
+			count--;
 	    }
 	}
 

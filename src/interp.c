@@ -957,7 +957,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		}
 		if (FLAGS(program) & DARK ||
 			(fr->brkpt.debugging && fr->brkpt.showstack && !fr->brkpt.bypass)) {
-			char *m = debug_inst(pc, arg, dbuf, sizeof(dbuf), atop, program);
+			char *m = debug_inst(pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
 
 			notify_nolisten(player, m, 1);
 		}
@@ -1000,7 +1000,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 							PLAYER_SET_BLOCK(player, 0);
 							interp_depth--;
 							if (!fr->brkpt.showstack) {
-								m = debug_inst(pc, arg, dbuf, sizeof(dbuf), atop, program);
+								m = debug_inst(pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
 								notify_nolisten(player, m, 1);
 							}
 							if (pc <= PROGRAM_CODE(program) || (pc - 1)->line != pc->line) {

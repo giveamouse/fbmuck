@@ -1,4 +1,5 @@
 2.2fb6.00b4
+Fixed garbage char at end of muf DEBUG lines.
 Fixed bug #205753 -- env-looping problems.
 Fixed bug #450413 -- Problems with forks within loops.
 Fixed problem with certain MUF primitives changing an object's last_used
@@ -77,6 +78,7 @@ Added MCP_MUF_MLEV @tune option to specify the mucker level required to
   use MCP and MCP-GUI muf calls.
 Added support for encrypted SSL connections.  See README.ssl
 Added {eval!} MPI function that acts like {eval} except it doesn't unbless.
+Changed MUF debug line display to show PID of process being debugged.
 Changed {eval} to unbless the code it evaluates, for security reasons.
 Changed {index}, {index!}, {rand}, and {timesub} to properly check the
   blessing of the property they evaluates.
