@@ -7,8 +7,11 @@ Returns:	void
 Called from:	process_command	(game.c)
 		back_it_up	(sanity.c)
 Calls:		Wizard, God, free, alloc_string, sprintf, notify, dump_db_now
-Does:		Calls dump_db_now if player is a wizard (or if GOD_PRIV is
-		defined, if player is God).  Dumpfile is given file if any. 
+Does:		Calls dump_db_now if player is a wizard.  Updates dumpfile
+		(string representing the name of the file to dump to) if
+		player is Wizard and supplies it; if GOD_PRIV is defined,
+		only updates dumpfile if player is God.  (Updates dumpfile
+		before calling dump_db_now.)
 #ifdefs:	GOD_PRIV
 #defines:	none
 Notes:
@@ -178,6 +181,9 @@ Notes:		the #define Matched() is only used in this function.
 
 /*
 * $Log: game.c.txt,v $
+* Revision 1.2  2000/02/18 00:22:22  winged
+* Fixed description of do_dump
+*
 * Revision 1.1  2000/02/18 00:15:38  winged
 * Initial revision, sent to winged by mcclure.y
 *
