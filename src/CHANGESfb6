@@ -8,6 +8,9 @@ Changed command logging to not list null commands.
 Changed READ to _not_ return blank lines unless the process asked for them.
 Added READ_WANTS_BLANKS ( -- ) muf primitive, to indicate the process wants
   READ to be able to return blank "" lines.
+Added new @tune -- default_room_parent. This is the dbref used to parent
+rooms as the case of last resort, and defaults to #0 (which was previously
+the only thing used). Closes feature request #476091.
 
 
 
