@@ -32,7 +32,7 @@ struct mcp_muf_context {
 void
 muf_mcp_context_cleanup(void *context)
 {
-	struct mcp_muf_context* mmc = (struct mcp_muf_context*)context;
+	struct mcp_muf_context *mmc = (struct mcp_muf_context *) context;
 
 	free(mmc);
 }
@@ -41,7 +41,7 @@ muf_mcp_context_cleanup(void *context)
 void
 muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 {
-	struct mcp_muf_context* mmc = (struct mcp_muf_context*)context;
+	struct mcp_muf_context *mmc = (struct mcp_muf_context *) context;
 	dbref obj = mmc->prog;
 	struct mcp_binding *ptr;
 	McpArg *arg;
@@ -120,7 +120,7 @@ struct mcpevent_context {
 void
 mcpevent_context_cleanup(void *context)
 {
-	struct mcpevent_context* mec = (struct mcpevent_context*)context;
+	struct mcpevent_context *mec = (struct mcpevent_context *) context;
 
 	free(mec);
 }
@@ -129,9 +129,9 @@ mcpevent_context_cleanup(void *context)
 void
 muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 {
-	struct mcpevent_context* mec = (struct mcpevent_context*)context;
+	struct mcpevent_context *mec = (struct mcpevent_context *) context;
 	int destpid = mec->pid;
-	struct frame* destfr = timequeue_pid_frame(destpid);
+	struct frame *destfr = timequeue_pid_frame(destpid);
 	int descr = mcpframe_to_descr(mfr);
 	char *pkgname = mesg->package;
 	char *msgname = mesg->mesgname;
@@ -154,8 +154,7 @@ muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *con
 
 				argname.type = PROG_INTEGER;
 				argval.type = PROG_ARRAY;
-				argval.data.array =
-						new_array_packed(mcp_mesg_arg_linecount(mesg, arg->name));
+				argval.data.array = new_array_packed(mcp_mesg_arg_linecount(mesg, arg->name));
 
 				for (partptr = arg->value; partptr; partptr = partptr->next) {
 					argname.data.number = count++;
@@ -199,12 +198,12 @@ muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *con
 
 
 int
-stuff_dict_in_mesg(stk_array* arr, McpMesg* msg)
+stuff_dict_in_mesg(stk_array * arr, McpMesg * msg)
 {
 	struct inst argname, *argval;
 	char buf[64];
 	int result;
-	
+
 	result = array_first(arr, &argname);
 	while (result) {
 		if (argname.type != PROG_STRING) {
@@ -311,10 +310,11 @@ prim_mcp_register(PRIM_PROTOTYPE)
 	vermax.vermajor = (int) oper3->data.fnumber;
 	vermax.verminor = (int) (oper3->data.fnumber * 1000) % 1000;
 
-	mmc = (struct mcp_muf_context*)malloc(sizeof(struct mcp_muf_context));
+	mmc = (struct mcp_muf_context *) malloc(sizeof(struct mcp_muf_context));
 	mmc->prog = program;
 
-	mcp_package_register(pkgname, vermin, vermax, muf_mcp_callback, (void *) mmc, muf_mcp_context_cleanup);
+	mcp_package_register(pkgname, vermin, vermax, muf_mcp_callback, (void *) mmc,
+						 muf_mcp_context_cleanup);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -356,10 +356,11 @@ prim_mcp_register_event(PRIM_PROTOTYPE)
 	vermax.vermajor = (int) oper3->data.fnumber;
 	vermax.verminor = (int) (oper3->data.fnumber * 1000) % 1000;
 
-	mec = (struct mcpevent_context*)malloc(sizeof(struct mcpevent_context));
+	mec = (struct mcpevent_context *) malloc(sizeof(struct mcpevent_context));
 	mec->pid = fr->pid;
 
-	mcp_package_register(pkgname, vermin, vermax, muf_mcp_event_callback, (void *)mec, mcpevent_context_cleanup);
+	mcp_package_register(pkgname, vermin, vermax, muf_mcp_event_callback, (void *) mec,
+						 mcpevent_context_cleanup);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -521,21 +522,21 @@ prim_mcp_send(PRIM_PROTOTYPE)
 		if (result) {
 			mcp_mesg_clear(&msg);
 			switch (result) {
-				case -1:
-					abort_interp("Args dictionary can only have string keys. (4)");
-					break;
-				case -2:
-					abort_interp("Args dictionary cannot have a null string key. (4)");
-					break;
-				case -3:
-					abort_interp("Unsupported value type in list value. (4)");
-					break;
-				case -4:
-					abort_interp("Unsupported value type in args dictionary. (4)");
-					break;
+			case -1:
+				abort_interp("Args dictionary can only have string keys. (4)");
+				break;
+			case -2:
+				abort_interp("Args dictionary cannot have a null string key. (4)");
+				break;
+			case -3:
+				abort_interp("Unsupported value type in list value. (4)");
+				break;
+			case -4:
+				abort_interp("Unsupported value type in args dictionary. (4)");
+				break;
 			}
 		}
-		
+
 		mcp_frame_output_mesg(mfr, &msg);
 		mcp_mesg_clear(&msg);
 	}
@@ -628,10 +629,10 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 	}
 
 	/*
-	if (did_dismiss) {
-		muf_dlog_remove(fr, dlogid);
-	}
-	*/
+	   if (did_dismiss) {
+	   muf_dlog_remove(fr, dlogid);
+	   }
+	 */
 
 	snprintf(buf, sizeof(buf), "GUI.%s", dlogid);
 	muf_event_add(fr, buf, &temp, 0);
@@ -650,7 +651,7 @@ fbgui_muf_error_cb(GUI_ERROR_CB_ARGS)
 	temp.type = PROG_ARRAY;
 	temp.data.array = new_array_dictionary();
 
-	array_set_strkey_intval(&temp.data.array, "descr",  descr);
+	array_set_strkey_intval(&temp.data.array, "descr", descr);
 	array_set_strkey_strval(&temp.data.array, "dlogid", dlogid);
 	if (id) {
 		array_set_strkey_strval(&temp.data.array, "id", id);
@@ -724,8 +725,7 @@ prim_gui_dlog_create(PRIM_PROTOTYPE)
 	if (!mfr)
 		abort_interp("Invalid descriptor number. (1)");
 
-	dlogid = gui_dlog_alloc(oper1->data.number, fbgui_muf_event_cb,
-							fbgui_muf_error_cb, fr);
+	dlogid = gui_dlog_alloc(oper1->data.number, fbgui_muf_event_cb, fbgui_muf_error_cb, fr);
 	mcp_mesg_init(&msg, GUI_PACKAGE, "dlog-create");
 	mcp_mesg_arg_append(&msg, "title", title);
 
@@ -733,21 +733,21 @@ prim_gui_dlog_create(PRIM_PROTOTYPE)
 	if (result) {
 		mcp_mesg_clear(&msg);
 		switch (result) {
-			case -1:
-				abort_interp("Args dictionary can only have string keys. (4)");
-				break;
-			case -2:
-				abort_interp("Args dictionary cannot have a null string key. (4)");
-				break;
-			case -3:
-				abort_interp("Unsupported value type in list value. (4)");
-				break;
-			case -4:
-				abort_interp("Unsupported value type in args dictionary. (4)");
-				break;
+		case -1:
+			abort_interp("Args dictionary can only have string keys. (4)");
+			break;
+		case -2:
+			abort_interp("Args dictionary cannot have a null string key. (4)");
+			break;
+		case -3:
+			abort_interp("Unsupported value type in list value. (4)");
+			break;
+		case -4:
+			abort_interp("Unsupported value type in args dictionary. (4)");
+			break;
 		}
 	}
-	
+
 	mcp_mesg_arg_remove(&msg, "type");
 	mcp_mesg_arg_append(&msg, "type", wintype);
 	mcp_mesg_arg_remove(&msg, "dlogid");
@@ -868,7 +868,8 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
 		abort_interp("No such dialog currently exists. (1)");
 
 	if (!GuiSupported(descr))
-		abort_interp("Internal error: The given dialog's descriptor doesn't support the GUI package. (1)");
+		abort_interp
+				("Internal error: The given dialog's descriptor doesn't support the GUI package. (1)");
 
 	snprintf(cmdname, sizeof(cmdname), "ctrl-%.55s", ctrltype);
 	mcp_mesg_init(&msg, GUI_PACKAGE, cmdname);
@@ -877,31 +878,31 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
 	if (result) {
 		mcp_mesg_clear(&msg);
 		switch (result) {
-			case -1:
-				abort_interp("Args dictionary can only have string keys. (4)");
-				break;
-			case -2:
-				abort_interp("Args dictionary cannot have a null string key. (4)");
-				break;
-			case -3:
-				abort_interp("Unsupported value type in list value. (4)");
-				break;
-			case -4:
-				abort_interp("Unsupported value type in args dictionary. (4)");
-				break;
+		case -1:
+			abort_interp("Args dictionary can only have string keys. (4)");
+			break;
+		case -2:
+			abort_interp("Args dictionary cannot have a null string key. (4)");
+			break;
+		case -3:
+			abort_interp("Unsupported value type in list value. (4)");
+			break;
+		case -4:
+			abort_interp("Unsupported value type in args dictionary. (4)");
+			break;
 		}
 	}
-	
+
 	vallines = mcp_mesg_arg_linecount(&msg, "value");
 	valname = mcp_mesg_arg_getline(&msg, "valname", 0);
 	if (!valname || !*valname) {
 		valname = ctrlid;
 	}
 	if (valname && vallines > 0) {
-		vallist = (char**)malloc(sizeof(char*) * vallines);
+		vallist = (char **) malloc(sizeof(char *) * vallines);
 		for (i = 0; i < vallines; i++)
 			vallist[i] = mcp_mesg_arg_getline(&msg, "value", i);
-		gui_value_set_local(dlogid, valname, vallines, (const char**)vallist);
+		gui_value_set_local(dlogid, valname, vallines, (const char **) vallist);
 		free(vallist);
 	}
 
@@ -970,7 +971,8 @@ prim_gui_ctrl_command(PRIM_PROTOTYPE)
 		abort_interp("No such dialog currently exists. (1)");
 
 	if (!GuiSupported(descr))
-		abort_interp("Internal error: The given dialog's descriptor doesn't support the GUI package. (1)");
+		abort_interp
+				("Internal error: The given dialog's descriptor doesn't support the GUI package. (1)");
 
 	mcp_mesg_init(&msg, GUI_PACKAGE, "ctrl-command");
 
@@ -978,21 +980,21 @@ prim_gui_ctrl_command(PRIM_PROTOTYPE)
 	if (result) {
 		mcp_mesg_clear(&msg);
 		switch (result) {
-			case -1:
-				abort_interp("Args dictionary can only have string keys. (4)");
-				break;
-			case -2:
-				abort_interp("Args dictionary cannot have a null string key. (4)");
-				break;
-			case -3:
-				abort_interp("Unsupported value type in list value. (4)");
-				break;
-			case -4:
-				abort_interp("Unsupported value type in args dictionary. (4)");
-				break;
+		case -1:
+			abort_interp("Args dictionary can only have string keys. (4)");
+			break;
+		case -2:
+			abort_interp("Args dictionary cannot have a null string key. (4)");
+			break;
+		case -3:
+			abort_interp("Unsupported value type in list value. (4)");
+			break;
+		case -4:
+			abort_interp("Unsupported value type in args dictionary. (4)");
+			break;
 		}
 	}
-	
+
 	mcp_mesg_arg_remove(&msg, "dlogid");
 	mcp_mesg_arg_append(&msg, "dlogid", dlogid);
 
@@ -1097,7 +1099,7 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 		}
 	}
 
-	GuiSetVal(dlogid, name, count, (const char**)valarray);
+	GuiSetVal(dlogid, name, count, (const char **) valarray);
 
 	while (count-- > 0) {
 		free(valarray[count]);
@@ -1218,4 +1220,3 @@ prim_gui_value_get(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	PushArrayRaw(nu);
 }
-

@@ -21,7 +21,7 @@ const char *
 mfn_func(MFUNARGS)
 {
 	char *funcname;
-	char *ptr=NULL, *def;
+	char *ptr = NULL, *def;
 	char namebuf[BUFFER_LEN];
 	char argbuf[BUFFER_LEN];
 	char defbuf[BUFFER_LEN];
@@ -35,7 +35,7 @@ mfn_func(MFUNARGS)
 		ptr = MesgParse(argv[i], argbuf);
 		CHECKRETURN(ptr, "FUNC", "variable name argument");
 		snprintf(defbuf, sizeof(defbuf), "{with:%.*s,{:%d},%.*s}", MAX_MFUN_NAME_LEN, ptr, i,
-				(BUFFER_LEN - MAX_MFUN_NAME_LEN - 20), def);
+				 (BUFFER_LEN - MAX_MFUN_NAME_LEN - 20), def);
 	}
 	i = new_mfunc(funcname, defbuf);
 	if (i == 1)
@@ -212,7 +212,8 @@ mfn_exec(MFUNARGS)
 	} else {
 		mesgtyp &= ~MPI_ISBLESSED;
 	}
-	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname) || Prop_Hidden(pname))
+	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname) ||
+		Prop_Hidden(pname))
 		trg = obj;
 	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
 	CHECKRETURN(ptr, "EXEC", "propval");
@@ -246,7 +247,8 @@ mfn_execbang(MFUNARGS)
 	} else {
 		mesgtyp &= ~MPI_ISBLESSED;
 	}
-	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname) || Prop_Hidden(pname))
+	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname) ||
+		Prop_Hidden(pname))
 		trg = obj;
 	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
 	CHECKRETURN(ptr, "EXEC!", "propval");
@@ -429,6 +431,7 @@ mfn_listprops(MFUNARGS)
 			}
 			if (flag) {
 				int entrylen = strlen(ptr);
+
 				if ((endbuf - buf) + entrylen + 2 < BUFFER_LEN) {
 					if (*buf) {
 						*endbuf++ = '\r';
@@ -461,7 +464,8 @@ mfn_concat(MFUNARGS)
 		ABORT_MPI("CONCAT", "Permission denied.");
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("CONCAT", "Match failed.");
-	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 1, mesgtyp, &blessed);
+	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 1, mesgtyp,
+						  &blessed);
 	if (!ptr)
 		ABORT_MPI("CONCAT", "Failed list read.");
 	return ptr;
@@ -503,7 +507,7 @@ mfn_select(MFUNARGS)
 	i = targval = atoi(argv[0]);
 	do {
 		ptr = get_list_item(player, obj, perms, pname, i--, mesgtyp, &blessed);
-	} while (limit-->0 && i >= 0 && ptr && !*ptr);
+	} while (limit-- > 0 && i >= 0 && ptr && !*ptr);
 	if (!ptr)
 		ABORT_MPI("SELECT", "Failed list read.");
 	if (*ptr)
@@ -519,8 +523,10 @@ mfn_select(MFUNARGS)
 	in = argv[1];
 	while (*in) {
 		*out++ = PROPDIR_DELIMITER;
-		while (*in == PROPDIR_DELIMITER) in++;
-		while (*in && *in != PROPDIR_DELIMITER) *out++ = *in++;
+		while (*in == PROPDIR_DELIMITER)
+			in++;
+		while (*in && *in != PROPDIR_DELIMITER)
+			*out++ = *in++;
 	}
 	*out++ = '\0';
 
@@ -532,7 +538,8 @@ mfn_select(MFUNARGS)
 		pname = next_prop_name(obj, propname, sizeof(propname), origprop);
 		while (pname && string_prefix(pname, origprop)) {
 			ptr = pname + baselen;
-			if (*ptr == '#') ptr++;
+			if (*ptr == '#')
+				ptr++;
 			if (!*ptr && is_propdir(obj, pname)) {
 				char propname2[BUFFER_LEN];
 				char *pname2;
@@ -568,7 +575,7 @@ mfn_select(MFUNARGS)
 			pname = next_prop_name(obj, propname, sizeof(propname), pname);
 		}
 	}
-	
+
 	if (*bestname) {
 		ptr = safegetprop_strict(player, bestobj, perms, bestname, mesgtyp, &blessed);
 		if (!ptr)
@@ -596,7 +603,8 @@ mfn_list(MFUNARGS)
 		ABORT_MPI("LIST", "Permission denied.");
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("LIST", "Match failed.");
-	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 0, mesgtyp, &blessed);
+	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 0, mesgtyp,
+						  &blessed);
 	if (!ptr)
 		ptr = "";
 	return ptr;
@@ -621,7 +629,8 @@ mfn_lexec(MFUNARGS)
 		ABORT_MPI("LEXEC", "Match failed.");
 	while (*pname == PROPDIR_DELIMITER)
 		pname++;
-	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 2, mesgtyp, &blessed);
+	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 2, mesgtyp,
+						  &blessed);
 	if (!ptr)
 		ptr = "";
 	trg = what;
@@ -630,7 +639,8 @@ mfn_lexec(MFUNARGS)
 	} else {
 		mesgtyp &= ~MPI_ISBLESSED;
 	}
-	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname) || Prop_Hidden(pname))
+	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname) ||
+		Prop_Hidden(pname))
 		trg = obj;
 	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
 	CHECKRETURN(ptr, "LEXEC", "listval");
@@ -658,7 +668,8 @@ mfn_rand(MFUNARGS)
 	num = get_list_count(what, obj, perms, pname, mesgtyp, &blessed);
 	if (!num)
 		ABORT_MPI("RAND", "Failed list read.");
-	ptr = get_list_item(what, obj, perms, pname, (((RANDOM() / 256) % num) + 1), mesgtyp, &blessed);
+	ptr = get_list_item(what, obj, perms, pname, (((RANDOM() / 256) % num) + 1), mesgtyp,
+						&blessed);
 	if (!ptr)
 		ABORT_MPI("RAND", "Failed list read.");
 	trg = what;
@@ -755,7 +766,7 @@ mfn_eval(MFUNARGS)
 {
 	int i, len, len2;
 	char buf2[BUFFER_LEN];
-	char* ptr;
+	char *ptr;
 
 	strcpy(buf, argv[0]);
 	len = strlen(buf);
@@ -773,7 +784,8 @@ mfn_eval(MFUNARGS)
 		len += len2;
 	}
 	strcpy(buf2, buf);
-	ptr = mesg_parse(descr, player, what, perms, buf2, buf, BUFFER_LEN, (mesgtyp & ~MPI_ISBLESSED));
+	ptr = mesg_parse(descr, player, what, perms, buf2, buf, BUFFER_LEN,
+					 (mesgtyp & ~MPI_ISBLESSED));
 	CHECKRETURN(ptr, "EVAL", "arg 1");
 	return buf;
 }
@@ -784,7 +796,7 @@ mfn_evalbang(MFUNARGS)
 {
 	int i, len, len2;
 	char buf2[BUFFER_LEN];
-	char* ptr;
+	char *ptr;
 
 	strcpy(buf, argv[0]);
 	len = strlen(buf);
@@ -1491,7 +1503,7 @@ mfn_time(MFUNARGS)
 	time_t lt;
 	struct tm *tm;
 
-	lt = time((time_t*) NULL);
+	lt = time((time_t *) NULL);
 	if (argc == 1) {
 		lt += (3600 * atoi(argv[0]));
 		lt += get_tz_offset();
@@ -1508,7 +1520,7 @@ mfn_date(MFUNARGS)
 	time_t lt;
 	struct tm *tm;
 
-	lt = time((time_t*) NULL);
+	lt = time((time_t *) NULL);
 	if (argc == 1) {
 		lt += (3600 * atoi(argv[0]));
 		lt += get_tz_offset();
@@ -1532,6 +1544,7 @@ mfn_ftime(MFUNARGS)
 	}
 	if (argc > 1 && *argv[1]) {
 		int offval = atoi(argv[1]);
+
 		if (offval < 25 && offval > -25) {
 			lt += 3600 * offval;
 		} else {
@@ -1852,11 +1865,11 @@ mfn_tell(MFUNARGS)
 			(Typeof(what) == TYPE_EXIT && Typeof(getloc(what)) == TYPE_ROOM) ||
 			string_prefix(argv[0], NAME(player))) {
 			snprintf(buf, BUFFER_LEN, "%s%.4093s",
-					((obj == OWNER(perms) || obj == player) ? "" : "> "), ptr);
+					 ((obj == OWNER(perms) || obj == player) ? "" : "> "), ptr);
 		} else {
 			snprintf(buf, BUFFER_LEN, "%s%.16s%s%.4078s",
-					((obj == OWNER(perms) || obj == player) ? "" : "> "),
-					NAME(player), ((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
+					 ((obj == OWNER(perms) || obj == player) ? "" : "> "),
+					 NAME(player), ((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
 		}
 		notify_from_echo(player, obj, buf, 1);
 	}
@@ -1897,7 +1910,7 @@ mfn_otell(MFUNARGS)
 			strcpy(buf, ptr);
 		} else {
 			snprintf(buf, BUFFER_LEN, "%.16s%s%.4078s", NAME(player),
-					((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
+					 ((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
 		}
 		thing = DBFETCH(obj)->contents;
 		while (thing != NOTHING) {

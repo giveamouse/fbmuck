@@ -76,7 +76,7 @@ xMD5Init(struct xMD5Context *ctx)
  * of bytes.
  */
 void
-xMD5Update(struct xMD5Context *ctx, const byte *buf, int len)
+xMD5Update(struct xMD5Context *ctx, const byte * buf, int len)
 {
 	word32 t;
 
@@ -100,7 +100,7 @@ xMD5Update(struct xMD5Context *ctx, const byte *buf, int len)
 
 	/* Process data in 64-byte chunks */
 	while (len >= 64) {
-		bcopy(buf, (byte*)ctx->in, 64);
+		bcopy(buf, (byte *) ctx->in, 64);
 		byteSwap(ctx->in, 16);
 		xMD5Transform(ctx->buf, ctx->in);
 		buf += 64;
@@ -108,7 +108,7 @@ xMD5Update(struct xMD5Context *ctx, const byte *buf, int len)
 	}
 
 	/* Handle any remaining bytes of data. */
-	bcopy(buf, (byte*)ctx->in, len);
+	bcopy(buf, (byte *) ctx->in, len);
 }
 
 /*
@@ -143,8 +143,8 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
 	xMD5Transform(ctx->buf, ctx->in);
 
 	byteSwap(ctx->buf, 4);
-	bcopy((byte*)ctx->buf, digest, 16);
-	bzero((byte*)ctx, sizeof(ctx));
+	bcopy((byte *) ctx->buf, digest, 16);
+	bzero((byte *) ctx, sizeof(ctx));
 }
 
 
@@ -257,8 +257,8 @@ MD5hash(void *dest, const void *orig, int len)
 	struct xMD5Context context;
 
 	xMD5Init(&context);
-	xMD5Update(&context, (const byte*)orig, len);
-	xMD5Final((byte*)dest, &context);
+	xMD5Update(&context, (const byte *) orig, len);
+	xMD5Final((byte *) dest, &context);
 }
 
 
@@ -267,9 +267,9 @@ MD5hash(void *dest, const void *orig, int len)
  * the full set of base64 encoded data in the string.
  */
 size_t
-Base64Decode(void* outbuf, size_t outbuflen, const char* inbuf)
+Base64Decode(void *outbuf, size_t outbuflen, const char *inbuf)
 {
-	unsigned char* outb = (unsigned char*)outbuf;
+	unsigned char *outb = (unsigned char *) outbuf;
 	const char *in = inbuf;
 	unsigned int acc = 0;
 	unsigned int val = 0;
@@ -304,7 +304,8 @@ Base64Decode(void* outbuf, size_t outbuflen, const char* inbuf)
 			*outb++ = (acc >> bitcnt) & 0xff;
 			acc &= ~(0xff << bitcnt);
 		}
-		if (*in) in++;
+		if (*in)
+			in++;
 	}
 	return bytcnt;
 }
@@ -312,11 +313,11 @@ Base64Decode(void* outbuf, size_t outbuflen, const char* inbuf)
 
 /* outbuf MUST be at least (((inlen+2)/3)*4)+1 chars long. */
 void
-Base64Encode(char* outbuf, const void* inbuf, size_t inlen)
+Base64Encode(char *outbuf, const void *inbuf, size_t inlen)
 {
 	const char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-	const unsigned char* inb = (unsigned char*)inbuf;
-	unsigned char* out;
+	const unsigned char *inb = (unsigned char *) inbuf;
+	unsigned char *out;
 	size_t numb;
 	size_t endcnt;
 	size_t i;
@@ -324,7 +325,8 @@ Base64Encode(char* outbuf, const void* inbuf, size_t inlen)
 	numb = inlen;
 	if (numb > 0) {
 		unsigned int acc = 0;
-		out = (unsigned char*)outbuf;
+
+		out = (unsigned char *) outbuf;
 		for (i = 0; i < numb; i++) {
 			if (i % 3 == 0) {
 				acc = inb[i];
@@ -342,11 +344,11 @@ Base64Encode(char* outbuf, const void* inbuf, size_t inlen)
 			}
 		}
 		if (i % 3 == 0) {
-		    endcnt = 0;
+			endcnt = 0;
 		} else if (i % 3 == 1) {
 			endcnt = 2;
 		} else {
-		    endcnt = 1;
+			endcnt = 1;
 		}
 		for (; i % 3; i++) {
 			acc <<= 8;
@@ -358,13 +360,13 @@ Base64Encode(char* outbuf, const void* inbuf, size_t inlen)
 				*out++ = b64[(acc >> 6) & 0x3f];
 			if (endcnt < 1)
 				*out++ = b64[acc & 0x3f];
-			while (endcnt-->0)
+			while (endcnt-- > 0)
 				*out++ = '=';
 		}
 	}
 	*out++ = '\0';
 
-	out = (unsigned char*)outbuf;
+	out = (unsigned char *) outbuf;
 	while (*out) {
 		if (*out++ > 127)
 			abort();
@@ -376,7 +378,8 @@ Base64Encode(char* outbuf, const void* inbuf, size_t inlen)
 void
 MD5base64(char *dest, const void *orig, int len)
 {
-	void* tmp = (void*)malloc(16);
+	void *tmp = (void *) malloc(16);
+
 	MD5hash(tmp, orig, len);
 	Base64Encode(dest, tmp, 16);
 	free(tmp);

@@ -121,7 +121,7 @@ dump_database_internal(void)
 #endif
 
 #ifdef WIN32
-		(void) unlink(dumpfile); /* Delete old file before rename */
+		(void) unlink(dumpfile);	/* Delete old file before rename */
 #endif
 
 		if (rename(tmpfile, dumpfile) < 0)
@@ -253,7 +253,7 @@ fork_and_dump(void)
 	if (tp_dbdump_warning)
 		wall_and_flush(tp_dumping_mesg);
 
-	if ((global_dumper_pid=fork())==0) {
+	if ((global_dumper_pid = fork()) == 0) {
 		forked_dump_process_flag = 1;
 		set_dumper_signals();
 		dump_database_internal();
@@ -421,8 +421,7 @@ do_restrict(dbref player, const char *arg)
 		notify(player, "Login access is now unrestricted.");
 	} else {
 		notify_fmt(player, "Restricted connection mode is currently %s.",
-			wizonly_mode ? "on" : "off"
-		);
+				   wizonly_mode ? "on" : "off");
 	}
 }
 
@@ -431,7 +430,7 @@ do_restrict(dbref player, const char *arg)
 #define Matched(string) { if(!string_prefix((string), command)) goto bad; }
 
 int force_level = 0;
-dbref force_prog = NOTHING; /* Set when a program is the source of FORCE */
+dbref force_prog = NOTHING;		/* Set when a program is the source of FORCE */
 
 void
 process_command(int descr, dbref player, char *command)
@@ -460,7 +459,7 @@ process_command(int descr, dbref player, char *command)
 	if ((tp_log_commands || Wizard(OWNER(player)))) {
 		if (!(FLAGS(player) & (INTERACTIVE | READMODE))) {
 			if (!*command) {
-				return; 
+				return;
 			}
 			log_command("%s%s%s%s(%d) in %s(%d):%s %s\n",
 						Wizard(OWNER(player)) ? "WIZ: " : "",
@@ -643,7 +642,7 @@ process_command(int descr, dbref player, char *command)
 						break;
 					case 'o':
 					case 'O':
-						if(strlen(command) < 7) {
+						if (strlen(command) < 7) {
 							Matched("@chown");
 							do_chown(descr, player, arg1, arg2);
 						} else {
@@ -702,7 +701,7 @@ process_command(int descr, dbref player, char *command)
 					break;
 				case 'e':
 				case 'E':
-					if(command[3] == 'l' || command[3] == 'L') {
+					if (command[3] == 'l' || command[3] == 'L') {
 						Matched("@delta");
 						do_delta(player);
 					} else {
@@ -785,7 +784,7 @@ process_command(int descr, dbref player, char *command)
 					break;
 				case 'o':
 				case 'O':
-					if(strlen(command) < 7) {
+					if (strlen(command) < 7) {
 						Matched("@force");
 						do_force(descr, player, arg1, arg2);
 					} else {
@@ -861,15 +860,15 @@ process_command(int descr, dbref player, char *command)
 					do_memory(player);
 					break;
 				case 'p':
-			    case 'P':
-			        Matched("@mpitops");
-			        do_mpi_topprofs(player, arg1);
-			        break;
-			    case 'u':
-			    case 'U':
-			        Matched("@muftops");
-			        do_muf_topprofs(player, arg1);
-			        break;
+				case 'P':
+					Matched("@mpitops");
+					do_mpi_topprofs(player, arg1);
+					break;
+				case 'u':
+				case 'U':
+					Matched("@muftops");
+					do_muf_topprofs(player, arg1);
+					break;
 				default:
 					goto bad;
 				}
@@ -1352,13 +1351,13 @@ process_command(int descr, dbref player, char *command)
 	totaltime = endtime.tv_sec + (endtime.tv_usec * 1.0e-6);
 	if (totaltime > (tp_cmd_log_threshold_msec / 1000.0)) {
 		log2file(LOG_CMD_TIMES, "%6.3fs, %.16s: %s%s%s%s(%d) in %s(%d):%s %s",
-					totaltime, ctime((time_t *)&starttime.tv_sec),
-					Wizard(OWNER(player)) ? "WIZ: " : "",
-					(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
-					(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
-					NAME(OWNER(player)), (int) player,
-					NAME(DBFETCH(player)->location),
-					(int) DBFETCH(player)->location, " ", command);
+				 totaltime, ctime((time_t *) & starttime.tv_sec),
+				 Wizard(OWNER(player)) ? "WIZ: " : "",
+				 (Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
+				 (Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
+				 NAME(OWNER(player)), (int) player,
+				 NAME(DBFETCH(player)->location),
+				 (int) DBFETCH(player)->location, " ", command);
 	}
 }
 

@@ -781,7 +781,7 @@ prim_array_notify(PRIM_PROTOTYPE)
 {
 	stk_array *strarr;
 	stk_array *refarr;
-	struct inst *oper1=NULL, *oper2=NULL, *oper3=NULL, *oper4=NULL;
+	struct inst *oper1 = NULL, *oper2 = NULL, *oper3 = NULL, *oper4 = NULL;
 	struct inst temp1, temp2;
 
 	CHECKOP(2);
@@ -802,10 +802,9 @@ prim_array_notify(PRIM_PROTOTYPE)
 		do {
 			oper4 = array_getitem(strarr, &temp2);
 			if (tp_force_mlev1_name_notify && mlev < 2) {
-				prefix_message(buf, DoNullInd(oper4->data.string), NAME(player), BUFFER_LEN, 1);
-			}
-			else
-			{
+				prefix_message(buf, DoNullInd(oper4->data.string), NAME(player), BUFFER_LEN,
+							   1);
+			} else {
 				/* TODO: Is there really a reason to make a copy? */
 				strcpy(buf, DoNullInd(oper4->data.string));
 			}
@@ -863,20 +862,20 @@ prim_array_reverse(PRIM_PROTOTYPE)
 
 static int sortflag_caseinsens = 0;
 static int sortflag_descending = 0;
-static struct inst* sortflag_index = NULL;
+static struct inst *sortflag_index = NULL;
 
 int
-sortcomp_generic(const void* x, const void* y)
+sortcomp_generic(const void *x, const void *y)
 {
-	struct inst* a;
-	struct inst* b;
+	struct inst *a;
+	struct inst *b;
 
 	if (!sortflag_descending) {
-		a = *(struct inst**)x;
-		b = *(struct inst**)y;
+		a = *(struct inst **) x;
+		b = *(struct inst **) y;
 	} else {
-		a = *(struct inst**)y;
-		b = *(struct inst**)x;
+		a = *(struct inst **) y;
+		b = *(struct inst **) x;
 	}
 	if (sortflag_index) {
 		/* This should only be set if comparators are all arrays. */
@@ -890,11 +889,11 @@ sortcomp_generic(const void* x, const void* y)
 			return 1;
 		}
 	}
-	return (array_idxcmp_case(a, b, (sortflag_caseinsens? 0 : 1)));
+	return (array_idxcmp_case(a, b, (sortflag_caseinsens ? 0 : 1)));
 }
 
 int
-sortcomp_shuffle(const void* x, const void* y)
+sortcomp_shuffle(const void *x, const void *y)
 {
 	return (((RANDOM() >> 8) % 5) - 2);
 }
@@ -913,8 +912,8 @@ prim_array_sort(PRIM_PROTOTYPE)
 	stk_array *arr;
 	stk_array *nu;
 	int count, i;
-	int (*comparator)(const void*, const void*);
-	struct inst** tmparr = NULL;
+	int (*comparator) (const void *, const void *);
+	struct inst **tmparr = NULL;
 
 	CHECKOP(2);
 	oper2 = POP();				/* int  sort_type   */
@@ -931,7 +930,7 @@ prim_array_sort(PRIM_PROTOTYPE)
 	temp1.type = PROG_INTEGER;
 	count = array_count(arr);
 	nu = new_array_packed(count);
-	tmparr = (struct inst**)malloc(count * sizeof(struct inst*));
+	tmparr = (struct inst **) malloc(count * sizeof(struct inst *));
 
 	for (i = 0; i < count; i++) {
 		temp1.data.number = i;
@@ -950,7 +949,7 @@ prim_array_sort(PRIM_PROTOTYPE)
 		comparator = sortcomp_generic;
 	}
 
-	qsort(tmparr, count, sizeof(struct inst*), comparator);
+	qsort(tmparr, count, sizeof(struct inst *), comparator);
 	/* WORK: if we go multithreaded, the mutex should be released here. */
 	/*       Share this mutex with ARRAY_SORT_INDEXED. */
 
@@ -979,8 +978,8 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
 	stk_array *arr;
 	stk_array *nu;
 	int count, i;
-	int (*comparator)(const void*, const void*);
-	struct inst** tmparr = NULL;
+	int (*comparator) (const void *, const void *);
+	struct inst **tmparr = NULL;
 
 	CHECKOP(3);
 	oper3 = POP();				/* idx  index_key   */
@@ -1003,7 +1002,7 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
 	temp1.type = PROG_INTEGER;
 	count = array_count(arr);
 	nu = new_array_packed(count);
-	tmparr = (struct inst**)malloc(count * sizeof(struct inst*));
+	tmparr = (struct inst **) malloc(count * sizeof(struct inst *));
 
 	for (i = 0; i < count; i++) {
 		temp1.data.number = i;
@@ -1022,7 +1021,7 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
 		comparator = sortcomp_generic;
 	}
 
-	qsort(tmparr, count, sizeof(struct inst*), comparator);
+	qsort(tmparr, count, sizeof(struct inst *), comparator);
 	/* WORK: if we go multithreaded, the mutex should be released here. */
 	/*       Share this mutex with ARRAY_SORT. */
 
@@ -1259,30 +1258,30 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 				temp2.data.number = 0;
 			} else {
 				switch (PropType(prptr)) {
-				  case PROP_STRTYP:
+				case PROP_STRTYP:
 					temp2.type = PROG_STRING;
 					temp2.data.string = alloc_prog_string(PropDataStr(prptr));
 					break;
-				  case PROP_LOKTYP:
+				case PROP_LOKTYP:
 					temp2.type = PROG_LOCK;
 					temp2.data.lock = PropDataLok(prptr);
 					if (temp2.data.lock != TRUE_BOOLEXP) {
 						temp2.data.lock = copy_bool(temp2.data.lock);
 					}
 					break;
-				  case PROP_REFTYP:
+				case PROP_REFTYP:
 					temp2.type = PROG_OBJECT;
 					temp2.data.number = PropDataRef(prptr);
 					break;
-				  case PROP_INTTYP:
+				case PROP_INTTYP:
 					temp2.type = PROG_INTEGER;
 					temp2.data.number = PropDataVal(prptr);
 					break;
-				  case PROP_FLTTYP:
+				case PROP_FLTTYP:
 					temp2.type = PROG_FLOAT;
 					temp2.data.fnumber = PropDataFVal(prptr);
 					break;
-				  default:
+				default:
 					temp2.type = PROG_INTEGER;
 					temp2.data.number = 0;
 					break;
@@ -1332,13 +1331,15 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
 			switch (temp1.type) {
 			case PROG_STRING:
 				snprintf(propname, sizeof(propname), "%s%c%s", dir, PROPDIR_DELIMITER,
-						DoNullInd(temp1.data.string));
+						 DoNullInd(temp1.data.string));
 				break;
 			case PROG_INTEGER:
-				snprintf(propname, sizeof(propname), "%s%c%d", dir, PROPDIR_DELIMITER, temp1.data.number);
+				snprintf(propname, sizeof(propname), "%s%c%d", dir, PROPDIR_DELIMITER,
+						 temp1.data.number);
 				break;
 			case PROG_FLOAT:
-				snprintf(propname, sizeof(propname), "%s%c%.15lg", dir, PROPDIR_DELIMITER, temp1.data.fnumber);
+				snprintf(propname, sizeof(propname), "%s%c%.15lg", dir, PROPDIR_DELIMITER,
+						 temp1.data.fnumber);
 				if (!strchr(propname, '.') && !strchr(propname, 'n') && !strchr(propname, 'e')) {
 					strcatn(propname, sizeof(propname), ".0");
 				}
@@ -1457,7 +1458,8 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 				if (*fmtin == 'N') {
 					if ((fmtout + 18) - propname > sizeof(propname))
 						break;
-					snprintf(fmtout, sizeof(propname) - (fmtout - propname), "%d", temp1.data.number + 1);
+					snprintf(fmtout, sizeof(propname) - (fmtout - propname), "%d",
+							 temp1.data.number + 1);
 					fmtout = &fmtout[strlen(fmtout)];
 				} else if (*fmtin == 'P') {
 					if ((fmtout + dirlen) - propname > sizeof(propname))
@@ -1644,7 +1646,7 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 			oper4 = array_getitem(arr, &temp1);
 			len = snprintf(buf2, sizeof(buf2), "#%d", oper4->data.objref);
 			if (len == -1) {
-				buf2[sizeof(buf2)-1] = '\0';
+				buf2[sizeof(buf2) - 1] = '\0';
 				len = sizeof(buf2) - 1;
 			}
 
@@ -1731,12 +1733,14 @@ prim_array_compare(PRIM_PROTOTYPE)
 	} else {
 		do {
 			result = array_idxcmp(&temp1, &temp2);
-			if (result) break;
+			if (result)
+				break;
 
 			val1 = array_getitem(arr1, &temp1);
 			val2 = array_getitem(arr2, &temp2);
 			result = array_idxcmp(val1, val2);
-			if (result) break;
+			if (result)
+				break;
 
 			res1 = array_next(arr1, &temp1);
 			res2 = array_next(arr2, &temp2);
@@ -1900,9 +1904,9 @@ prim_array_join(PRIM_PROTOTYPE)
 	struct inst *in;
 	stk_array *arr;
 	char outbuf[BUFFER_LEN];
-	char* ptr;
-	const char* text;
-	char* delim;
+	char *ptr;
+	const char *text;
+	char *delim;
 	int tmplen;
 	int done;
 	int first_item;
@@ -1924,32 +1928,32 @@ prim_array_join(PRIM_PROTOTYPE)
 	while (!done) {
 		in = array_getitem(arr, &temp1);
 		switch (in->type) {
-			case PROG_STRING:
-				text = DoNullInd(in->data.string);
-				break;
-			case PROG_INTEGER:
-				snprintf(buf, sizeof(buf), "%d", in->data.number);
-				text = buf;
-				break;
-			case PROG_OBJECT:
-				snprintf(buf, sizeof(buf), "#%d", in->data.number);
-				text = buf;
-				break;
-			case PROG_FLOAT:
-				snprintf(buf, sizeof(buf), "%.15lg", in->data.fnumber);
-				if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
-					strcatn(buf, sizeof(buf), ".0");
-				}
-				text = buf;
-				break;
-			case PROG_LOCK:
-				text = unparse_boolexp(ProgUID, in->data.lock, 1);
-				break;
-			default:
-				text = "<UNSUPPORTED>";
-				break;
+		case PROG_STRING:
+			text = DoNullInd(in->data.string);
+			break;
+		case PROG_INTEGER:
+			snprintf(buf, sizeof(buf), "%d", in->data.number);
+			text = buf;
+			break;
+		case PROG_OBJECT:
+			snprintf(buf, sizeof(buf), "#%d", in->data.number);
+			text = buf;
+			break;
+		case PROG_FLOAT:
+			snprintf(buf, sizeof(buf), "%.15lg", in->data.fnumber);
+			if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
+				strcatn(buf, sizeof(buf), ".0");
+			}
+			text = buf;
+			break;
+		case PROG_LOCK:
+			text = unparse_boolexp(ProgUID, in->data.lock, 1);
+			break;
+		default:
+			text = "<UNSUPPORTED>";
+			break;
 		}
-		if ( first_item ) {
+		if (first_item) {
 			first_item = 0;
 		} else {
 			tmplen = strlen(delim);
@@ -1975,87 +1979,87 @@ prim_array_join(PRIM_PROTOTYPE)
 void
 prim_array_interpret(PRIM_PROTOTYPE)
 {
-    struct inst *in;
-    stk_array *arr;
-    char outbuf[BUFFER_LEN];
-    char *ptr;
-    const char *text;
+	struct inst *in;
+	stk_array *arr;
+	char outbuf[BUFFER_LEN];
+	char *ptr;
+	const char *text;
 
-    /* char *delim; */
-    int tmplen;
-    int done;
+	/* char *delim; */
+	int tmplen;
+	int done;
 
-    CHECKOP(1);
-    oper1 = POP();              /* arr  Array */
-    if (oper1->type != PROG_ARRAY)
-        abort_interp("Argument not an array. (1)");
+	CHECKOP(1);
+	oper1 = POP();				/* arr  Array */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
 
-    arr = oper1->data.array;
-    ptr = outbuf;
-    *outbuf = '\0';
-    done = !array_first(arr, &temp1);
-    while (!done) {
-        in = array_getitem(arr, &temp1);
-        switch (in->type) {
-            case PROG_STRING:
-                text = DoNullInd(in->data.string);
-                break;
-            case PROG_INTEGER:
-                snprintf(buf, sizeof(buf), "%d", in->data.number);
-                text = buf;
-                break;
-            case PROG_OBJECT:
-                if (in->data.objref == NOTHING) {
-                    text = "*NOTHING*";
-                    break;
-                }
-                if (in->data.objref == AMBIGUOUS) {
-                    text = "*AMBIGUOUS*";
-                    break;
-                }
-                if (in->data.objref == HOME) {
-                    text = "*HOME*";
-                    break;
-                }
-                if (in->data.number < HOME) {
-                    text = "*INVALID*";
-                    break;
-                }
-                if (in->data.number >= db_top) {
-                    text = "*INVALID*";
-                    break;
-                }
-                snprintf(buf, sizeof(buf), "%s", NAME(in->data.number));
-                text = buf;
-                break;
-            case PROG_FLOAT:
-                snprintf(buf, sizeof(buf), "%.15g", in->data.fnumber);
-				if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
-					strcatn(buf, sizeof(buf), ".0");
-				}
-                text = buf;
-                break;
-            case PROG_LOCK:
-                text = unparse_boolexp(ProgUID, in->data.lock, 1);
-                break;
-            default:
-                text = "<UNSUPPORTED>";
-                break;
-        }
-        tmplen = strlen(text);
-        if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1) {
-            strncpy(ptr, text, BUFFER_LEN - (ptr - outbuf) - 1);
-            outbuf[BUFFER_LEN - 1] = '\0';
-            break;
-        } else {
-            strcpy(ptr, text);
-            ptr += tmplen;
-        }
-        done = !array_next(arr, &temp1);
-    }
+	arr = oper1->data.array;
+	ptr = outbuf;
+	*outbuf = '\0';
+	done = !array_first(arr, &temp1);
+	while (!done) {
+		in = array_getitem(arr, &temp1);
+		switch (in->type) {
+		case PROG_STRING:
+			text = DoNullInd(in->data.string);
+			break;
+		case PROG_INTEGER:
+			snprintf(buf, sizeof(buf), "%d", in->data.number);
+			text = buf;
+			break;
+		case PROG_OBJECT:
+			if (in->data.objref == NOTHING) {
+				text = "*NOTHING*";
+				break;
+			}
+			if (in->data.objref == AMBIGUOUS) {
+				text = "*AMBIGUOUS*";
+				break;
+			}
+			if (in->data.objref == HOME) {
+				text = "*HOME*";
+				break;
+			}
+			if (in->data.number < HOME) {
+				text = "*INVALID*";
+				break;
+			}
+			if (in->data.number >= db_top) {
+				text = "*INVALID*";
+				break;
+			}
+			snprintf(buf, sizeof(buf), "%s", NAME(in->data.number));
+			text = buf;
+			break;
+		case PROG_FLOAT:
+			snprintf(buf, sizeof(buf), "%.15g", in->data.fnumber);
+			if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
+				strcatn(buf, sizeof(buf), ".0");
+			}
+			text = buf;
+			break;
+		case PROG_LOCK:
+			text = unparse_boolexp(ProgUID, in->data.lock, 1);
+			break;
+		default:
+			text = "<UNSUPPORTED>";
+			break;
+		}
+		tmplen = strlen(text);
+		if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1) {
+			strncpy(ptr, text, BUFFER_LEN - (ptr - outbuf) - 1);
+			outbuf[BUFFER_LEN - 1] = '\0';
+			break;
+		} else {
+			strcpy(ptr, text);
+			ptr += tmplen;
+		}
+		done = !array_next(arr, &temp1);
+	}
 
-    CLEAR(oper1);
-    PushString(outbuf);
+	CLEAR(oper1);
+	PushString(outbuf);
 }
 
 
@@ -2131,8 +2135,7 @@ prim_array_get_ignorelist(PRIM_PROTOTYPE)
 
 	nu = new_array_packed(0);
 
-	if (tp_ignore_support)
-	{
+	if (tp_ignore_support) {
 		rawstr = get_property_class(ref, IGNORE_PROP);
 
 		if (rawstr) {
@@ -2275,13 +2278,13 @@ prim_array_nested_set(PRIM_PROTOTYPE)
 			}
 		}
 
-		array_setitem(&nest[idxcnt-1].data.array, idx, oper3);
-		for (i = idxcnt - 1; i--> 0;) {
+		array_setitem(&nest[idxcnt - 1].data.array, idx, oper3);
+		for (i = idxcnt - 1; i-- > 0;) {
 			temp.type = PROG_INTEGER;
 			temp.data.number = i;
 			idx = array_getitem(idxarr, &temp);
-			array_setitem(&nest[i].data.array, idx, &nest[i+1]);
-			CLEAR(&nest[i+1]);
+			array_setitem(&nest[i].data.array, idx, &nest[i + 1]);
+			CLEAR(&nest[i + 1]);
 		}
 	}
 
@@ -2325,6 +2328,7 @@ prim_array_nested_del(PRIM_PROTOTYPE)
 		copyinst(oper2, &nest[0]);
 	} else {
 		int doneearly = 0;
+
 		dat = oper2;
 		for (i = 0; i < idxcnt; i++) {
 			copyinst(dat, &nest[i]);
@@ -2345,13 +2349,13 @@ prim_array_nested_del(PRIM_PROTOTYPE)
 			}
 		}
 		if (!doneearly) {
-			array_delitem(&nest[idxcnt-1].data.array, idx);
-			for (i = idxcnt - 1; i--> 0;) {
+			array_delitem(&nest[idxcnt - 1].data.array, idx);
+			for (i = idxcnt - 1; i-- > 0;) {
 				temp.type = PROG_INTEGER;
 				temp.data.number = i;
 				idx = array_getitem(idxarr, &temp);
-				array_setitem(&nest[i].data.array, idx, &nest[i+1]);
-				CLEAR(&nest[i+1]);
+				array_setitem(&nest[i].data.array, idx, &nest[i + 1]);
+				CLEAR(&nest[i + 1]);
 			}
 		}
 	}
@@ -2368,36 +2372,35 @@ prim_array_nested_del(PRIM_PROTOTYPE)
 void
 prim_array_filter_flags(PRIM_PROTOTYPE)
 {
-    struct flgchkdat check;
-    stk_array *nw, *arr;
-    struct inst *in;
+	struct flgchkdat check;
+	stk_array *nw, *arr;
+	struct inst *in;
 
-    CHECKOP(2);
-    oper2 = POP();              /* str:flags */
-    oper1 = POP();              /* arr:refs */
+	CHECKOP(2);
+	oper2 = POP();				/* str:flags */
+	oper1 = POP();				/* arr:refs */
 
-    if (oper1->type != PROG_ARRAY)
-        abort_interp("Argument not an array. (1)");
-    if (!array_is_homogenous(oper1->data.array, PROG_OBJECT))
-        abort_interp("Argument not an array of dbrefs. (1)");
-    if (oper2->type != PROG_STRING || !oper2->data.string)
-        abort_interp("Argument not a non-null string. (2)");
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
+	if (!array_is_homogenous(oper1->data.array, PROG_OBJECT))
+		abort_interp("Argument not an array of dbrefs. (1)");
+	if (oper2->type != PROG_STRING || !oper2->data.string)
+		abort_interp("Argument not a non-null string. (2)");
 
-    arr = oper1->data.array;
-    nw = new_array_packed(0);
+	arr = oper1->data.array;
+	nw = new_array_packed(0);
 
-    init_checkflags(player, DoNullInd(oper2->data.string), &check);
+	init_checkflags(player, DoNullInd(oper2->data.string), &check);
 
-    if (array_first(arr, &temp1)) {
-        do {
-            in = array_getitem(arr, &temp1);
-            if (valid_object(in) && checkflags(in->data.objref, check))
-                array_appenditem(&nw, in);
-        } while (array_next(arr, &temp1));
-    }
+	if (array_first(arr, &temp1)) {
+		do {
+			in = array_getitem(arr, &temp1);
+			if (valid_object(in) && checkflags(in->data.objref, check))
+				array_appenditem(&nw, in);
+		} while (array_next(arr, &temp1));
+	}
 
-    CLEAR(oper1);
-    CLEAR(oper2);
-    PushArrayRaw(nw);
+	CLEAR(oper1);
+	CLEAR(oper2);
+	PushArrayRaw(nw);
 }
-

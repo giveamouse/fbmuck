@@ -295,12 +295,11 @@ match_exits(dbref first, struct match_data *md)
 		exitname = NAME(exit);
 		while (*exitname) {		/* for all exit aliases */
 			int notnull = 0;
+
 			for (p = md->match_name;	/* check out 1 alias */
 				 *p &&
 				 DOWNCASE(*p) == DOWNCASE(*exitname) &&
-				 *exitname != EXIT_DELIMITER;
-				 p++, exitname++)
-			{
+				 *exitname != EXIT_DELIMITER; p++, exitname++) {
 				if (!isspace(*p)) {
 					notnull = 1;
 				}
@@ -327,7 +326,7 @@ match_exits(dbref first, struct match_data *md)
 							md->exact_match = exit;
 							md->longest_match = strlen(md->match_name) - strlen(p);
 							if ((*p == ' ') || (partial && notnull)) {
-								strcpy(match_args, (partial && notnull)? p : (p + 1));
+								strcpy(match_args, (partial && notnull) ? p : (p + 1));
 								{
 									char *pp;
 									int ip;

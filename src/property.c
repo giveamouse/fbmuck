@@ -272,6 +272,7 @@ has_property(int descr, dbref player, dbref what, const char *pname, const char 
 
 
 static int has_prop_recursion_limit = 2;
+
 /* checks if object has property, returns 1 if it has the property */
 int
 has_property_strict(int descr, dbref player, dbref what, const char *pname, const char *strval,
@@ -288,12 +289,12 @@ has_property_strict(int descr, dbref player, dbref what, const char *pname, cons
 		if (PropType(p) == PROP_STRTYP) {
 			str = DoNull(PropDataStr(p));
 
-			if (has_prop_recursion_limit-->0) {
+			if (has_prop_recursion_limit-- > 0) {
 				ptr = do_parse_mesg(descr, player, what, str, "(Lock)", buf,
 									(MPI_ISPRIVATE | MPI_ISLOCK |
-									((PropFlags(p) & PROP_BLESSED)? MPI_ISBLESSED : 0)));
+									 ((PropFlags(p) & PROP_BLESSED) ? MPI_ISBLESSED : 0)));
 			} else {
-				strcpyn(buf, sizeof(buf), str); 
+				strcpyn(buf, sizeof(buf), str);
 				ptr = buf;
 			}
 			has_prop_recursion_limit++;
@@ -654,13 +655,16 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 	if (PropFlags(p) & PROP_BLESSED)
 		blesschar = 'B';
 	pdflag = (PropDir(p) != NULL);
-	snprintf(mybuf, bufsiz, "%.*s%c", (BUFFER_LEN / 4), name, (pdflag) ? PROPDIR_DELIMITER : '\0');
+	snprintf(mybuf, bufsiz, "%.*s%c", (BUFFER_LEN / 4), name,
+			 (pdflag) ? PROPDIR_DELIMITER : '\0');
 	switch (PropType(p)) {
 	case PROP_STRTYP:
-		snprintf(buf, bufsiz, "%c str %s:%.*s", blesschar, mybuf, (BUFFER_LEN / 2), PropDataStr(p));
+		snprintf(buf, bufsiz, "%c str %s:%.*s", blesschar, mybuf, (BUFFER_LEN / 2),
+				 PropDataStr(p));
 		break;
 	case PROP_REFTYP:
-		snprintf(buf, bufsiz, "%c ref %s:%s", blesschar, mybuf, unparse_object(player, PropDataRef(p)));
+		snprintf(buf, bufsiz, "%c ref %s:%s", blesschar, mybuf,
+				 unparse_object(player, PropDataRef(p)));
 		break;
 	case PROP_INTTYP:
 		snprintf(buf, bufsiz, "%c int %s:%d", blesschar, mybuf, PropDataVal(p));
@@ -670,7 +674,7 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 		break;
 	case PROP_LOKTYP:
 		snprintf(buf, bufsiz, "%c lok %s:%.*s", blesschar, mybuf, (BUFFER_LEN / 2),
-				unparse_boolexp(player, PropDataLok(p), 1));
+				 unparse_boolexp(player, PropDataLok(p), 1));
 		break;
 	case PROP_DIRTYP:
 		snprintf(buf, bufsiz, "%c dir %s:(no value)", blesschar, mybuf);
@@ -691,7 +695,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 	char getprop_buf[BUFFER_LEN * 3];
 	char *name, *flags, *value, *p;
 	int flg;
-	long tpos=0L;
+	long tpos = 0L;
 	struct boolexp *lok;
 	PData mydat;
 
@@ -700,10 +704,14 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 	}
 	name = fgets(getprop_buf, sizeof(getprop_buf), f);
 	if (!name) {
-		wall_wizards("## WARNING! A corrupt property was found while trying to read it from disk.");
-		wall_wizards("##   This property has been skipped and will not be loaded.  See the sanity");
+		wall_wizards
+				("## WARNING! A corrupt property was found while trying to read it from disk.");
+		wall_wizards
+				("##   This property has been skipped and will not be loaded.  See the sanity");
 		wall_wizards("##   logfile for technical details.");
-		log_sanity("Failed to read property from disk: Failed disk read.  obj = #%d, pos = %ld, pdir = %s", obj, pos, pdir);
+		log_sanity
+				("Failed to read property from disk: Failed disk read.  obj = #%d, pos = %ld, pdir = %s",
+				 obj, pos, pdir);
 		return -1;
 	}
 	if (*name == '*') {
@@ -717,20 +725,28 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 
 	flags = index(name, PROP_DELIMITER);
 	if (!flags) {
-		wall_wizards("## WARNING! A corrupt property was found while trying to read it from disk.");
-		wall_wizards("##   This property has been skipped and will not be loaded.  See the sanity");
+		wall_wizards
+				("## WARNING! A corrupt property was found while trying to read it from disk.");
+		wall_wizards
+				("##   This property has been skipped and will not be loaded.  See the sanity");
 		wall_wizards("##   logfile for technical details.");
-		log_sanity("Failed to read property from disk: Corrupt property, flag delimiter not found.  obj = #%d, pos = %ld, pdir = %s, data = %s", obj, pos, pdir, name);
+		log_sanity
+				("Failed to read property from disk: Corrupt property, flag delimiter not found.  obj = #%d, pos = %ld, pdir = %s, data = %s",
+				 obj, pos, pdir, name);
 		return -1;
 	}
 	*flags++ = '\0';
 
 	value = index(flags, PROP_DELIMITER);
 	if (!value) {
-		wall_wizards("## WARNING! A corrupt property was found while trying to read it from disk.");
-		wall_wizards("##   This property has been skipped and will not be loaded.  See the sanity");
+		wall_wizards
+				("## WARNING! A corrupt property was found while trying to read it from disk.");
+		wall_wizards
+				("##   This property has been skipped and will not be loaded.  See the sanity");
 		wall_wizards("##   logfile for technical details.");
-		log_sanity("Failed to read property from disk: Corrupt property, value delimiter not found.  obj = #%d, pos = %ld, pdir = %s, data = %s:%s", obj, pos, pdir, name, flags);
+		log_sanity
+				("Failed to read property from disk: Corrupt property, value delimiter not found.  obj = #%d, pos = %ld, pdir = %s, data = %s:%s",
+				 obj, pos, pdir, name, flags);
 		return -1;
 	}
 	*value++ = '\0';
@@ -741,10 +757,14 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 	}
 
 	if (!number(flags)) {
-		wall_wizards("## WARNING! A corrupt property was found while trying to read it from disk.");
-		wall_wizards("##   This property has been skipped and will not be loaded.  See the sanity");
+		wall_wizards
+				("## WARNING! A corrupt property was found while trying to read it from disk.");
+		wall_wizards
+				("##   This property has been skipped and will not be loaded.  See the sanity");
 		wall_wizards("##   logfile for technical details.");
-		log_sanity("Failed to read property from disk: Corrupt property flags.  obj = #%d, pos = %ld, pdir = %s, data = %s:%s:%s", obj, pos, pdir, name, flags, value);
+		log_sanity
+				("Failed to read property from disk: Corrupt property flags.  obj = #%d, pos = %ld, pdir = %s, data = %s:%s:%s",
+				 obj, pos, pdir, name, flags, value);
 		return -1;
 	}
 	flg = atoi(flags);
@@ -773,10 +793,14 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 		break;
 	case PROP_INTTYP:
 		if (!number(value)) {
-			wall_wizards("## WARNING! A corrupt property was found while trying to read it from disk.");
-			wall_wizards("##   This property has been skipped and will not be loaded.  See the sanity");
+			wall_wizards
+					("## WARNING! A corrupt property was found while trying to read it from disk.");
+			wall_wizards
+					("##   This property has been skipped and will not be loaded.  See the sanity");
 			wall_wizards("##   logfile for technical details.");
-			log_sanity("Failed to read property from disk: Corrupt integer value.  obj = #%d, pos = %ld, pdir = %s, data = %s:%s:%s", obj, pos, pdir, name, flags, value);
+			log_sanity
+					("Failed to read property from disk: Corrupt integer value.  obj = #%d, pos = %ld, pdir = %s, data = %s:%s:%s",
+					 obj, pos, pdir, name, flags, value);
 			return -1;
 		}
 		mydat.flags = flg;
@@ -819,10 +843,14 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 		break;
 	case PROP_REFTYP:
 		if (!number(value)) {
-			wall_wizards("## WARNING! A corrupt property was found while trying to read it from disk.");
-			wall_wizards("##   This property has been skipped and will not be loaded.  See the sanity");
+			wall_wizards
+					("## WARNING! A corrupt property was found while trying to read it from disk.");
+			wall_wizards
+					("##   This property has been skipped and will not be loaded.  See the sanity");
 			wall_wizards("##   logfile for technical details.");
-			log_sanity("Failed to read property from disk: Corrupt dbref value.  obj = #%d, pos = %ld, pdir = %s, data = %s:%s:%s", obj, pos, pdir, name, flags, value);
+			log_sanity
+					("Failed to read property from disk: Corrupt dbref value.  obj = #%d, pos = %ld, pdir = %s, data = %s:%s:%s",
+					 obj, pos, pdir, name, flags, value);
 			return -1;
 		}
 		mydat.flags = flg;
@@ -884,8 +912,7 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
 	}
 
 	snprintf(buf, sizeof(buf), "%s%s%c%d%c%s\n",
-			dir+1, PropName(p), PROP_DELIMITER,
-			outflags, PROP_DELIMITER, ptr2);
+			 dir + 1, PropName(p), PROP_DELIMITER, outflags, PROP_DELIMITER, ptr2);
 
 	if (fputs(buf, f) == EOF) {
 		log_sanity("Failed to write out property db_putprop(dir = %s)", dir);
@@ -968,7 +995,7 @@ untouchprops_incremental(int limit)
 
 
 void
-reflist_add(dbref obj, const char* propname, dbref toadd)
+reflist_add(dbref obj, const char *propname, dbref toadd)
 {
 	PropPtr ptr;
 	const char *temp;
@@ -1017,7 +1044,7 @@ reflist_add(dbref obj, const char* propname, dbref toadd)
 			snprintf(buf, sizeof(buf), " #%d", toadd);
 			if (strlen(outbuf) + strlen(buf) < BUFFER_LEN) {
 				strcatn(outbuf, sizeof(outbuf), buf);
-				for (temp = outbuf; isspace(*temp); temp++);
+				for (temp = outbuf; isspace(*temp); temp++) ;
 				add_property(obj, propname, temp, 0);
 			}
 			break;
@@ -1040,7 +1067,7 @@ reflist_add(dbref obj, const char* propname, dbref toadd)
 
 
 void
-reflist_del(dbref obj, const char* propname, dbref todel)
+reflist_del(dbref obj, const char *propname, dbref todel)
 {
 	PropPtr ptr;
 	const char *temp;
@@ -1083,7 +1110,7 @@ reflist_del(dbref obj, const char* propname, dbref todel)
 					strcpyn(outbuf, charcount, list);
 				}
 				strcatn(outbuf, sizeof(outbuf), temp);
-				for (temp = outbuf; isspace(*temp); temp++);
+				for (temp = outbuf; isspace(*temp); temp++) ;
 				add_property(obj, propname, temp, 0);
 			}
 			break;
@@ -1100,7 +1127,7 @@ reflist_del(dbref obj, const char* propname, dbref todel)
 
 
 int
-reflist_find(dbref obj, const char* propname, dbref tofind)
+reflist_find(dbref obj, const char *propname, dbref tofind)
 {
 	PropPtr ptr;
 	const char *temp;
@@ -1148,5 +1175,3 @@ reflist_find(dbref obj, const char* propname, dbref tofind)
 	}
 	return pos;
 }
-
-

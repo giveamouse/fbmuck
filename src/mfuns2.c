@@ -567,7 +567,7 @@ mfn_with(MFUNARGS)
 		ptr = MesgParse(argv[cnt], cmdbuf);
 		if (!ptr) {
 			snprintf(buf, BUFFER_LEN, "%s %cWITH%c (arg %d)", get_mvar("how"),
-					MFUN_LEADCHAR, MFUN_ARGEND, cnt);
+					 MFUN_LEADCHAR, MFUN_ARGEND, cnt);
 			notify(player, buf);
 			return NULL;
 		}
@@ -811,15 +811,20 @@ mfn_filter(MFUNARGS)
 }
 
 
-int list_contains(char* word, int len, char* list) {
+int
+list_contains(char *word, int len, char *list)
+{
 	char *w, *w2;
 
 	w = w2 = list;
 	do {
-		for(; *w2 && *w2 != '\r'; w2++) {};
-		if(w2 - w == len && !strncmp(word, w, len)) return 1;
-		if(*w2) w = ++w2;
-	} while(*w2);
+		for (; *w2 && *w2 != '\r'; w2++) {
+		};
+		if (w2 - w == len && !strncmp(word, w, len))
+			return 1;
+		if (*w2)
+			w = ++w2;
+	} while (*w2);
 
 	return 0;
 }
@@ -832,16 +837,17 @@ mfn_lremove(MFUNARGS)
 	int len;
 	int firstResult = 1;
 
-	ptr = argv[0];  // the list we're removing from
+	ptr = argv[0];				// the list we're removing from
 	endbuf = buf;
-	*buf = '\0';  // empty buf; this is what we're returning, I bet
-	while (*ptr) {  // while more of the first list
+	*buf = '\0';				// empty buf; this is what we're returning, I bet
+	while (*ptr) {				// while more of the first list
 		// Find the next word.
-		for (ptr2 = ptr; *ptr2 && *ptr2 != '\r'; ptr2++) {};
+		for (ptr2 = ptr; *ptr2 && *ptr2 != '\r'; ptr2++) {
+		};
 		len = ptr2 - ptr;
 
 		// If the second list contains the string, continue.
-		if(!list_contains(ptr, len, argv[1]) &&
+		if (!list_contains(ptr, len, argv[1]) &&
 			/*
 			 * If it's the first result, it already won't be in buf.
 			 * This wouldn't be a problem except buf already contains
@@ -849,8 +855,8 @@ mfn_lremove(MFUNARGS)
 			 * empty string, it won't be added.
 			 */
 			(firstResult || !list_contains(ptr, len, buf))
-		) {
-			if(firstResult)
+				) {
+			if (firstResult)
 				firstResult = 0;
 			else
 				*(endbuf++) = '\r';
@@ -858,9 +864,9 @@ mfn_lremove(MFUNARGS)
 			endbuf += len;
 			*endbuf = '\0';
 		}
-
 		// Next word.
-		if(*ptr2) ptr2++;
+		if (*ptr2)
+			ptr2++;
 		ptr = ptr2;
 		if (!(--iter_limit))
 			ABORT_MPI("LREMOVE", "Iteration limit exceeded");
@@ -1099,7 +1105,7 @@ mfn_lunique(MFUNARGS)
 		if (!*p) {
 			nextlen = strlen(ptr);
 			if (outcount++) {
-				strcatn(buf + outlen,  BUFFER_LEN - outlen,"\r");
+				strcatn(buf + outlen, BUFFER_LEN - outlen, "\r");
 				outlen++;
 			}
 			strcatn((buf + outlen), BUFFER_LEN - outlen, ptr);
@@ -1224,7 +1230,8 @@ mfn_awake(MFUNARGS)
 	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
 
 	if (obj == PERMDENIED || obj == AMBIGUOUS || obj == UNKNOWN || obj == NOTHING ||
-		obj == HOME) return ("0");
+		obj == HOME)
+		return ("0");
 
 	if (Typeof(obj) == TYPE_THING && (FLAGS(obj) & ZOMBIE)) {
 		obj = OWNER(obj);
@@ -1277,6 +1284,7 @@ const char *
 mfn_istype(MFUNARGS)
 {
 	dbref obj;
+
 	if (tp_lazy_mpi_istype_perm) {
 		obj = mesg_dbref_raw(descr, player, what, perms, argv[0]);
 	} else {
@@ -1284,9 +1292,8 @@ mfn_istype(MFUNARGS)
 	}
 	if (obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN)
 		return (string_compare(argv[1], "Bad") ? "0" : "1");
-	if ((string_compare(argv[1], "Bad") == 0) && 
-		(obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN ||
-		 obj == PERMDENIED ))
+	if ((string_compare(argv[1], "Bad") == 0) &&
+		(obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN || obj == PERMDENIED))
 		return "1";
 	if (obj == PERMDENIED)
 		ABORT_MPI("TYPE", "Permission Denied.");
@@ -1371,11 +1378,10 @@ mfn_timing(MFUNARGS)
 	int secs;
 	int usecs;
 	double timelen;
-	
+
 	gettimeofday(&start_time, (struct timezone *) 0);
 
-	ptr = mesg_parse(descr, player, what, perms, argv[0],
-						   buf, BUFFER_LEN, mesgtyp);
+	ptr = mesg_parse(descr, player, what, perms, argv[0], buf, BUFFER_LEN, mesgtyp);
 	CHECKRETURN(ptr, "TIMING", "arg 1");
 
 	gettimeofday(&end_time, (struct timezone *) 0);
@@ -1385,7 +1391,7 @@ mfn_timing(MFUNARGS)
 		secs += 1;
 		usecs -= 1000000;
 	}
-	timelen = ((double)secs) + (((double)usecs) / 1000000);
+	timelen = ((double) secs) + (((double) usecs) / 1000000);
 	snprintf(buf2, sizeof(buf2), "Time elapsed: %.6f seconds", timelen);
 	notify_nolisten(player, buf2, 1);
 
@@ -1466,7 +1472,8 @@ mfn_muf(MFUNARGS)
 	strcpyn(match_args, sizeof(match_args), argv[1]);
 	ptr = get_mvar("how");
 	snprintf(match_cmdname, sizeof(match_cmdname), "%s(MPI)", ptr);
-	tmpfr = interp(descr, player, DBFETCH(player)->location, obj, perms, PREEMPT, STD_HARDUID, 0);
+	tmpfr = interp(descr, player, DBFETCH(player)->location, obj, perms, PREEMPT, STD_HARDUID,
+				   0);
 	if (tmpfr) {
 		rv = interp_loop(player, obj, tmpfr, 1);
 	}
@@ -1809,7 +1816,8 @@ mfn_attr(MFUNARGS)
 			strcatn(buf, BUFFER_LEN, ANSI_FLASH);
 		} else if (!string_compare(argv[i], "reverse")) {
 			strcatn(buf, BUFFER_LEN, ANSI_REVERSE);
-		} else if (!string_compare(argv[i], "ostrike") || !string_compare(argv[i], "overstrike")) {
+		} else if (!string_compare(argv[i], "ostrike") ||
+				   !string_compare(argv[i], "overstrike")) {
 			strcatn(buf, BUFFER_LEN, ANSI_OSTRIKE);
 
 		} else if (!string_compare(argv[i], "black")) {
@@ -1847,7 +1855,8 @@ mfn_attr(MFUNARGS)
 			strcatn(buf, BUFFER_LEN, ANSI_BG_WHITE);
 		} else if (!string_compare(argv[i], "")) {
 		} else {
-			ABORT_MPI("ATTR", "Unrecognized ansi tag.  Try one of reset, bold, dim, italic, underline, reverse, overstrike, black, red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, bg_green, bg_cyan, bg_blue, bg_magenta, or bg_white.");
+			ABORT_MPI("ATTR",
+					  "Unrecognized ansi tag.  Try one of reset, bold, dim, italic, underline, reverse, overstrike, black, red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, bg_green, bg_cyan, bg_blue, bg_magenta, or bg_white.");
 		}
 	}
 	exlen = strlen(buf) + strlen(ANSI_RESET) + 1;

@@ -306,10 +306,10 @@ prim_remove_prop(PRIM_PROTOTYPE)
 	buf[BUFFER_LEN - 1] = '\0';
 
 	{
-		int	len = strlen(buf);
-		char*	ptr = buf + len;
+		int len = strlen(buf);
+		char *ptr = buf + len;
 
-		while((--len >= 0) && (*--ptr == PROPDIR_DELIMITER))
+		while ((--len >= 0) && (*--ptr == PROPDIR_DELIMITER))
 			*ptr = '\0';
 	}
 
@@ -323,7 +323,7 @@ prim_remove_prop(PRIM_PROTOTYPE)
 
 #ifdef LOG_PROPS
 	log2file("props.log", "#%d (%d) REMOVEPROP: o=%d n=\"%s\"",
-		program, pc->line, oper2->data.objref, buf);
+			 program, pc->line, oper2->data.objref, buf);
 #endif
 
 	ts_modifyobject(oper2->data.objref);
@@ -578,8 +578,8 @@ prim_setprop(PRIM_PROTOTYPE)
 	if ((oper1->type != PROG_STRING) &&
 		(oper1->type != PROG_INTEGER) &&
 		(oper1->type != PROG_LOCK) &&
-		(oper1->type != PROG_OBJECT) &&
-		(oper1->type != PROG_FLOAT)) abort_interp("Invalid argument type (3)");
+		(oper1->type != PROG_OBJECT) && (oper1->type != PROG_FLOAT))
+		abort_interp("Invalid argument type (3)");
 	if (oper2->type != PROG_STRING)
 		abort_interp("Non-string argument (2)");
 	if (!oper2->data.string)
@@ -805,10 +805,10 @@ prim_parseprop(PRIM_PROTOTYPE)
 {
 	const char *temp;
 	char *ptr;
-	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
-	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
-	struct inst *oper3 = NULL; /* prevents re-entrancy issues! */
-	struct inst *oper4 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper1 = NULL;	/* prevents re-entrancy issues! */
+	struct inst *oper2 = NULL;	/* prevents re-entrancy issues! */
+	struct inst *oper3 = NULL;	/* prevents re-entrancy issues! */
+	struct inst *oper4 = NULL;	/* prevents re-entrancy issues! */
 
 	char buf[BUFFER_LEN];
 	char type[BUFFER_LEN];
@@ -890,8 +890,8 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 	struct inst temp1;
 	stk_array *arr;
 	stk_array *nu;
-	char* prop;
-	const char* ptr;
+	char *prop;
+	const char *ptr;
 	int len;
 
 	CHECKOP(3);
@@ -950,9 +950,9 @@ void
 prim_reflist_find(PRIM_PROTOTYPE)
 {
 	CHECKOP(3);
-	oper3 = POP();   /* dbref */
-	oper2 = POP();   /* propname */
-	oper1 = POP();   /* propobj */
+	oper3 = POP();				/* dbref */
+	oper2 = POP();				/* propname */
+	oper1 = POP();				/* propobj */
 	if (!valid_object(oper1))
 		abort_interp("Non-object argument (1)");
 	if (oper2->type != PROG_STRING)
@@ -978,9 +978,9 @@ void
 prim_reflist_add(PRIM_PROTOTYPE)
 {
 	CHECKOP(3);
-	oper3 = POP();   /* dbref */
-	oper2 = POP();   /* propname */
-	oper1 = POP();   /* propobj */
+	oper3 = POP();				/* dbref */
+	oper2 = POP();				/* propname */
+	oper1 = POP();				/* propobj */
 	if (!valid_object(oper1))
 		abort_interp("Non-object argument (1)");
 	if (oper2->type != PROG_STRING)
@@ -1005,9 +1005,9 @@ void
 prim_reflist_del(PRIM_PROTOTYPE)
 {
 	CHECKOP(3);
-	oper3 = POP();   /* dbref */
-	oper2 = POP();   /* propname */
-	oper1 = POP();   /* propobj */
+	oper3 = POP();				/* dbref */
+	oper2 = POP();				/* propname */
+	oper1 = POP();				/* propobj */
 	if (!valid_object(oper1))
 		abort_interp("Non-object argument (1)");
 	if (oper2->type != PROG_STRING)
@@ -1063,30 +1063,30 @@ prim_blessedp(PRIM_PROTOTYPE)
 void
 prim_parsepropex(PRIM_PROTOTYPE)
 {
-	struct inst*	oper1 = NULL; /* prevents reentrancy issues! */
-	struct inst*	oper2 = NULL; /* prevents reentrancy issues! */
-	struct inst*	oper3 = NULL; /* prevents reentrancy issues! */
-	struct inst*	oper4 = NULL; /* prevents reentrancy issues! */
-	stk_array*		vars;
-	const char*		mpi;
-	char*			str = 0;
-	array_iter		idx;
-	extern int		varc; /* from msgparse.c */
-	int				mvarcnt;
-	char*			buffers;
-	int				novars;
-	int				hashow = 0;
-	int				i;
-	int             len;
-	char			tname[BUFFER_LEN];
-	char			buf[BUFFER_LEN];
+	struct inst *oper1 = NULL;	/* prevents reentrancy issues! */
+	struct inst *oper2 = NULL;	/* prevents reentrancy issues! */
+	struct inst *oper3 = NULL;	/* prevents reentrancy issues! */
+	struct inst *oper4 = NULL;	/* prevents reentrancy issues! */
+	stk_array *vars;
+	const char *mpi;
+	char *str = 0;
+	array_iter idx;
+	extern int varc;			/* from msgparse.c */
+	int mvarcnt;
+	char *buffers;
+	int novars;
+	int hashow = 0;
+	int i;
+	int len;
+	char tname[BUFFER_LEN];
+	char buf[BUFFER_LEN];
 
 	CHECKOP(4);
 
-	oper4 = POP(); /* int:Private */
-	oper3 = POP(); /* dict:Vars */
-	oper2 = POP(); /* str:Prop */
-	oper1 = POP(); /* ref:Object */
+	oper4 = POP();				/* int:Private */
+	oper3 = POP();				/* dict:Vars */
+	oper2 = POP();				/* str:Prop */
+	oper1 = POP();				/* ref:Object */
 
 	if (mlev < 3)
 		abort_interp("Mucker level 3 or greater required.");
@@ -1120,102 +1120,93 @@ prim_parsepropex(PRIM_PROTOTYPE)
 		tname[len] = '\0';
 	}
 
-	mpi		= get_property_class(oper1->data.objref, tname);
-	vars	= oper3->data.array;
-	novars	= array_count(vars);
+	mpi = get_property_class(oper1->data.objref, tname);
+	vars = oper3->data.array;
+	novars = array_count(vars);
 
 	if (check_mvar_overflow(novars))
 		abort_interp("Out of MPI variables. (3)");
 
-	if (array_first(vars, &idx))
-	{
-		do
-		{
-			array_data*	val = array_getitem(vars, &idx);
+	if (array_first(vars, &idx)) {
+		do {
+			array_data *val = array_getitem(vars, &idx);
 
-			if (idx.type != PROG_STRING)
-			{
+			if (idx.type != PROG_STRING) {
 				CLEAR(&idx);
 				abort_interp("Only string keys supported. (3)");
 			}
 
-			if (idx.data.string == NULL)
-			{
+			if (idx.data.string == NULL) {
 				CLEAR(&idx);
 				abort_interp("Empty string keys not supported. (3)");
 			}
 
-			if (strlen(idx.data.string->data) > MAX_MFUN_NAME_LEN)
-			{
+			if (strlen(idx.data.string->data) > MAX_MFUN_NAME_LEN) {
 				CLEAR(&idx);
 				abort_interp("Key too long to be an MPI variable. (3)");
 			}
 
-			switch(val->type)
-			{
-				case PROG_INTEGER:
-				case PROG_FLOAT:
-				case PROG_OBJECT:
-				case PROG_STRING:
-				case PROG_LOCK:
+			switch (val->type) {
+			case PROG_INTEGER:
+			case PROG_FLOAT:
+			case PROG_OBJECT:
+			case PROG_STRING:
+			case PROG_LOCK:
 				break;
 
-				default:
-					CLEAR(&idx);
-					abort_interp("Only integer, float, dbref, string and lock values supported. (3)");
+			default:
+				CLEAR(&idx);
+				abort_interp
+						("Only integer, float, dbref, string and lock values supported. (3)");
 				break;
 			}
 
 			if (string_compare(idx.data.string->data, "how") == 0)
 				hashow = 1;
 		}
-		while(array_next(vars, &idx));
+		while (array_next(vars, &idx));
 	}
 
-	if (mpi && *mpi)
-	{
-		if (novars > 0)
-		{
+	if (mpi && *mpi) {
+		if (novars > 0) {
 			mvarcnt = varc;
 
-			if ((buffers = (char*)malloc(novars * BUFFER_LEN)) == NULL)
+			if ((buffers = (char *) malloc(novars * BUFFER_LEN)) == NULL)
 				abort_interp("Out of memory.");
 
-			if (array_first(vars, &idx))
-			{
+			if (array_first(vars, &idx)) {
 				i = 0;
 
-				do
-				{
-					char*		var_buf = buffers + (i++ * BUFFER_LEN);
-					array_data*	val;
+				do {
+					char *var_buf = buffers + (i++ * BUFFER_LEN);
+					array_data *val;
 
 					val = array_getitem(vars, &idx);
 
-					switch(val->type)
-					{
-						case PROG_INTEGER:
-							snprintf(var_buf, BUFFER_LEN, "%i", val->data.number);
+					switch (val->type) {
+					case PROG_INTEGER:
+						snprintf(var_buf, BUFFER_LEN, "%i", val->data.number);
 						break;
 
-						case PROG_FLOAT:
-							snprintf(var_buf, BUFFER_LEN, "%f", val->data.fnumber);
+					case PROG_FLOAT:
+						snprintf(var_buf, BUFFER_LEN, "%f", val->data.fnumber);
 						break;
 
-						case PROG_OBJECT:
-							snprintf(var_buf, BUFFER_LEN, "#%i", val->data.objref);
+					case PROG_OBJECT:
+						snprintf(var_buf, BUFFER_LEN, "#%i", val->data.objref);
 						break;
 
-						case PROG_STRING:
-							strncpy(var_buf, DoNullInd(val->data.string), BUFFER_LEN);
+					case PROG_STRING:
+						strncpy(var_buf, DoNullInd(val->data.string), BUFFER_LEN);
 						break;
 
-						case PROG_LOCK:
-							strncpy(var_buf, unparse_boolexp(ProgUID, val->data.lock, 1), BUFFER_LEN);
+					case PROG_LOCK:
+						strncpy(var_buf, unparse_boolexp(ProgUID, val->data.lock, 1),
+								BUFFER_LEN);
 						break;
 
-						default:
-							var_buf[0] = '\0';
+					default:
+						var_buf[0] = '\0';
 						break;
 					}
 
@@ -1223,7 +1214,7 @@ prim_parsepropex(PRIM_PROTOTYPE)
 
 					new_mvar(idx.data.string->data, var_buf);
 				}
-				while(array_next(vars, &idx));
+				while (array_next(vars, &idx));
 			}
 		}
 
@@ -1238,27 +1229,25 @@ prim_parsepropex(PRIM_PROTOTYPE)
 		if (hashow)
 			result |= MPI_NOHOW;
 
-		str = do_parse_mesg(fr->descr, player, oper1->data.objref, mpi, "(parsepropex)", buf, result);
+		str = do_parse_mesg(fr->descr, player, oper1->data.objref, mpi, "(parsepropex)", buf,
+							result);
 
-		if (novars > 0)
-		{
-			if (array_first(vars, &idx))
-			{
+		if (novars > 0) {
+			if (array_first(vars, &idx)) {
 				i = 0;
 
-				do
-				{
-					char*		var_buf = buffers + (i++ * BUFFER_LEN);
-					struct inst	temp;
+				do {
+					char *var_buf = buffers + (i++ * BUFFER_LEN);
+					struct inst temp;
 
-					temp.type			= PROG_STRING;
-					temp.data.string	= alloc_prog_string(var_buf);
+					temp.type = PROG_STRING;
+					temp.data.string = alloc_prog_string(var_buf);
 
 					array_setitem(&vars, &idx, &temp);
 
 					CLEAR(&temp);
 				}
-				while(array_next(vars, &idx));
+				while (array_next(vars, &idx));
 			}
 
 			free(buffers);

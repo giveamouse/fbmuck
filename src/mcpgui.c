@@ -8,7 +8,7 @@
 #include "externs.h"
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
-#endif /* HAVE_MALLOC_H */
+#endif							/* HAVE_MALLOC_H */
 
 typedef struct DlogValue_t {
 	struct DlogValue_t *next;
@@ -39,8 +39,8 @@ void gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context);
 void
 gui_initialize(void)
 {
-	McpVer minver = { 1, 0 };  /* { major, minor } */
-	McpVer maxver = { 1, 3 };  /* { major, minor } */
+	McpVer minver = { 1, 0 };	/* { major, minor } */
+	McpVer maxver = { 1, 3 };	/* { major, minor } */
 
 	mcp_package_register(GUI_PACKAGE, minver, maxver, gui_pkg_callback, NULL, NULL);
 }
@@ -67,7 +67,7 @@ gui_dlog_find(const char *dlogid)
 }
 
 
-void*
+void *
 gui_dlog_get_context(const char *dlogid)
 {
 	DlogData *ptr = gui_dlog_find(dlogid);
@@ -289,9 +289,9 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 			dat->callback(dat->descr, dlogid, id, evt, msg, did_dismiss, dat->context);
 		}
 	} else if (!string_compare(msg->mesgname, "error")) {
-		const char *err  = mcp_mesg_arg_getline(msg, "errcode", 0);
+		const char *err = mcp_mesg_arg_getline(msg, "errcode", 0);
 		const char *text = mcp_mesg_arg_getline(msg, "errtext", 0);
-		const char *id   = mcp_mesg_arg_getline(msg, "id", 0);
+		const char *id = mcp_mesg_arg_getline(msg, "id", 0);
 
 		if (!err) {
 			err = "";
@@ -313,7 +313,7 @@ gui_dlog_alloc(int descr, Gui_CB callback, GuiErr_CB error_cb, void *context)
 	DlogData *ptr;
 
 	while (1) {
-		snprintf(tmpid, sizeof(tmpid), "%08lX", (unsigned long)RANDOM());
+		snprintf(tmpid, sizeof(tmpid), "%08lX", (unsigned long) RANDOM());
 		if (!gui_dlog_find(tmpid)) {
 			break;
 		}
@@ -396,7 +396,8 @@ gui_dlog_closeall_descr(int descr)
 			mcp_mesg_arg_append(&msg, "id", "_closed");
 			mcp_mesg_arg_append(&msg, "dismissed", "1");
 			mcp_mesg_arg_append(&msg, "event", "buttonpress");
-			ptr->callback(ptr->descr, ptr->id, "_closed", "buttonpress", &msg, 1, ptr->context);
+			ptr->callback(ptr->descr, ptr->id, "_closed", "buttonpress", &msg, 1,
+						  ptr->context);
 			mcp_mesg_clear(&msg);
 		}
 		ptr = ptr->next;
@@ -722,7 +723,8 @@ GuiListDel(const char *dlogid, const char *id, int from, int to)
 
 
 int
-GuiMenuItem(const char *dlogid, const char *id, const char *type, const char *name, const char **args)
+GuiMenuItem(const char *dlogid, const char *id, const char *type, const char *name,
+			const char **args)
 {
 	McpMesg msg;
 	McpFrame *mfr;
@@ -839,7 +841,7 @@ gui_ctrl_process_layout(McpMesg * msg, int layout)
 
 int
 gui_ctrl_make_v(const char *dlogid, const char *type, const char *pane,
-		        const char *id, const char *text, const char *value,
+				const char *id, const char *text, const char *value,
 				int layout, const char **args)
 {
 	McpMesg msg;
@@ -891,8 +893,8 @@ gui_ctrl_make_v(const char *dlogid, const char *type, const char *pane,
 
 
 int
-gui_ctrl_make_l(const char *dlogid, const char *type, const char *pane, const char *id, const char *text, const char *value,
-				int layout, ...)
+gui_ctrl_make_l(const char *dlogid, const char *type, const char *pane, const char *id,
+				const char *text, const char *value, int layout, ...)
 {
 	va_list ap;
 	McpMesg msg;
@@ -949,7 +951,8 @@ gui_ctrl_make_l(const char *dlogid, const char *type, const char *pane, const ch
 
 
 int
-GuiEdit(const char *dlogid, const char *pane, const char *id, const char *text, const char *value, int width, int layout)
+GuiEdit(const char *dlogid, const char *pane, const char *id, const char *text,
+		const char *value, int width, int layout)
 {
 	char buf[32];
 
@@ -959,18 +962,20 @@ GuiEdit(const char *dlogid, const char *pane, const char *id, const char *text, 
 
 
 int
-GuiText(const char *dlogid, const char *pane, const char *id, const char *value, int width, int layout)
+GuiText(const char *dlogid, const char *pane, const char *id, const char *value, int width,
+		int layout)
 {
 	char widthbuf[32];
 
 	snprintf(widthbuf, sizeof(widthbuf), "%d", width);
-	return gui_ctrl_make_l(dlogid, "text", pane, id, NULL, value, layout, "width", widthbuf, NULL);
+	return gui_ctrl_make_l(dlogid, "text", pane, id, NULL, value, layout, "width", widthbuf,
+						   NULL);
 }
 
 
 int
-GuiSpinner(const char *dlogid, const char *pane, const char *id, const char *text, int value, int width, int min,
-		   int max, int layout)
+GuiSpinner(const char *dlogid, const char *pane, const char *id, const char *text, int value,
+		   int width, int min, int max, int layout)
 {
 	char widthbuf[32];
 	char valbuf[32];
@@ -982,25 +987,25 @@ GuiSpinner(const char *dlogid, const char *pane, const char *id, const char *tex
 	snprintf(minbuf, sizeof(minbuf), "%d", min);
 	snprintf(maxbuf, sizeof(maxbuf), "%d", max);
 	return gui_ctrl_make_l(dlogid, "spinner", pane, id, text, valbuf, layout,
-					"width", widthbuf, "min", minbuf, "max", maxbuf, NULL);
+						   "width", widthbuf, "min", minbuf, "max", maxbuf, NULL);
 }
 
 
 int
-GuiCombo(const char *dlogid, const char *pane, const char *id, const char *text, const char *value, int width, int editable,
-		 int layout)
+GuiCombo(const char *dlogid, const char *pane, const char *id, const char *text,
+		 const char *value, int width, int editable, int layout)
 {
 	char buf[32];
 
 	snprintf(buf, sizeof(buf), "%d", width);
 	return gui_ctrl_make_l(dlogid, "combobox", pane, id, text, value, layout,
-					"width", buf, "editable", editable ? "1" : "0", NULL);
+						   "width", buf, "editable", editable ? "1" : "0", NULL);
 }
 
 
 int
-GuiMulti(const char *dlogid, const char *pane, const char *id, const char *value, int width, int height, int fixed,
-		 int layout)
+GuiMulti(const char *dlogid, const char *pane, const char *id, const char *value, int width,
+		 int height, int fixed, int layout)
 {
 	char widthbuf[32];
 	char heightbuf[32];
@@ -1008,8 +1013,8 @@ GuiMulti(const char *dlogid, const char *pane, const char *id, const char *value
 	snprintf(widthbuf, sizeof(widthbuf), "%d", width);
 	snprintf(heightbuf, sizeof(heightbuf), "%d", height);
 	return gui_ctrl_make_l(dlogid, "multiedit", pane, id, NULL, value, layout,
-					"width", widthbuf,
-					"height", heightbuf, "font", (fixed ? "fixed" : "variable"), NULL);
+						   "width", widthbuf,
+						   "height", heightbuf, "font", (fixed ? "fixed" : "variable"), NULL);
 }
 
 
@@ -1019,7 +1024,8 @@ GuiHRule(const char *dlogid, const char *pane, const char *id, int height, int l
 	char heightbuf[32];
 
 	snprintf(heightbuf, sizeof(heightbuf), "%d", height);
-	return gui_ctrl_make_l(dlogid, "hrule", pane, id, NULL, NULL, layout, "height", heightbuf, NULL);
+	return gui_ctrl_make_l(dlogid, "hrule", pane, id, NULL, NULL, layout, "height", heightbuf,
+						   NULL);
 }
 
 
@@ -1029,7 +1035,8 @@ GuiVRule(const char *dlogid, const char *pane, const char *id, int thickness, in
 	char widthbuf[32];
 
 	snprintf(widthbuf, sizeof(widthbuf), "%d", thickness);
-	return gui_ctrl_make_l(dlogid, "vrule", pane, id, NULL, NULL, layout, "width", widthbuf, NULL);
+	return gui_ctrl_make_l(dlogid, "vrule", pane, id, NULL, NULL, layout, "width", widthbuf,
+						   NULL);
 }
 
 
@@ -1041,24 +1048,25 @@ GuiFrame(const char *dlogid, const char *pane, const char *id, int layout)
 
 
 int
-GuiGroupBox(const char *dlogid, const char *pane, const char *id, const char *text, int collapsible, int collapsed,
-			int layout)
+GuiGroupBox(const char *dlogid, const char *pane, const char *id, const char *text,
+			int collapsible, int collapsed, int layout)
 {
 	return gui_ctrl_make_l(dlogid, "frame", pane, id, text, NULL, layout,
-					"visible", "1",
-					"collapsible", collapsible ? "1" : "0",
-					"collapsed", collapsed ? "1" : "0", NULL);
+						   "visible", "1",
+						   "collapsible", collapsible ? "1" : "0",
+						   "collapsed", collapsed ? "1" : "0", NULL);
 }
 
 
 int
-GuiButton(const char *dlogid, const char *pane, const char *id, const char *text, int width, int dismiss, int layout)
+GuiButton(const char *dlogid, const char *pane, const char *id, const char *text, int width,
+		  int dismiss, int layout)
 {
 	char widthbuf[32];
 
 	snprintf(widthbuf, sizeof(widthbuf), "%d", width);
 	return gui_ctrl_make_l(dlogid, "button", pane, id, text, NULL, layout,
-					"width", widthbuf, "dismiss", dismiss ? "1" : "0", NULL);
+						   "width", widthbuf, "dismiss", dismiss ? "1" : "0", NULL);
 }
 
 
@@ -1127,6 +1135,7 @@ post_dlog_cb(GUI_EVENT_CB_ARGS)
 		char buf[BUFFER_LEN];
 		const char *subject = gui_value_get(dlogid, "subj", 0);
 		const char *keywords = gui_value_get(dlogid, "keywd", 0);
+
 		/* int bodycnt = gui_value_linecount(dlogid, "body"); */
 
 		snprintf(buf, sizeof(buf), "Subject: %s", subject);

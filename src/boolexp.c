@@ -143,7 +143,8 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 			if (PropType(b->prop_check) == PROP_STRTYP) {
 				if (has_property_strict(descr, player, thing,
 										PropName(b->prop_check),
-										PropDataStr(b->prop_check), 0)) return 1;
+										PropDataStr(b->prop_check), 0))
+					return 1;
 				if (has_property(descr, player, player,
 								 PropName(b->prop_check), PropDataStr(b->prop_check), 0))
 					return 1;

@@ -51,34 +51,28 @@ p_null(PRIM_PROTOTYPE)
 
 /* void    (*prim_func[]) (PRIM_PROTOTYPE) = */
 void (*prim_func[]) (PRIM_PROTOTYPE) = {
-	p_null, p_null, p_null, p_null, p_null,  p_null,
-	/* JMP, READ,   SLEEP,  CALL,   EXECUTE, RETURN, */
-	p_null,           p_null, p_null,
-	/* EVENT_WAITFOR, CATCH,  CATCH_DETAILED */
+	p_null, p_null, p_null, p_null, p_null, p_null,
+			/* JMP, READ,   SLEEP,  CALL,   EXECUTE, RETURN, */
+			p_null, p_null, p_null,
+			/* EVENT_WAITFOR, CATCH,  CATCH_DETAILED */
+PRIMS_CONNECTS_FUNCS,
+			PRIMS_DB_FUNCS,
+			PRIMS_MATH_FUNCS,
+			PRIMS_MISC_FUNCS,
+			PRIMS_PROPS_FUNCS,
+			PRIMS_STACK_FUNCS,
+			PRIMS_STRINGS_FUNCS,
+			PRIMS_ARRAY_FUNCS,
+			PRIMS_FLOAT_FUNCS,
+			PRIMS_ERROR_FUNCS, PRIMS_MCP_FUNCS, PRIMS_REGEX_FUNCS, PRIMS_INTERNAL_FUNCS, NULL};
 
-	PRIMS_CONNECTS_FUNCS,
-	PRIMS_DB_FUNCS,
-	PRIMS_MATH_FUNCS,
-	PRIMS_MISC_FUNCS,
-	PRIMS_PROPS_FUNCS,
-	PRIMS_STACK_FUNCS,
-	PRIMS_STRINGS_FUNCS,
-
-	PRIMS_ARRAY_FUNCS,
-	PRIMS_FLOAT_FUNCS,
-	PRIMS_ERROR_FUNCS,
-	PRIMS_MCP_FUNCS,
-	PRIMS_REGEX_FUNCS,
-	PRIMS_INTERNAL_FUNCS,
-	NULL
-};
-
-struct localvars*
+struct localvars *
 localvars_get(struct frame *fr, dbref prog)
 {
 	struct localvars *tmp = fr->lvars;
 
-	while (tmp && tmp->prog != prog) tmp = tmp->next;
+	while (tmp && tmp->prog != prog)
+		tmp = tmp->next;
 	if (tmp) {
 		/* Pull this out of the middle of the stack. */
 		*tmp->prev = tmp->next;
@@ -117,7 +111,7 @@ localvar_dupall(struct frame *fr, struct frame *oldfr)
 
 	while (orig) {
 		int count = MAX_VAR;
-		*targ = (struct localvars*)malloc(sizeof(struct localvars));
+		*targ = (struct localvars *) malloc(sizeof(struct localvars));
 		while (count-- > 0)
 			copyinst(&orig->lvars[count], &(*targ)->lvars[count]);
 		(*targ)->prog = orig->prog;
@@ -138,13 +132,14 @@ localvar_freeall(struct frame *fr)
 
 	while (ptr) {
 		int count = MAX_VAR;
+
 		nxt = ptr->next;
 		while (count-- > 0)
 			CLEAR(&ptr->lvars[count]);
 		ptr->next = NULL;
 		ptr->prev = NULL;
 		ptr->prog = NOTHING;
-		free((void*)ptr);
+		free((void *) ptr);
 		ptr = nxt;
 	}
 	fr->lvars = NULL;
@@ -222,7 +217,8 @@ struct inst *
 scopedvar_get(struct frame *fr, int level, int varnum)
 {
 	struct scopedvar_t *svinfo = fr->svars;
-	while (svinfo && level-->0)
+
+	while (svinfo && level-- > 0)
 		svinfo = svinfo->next;
 	if (!svinfo) {
 		return NULL;
@@ -233,7 +229,7 @@ scopedvar_get(struct frame *fr, int level, int varnum)
 	return (&svinfo->vars[varnum]);
 }
 
-const char*
+const char *
 scopedvar_getname_byinst(struct inst *pc, int varnum)
 {
 	while (pc->type != PROG_FUNCTION)
@@ -250,12 +246,12 @@ scopedvar_getname_byinst(struct inst *pc, int varnum)
 	return pc->data.mufproc->varnames[varnum];
 }
 
-const char*
+const char *
 scopedvar_getname(struct frame *fr, int level, int varnum)
 {
 	struct scopedvar_t *svinfo = fr->svars;
 
-	while (svinfo && level-->0)
+	while (svinfo && level-- > 0)
 		svinfo = svinfo->next;
 	if (!svinfo) {
 		return NULL;
@@ -270,12 +266,12 @@ scopedvar_getname(struct frame *fr, int level, int varnum)
 }
 
 int
-scopedvar_getnum(struct frame *fr, int level, const char* varname)
+scopedvar_getnum(struct frame *fr, int level, const char *varname)
 {
 	struct scopedvar_t *svinfo = fr->svars;
 	int varnum;
 
-	while (svinfo && level-->0)
+	while (svinfo && level-- > 0)
 		svinfo = svinfo->next;
 	if (!svinfo) {
 		return -1;
@@ -297,17 +293,17 @@ RCLEAR(struct inst *oper, char *file, int line)
 	int varcnt, j;
 
 	switch (oper->type) {
-	case PROG_CLEARED: {
-		time_t lt;
-		char buf[40];
+	case PROG_CLEARED:{
+			time_t lt;
+			char buf[40];
 
-		lt = time(NULL);
-		format_time(buf, 32, "%c", localtime(&lt));
-		fprintf(stderr, "%.32s: ", buf);
-		fprintf(stderr, "Attempt to re-CLEAR() instruction from %s:%hd "
-				"previously CLEAR()ed at %s:%d\n", file, line, (char *) oper->data.addr,
-				oper->line);
-		return;
+			lt = time(NULL);
+			format_time(buf, 32, "%c", localtime(&lt));
+			fprintf(stderr, "%.32s: ", buf);
+			fprintf(stderr, "Attempt to re-CLEAR() instruction from %s:%hd "
+					"previously CLEAR()ed at %s:%d\n", file, line, (char *) oper->data.addr,
+					oper->line);
+			return;
 		}
 	case PROG_ADD:
 		PROGRAM_DEC_INSTANCES(oper->data.addr->progref);
@@ -319,15 +315,15 @@ RCLEAR(struct inst *oper, char *file, int line)
 		break;
 	case PROG_FUNCTION:
 		if (oper->data.mufproc) {
-			free((void*) oper->data.mufproc->procname);
+			free((void *) oper->data.mufproc->procname);
 			varcnt = oper->data.mufproc->vars;
 			if (oper->data.mufproc->varnames) {
 				for (j = 0; j < varcnt; j++) {
-					free((void*)oper->data.mufproc->varnames[j]);
+					free((void *) oper->data.mufproc->varnames[j]);
 				}
-				free((void*) oper->data.mufproc->varnames);
+				free((void *) oper->data.mufproc->varnames);
 			}
-			free((void*) oper->data.mufproc);
+			free((void *) oper->data.mufproc);
 		}
 		break;
 	case PROG_ARRAY:
@@ -521,9 +517,9 @@ interp(int descr, dbref player, dbref location, dbref program,
 	fr->brkpt.prog[0] = program;
 
 	fr->proftime.tv_sec = 0;
-    fr->proftime.tv_usec = 0;
-    fr->totaltime.tv_sec = 0;
-    fr->totaltime.tv_usec = 0;
+	fr->proftime.tv_usec = 0;
+	fr->totaltime.tv_sec = 0;
+	fr->totaltime.tv_usec = 0;
 
 	fr->variables[0].type = PROG_OBJECT;
 	fr->variables[0].data.objref = player;
@@ -610,9 +606,9 @@ pop_for(struct forvars *forstack)
 	newstack = forstack->next;
 	forstack->next = for_pool;
 	for_pool = forstack;
- 	if (last_for == &for_pool) {
- 		last_for = &(for_pool->next);
- 	}
+	if (last_for == &for_pool) {
+		last_for = &(for_pool->next);
+	}
 	return newstack;
 }
 
@@ -627,7 +623,7 @@ copy_trys(struct tryvars *trystack)
 
 	for (in = trystack; in; in = in->next) {
 		if (!try_pool) {
-			nu = (struct tryvars*) malloc(sizeof(struct tryvars));
+			nu = (struct tryvars *) malloc(sizeof(struct tryvars));
 		} else {
 			nu = try_pool;
 			if (*last_try == try_pool->next) {
@@ -636,10 +632,10 @@ copy_trys(struct tryvars *trystack)
 			try_pool = nu->next;
 		}
 
-		nu->depth      = in->depth;
+		nu->depth = in->depth;
 		nu->call_level = in->call_level;
-		nu->for_count  = in->for_count;
-		nu->addr       = in->addr;
+		nu->for_count = in->for_count;
+		nu->addr = in->addr;
 		nu->next = NULL;
 
 		if (!out) {
@@ -658,7 +654,7 @@ push_try(struct tryvars *trystack)
 	struct tryvars *nu;
 
 	if (!try_pool) {
-		nu = (struct tryvars*) malloc(sizeof(struct tryvars));
+		nu = (struct tryvars *) malloc(sizeof(struct tryvars));
 	} else {
 		nu = try_pool;
 		if (*last_try == try_pool->next) {
@@ -681,9 +677,9 @@ pop_try(struct tryvars *trystack)
 	newstack = trystack->next;
 	trystack->next = try_pool;
 	try_pool = trystack;
- 	if (last_try == &try_pool) {
- 		last_try = &(try_pool->next);
- 	}
+	if (last_try == &try_pool) {
+		last_try = &(try_pool->next);
+	}
 	return newstack;
 }
 
@@ -696,6 +692,7 @@ watchpid_process(struct frame *fr)
 	struct mufwatchpidlist *cur;
 	struct mufwatchpidlist **curptr;
 	struct inst temp1;
+
 	temp1.type = PROG_INTEGER;
 	temp1.data.number = fr->pid;
 
@@ -703,14 +700,14 @@ watchpid_process(struct frame *fr)
 		cur = fr->waitees;
 		fr->waitees = cur->next;
 
-		frame = timequeue_pid_frame (cur->pid);
-		free (cur);
+		frame = timequeue_pid_frame(cur->pid);
+		free(cur);
 		if (frame) {
 			for (curptr = &frame->waiters; *curptr; curptr = &(*curptr)->next) {
 				if ((*curptr)->pid == fr->pid) {
 					cur = *curptr;
 					*curptr = (*curptr)->next;
-					free (cur);
+					free(cur);
 					break;
 				}
 			}
@@ -720,20 +717,20 @@ watchpid_process(struct frame *fr)
 	while (fr->waiters) {
 		char buf[64];
 
-		snprintf (buf, sizeof(buf), "PROC.EXIT.%d", fr->pid);
+		snprintf(buf, sizeof(buf), "PROC.EXIT.%d", fr->pid);
 
 		cur = fr->waiters;
 		fr->waiters = cur->next;
 
-		frame = timequeue_pid_frame (cur->pid);
-		free (cur);
+		frame = timequeue_pid_frame(cur->pid);
+		free(cur);
 		if (frame) {
 			muf_event_add(frame, buf, &temp1, 0);
 			for (curptr = &frame->waitees; *curptr; curptr = &(*curptr)->next) {
 				if ((*curptr)->pid == fr->pid) {
 					cur = *curptr;
 					*curptr = (*curptr)->next;
-					free (cur);
+					free(cur);
 					break;
 				}
 			}
@@ -762,7 +759,7 @@ prog_clean(struct frame *fr)
 		}
 	}
 
-	watchpid_process (fr);
+	watchpid_process(fr);
 
 	fr->system.top = 0;
 	for (i = 0; i < fr->argument.top; i++)
@@ -857,27 +854,28 @@ void
 copyinst(struct inst *from, struct inst *to)
 {
 	int j, varcnt;
+
 	*to = *from;
-	switch(from->type) {
+	switch (from->type) {
 	case PROG_FUNCTION:
-	    if (from->data.mufproc) {
-			to->data.mufproc = (struct muf_proc_data*)malloc(sizeof(struct muf_proc_data));
+		if (from->data.mufproc) {
+			to->data.mufproc = (struct muf_proc_data *) malloc(sizeof(struct muf_proc_data));
 			to->data.mufproc->procname = string_dup(from->data.mufproc->procname);
 			to->data.mufproc->vars = varcnt = from->data.mufproc->vars;
 			to->data.mufproc->args = from->data.mufproc->args;
-			to->data.mufproc->varnames = (const char**)calloc(varcnt, sizeof(const char*));
+			to->data.mufproc->varnames = (const char **) calloc(varcnt, sizeof(const char *));
 			for (j = 0; j < varcnt; j++) {
 				to->data.mufproc->varnames[j] = string_dup(from->data.mufproc->varnames[j]);
 			}
 		}
 		break;
 	case PROG_STRING:
-	    if (from->data.string) {
+		if (from->data.string) {
 			from->data.string->links++;
 		}
 		break;
 	case PROG_ARRAY:
-	    if (from->data.array) {
+		if (from->data.array) {
 			from->data.array->links++;
 		}
 		break;
@@ -886,7 +884,7 @@ copyinst(struct inst *from, struct inst *to)
 		PROGRAM_INC_INSTANCES(from->data.addr->progref);
 		break;
 	case PROG_LOCK:
-	    if (from->data.lock != TRUE_BOOLEXP) {
+		if (from->data.lock != TRUE_BOOLEXP) {
 			to->data.lock = copy_bool(from->data.lock);
 		}
 		break;
@@ -947,7 +945,8 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 
 	if (fr->trys.top) {
 		fr->errorstr = string_dup(msg);
-		fr->errorinst = string_dup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
+		fr->errorinst =
+				string_dup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
 		fr->errorline = pc->line;
 		fr->errorprog = program;
 		err++;
@@ -965,7 +964,8 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 	if (!fr->trys.top) {
 		if (pc) {
 			interp_err(player, program, pc, fr->argument.st, fr->argument.top,
-					fr->caller.st[1], insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1), msg);
+					   fr->caller.st[1], insttotext(fr, 0, pc, buffer, sizeof(buffer), 30,
+													program, 1), msg);
 			if (controls(player, program))
 				muf_backtrace(player, program, STACK_SIZE, fr);
 		} else {
@@ -1035,12 +1035,11 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		instr_count++;
 		if ((fr->multitask == PREEMPT) || (FLAGS(program) & BUILDER)) {
 			if (mlev == 4) {
-				if (tp_max_ml4_preempt_count)
-				{
+				if (tp_max_ml4_preempt_count) {
 					if (instr_count >= tp_max_ml4_preempt_count)
-						abort_loop_hard("Maximum preempt instruction count exceeded", NULL, NULL);
-				}
-				else
+						abort_loop_hard("Maximum preempt instruction count exceeded", NULL,
+										NULL);
+				} else
 					instr_count = 0;
 			} else {
 				/* else make sure that the program doesn't run too long */
@@ -1057,14 +1056,13 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 									(fr->multitask ==
 									 FOREGROUND) ? "FOREGROUND" : "BACKGROUND");
 				interp_depth--;
-				calc_profile_timing(program,fr);
+				calc_profile_timing(program, fr);
 				return NULL;
 			}
 		}
 		if (((FLAGS(program) & ZOMBIE) || fr->brkpt.force_debugging) &&
-				!fr->been_background &&
-				controls(player, program)
-		) {
+			!fr->been_background && controls(player, program)
+				) {
 			fr->brkpt.debugging = 1;
 		} else {
 			fr->brkpt.debugging = 0;
@@ -1072,20 +1070,18 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		if (FLAGS(program) & DARK ||
 			(fr->brkpt.debugging && fr->brkpt.showstack && !fr->brkpt.bypass)) {
 
-			if ((pc->type != PROG_PRIMITIVE) || (pc->data.number != instno_debug_line))
-			{
-				char *m = debug_inst(fr, 0, pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
+			if ((pc->type != PROG_PRIMITIVE) || (pc->data.number != instno_debug_line)) {
+				char *m =
+						debug_inst(fr, 0, pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
 
 				notify_nolisten(player, m, 1);
 			}
 		}
 		if (fr->brkpt.debugging) {
 			short breakflag = 0;
+
 			if (stop == 1 &&
-					!fr->brkpt.bypass &&
-					pc->type == PROG_PRIMITIVE &&
-					pc->data.number == IN_RET
-			) {
+				!fr->brkpt.bypass && pc->type == PROG_PRIMITIVE && pc->data.number == IN_RET) {
 				/* Program is about to EXIT */
 				notify_nolisten(player, "Program is about to EXIT.", 1);
 				breakflag = 1;
@@ -1094,24 +1090,19 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					if ((!fr->brkpt.pc[i] || pc == fr->brkpt.pc[i]) &&
 						/* pc matches */
 						(fr->brkpt.line[i] == -1 ||
-						 (fr->brkpt.lastline != pc->line &&
-						  fr->brkpt.line[i] == pc->line)) &&
+						 (fr->brkpt.lastline != pc->line && fr->brkpt.line[i] == pc->line)) &&
 						/* line matches */
-						(fr->brkpt.level[i] == -1 ||
-						 stop <= fr->brkpt.level[i]) &&
+						(fr->brkpt.level[i] == -1 || stop <= fr->brkpt.level[i]) &&
 						/* level matches */
-						(fr->brkpt.prog[i] == NOTHING ||
-						 fr->brkpt.prog[i] == program) &&
+						(fr->brkpt.prog[i] == NOTHING || fr->brkpt.prog[i] == program) &&
 						/* program matches */
 						(fr->brkpt.linecount[i] == -2 ||
-						 (fr->brkpt.lastline != pc->line &&
-						  fr->brkpt.linecount[i]-- <= 0)) &&
+						 (fr->brkpt.lastline != pc->line && fr->brkpt.linecount[i]-- <= 0)) &&
 						/* line count matches */
 						(fr->brkpt.pccount[i] == -2 ||
-						 (fr->brkpt.lastpc != pc &&
-						  fr->brkpt.pccount[i]-- <= 0))
+						 (fr->brkpt.lastpc != pc && fr->brkpt.pccount[i]-- <= 0))
 						/* pc count matches */
-					) {
+							) {
 						if (fr->brkpt.bypass) {
 							if (fr->brkpt.pccount[i] == -1)
 								fr->brkpt.pccount[i] = 0;
@@ -1154,7 +1145,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					snprintf(buf, sizeof(buf), "     %s", m);
 					notify_nolisten(player, buf, 1);
 				}
-				calc_profile_timing(program,fr);
+				calc_profile_timing(program, fr);
 				return NULL;
 			}
 			fr->brkpt.lastline = pc->line;
@@ -1203,8 +1194,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 				if (pc->type == PROG_LVAR_AT_CLEAR) {
 					CLEAR(tmp);
-					tmp->type			= PROG_INTEGER;
-					tmp->data.number	= 0;
+					tmp->type = PROG_INTEGER;
+					tmp->data.number = 0;
 				}
 
 				pc++;
@@ -1216,6 +1207,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			{
 				struct inst *the_var;
 				struct localvars *lv;
+
 				if (atop < 1)
 					abort_loop("Stack Underflow.", NULL, NULL);
 				if (fr->trys.top && atop - fr->trys.st->depth < 1)
@@ -1251,8 +1243,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				if (pc->type == PROG_SVAR_AT_CLEAR) {
 					CLEAR(tmp);
 
-					tmp->type			= PROG_INTEGER;
-					tmp->data.number	= 0;
+					tmp->type = PROG_INTEGER;
+					tmp->data.number = 0;
 				}
 
 				pc++;
@@ -1263,6 +1255,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		case PROG_SVAR_BANG:
 			{
 				struct inst *the_var;
+
 				if (atop < 1)
 					abort_loop("Stack Underflow.", NULL, NULL);
 				if (fr->trys.top && atop - fr->trys.st->depth < 1)
@@ -1282,6 +1275,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		case PROG_FUNCTION:
 			{
 				int i = pc->data.mufproc->args;
+
 				if (atop < i)
 					abort_loop("Stack Underflow.", NULL, NULL);
 				if (fr->trys.top && atop - fr->trys.st->depth < i)
@@ -1290,13 +1284,15 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					fr->skip_declare = 0;
 				else
 					scopedvar_addlevel(fr, pc, pc->data.mufproc->vars);
-				while (i-->0)
-				{
+				while (i-- > 0) {
 					struct inst *tmp;
+
 					temp1 = arg + --atop;
 					tmp = scopedvar_get(fr, 0, i);
 					if (!tmp)
-						abort_loop_hard("Internal error: Scoped variable number out of range in FUNCTION init.", temp1, NULL);
+						abort_loop_hard
+								("Internal error: Scoped variable number out of range in FUNCTION init.",
+								 temp1, NULL);
 					CLEAR(tmp);
 					copyinst(temp1, tmp);
 					CLEAR(temp1);
@@ -1324,7 +1320,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			sys[stop].progref = program;
 			sys[stop++].offset = pc + 1;
 			pc = pc->data.call;
-			fr->skip_declare = 0;  /* Make sure we DON'T skip var decls */
+			fr->skip_declare = 0;	/* Make sure we DON'T skip var decls */
 			break;
 
 		case PROG_JMP:
@@ -1374,7 +1370,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				if (temp1->data.addr->progref >= db_top ||
 					temp1->data.addr->progref < 0 ||
 					(Typeof(temp1->data.addr->progref) != TYPE_PROGRAM))
-							abort_loop_hard("Internal error.  Invalid address.", temp1, NULL);
+					abort_loop_hard("Internal error.  Invalid address.", temp1, NULL);
 				if (program != temp1->data.addr->progref) {
 					abort_loop("Destination outside current program.", temp1, NULL);
 				}
@@ -1396,7 +1392,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				if (temp1->data.addr->progref >= db_top ||
 					temp1->data.addr->progref < 0 ||
 					(Typeof(temp1->data.addr->progref) != TYPE_PROGRAM))
-							abort_loop_hard("Internal error.  Invalid address.", temp1, NULL);
+					abort_loop_hard("Internal error.  Invalid address.", temp1, NULL);
 				if (stop >= STACK_SIZE)
 					abort_loop("System Stack Overflow", temp1, NULL);
 				sys[stop].progref = program;
@@ -1451,7 +1447,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					abort_loop("Permission denied", temp1, temp2);
 				if (mlev < 4 && OWNER(temp1->data.objref) != ProgUID
 					&& !Linkable(temp1->data.objref))
-							abort_loop("Permission denied", temp1, temp2);
+					abort_loop("Permission denied", temp1, temp2);
 				if (stop >= STACK_SIZE)
 					abort_loop("System Stack Overflow", temp1, temp2);
 				sys[stop].progref = program;
@@ -1478,7 +1474,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				}
 				stop++;
 				if (temp1->data.objref != program) {
-					calc_profile_timing(program,fr);
+					calc_profile_timing(program, fr);
 					gettimeofday(&fr->proftime, NULL);
 					program = temp1->data.objref;
 					fr->caller.st[++fr->caller.top] = program;
@@ -1497,8 +1493,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					if (sys[stop - 1].progref >= db_top ||
 						sys[stop - 1].progref < 0 ||
 						(Typeof(sys[stop - 1].progref) != TYPE_PROGRAM))
-								abort_loop_hard("Internal error.  Invalid address.", NULL, NULL);
-					calc_profile_timing(program,fr);
+						abort_loop_hard("Internal error.  Invalid address.", NULL, NULL);
+					calc_profile_timing(program, fr);
 					gettimeofday(&fr->proftime, NULL);
 					PROGRAM_DEC_INSTANCES(program);
 					program = sys[stop - 1].progref;
@@ -1523,7 +1519,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 						CLEAR(temp1);
 					}
 
-					while (fr->trys.st->for_count-->0) {
+					while (fr->trys.st->for_count-- > 0) {
 						CLEAR(&fr->fors.st->cur);
 						CLEAR(&fr->fors.st->end);
 						fr->fors.top--;
@@ -1551,6 +1547,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					} else {
 						/* IN_CATCH_DETAILED */
 						stk_array *nu = new_array_dictionary();
+
 						if (fr->errorstr) {
 							array_set_strkey_strval(&nu, "error", fr->errorstr);
 							free(fr->errorstr);
@@ -1573,28 +1570,34 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 			case IN_EVENT_WAITFOR:
 				if (atop < 1)
-					abort_loop("Stack Underflow. Missing eventID list array argument.", NULL, NULL);
+					abort_loop("Stack Underflow. Missing eventID list array argument.", NULL,
+							   NULL);
 				if (fr->trys.top && atop - fr->trys.st->depth < 1)
 					abort_loop("Stack protection fault.", NULL, NULL);
 				temp1 = arg + --atop;
 				if (temp1->type != PROG_ARRAY)
 					abort_loop("EventID string list array expected.", temp1, NULL);
 				if (temp1->data.array && temp1->data.array->type != ARRAY_PACKED)
-					abort_loop("Argument must be a list array of eventid strings.", temp1, NULL);
+					abort_loop("Argument must be a list array of eventid strings.", temp1,
+							   NULL);
 				if (!array_is_homogenous(temp1->data.array, PROG_STRING))
-					abort_loop("Argument must be a list array of eventid strings.", temp1, NULL);
+					abort_loop("Argument must be a list array of eventid strings.", temp1,
+							   NULL);
 				fr->pc = pc + 1;
 				reload(fr, atop, stop);
 
 				{
 					int i, outcount;
 					int count = array_count(temp1->data.array);
-					char** events = (char**)malloc(count * sizeof(char**));
+					char **events = (char **) malloc(count * sizeof(char **));
+
 					for (outcount = i = 0; i < count; i++) {
 						char *val = array_get_intkey_strval(temp1->data.array, i);
+
 						if (val != NULL) {
 							int found = 0;
 							int j;
+
 							for (j = 0; j < outcount; j++) {
 								if (!strcmp(events[j], val)) {
 									found = 1;
@@ -1613,7 +1616,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				PLAYER_SET_BLOCK(player, (!fr->been_background));
 				CLEAR(temp1);
 				interp_depth--;
-				calc_profile_timing(program,fr);
+				calc_profile_timing(program, fr);
 				return NULL;
 				/* NOTREACHED */
 				break;
@@ -1630,7 +1633,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				PLAYER_SET_BLOCK(player, 0);
 				add_muf_read_event(fr->descr, player, program, fr);
 				interp_depth--;
-				calc_profile_timing(program,fr);
+				calc_profile_timing(program, fr);
 				return NULL;
 				/* NOTREACHED */
 				break;
@@ -1651,7 +1654,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 									NOTHING, NOTHING, program, fr, "SLEEPING");
 				PLAYER_SET_BLOCK(player, (!fr->been_background));
 				interp_depth--;
-				calc_profile_timing(program,fr);
+				calc_profile_timing(program, fr);
 				return NULL;
 				/* NOTREACHED */
 				break;
@@ -1670,8 +1673,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			fprintf(stderr, "Attempt to execute instruction cleared by %s:%hd in program %d\n",
 					(char *) pc->data.addr, pc->line, program);
 			pc = NULL;
-			abort_loop_hard("Program internal error. Program erroneously freed from memory.", NULL,
-					   NULL);
+			abort_loop_hard("Program internal error. Program erroneously freed from memory.",
+							NULL, NULL);
 		default:
 			pc = NULL;
 			abort_loop_hard("Program internal error. Unknown instruction type.", NULL, NULL);
@@ -1683,8 +1686,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 						if (sys[stop - 1].progref >= db_top ||
 							sys[stop - 1].progref < 0 ||
 							(Typeof(sys[stop - 1].progref) != TYPE_PROGRAM))
-									abort_loop_hard("Internal error.  Invalid address.", NULL, NULL);
-						calc_profile_timing(program,fr);
+							abort_loop_hard("Internal error.  Invalid address.", NULL, NULL);
+						calc_profile_timing(program, fr);
 						gettimeofday(&fr->proftime, NULL);
 						PROGRAM_DEC_INSTANCES(program);
 						program = sys[stop - 1].progref;
@@ -1702,7 +1705,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				prog_clean(fr);
 				PLAYER_SET_BLOCK(player, 0);
 				interp_depth--;
-				calc_profile_timing(program,fr);
+				calc_profile_timing(program, fr);
 				return NULL;
 			}
 		}
@@ -1725,13 +1728,13 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		reload(fr, atop, stop);
 		prog_clean(fr);
 		interp_depth--;
-		calc_profile_timing(program,fr);
+		calc_profile_timing(program, fr);
 		return rv;
 	}
 	reload(fr, atop, stop);
 	prog_clean(fr);
 	interp_depth--;
-	calc_profile_timing(program,fr);
+	calc_profile_timing(program, fr);
 	return NULL;
 }
 
@@ -1749,14 +1752,17 @@ interp_err(dbref player, dbref program, struct inst *pc,
 	err++;
 
 	if (OWNER(origprog) == OWNER(player)) {
-		strcpy(buf, "\033[1;31;40mProgram Error.  Your program just got the following error.\033[0m");
+		strcpy(buf,
+			   "\033[1;31;40mProgram Error.  Your program just got the following error.\033[0m");
 	} else {
-		snprintf(buf, sizeof(buf), "\033[1;31;40mProgrammer Error.  Please tell %s what you typed, and the following message.\033[0m",
-				NAME(OWNER(origprog)));
+		snprintf(buf, sizeof(buf),
+				 "\033[1;31;40mProgrammer Error.  Please tell %s what you typed, and the following message.\033[0m",
+				 NAME(OWNER(origprog)));
 	}
 	notify_nolisten(player, buf, 1);
 
-	snprintf(buf, sizeof(buf), "\033[1m%s(#%d), line %d; %s: %s\033[0m", NAME(program), program, pc->line, msg1, msg2);
+	snprintf(buf, sizeof(buf), "\033[1m%s(#%d), line %d; %s: %s\033[0m", NAME(program),
+			 program, pc->line, msg1, msg2);
 	notify_nolisten(player, buf, 1);
 
 	lt = time(NULL);
@@ -1767,7 +1773,7 @@ interp_err(dbref player, dbref program, struct inst *pc,
 	errcount++;
 	add_property(origprog, ".debug/errcount", NULL, errcount);
 	add_property(origprog, ".debug/lasterr", buf2, 0);
-	add_property(origprog, ".debug/lastcrash", NULL, (int)lt);
+	add_property(origprog, ".debug/lastcrash", NULL, (int) lt);
 	add_property(origprog, ".debug/lastcrashtime", tbuf, 0);
 
 	if (origprog != program) {
@@ -1775,7 +1781,7 @@ interp_err(dbref player, dbref program, struct inst *pc,
 		errcount++;
 		add_property(program, ".debug/errcount", NULL, errcount);
 		add_property(program, ".debug/lasterr", buf2, 0);
-		add_property(program, ".debug/lastcrash", NULL, (int)lt);
+		add_property(program, ".debug/lastcrash", NULL, (int) lt);
 		add_property(program, ".debug/lastcrashtime", tbuf, 0);
 	}
 }
@@ -1889,15 +1895,16 @@ do_abort_interp(dbref player, const char *msg, struct inst *pc,
 
 	if (fr->trys.top) {
 		fr->errorstr = string_dup(msg);
-		fr->errorinst = string_dup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
+		fr->errorinst =
+				string_dup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
 		fr->errorline = pc->line;
 		fr->errorprog = program;
 		err++;
 	} else {
 		fr->pc = pc;
-		calc_profile_timing(program,fr);
+		calc_profile_timing(program, fr);
 		interp_err(player, program, pc, arg, atop, fr->caller.st[1],
-				insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1), msg);
+				   insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1), msg);
 		if (controls(player, program))
 			muf_backtrace(player, program, STACK_SIZE, fr);
 	}

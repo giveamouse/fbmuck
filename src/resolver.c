@@ -48,7 +48,7 @@
 
 
 int
-notify(int player, const char* msg)
+notify(int player, const char *msg)
 {
 	return printf("%s\n", msg);
 }
@@ -487,7 +487,7 @@ addrout(long a, unsigned short prt, unsigned short myprt)
 
 	a = ntohl(a);
 	snprintf(tmpbuf, sizeof(tmpbuf), "%ld.%ld.%ld.%ld",
-			(a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff);
+			 (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff);
 	hostadd_timestamp(a, tmpbuf);
 	ptr = get_username(htonl(a), prt, myprt);
 #endif

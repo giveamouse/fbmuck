@@ -39,9 +39,9 @@ moveto(dbref what, dbref where)
 		case TYPE_THING:
 			where = THING_HOME(what);
 			if (parent_loop_check(what, where)) {
-			  where = PLAYER_HOME(OWNER(what));
-			  if (parent_loop_check(what, where))
-			    where = (dbref) 0;
+				where = PLAYER_HOME(OWNER(what));
+				if (parent_loop_check(what, where))
+					where = (dbref) 0;
 			}
 			break;
 		case TYPE_ROOM:
@@ -52,28 +52,28 @@ moveto(dbref what, dbref where)
 			break;
 		}
 		break;
-        default:
-	  if (parent_loop_check(what, where)) {
-	    switch (Typeof(what)) {
-		case TYPE_PLAYER:
-			where = PLAYER_HOME(what);
-			break;
-		case TYPE_THING:
-			where = THING_HOME(what);
-			if (parent_loop_check(what, where)) {
-			  where = PLAYER_HOME(OWNER(what));
-			  if (parent_loop_check(what, where))
-			    where = (dbref) 0;
+	default:
+		if (parent_loop_check(what, where)) {
+			switch (Typeof(what)) {
+			case TYPE_PLAYER:
+				where = PLAYER_HOME(what);
+				break;
+			case TYPE_THING:
+				where = THING_HOME(what);
+				if (parent_loop_check(what, where)) {
+					where = PLAYER_HOME(OWNER(what));
+					if (parent_loop_check(what, where))
+						where = (dbref) 0;
+				}
+				break;
+			case TYPE_ROOM:
+				where = GLOBAL_ENVIRONMENT;
+				break;
+			case TYPE_PROGRAM:
+				where = OWNER(what);
+				break;
 			}
-			break;
-		case TYPE_ROOM:
-			where = GLOBAL_ENVIRONMENT;
-			break;
-		case TYPE_PROGRAM:
-			where = OWNER(what);
-			break;
 		}
-	  }
 	}
 
 	/* now put what in where */
@@ -153,99 +153,99 @@ maybe_dropto(int descr, dbref loc, dbref dropto)
 
 int
 location_loop_check(dbref source, dbref dest)
-{   
-  unsigned int level = 0;
-  unsigned int place = 0;
-  dbref pstack[MAX_PARENT_DEPTH+2];
+{
+	unsigned int level = 0;
+	unsigned int place = 0;
+	dbref pstack[MAX_PARENT_DEPTH + 2];
 
-  if (source == dest) {
-    return 1;
-  }
-  pstack[0] = source;
-  pstack[1] = dest;
+	if (source == dest) {
+		return 1;
+	}
+	pstack[0] = source;
+	pstack[1] = dest;
 
-  while (level < MAX_PARENT_DEPTH) {
-    dest = getloc(dest);
-    if (dest == NOTHING) {
-      return 0;
-    }
-    if (dest == HOME) {        /* We should never get this, either. */
-      return 1;
-    }
-    if (dest == (dbref) 0) {   /* Reached the top of the chain. */
-      return 0;
-    }
-    /* Check to see if we've found this item before.. */
-    for (place = 0; place < (level+2); place++) {
-      if (pstack[place] == dest) {
-        return 1;
-      }
-    }
-    pstack[level+2] = dest;
-    level++;
-  }
-  return 1;
+	while (level < MAX_PARENT_DEPTH) {
+		dest = getloc(dest);
+		if (dest == NOTHING) {
+			return 0;
+		}
+		if (dest == HOME) {		/* We should never get this, either. */
+			return 1;
+		}
+		if (dest == (dbref) 0) {	/* Reached the top of the chain. */
+			return 0;
+		}
+		/* Check to see if we've found this item before.. */
+		for (place = 0; place < (level + 2); place++) {
+			if (pstack[place] == dest) {
+				return 1;
+			}
+		}
+		pstack[level + 2] = dest;
+		level++;
+	}
+	return 1;
 }
 
 int
 parent_loop_check(dbref source, dbref dest)
-{   
-  unsigned int level = 0;
-  unsigned int place = 0;
-  dbref pstack[MAX_PARENT_DEPTH+2];
+{
+	unsigned int level = 0;
+	unsigned int place = 0;
+	dbref pstack[MAX_PARENT_DEPTH + 2];
 
-  if (dest == HOME) {
-	  switch(Typeof(source)) {
-		  case TYPE_PLAYER:
-			  dest = PLAYER_HOME(source);
-			  break;
-		  case TYPE_THING:
-			  dest = THING_HOME(source);
-			  break;
-		  case TYPE_ROOM:
-			  dest = GLOBAL_ENVIRONMENT;
-			  break;
-		  case TYPE_PROGRAM:
-			  dest = OWNER(source);
-			  break;
-		  default:
-			  return 1;
-	  }
-  }
-  if (location_loop_check(source, dest)) {
-	  return 1;
-  }
+	if (dest == HOME) {
+		switch (Typeof(source)) {
+		case TYPE_PLAYER:
+			dest = PLAYER_HOME(source);
+			break;
+		case TYPE_THING:
+			dest = THING_HOME(source);
+			break;
+		case TYPE_ROOM:
+			dest = GLOBAL_ENVIRONMENT;
+			break;
+		case TYPE_PROGRAM:
+			dest = OWNER(source);
+			break;
+		default:
+			return 1;
+		}
+	}
+	if (location_loop_check(source, dest)) {
+		return 1;
+	}
 
-  if (source == dest) {
-    return 1;
-  }
-  pstack[0] = source;
-  pstack[1] = dest;
+	if (source == dest) {
+		return 1;
+	}
+	pstack[0] = source;
+	pstack[1] = dest;
 
-  while (level < MAX_PARENT_DEPTH) {
-    /* if (Typeof(dest) == TYPE_THING) {
-         dest = THING_HOME(dest);
-       } */
-    dest = getparent(dest);
-    if (dest == NOTHING) {
-      return 0;
-    }
-    if (dest == HOME) {        /* We should never get this, either. */
-      return 1;
-    }
-    if (dest == (dbref) 0) {   /* Reached the top of the chain. */
-      return 0;
-    }
-    /* Check to see if we've found this item before.. */
-    for (place = 0; place < (level+2); place++) {
-      if (pstack[place] == dest) {
-        return 1;
-      }
-    }
-    pstack[level+2] = dest;
-    level++;
-  }
-  return 1;
+	while (level < MAX_PARENT_DEPTH) {
+		/* if (Typeof(dest) == TYPE_THING) {
+		   dest = THING_HOME(dest);
+		   } */
+		dest = getparent(dest);
+		if (dest == NOTHING) {
+			return 0;
+		}
+		if (dest == HOME) {		/* We should never get this, either. */
+			return 1;
+		}
+		if (dest == (dbref) 0) {	/* Reached the top of the chain. */
+			return 0;
+		}
+		/* Check to see if we've found this item before.. */
+		for (place = 0; place < (level + 2); place++) {
+			if (pstack[place] == dest) {
+				return 1;
+			}
+		}
+		pstack[level + 2] = dest;
+		level++;
+	}
+	return 1;
 }
 
 static int donelook = 0;
@@ -264,25 +264,25 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 	old = DBFETCH(player)->location;
 
 	if (parent_loop_check(player, loc)) {
-	  switch (Typeof(player)) {
-	  case TYPE_PLAYER:
-	    loc = PLAYER_HOME(player);
-	    break;
-	  case TYPE_THING:
-	    loc = THING_HOME(player);
-	    if (parent_loop_check(player, loc)) {
-	      loc = PLAYER_HOME(OWNER(player));
-	      if (parent_loop_check(player, loc))
-		loc = (dbref) 0;
-	    }
-	    break;
-	  case TYPE_ROOM:
-	    loc = GLOBAL_ENVIRONMENT;
-	    break;
-	  case TYPE_PROGRAM:
-	    loc = OWNER(player);
-	    break;
-	  }
+		switch (Typeof(player)) {
+		case TYPE_PLAYER:
+			loc = PLAYER_HOME(player);
+			break;
+		case TYPE_THING:
+			loc = THING_HOME(player);
+			if (parent_loop_check(player, loc)) {
+				loc = PLAYER_HOME(OWNER(player));
+				if (parent_loop_check(player, loc))
+					loc = (dbref) 0;
+			}
+			break;
+		case TYPE_ROOM:
+			loc = GLOBAL_ENVIRONMENT;
+			break;
+		case TYPE_PROGRAM:
+			loc = OWNER(player);
+			break;
+		}
 	}
 
 	/* check for self-loop */
@@ -428,7 +428,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 	dbref dest;
 	int sobjact;				/* sticky object action flag, sends home
 
-								   * source obj */
+								 * source obj */
 	int succ;
 	struct frame *tmpfr;
 
@@ -459,7 +459,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 					exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
 				if (GETODROP(exit) && !Dark(player)) {
 					parse_oprop(descr, player, dest, exit, MESGPROP_ODROP,
-								   NAME(player), "(@Odrop)");
+								NAME(player), "(@Odrop)");
 				}
 				enter_room(descr, player, dest, exit);
 				succ = 1;
@@ -476,7 +476,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 						exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
 					if (GETODROP(exit) && !Dark(player)) {
 						parse_oprop(descr, player, dest, exit, MESGPROP_ODROP,
-									   NAME(player), "(@Odrop)");
+									NAME(player), "(@Odrop)");
 					}
 					enter_room(descr, player, dest, exit);
 					succ = 1;
@@ -531,7 +531,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 					}
 					if (GETODROP(exit) && !Dark(player)) {
 						parse_oprop(descr, player, getloc(dest), exit,
-									   MESGPROP_ODROP, NAME(player), "(@Odrop)");
+									MESGPROP_ODROP, NAME(player), "(@Odrop)");
 					}
 					enter_room(descr, player, DBFETCH(dest)->location, exit);
 				} else {
@@ -777,7 +777,6 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 		} else {
 			int immediate_dropto = (Typeof(cont) == TYPE_ROOM &&
 									DBFETCH(cont)->sp.room.dropto != NOTHING
-
 									&& !(FLAGS(cont) & STICKY));
 
 			if (tp_thing_movement && (Typeof(thing) == TYPE_THING)) {
@@ -805,8 +804,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 			exec_or_notify_prop(descr, player, loc, MESGPROP_DROP, "(@Drop)");
 
 		if (GETODROP(thing)) {
-			parse_oprop(descr, player, loc, thing, MESGPROP_ODROP,
-						   NAME(player), "(@Odrop)");
+			parse_oprop(descr, player, loc, thing, MESGPROP_ODROP, NAME(player), "(@Odrop)");
 		} else {
 			snprintf(buf, sizeof(buf), "%s drops %s.", NAME(player), NAME(thing));
 			notify_except(DBFETCH(loc)->contents, player, buf, player);
@@ -838,7 +836,7 @@ do_recycle(int descr, dbref player, const char *name)
 	match_absolute(&md);
 	if ((thing = noisy_match_result(&md)) != NOTHING) {
 		if (!controls(player, thing)) {
-			if(Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
+			if (Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
 				notify(player, "That's already garbage!");
 			else
 				notify(player, "Permission denied.");
@@ -850,7 +848,8 @@ do_recycle(int descr, dbref player, const char *name)
 					return;
 				}
 				if (thing == tp_player_start || thing == GLOBAL_ENVIRONMENT) {
-					notify(player, "This room may not be recycled (is either player start or the global environment).");
+					notify(player,
+						   "This room may not be recycled (is either player start or the global environment).");
 					return;
 				}
 				break;
@@ -861,8 +860,8 @@ do_recycle(int descr, dbref player, const char *name)
 				}
 				if (thing == player) {
 					snprintf(buf, sizeof(buf),
-							"%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks it's legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
-							NAME(thing));
+							 "%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks it's legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
+							 NAME(thing));
 					notify_except(DBFETCH(getloc(thing))->contents, thing, buf, player);
 					notify(OWNER(player), buf);
 					notify(OWNER(player), "Now don't you feel guilty?");
@@ -889,7 +888,7 @@ do_recycle(int descr, dbref player, const char *name)
 					return;
 				}
 				/* FIXME: This is a workaround for bug #201633 */
-				if(PROGRAM_INSTANCES(thing)) {
+				if (PROGRAM_INSTANCES(thing)) {
 					notify(player, "Recycle failed: Program is running.");
 					return;
 				}
@@ -900,7 +899,8 @@ do_recycle(int descr, dbref player, const char *name)
 				/* NOTREACHED */
 				break;
 			}
-			snprintf(buf, sizeof(buf), "Thank you for recycling %.512s (#%d).", NAME(thing), thing);
+			snprintf(buf, sizeof(buf), "Thank you for recycling %.512s (#%d).", NAME(thing),
+					 thing);
 			recycle(descr, player, thing);
 			notify(player, buf);
 		}
@@ -919,13 +919,14 @@ recycle(int descr, dbref player, dbref thing)
 
 	depth++;
 	if (force_level) {
-		if(thing == force_prog) {
+		if (thing == force_prog) {
 			log_status("SANITYCHECK: Was about to recycle FORCEing object #%d!", thing);
 			notify(player, "ERROR: Cannot recycle an object FORCEing you!");
 			return;
 		}
-		if((Typeof(thing) == TYPE_PROGRAM) && (PROGRAM_INSTANCES(thing) != 0)) {
-			log_status("SANITYCHECK: Trying to recycle a running program (#%d) from FORCE!", thing);
+		if ((Typeof(thing) == TYPE_PROGRAM) && (PROGRAM_INSTANCES(thing) != 0)) {
+			log_status("SANITYCHECK: Trying to recycle a running program (#%d) from FORCE!",
+					   thing);
 			notify(player, "ERROR: Cannot recycle a running program from FORCE.");
 			return;
 		}
@@ -987,19 +988,19 @@ recycle(int descr, dbref player, dbref thing)
 			break;
 		case TYPE_THING:
 			if (THING_HOME(rest) == thing) {
-			  dbref loc;
+				dbref loc;
 
-			  if (PLAYER_HOME(OWNER(rest)) == thing)
-			    PLAYER_SET_HOME(OWNER(rest), tp_player_start);
-			  loc = PLAYER_HOME(OWNER(rest));
-			  if (parent_loop_check(rest, loc)) {
-			    loc = OWNER(rest);
-			    if (parent_loop_check(rest, loc)) {
-			      loc = (dbref) 0;
-			    }
-			  }
-			  THING_SET_HOME(rest, loc);
-			  DBDIRTY(rest);
+				if (PLAYER_HOME(OWNER(rest)) == thing)
+					PLAYER_SET_HOME(OWNER(rest), tp_player_start);
+				loc = PLAYER_HOME(OWNER(rest));
+				if (parent_loop_check(rest, loc)) {
+					loc = OWNER(rest);
+					if (parent_loop_check(rest, loc)) {
+						loc = (dbref) 0;
+					}
+				}
+				THING_SET_HOME(rest, loc);
+				DBDIRTY(rest);
 			}
 			if (DBFETCH(rest)->exits == thing) {
 				DBFETCH(rest)->exits = DBFETCH(thing)->next;
@@ -1079,7 +1080,7 @@ recycle(int descr, dbref player, dbref thing)
 		if (Typeof(first) == TYPE_PLAYER ||
 			(Typeof(first) == TYPE_THING &&
 			 (FLAGS(first) & (ZOMBIE | VEHICLE) || tp_thing_movement))
-		) {
+				) {
 			enter_room(descr, first, HOME, DBFETCH(thing)->location);
 			/* If the room is set to drag players back, there'll be no
 			 * reasoning with it.  DRAG the player out.
@@ -1100,7 +1101,7 @@ recycle(int descr, dbref player, dbref thing)
 
 	db_free_object(thing);
 	db_clear_object(thing);
-	NAME(thing) = (char*) string_dup("<garbage>");
+	NAME(thing) = (char *) string_dup("<garbage>");
 	SETDESC(thing, "<recyclable>");
 	FLAGS(thing) = TYPE_GARBAGE;
 

@@ -30,6 +30,7 @@
 #endif
 
 extern char **environ;
+
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #else
@@ -43,11 +44,11 @@ char *Name;						/* name of this program for error messages */
 char msg[32768];
 
 
-char*
-strcpyn(char* buf, size_t bufsize, const char* src)
+char *
+strcpyn(char *buf, size_t bufsize, const char *src)
 {
 	int pos = 0;
-	char* dest = buf;
+	char *dest = buf;
 
 	while (++pos < bufsize && *src) {
 		*dest++ = *src++;
@@ -56,11 +57,11 @@ strcpyn(char* buf, size_t bufsize, const char* src)
 	return buf;
 }
 
-char*
-strcatn(char* buf, size_t bufsize, const char* src)
+char *
+strcatn(char *buf, size_t bufsize, const char *src)
 {
 	int pos = strlen(buf);
-	char* dest = &buf[pos];
+	char *dest = &buf[pos];
 
 	while (++pos < bufsize && *src) {
 		*dest++ = *src++;
@@ -114,7 +115,7 @@ main(int argc, char *argv[])
 	strcpyn(msg, sizeof(msg), "");
 	strcpyn(tmp, sizeof(tmp), "");
 	while (1) {
-		if (fgets(tmp,32766,stdin) == NULL)
+		if (fgets(tmp, 32766, stdin) == NULL)
 			break;
 		strcatn(tmp, sizeof(tmp), "\r\n");
 		strcatn(msg, sizeof(msg), tmp);
@@ -150,7 +151,7 @@ main(int argc, char *argv[])
 	}
 	foo = sizeof sin;
 	for (;;) {					/* loop forever, accepting requests & printing
-								   * msg */
+								 * msg */
 		ns = accept(s, (struct sockaddr *) &sin, &foo);
 		if (ns < 0) {
 			perror("announce: accept");

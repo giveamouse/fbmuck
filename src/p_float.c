@@ -196,7 +196,7 @@ prim_tan(PRIM_PROTOTYPE)
 		abort_interp("Non-float argument. (1)");
 	if (!no_good(oper1->data.fnumber)) {
 		fresult = fmod((oper1->data.fnumber - H_PI), F_PI);
-		if (fabs(fresult) > DBL_EPSILON && fabs(fresult-F_PI) > DBL_EPSILON) {
+		if (fabs(fresult) > DBL_EPSILON && fabs(fresult - F_PI) > DBL_EPSILON) {
 			fresult = tan(oper1->data.fnumber);
 		} else {
 			fresult = 0.0;
@@ -551,8 +551,7 @@ prim_pow(PRIM_PROTOTYPE)
 		if (fabs(oper2->data.fnumber) < DBL_EPSILON) {
 			fresult = 0.0;
 		} else if (oper2->data.fnumber < 0.0 &&
-			oper1->data.fnumber != floor(oper1->data.fnumber))
-		{
+				   oper1->data.fnumber != floor(oper1->data.fnumber)) {
 			fresult = 0.0;
 			fr->error.error_flags.imaginary = 1;
 		} else {
@@ -576,10 +575,10 @@ prim_frand(PRIM_PROTOTYPE)
 	result = rand();
 	tresult = rand();
 	if ((result < tresult) && (result != tresult)) {
-		fresult = (float)result / (float)tresult;
+		fresult = (float) result / (float) tresult;
 	} else {
 		if (result != 0) {
-			fresult = (float)tresult / (float)result;
+			fresult = (float) tresult / (float) result;
 		} else {
 			fresult = 0.0;
 			/* 0 is what we want here, no error.error */
@@ -687,4 +686,3 @@ prim_ftostrc(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushString(buf);
 }
-

@@ -115,7 +115,8 @@ prim_fmtstring(PRIM_PROTOTYPE)
 							if (oper2->type != PROG_INTEGER)
 								abort_interp("Format specified integer argument not found.");
 							if (oper2->data.number < 0)
-								abort_interp("Dynamic precision value must be a positive integer.");
+								abort_interp
+										("Dynamic precision value must be a positive integer.");
 							slen2 = oper2->data.number;
 							CLEAR(oper2);
 						} else {
@@ -129,11 +130,12 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				/* If s is the format and oper2 is really a string, repair the lengths to account for ansi codes. */
 				CHECKOP(1);
 				oper2 = POP();
-				if(('s' == sstr[scnt]) && (PROG_STRING == oper2->type) && (oper2->data.string)) {
+				if (('s' == sstr[scnt]) && (PROG_STRING == oper2->type) &&
+					(oper2->data.string)) {
 					ptr = oper2->data.string->data;
 
 					i = 0;
-					while ((-1 == slen2 || i < slen2) && *ptr) {  /* adapted from prim_ansi_strlen */
+					while ((-1 == slen2 || i < slen2) && *ptr) {	/* adapted from prim_ansi_strlen */
 						begptr = ptr;
 						if (*ptr++ == ESCAPE_CHAR) {
 							if (*ptr == '\0') {;
@@ -148,8 +150,11 @@ prim_fmtstring(PRIM_PROTOTYPE)
 							}
 							i += (int) (ptr - begptr);
 							slen1 += (int) (ptr - begptr);
-							if(-1 != slen2) slen2 += (int) (ptr - begptr);
-						} else { i++; };
+							if (-1 != slen2)
+								slen2 += (int) (ptr - begptr);
+						} else {
+							i++;
+						};
 					}
 				}
 
@@ -230,7 +235,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					if (oper2->type != PROG_STRING)
 						abort_interp("Format specified string argument not found.");
 					snprintf(tbuf, sizeof(tbuf), sfmt,
-							((oper2->data.string) ? oper2->data.string->data : ""));
+							 ((oper2->data.string) ? oper2->data.string->data : ""));
 					tlen = strlen(tbuf);
 					if (slrj == 2) {
 						tnum = 0;
@@ -517,8 +522,8 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 	if (array_first(arr, &temp1)) {
 		do {
 			strcpy(sstr, fmtstr);
-			result = 0;		/* End of current string, must be smaller than BUFFER_LEN */
-			tmp = 0;		/* Number of props to search for/found */
+			result = 0;			/* End of current string, must be smaller than BUFFER_LEN */
+			tmp = 0;			/* Number of props to search for/found */
 			scnt = 0;
 			tstop = 0;
 			/*   "%-20.19[name]s %6[dbref]d"   */
@@ -576,11 +581,12 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 						if (sstr[scnt] == '[') {
 							scnt++;
 							fieldname = fieldbuf;
-							while(sstr[scnt] && sstr[scnt] != ']') {
+							while (sstr[scnt] && sstr[scnt] != ']') {
 								*fieldname++ = sstr[scnt++];
 							}
 							if (sstr[scnt] != ']') {
-								abort_interp("Specified format field didn't have an array index terminator ']'.");
+								abort_interp
+										("Specified format field didn't have an array index terminator ']'.");
 							}
 							scnt++;
 							*fieldname++ = '\0';
@@ -610,11 +616,12 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 						}
 
 						/* If s is the format and oper3 is really a string, repair the lengths to account for ansi codes. */
-						if(('s' == sstr[scnt]) && (PROG_STRING == oper3->type) && (oper3->data.string)) {
+						if (('s' == sstr[scnt]) && (PROG_STRING == oper3->type) &&
+							(oper3->data.string)) {
 							ptr = oper3->data.string->data;
 
 							i = 0;
-							while ((-1 == slen2 || i < slen2) && *ptr) {  /* adapted from prim_ansi_strlen */
+							while ((-1 == slen2 || i < slen2) && *ptr) {	/* adapted from prim_ansi_strlen */
 								begptr = ptr;
 								if (*ptr++ == ESCAPE_CHAR) {
 									if (*ptr == '\0') {;
@@ -629,8 +636,11 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 									}
 									i += (int) (ptr - begptr);
 									slen1 += (int) (ptr - begptr);
-									if(-1 != slen2) slen2 += (int) (ptr - begptr);
-								} else { i++; };
+									if (-1 != slen2)
+										slen2 += (int) (ptr - begptr);
+								} else {
+									i++;
+								};
 							}
 						}
 						if ((slen1 > 0) && ((slen1 + result) > BUFFER_LEN))
@@ -966,7 +976,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 void
 prim_split(PRIM_PROTOTYPE)
 {
-	char *temp=NULL;
+	char *temp = NULL;
 
 	CHECKOP(2);
 	oper1 = POP();
@@ -1019,7 +1029,7 @@ prim_split(PRIM_PROTOTYPE)
 void
 prim_rsplit(PRIM_PROTOTYPE)
 {
-	char *temp=NULL, *hold=NULL;
+	char *temp = NULL, *hold = NULL;
 
 	CHECKOP(2);
 	oper1 = POP();
@@ -1138,20 +1148,23 @@ prim_stod(PRIM_PROTOTYPE)
 		const char *ptr = oper1->data.string->data;
 		const char *nptr = NULL;
 
-		while (isspace(*ptr)) ptr++;
-		if (*ptr == '#') ptr++;
-		if (*ptr == '+') ptr++;
+		while (isspace(*ptr))
+			ptr++;
+		if (*ptr == '#')
+			ptr++;
+		if (*ptr == '+')
+			ptr++;
 		nptr = ptr;
-		if (*nptr == '-') nptr++;
-		while (*nptr && !isspace(*nptr) &&
-		       (*nptr >= '0' || *nptr <= '9')) {
-		        nptr++;
-		} /* while */
+		if (*nptr == '-')
+			nptr++;
+		while (*nptr && !isspace(*nptr) && (*nptr >= '0' || *nptr <= '9')) {
+			nptr++;
+		}						/* while */
 		if (*nptr && !isspace(*nptr)) {
-		        ref = NOTHING;
+			ref = NOTHING;
 		} else {
-		        ref = (dbref) atoi(ptr);
-		} /* if */
+			ref = (dbref) atoi(ptr);
+		}						/* if */
 	}
 	CLEAR(oper1);
 	PushObject(ref);
@@ -1269,8 +1282,7 @@ prim_strncmp(PRIM_PROTOTYPE)
 		result = 0;
 	else
 		result = strncmp(DoNullInd(oper3->data.string),
-		                 DoNullInd(oper2->data.string),
-						 oper1->data.number);
+						 DoNullInd(oper2->data.string), oper1->data.number);
 	CLEAR(oper1);
 	CLEAR(oper2);
 	CLEAR(oper3);
@@ -1376,8 +1388,8 @@ prim_atoi(PRIM_PROTOTYPE)
 void
 prim_notify(PRIM_PROTOTYPE)
 {
-	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
-	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper1 = NULL;	/* prevents re-entrancy issues! */
+	struct inst *oper2 = NULL;	/* prevents re-entrancy issues! */
 
 	CHECKOP(2);
 	oper1 = POP();
@@ -1391,9 +1403,7 @@ prim_notify(PRIM_PROTOTYPE)
 	if (oper1->data.string) {
 		if (tp_force_mlev1_name_notify && mlev < 2 && player != oper2->data.objref) {
 			prefix_message(buf, oper1->data.string->data, NAME(player), BUFFER_LEN, 1);
-		}
-		else
-		{
+		} else {
 			/* TODO: The original code made this copy, is it really necessary? */
 			strcpy(buf, oper1->data.string->data);
 		}
@@ -1410,8 +1420,8 @@ void
 prim_notify_exclude(PRIM_PROTOTYPE)
 {
 	/* roomD excludeDn ... excludeD1 nI messageS  -- */
-	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
-	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper1 = NULL;	/* prevents re-entrancy issues! */
+	struct inst *oper2 = NULL;	/* prevents re-entrancy issues! */
 
 	CHECKOP(2);
 	oper1 = POP();
@@ -1423,8 +1433,7 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 
 	if (tp_force_mlev1_name_notify && mlev < 2) {
 		prefix_message(buf, DoNullInd(oper1->data.string), NAME(player), BUFFER_LEN, 1);
-	}
-	else
+	} else
 		strcpy(buf, DoNullInd(oper1->data.string));
 
 	result = oper2->data.number;
@@ -1452,7 +1461,8 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 			abort_interp("Non-object argument (1)");
 		where = oper1->data.objref;
 		if (Typeof(where) != TYPE_ROOM && Typeof(where) != TYPE_THING &&
-			Typeof(where) != TYPE_PLAYER) abort_interp("Invalid location argument (1)");
+			Typeof(where) != TYPE_PLAYER)
+			abort_interp("Invalid location argument (1)");
 		CHECKREMOTE(where);
 		what = DBFETCH(where)->contents;
 		CLEAR(oper1);
@@ -1491,7 +1501,7 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 void
 prim_intostr(PRIM_PROTOTYPE)
 {
-	char *ptr=NULL;
+	char *ptr = NULL;
 	int val;
 	int negflag;
 
@@ -1504,7 +1514,7 @@ prim_intostr(PRIM_PROTOTYPE)
 		if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
 			strcatn(buf, sizeof(buf), ".0");
 		}
-		ptr=buf;
+		ptr = buf;
 	} else {
 		val = oper1->data.number;
 		ptr = &buf[BUFFER_LEN];
@@ -1583,6 +1593,7 @@ prim_explode_array(PRIM_PROTOTYPE)
 	stk_array *nu;
 	char *tempPtr;
 	char *lastPtr;
+
 	CHECKOP(2);
 	temp1 = *(oper1 = POP());
 	temp2 = *(oper2 = POP());
@@ -1832,7 +1843,8 @@ prim_unparseobj(PRIM_PROTOTYPE)
 			if (result < 0 || result >= db_top)
 				snprintf(buf, sizeof(buf), "*INVALID*");
 			else
-				snprintf(buf, sizeof(buf), "%s(#%d%s)", NAME(result), result, unparse_flags(result));
+				snprintf(buf, sizeof(buf), "%s(#%d%s)", NAME(result), result,
+						 unparse_flags(result));
 		}
 		CLEAR(oper1);
 		PushString(buf);
@@ -2283,13 +2295,13 @@ void
 prim_ansi_midstr(PRIM_PROTOTYPE)
 {
 	int loc, start, range;
-	const char* ptr;
-	char* op;
+	const char *ptr;
+	char *op;
 
 	CHECKOP(3);
-	oper1 = POP(); /* length */
-	oper2 = POP(); /* begin */
-	oper3 = POP(); /* string */
+	oper1 = POP();				/* length */
+	oper2 = POP();				/* begin */
+	oper3 = POP();				/* string */
 
 	if (oper3->type != PROG_STRING)
 		abort_interp("Non-string argument! (3)");
@@ -2305,8 +2317,7 @@ prim_ansi_midstr(PRIM_PROTOTYPE)
 	start = oper2->data.number - 1;
 	range = oper1->data.number;
 
-	if (!oper3->data.string || start > oper3->data.string->length ||
-			range == 0) {
+	if (!oper3->data.string || start > oper3->data.string->length || range == 0) {
 		CLEAR(oper1);
 		CLEAR(oper2);
 		CLEAR(oper3);

@@ -64,7 +64,7 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
 
 	more1 = array_first(a->data.array, &idx1);
 	more2 = array_first(b->data.array, &idx2);
-	for(;;) {
+	for (;;) {
 		if (more1 && more2) {
 			val1 = array_getitem(a->data.array, &idx1);
 			val2 = array_getitem(b->data.array, &idx2);
@@ -103,7 +103,8 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 {
 	if (a->type != b->type) {
 		if (a->type == PROG_INTEGER && b->type == PROG_FLOAT) {
-			if (fabs(((double)a->data.number - b->data.fnumber) / (double)a->data.number) < DBL_EPSILON) {
+			if (fabs(((double) a->data.number - b->data.fnumber) / (double) a->data.number) <
+				DBL_EPSILON) {
 				return 0;
 			} else if (a->data.number > b->data.fnumber) {
 				return 1;
@@ -148,12 +149,12 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 		 * In a perfect world, we'd compare the locks by element,
 		 * instead of unparsing them into strings for strcmp()s.
 		 */
-		char* la;
-		const char* lb;
+		char *la;
+		const char *lb;
 		int retval = 0;
 
-		la = string_dup(unparse_boolexp((dbref)1, a->data.lock, 0));
-		lb = unparse_boolexp((dbref)1, b->data.lock, 0);
+		la = string_dup(unparse_boolexp((dbref) 1, a->data.lock, 0));
+		lb = unparse_boolexp((dbref) 1, b->data.lock, 0);
 		retval = strcmp(la, lb);
 		free(la);
 		return retval;
@@ -170,7 +171,7 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 }
 
 /*@null@*/
-static array_tree * 
+static array_tree *
 array_tree_find(array_tree * avl, array_iter * key)
 {
 	int cmpval;
@@ -188,7 +189,7 @@ array_tree_find(array_tree * avl, array_iter * key)
 	return avl;
 }
 
-static short 
+static short
 array_tree_height_of(array_tree * node)
 {
 	if (node != NULL)
@@ -218,9 +219,9 @@ static void
 array_tree_fixup_height(array_tree * node)
 {
 	if (node)
-		node->height = (short)(1 +
-			max(array_tree_height_of(AVL_LF(node)),
-			array_tree_height_of(AVL_RT(node))));
+		node->height = (short) (1 +
+								max(array_tree_height_of(AVL_LF(node)),
+									array_tree_height_of(AVL_RT(node))));
 }
 
 static array_tree *
@@ -317,7 +318,7 @@ array_tree_alloc_node(array_iter * key)
 {
 	array_tree *new_node;
 
-	new_node = (array_tree *) calloc(1,sizeof(array_tree));
+	new_node = (array_tree *) calloc(1, sizeof(array_tree));
 	if (!new_node) {
 		fprintf(stderr, "array_tree_alloc_node(): Out of Memory!\n");
 		abort();
@@ -332,6 +333,7 @@ array_tree_alloc_node(array_iter * key)
 	new_node->data.data.number = 0;
 	return new_node;
 }
+
 /*@=nullret =mustfreeonly@*/
 
 void
@@ -373,6 +375,7 @@ array_tree_insert(array_tree ** avl, array_iter * key)
 		return (p);
 	}
 }
+
 /*@=usereleased =compdef@*/
 
 static array_tree *
@@ -403,9 +406,8 @@ array_tree_remove_node(array_iter * key, array_tree ** root)
 		} else if (!(AVL_RT(avl))) {
 			avl = AVL_LF(avl);
 		} else {
-			tmp = array_tree_remove_node(
-					AVL_KEY(array_tree_getmax(AVL_LF(avl))),
-					&AVL_LF(avl));
+			tmp = array_tree_remove_node(AVL_KEY(array_tree_getmax(AVL_LF(avl))),
+										 &AVL_LF(avl));
 			if (!tmp)
 				abort();		/* this shouldn't be possible. */
 			AVL_LF(tmp) = AVL_LF(avl);
@@ -590,7 +592,7 @@ new_array_dictionary(void)
 
 
 void
-array_set_pinned(stk_array* arr, int pinned)
+array_set_pinned(stk_array * arr, int pinned)
 {
 	if (arr) {
 		arr->pinned = pinned;
@@ -1023,7 +1025,7 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 					arr->links--;
 					arr = *harr = array_decouple(arr);
 				}
-				arr->data.packed = (array_data*)
+				arr->data.packed = (array_data *)
 						realloc(arr->data.packed, sizeof(array_data) * (arr->items + 1));
 				copyinst(item, &arr->data.packed[arr->items]);
 				return (++arr->items);
@@ -1082,7 +1084,7 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
-			arr->data.packed = (array_data*)
+			arr->data.packed = (array_data *)
 					realloc(arr->data.packed, sizeof(array_data) * (arr->items + 1));
 			for (i = arr->items++; i > idx->data.number; i--) {
 				copyinst(&arr->data.packed[i - 1], &arr->data.packed[i]);
@@ -1319,8 +1321,9 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
-			arr->data.packed = (struct inst*)
-					realloc(arr->data.packed, sizeof(array_data) * (arr->items + inarr->items));
+			arr->data.packed = (struct inst *)
+					realloc(arr->data.packed,
+							sizeof(array_data) * (arr->items + inarr->items));
 			copyinst(start, &idx);
 			copyinst(start, &didx);
 			idx.data.number = arr->items - 1;
@@ -1386,7 +1389,7 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 			if (end->type != PROG_INTEGER) {
 				return -1;
 			}
-			if (arr->items == 0) { /* nothing to do here */
+			if (arr->items == 0) {	/* nothing to do here */
 				return 0;
 			}
 			sidx = start->data.number;
@@ -1421,8 +1424,8 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 				didx.data.number++;
 			}
 			arr->items -= (eidx - sidx + 1);
-			totsize = (arr->items)?arr->items:1;
-			arr->data.packed = (array_data*)
+			totsize = (arr->items) ? arr->items : 1;
+			arr->data.packed = (array_data *)
 					realloc(arr->data.packed, sizeof(array_data) * totsize);
 			return arr->items;
 			break;
@@ -1678,7 +1681,7 @@ array_set_strkey_refval(stk_array ** harr, const char *key, dbref val)
 }
 
 int
-array_set_strkey_arrval(stk_array ** harr, const char *key, stk_array* val)
+array_set_strkey_arrval(stk_array ** harr, const char *key, stk_array * val)
 {
 	struct inst value;
 	int result;
@@ -1778,7 +1781,7 @@ array_set_intkey_strval(stk_array ** harr, int key, const char *val)
 }
 
 int
-array_set_intkey_arrval(stk_array ** harr, int key, stk_array* val)
+array_set_intkey_arrval(stk_array ** harr, int key, stk_array * val)
 {
 	struct inst value;
 	int result;
@@ -1794,7 +1797,7 @@ array_set_intkey_arrval(stk_array ** harr, int key, stk_array* val)
 }
 
 
-char*
+char *
 array_get_intkey_strval(stk_array * arr, int key)
 {
 	struct inst ikey;
@@ -1822,7 +1825,7 @@ array_get_intkey_strval(stk_array * arr, int key)
 /**** KEY-VAL ****/
 
 int
-array_set_strval(stk_array ** harr, struct inst* key, const char *val)
+array_set_strval(stk_array ** harr, struct inst *key, const char *val)
 {
 	struct inst value;
 	int result;
@@ -1838,7 +1841,7 @@ array_set_strval(stk_array ** harr, struct inst* key, const char *val)
 }
 
 int
-array_set_intval(stk_array ** harr, struct inst* key, int val)
+array_set_intval(stk_array ** harr, struct inst *key, int val)
 {
 	struct inst value;
 	int result;
@@ -1854,7 +1857,7 @@ array_set_intval(stk_array ** harr, struct inst* key, int val)
 }
 
 int
-array_set_fltval(stk_array ** harr, struct inst* key, double val)
+array_set_fltval(stk_array ** harr, struct inst *key, double val)
 {
 	struct inst value;
 	int result;
@@ -1870,7 +1873,7 @@ array_set_fltval(stk_array ** harr, struct inst* key, double val)
 }
 
 int
-array_set_refval(stk_array ** harr, struct inst* key, dbref val)
+array_set_refval(stk_array ** harr, struct inst *key, dbref val)
 {
 	struct inst value;
 	int result;
@@ -1886,7 +1889,7 @@ array_set_refval(stk_array ** harr, struct inst* key, dbref val)
 }
 
 int
-array_set_arrval(stk_array ** harr, struct inst* key, stk_array* val)
+array_set_arrval(stk_array ** harr, struct inst *key, stk_array * val)
 {
 	struct inst value;
 	int result;

@@ -142,13 +142,14 @@ do_list_tree(struct macrotable *node, const char *first, const char *last,
 			(strncmp(node->name, last, strlen(last)) <= 0)) {
 			if (length) {
 				snprintf(buf, sizeof(buf), "%-16s %-16s  %s", node->name,
-						NAME(node->implementor), node->definition);
+						 NAME(node->implementor), node->definition);
 				notify(player, buf);
 				buf[0] = '\0';
 			} else {
 				int blen = strlen(buf);
+
 				snprintf(buf + blen, sizeof(buf) - blen, "%-16s", node->name);
-				buf[sizeof(buf)-1] = '\0';
+				buf[sizeof(buf) - 1] = '\0';
 				if (strlen(buf) > 70) {
 					notify(player, buf);
 					buf[0] = '\0';
@@ -747,9 +748,9 @@ insert(dbref player, const char *line)
 		return;
 	}
 	if (!PROGRAM_CURR_LINE(program)) {	/* insert at the
-										   * beginning */
+										 * beginning */
 		PROGRAM_SET_CURR_LINE(program, 1);	/* insert after this new
-											   * line */
+											 * line */
 		new_line->next = PROGRAM_FIRST(program);
 		PROGRAM_SET_FIRST(program, new_line);
 		/* DBDIRTY(program); */

@@ -93,7 +93,7 @@ prim_systime_precise(PRIM_PROTOTYPE)
 	CHECKOP(0);
 	gettimeofday(&fulltime, (struct timezone *) 0);
 	CHECKOFLOW(2);
-	dbltime = fulltime.tv_sec + (((double)fulltime.tv_usec) / 1.0e6);
+	dbltime = fulltime.tv_sec + (((double) fulltime.tv_usec) / 1.0e6);
 	PushFloat(dbltime);
 }
 
@@ -163,10 +163,10 @@ prim_userlog(PRIM_PROTOTYPE)
 		abort_interp("Non-string argument.");
 	if (mlev < tp_userlog_mlev)
 		abort_interp("Permission Denied (mlev < tp_userlog_mlev)");
-	if(oper1->data.string) {
-		snprintf(buf,BUFFER_LEN,"%s",oper1->data.string->data);
+	if (oper1->data.string) {
+		snprintf(buf, BUFFER_LEN, "%s", oper1->data.string->data);
 	} else {
-		*buf='\0';
+		*buf = '\0';
 	}
 	log_user(player, program, buf);
 	CLEAR(oper1);
@@ -238,8 +238,8 @@ prim_kill(PRIM_PROTOTYPE)
 void
 prim_force(PRIM_PROTOTYPE)
 {
-	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
-	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper1 = NULL;	/* prevents re-entrancy issues! */
+	struct inst *oper2 = NULL;	/* prevents re-entrancy issues! */
 
 	int i;
 
@@ -396,9 +396,9 @@ prim_fork(PRIM_PROTOTYPE)
 	tmpfr->brkpt.prog[0] = program;
 
 	tmpfr->proftime.tv_sec = 0;
-    tmpfr->proftime.tv_usec = 0;
-    tmpfr->totaltime.tv_sec = 0;
-    tmpfr->totaltime.tv_usec = 0;
+	tmpfr->proftime.tv_usec = 0;
+	tmpfr->totaltime.tv_sec = 0;
+	tmpfr->totaltime.tv_usec = 0;
 
 
 	tmpfr->pid = top_pid++;
@@ -589,8 +589,8 @@ prim_prettylock(PRIM_PROTOTYPE)
 void
 prim_testlock(PRIM_PROTOTYPE)
 {
-	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
-	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper1 = NULL;	/* prevents re-entrancy issues! */
+	struct inst *oper2 = NULL;	/* prevents re-entrancy issues! */
 
 
 	/* d d - i */
@@ -757,8 +757,9 @@ prim_timer_start(PRIM_PROTOTYPE)
 	if (oper2->type != PROG_STRING)
 		abort_interp("Expected a string timer id. (2)");
 
-    dequeue_timers(fr->pid, DoNullInd(oper2->data.string));
-	add_muf_timer_event(fr->descr, player, program, fr, oper1->data.number, DoNullInd(oper2->data.string));
+	dequeue_timers(fr->pid, DoNullInd(oper2->data.string));
+	add_muf_timer_event(fr->descr, player, program, fr, oper1->data.number,
+						DoNullInd(oper2->data.string));
 
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -774,7 +775,7 @@ prim_timer_stop(PRIM_PROTOTYPE)
 	if (oper1->type != PROG_STRING)
 		abort_interp("Expected a string timer id. (2)");
 
-    dequeue_timers(fr->pid, DoNullInd(oper1->data.string));
+	dequeue_timers(fr->pid, DoNullInd(oper1->data.string));
 
 	CLEAR(oper1);
 }
@@ -809,7 +810,7 @@ prim_event_count(PRIM_PROTOTYPE)
 void
 prim_event_send(PRIM_PROTOTYPE)
 {
-	struct frame* destfr;
+	struct frame *destfr;
 	stk_array *arr;
 	struct inst temp1;
 
@@ -914,7 +915,7 @@ prim_watchpid(PRIM_PROTOTYPE)
 		abort_interp("Narcissistic processes not allowed.");
 	}
 
-	frame = timequeue_pid_frame (oper1->data.number);
+	frame = timequeue_pid_frame(oper1->data.number);
 	if (frame) {
 		struct mufwatchpidlist **cur;
 		struct mufwatchpidlist *waitee;
@@ -926,16 +927,16 @@ prim_watchpid(PRIM_PROTOTYPE)
 		}
 
 		if (!*cur) {
-			*cur = (struct mufwatchpidlist*) malloc (sizeof (**cur));
+			*cur = (struct mufwatchpidlist *) malloc(sizeof(**cur));
 			if (!*cur) {
-				abort_interp ("Internal memory error.\n");
+				abort_interp("Internal memory error.\n");
 			}
 			(*cur)->next = 0;
 			(*cur)->pid = fr->pid;
 
-			waitee = (struct mufwatchpidlist*) malloc (sizeof (*waitee));
+			waitee = (struct mufwatchpidlist *) malloc(sizeof(*waitee));
 			if (!waitee) {
-				abort_interp ("Internal memory error.\n");
+				abort_interp("Internal memory error.\n");
 			}
 			waitee->next = fr->waitees;
 			waitee->pid = oper1->data.number;
@@ -944,11 +945,11 @@ prim_watchpid(PRIM_PROTOTYPE)
 	} else {
 		char buf[64];
 
-		snprintf (buf, sizeof(buf), "PROC.EXIT.%d", oper1->data.number);
+		snprintf(buf, sizeof(buf), "PROC.EXIT.%d", oper1->data.number);
 		muf_event_add(fr, buf, oper1, 0);
 	}
 
-	CLEAR (oper1);
+	CLEAR(oper1);
 }
 
 
@@ -968,15 +969,13 @@ prim_debugger_break(PRIM_PROTOTYPE)
 		abort_interp("Too many breakpoints set.");
 
 	fr->brkpt.force_debugging = 1;
-	if (fr->brkpt.count        !=  1   ||
-		fr->brkpt.temp[0]      !=  1   ||
-		fr->brkpt.level[0]     != -1   ||
-		fr->brkpt.line[0]      != -1   ||
-		fr->brkpt.linecount[0] != -2   ||
-		fr->brkpt.pc[0]        != NULL ||
-		fr->brkpt.pccount[0]   != -2   ||
-		fr->brkpt.prog[0]      != program
-	) {
+	if (fr->brkpt.count != 1 ||
+		fr->brkpt.temp[0] != 1 ||
+		fr->brkpt.level[0] != -1 ||
+		fr->brkpt.line[0] != -1 ||
+		fr->brkpt.linecount[0] != -2 ||
+		fr->brkpt.pc[0] != NULL ||
+		fr->brkpt.pccount[0] != -2 || fr->brkpt.prog[0] != program) {
 		/* No initial breakpoint.  Lets make one. */
 		i = fr->brkpt.count++;
 		fr->brkpt.temp[i] = 1;
@@ -1058,9 +1057,9 @@ prim_debug_off(PRIM_PROTOTYPE)
 void
 prim_debug_line(PRIM_PROTOTYPE)
 {
-	if (((FLAGS(program) & DARK) == 0) && controls(player, program))
-	{
-		char* msg = debug_inst(fr, 0, pc, fr->pid, arg, buf, sizeof(buf), *top, program);
+	if (((FLAGS(program) & DARK) == 0) && controls(player, program)) {
+		char *msg = debug_inst(fr, 0, pc, fr->pid, arg, buf, sizeof(buf), *top, program);
+
 		notify_nolisten(player, msg, 1);
 	}
 }

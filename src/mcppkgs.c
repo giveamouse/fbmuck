@@ -120,7 +120,8 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 					return;
 				}
 			}
-			if (Prop_System(reference) || (!Wizard(player) && (Prop_SeeOnly(reference) || Prop_Hidden(reference)))) {
+			if (Prop_System(reference) ||
+				(!Wizard(player) && (Prop_SeeOnly(reference) || Prop_Hidden(reference)))) {
 				show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
 				return;
 			}
@@ -176,7 +177,8 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 					return;
 				}
 			}
-			if (Prop_System(reference) || (!Wizard(player) && (Prop_SeeOnly(reference) || Prop_Hidden(reference)))) {
+			if (Prop_System(reference) ||
+				(!Wizard(player) && (Prop_SeeOnly(reference) || Prop_Hidden(reference)))) {
 				show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
 				return;
 			}

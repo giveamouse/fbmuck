@@ -201,10 +201,11 @@ pronoun_substitute(int descr, dbref player, const char *str)
 	sexstr = get_property_class(player, "sex");
 	if (sexstr) {
 		sexstr = do_parse_mesg(descr, player, player, sexstr, "(Lock)", sexbuf,
-						(MPI_ISPRIVATE | MPI_ISLOCK |
-							(Prop_Blessed(player, "sex")? MPI_ISBLESSED : 0)));
+							   (MPI_ISPRIVATE | MPI_ISLOCK |
+								(Prop_Blessed(player, "sex") ? MPI_ISBLESSED : 0)));
 	}
-	while (sexstr && isspace(*sexstr)) sexstr++;
+	while (sexstr && isspace(*sexstr))
+		sexstr++;
 	if (!sexstr || !*sexstr) {
 		sexstr = "_default";
 	}
@@ -256,9 +257,9 @@ pronoun_substitute(int descr, dbref player, const char *str)
 					result += strlen(result);
 					str++;
 					if (temp_sub) {
-						if (((result - buf) + strlen(temp_sub+2)) > (BUFFER_LEN - 2))
+						if (((result - buf) + strlen(temp_sub + 2)) > (BUFFER_LEN - 2))
 							return buf;
-						strcatn(result, sizeof(buf) - (result - buf), temp_sub+2);
+						strcatn(result, sizeof(buf) - (result - buf), temp_sub + 2);
 						if (isupper(temp_sub[1]) && islower(*result))
 							*result = toupper(*result);
 						result += strlen(result);
@@ -487,7 +488,7 @@ strencrypt(const char *data, const char *key)
 		seed2 = ((seed2 + 1) & 0x3f);
 		if (!*(++cp))
 			cp = key;
-		result = (enarr[(unsigned char)*upt] - (32 - (CHARCOUNT - 96))) + count + seed;
+		result = (enarr[(unsigned char) *upt] - (32 - (CHARCOUNT - 96))) + count + seed;
 		*ups = enarr[(result % CHARCOUNT) + (32 - (CHARCOUNT - 96))];
 		count = (((*upt) ^ count) + seed) & 0xff;
 		ups++;
@@ -561,7 +562,7 @@ strdecrypt(const char *data, const char *key)
 			cp = key;
 		seed2 = ((seed2 + 1) & 0x3f);
 
-		result = (enarr[(unsigned char)*upt] - (32 - (chrcnt - 96))) - (count + seed);
+		result = (enarr[(unsigned char) *upt] - (32 - (chrcnt - 96))) - (count + seed);
 		while (result < 0)
 			result += chrcnt;
 		*ups = enarr[result + (32 - (chrcnt - 96))];
@@ -622,7 +623,7 @@ strip_bad_ansi(char *buf, const char *input)
 
 	is = input;
 
-	while (*is && limit-->0) {
+	while (*is && limit-- > 0) {
 		if (*is == ESCAPE_CHAR) {
 			if (is[1] == '\0') {
 				is++;
@@ -647,6 +648,7 @@ strip_bad_ansi(char *buf, const char *input)
 	}
 	if (aflag) {
 		int termrn = 0;
+
 		if (*(os - 2) == '\r' && *(os - 1) == '\n') {
 			termrn = 1;
 			os -= 2;
@@ -671,17 +673,18 @@ strip_bad_ansi(char *buf, const char *input)
  * and it returns the number of chars prepended.
  */
 int
-prepend_string(char** before, char* start, const char* what)
+prepend_string(char **before, char *start, const char *what)
 {
-   char* ptr;
-   size_t len;
-   len = strlen(what);
-   ptr = *before - len;
-   if (ptr < start)
-       return 0;
-   memcpy((void*) ptr, (const void*) what, len);
-   *before = ptr;
-   return len;
+	char *ptr;
+	size_t len;
+
+	len = strlen(what);
+	ptr = *before - len;
+	if (ptr < start)
+		return 0;
+	memcpy((void *) ptr, (const void *) what, len);
+	*before = ptr;
+	return len;
 }
 
 int
@@ -691,50 +694,43 @@ is_valid_pose_separator(char ch)
 }
 
 void
-prefix_message(char* Dest, const char* Src, const char* Prefix, int BufferLength, int SuppressIfPresent)
+prefix_message(char *Dest, const char *Src, const char *Prefix, int BufferLength,
+			   int SuppressIfPresent)
 {
-	int PrefixLength			= strlen(Prefix);
-	int CheckForHangingEnter	= 0;
+	int PrefixLength = strlen(Prefix);
+	int CheckForHangingEnter = 0;
 
-	while((BufferLength > PrefixLength) && (*Src != '\0'))
-	{
-		if (*Src == '\r')
-		{
+	while ((BufferLength > PrefixLength) && (*Src != '\0')) {
+		if (*Src == '\r') {
 			Src++;
 			continue;
 		}
 
-		if (!SuppressIfPresent || strncmp(Src, Prefix, PrefixLength) || (
-				!is_valid_pose_separator(Src[PrefixLength]) &&	
-				(Src[PrefixLength] != '\r') &&
-				(Src[PrefixLength] != '\0')
-			))
-		{
+		if (!SuppressIfPresent || strncmp(Src, Prefix, PrefixLength) ||
+			(!is_valid_pose_separator(Src[PrefixLength]) && (Src[PrefixLength] != '\r') &&
+			 (Src[PrefixLength] != '\0')
+			)) {
 			strcpy(Dest, Prefix);
 
-			Dest			+= PrefixLength;
-			BufferLength	-= PrefixLength;
+			Dest += PrefixLength;
+			BufferLength -= PrefixLength;
 
-			if (BufferLength > 1)
-			{
-				if (!is_valid_pose_separator(*Src))
-				{
+			if (BufferLength > 1) {
+				if (!is_valid_pose_separator(*Src)) {
 					*Dest++ = ' ';
 					BufferLength--;
 				}
 			}
 		}
 
-		while((BufferLength > 1) && (*Src != '\0'))
-		{
-				*Dest++ = *Src;
-				BufferLength--;
+		while ((BufferLength > 1) && (*Src != '\0')) {
+			*Dest++ = *Src;
+			BufferLength--;
 
-				if (*Src++ == '\r')
-				{
-					CheckForHangingEnter = 1;
-					break;
-				}
+			if (*Src++ == '\r') {
+				CheckForHangingEnter = 1;
+				break;
+			}
 		}
 	}
 
@@ -745,16 +741,15 @@ prefix_message(char* Dest, const char* Src, const char* Prefix, int BufferLength
 }
 
 int
-is_prop_prefix(const char* Property, const char* Prefix)
+is_prop_prefix(const char *Property, const char *Prefix)
 {
-	while(*Property == PROPDIR_DELIMITER)
+	while (*Property == PROPDIR_DELIMITER)
 		Property++;
 
-	while(*Prefix == PROPDIR_DELIMITER)
+	while (*Prefix == PROPDIR_DELIMITER)
 		Prefix++;
 
-	while(*Prefix)
-	{
+	while (*Prefix) {
 		if (*Property == '\0')
 			return 0;
 
@@ -766,7 +761,7 @@ is_prop_prefix(const char* Property, const char* Prefix)
 }
 
 int
-has_suffix(const char* text, const char* suffix)
+has_suffix(const char *text, const char *suffix)
 {
 	int tlen = text ? strlen(text) : 0;
 	int slen = suffix ? strlen(suffix) : 0;
@@ -778,7 +773,7 @@ has_suffix(const char* text, const char* suffix)
 }
 
 int
-has_suffix_char(const char* text, char suffix)
+has_suffix_char(const char *text, char suffix)
 {
 	int tlen = text ? strlen(text) : 0;
 
@@ -793,11 +788,11 @@ has_suffix_char(const char* text, char suffix)
  * Like strncpy, except it guarentees null termination of the result string.
  * It also has a more sensible argument ordering.
  */
-char*
-strcpyn(char* buf, size_t bufsize, const char* src)
+char *
+strcpyn(char *buf, size_t bufsize, const char *src)
 {
 	int pos = 0;
-	char* dest = buf;
+	char *dest = buf;
 
 	while (++pos < bufsize && *src) {
 		*dest++ = *src++;
@@ -811,11 +806,11 @@ strcpyn(char* buf, size_t bufsize, const char* src)
  * Like strncat, except it takes the buffer size instead of the number
  * of characters to catenate.  It also has a more sensible argument order.
  */
-char*
-strcatn(char* buf, size_t bufsize, const char* src)
+char *
+strcatn(char *buf, size_t bufsize, const char *src)
 {
 	int pos = strlen(buf);
-	char* dest = &buf[pos];
+	char *dest = &buf[pos];
 
 	while (++pos < bufsize && *src) {
 		*dest++ = *src++;

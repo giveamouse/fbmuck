@@ -480,7 +480,7 @@ void
 prim_descriptors(PRIM_PROTOTYPE)
 {
 	int mydescr, mycount = 0;
-	int* darr;
+	int *darr;
 	int di, dcount;
 
 	CHECKOP(1);
@@ -497,23 +497,23 @@ prim_descriptors(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CHECKOP(0);
 
-    if (ref == NOTHING) {
-        result = pcount();
+	if (ref == NOTHING) {
+		result = pcount();
 		CHECKOFLOW(result + 1);
-        while (result) {
-            mydescr = pdescr(result);
-            PushInt(mydescr);
-            mycount++;
+		while (result) {
+			mydescr = pdescr(result);
+			PushInt(mydescr);
+			mycount++;
 			result--;
-        }
-    } else {
+		}
+	} else {
 		darr = get_player_descrs(ref, &dcount);
 		CHECKOFLOW(dcount + 1);
-        for (di = 0; di < dcount; di++) {
-            PushInt(darr[di]);
-            mycount++;
-        }
-    }
+		for (di = 0; di < dcount; di++) {
+			PushInt(darr[di]);
+			mycount++;
+		}
+	}
 	PushInt(mycount);
 }
 
@@ -521,7 +521,7 @@ void
 prim_descr_array(PRIM_PROTOTYPE)
 {
 	stk_array *newarr;
-	int* darr;
+	int *darr;
 	int di, dcount;
 	int i;
 
@@ -543,22 +543,22 @@ prim_descr_array(PRIM_PROTOTYPE)
 	temp2.type = PROG_INTEGER;
 	temp1.line = 0;
 	temp2.line = 0;
-    if (ref == NOTHING) {
+	if (ref == NOTHING) {
 		result = pcount();
 		newarr = new_array_packed(result);
 		for (i = 0; i < result; i++) {
 			temp1.data.number = i;
 			temp2.data.number = pdescr(i + 1);
 			array_setitem(&newarr, &temp1, &temp2);
-        }
+		}
 	} else {
 		darr = get_player_descrs(ref, &dcount);
 		newarr = new_array_packed(dcount);
-        for (di = 0; di < dcount; di++) {
+		for (di = 0; di < dcount; di++) {
 			temp1.data.number = (dcount - 1) - di;
 			temp2.data.number = darr[di];
 			array_setitem(&newarr, &temp1, &temp2);
-        }
+		}
 	}
 	PushArrayRaw(newarr);
 }
@@ -592,7 +592,8 @@ prim_descr_setuser(PRIM_PROTOTYPE)
 	}
 
 	if (ref != NOTHING) {
-		const char* destname = "*NOBODY*";
+		const char *destname = "*NOBODY*";
+
 		if (ref != NOTHING) {
 			destname = NAME(ref);
 		}
@@ -632,8 +633,8 @@ void
 prim_firstdescr(PRIM_PROTOTYPE)
 {
 	/* ref -- int */
-	int* darr;
-	int  dcount;
+	int *darr;
+	int dcount;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -644,16 +645,16 @@ prim_firstdescr(PRIM_PROTOTYPE)
 	ref = oper1->data.objref;
 	if (ref != NOTHING && !valid_player(oper1))
 		abort_interp("Player dbref expected (2)");
-	if(ref == NOTHING) {
+	if (ref == NOTHING) {
 		result = pfirstdescr();
 	} else {
 		if (Typeof(ref) != TYPE_PLAYER)
-            abort_interp("invalid argument");
+			abort_interp("invalid argument");
 		if (online(ref)) {
-            darr = get_player_descrs(ref, &dcount);
-            result = index_descr(darr[dcount - 1]);
+			darr = get_player_descrs(ref, &dcount);
+			result = index_descr(darr[dcount - 1]);
 		} else {
-            result = 0;
+			result = 0;
 		}
 	}
 	CHECKOFLOW(1);
@@ -665,8 +666,8 @@ void
 prim_lastdescr(PRIM_PROTOTYPE)
 {
 	/* ref -- int */
-	int* darr;
-	int  dcount;
+	int *darr;
+	int dcount;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -677,16 +678,16 @@ prim_lastdescr(PRIM_PROTOTYPE)
 	ref = oper1->data.objref;
 	if (ref != NOTHING && !valid_player(oper1))
 		abort_interp("Player dbref expected (2)");
-	if(ref == NOTHING) {
+	if (ref == NOTHING) {
 		result = plastdescr();
 	} else {
 		if (Typeof(ref) != TYPE_PLAYER)
-            abort_interp("invalid argument");
+			abort_interp("invalid argument");
 		if (online(ref)) {
-            darr = get_player_descrs(ref, &dcount);
-            result = index_descr(darr[0]);
+			darr = get_player_descrs(ref, &dcount);
+			result = index_descr(darr[0]);
 		} else {
-            result = 0;
+			result = 0;
 		}
 	}
 	CHECKOFLOW(1);
@@ -704,7 +705,7 @@ prim_descr_securep(PRIM_PROTOTYPE)
 	if (mlev < 3)
 		abort_interp("Requires Mucker Level 3.");
 	if (oper1->type != PROG_INTEGER)
-			abort_interp("Integer descriptor number expected.");
+		abort_interp("Integer descriptor number expected.");
 
 	result = pdescrsecure(oper1->data.number);
 	PushInt(result);
@@ -727,5 +728,3 @@ prim_descr_bufsize(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
-

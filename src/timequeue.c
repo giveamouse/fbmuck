@@ -145,7 +145,8 @@ free_timenode(timequeue ptr)
 									   ptr->subtyp == TQ_MUF_TREAD)) {
 			FLAGS(ptr->uid) &= ~INTERACTIVE;
 			FLAGS(ptr->uid) &= ~READMODE;
-			notify_nolisten(ptr->uid, "Data input aborted.  The command you were using was killed.", 1);
+			notify_nolisten(ptr->uid,
+							"Data input aborted.  The command you were using was killed.", 1);
 		}
 	}
 	if (free_timenode_count < tp_free_frames_pool) {
@@ -165,7 +166,7 @@ purge_timenode_free_pool()
 
 	while (ptr) {
 		nxt = ptr->next;
-		free((void*)ptr);
+		free((void *) ptr);
 		ptr = nxt;
 	}
 	free_timenode_count = 0;
@@ -325,6 +326,7 @@ int
 add_muf_timer_event(int descr, dbref player, dbref prog, struct frame *fr, int delay, char *id)
 {
 	char buf[40];
+
 	snprintf(buf, sizeof(buf), "TIMER.%.32s", id);
 	fr->timercount++;
 	return add_event(TQ_MUF_TYP, TQ_MUF_TIMER, delay, descr, player, -1, fr->trig,
@@ -342,7 +344,7 @@ add_muf_delay_event(int delay, int descr, dbref player, dbref loc, dbref trig, d
 
 
 int
-read_event_notify(int descr, dbref player, const char* cmd)
+read_event_notify(int descr, dbref player, const char *cmd)
 {
 	timequeue ptr;
 
@@ -578,9 +580,9 @@ next_timequeue_event(void)
 					dbref plyr;
 
 					snprintf(bbuf, sizeof(bbuf), ">> %.4000s %.*s",
-							NAME(event->uid),
-							(int)(4000 - strlen(NAME(event->uid))),
-							pronoun_substitute(event->descr, event->uid, cbuf));
+							 NAME(event->uid),
+							 (int) (4000 - strlen(NAME(event->uid))),
+							 pronoun_substitute(event->descr, event->uid, cbuf));
 					plyr = DBFETCH(event->loc)->contents;
 					for (; plyr != NOTHING; plyr = DBFETCH(plyr)->next) {
 						if (Typeof(plyr) == TYPE_PLAYER && plyr != event->uid)
@@ -643,7 +645,7 @@ in_timequeue(int pid)
 }
 
 
-struct frame*
+struct frame *
 timequeue_pid_frame(int pid)
 {
 	struct frame *out = NULL;
@@ -726,18 +728,18 @@ list_events(dbref player)
 	time_t rtime = time((time_t *) NULL);
 	time_t etime;
 	double pcnt;
-	const char* strfmt = "%10s %4s %4s %6s %4s %7s %-10.10s %-12s %.512s";
+	const char *strfmt = "%10s %4s %4s %6s %4s %7s %-10.10s %-12s %.512s";
 
-	(void)snprintf(buf, sizeof(buf), strfmt, "PID", "Next", "Run", "KInst", "%CPU", "Prog#", "ProgName", "Player", "");
+	(void) snprintf(buf, sizeof(buf), strfmt, "PID", "Next", "Run", "KInst", "%CPU", "Prog#",
+					"ProgName", "Player", "");
 	notify_nolisten(player, buf, 1);
 
 	while (ptr) {
 		snprintf(pidstr, sizeof(pidstr), "%d", ptr->eventnum);
 		strcpy(duestr, ((ptr->when - rtime) > 0) ?
-				time_format_2((long) (ptr->when - rtime)) : "Due");
-		strcpy(runstr, ptr->fr ?
-				time_format_2((long) (rtime - ptr->fr->started)): "0s");
-		snprintf(inststr, sizeof(inststr), "%d", ptr->fr? (ptr->fr->instcnt / 1000) : 0);
+			   time_format_2((long) (ptr->when - rtime)) : "Due");
+		strcpy(runstr, ptr->fr ? time_format_2((long) (rtime - ptr->fr->started)) : "0s");
+		snprintf(inststr, sizeof(inststr), "%d", ptr->fr ? (ptr->fr->instcnt / 1000) : 0);
 
 		if (ptr->fr) {
 			etime = rtime - ptr->fr->started;
@@ -776,8 +778,8 @@ list_events(dbref player)
 			strcpy(cpustr, "--");
 		}
 		(void) snprintf(buf, sizeof(buf), strfmt, pidstr, duestr, runstr, inststr,
-					                cpustr, progstr, prognamestr, NAME(ptr->uid), 
-									ptr->called_data? ptr->called_data : "");
+						cpustr, progstr, prognamestr, NAME(ptr->uid),
+						ptr->called_data ? ptr->called_data : "");
 		if (Wizard(OWNER(player)) || ptr->uid == player) {
 			notify_nolisten(player, buf, 1);
 		} else if (ptr->called_prog != NOTHING && OWNER(ptr->called_prog) == OWNER(player)) {
@@ -795,14 +797,15 @@ stk_array *
 get_pids(dbref ref)
 {
 	struct inst temp1, temp2;
-	stk_array  *nw;
+	stk_array *nw;
 	int count = 0;
 
 	timequeue ptr = tqhead;
+
 	nw = new_array_packed(0);
 	while (ptr) {
 		if (((ptr->typ != TQ_MPI_TYP) ? (ptr->called_prog == ref) : (ptr->trig == ref)) ||
-			(ptr->uid == ref) || (ref < 0) ) {
+			(ptr->uid == ref) || (ref < 0)) {
 			temp2.type = PROG_INTEGER;
 			temp2.data.number = ptr->eventnum;
 			temp1.type = PROG_INTEGER;
@@ -821,12 +824,13 @@ stk_array *
 get_pidinfo(int pid)
 {
 	struct inst temp1, temp2;
-	stk_array  *nw;
-	time_t      rtime = time(NULL);
-	time_t      etime = 0;
-	double      pcnt  = 0.0;
+	stk_array *nw;
+	time_t rtime = time(NULL);
+	time_t etime = 0;
+	double pcnt = 0.0;
 
 	timequeue ptr = tqhead;
+
 	nw = new_array_dictionary();
 	while (ptr) {
 		if (ptr->eventnum == pid) {
@@ -837,7 +841,7 @@ get_pidinfo(int pid)
 		ptr = ptr->next;
 	}
 	if (ptr && (ptr->eventnum == pid) &&
-			(ptr->typ != TQ_MUF_TYP || ptr->subtyp != TQ_MUF_TIMER)) {
+		(ptr->typ != TQ_MUF_TYP || ptr->subtyp != TQ_MUF_TIMER)) {
 		if (ptr->fr) {
 			etime = rtime - ptr->fr->started;
 			if (etime > 0) {
@@ -924,8 +928,8 @@ get_pidinfo(int pid)
 		temp1.type = PROG_STRING;
 		temp1.data.string = alloc_prog_string("TYPE");
 		temp2.type = PROG_STRING;
-		temp2.data.string = 	(ptr->typ == TQ_MUF_TYP) ? alloc_prog_string("MUF") :
-						(ptr->typ == TQ_MPI_TYP) ? alloc_prog_string("MPI") : alloc_prog_string("UNK") ;
+		temp2.data.string = (ptr->typ == TQ_MUF_TYP) ? alloc_prog_string("MUF") :
+				(ptr->typ == TQ_MPI_TYP) ? alloc_prog_string("MPI") : alloc_prog_string("UNK");
 		array_setitem(&nw, &temp1, &temp2);
 		CLEAR(&temp1);
 		CLEAR(&temp2);
@@ -934,17 +938,18 @@ get_pidinfo(int pid)
 		temp2.type = PROG_STRING;
 		if (ptr->typ == TQ_MUF_TYP) {
 			temp2.data.string = (ptr->subtyp == TQ_MUF_READ) ? alloc_prog_string("READ") :
-							(ptr->subtyp == TQ_MUF_TREAD) ? alloc_prog_string("TREAD") :
-							(ptr->subtyp == TQ_MUF_QUEUE) ? alloc_prog_string("QUEUE") :
-							(ptr->subtyp == TQ_MUF_LISTEN) ? alloc_prog_string("LISTEN") :
-							(ptr->subtyp == TQ_MUF_TIMER) ? alloc_prog_string("TIMER") :
-							(ptr->subtyp == TQ_MUF_DELAY) ? alloc_prog_string("DELAY") :
-							alloc_prog_string("");
+					(ptr->subtyp == TQ_MUF_TREAD) ? alloc_prog_string("TREAD") :
+					(ptr->subtyp == TQ_MUF_QUEUE) ? alloc_prog_string("QUEUE") :
+					(ptr->subtyp == TQ_MUF_LISTEN) ? alloc_prog_string("LISTEN") :
+					(ptr->subtyp == TQ_MUF_TIMER) ? alloc_prog_string("TIMER") :
+					(ptr->subtyp == TQ_MUF_DELAY) ? alloc_prog_string("DELAY") :
+					alloc_prog_string("");
 		} else if (ptr->typ == TQ_MPI_TYP) {
 			int subtyp = (ptr->subtyp & TQ_MPI_SUBMASK);
+
 			temp2.data.string = (subtyp == TQ_MPI_QUEUE) ? alloc_prog_string("QUEUE") :
-							(subtyp == TQ_MPI_DELAY) ? alloc_prog_string("DELAY") :
-							alloc_prog_string("");
+					(subtyp == TQ_MPI_DELAY) ? alloc_prog_string("DELAY") :
+					alloc_prog_string("");
 		} else {
 			temp2.data.string = alloc_prog_string("");
 		}
@@ -970,7 +975,8 @@ dequeue_prog(dbref program, int killmode)
 	timequeue tmp, ptr;
 
 	while (tqhead) {
-		if (tqhead->called_prog != program && !has_refs(program, tqhead) && tqhead->uid != program) {
+		if (tqhead->called_prog != program && !has_refs(program, tqhead) &&
+			tqhead->uid != program) {
 			break;
 		}
 		if (killmode == 2) {
@@ -1061,7 +1067,7 @@ dequeue_process(int pid)
 
 	for (ptr = tqhead; ptr; ptr = ptr->next) {
 		if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
-									ptr->subtyp == TQ_MUF_TREAD)) {
+									   ptr->subtyp == TQ_MUF_TREAD)) {
 			FLAGS(ptr->uid) |= (INTERACTIVE | READMODE);
 		}
 	}
@@ -1070,7 +1076,7 @@ dequeue_process(int pid)
 
 
 int
-dequeue_timers(int pid, char* id)
+dequeue_timers(int pid, char *id)
 {
 	char buf[40];
 	timequeue tmp, ptr;
@@ -1086,8 +1092,7 @@ dequeue_timers(int pid, char* id)
 	while (ptr) {
 		if (pid == ptr->eventnum &&
 			ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_TIMER &&
-			(!id || !strcmp(ptr->called_data, buf)))
-		{
+			(!id || !strcmp(ptr->called_data, buf))) {
 			if (tmp == ptr) {
 				tqhead = tmp = tmp->next;
 				ptr->fr->timercount--;
@@ -1289,7 +1294,7 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 							dbref plyr;
 
 							snprintf(bbuf, sizeof(bbuf), ">> %.4000s",
-									pronoun_substitute(descr, player, cbuf));
+									 pronoun_substitute(descr, player, cbuf));
 							plyr = DBFETCH(where)->contents;
 							while (plyr != NOTHING) {
 								if (Typeof(plyr) == TYPE_PLAYER && plyr != player)

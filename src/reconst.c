@@ -197,8 +197,8 @@ void
 check_player(dbref obj)
 {
 	if (db[obj].sp.player.home >= db_top ||
-		((db[db[obj].sp.player.home].flags & TYPE_MASK) != TYPE_ROOM)) db[obj].sp.player.home =
-				tp_player_start;
+		((db[db[obj].sp.player.home].flags & TYPE_MASK) != TYPE_ROOM))
+		db[obj].sp.player.home = tp_player_start;
 
 	if (db[obj].exits < db_top)
 		nexted[db[obj].exits] = obj;

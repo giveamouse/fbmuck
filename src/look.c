@@ -21,7 +21,7 @@
 
 
 #define EXEC_SIGNAL '@'			/* Symbol which tells us what we're looking at
-								   * is an execution order and not a message.    */
+								 * is an execution order and not a message.    */
 
 /* prints owner of something */
 static void
@@ -51,7 +51,7 @@ exec_or_notify_prop(int descr, dbref player, dbref thing,
 					const char *propname, const char *whatcalled)
 {
 	const char *message = get_property_class(thing, propname);
-	int mpiflags = Prop_Blessed(thing, propname)? MPI_ISBLESSED : 0;
+	int mpiflags = Prop_Blessed(thing, propname) ? MPI_ISBLESSED : 0;
 
 	if (message)
 		exec_or_notify(descr, player, thing, message, whatcalled, mpiflags);
@@ -59,8 +59,7 @@ exec_or_notify_prop(int descr, dbref player, dbref thing,
 
 void
 exec_or_notify(int descr, dbref player, dbref thing,
-			   const char *message, const char *whatcalled,
-			   int mpiflags)
+			   const char *message, const char *whatcalled, int mpiflags)
 {
 	char *p;
 	char *p2;
@@ -106,7 +105,8 @@ exec_or_notify(int descr, dbref player, dbref thing,
 
 			strcpy(tmparg, match_args);
 			strcpy(tmpcmd, match_cmdname);
-			p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, MPI_ISPRIVATE | mpiflags);
+			p = do_parse_mesg(descr, player, thing, p, whatcalled, buf,
+							  MPI_ISPRIVATE | mpiflags);
 			strcpy(match_args, p);
 			strcpy(match_cmdname, whatcalled);
 			tmpfr = interp(descr, player, DBFETCH(player)->location, i, thing,
@@ -152,7 +152,7 @@ look_simple(int descr, dbref player, dbref thing)
 {
 	if (GETDESC(thing)) {
 		exec_or_notify(descr, player, thing, GETDESC(thing), "(@Desc)",
-				Prop_Blessed(thing, MESGPROP_DESC)? MPI_ISBLESSED : 0);
+					   Prop_Blessed(thing, MESGPROP_DESC) ? MPI_ISBLESSED : 0);
 	} else {
 		notify(player, "You see nothing special.");
 	}
@@ -170,14 +170,14 @@ look_room(int descr, dbref player, dbref loc, int verbose)
 	if (Typeof(loc) == TYPE_ROOM) {
 		if (GETDESC(loc)) {
 			exec_or_notify(descr, player, loc, GETDESC(loc), "(@Desc)",
-				Prop_Blessed(loc, MESGPROP_DESC)? MPI_ISBLESSED : 0);
+						   Prop_Blessed(loc, MESGPROP_DESC) ? MPI_ISBLESSED : 0);
 		}
 		/* tell him the appropriate messages if he has the key */
 		can_doit(descr, player, loc, 0);
 	} else {
 		if (GETIDESC(loc)) {
 			exec_or_notify(descr, player, loc, GETIDESC(loc), "(@Idesc)",
-				Prop_Blessed(loc, MESGPROP_IDESC)? MPI_ISBLESSED : 0);
+						   Prop_Blessed(loc, MESGPROP_IDESC) ? MPI_ISBLESSED : 0);
 		}
 	}
 	ts_useobject(loc);
@@ -205,6 +205,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 {
 	dbref thing;
 	struct match_data md;
+
 	/* int res; */
 	char buf[BUFFER_LEN];
 	char obj_num[20];
@@ -307,7 +308,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 			}
 			if (lastmatch && PropType(lastmatch) == PROP_STRTYP) {
 				exec_or_notify(descr, player, thing, PropDataStr(lastmatch), "(@detail)",
-					(PropFlags(lastmatch) & PROP_BLESSED)? MPI_ISBLESSED : 0);
+							   (PropFlags(lastmatch) & PROP_BLESSED) ? MPI_ISBLESSED : 0);
 			} else if (ambig_flag) {
 				notify(player, AMBIGUOUS_MESSAGE);
 			} else if (*detail) {
@@ -361,9 +362,10 @@ flag_description(dbref thing)
 			strcatn(buf, sizeof(buf), " QUELL");
 		if (FLAGS(thing) & STICKY)
 			strcatn(buf, sizeof(buf), (Typeof(thing) == TYPE_PROGRAM) ? " SETUID" :
-				   (Typeof(thing) == TYPE_PLAYER) ? " SILENT" : " STICKY");
+					(Typeof(thing) == TYPE_PLAYER) ? " SILENT" : " STICKY");
 		if (FLAGS(thing) & DARK)
-			strcatn(buf, sizeof(buf), (Typeof(thing) != TYPE_PROGRAM) ? " DARK" : " DEBUGGING");
+			strcatn(buf, sizeof(buf),
+					(Typeof(thing) != TYPE_PROGRAM) ? " DARK" : " DEBUGGING");
 		if (FLAGS(thing) & LINK_OK)
 			strcatn(buf, sizeof(buf), " LINK_OK");
 
@@ -391,7 +393,8 @@ flag_description(dbref thing)
 		if (FLAGS(thing) & JUMP_OK)
 			strcatn(buf, sizeof(buf), " JUMP_OK");
 		if (FLAGS(thing) & VEHICLE)
-			strcatn(buf, sizeof(buf), (Typeof(thing) == TYPE_PROGRAM) ? " VIEWABLE" : " VEHICLE");
+			strcatn(buf, sizeof(buf),
+					(Typeof(thing) == TYPE_PROGRAM) ? " VIEWABLE" : " VEHICLE");
 
 		if (FLAGS(thing) & XFORCIBLE) {
 			if (Typeof(thing) == TYPE_EXIT) {
@@ -404,14 +407,14 @@ flag_description(dbref thing)
 			strcatn(buf, sizeof(buf), " ZOMBIE");
 		if (FLAGS(thing) & HAVEN)
 			strcatn(buf, sizeof(buf),
-			        (Typeof(thing) !=
-					TYPE_PROGRAM) ? ((Typeof(thing) ==
-									  TYPE_THING) ? " HIDE" : " HAVEN") : " HARDUID");
+					(Typeof(thing) !=
+					 TYPE_PROGRAM) ? ((Typeof(thing) ==
+									   TYPE_THING) ? " HIDE" : " HAVEN") : " HARDUID");
 		if (FLAGS(thing) & ABODE)
 			strcatn(buf, sizeof(buf),
-			        (Typeof(thing) != TYPE_PROGRAM) ? (Typeof(thing) !=
-													  TYPE_EXIT ? " ABODE" : " ABATE") :
-				   " AUTOSTART");
+					(Typeof(thing) != TYPE_PROGRAM) ? (Typeof(thing) !=
+													   TYPE_EXIT ? " ABODE" : " ABATE") :
+					" AUTOSTART");
 	}
 	return buf;
 }
@@ -446,8 +449,9 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
 	while (propadr) {
 		if (equalstr(wldcrd, propname)) {
 			snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
-			if (!Prop_System(buf) && ((!Prop_Hidden(buf) && !(PropFlags(propadr) & PROP_SYSPERMS))
-				|| Wizard(OWNER(player)))) {
+			if (!Prop_System(buf) &&
+				((!Prop_Hidden(buf) && !(PropFlags(propadr) & PROP_SYSPERMS))
+				 || Wizard(OWNER(player)))) {
 				if (!*ptr || recurse) {
 					cnt++;
 					displayprop(player, thing, buf, buf2, sizeof(buf2));
@@ -536,29 +540,25 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	switch (Typeof(thing)) {
 	case TYPE_ROOM:
 		snprintf(buf, sizeof(buf), "%.*s  Owner: %s  Parent: ",
-				(BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
-				unparse_object(player, thing),
-				NAME(OWNER(thing)));
+				 (BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
+				 unparse_object(player, thing), NAME(OWNER(thing)));
 		strcatn(buf, sizeof(buf), unparse_object(player, DBFETCH(thing)->location));
 		break;
 	case TYPE_THING:
 		snprintf(buf, sizeof(buf), "%.*s  Owner: %s  Value: %d",
-				(BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
-				unparse_object(player, thing),
-				NAME(OWNER(thing)), GETVALUE(thing));
+				 (BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
+				 unparse_object(player, thing), NAME(OWNER(thing)), GETVALUE(thing));
 		break;
 	case TYPE_PLAYER:
-		snprintf(buf, sizeof(buf), "%.*s  %s: %d  ", 
-				(BUFFER_LEN - strlen(tp_cpennies) - 35),
-				unparse_object(player, thing),
-				tp_cpennies, GETVALUE(thing));
+		snprintf(buf, sizeof(buf), "%.*s  %s: %d  ",
+				 (BUFFER_LEN - strlen(tp_cpennies) - 35),
+				 unparse_object(player, thing), tp_cpennies, GETVALUE(thing));
 		break;
 	case TYPE_EXIT:
 	case TYPE_PROGRAM:
 		snprintf(buf, sizeof(buf), "%.*s  Owner: %s",
-				(BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
-				unparse_object(player, thing),
-				NAME(OWNER(thing)));
+				 (BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
+				 unparse_object(player, thing), NAME(OWNER(thing)));
 		break;
 	case TYPE_GARBAGE:
 		strcpy(buf, unparse_object(player, thing));
@@ -576,15 +576,15 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	notify(player, buf);
 
 	snprintf(buf, sizeof(buf), "Chown_OK Key: %s",
-			unparse_boolexp(player, get_property_lock(thing, "_/chlk"), 1));
+			 unparse_boolexp(player, get_property_lock(thing, "_/chlk"), 1));
 	notify(player, buf);
 
 	snprintf(buf, sizeof(buf), "Container Key: %s",
-			unparse_boolexp(player, get_property_lock(thing, "_/clk"), 1));
+			 unparse_boolexp(player, get_property_lock(thing, "_/clk"), 1));
 	notify(player, buf);
 
 	snprintf(buf, sizeof(buf), "Force Key: %s",
-			unparse_boolexp(player, get_property_lock(thing, "@/flk"), 1));
+			 unparse_boolexp(player, get_property_lock(thing, "@/flk"), 1));
 	notify(player, buf);
 
 	if (GETSUCC(thing)) {
@@ -643,7 +643,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	notify(player, buf);
 	if (Typeof(thing) == TYPE_PROGRAM) {
 		snprintf(buf, sizeof(buf), "Usecount: %d     Instances: %d",
-				DBFETCH(thing)->ts.usecount, PROGRAM_INSTANCES(thing));
+				 DBFETCH(thing)->ts.usecount, PROGRAM_INSTANCES(thing));
 	} else {
 		snprintf(buf, sizeof(buf), "Usecount: %d", DBFETCH(thing)->ts.usecount);
 	}
@@ -679,7 +679,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		/* print dropto if present */
 		if (DBFETCH(thing)->sp.room.dropto != NOTHING) {
 			snprintf(buf, sizeof(buf), "Dropped objects go to: %s",
-					unparse_object(player, DBFETCH(thing)->sp.room.dropto));
+					 unparse_object(player, DBFETCH(thing)->sp.room.dropto));
 			notify(player, buf);
 		}
 		break;
@@ -690,8 +690,10 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		/* print location if player can link to it */
 		if (DBFETCH(thing)->location != NOTHING && (controls(player, DBFETCH(thing)->location)
 													|| can_link_to(player, NOTYPE,
-																   DBFETCH(thing)->location))) {
-			snprintf(buf, sizeof(buf), "Location: %s", unparse_object(player, DBFETCH(thing)->location));
+																   DBFETCH(thing)->
+																   location))) {
+			snprintf(buf, sizeof(buf), "Location: %s",
+					 unparse_object(player, DBFETCH(thing)->location));
 			notify(player, buf);
 		}
 		/* print thing's actions, if any */
@@ -713,8 +715,10 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		/* print location if player can link to it */
 		if (DBFETCH(thing)->location != NOTHING && (controls(player, DBFETCH(thing)->location)
 													|| can_link_to(player, NOTYPE,
-																   DBFETCH(thing)->location))) {
-			snprintf(buf, sizeof(buf), "Location: %s", unparse_object(player, DBFETCH(thing)->location));
+																   DBFETCH(thing)->
+																   location))) {
+			snprintf(buf, sizeof(buf), "Location: %s",
+					 unparse_object(player, DBFETCH(thing)->location));
 			notify(player, buf);
 		}
 		/* print player's actions, if any */
@@ -729,7 +733,8 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		break;
 	case TYPE_EXIT:
 		if (DBFETCH(thing)->location != NOTHING) {
-			snprintf(buf, sizeof(buf), "Source: %s", unparse_object(player, DBFETCH(thing)->location));
+			snprintf(buf, sizeof(buf), "Source: %s",
+					 unparse_object(player, DBFETCH(thing)->location));
 			notify(player, buf);
 		}
 		/* print destinations */
@@ -744,7 +749,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 				break;
 			default:
 				snprintf(buf, sizeof(buf), "Destination: %s",
-						unparse_object(player, (DBFETCH(thing)->sp.exit.dest)[i]));
+						 unparse_object(player, (DBFETCH(thing)->sp.exit.dest)[i]));
 				notify(player, buf);
 				break;
 			}
@@ -753,9 +758,12 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	case TYPE_PROGRAM:
 		if (PROGRAM_SIZ(thing)) {
 			struct timeval tv = PROGRAM_PROFTIME(thing);
-			snprintf(buf, sizeof(buf), "Program compiled size: %d instructions", PROGRAM_SIZ(thing));
+
+			snprintf(buf, sizeof(buf), "Program compiled size: %d instructions",
+					 PROGRAM_SIZ(thing));
 			notify(player, buf);
-			snprintf(buf, sizeof(buf), "Cumulative runtime: %d.%06d seconds ", tv.tv_sec, tv.tv_usec);
+			snprintf(buf, sizeof(buf), "Cumulative runtime: %d.%06d seconds ", tv.tv_sec,
+					 tv.tv_usec);
 			notify(player, buf);
 		} else {
 			snprintf(buf, sizeof(buf), "Program not compiled.");
@@ -765,8 +773,10 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		/* print location if player can link to it */
 		if (DBFETCH(thing)->location != NOTHING && (controls(player, DBFETCH(thing)->location)
 													|| can_link_to(player, NOTYPE,
-																   DBFETCH(thing)->location))) {
-			snprintf(buf, sizeof(buf), "Location: %s", unparse_object(player, DBFETCH(thing)->location));
+																   DBFETCH(thing)->
+																   location))) {
+			snprintf(buf, sizeof(buf), "Location: %s",
+					 unparse_object(player, DBFETCH(thing)->location));
 			notify(player, buf);
 		}
 		break;
@@ -783,7 +793,7 @@ do_score(dbref player)
 	char buf[BUFFER_LEN];
 
 	snprintf(buf, sizeof(buf), "You have %d %s.", GETVALUE(player),
-			GETVALUE(player) == 1 ? tp_penny : tp_pennies);
+			 GETVALUE(player) == 1 ? tp_penny : tp_pennies);
 	notify(player, buf);
 }
 
@@ -1151,13 +1161,14 @@ display_objinfo(dbref player, dbref obj, int output_type)
 
 	switch (output_type) {
 	case 1:					/* owners */
-		snprintf(buf, sizeof(buf), "%-38.512s  %.512s", buf2, unparse_object(player, OWNER(obj)));
+		snprintf(buf, sizeof(buf), "%-38.512s  %.512s", buf2,
+				 unparse_object(player, OWNER(obj)));
 		break;
 	case 2:					/* links */
 		switch (Typeof(obj)) {
 		case TYPE_ROOM:
 			snprintf(buf, sizeof(buf), "%-38.512s  %.512s", buf2,
-					unparse_object(player, DBFETCH(obj)->sp.room.dropto));
+					 unparse_object(player, DBFETCH(obj)->sp.room.dropto));
 			break;
 		case TYPE_EXIT:
 			if (DBFETCH(obj)->sp.exit.ndest == 0) {
@@ -1169,13 +1180,15 @@ display_objinfo(dbref player, dbref obj, int output_type)
 				break;
 			}
 			snprintf(buf, sizeof(buf), "%-38.512s  %.512s", buf2,
-					unparse_object(player, DBFETCH(obj)->sp.exit.dest[0]));
+					 unparse_object(player, DBFETCH(obj)->sp.exit.dest[0]));
 			break;
 		case TYPE_PLAYER:
-			snprintf(buf, sizeof(buf), "%-38.512s  %.512s", buf2, unparse_object(player, PLAYER_HOME(obj)));
+			snprintf(buf, sizeof(buf), "%-38.512s  %.512s", buf2,
+					 unparse_object(player, PLAYER_HOME(obj)));
 			break;
 		case TYPE_THING:
-			snprintf(buf, sizeof(buf), "%-38.512s  %.512s", buf2, unparse_object(player, THING_HOME(obj)));
+			snprintf(buf, sizeof(buf), "%-38.512s  %.512s", buf2,
+					 unparse_object(player, THING_HOME(obj)));
 			break;
 		default:
 			snprintf(buf, sizeof(buf), "%-38.512s  %.512s", buf2, "N/A");
@@ -1184,7 +1197,7 @@ display_objinfo(dbref player, dbref obj, int output_type)
 		break;
 	case 3:					/* locations */
 		snprintf(buf, sizeof(buf), "%-38.512s  %.512s", buf2,
-				unparse_object(player, DBFETCH(obj)->location));
+				 unparse_object(player, DBFETCH(obj)->location));
 		break;
 	case 4:
 		return;
@@ -1218,7 +1231,8 @@ do_find(dbref player, const char *name, const char *flags)
 	} else {
 		for (i = 0; i < db_top; i++) {
 			if ((Wizard(OWNER(player)) || OWNER(i) == OWNER(player)) &&
-				checkflags(i, check) && NAME(i) && (!*name || equalstr(buf, (char *) NAME(i)))) {
+				checkflags(i, check) && NAME(i) && (!*name ||
+													equalstr(buf, (char *) NAME(i)))) {
 				display_objinfo(player, i, output_type);
 				total++;
 			}
@@ -1454,7 +1468,8 @@ exit_match_exists(dbref player, dbref obj, const char *name, int exactMatch)
 	exit = DBFETCH(obj)->exits;
 	while (exit != NOTHING) {
 		if (exit_matches_name(exit, name, exactMatch)) {
-			snprintf(buf, sizeof(buf), "  %ss are trapped on %.2048s", name, unparse_object(player, obj));
+			snprintf(buf, sizeof(buf), "  %ss are trapped on %.2048s", name,
+					 unparse_object(player, obj));
 			notify(player, buf);
 			return 1;
 		}
@@ -1506,7 +1521,7 @@ do_sweep(int descr, dbref player, const char *name)
 		case TYPE_PLAYER:
 			if (!Dark(thing) || online(ref)) {
 				snprintf(buf, sizeof(buf), "  %s is a %splayer.",
-						unparse_object(player, ref), online(ref) ? "" : "sleeping ");
+						 unparse_object(player, ref), online(ref) ? "" : "sleeping ");
 				notify(player, buf);
 			}
 			break;
@@ -1537,8 +1552,8 @@ do_sweep(int descr, dbref player, const char *name)
 			exit_match_exists(player, ref, "page", 0);
 			exit_match_exists(player, ref, "whisper", 0);
 			exit_match_exists(player, ref, "pose", 1) ||
-				exit_match_exists(player, ref, "pos", 1) ||
-				exit_match_exists(player, ref, "po", 1);
+					exit_match_exists(player, ref, "pos", 1) ||
+					exit_match_exists(player, ref, "po", 1);
 			exit_match_exists(player, ref, "say", 0);
 			break;
 		}
@@ -1553,16 +1568,17 @@ do_sweep(int descr, dbref player, const char *name)
 
 		if ((FLAGS(loc) & LISTENER) &&
 			(get_property(loc, "_listen") ||
-				get_property(loc, "~listen") || get_property(loc, "~olisten"))) {
-			snprintf(buf, sizeof(buf), "  %s is a listening room.", unparse_object(player, loc));
+			 get_property(loc, "~listen") || get_property(loc, "~olisten"))) {
+			snprintf(buf, sizeof(buf), "  %s is a listening room.",
+					 unparse_object(player, loc));
 			notify(player, buf);
 		}
 
 		exit_match_exists(player, loc, "page", 0);
 		exit_match_exists(player, loc, "whisper", 0);
 		exit_match_exists(player, loc, "pose", 1) ||
-			exit_match_exists(player, loc, "pos", 1) ||
-			exit_match_exists(player, loc, "po", 1);
+				exit_match_exists(player, loc, "pos", 1) ||
+				exit_match_exists(player, loc, "po", 1);
 		exit_match_exists(player, loc, "say", 0);
 
 		loc = getparent(loc);

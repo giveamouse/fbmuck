@@ -85,10 +85,10 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 		case TYPE_THING:
 			destination = THING_HOME(victim);
 			if (parent_loop_check(victim, destination)) {
-			  destination = PLAYER_HOME(OWNER(victim));
-			  if (parent_loop_check(victim, destination)) {
-			    destination = (dbref) 0;
-			  }
+				destination = PLAYER_HOME(OWNER(victim));
+				if (parent_loop_check(victim, destination)) {
+					destination = (dbref) 0;
+				}
 			}
 			break;
 		case TYPE_ROOM:
@@ -99,7 +99,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 			break;
 		default:
 			destination = tp_player_start;	/* caught in the next
-											   * switch anyway */
+											 * switch anyway */
 			break;
 		}
 	default:
@@ -108,7 +108,8 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 			if (!controls(player, victim) ||
 				!controls(player, destination) ||
 				!controls(player, getloc(victim)) ||
-				(Typeof(destination) == TYPE_THING && !controls(player, getloc(destination)))) {
+				(Typeof(destination) == TYPE_THING &&
+				 !controls(player, getloc(destination)))) {
 				notify(player, "Permission denied.");
 				break;
 			}
@@ -150,7 +151,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 			if (Typeof(destination) == TYPE_ROOM
 				&& DBFETCH(destination)->sp.room.dropto != NOTHING
 				&& !(FLAGS(destination) & STICKY))
-						destination = DBFETCH(destination)->sp.room.dropto;
+				destination = DBFETCH(destination)->sp.room.dropto;
 			if (tp_thing_movement && (Typeof(victim) == TYPE_THING)) {
 				enter_room(descr, victim, destination, DBFETCH(victim)->location);
 			} else {
@@ -216,8 +217,9 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild
 	while (propadr) {
 		if (equalstr(wldcrd, propname)) {
 			snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
-			if (!Prop_System(buf) && ((!Prop_Hidden(buf) && !(PropFlags(propadr) & PROP_SYSPERMS))
-				|| Wizard(OWNER(player)))) {
+			if (!Prop_System(buf) &&
+				((!Prop_Hidden(buf) && !(PropFlags(propadr) & PROP_SYSPERMS))
+				 || Wizard(OWNER(player)))) {
 				if (!*ptr || recurse) {
 					cnt++;
 					if (blessp) {
@@ -271,7 +273,7 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
 	}
 
 	cnt = blessprops_wildcard(player, victim, "", propname, 0);
-	snprintf(buf, sizeof(buf), "%d propert%s unblessed.", cnt, (cnt == 1)? "y" : "ies");
+	snprintf(buf, sizeof(buf), "%d propert%s unblessed.", cnt, (cnt == 1) ? "y" : "ies");
 	notify(player, buf);
 }
 
@@ -312,7 +314,7 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 	}
 
 	cnt = blessprops_wildcard(player, victim, "", propname, 1);
-	snprintf(buf, sizeof(buf), "%d propert%s blessed.", cnt, (cnt == 1)? "y" : "ies");
+	snprintf(buf, sizeof(buf), "%d propert%s blessed.", cnt, (cnt == 1) ? "y" : "ies");
 	notify(player, buf);
 }
 
@@ -403,11 +405,11 @@ do_force(int descr, dbref player, const char *what, char *command)
 	log_status("FORCED: %s(%d) by %s(%d): %s\n", NAME(victim),
 			   victim, NAME(player), player, command);
 	/* force victim to do command */
-	force_prog=NOTHING;
+	force_prog = NOTHING;
 	force_level++;
 	process_command(dbref_first_descr(victim), victim, command);
 	force_level--;
-	force_prog=NOTHING;
+	force_prog = NOTHING;
 }
 
 void
@@ -424,7 +426,7 @@ do_stats(dbref player, const char *name)
 	int oldobjs = 0;
 	time_t currtime = time(NULL);
 	dbref i;
-	dbref owner=NOTHING;
+	dbref owner = NOTHING;
 	char buf[BUFFER_LEN];
 
 	if (!Wizard(OWNER(player)) && (!name || !*name)) {
@@ -449,7 +451,8 @@ do_stats(dbref player, const char *name)
 
 				/* if unused for 90 days, inc oldobj count */
 				if ((OWNER(i) == owner) &&
-					(currtime - DBFETCH(i)->ts.lastused) > tp_aging_time) oldobjs++;
+					(currtime - DBFETCH(i)->ts.lastused) > tp_aging_time)
+					oldobjs++;
 
 				switch (Typeof(i)) {
 				case TYPE_ROOM:
@@ -676,7 +679,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 		FLAGS(victim) = (FLAGS(victim) & ~TYPE_MASK) | TYPE_THING;
 		OWNER(victim) = player;	/* you get it */
 		SETVALUE(victim, 1);	/* don't let him keep his
-									 * immense wealth */
+								 * immense wealth */
 	}
 }
 
@@ -818,11 +821,11 @@ do_muf_topprofs(dbref player, char *arg1)
 {
 	struct profnode {
 		struct profnode *next;
-		dbref  prog;
+		dbref prog;
 		double proftime;
 		double pcnt;
-		long   comptime;
-		long   usecount;
+		long comptime;
+		long usecount;
 	} *tops = NULL;
 
 	struct profnode *curr = NULL;
@@ -837,7 +840,7 @@ do_muf_topprofs(dbref player, char *arg1)
 		return;
 	}
 	if (!string_compare(arg1, "reset")) {
-		for (i = db_top; i-->0; ) {
+		for (i = db_top; i-- > 0;) {
 			if (Typeof(i) == TYPE_PROGRAM) {
 				PROGRAM_SET_PROFTIME(i, 0, 0);
 				PROGRAM_SET_PROFSTART(i, current_systime);
@@ -854,9 +857,9 @@ do_muf_topprofs(dbref player, char *arg1)
 		count = 10;
 	}
 
-	for (i = db_top; i-->0; ) {
+	for (i = db_top; i-- > 0;) {
 		if (Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
-			struct profnode *newnode = (struct profnode *)malloc(sizeof(struct profnode));
+			struct profnode *newnode = (struct profnode *) malloc(sizeof(struct profnode));
 			struct timeval tmpt = PROGRAM_PROFTIME(i);
 
 			newnode->next = NULL;
@@ -868,7 +871,7 @@ do_muf_topprofs(dbref player, char *arg1)
 			if (newnode->comptime > 0) {
 				newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
 			} else {
-				newnode->pcnt =  0.0;
+				newnode->pcnt = 0.0;
 			}
 			if (!tops) {
 				tops = newnode;
@@ -909,17 +912,18 @@ do_muf_topprofs(dbref player, char *arg1)
 	notify(player, "     %CPU   TotalTime  UseCount  Program");
 	while (tops) {
 		curr = tops;
-		snprintf(buf, sizeof(buf), "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
+		snprintf(buf, sizeof(buf), "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime,
+				 curr->usecount, unparse_object(player, curr->prog));
 		notify(player, buf);
 		tops = tops->next;
 		free(curr);
 	}
-	snprintf(buf, sizeof(buf), "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
-			(current_systime-sel_prof_start_time),
-			((double)(sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
-			(double)((current_systime-sel_prof_start_time)+0.01),
-			sel_prof_idle_use);
-	notify(player,buf);
+	snprintf(buf, sizeof(buf),
+			 "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
+			 (current_systime - sel_prof_start_time),
+			 ((double) (sel_prof_idle_sec + (sel_prof_idle_usec / 1000000.0)) * 100.0) /
+			 (double) ((current_systime - sel_prof_start_time) + 0.01), sel_prof_idle_use);
+	notify(player, buf);
 	notify(player, "*Done*");
 }
 
@@ -929,11 +933,11 @@ do_mpi_topprofs(dbref player, char *arg1)
 {
 	struct profnode {
 		struct profnode *next;
-		dbref  prog;
+		dbref prog;
 		double proftime;
 		double pcnt;
-		long   comptime;
-		long   usecount;
+		long comptime;
+		long usecount;
 	} *tops = NULL;
 
 	struct profnode *curr = NULL;
@@ -948,7 +952,7 @@ do_mpi_topprofs(dbref player, char *arg1)
 		return;
 	}
 	if (!string_compare(arg1, "reset")) {
-		for (i = db_top; i-->0; ) {
+		for (i = db_top; i-- > 0;) {
 			if (DBFETCH(i)->mpi_prof_use) {
 				DBFETCH(i)->mpi_prof_use = 0;
 				DBFETCH(i)->mpi_proftime.tv_usec = 0;
@@ -966,9 +970,10 @@ do_mpi_topprofs(dbref player, char *arg1)
 		count = 10;
 	}
 
-	for (i = db_top; i-->0; ) {
+	for (i = db_top; i-- > 0;) {
 		if (DBFETCH(i)->mpi_prof_use) {
-			struct profnode *newnode = (struct profnode *)malloc(sizeof(struct profnode));
+			struct profnode *newnode = (struct profnode *) malloc(sizeof(struct profnode));
+
 			newnode->next = NULL;
 			newnode->prog = i;
 			newnode->proftime = DBFETCH(i)->mpi_proftime.tv_sec;
@@ -978,7 +983,7 @@ do_mpi_topprofs(dbref player, char *arg1)
 			if (newnode->comptime > 0) {
 				newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
 			} else {
-				newnode->pcnt =  0.0;
+				newnode->pcnt = 0.0;
 			}
 			if (!tops) {
 				tops = newnode;
@@ -1019,17 +1024,21 @@ do_mpi_topprofs(dbref player, char *arg1)
 	notify(player, "     %CPU   TotalTime  UseCount  Object");
 	while (tops) {
 		curr = tops;
-		snprintf(buf, sizeof(buf), "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
+		snprintf(buf, sizeof(buf), "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime,
+				 curr->usecount, unparse_object(player, curr->prog));
 		notify(player, buf);
 		tops = tops->next;
 		free(curr);
 	}
-	snprintf(buf, sizeof(buf), "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
-			(current_systime-sel_prof_start_time),
-			(((double)sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
-			(double)((current_systime-sel_prof_start_time)+0.01),
-			sel_prof_idle_use);
-	notify(player,buf);
+	snprintf(buf, sizeof(buf),
+			 "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
+			 (current_systime - sel_prof_start_time),
+			 (((double) sel_prof_idle_sec +
+			   (sel_prof_idle_usec / 1000000.0)) * 100.0) / (double) ((current_systime -
+																	   sel_prof_start_time) +
+																	  0.01),
+			 sel_prof_idle_use);
+	notify(player, buf);
 	notify(player, "*Done*");
 }
 
@@ -1039,12 +1048,12 @@ do_all_topprofs(dbref player, char *arg1)
 {
 	struct profnode {
 		struct profnode *next;
-		dbref  prog;
+		dbref prog;
 		double proftime;
 		double pcnt;
-		long   comptime;
-		long   usecount;
-		short  type;
+		long comptime;
+		long usecount;
+		short type;
 	} *tops = NULL;
 
 	struct profnode *curr = NULL;
@@ -1059,7 +1068,7 @@ do_all_topprofs(dbref player, char *arg1)
 		return;
 	}
 	if (!string_compare(arg1, "reset")) {
-		for (i = db_top; i-->0; ) {
+		for (i = db_top; i-- > 0;) {
 			if (DBFETCH(i)->mpi_prof_use) {
 				DBFETCH(i)->mpi_prof_use = 0;
 				DBFETCH(i)->mpi_proftime.tv_usec = 0;
@@ -1086,9 +1095,10 @@ do_all_topprofs(dbref player, char *arg1)
 		count = 10;
 	}
 
-	for (i = db_top; i-->0; ) {
+	for (i = db_top; i-- > 0;) {
 		if (DBFETCH(i)->mpi_prof_use) {
-			struct profnode *newnode = (struct profnode *)malloc(sizeof(struct profnode));
+			struct profnode *newnode = (struct profnode *) malloc(sizeof(struct profnode));
+
 			newnode->next = NULL;
 			newnode->prog = i;
 			newnode->proftime = DBFETCH(i)->mpi_proftime.tv_sec;
@@ -1099,7 +1109,7 @@ do_all_topprofs(dbref player, char *arg1)
 			if (newnode->comptime > 0) {
 				newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
 			} else {
-				newnode->pcnt =  0.0;
+				newnode->pcnt = 0.0;
 			}
 			if (!tops) {
 				tops = newnode;
@@ -1137,7 +1147,7 @@ do_all_topprofs(dbref player, char *arg1)
 			}
 		}
 		if (Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
-			struct profnode *newnode = (struct profnode *)malloc(sizeof(struct profnode));
+			struct profnode *newnode = (struct profnode *) malloc(sizeof(struct profnode));
 			struct timeval tmpt = PROGRAM_PROFTIME(i);
 
 			newnode->next = NULL;
@@ -1150,7 +1160,7 @@ do_all_topprofs(dbref player, char *arg1)
 			if (newnode->comptime > 0) {
 				newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
 			} else {
-				newnode->pcnt =  0.0;
+				newnode->pcnt = 0.0;
 			}
 			if (!tops) {
 				tops = newnode;
@@ -1191,17 +1201,19 @@ do_all_topprofs(dbref player, char *arg1)
 	notify(player, "     %CPU   TotalTime  UseCount  Type  Object");
 	while (tops) {
 		curr = tops;
-		snprintf(buf, sizeof(buf), "%10.3f %10.3f %9ld%5s   %s", curr->pcnt, curr->proftime, curr->usecount, curr->type?"MUF":"MPI",unparse_object(player, curr->prog));
+		snprintf(buf, sizeof(buf), "%10.3f %10.3f %9ld%5s   %s", curr->pcnt, curr->proftime,
+				 curr->usecount, curr->type ? "MUF" : "MPI", unparse_object(player,
+																			curr->prog));
 		notify(player, buf);
 		tops = tops->next;
 		free(curr);
 	}
-	snprintf(buf, sizeof(buf), "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
-			(current_systime-sel_prof_start_time),
-			((double)(sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
-			(double)((current_systime-sel_prof_start_time)+0.01),
-			sel_prof_idle_use);
-	notify(player,buf);
+	snprintf(buf, sizeof(buf),
+			 "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
+			 (current_systime - sel_prof_start_time),
+			 ((double) (sel_prof_idle_sec + (sel_prof_idle_usec / 1000000.0)) * 100.0) /
+			 (double) ((current_systime - sel_prof_start_time) + 0.01), sel_prof_idle_use);
+	notify(player, buf);
 	notify(player, "*Done*");
 }
 
@@ -1229,7 +1241,8 @@ do_memory(dbref who)
 #endif
 		notify_fmt(who, "Total memory mmapped:          %6dk", (mi.hblkhd / 1024));
 		notify_fmt(who, "Total memory malloced:         %6dk", (mi.uordblks / 1024));
-		notify_fmt(who, "Mem allocated overhead:        %6dk", ((mi.arena - mi.uordblks) / 1024));
+		notify_fmt(who, "Mem allocated overhead:        %6dk",
+				   ((mi.arena - mi.uordblks) / 1024));
 		notify_fmt(who, "Memory free:                   %6dk", (mi.fordblks / 1024));
 #ifdef HAVE_MALLINFO_KEEPCOST
 		notify_fmt(who, "Top-most releasable chunk size:%6dk", (mi.keepcost / 1024));

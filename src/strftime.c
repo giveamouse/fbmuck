@@ -170,12 +170,14 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 					break;
 				case 'c':
 					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%x %X", tmval))) return (0);
+											(char *) "%x %X", tmval)))
+						return (0);
 					pos += ret;
 					break;
 				case 'C':
 					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%A %B %e, %Y", tmval))) return (0);
+											(char *) "%A %B %e, %Y", tmval)))
+						return (0);
 					pos += ret;
 					break;
 				case 'd':
@@ -183,7 +185,8 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 					break;
 				case 'D':
 					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%m/%d/%y", tmval))) return (0);
+											(char *) "%m/%d/%y", tmval)))
+						return (0);
 					pos += ret;
 					break;
 				case 'e':
@@ -217,12 +220,14 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 					break;
 				case 'r':
 					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%I:%M:%S %p", tmval))) return (0);
+											(char *) "%I:%M:%S %p", tmval)))
+						return (0);
 					pos += ret;
 					break;
 				case 'R':
 					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%H:%M", tmval))) return (0);
+											(char *) "%H:%M", tmval)))
+						return (0);
 					pos += ret;
 					break;
 				case 'S':
@@ -230,7 +235,8 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 					break;
 				case 'T':
 					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%H:%M:%S", tmval))) return (0);
+											(char *) "%H:%M:%S", tmval)))
+						return (0);
 					pos += ret;
 					break;
 				case 'U':
@@ -249,12 +255,14 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 					break;
 				case 'x':
 					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%m/%d/%y", tmval))) return (0);
+											(char *) "%m/%d/%y", tmval)))
+						return (0);
 					pos += ret;
 					break;
 				case 'X':
 					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%H:%M:%S", tmval))) return (0);
+											(char *) "%H:%M:%S", tmval)))
+						return (0);
 					pos += ret;
 					break;
 				case 'y':

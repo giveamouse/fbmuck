@@ -46,7 +46,7 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
 
 	if (!tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
 		snprintf(buf, sizeof(buf), "You can't link to players.  Destination %s ignored.",
-				unparse_object(player, dobj));
+				 unparse_object(player, dobj));
 		notify(player, buf);
 		return NOTHING;
 	}
@@ -217,11 +217,11 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 		case TYPE_PROGRAM:
 			if (prdest) {
 				snprintf(buf, sizeof(buf),
-						"Only one player, room, or program destination allowed. Destination %s ignored.",
-						unparse_object(player, dest));
+						 "Only one player, room, or program destination allowed. Destination %s ignored.",
+						 unparse_object(player, dest));
 				notify(player, buf);
 
-				if(dryrun)
+				if (dryrun)
 					error = 1;
 
 				continue;
@@ -235,11 +235,11 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 		case TYPE_EXIT:
 			if (exit_loop_check(exit, dest)) {
 				snprintf(buf, sizeof(buf),
-						"Destination %s would create a loop, ignored.",
-						unparse_object(player, dest));
+						 "Destination %s would create a loop, ignored.",
+						 unparse_object(player, dest));
 				notify(player, buf);
-				
-				if(dryrun)
+
+				if (dryrun)
 					error = 1;
 
 				continue;
@@ -250,12 +250,12 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 			notify(player, "Internal error: weird object type.");
 			log_status("PANIC: weird object: Typeof(%d) = %d\n", dest, Typeof(dest));
 
-			if(dryrun)
+			if (dryrun)
 				error = 1;
-				
+
 			break;
 		}
-		if(!dryrun) {
+		if (!dryrun) {
 			if (dest == HOME) {
 				notify(player, "Linked to HOME.");
 			} else {
@@ -263,20 +263,20 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 				notify(player, buf);
 			}
 		}
-		
+
 		if (ndest >= MAX_LINKS) {
 			notify(player, "Too many destinations, rest ignored.");
 
-			if(dryrun)
+			if (dryrun)
 				error = 1;
 
 			break;
 		}
 	}
-	
-	if(dryrun && error)
+
+	if (dryrun && error)
 		return 0;
-		
+
 	return ndest;
 }
 
@@ -393,7 +393,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 		}
 		DBFETCH(thing)->sp.exit.ndest = ndest;
 		if (DBFETCH(thing)->sp.exit.dest) {
-		    free(DBFETCH(thing)->sp.exit.dest);
+			free(DBFETCH(thing)->sp.exit.dest);
 		}
 		DBFETCH(thing)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * ndest);
 		for (i = 0; i < ndest; i++) {
@@ -539,7 +539,8 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 				notify(player, "Permission denied.  Parent set to default.");
 			} else {
 				moveto(room, parent);
-				snprintf(buf, sizeof(buf), "Parent set to %s.", unparse_object(player, parent));
+				snprintf(buf, sizeof(buf), "Parent set to %s.",
+						 unparse_object(player, parent));
 				notify(player, buf);
 			}
 		}
@@ -749,7 +750,7 @@ do_mcpedit(int descr, dbref player, const char *name)
 
 
 void
-do_mcpprogram(int descr, dbref player, const char* name)
+do_mcpprogram(int descr, dbref player, const char *name)
 {
 	dbref prog;
 	char buf[BUFFER_LEN];
@@ -824,7 +825,7 @@ do_mcpprogram(int descr, dbref player, const char* name)
 
 
 void
-mcpedit_program(int descr, dbref player, dbref prog, const char* name)
+mcpedit_program(int descr, dbref player, dbref prog, const char *name)
 {
 	char namestr[BUFFER_LEN];
 	char refstr[BUFFER_LEN];
@@ -864,7 +865,8 @@ mcpedit_program(int descr, dbref player, dbref prog, const char* name)
 		return;
 	}
 	if (FLAGS(prog) & INTERNAL) {
-		show_mcp_error(mfr, "@mcpedit", "Sorry, this program is currently being edited.  Try again later.");
+		show_mcp_error(mfr, "@mcpedit",
+					   "Sorry, this program is currently being edited.  Try again later.");
 		return;
 	}
 	PROGRAM_SET_FIRST(prog, read_program(prog));
@@ -899,32 +901,32 @@ copy_one_prop(dbref player, dbref source, dbref destination, char *propname)
 	/* read property from old object */
 	currprop = get_property(source, propname);
 
-	if(currprop) {
+	if (currprop) {
 
-		/* flags can be copied. */		
+		/* flags can be copied. */
 		newprop.flags = currprop->flags;
 
 		/* data, however, must be cloned in case it's a string or a
 		   lock. */
-		switch(PropType(currprop)) {
-			case PROP_STRTYP:
-				newprop.data.str = alloc_string((currprop->data).str);
-				break;
-			case PROP_INTTYP:
-			case PROP_FLTTYP:
-			case PROP_REFTYP:
-				newprop.data = currprop->data;
-				break;
-			case PROP_LOKTYP:
-				newprop.data.lok = copy_bool((currprop->data).lok);
-			case PROP_DIRTYP:
-				break;
+		switch (PropType(currprop)) {
+		case PROP_STRTYP:
+			newprop.data.str = alloc_string((currprop->data).str);
+			break;
+		case PROP_INTTYP:
+		case PROP_FLTTYP:
+		case PROP_REFTYP:
+			newprop.data = currprop->data;
+			break;
+		case PROP_LOKTYP:
+			newprop.data.lok = copy_bool((currprop->data).lok);
+		case PROP_DIRTYP:
+			break;
 		}
 
 		/* now hook the new property into the destination object. */
 		set_property(destination, propname, &newprop);
 	}
-	
+
 	return;
 }
 
@@ -944,27 +946,27 @@ copy_props(dbref player, dbref source, dbref destination, const char *dir)
 	/* loop through all properties in the current propdir */
 	propadr = first_prop(source, (char *) dir, &pptr, propname);
 	while (propadr) {
-	
+
 		/* generate name for current property */
 		snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 
 		/* notify player */
-		if(tp_verbose_clone && Wizard(OWNER(player))) {
+		if (tp_verbose_clone && Wizard(OWNER(player))) {
 			snprintf(buf2, sizeof(buf2), "copying property %s", buf);
 			notify(player, buf2);
 		}
 
 		/* copy this property */
 		copy_one_prop(player, source, destination, buf);
-		
+
 		/* recursively copy this property directory */
 		copy_props(player, source, destination, buf);
-		
+
 		/* find next property in current dir */
 		propadr = next_prop(pptr, propadr, propname);
 
 	}
-	
+
 	/* chaos and disorder - our work here is done. */
 	return;
 }
@@ -978,8 +980,8 @@ void
 do_clone(int descr, dbref player, char *name)
 {
 	static char buf[BUFFER_LEN];
-	dbref  thing, clonedthing;
-	int    cost;
+	dbref thing, clonedthing;
+	int cost;
 	struct match_data md;
 
 	/* Perform sanity checks */
@@ -988,11 +990,11 @@ do_clone(int descr, dbref player, char *name)
 		notify(player, "That command is restricted to authorized builders.");
 		return;
 	}
-	
+
 	if (*name == '\0') {
 		notify(player, "Clone what?");
 		return;
-	} 
+	}
 
 	/* All OK so far, so try to find the thing that should be cloned. We
 	   do not allow rooms, exits, etc. to be cloned for now. */
@@ -1002,7 +1004,7 @@ do_clone(int descr, dbref player, char *name)
 	match_neighbor(&md);
 	match_registered(&md);
 	match_absolute(&md);
-	
+
 	if ((thing = noisy_match_result(&md)) == NOTHING)
 		return;
 
@@ -1014,11 +1016,11 @@ do_clone(int descr, dbref player, char *name)
 	/* Further sanity checks */
 
 	/* things only. */
-	if(Typeof(thing) != TYPE_THING) {
+	if (Typeof(thing) != TYPE_THING) {
 		notify(player, "That is not a cloneable object.");
 		return;
-	}		
-	
+	}
+
 	/* check the name again, just in case reserved name patterns have
 	   changed since the original object was created. */
 	if (!ok_name(NAME(thing))) {
@@ -1027,7 +1029,7 @@ do_clone(int descr, dbref player, char *name)
 	}
 
 	/* no stealing stuff. */
-	if(!controls(player, thing)) {
+	if (!controls(player, thing)) {
 		notify(player, "Permission denied.");
 		return;
 	}
@@ -1037,16 +1039,16 @@ do_clone(int descr, dbref player, char *name)
 	if (cost < tp_object_cost) {
 		cost = tp_object_cost;
 	}
-	
+
 	if (!payfor(player, cost)) {
 		notify_fmt(player, "Sorry, you don't have enough %s.", tp_pennies);
 		return;
 	} else {
-		if(tp_verbose_clone) {
+		if (tp_verbose_clone) {
 			snprintf(buf, sizeof(buf), "Now cloning %s...", unparse_object(player, thing));
 			notify(player, buf);
 		}
-		
+
 		/* create the object */
 		clonedthing = new_object();
 
@@ -1067,7 +1069,7 @@ do_clone(int descr, dbref player, char *name)
 		if (GETVALUE(thing) > tp_max_object_endowment) {
 			SETVALUE(thing, tp_max_object_endowment);
 		}
-		
+
 		/* Home, sweet home */
 		THING_SET_HOME(clonedthing, THING_HOME(thing));
 
@@ -1080,7 +1082,7 @@ do_clone(int descr, dbref player, char *name)
 		notify(player, buf);
 		DBDIRTY(clonedthing);
 	}
-	
+
 }
 
 /*
@@ -1317,10 +1319,10 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 	}
 	if (((source = parse_source(descr, player, qname)) == NOTHING))
 		return;
-        if (!payfor(player, tp_exit_cost)) {
-                notify_fmt(player, "Sorry, you don't have enough %s to make an action.", tp_pennies);
-                return;
-        }
+	if (!payfor(player, tp_exit_cost)) {
+		notify_fmt(player, "Sorry, you don't have enough %s to make an action.", tp_pennies);
+		return;
+	}
 
 	action = new_object();
 

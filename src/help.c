@@ -54,8 +54,8 @@ int
 string_prefix(register const char *string, register const char *prefix)
 {
 	while (*string && *prefix && tolower(*string) == tolower(*prefix))
-				string++, prefix++;
-		return *prefix == '\0';
+		string++, prefix++;
+	return *prefix == '\0';
 }
 
 
@@ -68,11 +68,11 @@ string_compare(register const char *s1, register const char *s2)
 	return (tolower(*s1) - tolower(*s2));
 }
 
-char*
-strcpyn(char* buf, size_t bufsize, const char* src)
+char *
+strcpyn(char *buf, size_t bufsize, const char *src)
 {
 	int pos = 0;
-	char* dest = buf;
+	char *dest = buf;
 
 	while (++pos < bufsize && *src) {
 		*dest++ = *src++;
@@ -81,11 +81,11 @@ strcpyn(char* buf, size_t bufsize, const char* src)
 	return buf;
 }
 
-char*
-strcatn(char* buf, size_t bufsize, const char* src)
+char *
+strcatn(char *buf, size_t bufsize, const char *src)
 {
 	int pos = strlen(buf);
-	char* dest = &buf[pos];
+	char *dest = &buf[pos];
 
 	while (++pos < bufsize && *src) {
 		*dest++ = *src++;
@@ -123,7 +123,8 @@ spit_file_segment(dbref player, const char *filename, const char *seg)
 		}
 	}
 	if ((f = fopen(filename, "r")) == NULL) {
-		snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.", filename);
+		snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.",
+				 filename);
 		notify(player, buf);
 		fputs("spit_file:", stderr);
 		perror(filename);
@@ -171,7 +172,8 @@ index_file(dbref player, const char *onwhat, const char *file)
 	}
 
 	if ((f = fopen(file, "r")) == NULL) {
-		snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.", file);
+		snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.",
+				 file);
 		notify(player, buf);
 		fprintf(stderr, "help: No file %s!\n", file);
 	} else {
@@ -180,7 +182,8 @@ index_file(dbref player, const char *onwhat, const char *file)
 			do {
 				do {
 					if (!(fgets(buf, sizeof buf, f))) {
-						snprintf(buf, sizeof(buf), "Sorry, no help available on topic \"%s\"", onwhat);
+						snprintf(buf, sizeof(buf), "Sorry, no help available on topic \"%s\"",
+								 onwhat);
 						notify(player, buf);
 						fclose(f);
 						return;
@@ -188,7 +191,8 @@ index_file(dbref player, const char *onwhat, const char *file)
 				} while (*buf != '~');
 				do {
 					if (!(fgets(buf, sizeof buf, f))) {
-						snprintf(buf, sizeof(buf), "Sorry, no help available on topic \"%s\"", onwhat);
+						snprintf(buf, sizeof(buf), "Sorry, no help available on topic \"%s\"",
+								 onwhat);
 						notify(player, buf);
 						fclose(f);
 						return;
@@ -234,7 +238,7 @@ void
 mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 {
 	FILE *f;
-	const char* file;
+	const char *file;
 	char buf[BUFFER_LEN];
 	char topic[BUFFER_LEN];
 	char *p;
@@ -279,7 +283,8 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		}
 
 		if ((f = fopen(file, "r")) == NULL) {
-			snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.", file);
+			snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.",
+					 file);
 			fprintf(stderr, "help: No file %s!\n", file);
 			mcp_mesg_init(&omsg, "org-fuzzball-help", "error");
 			mcp_mesg_arg_append(&omsg, "text", buf);
@@ -292,7 +297,8 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 				do {
 					do {
 						if (!(fgets(buf, sizeof buf, f))) {
-							snprintf(buf, sizeof(buf), "Sorry, no help available on topic \"%s\"", onwhat);
+							snprintf(buf, sizeof(buf),
+									 "Sorry, no help available on topic \"%s\"", onwhat);
 							fclose(f);
 							mcp_mesg_init(&omsg, "org-fuzzball-help", "error");
 							mcp_mesg_arg_append(&omsg, "text", buf);
@@ -304,7 +310,8 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 					} while (*buf != '~');
 					do {
 						if (!(fgets(buf, sizeof buf, f))) {
-							snprintf(buf, sizeof(buf), "Sorry, no help available on topic \"%s\"", onwhat);
+							snprintf(buf, sizeof(buf),
+									 "Sorry, no help available on topic \"%s\"", onwhat);
 							fclose(f);
 							mcp_mesg_init(&omsg, "org-fuzzball-help", "error");
 							mcp_mesg_arg_append(&omsg, "text", buf);
@@ -366,10 +373,10 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 #endif
 
 #ifdef WIN32
-	char   *dirname;
+	char *dirname;
 	int dirnamelen = 0;
-	HANDLE  hFind;
-	BOOL    bMore;
+	HANDLE hFind;
+	BOOL bMore;
 	WIN32_FIND_DATA finddata;
 #endif
 
@@ -410,26 +417,25 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 	dirname = (char *) malloc(dirnamelen);
 	strcpy(dirname, dir);
 	strcatn(dirname, dirnamelen, "*.*");
-	hFind = FindFirstFile(dirname,&finddata);
-	bMore = (hFind != (HANDLE) -1);
+	hFind = FindFirstFile(dirname, &finddata);
+	bMore = (hFind != (HANDLE) - 1);
 
 	free(dirname);
 
 	while (bMore) {
 		if (!(finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 			if ((partial && string_prefix(finddata.cFileName, topic)) ||
-				(!partial && !string_compare(finddata.cFileName,topic))
-				)
-			{
+				(!partial && !string_compare(finddata.cFileName, topic))
+					) {
 				snprintf(buf, sizeof(buf), "%s/%s", dir, finddata.cFileName);
 				break;
 			}
 		}
 		bMore = FindNextFile(hFind, &finddata);
 	}
-#else                           /* !DIR_AVAILABLE && !WIN32 */
+#else							/* !DIR_AVAILABLE && !WIN32 */
 	snprintf(buf, sizeof(buf), "%s/%s", dir, topic);
-#endif 
+#endif
 
 	if (stat(buf, &st)) {
 		return 0;
@@ -537,10 +543,10 @@ do_info(dbref player, const char *topic, const char *seg)
 	struct dirent *dp;
 #endif
 #ifdef WIN32
-	HANDLE  hFind;
-	BOOL    bMore;
+	HANDLE hFind;
+	BOOL bMore;
 	WIN32_FIND_DATA finddata;
-	char    *dirname;
+	char *dirname;
 	int dirnamelen = 0;
 #endif
 
@@ -581,7 +587,7 @@ do_info(dbref player, const char *topic, const char *seg)
 			notify(player, "No information files are available.");
 		free(buf);
 #elif WIN32
-		buf = (char *) calloc(1,buflen);
+		buf = (char *) calloc(1, buflen);
 		(void) strcpy(buf, "    ");
 		f = 0;
 		cols = 0;
@@ -590,8 +596,8 @@ do_info(dbref player, const char *topic, const char *seg)
 		dirname = (char *) malloc(dirnamelen);
 		strcpy(dirname, INFO_DIR);
 		strcatn(dirname, dirnamelen, "*.*");
-		hFind = FindFirstFile(dirname,&finddata);
-		bMore = (hFind != (HANDLE) -1);
+		hFind = FindFirstFile(dirname, &finddata);
+		bMore = (hFind != (HANDLE) - 1);
 
 		free(dirname);
 
@@ -600,20 +606,20 @@ do_info(dbref player, const char *topic, const char *seg)
 				if (!f)
 					notify(player, "Available information files are:");
 				if ((cols++ > 2) || ((strlen(buf) + strlen(finddata.cFileName)) > 63)) {
-					notify(player,buf);
+					notify(player, buf);
 					(void) strcpy(buf, "    ");
 					cols = 0;
 				}
-			    strcatn(buf, buflen, finddata.cFileName);
-			    strcatn(buf, buflen, " ");
+				strcatn(buf, buflen, finddata.cFileName);
+				strcatn(buf, buflen, " ");
 				f = strlen(buf);
-				while((f %20) != 4)
+				while ((f % 20) != 4)
 					buf[f++] = ' ';
 				buf[f] = '\0';
 			}
 			bMore = FindNextFile(hFind, &finddata);
 		}
-		
+
 		if (f)
 			notify(player, buf);
 		else
@@ -625,16 +631,17 @@ do_info(dbref player, const char *topic, const char *seg)
 #endif							/* !DIR_AVALIBLE && !WIN32 */
 	}
 }
-#else /* STANDALONE_HELP */
+#else							/* STANDALONE_HELP */
 
 int
-main(int argc, char**argv)
+main(int argc, char **argv)
 {
-	char* helpfile = NULL;
-	char* topic = NULL;
+	char *helpfile = NULL;
+	char *topic = NULL;
 	char buf[BUFFER_LEN];
+
 	if (argc < 2) {
-			fprintf(stderr, "Usage: %s muf|mpi|help [topic]\n", argv[0]);
+		fprintf(stderr, "Usage: %s muf|mpi|help [topic]\n", argv[0]);
 		exit(-1);
 	} else if (argc == 2 || argc == 3) {
 		if (argc == 2) {
@@ -672,5 +679,4 @@ main(int argc, char**argv)
 	return 0;
 }
 
-#endif /* STANDALONE_HELP */
-
+#endif							/* STANDALONE_HELP */

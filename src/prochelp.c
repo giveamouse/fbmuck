@@ -40,9 +40,9 @@
 #define HTML_ALSOSEE_END        "\n</h5>\n"
 
 
-const char* title = "";
-const char* author = "";
-const char* doccmd = "";
+const char *title = "";
+const char *author = "";
+const char *doccmd = "";
 
 char *
 string_dup(const char *s)
@@ -134,10 +134,11 @@ add_topic(const char *str)
 	ptr->next = top;
 }
 
-char*
-escape_html(const char* in, char* buf)
+char *
+escape_html(const char *in, char *buf)
 {
-	char* out = buf;
+	char *out = buf;
+
 	while (*in) {
 		if (*in == '<') {
 			strcpy(out, "&lt;");
@@ -321,7 +322,8 @@ print_sections(FILE * f, FILE * hf, int cols)
 			sectptr = "";
 		}
 
-		fprintf(hf, HTML_SECTLIST_ENTRY, escape_html(sectptr, buf3), escape_html(sectname, buf4));
+		fprintf(hf, HTML_SECTLIST_ENTRY, escape_html(sectptr, buf3),
+				escape_html(sectname, buf4));
 		fprintf(f, "  %-40s (%s)\n", sectname, sectptr);
 	}
 	fprintf(hf, HTML_SECTLIST_FOOT);
@@ -346,12 +348,12 @@ print_topics(FILE * f, FILE * hf)
 	int longest;
 
 	fprintf(hf, HTML_INDEX_BEGIN);
-    fprintf(f, "~\n");
+	fprintf(f, "~\n");
 	fprintf(f, "~%s\n", HRULE_TEXT);
-    fprintf(f, "~\n");
-    fprintf(f, "ALPHA|ALPHABETICAL|COMMANDS\n");
-    fprintf(f, "                 Alphabetical List of Topics:\n");
-    fprintf(f, " \n");
+	fprintf(f, "~\n");
+	fprintf(f, "ALPHA|ALPHABETICAL|COMMANDS\n");
+	fprintf(f, "                 Alphabetical List of Topics:\n");
+	fprintf(f, " \n");
 	fprintf(f, "You can get more help on the following topics:\n");
 	for (alph = 'A' - 1; alph <= 'Z'; alph++) {
 		cnt = 0;
@@ -401,7 +403,7 @@ print_topics(FILE * f, FILE * hf)
 						hcol = 1;
 					}
 					escape_html(ptr->topic, buf3);
-					fprintf(hf, HTML_IDXGROUP_ENTRY, /*(100 / cols),*/ buf3, buf3);
+					fprintf(hf, HTML_IDXGROUP_ENTRY, /*(100 / cols), */ buf3, buf3);
 					if (cnt == cols) {
 						snprintf(buf2, sizeof(buf2), "%-0.*s", width - 1, ptr->topic);
 					} else {
@@ -445,13 +447,13 @@ find_topics(FILE * infile)
 					add_section(sect);
 				} else if (!strncmp(buf, "~~title ", 8)) {
 					buf[strlen(buf) - 1] = '\0';
-					title = string_dup(buf+8);
+					title = string_dup(buf + 8);
 				} else if (!strncmp(buf, "~~author ", 9)) {
 					buf[strlen(buf) - 1] = '\0';
-					author = string_dup(buf+9);
+					author = string_dup(buf + 9);
 				} else if (!strncmp(buf, "~~doccmd ", 9)) {
 					buf[strlen(buf) - 1] = '\0';
-					doccmd = string_dup(buf+9);
+					doccmd = string_dup(buf + 9);
 				}
 			}
 		} while (!feof(infile) &&
@@ -469,13 +471,13 @@ find_topics(FILE * infile)
 					add_section(sect);
 				} else if (!strncmp(buf, "~~title ", 8)) {
 					buf[strlen(buf) - 1] = '\0';
-					title = string_dup(buf+8);
+					title = string_dup(buf + 8);
 				} else if (!strncmp(buf, "~~author ", 9)) {
 					buf[strlen(buf) - 1] = '\0';
-					author = string_dup(buf+9);
+					author = string_dup(buf + 9);
 				} else if (!strncmp(buf, "~~doccmd ", 9)) {
 					buf[strlen(buf) - 1] = '\0';
-					doccmd = string_dup(buf+9);
+					doccmd = string_dup(buf + 9);
 				}
 			}
 		} while (*buf == '~' && !feof(infile));
@@ -517,9 +519,10 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 	escape_html(author, buf2);
 	fprintf(htmlfile, HTML_PAGE_HEAD, buf, buf, buf2);
 
-	fprintf(outfile, "%*s%s\n", (36-(strlen(title)/2)), "", title);
-	fprintf(outfile, "%*sby %s\n\n", (36-((strlen(author)+3)/2)), "", author);
-	fprintf(outfile, "You may get a listing of topics that you can get help on, either sorted\n");
+	fprintf(outfile, "%*s%s\n", (36 - (strlen(title) / 2)), "", title);
+	fprintf(outfile, "%*sby %s\n\n", (36 - ((strlen(author) + 3) / 2)), "", author);
+	fprintf(outfile,
+			"You may get a listing of topics that you can get help on, either sorted\n");
 	fprintf(outfile, "Alphabetically or sorted by Category.  To get these lists, type:\n");
 	fprintf(outfile, "        %s alpha        or\n", doccmd);
 	fprintf(outfile, "        %s category\n\n", doccmd);
@@ -537,8 +540,9 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 						fprintf(stderr, "Error: can't write to %s", buf + 7);
 						exit(1);
 					}
-					fprintf(docsfile,  "%*s%s\n", (36-(strlen(title)/2)), "", title);
-					fprintf(docsfile,  "%*sby %s\n\n", (36-((strlen(author)+3)/2)), "", author);
+					fprintf(docsfile, "%*s%s\n", (36 - (strlen(title) / 2)), "", title);
+					fprintf(docsfile, "%*sby %s\n\n", (36 - ((strlen(author) + 3) / 2)), "",
+							author);
 				} else if (!strncmp(buf, "~~section ", 10)) {
 					buf[strlen(buf) - 1] = '\0';
 					sectptr = index(buf + 10, '|');

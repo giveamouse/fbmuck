@@ -102,10 +102,10 @@ typedef struct COMPILE_STATE_T {
 	int nested_trys;
 
 	/* Address resolution data.  Used to relink addresses after compile. */
-	struct INTERMEDIATE **addrlist; /* list of addresses to resolve */
-	int *addroffsets;               /* list of offsets from instrs */
-	int addrmax;                    /* size of current addrlist array */
-	int addrcount;                  /* number of allocated addresses */
+	struct INTERMEDIATE **addrlist;	/* list of addresses to resolve */
+	int *addroffsets;			/* list of offsets from instrs */
+	int addrmax;				/* size of current addrlist array */
+	int addrcount;				/* number of allocated addresses */
 
 	/* variable names.  The index into cstat->variables give you what position
 	 * the variable holds.
@@ -118,9 +118,9 @@ typedef struct COMPILE_STATE_T {
 	int scopedvartypes[MAX_VAR];
 
 	struct line *curr_line;		/* current line */
-	int lineno;			/* current line number */
-	int start_comment;              /* Line last comment started at */
-	int force_comment;              /* Only attempt certain compile. */
+	int lineno;					/* current line number */
+	int start_comment;			/* Line last comment started at */
+	int force_comment;			/* Only attempt certain compile. */
 	const char *next_char;		/* next char * */
 	dbref player, program;		/* player and program for this compile */
 
@@ -167,8 +167,8 @@ void add_control_structure(COMPSTATE *, int typ, struct INTERMEDIATE *);
 void add_loop_exit(COMPSTATE *, struct INTERMEDIATE *);
 int in_loop(COMPSTATE * cstat);
 int innermost_control_type(COMPSTATE * cstat);
-int count_trys_inside_loop(COMPSTATE* cstat);
-struct INTERMEDIATE *locate_control_structure(COMPSTATE* cstat, int type1, int type2);
+int count_trys_inside_loop(COMPSTATE * cstat);
+struct INTERMEDIATE *locate_control_structure(COMPSTATE * cstat, int type1, int type2);
 struct INTERMEDIATE *innermost_control_place(COMPSTATE * cstat, int type1);
 struct INTERMEDIATE *pop_control_structure(COMPSTATE * cstat, int type1, int type2);
 struct INTERMEDIATE *pop_loop_exit(COMPSTATE *);
@@ -205,10 +205,11 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
 	static char _buf[BUFFER_LEN];
 
 	if (cstat->start_comment) {
-	  snprintf(_buf, sizeof(_buf), "Error in line %d: %s  Comment starting at line %d.", cstat->lineno, c, cstat->start_comment);
-	  cstat->start_comment = 0;
+		snprintf(_buf, sizeof(_buf), "Error in line %d: %s  Comment starting at line %d.",
+				 cstat->lineno, c, cstat->start_comment);
+		cstat->start_comment = 0;
 	} else {
-	  snprintf(_buf, sizeof(_buf), "Error in line %d: %s", cstat->lineno, c);
+		snprintf(_buf, sizeof(_buf), "Error in line %d: %s", cstat->lineno, c);
 	}
 	if (cstat->line_copy) {
 		free((void *) cstat->line_copy);
@@ -219,20 +220,18 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
 		notify_nolisten(cstat->player, _buf, 1);
 	} else {
 		log_muf("%s(#%d) [%s(#%d)] %s(#%d) %s\n",
-			NAME(OWNER(cstat->program)), OWNER(cstat->program),
-			NAME(cstat->program), cstat->program,
-			NAME(cstat->player), cstat->player,
-			_buf
-		);
+				NAME(OWNER(cstat->program)), OWNER(cstat->program),
+				NAME(cstat->program), cstat->program,
+				NAME(cstat->player), cstat->player, _buf);
 	}
 	cstat->compile_err++;
 	if (cstat->compile_err > 1) {
 		return;
 	}
 	if (cstat->nextinst) {
-		struct INTERMEDIATE* ptr;
-		while (cstat->nextinst)
-		{
+		struct INTERMEDIATE *ptr;
+
+		while (cstat->nextinst) {
 			ptr = cstat->nextinst;
 			cstat->nextinst = ptr->next;
 			free(ptr);
@@ -256,7 +255,8 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
 /* abort compile for void functions */
 #define v_abort_compile(ST,C) { do_abort_compile(ST,C); return; }
 
-void compiler_warning(COMPSTATE* cstat, char* text, ...)
+void
+compiler_warning(COMPSTATE * cstat, char *text, ...)
 {
 	char buf[BUFFER_LEN];
 	va_list vl;
@@ -274,31 +274,29 @@ void compiler_warning(COMPSTATE* cstat, char* text, ...)
 #define ADDRLIST_ALLOC_CHUNK_SIZE 256
 
 int
-get_address(COMPSTATE* cstat, struct INTERMEDIATE* dest, int offset)
+get_address(COMPSTATE * cstat, struct INTERMEDIATE *dest, int offset)
 {
 	int i;
 
-	if (!cstat->addrlist)
-	{
+	if (!cstat->addrlist) {
 		cstat->addrcount = 0;
 		cstat->addrmax = ADDRLIST_ALLOC_CHUNK_SIZE;
-		cstat->addrlist = (struct INTERMEDIATE**)
-			malloc(cstat->addrmax * sizeof(struct INTERMEDIATE*));
-		cstat->addroffsets = (int*)
-			malloc(cstat->addrmax * sizeof(int));
+		cstat->addrlist = (struct INTERMEDIATE **)
+				malloc(cstat->addrmax * sizeof(struct INTERMEDIATE *));
+		cstat->addroffsets = (int *)
+				malloc(cstat->addrmax * sizeof(int));
 	}
 
 	for (i = 0; i < cstat->addrcount; i++)
 		if (cstat->addrlist[i] == dest && cstat->addroffsets[i] == offset)
 			return i;
 
-    if (cstat->addrcount >= cstat->addrmax)
-	{
+	if (cstat->addrcount >= cstat->addrmax) {
 		cstat->addrmax += ADDRLIST_ALLOC_CHUNK_SIZE;
-		cstat->addrlist = (struct INTERMEDIATE**)
-			realloc(cstat->addrlist, cstat->addrmax * sizeof(struct INTERMEDIATE*));
-		cstat->addroffsets = (int*)
-			realloc(cstat->addroffsets, cstat->addrmax * sizeof(int));
+		cstat->addrlist = (struct INTERMEDIATE **)
+				realloc(cstat->addrlist, cstat->addrmax * sizeof(struct INTERMEDIATE *));
+		cstat->addroffsets = (int *)
+				realloc(cstat->addroffsets, cstat->addrmax * sizeof(int));
 	}
 
 	cstat->addrlist[cstat->addrcount] = dest;
@@ -308,10 +306,10 @@ get_address(COMPSTATE* cstat, struct INTERMEDIATE* dest, int offset)
 
 
 void
-fix_addresses(COMPSTATE* cstat)
+fix_addresses(COMPSTATE * cstat)
 {
-	struct INTERMEDIATE* ptr;
-	struct publics* pub;
+	struct INTERMEDIATE *ptr;
+	struct publics *pub;
 	int count = 0;
 
 	/* renumber the instruction chain */
@@ -320,12 +318,10 @@ fix_addresses(COMPSTATE* cstat)
 
 	/* repoint publics to targets */
 	for (pub = cstat->currpubs; pub; pub = pub->next)
-		pub->addr.no = cstat->addrlist[pub->addr.no]->no +
-				cstat->addroffsets[pub->addr.no];
+		pub->addr.no = cstat->addrlist[pub->addr.no]->no + cstat->addroffsets[pub->addr.no];
 
 	/* repoint addresses to targets */
-	for (ptr = cstat->first_word; ptr; ptr = ptr->next)
-	{
+	for (ptr = cstat->first_word; ptr; ptr = ptr->next) {
 		switch (ptr->in.type) {
 		case PROG_ADD:
 		case PROG_IF:
@@ -343,7 +339,7 @@ fix_addresses(COMPSTATE* cstat)
 
 
 void
-free_addresses(COMPSTATE* cstat)
+free_addresses(COMPSTATE * cstat)
 {
 	cstat->addrcount = 0;
 	cstat->addrmax = 0;
@@ -501,7 +497,8 @@ include_internal_defs(COMPSTATE * cstat)
 	insert_def(cstat, "foreground", "fg_mode setmode");
 	insert_def(cstat, "notify_except", "1 swap notify_exclude");
 	insert_def(cstat, "event_wait", "0 array_make event_waitfor");
-	insert_def(cstat, "tread", "\"__tread\" timer_start { \"TIMER.__tread\" \"READ\" }list event_waitfor swap pop \"READ\" strcmp if \"\" 0 else read 1 \"__tread\" timer_stop then");
+	insert_def(cstat, "tread",
+			   "\"__tread\" timer_start { \"TIMER.__tread\" \"READ\" }list event_waitfor swap pop \"READ\" strcmp if \"\" 0 else read 1 \"__tread\" timer_stop then");
 	insert_def(cstat, "truename", "name");
 
 	/* MUF Error defines */
@@ -532,35 +529,37 @@ include_internal_defs(COMPSTATE * cstat)
 	insert_def(cstat, "d_helper", "\"helper\"");
 
 	/* GUI control types */
-	insert_def(cstat, "c_menu",      "\"menu\"");
-	insert_def(cstat, "c_datum",     "\"datum\"");
-	insert_def(cstat, "c_label",     "\"text\"");
-	insert_def(cstat, "c_image",     "\"image\"");
-	insert_def(cstat, "c_hrule",     "\"hrule\"");
-	insert_def(cstat, "c_vrule",     "\"vrule\"");
-	insert_def(cstat, "c_button",    "\"button\"");
-	insert_def(cstat, "c_checkbox",  "\"checkbox\"");
-	insert_def(cstat, "c_radiobtn",  "\"radio\"");
-	insert_def(cstat, "c_password",  "\"password\"");
-	insert_def(cstat, "c_edit",      "\"edit\"");
+	insert_def(cstat, "c_menu", "\"menu\"");
+	insert_def(cstat, "c_datum", "\"datum\"");
+	insert_def(cstat, "c_label", "\"text\"");
+	insert_def(cstat, "c_image", "\"image\"");
+	insert_def(cstat, "c_hrule", "\"hrule\"");
+	insert_def(cstat, "c_vrule", "\"vrule\"");
+	insert_def(cstat, "c_button", "\"button\"");
+	insert_def(cstat, "c_checkbox", "\"checkbox\"");
+	insert_def(cstat, "c_radiobtn", "\"radio\"");
+	insert_def(cstat, "c_password", "\"password\"");
+	insert_def(cstat, "c_edit", "\"edit\"");
 	insert_def(cstat, "c_multiedit", "\"multiedit\"");
-	insert_def(cstat, "c_combobox",  "\"combobox\"");
-	insert_def(cstat, "c_spinner",   "\"spinner\"");
-	insert_def(cstat, "c_scale",     "\"scale\"");
-	insert_def(cstat, "c_listbox",   "\"listbox\"");
-	insert_def(cstat, "c_tree",      "\"tree\"");
-	insert_def(cstat, "c_frame",     "\"frame\"");
-	insert_def(cstat, "c_notebook",  "\"notebook\"");
+	insert_def(cstat, "c_combobox", "\"combobox\"");
+	insert_def(cstat, "c_spinner", "\"spinner\"");
+	insert_def(cstat, "c_scale", "\"scale\"");
+	insert_def(cstat, "c_listbox", "\"listbox\"");
+	insert_def(cstat, "c_tree", "\"tree\"");
+	insert_def(cstat, "c_frame", "\"frame\"");
+	insert_def(cstat, "c_notebook", "\"notebook\"");
 
 	/* Backwards compatibility for old GUI dialog creation prims */
 	insert_def(cstat, "gui_dlog_simple", "d_simple 0 array_make_dict gui_dlog_create");
-    insert_def(cstat, "gui_dlog_tabbed", "d_tabbed swap \"panes\" over array_keys array_make \"names\" 4 rotate array_vals array_make 2 array_make_dict gui_dlog_create");
-    insert_def(cstat, "gui_dlog_helper", "d_helper swap \"panes\" over array_keys array_make \"names\" 4 rotate array_vals array_make 2 array_make_dict gui_dlog_create");
+	insert_def(cstat, "gui_dlog_tabbed",
+			   "d_tabbed swap \"panes\" over array_keys array_make \"names\" 4 rotate array_vals array_make 2 array_make_dict gui_dlog_create");
+	insert_def(cstat, "gui_dlog_helper",
+			   "d_helper swap \"panes\" over array_keys array_make \"names\" 4 rotate array_vals array_make 2 array_make_dict gui_dlog_create");
 
 	/* Regex */
-	insert_intdef(cstat, "reg_icase",		MUF_RE_ICASE);
-	insert_intdef(cstat, "reg_all",			MUF_RE_ALL);
-	insert_intdef(cstat, "reg_extended",	MUF_RE_EXTENDED);
+	insert_intdef(cstat, "reg_icase", MUF_RE_ICASE);
+	insert_intdef(cstat, "reg_all", MUF_RE_ALL);
+	insert_intdef(cstat, "reg_extended", MUF_RE_EXTENDED);
 }
 
 
@@ -627,7 +626,8 @@ free_unused_programs()
 
 	for (i = 0; i < db_top; i++) {
 		if ((Typeof(i) == TYPE_PROGRAM) && !(FLAGS(i) & (ABODE | INTERNAL)) &&
-			(now - DBFETCH(i)->ts.lastused > tp_clean_interval) && (PROGRAM_INSTANCES(i) == 0)) {
+			(now - DBFETCH(i)->ts.lastused > tp_clean_interval) &&
+			(PROGRAM_INSTANCES(i) == 0)) {
 			uncompile_program(i);
 		}
 	}
@@ -640,10 +640,10 @@ free_unused_programs()
 
 /* Checks code for valid fetch-and-clear optim changes, and does them. */
 void
-MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int BangNo)
+MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int BangNo)
 {
-	struct INTERMEDIATE* curr = first->next;
-	struct INTERMEDIATE* ptr;
+	struct INTERMEDIATE *curr = first->next;
+	struct INTERMEDIATE *ptr;
 	int farthest = 0;
 	int i;
 	int lvarflag = 0;
@@ -654,121 +654,117 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 	if (first->in.type == PROG_LVAR_AT || first->in.type == PROG_LVAR_AT_CLEAR)
 		lvarflag = 1;
 
-	for(; curr; curr = curr->next) {
+	for (; curr; curr = curr->next) {
 		if (curr->flags & INTMEDFLG_INTRY)
 			return;
 
-		switch(curr->in.type) {
-			case PROG_PRIMITIVE:
-				/* Don't trust any physical @ or !'s in the code, someone
-					may be indirectly referencing the scoped variable */
-				/* Don't trust any explicit jmp's in the code. */
+		switch (curr->in.type) {
+		case PROG_PRIMITIVE:
+			/* Don't trust any physical @ or !'s in the code, someone
+			   may be indirectly referencing the scoped variable */
+			/* Don't trust any explicit jmp's in the code. */
 
-				if ((curr->in.data.number == AtNo) || 
-					(curr->in.data.number == BangNo) ||
-					(curr->in.data.number == IN_JMP))
-				{
-					return;
-				}
-
-				if (lvarflag) {
-					/* For lvars, don't trust the following prims... */
-					/*   EXITs escape the code path without leaving lvar scope. */
-					/*   EXECUTEs escape the code path without leaving lvar scope. */
-					/*   CALLs cause re-entrancy problems. */
-					if (curr->in.data.number == IN_RET ||
-						curr->in.data.number == IN_EXECUTE ||
-						curr->in.data.number == IN_CALL)
-					{
-						return;
-					}
-				}
-				break;
-
-			case PROG_LVAR_AT:
-			case PROG_LVAR_AT_CLEAR:
-				if (lvarflag) {
-					if (curr->in.data.number == first->in.data.number) {
-						/* Can't optimize if references to the variable found before a var! */
-						return;
-					}
-				}
-				break;
-
-			case PROG_SVAR_AT:
-			case PROG_SVAR_AT_CLEAR:
-				if (!lvarflag) {
-					if (curr->in.data.number == first->in.data.number) {
-						/* Can't optimize if references to the variable found before a var! */
-						return;
-					}
-				}
-				break;
-
-			case PROG_LVAR_BANG:
-				if (lvarflag) {
-					if (first->in.data.number == curr->in.data.number) {
-						if (curr->no <= farthest) {
-							/* cannot optimize as we are within a branch */
-							return;
-						} else {
-							/* Optimize it! */
-							first->in.type = PROG_LVAR_AT_CLEAR;
-							return;
-						}
-					}
-				}
-				break;
-
-			case PROG_SVAR_BANG:
-				if (!lvarflag) {
-					if (first->in.data.number == curr->in.data.number) {
-						if (curr->no <= farthest) {
-							/* cannot optimize as we are within a branch */
-							return;
-						} else {
-							/* Optimize it! */
-							first->in.type = PROG_SVAR_AT_CLEAR;
-							return;
-						}
-					}
-				}
-				break;
-
-			case PROG_EXEC:
-				if (lvarflag) {
-					/* Don't try to optimize lvars over execs */
-					return;
-				}
-				break;
-
-			case PROG_IF:
-			case PROG_TRY:
-			case PROG_JMP:
-				ptr = cstat->addrlist[curr->in.data.number];
-				i = cstat->addroffsets[curr->in.data.number];
-				while (ptr->next && i-->0)
-					ptr = ptr->next;
-				if (ptr->no <= first->no) {
-					/* Can't optimize as we've exited the code branch the @ is in. */
-					return;
-				}
-				if (ptr->no > farthest)
-					farthest = ptr->no;
-				break;
-
-			case PROG_FUNCTION:
-				/* Don't try to optimize over functions */
+			if ((curr->in.data.number == AtNo) ||
+				(curr->in.data.number == BangNo) || (curr->in.data.number == IN_JMP)) {
 				return;
+			}
+
+			if (lvarflag) {
+				/* For lvars, don't trust the following prims... */
+				/*   EXITs escape the code path without leaving lvar scope. */
+				/*   EXECUTEs escape the code path without leaving lvar scope. */
+				/*   CALLs cause re-entrancy problems. */
+				if (curr->in.data.number == IN_RET ||
+					curr->in.data.number == IN_EXECUTE || curr->in.data.number == IN_CALL) {
+					return;
+				}
+			}
+			break;
+
+		case PROG_LVAR_AT:
+		case PROG_LVAR_AT_CLEAR:
+			if (lvarflag) {
+				if (curr->in.data.number == first->in.data.number) {
+					/* Can't optimize if references to the variable found before a var! */
+					return;
+				}
+			}
+			break;
+
+		case PROG_SVAR_AT:
+		case PROG_SVAR_AT_CLEAR:
+			if (!lvarflag) {
+				if (curr->in.data.number == first->in.data.number) {
+					/* Can't optimize if references to the variable found before a var! */
+					return;
+				}
+			}
+			break;
+
+		case PROG_LVAR_BANG:
+			if (lvarflag) {
+				if (first->in.data.number == curr->in.data.number) {
+					if (curr->no <= farthest) {
+						/* cannot optimize as we are within a branch */
+						return;
+					} else {
+						/* Optimize it! */
+						first->in.type = PROG_LVAR_AT_CLEAR;
+						return;
+					}
+				}
+			}
+			break;
+
+		case PROG_SVAR_BANG:
+			if (!lvarflag) {
+				if (first->in.data.number == curr->in.data.number) {
+					if (curr->no <= farthest) {
+						/* cannot optimize as we are within a branch */
+						return;
+					} else {
+						/* Optimize it! */
+						first->in.type = PROG_SVAR_AT_CLEAR;
+						return;
+					}
+				}
+			}
+			break;
+
+		case PROG_EXEC:
+			if (lvarflag) {
+				/* Don't try to optimize lvars over execs */
+				return;
+			}
+			break;
+
+		case PROG_IF:
+		case PROG_TRY:
+		case PROG_JMP:
+			ptr = cstat->addrlist[curr->in.data.number];
+			i = cstat->addroffsets[curr->in.data.number];
+			while (ptr->next && i-- > 0)
+				ptr = ptr->next;
+			if (ptr->no <= first->no) {
+				/* Can't optimize as we've exited the code branch the @ is in. */
+				return;
+			}
+			if (ptr->no > farthest)
+				farthest = ptr->no;
+			break;
+
+		case PROG_FUNCTION:
+			/* Don't try to optimize over functions */
+			return;
 		}
 	}
 }
 
 
 void
-RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE* curr)
+RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
 {
-	struct INTERMEDIATE* tmp;
+	struct INTERMEDIATE *tmp;
 	int i;
 
 	if (!curr->next) {
@@ -788,37 +784,37 @@ RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE* curr)
 
 
 void
-RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE* curr)
+RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
 {
 	if (!curr->next) {
 		return;
 	}
 
-	curr->no           = curr->next->no;
-	curr->in.line      = curr->next->in.line;
-	curr->in.type      = curr->next->in.type;
-	switch(curr->in.type) {
-		case PROG_STRING:
-			curr->in.data.string = curr->next->in.data.string;
-			break;
-		case PROG_FLOAT:
-			curr->in.data.fnumber = curr->next->in.data.fnumber;
-			break;
-		case PROG_FUNCTION:
-			curr->in.data.mufproc = curr->next->in.data.mufproc;
-			break;
-		case PROG_ADD:
-			curr->in.data.addr = curr->next->in.data.addr;
-			break;
-		case PROG_IF:
-		case PROG_TRY:
-		case PROG_JMP:
-		case PROG_EXEC:
-			curr->in.data.call = curr->next->in.data.call;
-			break;
-		default:
-			curr->in.data.number = curr->next->in.data.number;
-			break;
+	curr->no = curr->next->no;
+	curr->in.line = curr->next->in.line;
+	curr->in.type = curr->next->in.type;
+	switch (curr->in.type) {
+	case PROG_STRING:
+		curr->in.data.string = curr->next->in.data.string;
+		break;
+	case PROG_FLOAT:
+		curr->in.data.fnumber = curr->next->in.data.fnumber;
+		break;
+	case PROG_FUNCTION:
+		curr->in.data.mufproc = curr->next->in.data.mufproc;
+		break;
+	case PROG_ADD:
+		curr->in.data.addr = curr->next->in.data.addr;
+		break;
+	case PROG_IF:
+	case PROG_TRY:
+	case PROG_JMP:
+	case PROG_EXEC:
+		curr->in.data.call = curr->next->in.data.call;
+		break;
+	default:
+		curr->in.data.number = curr->next->in.data.number;
+		break;
 	}
 	curr->next->in.type = PROG_INTEGER;
 	curr->next->in.data.number = 0;
@@ -827,9 +823,9 @@ RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE* curr)
 
 
 int
-ContiguousIntermediates(int* Flags, struct INTERMEDIATE* ptr, int count)
+ContiguousIntermediates(int *Flags, struct INTERMEDIATE *ptr, int count)
 {
-	while (count-->0) {
+	while (count-- > 0) {
 		if (!ptr) {
 			return 0;
 		}
@@ -843,7 +839,7 @@ ContiguousIntermediates(int* Flags, struct INTERMEDIATE* ptr, int count)
 
 
 int
-IntermediateIsPrimitive(struct INTERMEDIATE* ptr, int primnum)
+IntermediateIsPrimitive(struct INTERMEDIATE *ptr, int primnum)
 {
 	if (ptr && ptr->in.type == PROG_PRIMITIVE) {
 		if (ptr->in.data.number == primnum) {
@@ -855,7 +851,7 @@ IntermediateIsPrimitive(struct INTERMEDIATE* ptr, int primnum)
 
 
 int
-IntermediateIsInteger(struct INTERMEDIATE* ptr, int val)
+IntermediateIsInteger(struct INTERMEDIATE *ptr, int val)
 {
 	if (ptr && ptr->in.type == PROG_INTEGER) {
 		if (ptr->in.data.number == val) {
@@ -867,12 +863,12 @@ IntermediateIsInteger(struct INTERMEDIATE* ptr, int val)
 
 
 int
-IntermediateIsString(struct INTERMEDIATE* ptr, const char* val)
+IntermediateIsString(struct INTERMEDIATE *ptr, const char *val)
 {
-	const char* myval;
+	const char *myval;
 
 	if (ptr && ptr->in.type == PROG_STRING) {
-		myval = ptr->in.data.string? ptr->in.data.string->data : "";
+		myval = ptr->in.data.string ? ptr->in.data.string->data : "";
 		if (!strcmp(myval, val)) {
 			return 1;
 		}
@@ -883,12 +879,12 @@ IntermediateIsString(struct INTERMEDIATE* ptr, const char* val)
 int
 OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 {
-	struct INTERMEDIATE* curr;
-	int* Flags;
+	struct INTERMEDIATE *curr;
+	int *Flags;
 	int i;
 	int count = 0;
 	int old_instr_count = cstat->nowords;
-	int AtNo = get_primitive("@"); /* Wince */
+	int AtNo = get_primitive("@");	/* Wince */
 	int BangNo = get_primitive("!");
 	int SwapNo = get_primitive("swap");
 	int RotNo = get_primitive("rot");
@@ -912,259 +908,246 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 	for (curr = cstat->first_word; curr; curr = curr->next)
 		curr->no = count++;
 
-	if ((Flags = (int*)malloc(sizeof(int) * count)) == 0)
+	if ((Flags = (int *) malloc(sizeof(int) * count)) == 0)
 		return 0;
 
 	memset(Flags, 0, sizeof(int) * count);
 
 	/* Mark instructions which jumps reference */
 
-	for(curr = cstat->first_word; curr; curr = curr->next) {
-		switch(curr->in.type) {
-			case PROG_ADD:
-			case PROG_IF:
-			case PROG_TRY:
-			case PROG_JMP:
-			case PROG_EXEC:
-				i = cstat->addrlist[curr->in.data.number]->no +
-						cstat->addroffsets[curr->in.data.number];
-				Flags[i] |= IMMFLAG_REFERENCED;
-				break;
+	for (curr = cstat->first_word; curr; curr = curr->next) {
+		switch (curr->in.type) {
+		case PROG_ADD:
+		case PROG_IF:
+		case PROG_TRY:
+		case PROG_JMP:
+		case PROG_EXEC:
+			i = cstat->addrlist[curr->in.data.number]->no +
+					cstat->addroffsets[curr->in.data.number];
+			Flags[i] |= IMMFLAG_REFERENCED;
+			break;
 		}
 	}
 
-	for(curr = cstat->first_word; curr; ) {
+	for (curr = cstat->first_word; curr;) {
 		int advance = 1;
-		switch(curr->in.type) {
-			case PROG_LVAR:
-				/* lvar !  ==>  lvar! */
-				/* lvar @  ==>  lvar@ */
-				if (curr->next && curr->next->in.type == PROG_PRIMITIVE) {
-					if (curr->next->in.data.number == AtNo) {
-						if (ContiguousIntermediates(Flags, curr->next, 1)) {
-							curr->in.type = PROG_LVAR_AT;
-							RemoveNextIntermediate(cstat, curr);
-							advance = 0;
-							break;
-						}
-					}
-					if (curr->next->in.data.number == BangNo) {
-						if (ContiguousIntermediates(Flags, curr->next, 1)) {
-							curr->in.type = PROG_LVAR_BANG;
-							RemoveNextIntermediate(cstat, curr);
-							advance = 0;
-							break;
-						}
+
+		switch (curr->in.type) {
+		case PROG_LVAR:
+			/* lvar !  ==>  lvar! */
+			/* lvar @  ==>  lvar@ */
+			if (curr->next && curr->next->in.type == PROG_PRIMITIVE) {
+				if (curr->next->in.data.number == AtNo) {
+					if (ContiguousIntermediates(Flags, curr->next, 1)) {
+						curr->in.type = PROG_LVAR_AT;
+						RemoveNextIntermediate(cstat, curr);
+						advance = 0;
+						break;
 					}
 				}
-				break;
-
-			case PROG_SVAR:
-				/* svar !  ==>  svar! */
-				/* svar @  ==>  svar@ */
-				if (curr->next && curr->next->in.type == PROG_PRIMITIVE) {
-					if (curr->next->in.data.number == AtNo) {
-						if (ContiguousIntermediates(Flags, curr->next, 1)) {
-							curr->in.type = PROG_SVAR_AT;
-							RemoveNextIntermediate(cstat, curr);
-							advance = 0;
-							break;
-						}
-					}
-					if (curr->next->in.data.number == BangNo) {
-						if (ContiguousIntermediates(Flags, curr->next, 1)) {
-							curr->in.type = PROG_SVAR_BANG;
-							RemoveNextIntermediate(cstat, curr);
-							advance = 0;
-							break;
-						}
+				if (curr->next->in.data.number == BangNo) {
+					if (ContiguousIntermediates(Flags, curr->next, 1)) {
+						curr->in.type = PROG_LVAR_BANG;
+						RemoveNextIntermediate(cstat, curr);
+						advance = 0;
+						break;
 					}
 				}
-				break;
+			}
+			break;
 
-			case PROG_STRING:
-				/* "" strcmp 0 =  ==>  not */
-				if (IntermediateIsString(curr, "")) {
-					if (ContiguousIntermediates(Flags, curr->next, 3)) {
-						if (IntermediateIsPrimitive(curr->next, StrcmpNo)) {
-							if (IntermediateIsInteger(curr->next->next, 0)) {
-								if (IntermediateIsPrimitive(curr->next->next->next, EqualsNo)) {
-									if (curr->in.data.string)
-										free((void *) curr->in.data.string);
-									curr->in.type = PROG_PRIMITIVE;
-									curr->in.data.number = NotNo;
-									RemoveNextIntermediate(cstat, curr);
-									RemoveNextIntermediate(cstat, curr);
-									RemoveNextIntermediate(cstat, curr);
-									advance = 0;
-									break;
-								}
+		case PROG_SVAR:
+			/* svar !  ==>  svar! */
+			/* svar @  ==>  svar@ */
+			if (curr->next && curr->next->in.type == PROG_PRIMITIVE) {
+				if (curr->next->in.data.number == AtNo) {
+					if (ContiguousIntermediates(Flags, curr->next, 1)) {
+						curr->in.type = PROG_SVAR_AT;
+						RemoveNextIntermediate(cstat, curr);
+						advance = 0;
+						break;
+					}
+				}
+				if (curr->next->in.data.number == BangNo) {
+					if (ContiguousIntermediates(Flags, curr->next, 1)) {
+						curr->in.type = PROG_SVAR_BANG;
+						RemoveNextIntermediate(cstat, curr);
+						advance = 0;
+						break;
+					}
+				}
+			}
+			break;
+
+		case PROG_STRING:
+			/* "" strcmp 0 =  ==>  not */
+			if (IntermediateIsString(curr, "")) {
+				if (ContiguousIntermediates(Flags, curr->next, 3)) {
+					if (IntermediateIsPrimitive(curr->next, StrcmpNo)) {
+						if (IntermediateIsInteger(curr->next->next, 0)) {
+							if (IntermediateIsPrimitive(curr->next->next->next, EqualsNo)) {
+								if (curr->in.data.string)
+									free((void *) curr->in.data.string);
+								curr->in.type = PROG_PRIMITIVE;
+								curr->in.data.number = NotNo;
+								RemoveNextIntermediate(cstat, curr);
+								RemoveNextIntermediate(cstat, curr);
+								RemoveNextIntermediate(cstat, curr);
+								advance = 0;
+								break;
 							}
 						}
 					}
 				}
-				break;
+			}
+			break;
 
-			case PROG_INTEGER:
-				/* consolidate constant integer calculations */
+		case PROG_INTEGER:
+			/* consolidate constant integer calculations */
+			if (ContiguousIntermediates(Flags, curr->next, 2)) {
+				if (curr->next->in.type == PROG_INTEGER) {
+					/* Int Int +  ==>  Sum */
+					if (IntermediateIsPrimitive(curr->next->next, PlusNo)) {
+						curr->in.data.number += curr->next->in.data.number;
+						RemoveNextIntermediate(cstat, curr);
+						RemoveNextIntermediate(cstat, curr);
+						advance = 0;
+						break;
+					}
+
+					/* Int Int -  ==>  Diff */
+					if (IntermediateIsPrimitive(curr->next->next, MinusNo)) {
+						curr->in.data.number -= curr->next->in.data.number;
+						RemoveNextIntermediate(cstat, curr);
+						RemoveNextIntermediate(cstat, curr);
+						advance = 0;
+						break;
+					}
+
+					/* Int Int *  ==>  Prod */
+					if (IntermediateIsPrimitive(curr->next->next, MultNo)) {
+						curr->in.data.number *= curr->next->in.data.number;
+						RemoveNextIntermediate(cstat, curr);
+						RemoveNextIntermediate(cstat, curr);
+						advance = 0;
+						break;
+					}
+
+					/* Int Int /  ==>  Div  */
+					if (IntermediateIsPrimitive(curr->next->next, DivNo)) {
+						if (curr->next->in.data.number == 0) {
+							if (!(curr->next->next->flags & INTMEDFLG_DIVBYZERO)) {
+								curr->next->next->flags |= INTMEDFLG_DIVBYZERO;
+
+								if (force_err_display) {
+									compiler_warning(cstat,
+													 "Warning on line %i: Divide by zero",
+													 curr->next->next->in.line);
+								}
+							}
+						} else {
+							curr->in.data.number /= curr->next->in.data.number;
+							RemoveNextIntermediate(cstat, curr);
+							RemoveNextIntermediate(cstat, curr);
+							advance = 0;
+						}
+
+						break;
+					}
+
+					/* Int Int %  ==>  Div  */
+					if (IntermediateIsPrimitive(curr->next->next, ModNo)) {
+						if (curr->next->in.data.number == 0) {
+							if (!(curr->next->next->flags & INTMEDFLG_MODBYZERO)) {
+								curr->next->next->flags |= INTMEDFLG_MODBYZERO;
+
+								if (force_err_display) {
+									compiler_warning(cstat,
+													 "Warning on line %i: Modulus by zero",
+													 curr->next->next->in.line);
+								}
+							}
+						} else {
+							curr->in.data.number %= curr->next->in.data.number;
+							RemoveNextIntermediate(cstat, curr);
+							RemoveNextIntermediate(cstat, curr);
+							advance = 0;
+						}
+
+						break;
+					}
+				}
+			}
+
+			/* 0 =  ==>  not */
+			if (IntermediateIsInteger(curr, 0)) {
+				if (ContiguousIntermediates(Flags, curr->next, 1)) {
+					if (IntermediateIsPrimitive(curr->next, EqualsNo)) {
+						curr->in.type = PROG_PRIMITIVE;
+						curr->in.data.number = NotNo;
+						RemoveNextIntermediate(cstat, curr);
+						advance = 0;
+						break;
+					}
+				}
+			}
+
+			/* 1 +  ==>  ++ */
+			if (IntermediateIsInteger(curr, 1)) {
+				if (ContiguousIntermediates(Flags, curr->next, 1)) {
+					if (IntermediateIsPrimitive(curr->next, PlusNo)) {
+						curr->in.type = PROG_PRIMITIVE;
+						curr->in.data.number = IncrNo;
+						RemoveNextIntermediate(cstat, curr);
+						advance = 0;
+						break;
+					}
+				}
+			}
+
+			/* 1 -  ==>  -- */
+			if (IntermediateIsInteger(curr, 1)) {
+				if (ContiguousIntermediates(Flags, curr->next, 1)) {
+					if (IntermediateIsPrimitive(curr->next, MinusNo)) {
+						curr->in.type = PROG_PRIMITIVE;
+						curr->in.data.number = DecrNo;
+						RemoveNextIntermediate(cstat, curr);
+						advance = 0;
+						break;
+					}
+				}
+			}
+			break;
+
+		case PROG_PRIMITIVE:
+			/* rot rot swap  ==>  swap rot */
+			if (IntermediateIsPrimitive(curr, RotNo)) {
 				if (ContiguousIntermediates(Flags, curr->next, 2)) {
-					if (curr->next->in.type == PROG_INTEGER) {
-						/* Int Int +  ==>  Sum */
-						if (IntermediateIsPrimitive(curr->next->next, PlusNo)) {
-							curr->in.data.number += curr->next->in.data.number;
-							RemoveNextIntermediate(cstat, curr);
-							RemoveNextIntermediate(cstat, curr);
-							advance = 0;
-							break;
-						}
-
-						/* Int Int -  ==>  Diff */
-						if (IntermediateIsPrimitive(curr->next->next, MinusNo)) {
-							curr->in.data.number -= curr->next->in.data.number;
-							RemoveNextIntermediate(cstat, curr);
-							RemoveNextIntermediate(cstat, curr);
-							advance = 0;
-							break;
-						}
-
-						/* Int Int *  ==>  Prod */
-						if (IntermediateIsPrimitive(curr->next->next, MultNo)) {
-							curr->in.data.number *= curr->next->in.data.number;
-							RemoveNextIntermediate(cstat, curr);
-							RemoveNextIntermediate(cstat, curr);
-							advance = 0;
-							break;
-						}
-
-						/* Int Int /  ==>  Div  */
-						if (IntermediateIsPrimitive(curr->next->next, DivNo)) {
-							if (curr->next->in.data.number == 0)
-							{
-								if (!(curr->next->next->flags & INTMEDFLG_DIVBYZERO))
-								{
-									curr->next->next->flags |= INTMEDFLG_DIVBYZERO;
-
-									if (force_err_display)
-									{
-										compiler_warning(
-												cstat,
-												"Warning on line %i: Divide by zero",
-												curr->next->next->in.line
-											);
-									}
-								}
-							}
-							else
-							{
-								curr->in.data.number /= curr->next->in.data.number;
-								RemoveNextIntermediate(cstat, curr);
-								RemoveNextIntermediate(cstat, curr);
-								advance = 0;
-							}
-
-							break;
-						}
-
-						/* Int Int %  ==>  Div  */
-						if (IntermediateIsPrimitive(curr->next->next, ModNo)) {
-							if (curr->next->in.data.number == 0)
-							{
-								if (!(curr->next->next->flags & INTMEDFLG_MODBYZERO))
-								{
-									curr->next->next->flags |= INTMEDFLG_MODBYZERO;
-
-									if (force_err_display)
-									{
-										compiler_warning(
-												cstat,
-											   	"Warning on line %i: Modulus by zero",
-											   	curr->next->next->in.line
-											);
-									}
-								}
-							}
-							else
-							{
-								curr->in.data.number %= curr->next->in.data.number;
-								RemoveNextIntermediate(cstat, curr);
-								RemoveNextIntermediate(cstat, curr);
-								advance = 0;
-							}
-
-							break;
-						}
-					}
-				}
-
-				/* 0 =  ==>  not */
-				if (IntermediateIsInteger(curr, 0)) {
-					if (ContiguousIntermediates(Flags, curr->next, 1)) {
-						if (IntermediateIsPrimitive(curr->next, EqualsNo)) {
-							curr->in.type = PROG_PRIMITIVE;
-							curr->in.data.number = NotNo;
-							RemoveNextIntermediate(cstat, curr);
+					if (IntermediateIsPrimitive(curr->next, RotNo)) {
+						if (IntermediateIsPrimitive(curr->next->next, SwapNo)) {
+							curr->in.data.number = SwapNo;
+							curr->next->in.data.number = RotNo;
+							RemoveNextIntermediate(cstat, curr->next);
 							advance = 0;
 							break;
 						}
 					}
 				}
-
-				/* 1 +  ==>  ++ */
-				if (IntermediateIsInteger(curr, 1)) {
-					if (ContiguousIntermediates(Flags, curr->next, 1)) {
-						if (IntermediateIsPrimitive(curr->next, PlusNo)) {
-							curr->in.type = PROG_PRIMITIVE;
-							curr->in.data.number = IncrNo;
-							RemoveNextIntermediate(cstat, curr);
+			}
+			/* not not if  ==>  if */
+			if (IntermediateIsPrimitive(curr, NotNo)) {
+				if (ContiguousIntermediates(Flags, curr->next, 2)) {
+					if (IntermediateIsPrimitive(curr->next, NotNo)) {
+						if (curr->next->next->in.type == PROG_IF) {
+							RemoveIntermediate(cstat, curr);
+							RemoveIntermediate(cstat, curr);
 							advance = 0;
 							break;
 						}
 					}
 				}
-
-				/* 1 -  ==>  -- */
-				if (IntermediateIsInteger(curr, 1)) {
-					if (ContiguousIntermediates(Flags, curr->next, 1)) {
-						if (IntermediateIsPrimitive(curr->next, MinusNo)) {
-							curr->in.type = PROG_PRIMITIVE;
-							curr->in.data.number = DecrNo;
-							RemoveNextIntermediate(cstat, curr);
-							advance = 0;
-							break;
-						}
-					}
-				}
-				break;
-
-			case PROG_PRIMITIVE:
-				/* rot rot swap  ==>  swap rot */
-				if (IntermediateIsPrimitive(curr, RotNo)) {
-					if (ContiguousIntermediates(Flags, curr->next, 2)) {
-						if (IntermediateIsPrimitive(curr->next, RotNo)) {
-							if (IntermediateIsPrimitive(curr->next->next, SwapNo)) {
-								curr->in.data.number = SwapNo;
-								curr->next->in.data.number = RotNo;
-								RemoveNextIntermediate(cstat, curr->next);
-								advance = 0;
-								break;
-							}
-						}
-					}
-				}
-				/* not not if  ==>  if */
-				if (IntermediateIsPrimitive(curr, NotNo)) {
-					if (ContiguousIntermediates(Flags, curr->next, 2)) {
-						if (IntermediateIsPrimitive(curr->next, NotNo)) {
-							if (curr->next->next->in.type == PROG_IF) {
-								RemoveIntermediate(cstat, curr);
-								RemoveIntermediate(cstat, curr);
-								advance = 0;
-								break;
-							}
-						}
-					}
-				}
-				break;
+			}
+			break;
 		}
 
 		if (advance) {
@@ -1174,9 +1157,9 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 
 	/* Turn all var@'s which have a following var! into a var@-clear */
 
-	for(curr = cstat->first_word; curr; curr = curr->next)
+	for (curr = cstat->first_word; curr; curr = curr->next)
 		if (curr->in.type == PROG_SVAR_AT || curr->in.type == PROG_LVAR_AT)
-				MaybeOptimizeVarsAt(cstat, curr, AtNo, BangNo);
+			MaybeOptimizeVarsAt(cstat, curr, AtNo, BangNo);
 
 	free(Flags);
 	return (old_instr_count - cstat->nowords);
@@ -1294,7 +1277,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	cstat.curr_line = PROGRAM_FIRST(program_in);
 	cstat.lineno = 1;
 	cstat.start_comment = 0;
-	cstat.force_comment = tp_muf_comments_strict? 1 : 0;
+	cstat.force_comment = tp_muf_comments_strict ? 1 : 0;
 	cstat.next_char = NULL;
 	if (cstat.curr_line)
 		cstat.next_char = cstat.curr_line->this_line;
@@ -1337,7 +1320,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 
 		/* test for errors */
 		if (cstat.compile_err) {
-		        free((void *) token);
+			free((void *) token);
 			return;
 		}
 
@@ -1375,7 +1358,9 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 
 		if (force_err_display && optimcount > 0) {
 			char buf[BUFFER_LEN];
-			snprintf(buf, sizeof(buf), "Program optimized by %d instructions in %d passes.", optimcount, passcount);
+
+			snprintf(buf, sizeof(buf), "Program optimized by %d instructions in %d passes.",
+					 optimcount, passcount);
 			notify_nolisten(cstat.player, buf, 1);
 		}
 	}
@@ -1387,9 +1372,9 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	PROGRAM_SET_PUBS(cstat.program, cstat.currpubs);
 
 	if (cstat.nextinst) {
-		struct INTERMEDIATE* ptr;
-		while (cstat.nextinst)
-		{
+		struct INTERMEDIATE *ptr;
+
+		while (cstat.nextinst) {
 			ptr = cstat.nextinst;
 			cstat.nextinst = ptr->next;
 			free(ptr);
@@ -1544,6 +1529,7 @@ next_token(COMPSTATE * cstat)
 			abort_compile(cstat, "Too many macro substitutions.");
 		} else {
 			int templen = strlen(cstat->next_char) + strlen(expansion) + 21;
+
 			temp = (char *) malloc(templen);
 			strcpy(temp, expansion);
 			strcatn(temp, templen, cstat->next_char);
@@ -1561,26 +1547,28 @@ next_token(COMPSTATE * cstat)
 
 
 /* Old-style comment parser */
-int do_old_comment(COMPSTATE * cstat)
+int
+do_old_comment(COMPSTATE * cstat)
 {
-  while (*cstat->next_char && *cstat->next_char != ENDCOMMENT)
-    cstat->next_char++;
-  if (!(*cstat->next_char)) {
-    advance_line(cstat);
-    if (!cstat->curr_line) {
-      return 1;
-    }
-    return do_old_comment(cstat);
-  } else {
-    cstat->next_char++;
-    if (!(*cstat->next_char))
-      advance_line(cstat);
-  }
-  return 0;
+	while (*cstat->next_char && *cstat->next_char != ENDCOMMENT)
+		cstat->next_char++;
+	if (!(*cstat->next_char)) {
+		advance_line(cstat);
+		if (!cstat->curr_line) {
+			return 1;
+		}
+		return do_old_comment(cstat);
+	} else {
+		cstat->next_char++;
+		if (!(*cstat->next_char))
+			advance_line(cstat);
+	}
+	return 0;
 }
 
 /* skip comments, recursive style */
-int do_new_comment(COMPSTATE * cstat, int depth)
+int
+do_new_comment(COMPSTATE * cstat, int depth)
 {
 	int retval = 0;
 	int in_str = 0;
@@ -1588,9 +1576,9 @@ int do_new_comment(COMPSTATE * cstat, int depth)
 
 	if (!*cstat->next_char || *cstat->next_char != BEGINCOMMENT)
 		return 2;
-	if (depth >= 7 /*arbitrary*/)
+	if (depth >= 7 /*arbitrary */ )
 		return 3;
-	cstat->next_char++;  /* Advance past BEGINCOMMENT */
+	cstat->next_char++;			/* Advance past BEGINCOMMENT */
 
 	while (*cstat->next_char != ENDCOMMENT) {
 		if (!(*cstat->next_char)) {
@@ -1599,9 +1587,9 @@ int do_new_comment(COMPSTATE * cstat, int depth)
 				if (!cstat->curr_line) {
 					return 1;
 				}
-			} while(!(*cstat->next_char));
+			} while (!(*cstat->next_char));
 		} else if (*cstat->next_char == BEGINCOMMENT) {
-			retval = do_new_comment(cstat, depth+1);
+			retval = do_new_comment(cstat, depth + 1);
 			if (retval) {
 				return retval;
 			}
@@ -1610,7 +1598,7 @@ int do_new_comment(COMPSTATE * cstat, int depth)
 		}
 	};
 
-	cstat->next_char++;  /* Advance past ENDCOMMENT */
+	cstat->next_char++;			/* Advance past ENDCOMMENT */
 	ptr = cstat->next_char;
 	while (*ptr) {
 		if (in_str) {
@@ -1628,15 +1616,13 @@ int do_new_comment(COMPSTATE * cstat, int depth)
 		ptr++;
 	}
 	if (in_str) {
-		compiler_warning(
-			cstat,
-			"Warning on line %i: Unterminated string may indicate unterminated comment. Comment starts on line %i.",
-			cstat->lineno, cstat->start_comment
-		);
+		compiler_warning(cstat,
+						 "Warning on line %i: Unterminated string may indicate unterminated comment. Comment starts on line %i.",
+						 cstat->lineno, cstat->start_comment);
 	}
 	if (!(*cstat->next_char))
 		advance_line(cstat);
-	if (depth && !cstat->curr_line) /* EOF? Don't care if done (depth==0) */
+	if (depth && !cstat->curr_line)	/* EOF? Don't care if done (depth==0) */
 		return 1;
 	return 0;
 }
@@ -1645,15 +1631,14 @@ int do_new_comment(COMPSTATE * cstat, int depth)
 void
 do_comment(COMPSTATE * cstat, int depth)
 {
-	unsigned int next_char = 0;  /* Save state if needed. */
+	unsigned int next_char = 0;	/* Save state if needed. */
 	int lineno = 0;
 	struct line *curr_line = NULL;
 	int macrosubs = 0;
 	int retval = 0;
 
 	if (!depth && !cstat->force_comment) {
-		next_char = cstat->line_copy?
-			cstat->next_char - cstat->line_copy : 0;
+		next_char = cstat->line_copy ? cstat->next_char - cstat->line_copy : 0;
 		macrosubs = cstat->macrosubs;
 		lineno = cstat->lineno;
 		curr_line = cstat->curr_line;
@@ -1684,7 +1669,8 @@ do_comment(COMPSTATE * cstat, int depth)
 				cstat->macrosubs = macrosubs;
 				cstat->lineno = lineno;
 				if (cstat->curr_line) {
-					cstat->next_char = (cstat->line_copy = alloc_string(cstat->curr_line->this_line)) + next_char;
+					cstat->next_char = (cstat->line_copy =
+										alloc_string(cstat->curr_line->this_line)) + next_char;
 				} else {
 					cstat->next_char = (cstat->line_copy = NULL);
 				}
@@ -1696,12 +1682,12 @@ do_comment(COMPSTATE * cstat, int depth)
 	}
 
 	if (do_old_comment(cstat)) {
-	  v_abort_compile(cstat, "Unterminated comment.");
+		v_abort_compile(cstat, "Unterminated comment.");
 	}
 }
 
 int
-is_preprocessor_conditional(const char* tmpptr)
+is_preprocessor_conditional(const char *tmpptr)
 {
 	if (!string_compare(tmpptr, "$ifdef"))
 		return 1;
@@ -1778,17 +1764,16 @@ do_directive(COMPSTATE * cstat, char *direct)
 	} else if (!string_compare(temp, "cleardefs")) {
 		char nextToken[BUFFER_LEN];
 
-		purge_defs(cstat); /* Get rid of all defs first. */
-		include_internal_defs(cstat); /* Always include internal defs. */
-		while(*cstat->next_char && isspace(*cstat->next_char))
-			cstat->next_char++; /* eating leading spaces */
+		purge_defs(cstat);		/* Get rid of all defs first. */
+		include_internal_defs(cstat);	/* Always include internal defs. */
+		while (*cstat->next_char && isspace(*cstat->next_char))
+			cstat->next_char++;	/* eating leading spaces */
 		strcpy(nextToken, cstat->next_char);
 		tmpname = nextToken;
 		while (*cstat->next_char)
 			cstat->next_char++;
 		advance_line(cstat);
-		if (!tmpname || !*tmpname || MLevel(OWNER(cstat->program)) < 4)
-		{
+		if (!tmpname || !*tmpname || MLevel(OWNER(cstat->program)) < 4) {
 			include_defs(cstat, OWNER(cstat->program));
 			include_defs(cstat, (dbref) 0);
 		}
@@ -1816,11 +1801,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 
 		if (string_compare(tmpname, ":") &&
 			(index(tmpname, '/') ||
-			index(tmpname, ':') ||
-			Prop_SeeOnly(tmpname) ||
-			Prop_Hidden(tmpname) ||
-			Prop_System(tmpname)))
-		{
+			 index(tmpname, ':') ||
+			 Prop_SeeOnly(tmpname) || Prop_Hidden(tmpname) || Prop_System(tmpname))) {
 			free(tmpname);
 			v_abort_compile(cstat, "Invalid $pubdef name.  No /, :, @ nor ~ are allowed.");
 		} else {
@@ -1831,8 +1813,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 				char propname[BUFFER_LEN];
 				int doitset = 1;
 
-				while(*cstat->next_char && isspace(*cstat->next_char))
-					cstat->next_char++; /* eating leading spaces */
+				while (*cstat->next_char && isspace(*cstat->next_char))
+					cstat->next_char++;	/* eating leading spaces */
 				defstr = cstat->next_char;
 
 				if (*tmpname == '\\') {
@@ -1841,7 +1823,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 					(void) *tmpname++;
 					snprintf(propname, sizeof(propname), "/_defs/%s", tmpname);
 					temppropstr = (char *) get_property_class(cstat->program, propname);
-					if (temppropstr ) {
+					if (temppropstr) {
 						doitset = 0;
 					}
 				} else {
@@ -1863,7 +1845,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 		advance_line(cstat);
 		free(holder);
 
-    } else if (!string_compare(temp, "libdef")) {
+	} else if (!string_compare(temp, "libdef")) {
 		char *holder = NULL;
 
 		tmpname = (char *) next_token_raw(cstat);
@@ -1874,10 +1856,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 
 		if (index(tmpname, '/') ||
 			index(tmpname, ':') ||
-			Prop_SeeOnly(tmpname) ||
-			Prop_Hidden(tmpname) ||
-			Prop_System(tmpname))
-		{
+			Prop_SeeOnly(tmpname) || Prop_Hidden(tmpname) || Prop_System(tmpname)) {
 			free(tmpname);
 			v_abort_compile(cstat, "Invalid $libdef name.  No /, :, @, nor ~ are allowed.");
 		} else {
@@ -1885,8 +1864,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 			char defstr[BUFFER_LEN];
 			int doitset = 1;
 
-			while(*cstat->next_char && isspace(*cstat->next_char))
-				cstat->next_char++; /* eating leading spaces */
+			while (*cstat->next_char && isspace(*cstat->next_char))
+				cstat->next_char++;	/* eating leading spaces */
 
 			if (*tmpname == '\\') {
 				char *temppropstr = NULL;
@@ -1894,7 +1873,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 				(void) *tmpname++;
 				snprintf(propname, sizeof(propname), "/_defs/%s", tmpname);
 				temppropstr = (char *) get_property_class(cstat->program, propname);
-				if (temppropstr ) {
+				if (temppropstr) {
 					doitset = 0;
 				}
 			} else {
@@ -1917,7 +1896,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 
 		advance_line(cstat);
 
-		free(holder);		
+		free(holder);
 	} else if (!string_compare(temp, "include")) {
 		struct match_data md;
 
@@ -1957,8 +1936,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 		advance_line(cstat);
 
 	} else if (!string_compare(temp, "abort")) {
-		while(*cstat->next_char && isspace(*cstat->next_char))
-			cstat->next_char++; /* eating leading spaces */
+		while (*cstat->next_char && isspace(*cstat->next_char))
+			cstat->next_char++;	/* eating leading spaces */
 		tmpname = (char *) cstat->next_char;
 		if (tmpname && *tmpname) {
 			v_abort_compile(cstat, tmpname);
@@ -1967,7 +1946,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 		}
 
 	} else if (!string_compare(temp, "version")) {
-		tmpname = (char *) next_token_raw(cstat); 
+		tmpname = (char *) next_token_raw(cstat);
 		if (!ifloat(tmpname))
 			v_abort_compile(cstat, "Expected a floating point number for the version.");
 		add_property(cstat->program, "_version", tmpname, 0);
@@ -1987,8 +1966,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 		free(tmpname);
 
 	} else if (!string_compare(temp, "author")) {
-		while(*cstat->next_char && isspace(*cstat->next_char))
-			cstat->next_char++; /* eating leading spaces */
+		while (*cstat->next_char && isspace(*cstat->next_char))
+			cstat->next_char++;	/* eating leading spaces */
 		tmpname = (char *) cstat->next_char;
 		while (*cstat->next_char)
 			cstat->next_char++;
@@ -1996,8 +1975,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 		advance_line(cstat);
 
 	} else if (!string_compare(temp, "note")) {
-		while(*cstat->next_char && isspace(*cstat->next_char))
-			cstat->next_char++; /* eating leading spaces */
+		while (*cstat->next_char && isspace(*cstat->next_char))
+			cstat->next_char++;	/* eating leading spaces */
 		tmpname = (char *) cstat->next_char;
 		while (*cstat->next_char)
 			cstat->next_char++;
@@ -2006,12 +1985,13 @@ do_directive(COMPSTATE * cstat, char *direct)
 
 	} else if (!string_compare(temp, "ifdef") || !string_compare(temp, "ifndef")) {
 		int invert_flag = !string_compare(temp, "ifndef");
+
 		tmpname = (char *) next_token_raw(cstat);
 		if (!tmpname) {
 			v_abort_compile(cstat, "Unexpected end of file looking for $ifdef condition.");
 		}
 		if (*tmpname == '"') {
-			strcpy(temp, tmpname+1);
+			strcpy(temp, tmpname + 1);
 		} else {
 			strcpy(temp, tmpname);
 		}
@@ -2061,8 +2041,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 		tmpname = (char *) next_token_raw(cstat);
 		if (!tmpname)
 			v_abort_compile(cstat, "Unexpected end of file for ifcancall.");
-		if (string_compare(tmpname, "this"))
-		{
+		if (string_compare(tmpname, "this")) {
 			char tempa[BUFFER_LEN], tempb[BUFFER_LEN];
 
 			strcpy(tempa, match_args);
@@ -2079,10 +2058,10 @@ do_directive(COMPSTATE * cstat, char *direct)
 		}
 		free(tmpname);
 		if (((dbref) i == NOTHING) || (i < 0) || (i >= db_top) || (Typeof(i) == TYPE_GARBAGE))
-			v_abort_compile(cstat, "I don't understand what program you want to check in ifcancall.");
+			v_abort_compile(cstat,
+							"I don't understand what program you want to check in ifcancall.");
 		tmpname = (char *) next_token_raw(cstat);
-		if (!tmpname || !*tmpname)
-		{
+		if (!tmpname || !*tmpname) {
 			if (tmpptr) {
 				free(tmpptr);
 			}
@@ -2102,10 +2081,11 @@ do_directive(COMPSTATE * cstat, char *direct)
 		}
 		j = 0;
 		if (MLevel(OWNER(i)) > 0 &&
-			(MLevel(OWNER(cstat->program)) >= 4 || OWNER(i) == OWNER(cstat->program) || Linkable(i))
-		) {
+			(MLevel(OWNER(cstat->program)) >= 4 || OWNER(i) == OWNER(cstat->program) ||
+			 Linkable(i))
+				) {
 			struct publics *pbs;
-	
+
 			pbs = PROGRAM_PUBS(i);
 			while (pbs) {
 				if (!string_compare(tmpname, pbs->subname))
@@ -2136,7 +2116,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 			free(tmpptr);
 		}
 
-	} else if (!string_compare(temp, "ifver")  || !string_compare(temp, "iflibver") ||
+	} else if (!string_compare(temp, "ifver") || !string_compare(temp, "iflibver") ||
 			   !string_compare(temp, "ifnver") || !string_compare(temp, "ifnlibver")) {
 		struct match_data md;
 		double verflt = 0;
@@ -2146,8 +2126,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 		tmpname = (char *) next_token_raw(cstat);
 		if (!tmpname)
 			v_abort_compile(cstat, "Unexpected end of file while doing $ifver.");
-		if (string_compare(tmpname, "this"))
-		{
+		if (string_compare(tmpname, "this")) {
 			char tempa[BUFFER_LEN], tempb[BUFFER_LEN];
 
 			strcpy(tempa, match_args);
@@ -2164,14 +2143,15 @@ do_directive(COMPSTATE * cstat, char *direct)
 		}
 		free(tmpname);
 		if (((dbref) i == NOTHING) || (i < 0) || (i >= db_top) || (Typeof(i) == TYPE_GARBAGE))
-			v_abort_compile(cstat, "I don't understand what object you want to check with $ifver.");
+			v_abort_compile(cstat,
+							"I don't understand what object you want to check with $ifver.");
 		if (!string_compare(temp, "ifver") || !string_compare(temp, "ifnver")) {
 			tmpptr = (char *) get_property_class(i, "_version");
 		} else {
 			tmpptr = (char *) get_property_class(i, "_lib-version");
 		}
 		if (!tmpptr || !*tmpptr) {
-			tmpptr = (char*)malloc(4 * sizeof(char));
+			tmpptr = (char *) malloc(4 * sizeof(char));
 			strcpy(tmpptr, "0.0");
 			needFree = 1;
 		}
@@ -2179,14 +2159,15 @@ do_directive(COMPSTATE * cstat, char *direct)
 		if (!tmpname || !*tmpname) {
 			free(tmpptr);
 			free(tmpname);
-			v_abort_compile(cstat, "I don't understand what version you want to compare to with $ifver.");
+			v_abort_compile(cstat,
+							"I don't understand what version you want to compare to with $ifver.");
 		}
 		if (!tmpptr || !ifloat(tmpptr)) {
 			verflt = 0.0;
 		} else {
 			sscanf(tmpptr, "%lg", &verflt);
 		}
-		if ( needFree )
+		if (needFree)
 			free(tmpptr);
 		if (!tmpname || !ifloat(tmpname)) {
 			checkflt = 0.0;
@@ -2238,8 +2219,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 
 		free(tmpname);
 		if ((((dbref) i == NOTHING) || (i < 0) || (i >= db_top)
-			|| (Typeof(i) == TYPE_GARBAGE)) ? 0 : (Typeof(i) == TYPE_PROGRAM)
-		) {
+			 || (Typeof(i) == TYPE_GARBAGE)) ? 0 : (Typeof(i) == TYPE_PROGRAM)
+				) {
 			j = 1;
 		} else {
 			j = 0;
@@ -2285,7 +2266,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 		/* TODO - move pragmas to its own section for easy expansion. */
 		while (*cstat->next_char && isspace(*cstat->next_char))
 			cstat->next_char++;
-		if (!*cstat->next_char || !(tmpptr = (char *)next_token_raw(cstat)))
+		if (!*cstat->next_char || !(tmpptr = (char *) next_token_raw(cstat)))
 			v_abort_compile(cstat, "Pragma requires at least one argument.");
 		if (!string_compare(tmpptr, "comment_strict")) {
 			/* Do non-recursive comments (old style) */
@@ -2295,27 +2276,23 @@ do_directive(COMPSTATE * cstat, char *direct)
 			cstat->force_comment = 2;
 		} else if (!string_compare(tmpptr, "comment_loose")) {
 			/* Try to compile with recursive and non-recursive comments
-			doing recursive first, then strict on a comment-based
-			compile error.  Only throw an error if both fail.  This is
-			the default mode. */
+			   doing recursive first, then strict on a comment-based
+			   compile error.  Only throw an error if both fail.  This is
+			   the default mode. */
 			cstat->force_comment = 0;
 		} else {
 			/* If the pragma is not recognized, it is ignored, with a warning. */
-			compiler_warning(
-					cstat,
-					"Warning on line %i: Pragma %.64s unrecognized.  Ignoring.",
-					cstat->lineno, tmpptr
-				);
+			compiler_warning(cstat,
+							 "Warning on line %i: Pragma %.64s unrecognized.  Ignoring.",
+							 cstat->lineno, tmpptr);
 			while (*cstat->next_char)
 				cstat->next_char++;
 		}
 		free(tmpptr);
 		if (*cstat->next_char) {
-			compiler_warning(
-					cstat,
-					"Warning on line %i: Ignoring extra pragma arguments: %.256s",
-					cstat->lineno, cstat->next_char
-				);
+			compiler_warning(cstat,
+							 "Warning on line %i: Ignoring extra pragma arguments: %.256s",
+							 cstat->lineno, cstat->next_char);
 			advance_line(cstat);
 		}
 	} else {
@@ -2388,9 +2365,9 @@ process_special(COMPSTATE * cstat, const char *token)
 			free((void *) proc_name);
 		proc_name = buf;
 
-		if (*proc_name && buf[strlen(buf)-1] == '[') {
+		if (*proc_name && buf[strlen(buf) - 1] == '[') {
 			argsflag = 1;
-			buf[strlen(buf)-1] = '\0';
+			buf[strlen(buf) - 1] = '\0';
 			if (!*proc_name)
 				abort_compile(cstat, "Bad procedure name.");
 		}
@@ -2399,7 +2376,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		nu->no = cstat->nowords++;
 		nu->in.type = PROG_FUNCTION;
 		nu->in.line = cstat->lineno;
-		nu->in.data.mufproc = (struct muf_proc_data*)malloc(sizeof(struct muf_proc_data));
+		nu->in.data.mufproc = (struct muf_proc_data *) malloc(sizeof(struct muf_proc_data));
 		nu->in.data.mufproc->procname = string_dup(proc_name);
 		nu->in.data.mufproc->vars = 0;
 		nu->in.data.mufproc->args = 0;
@@ -2408,15 +2385,16 @@ process_special(COMPSTATE * cstat, const char *token)
 		cstat->curr_proc = nu;
 
 		if (argsflag) {
-			const char* varspec;
-			const char* varname;
+			const char *varspec;
+			const char *varname;
 			int argsdone = 0;
 			int outflag = 0;
 
 			do {
 				varspec = next_token(cstat);
 				if (!varspec)
-					abort_compile(cstat, "Unexpected end of file within procedure arguments declaration.");
+					abort_compile(cstat,
+								  "Unexpected end of file within procedure arguments declaration.");
 
 				if (!strcmp(varspec, "]")) {
 					argsdone = 1;
@@ -2440,7 +2418,7 @@ process_special(COMPSTATE * cstat, const char *token)
 				if (varspec) {
 					free((void *) varspec);
 				}
-			} while(!argsdone);
+			} while (!argsdone);
 		}
 
 		add_proc(cstat, proc_name, nu, PROG_UNTYPED);
@@ -2462,12 +2440,12 @@ process_special(COMPSTATE * cstat, const char *token)
 
 		varcnt = cstat->curr_proc->in.data.mufproc->vars;
 		if (varcnt) {
-		    cstat->curr_proc->in.data.mufproc->varnames =
-			(const char**)calloc(varcnt, sizeof(char*));
-		    for (i = 0; i < varcnt; i++) {
-			cstat->curr_proc->in.data.mufproc->varnames[i] = cstat->scopedvars[i];
-			cstat->scopedvars[i] = 0;
-		    }
+			cstat->curr_proc->in.data.mufproc->varnames =
+					(const char **) calloc(varcnt, sizeof(char *));
+			for (i = 0; i < varcnt; i++) {
+				cstat->curr_proc->in.data.mufproc->varnames[i] = cstat->scopedvars[i];
+				cstat->scopedvars[i] = 0;
+			}
 		}
 		cstat->curr_proc = 0;
 		return nu;
@@ -2484,21 +2462,21 @@ process_special(COMPSTATE * cstat, const char *token)
 		int ctrltype = innermost_control_type(cstat);
 
 		switch (ctrltype) {
-			case CTYPE_IF:
-				break;
-			case CTYPE_TRY:
-				abort_compile(cstat, "Unterminated TRY-CATCH block at ELSE.");
-				break;
-			case CTYPE_CATCH:
-				abort_compile(cstat, "Unterminated CATCH-ENDCATCH block at ELSE.");
-				break;
-			case CTYPE_FOR:
-			case CTYPE_BEGIN:
-				abort_compile(cstat, "Unterminated Loop at ELSE.");
-				break;
-			default:
-				abort_compile(cstat, "ELSE without IF.");
-				break;
+		case CTYPE_IF:
+			break;
+		case CTYPE_TRY:
+			abort_compile(cstat, "Unterminated TRY-CATCH block at ELSE.");
+			break;
+		case CTYPE_CATCH:
+			abort_compile(cstat, "Unterminated CATCH-ENDCATCH block at ELSE.");
+			break;
+		case CTYPE_FOR:
+		case CTYPE_BEGIN:
+			abort_compile(cstat, "Unterminated Loop at ELSE.");
+			break;
+		default:
+			abort_compile(cstat, "ELSE without IF.");
+			break;
 		}
 
 		nu = new_inst(cstat);
@@ -2517,22 +2495,22 @@ process_special(COMPSTATE * cstat, const char *token)
 		int ctrltype = innermost_control_type(cstat);
 
 		switch (ctrltype) {
-			case CTYPE_IF:
-			case CTYPE_ELSE:
-				break;
-			case CTYPE_TRY:
-				abort_compile(cstat, "Unterminated TRY-CATCH block at THEN.");
-				break;
-			case CTYPE_CATCH:
-				abort_compile(cstat, "Unterminated CATCH-ENDCATCH block at THEN.");
-				break;
-			case CTYPE_FOR:
-			case CTYPE_BEGIN:
-				abort_compile(cstat, "Unterminated Loop at THEN.");
-				break;
-			default:
-				abort_compile(cstat, "THEN without IF.");
-				break;
+		case CTYPE_IF:
+		case CTYPE_ELSE:
+			break;
+		case CTYPE_TRY:
+			abort_compile(cstat, "Unterminated TRY-CATCH block at THEN.");
+			break;
+		case CTYPE_CATCH:
+			abort_compile(cstat, "Unterminated CATCH-ENDCATCH block at THEN.");
+			break;
+		case CTYPE_FOR:
+		case CTYPE_BEGIN:
+			abort_compile(cstat, "Unterminated Loop at THEN.");
+			break;
+		default:
+			abort_compile(cstat, "THEN without IF.");
+			break;
 		}
 
 		prealloc_inst(cstat);
@@ -2594,23 +2572,23 @@ process_special(COMPSTATE * cstat, const char *token)
 		int ctrltype = innermost_control_type(cstat);
 
 		switch (ctrltype) {
-			case CTYPE_FOR:
-				cstat->nested_fors--;
-			case CTYPE_BEGIN:
-				break;
-			case CTYPE_TRY:
-				abort_compile(cstat, "Unterminated TRY-CATCH block at UNTIL.");
-				break;
-			case CTYPE_CATCH:
-				abort_compile(cstat, "Unterminated CATCH-ENDCATCH block at UNTIL.");
-				break;
-			case CTYPE_IF:
-			case CTYPE_ELSE:
-				abort_compile(cstat, "Unterminated IF-THEN at UNTIL.");
-				break;
-			default:
-				abort_compile(cstat, "Loop start not found for UNTIL.");
-				break;
+		case CTYPE_FOR:
+			cstat->nested_fors--;
+		case CTYPE_BEGIN:
+			break;
+		case CTYPE_TRY:
+			abort_compile(cstat, "Unterminated TRY-CATCH block at UNTIL.");
+			break;
+		case CTYPE_CATCH:
+			abort_compile(cstat, "Unterminated CATCH-ENDCATCH block at UNTIL.");
+			break;
+		case CTYPE_IF:
+		case CTYPE_ELSE:
+			abort_compile(cstat, "Unterminated IF-THEN at UNTIL.");
+			break;
+		default:
+			abort_compile(cstat, "Loop start not found for UNTIL.");
+			break;
 		}
 
 		prealloc_inst(cstat);
@@ -2634,12 +2612,13 @@ process_special(COMPSTATE * cstat, const char *token)
 	} else if (!string_compare(token, "WHILE")) {
 		struct INTERMEDIATE *curr;
 		int trycount;
+
 		if (!in_loop(cstat))
 			abort_compile(cstat, "Can't have a WHILE outside of a loop.");
 
 		trycount = count_trys_inside_loop(cstat);
 		nu = curr = NULL;
-		while (trycount-->0) {
+		while (trycount-- > 0) {
 			if (!nu) {
 				nu = curr = new_inst(cstat);
 			} else {
@@ -2665,12 +2644,13 @@ process_special(COMPSTATE * cstat, const char *token)
 	} else if (!string_compare(token, "BREAK")) {
 		int trycount;
 		struct INTERMEDIATE *curr;
+
 		if (!in_loop(cstat))
 			abort_compile(cstat, "Can't have a BREAK outside of a loop.");
 
 		trycount = count_trys_inside_loop(cstat);
 		nu = curr = NULL;
-		while (trycount-->0) {
+		while (trycount-- > 0) {
 			if (!nu) {
 				nu = curr = new_inst(cstat);
 			} else {
@@ -2705,7 +2685,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		beef = locate_control_structure(cstat, CTYPE_FOR, CTYPE_BEGIN);
 		trycount = count_trys_inside_loop(cstat);
 		nu = curr = NULL;
-		while (trycount-->0) {
+		while (trycount-- > 0) {
 			if (!nu) {
 				nu = curr = new_inst(cstat);
 			} else {
@@ -2734,23 +2714,23 @@ process_special(COMPSTATE * cstat, const char *token)
 		int ctrltype = innermost_control_type(cstat);
 
 		switch (ctrltype) {
-			case CTYPE_FOR:
-				cstat->nested_fors--;
-			case CTYPE_BEGIN:
-				break;
-			case CTYPE_TRY:
-				abort_compile(cstat, "Unterminated TRY-CATCH block at REPEAT.");
-				break;
-			case CTYPE_CATCH:
-				abort_compile(cstat, "Unterminated CATCH-ENDCATCH block at REPEAT.");
-				break;
-			case CTYPE_IF:
-			case CTYPE_ELSE:
-				abort_compile(cstat, "Unterminated IF-THEN at REPEAT.");
-				break;
-			default:
-				abort_compile(cstat, "Loop start not found for REPEAT.");
-				break;
+		case CTYPE_FOR:
+			cstat->nested_fors--;
+		case CTYPE_BEGIN:
+			break;
+		case CTYPE_TRY:
+			abort_compile(cstat, "Unterminated TRY-CATCH block at REPEAT.");
+			break;
+		case CTYPE_CATCH:
+			abort_compile(cstat, "Unterminated CATCH-ENDCATCH block at REPEAT.");
+			break;
+		case CTYPE_IF:
+		case CTYPE_ELSE:
+			abort_compile(cstat, "Unterminated IF-THEN at REPEAT.");
+			break;
+		default:
+			abort_compile(cstat, "Loop start not found for REPEAT.");
+			break;
 		}
 
 		prealloc_inst(cstat);
@@ -2791,20 +2771,20 @@ process_special(COMPSTATE * cstat, const char *token)
 		int ctrltype = innermost_control_type(cstat);
 
 		switch (ctrltype) {
-			case CTYPE_TRY:
-				break;
-			case CTYPE_FOR:
-			case CTYPE_BEGIN:
-				abort_compile(cstat, "Unterminated Loop at CATCH.");
-				break;
-			case CTYPE_IF:
-			case CTYPE_ELSE:
-				abort_compile(cstat, "Unterminated IF-THEN at CATCH.");
-				break;
-			case CTYPE_CATCH:
-			default:
-				abort_compile(cstat, "No TRY found for CATCH.");
-				break;
+		case CTYPE_TRY:
+			break;
+		case CTYPE_FOR:
+		case CTYPE_BEGIN:
+			abort_compile(cstat, "Unterminated Loop at CATCH.");
+			break;
+		case CTYPE_IF:
+		case CTYPE_ELSE:
+			abort_compile(cstat, "Unterminated IF-THEN at CATCH.");
+			break;
+		case CTYPE_CATCH:
+		default:
+			abort_compile(cstat, "No TRY found for CATCH.");
+			break;
 		}
 
 		nu = new_inst(cstat);
@@ -2840,20 +2820,20 @@ process_special(COMPSTATE * cstat, const char *token)
 		int ctrltype = innermost_control_type(cstat);
 
 		switch (ctrltype) {
-			case CTYPE_CATCH:
-				break;
-			case CTYPE_FOR:
-			case CTYPE_BEGIN:
-				abort_compile(cstat, "Unterminated Loop at ENDCATCH.");
-				break;
-			case CTYPE_IF:
-			case CTYPE_ELSE:
-				abort_compile(cstat, "Unterminated IF-THEN at ENDCATCH.");
-				break;
-			case CTYPE_TRY:
-			default:
-				abort_compile(cstat, "No CATCH found for ENDCATCH.");
-				break;
+		case CTYPE_CATCH:
+			break;
+		case CTYPE_FOR:
+		case CTYPE_BEGIN:
+			abort_compile(cstat, "Unterminated Loop at ENDCATCH.");
+			break;
+		case CTYPE_IF:
+		case CTYPE_ELSE:
+			abort_compile(cstat, "Unterminated IF-THEN at ENDCATCH.");
+			break;
+		case CTYPE_TRY:
+		default:
+			abort_compile(cstat, "No CATCH found for ENDCATCH.");
+			break;
 		}
 
 		prealloc_inst(cstat);
@@ -2969,7 +2949,8 @@ process_special(COMPSTATE * cstat, const char *token)
 			free((void *) tok);
 		return 0;
 	} else {
-		snprintf(buf, sizeof(buf), "Unrecognized special form %s found. (%d)", token, cstat->lineno);
+		snprintf(buf, sizeof(buf), "Unrecognized special form %s found. (%d)", token,
+				 cstat->lineno);
 		abort_compile(cstat, buf);
 	}
 }
@@ -3259,7 +3240,7 @@ innermost_control_type(COMPSTATE * cstat)
 
 /* Returns number of TRYs before topmost Loop */
 int
-count_trys_inside_loop(COMPSTATE* cstat)
+count_trys_inside_loop(COMPSTATE * cstat)
 {
 	struct CONTROL_STACK *loop;
 	int count = 0;
@@ -3281,7 +3262,7 @@ count_trys_inside_loop(COMPSTATE* cstat)
 
 /* returns topmost begin or for off the stack */
 struct INTERMEDIATE *
-locate_control_structure(COMPSTATE* cstat, int type1, int type2)
+locate_control_structure(COMPSTATE * cstat, int type1, int type2)
 {
 	struct CONTROL_STACK *loop;
 
@@ -3604,15 +3585,15 @@ free_intermediate_node(struct INTERMEDIATE *wd)
 			free((void *) wd->in.data.string);
 	}
 	if (wd->in.type == PROG_FUNCTION) {
-		free((void*)wd->in.data.mufproc->procname);
+		free((void *) wd->in.data.mufproc->procname);
 		varcnt = wd->in.data.mufproc->vars;
 		if (wd->in.data.mufproc->varnames) {
 			for (j = 0; j < varcnt; j++) {
-				free((void*)wd->in.data.mufproc->varnames[j]);
+				free((void *) wd->in.data.mufproc->varnames[j]);
 			}
-			free((void*)wd->in.data.mufproc->varnames);
+			free((void *) wd->in.data.mufproc->varnames);
 		}
-		free((void*)wd->in.data.mufproc);
+		free((void *) wd->in.data.mufproc);
 	}
 	free((void *) wd);
 }
@@ -3620,7 +3601,8 @@ free_intermediate_node(struct INTERMEDIATE *wd)
 void
 free_intermediate_chain(struct INTERMEDIATE *wd)
 {
-	struct INTERMEDIATE* tempword;
+	struct INTERMEDIATE *tempword;
+
 	while (wd) {
 		tempword = wd->next;
 		free_intermediate_node(wd);
@@ -3715,19 +3697,22 @@ copy_program(COMPSTATE * cstat)
 					alloc_prog_string(curr->in.data.string->data) : 0;
 			break;
 		case PROG_FUNCTION:
-			code[i].data.mufproc = (struct muf_proc_data*)malloc(sizeof(struct muf_proc_data));
+			code[i].data.mufproc =
+					(struct muf_proc_data *) malloc(sizeof(struct muf_proc_data));
 			code[i].data.mufproc->procname = string_dup(curr->in.data.mufproc->procname);
 			code[i].data.mufproc->vars = varcnt = curr->in.data.mufproc->vars;
 			code[i].data.mufproc->args = curr->in.data.mufproc->args;
 			if (varcnt) {
-			    if (curr->in.data.mufproc->varnames) {
-				code[i].data.mufproc->varnames = (const char**)calloc(varcnt, sizeof(char*));
-				for (j = 0; j < varcnt; j++) {
-				    code[i].data.mufproc->varnames[j] = string_dup(curr->in.data.mufproc->varnames[j]);
+				if (curr->in.data.mufproc->varnames) {
+					code[i].data.mufproc->varnames =
+							(const char **) calloc(varcnt, sizeof(char *));
+					for (j = 0; j < varcnt; j++) {
+						code[i].data.mufproc->varnames[j] =
+								string_dup(curr->in.data.mufproc->varnames[j]);
+					}
+				} else {
+					code[i].data.mufproc->varnames = NULL;
 				}
-			    } else {
-				code[i].data.mufproc->varnames = NULL;
-			    }
 			} else {
 				code[i].data.mufproc->varnames = NULL;
 			}
@@ -3798,7 +3783,7 @@ prealloc_inst(COMPSTATE * cstat)
 	if (!cstat->nextinst) {
 		cstat->nextinst = nu;
 	} else {
-		for (ptr = cstat->nextinst; ptr->next; ptr = ptr->next);
+		for (ptr = cstat->nextinst; ptr->next; ptr = ptr->next) ;
 		ptr->next = nu;
 	}
 
@@ -3862,9 +3847,7 @@ free_prog(dbref prog)
 							unparse_object(GOD, prog), c[i].data.addr->links);
 				}
 				free(c[i].data.addr);
-			}
-			else
-			{
+			} else {
 				CLEAR(c + i);
 			}
 		}
@@ -3894,7 +3877,7 @@ size_prog(dbref prog)
 				for (j = 0; j < varcnt; j++) {
 					byts += strlen(c[i].data.mufproc->varnames[j]) + 1;
 				}
-				byts += sizeof(char**) * varcnt;
+				byts += sizeof(char **) * varcnt;
 			}
 			byts += sizeof(struct muf_proc_data);
 		} else if (c[i].type == PROG_STRING && c[i].data.string) {
@@ -3942,4 +3925,3 @@ init_primitives(void)
 	IN_TRYPOP = get_primitive(" TRYPOP");
 	log_status("MUF: %d primitives exist.\n", BASE_MAX);
 }
-

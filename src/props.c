@@ -183,10 +183,10 @@ free_propnode(PropPtr p)
 void
 clear_propnode(PropPtr p)
 {
-        if (PropType(p) == PROP_STRTYP) {
+	if (PropType(p) == PROP_STRTYP) {
 		free((void *) PropDataStr(p));
 		PropDataStr(p) = NULL;
-        }
+	}
 	if (PropType(p) == PROP_LOKTYP)
 		free_boolexp(PropDataLok(p));
 	SetPDataVal(p, 0);

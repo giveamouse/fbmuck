@@ -37,7 +37,8 @@ list_proglines(dbref player, dbref program, struct frame *fr, int start, int end
 		free_prog_text(fr->brkpt.proglines);
 		fr->brkpt.proglines = (struct line *) read_program(program);
 		fr->brkpt.lastproglisted = program;
-	} {
+	}
+	{
 		struct line *tmpline = PROGRAM_FIRST(program);
 
 		PROGRAM_SET_FIRST(program, fr->brkpt.proglines);
@@ -100,10 +101,12 @@ show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, 
 				strcatn(buf, sizeof(buf), " ");
 			if (pc == linestart && markpc) {
 				strcatn(buf, sizeof(buf), " {{");
-				strcatn(buf, sizeof(buf), insttotext(NULL, 0, linestart, buf2, sizeof(buf2), 30, program, 1));
+				strcatn(buf, sizeof(buf),
+						insttotext(NULL, 0, linestart, buf2, sizeof(buf2), 30, program, 1));
 				strcatn(buf, sizeof(buf), "}} ");
 			} else {
-				strcatn(buf, sizeof(buf), insttotext(NULL, 0, linestart, buf2, sizeof(buf2), 30, program, 1));
+				strcatn(buf, sizeof(buf),
+						insttotext(NULL, 0, linestart, buf2, sizeof(buf2), 30, program, 1));
 			}
 		} else {
 			break;
@@ -200,7 +203,8 @@ unparse_breakpoint(struct frame *fr, int brk)
 		strcatn(buf, sizeof(buf), buf2);
 	}
 	if (fr->brkpt.prog[brk] != NOTHING) {
-		snprintf(buf2, sizeof(buf2), " in %s(#%d)", NAME(fr->brkpt.prog[brk]), fr->brkpt.prog[brk]);
+		snprintf(buf2, sizeof(buf2), " in %s(#%d)", NAME(fr->brkpt.prog[brk]),
+				 fr->brkpt.prog[brk]);
 		strcatn(buf, sizeof(buf), buf2);
 	}
 	if (fr->brkpt.level[brk] != -1) {
@@ -250,23 +254,24 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
 		if (ptr) {
 			int k;
 			int snplen;
-			char* bufend = buf2;
-			struct inst* fntop = fr->pc;
-			struct inst* varinst;
+			char *bufend = buf2;
+			struct inst *fntop = fr->pc;
+			struct inst *varinst;
 
 			while (fntop->type != PROG_FUNCTION)
 				fntop--;
 
 			snplen = snprintf(buf2, sizeof(buf2), "%.512s\033[1m(\033[0m", ptr);
 			if (snplen == -1) {
-				buf2[sizeof(buf2)-1] = '\0';
+				buf2[sizeof(buf2) - 1] = '\0';
 				snplen = sizeof(buf2) - 1;
 			}
 			bufend += snplen;
 			for (k = 0; k < fntop->data.mufproc->args; k++) {
-				const char* nam = scopedvar_getname(fr, lev, k);
-				char* val;
-				const char* fmt;
+				const char *nam = scopedvar_getname(fr, lev, k);
+				char *val;
+				const char *fmt;
+
 				if (!nam) {
 					break;
 				}
@@ -283,7 +288,8 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
 			ptr = buf2;
 		}
 		if (pinst != lastinst) {
-			snprintf(buf, sizeof(buf), "\033[1;33;40m%3d)\033[0m \033[1m%s(#%d)\033[0m %s:", lev, NAME(ref), ref, ptr);
+			snprintf(buf, sizeof(buf), "\033[1;33;40m%3d)\033[0m \033[1m%s(#%d)\033[0m %s:",
+					 lev, NAME(ref), ref, ptr);
 			notify_nolisten(player, buf, 1);
 			flag = ((FLAGS(player) & INTERNAL) ? 1 : 0);
 			FLAGS(player) &= ~INTERNAL;
@@ -374,10 +380,15 @@ debug_printvar(dbref player, dbref program, struct frame *fr, const char *arg)
 		}
 		notify_nolisten(player, insttotext(fr, 0, tmp, buf, sizeof(buf), 4000, -1, 1), 1);
 	} else if (lflag) {
-		struct localvars* lvars = localvars_get(fr, program);
-		notify_nolisten(player, insttotext(fr, 0, &(lvars->lvars[i]), buf, sizeof(buf), 4000, -1, 1), 1);
+		struct localvars *lvars = localvars_get(fr, program);
+
+		notify_nolisten(player,
+						insttotext(fr, 0, &(lvars->lvars[i]), buf, sizeof(buf), 4000, -1, 1),
+						1);
 	} else {
-		notify_nolisten(player, insttotext(fr, 0, &(fr->variables[i]), buf, sizeof(buf), 4000, -1, 1), 1);
+		notify_nolisten(player,
+						insttotext(fr, 0, &(fr->variables[i]), buf, sizeof(buf), 4000, -1, 1),
+						1);
 	}
 }
 
@@ -433,6 +444,7 @@ push_arg(dbref player, struct frame *fr, const char *arg)
 		notify_nolisten(player, "String pushed.", 1);
 	} else {
 		int varnum = scopedvar_getnum(fr, 0, arg);
+
 		if (varnum != -1) {
 			sflag = 1;
 		} else {
@@ -479,7 +491,7 @@ extern int primitive(const char *token);
 
 struct inst primset[5];
 static struct muf_proc_data temp_muf_proc_data = {
-    "__Temp_Debugger_Proc",
+	"__Temp_Debugger_Proc",
 	0,
 	0,
 	NULL
@@ -784,7 +796,8 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 			cnt = 0;
 			do {
 				strcpy(buf, ptr);
-				ptr = insttotext(NULL, 0, &fr->argument.st[--j], buf2, sizeof(buf2), 4000, program, 1);
+				ptr = insttotext(NULL, 0, &fr->argument.st[--j], buf2, sizeof(buf2), 4000,
+								 program, 1);
 				cnt++;
 			} while (!string_compare(ptr, buf) && j > 0);
 			if (cnt > 1)
@@ -863,8 +876,8 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 				pinst = linenum_to_pc(program, i);
 				if (pinst) {
 					snprintf(buf, sizeof(buf), "line %d: %s", i, (i == fr->pc->line) ?
-							show_line_prims(fr, program, fr->pc, STACK_SIZE, 1) :
-							show_line_prims(fr, program, pinst, STACK_SIZE, 0));
+							 show_line_prims(fr, program, fr->pc, STACK_SIZE, 1) :
+							 show_line_prims(fr, program, pinst, STACK_SIZE, 0));
 					notify_nolisten(player, buf, 1);
 				}
 			}
@@ -886,7 +899,8 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 			fr->brkpt.showstack = 0;
 			notify_nolisten(player, "Trace turned off.", 1);
 		} else {
-			snprintf(buf, sizeof(buf), "Trace is currently %s.", fr->brkpt.showstack ? "on" : "off");
+			snprintf(buf, sizeof(buf), "Trace is currently %s.",
+					 fr->brkpt.showstack ? "on" : "off");
 			notify_nolisten(player, buf, 1);
 		}
 		return 0;

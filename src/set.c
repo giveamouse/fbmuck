@@ -114,7 +114,7 @@ do_describe(int descr, dbref player, const char *name, const char *description)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETDESC(thing, description);
-		if(description && *description) {
+		if (description && *description) {
 			notify(player, "Description set.");
 		} else {
 			notify(player, "Description cleared.");
@@ -130,7 +130,7 @@ do_idescribe(int descr, dbref player, const char *name, const char *description)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETIDESC(thing, description);
-		if(description && *description) {
+		if (description && *description) {
 			notify(player, "Description set.");
 		} else {
 			notify(player, "Description cleared.");
@@ -146,7 +146,7 @@ do_doing(int descr, dbref player, const char *name, const char *mesg)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETDOING(thing, mesg);
-		if(mesg && *mesg) {
+		if (mesg && *mesg) {
 			notify(player, "Doing set.");
 		} else {
 			notify(player, "Doing cleared.");
@@ -162,7 +162,7 @@ do_fail(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETFAIL(thing, message);
-		if(message && *message) {
+		if (message && *message) {
 			notify(player, "Message set.");
 		} else {
 			notify(player, "Message cleared.");
@@ -178,7 +178,7 @@ do_success(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETSUCC(thing, message);
-		if(message && *message) {
+		if (message && *message) {
 			notify(player, "Message set.");
 		} else {
 			notify(player, "Message cleared.");
@@ -195,7 +195,7 @@ do_drop_message(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETDROP(thing, message);
-		if(message && *message) {
+		if (message && *message) {
 			notify(player, "Message set.");
 		} else {
 			notify(player, "Message cleared.");
@@ -211,7 +211,7 @@ do_osuccess(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETOSUCC(thing, message);
-		if(message && *message) {
+		if (message && *message) {
 			notify(player, "Message set.");
 		} else {
 			notify(player, "Message cleared.");
@@ -227,7 +227,7 @@ do_ofail(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETOFAIL(thing, message);
-		if(message && *message) {
+		if (message && *message) {
 			notify(player, "Message set.");
 		} else {
 			notify(player, "Message cleared.");
@@ -243,7 +243,7 @@ do_odrop(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETODROP(thing, message);
-		if(message && *message) {
+		if (message && *message) {
 			notify(player, "Message set.");
 		} else {
 			notify(player, "Message cleared.");
@@ -259,7 +259,7 @@ do_oecho(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETOECHO(thing, message);
-		if(message && *message) {
+		if (message && *message) {
 			notify(player, "Message set.");
 		} else {
 			notify(player, "Message cleared.");
@@ -275,7 +275,7 @@ do_pecho(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETPECHO(thing, message);
-		if(message && *message) {
+		if (message && *message) {
 			notify(player, "Message set.");
 		} else {
 			notify(player, "Message cleared.");
@@ -483,7 +483,7 @@ do_lock(int descr, dbref player, const char *name, const char *keyname)
 		break;
 	}
 
-	if(keyname && *keyname) {
+	if (keyname && *keyname) {
 		key = parse_boolexp(descr, player, keyname, 0);
 		if (key == TRUE_BOOLEXP) {
 			notify(player, "I don't understand that key.");
@@ -589,33 +589,33 @@ _do_unlink(int descr, dbref player, const char *name, int quiet)
 					free((void *) DBFETCH(exit)->sp.exit.dest);
 					DBSTORE(exit, sp.exit.dest, NULL);
 				}
-				if(!quiet)
+				if (!quiet)
 					notify(player, "Unlinked.");
 				if (MLevRaw(exit)) {
 					SetMLevel(exit, 0);
 					DBDIRTY(exit);
-					if(!quiet)
+					if (!quiet)
 						notify(player, "Action priority Level reset to 0.");
 				}
 				break;
 			case TYPE_ROOM:
 				ts_modifyobject(exit);
 				DBSTORE(exit, sp.room.dropto, NOTHING);
-				if(!quiet)
+				if (!quiet)
 					notify(player, "Dropto removed.");
 				break;
 			case TYPE_THING:
 				ts_modifyobject(exit);
 				THING_SET_HOME(exit, OWNER(exit));
 				DBDIRTY(exit);
-				if(!quiet)
+				if (!quiet)
 					notify(player, "Thing's home reset to owner.");
 				break;
 			case TYPE_PLAYER:
 				ts_modifyobject(exit);
 				PLAYER_SET_HOME(exit, tp_player_start);
 				DBDIRTY(exit);
-				if(!quiet)
+				if (!quiet)
 					notify(player, "Player's home reset to default player start room.");
 				break;
 			default:
@@ -672,82 +672,82 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 
 	/* first of all, check if the new target would be valid, so we can
 	   avoid breaking the old link if it isn't. */
-	   
+
 	switch (Typeof(thing)) {
-		case TYPE_EXIT:
-			/* we're ok, check the usual stuff */
-			if (DBFETCH(thing)->sp.exit.ndest != 0) {
-				if(!controls(player, thing)) {
-					notify(player, "Permission denied.");
-					return;
-				}
-			} else {
-				if(!Wizard(OWNER(player)) && (GETVALUE(player) < (tp_link_cost + tp_exit_cost))) {
-					notify_fmt(player, "It costs %d %s to link this exit.",
-							   (tp_link_cost + tp_exit_cost),
-							   (tp_link_cost + tp_exit_cost == 1) ? tp_penny : tp_pennies);
-					return;
-				} else if (!Builder(player)) {
-					notify(player, "Only authorized builders may seize exits.");
-					return;
-				}					
-			}
-			
-			/* be anal: each and every new links destination has
-			   to be ok. Detailed error messages are given by
-			   link_exit_dry(). */
-			   
-			ndest = link_exit_dry(descr, player, thing, (char *) dest_name, good_dest);
-			if(ndest == 0) {
-				notify(player, "Invalid target.");
-				return;
-			}
-			
-			break;
-		case TYPE_THING:
-		case TYPE_PLAYER:
-			init_match(descr, player, dest_name, TYPE_ROOM, &md);
-			match_neighbor(&md);
-			match_absolute(&md);
-			match_registered(&md);
-			match_me(&md);
-			match_here(&md);
-			if (Typeof(thing) == TYPE_THING)
-				match_possession(&md);
-			if ((dest = noisy_match_result(&md)) == NOTHING)
-				return;
-			if (!controls(player, thing)
-				|| !can_link_to(player, Typeof(thing), dest)) {
+	case TYPE_EXIT:
+		/* we're ok, check the usual stuff */
+		if (DBFETCH(thing)->sp.exit.ndest != 0) {
+			if (!controls(player, thing)) {
 				notify(player, "Permission denied.");
 				return;
 			}
-			if (parent_loop_check(thing, dest)) {
-				notify(player, "That would cause a parent paradox.");
+		} else {
+			if (!Wizard(OWNER(player)) && (GETVALUE(player) < (tp_link_cost + tp_exit_cost))) {
+				notify_fmt(player, "It costs %d %s to link this exit.",
+						   (tp_link_cost + tp_exit_cost),
+						   (tp_link_cost + tp_exit_cost == 1) ? tp_penny : tp_pennies);
+				return;
+			} else if (!Builder(player)) {
+				notify(player, "Only authorized builders may seize exits.");
 				return;
 			}
-			break;
-		case TYPE_ROOM:			/* room dropto's */
-			init_match(descr, player, dest_name, TYPE_ROOM, &md);
-			match_neighbor(&md);
+		}
+
+		/* be anal: each and every new links destination has
+		   to be ok. Detailed error messages are given by
+		   link_exit_dry(). */
+
+		ndest = link_exit_dry(descr, player, thing, (char *) dest_name, good_dest);
+		if (ndest == 0) {
+			notify(player, "Invalid target.");
+			return;
+		}
+
+		break;
+	case TYPE_THING:
+	case TYPE_PLAYER:
+		init_match(descr, player, dest_name, TYPE_ROOM, &md);
+		match_neighbor(&md);
+		match_absolute(&md);
+		match_registered(&md);
+		match_me(&md);
+		match_here(&md);
+		if (Typeof(thing) == TYPE_THING)
 			match_possession(&md);
-			match_registered(&md);
-			match_absolute(&md);
-			match_home(&md);
-			if ((dest = noisy_match_result(&md)) == NOTHING)
-				return;
-			if (!controls(player, thing) || !can_link_to(player, Typeof(thing), dest)
-				|| (thing == dest)) {
-				notify(player, "Permission denied.");
-				return;
-			}
-			break;
-		case TYPE_PROGRAM:
-			notify(player, "You can't link programs to things!");
+		if ((dest = noisy_match_result(&md)) == NOTHING)
 			return;
-		default:
-			notify(player, "Internal error: weird object type.");
-			log_status("PANIC: weird object: Typeof(%d) = %d\n", thing, Typeof(thing));
+		if (!controls(player, thing)
+			|| !can_link_to(player, Typeof(thing), dest)) {
+			notify(player, "Permission denied.");
 			return;
+		}
+		if (parent_loop_check(thing, dest)) {
+			notify(player, "That would cause a parent paradox.");
+			return;
+		}
+		break;
+	case TYPE_ROOM:			/* room dropto's */
+		init_match(descr, player, dest_name, TYPE_ROOM, &md);
+		match_neighbor(&md);
+		match_possession(&md);
+		match_registered(&md);
+		match_absolute(&md);
+		match_home(&md);
+		if ((dest = noisy_match_result(&md)) == NOTHING)
+			return;
+		if (!controls(player, thing) || !can_link_to(player, Typeof(thing), dest)
+			|| (thing == dest)) {
+			notify(player, "Permission denied.");
+			return;
+		}
+		break;
+	case TYPE_PROGRAM:
+		notify(player, "You can't link programs to things!");
+		return;
+	default:
+		notify(player, "Internal error: weird object type.");
+		log_status("PANIC: weird object: Typeof(%d) = %d\n", thing, Typeof(thing));
+		return;
 	}
 
 	do_unlink_quiet(descr, player, thing_name);
@@ -890,7 +890,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 			for (type++; isspace(*type); type++) ;
 			if (string_compare(type, "clear")) {
 				notify(player, "Use '@set <obj>=:clear' to clear all props on an object");
-				free((void *)x);
+				free((void *) x);
 				return;
 			}
 			remove_property_list(thing, Wizard(OWNER(player)));
@@ -910,9 +910,10 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 		if (*pname == '^' && number(pname + 1))
 			ival = atoi(++pname);
 
-		if (Prop_System(type) || (!Wizard(OWNER(player)) && (Prop_SeeOnly(type) || Prop_Hidden(type)))) {
+		if (Prop_System(type) ||
+			(!Wizard(OWNER(player)) && (Prop_SeeOnly(type) || Prop_Hidden(type)))) {
 			notify(player, "Permission denied.");
-			free((void *)x);
+			free((void *) x);
 			return;
 		}
 
@@ -1009,7 +1010,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	} else if (string_prefix("ZOMBIE", p)) {
 		f = ZOMBIE;
 	} else if (string_prefix("VEHICLE", p)
-		|| string_prefix("VIEWABLE", p)) {
+			   || string_prefix("VIEWABLE", p)) {
 		if (*flag == NOT_TOKEN && Typeof(thing) == TYPE_THING) {
 			dbref obj = DBFETCH(thing)->contents;
 
@@ -1140,7 +1141,8 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 		return;
 	}
 
-	if (Prop_System(pname) || (!Wizard(OWNER(player)) && (Prop_SeeOnly(pname) || Prop_Hidden(pname)))) {
+	if (Prop_System(pname) ||
+		(!Wizard(OWNER(player)) && (Prop_SeeOnly(pname) || Prop_Hidden(pname)))) {
 		notify(player, "Permission denied.");
 		return;
 	}
@@ -1196,13 +1198,14 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 }
 
 void
-set_flags_from_tunestr(dbref obj, const char* tunestr)
+set_flags_from_tunestr(dbref obj, const char *tunestr)
 {
 	const char *p = tunestr;
 	object_flag_type f = 0;
 
 	for (;;) {
 		char pcc = toupper(*p);
+
 		if (pcc == '\0' || pcc == '\n' || pcc == '\r') {
 			break;
 		} else if (pcc == '0') {
@@ -1250,5 +1253,3 @@ set_flags_from_tunestr(dbref obj, const char* tunestr)
 	ts_modifyobject(obj);
 	DBDIRTY(obj);
 }
-
-

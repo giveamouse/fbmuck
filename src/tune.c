@@ -50,31 +50,36 @@ struct tune_str_entry {
 };
 
 struct tune_str_entry tune_str_list[] = {
-	{"Commands",   "autolook_cmd", &tp_autolook_cmd, 0, 1, "Room entry look command"},
-	{"Currency",   "penny", &tp_penny, 0, 1, "Currency name"},
-	{"Currency",   "pennies", &tp_pennies, 0, 1, "Currency name, plural"},
-	{"Currency",   "cpenny", &tp_cpenny, 0, 1, "Currency name, capitalized"},
-	{"Currency",   "cpennies", &tp_cpennies, 0, 1, "Currency name, capitalized, plural"},
-	{"DB Dumps",   "dumpwarn_mesg", &tp_dumpwarn_mesg, 0, 1, "Full dump warning mesg"},
-	{"DB Dumps",   "deltawarn_mesg", &tp_deltawarn_mesg, 0, 1, "Delta dump warning mesg"},
-	{"DB Dumps",   "dumping_mesg", &tp_dumping_mesg, 0, 1, "Full dump start mesg"},
-	{"DB Dumps",   "dumpdeltas_mesg", &tp_dumpdeltas_mesg, 0, 1, "Delta dump start mesg"},
-	{"DB Dumps",   "dumpdone_mesg", &tp_dumpdone_mesg, 0, 1, "Dump completion message"},
-	{"Idle Boot",  "idle_boot_mesg", &tp_idle_mesg, 0, 1, "Boot message for idling out"},
-	{"Player Max", "playermax_warnmesg", &tp_playermax_warnmesg, 0, 1, "Max. players login warning"},
-	{"Player Max", "playermax_bootmesg", &tp_playermax_bootmesg, 0, 1, "Max. players boot message"},
-	{"Properties", "proplist_counter_fmt", &tp_proplist_counter_fmt, 0, 1, "Proplist counter name format"},
-	{"Properties", "proplist_entry_fmt", &tp_proplist_entry_fmt, 0, 1, "Proplist entry name format"},
+	{"Commands", "autolook_cmd", &tp_autolook_cmd, 0, 1, "Room entry look command"},
+	{"Currency", "penny", &tp_penny, 0, 1, "Currency name"},
+	{"Currency", "pennies", &tp_pennies, 0, 1, "Currency name, plural"},
+	{"Currency", "cpenny", &tp_cpenny, 0, 1, "Currency name, capitalized"},
+	{"Currency", "cpennies", &tp_cpennies, 0, 1, "Currency name, capitalized, plural"},
+	{"DB Dumps", "dumpwarn_mesg", &tp_dumpwarn_mesg, 0, 1, "Full dump warning mesg"},
+	{"DB Dumps", "deltawarn_mesg", &tp_deltawarn_mesg, 0, 1, "Delta dump warning mesg"},
+	{"DB Dumps", "dumping_mesg", &tp_dumping_mesg, 0, 1, "Full dump start mesg"},
+	{"DB Dumps", "dumpdeltas_mesg", &tp_dumpdeltas_mesg, 0, 1, "Delta dump start mesg"},
+	{"DB Dumps", "dumpdone_mesg", &tp_dumpdone_mesg, 0, 1, "Dump completion message"},
+	{"Idle Boot", "idle_boot_mesg", &tp_idle_mesg, 0, 1, "Boot message for idling out"},
+	{"Player Max", "playermax_warnmesg", &tp_playermax_warnmesg, 0, 1,
+	 "Max. players login warning"},
+	{"Player Max", "playermax_bootmesg", &tp_playermax_bootmesg, 0, 1,
+	 "Max. players boot message"},
+	{"Properties", "proplist_counter_fmt", &tp_proplist_counter_fmt, 0, 1,
+	 "Proplist counter name format"},
+	{"Properties", "proplist_entry_fmt", &tp_proplist_entry_fmt, 0, 1,
+	 "Proplist entry name format"},
 	{"Registration", "register_mesg", &tp_register_mesg, 0, 1, "Login registration mesg"},
-	{"RWHO",       "rwho_passwd", &tp_rwho_passwd, 4, 1, "RWHO server entry password"},
-	{"RWHO",       "rwho_server", &tp_rwho_server, 4, 1, "RWHO server hostname"},
-	{"Misc",       "muckname", &tp_muckname, 0, 1, "Muck name"},
-	{"Misc",       "leave_mesg", &tp_leave_mesg, 0, 1, "Logoff message"},
-	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, 1, "Command unrecognized warning"},
-	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, 4, 1, "Password for SSL keyfile"},
-	{"Database",   "pcreate_flags", &tp_pcreate_flags, 0, 1, "Initial Player Flags"},
-	{"Database",   "reserved_names", &tp_reserved_names, 0, 1, "Reserved names smatch"},
-	{"Database",   "reserved_player_names", &tp_reserved_player_names, 0, 1, "Reserved player names smatch"},
+	{"RWHO", "rwho_passwd", &tp_rwho_passwd, 4, 1, "RWHO server entry password"},
+	{"RWHO", "rwho_server", &tp_rwho_server, 4, 1, "RWHO server hostname"},
+	{"Misc", "muckname", &tp_muckname, 0, 1, "Muck name"},
+	{"Misc", "leave_mesg", &tp_leave_mesg, 0, 1, "Logoff message"},
+	{"Misc", "huh_mesg", &tp_huh_mesg, 0, 1, "Command unrecognized warning"},
+	{"SSL", "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, 4, 1, "Password for SSL keyfile"},
+	{"Database", "pcreate_flags", &tp_pcreate_flags, 0, 1, "Initial Player Flags"},
+	{"Database", "reserved_names", &tp_reserved_names, 0, 1, "Reserved names smatch"},
+	{"Database", "reserved_player_names", &tp_reserved_player_names, 0, 1,
+	 "Reserved player names smatch"},
 
 	{NULL, NULL, NULL, 0, 0}
 };
@@ -100,13 +105,15 @@ struct tune_time_entry {
 };
 
 struct tune_time_entry tune_time_list[] = {
-	{"Database",  "aging_time", &tp_aging_time, 0, "When to considered an object old and unused"},
-	{"DB Dumps",  "dump_interval", &tp_dump_interval, 0, "Interval between delta dumps"},
-	{"DB Dumps",  "dump_warntime", &tp_dump_warntime, 0, "Interval between warning and dump"},
-	{"DB Dumps",  "monolithic_interval", &tp_monolithic_interval, 0, "Interval between full dumps"},
+	{"Database", "aging_time", &tp_aging_time, 0,
+	 "When to considered an object old and unused"},
+	{"DB Dumps", "dump_interval", &tp_dump_interval, 0, "Interval between delta dumps"},
+	{"DB Dumps", "dump_warntime", &tp_dump_warntime, 0, "Interval between warning and dump"},
+	{"DB Dumps", "monolithic_interval", &tp_monolithic_interval, 0,
+	 "Interval between full dumps"},
 	{"Idle Boot", "maxidle", &tp_maxidle, 0, "Maximum idle time before booting"},
-	{"RWHO",      "rwho_interval", &tp_rwho_interval, 0, "Interval between RWHO server updates."},
-	{"Tuning",    "clean_interval", &tp_clean_interval, 0, "Interval between memory cleanups."},
+	{"RWHO", "rwho_interval", &tp_rwho_interval, 0, "Interval between RWHO server updates."},
+	{"Tuning", "clean_interval", &tp_clean_interval, 0, "Interval between memory cleanups."},
 
 	{NULL, NULL, NULL, 0}
 };
@@ -163,40 +170,54 @@ struct tune_val_entry {
 };
 
 struct tune_val_entry tune_val_list[] = {
-	{"Costs",       "max_object_endowment", &tp_max_object_endowment, 0, "Max value of object"},
-	{"Costs",       "object_cost", &tp_object_cost, 0, "Cost to create thing"},
-	{"Costs",       "exit_cost", &tp_exit_cost, 0, "Cost to create exit"},
-	{"Costs",       "link_cost", &tp_link_cost, 0, "Cost to link exit"},
-	{"Costs",       "room_cost", &tp_room_cost, 0, "Cost to create room"},
-	{"Costs",       "lookup_cost", &tp_lookup_cost, 0, "Cost to lookup playername"},
-	{"Currency",    "max_pennies", &tp_max_pennies, 0, "Player currency cap"},
-	{"Currency",    "penny_rate", &tp_penny_rate, 0, "Moves between finding currency, avg"},
-	{"Currency",    "start_pennies", &tp_start_pennies, 0, "Player starting currency count"},
-	{"Killing",     "kill_base_cost", &tp_kill_base_cost, 0, "Cost to guarentee kill"},
-	{"Killing",     "kill_min_cost", &tp_kill_min_cost, 0, "Min cost to kill"},
-	{"Killing",     "kill_bonus", &tp_kill_bonus, 0, "Bonus to killed player"},
-	{"Listeners",   "listen_mlev", &tp_listen_mlev, 0, "Mucker Level required for Listener progs"},
-	{"Logging",     "cmd_log_threshold_msec", &tp_cmd_log_threshold_msec, 0, "Log commands that take longer than X millisecs"},
-	{"MUF",         "max_process_limit", &tp_max_process_limit, 0, "Max concurrent processes on system"},
-	{"MUF",         "max_plyr_processes", &tp_max_plyr_processes, 0, "Max concurrent processes per player"},
-	{"MUF",         "max_instr_count", &tp_max_instr_count, 0, "Max MUF instruction run length for ML1"},
-	{"MUF",         "max_ml4_preempt_count", &tp_max_ml4_preempt_count, 0, "Max MUF preempt instruction run length for ML4, (0 = no limit)"},
-	{"MUF",         "instr_slice", &tp_instr_slice, 0, "Instructions run per timeslice"},
-	{"MUF",         "process_timer_limit", &tp_process_timer_limit, 0, "Max timers per process"},
-	{"MUF",         "mcp_muf_mlev", &tp_mcp_muf_mlev, 0, "Mucker Level required to use MCP"},
-	{"MUF",		"userlog_mlev", &tp_userlog_mlev, 0, "Mucker Level required to write to userlog"},
-	{"MUF",         "movepennies_muf_mlev", &tp_movepennies_muf_mlev, 0, "Mucker Level required to move pennies non-destructively"},
-	{"MUF",         "addpennies_muf_mlev", &tp_addpennies_muf_mlev, 0, "Mucker Level required to create/destroy pennies"},
-	{"MUF",         "pennies_muf_mlev", &tp_pennies_muf_mlev, 0, "Mucker Level required to read the value of pennies, settings above 1 disable {money}"},
-	{"MPI",         "mpi_max_commands", &tp_mpi_max_commands, 0, "Max MPI instruction run length"},
-	{"Player Max",  "playermax_limit", &tp_playermax_limit, 0, "Max player connections allowed"},
-	{"Spam Limits", "command_burst_size", &tp_command_burst_size, 0, "Commands before limiter engages"},
-	{"Spam Limits", "commands_per_time", &tp_commands_per_time, 0, "Commands allowed per time period"},
-	{"Spam Limits", "command_time_msec", &tp_command_time_msec, 0, "Millisecs per spam limiter time period"},
+	{"Costs", "max_object_endowment", &tp_max_object_endowment, 0, "Max value of object"},
+	{"Costs", "object_cost", &tp_object_cost, 0, "Cost to create thing"},
+	{"Costs", "exit_cost", &tp_exit_cost, 0, "Cost to create exit"},
+	{"Costs", "link_cost", &tp_link_cost, 0, "Cost to link exit"},
+	{"Costs", "room_cost", &tp_room_cost, 0, "Cost to create room"},
+	{"Costs", "lookup_cost", &tp_lookup_cost, 0, "Cost to lookup playername"},
+	{"Currency", "max_pennies", &tp_max_pennies, 0, "Player currency cap"},
+	{"Currency", "penny_rate", &tp_penny_rate, 0, "Moves between finding currency, avg"},
+	{"Currency", "start_pennies", &tp_start_pennies, 0, "Player starting currency count"},
+	{"Killing", "kill_base_cost", &tp_kill_base_cost, 0, "Cost to guarentee kill"},
+	{"Killing", "kill_min_cost", &tp_kill_min_cost, 0, "Min cost to kill"},
+	{"Killing", "kill_bonus", &tp_kill_bonus, 0, "Bonus to killed player"},
+	{"Listeners", "listen_mlev", &tp_listen_mlev, 0,
+	 "Mucker Level required for Listener progs"},
+	{"Logging", "cmd_log_threshold_msec", &tp_cmd_log_threshold_msec, 0,
+	 "Log commands that take longer than X millisecs"},
+	{"MUF", "max_process_limit", &tp_max_process_limit, 0,
+	 "Max concurrent processes on system"},
+	{"MUF", "max_plyr_processes", &tp_max_plyr_processes, 0,
+	 "Max concurrent processes per player"},
+	{"MUF", "max_instr_count", &tp_max_instr_count, 0,
+	 "Max MUF instruction run length for ML1"},
+	{"MUF", "max_ml4_preempt_count", &tp_max_ml4_preempt_count, 0,
+	 "Max MUF preempt instruction run length for ML4, (0 = no limit)"},
+	{"MUF", "instr_slice", &tp_instr_slice, 0, "Instructions run per timeslice"},
+	{"MUF", "process_timer_limit", &tp_process_timer_limit, 0, "Max timers per process"},
+	{"MUF", "mcp_muf_mlev", &tp_mcp_muf_mlev, 0, "Mucker Level required to use MCP"},
+	{"MUF", "userlog_mlev", &tp_userlog_mlev, 0, "Mucker Level required to write to userlog"},
+	{"MUF", "movepennies_muf_mlev", &tp_movepennies_muf_mlev, 0,
+	 "Mucker Level required to move pennies non-destructively"},
+	{"MUF", "addpennies_muf_mlev", &tp_addpennies_muf_mlev, 0,
+	 "Mucker Level required to create/destroy pennies"},
+	{"MUF", "pennies_muf_mlev", &tp_pennies_muf_mlev, 0,
+	 "Mucker Level required to read the value of pennies, settings above 1 disable {money}"},
+	{"MPI", "mpi_max_commands", &tp_mpi_max_commands, 0, "Max MPI instruction run length"},
+	{"Player Max", "playermax_limit", &tp_playermax_limit, 0,
+	 "Max player connections allowed"},
+	{"Spam Limits", "command_burst_size", &tp_command_burst_size, 0,
+	 "Commands before limiter engages"},
+	{"Spam Limits", "commands_per_time", &tp_commands_per_time, 0,
+	 "Commands allowed per time period"},
+	{"Spam Limits", "command_time_msec", &tp_command_time_msec, 0,
+	 "Millisecs per spam limiter time period"},
 	{"Spam Limits", "max_output", &tp_max_output, 0, "Max output buffer size"},
-	{"Tuning",      "pause_min", &tp_pause_min, 0, "Min ms to pause between MUF timeslices"},
-	{"Tuning",      "free_frames_pool", &tp_free_frames_pool, 0, "Size of MUF process frame pool"},
-	{"Tuning",      "max_delta_objs", &tp_max_delta_objs, 0, "Percentage changed objects to force full dump"},
+	{"Tuning", "pause_min", &tp_pause_min, 0, "Min ms to pause between MUF timeslices"},
+	{"Tuning", "free_frames_pool", &tp_free_frames_pool, 0, "Size of MUF process frame pool"},
+	{"Tuning", "max_delta_objs", &tp_max_delta_objs, 0,
+	 "Percentage changed objects to force full dump"},
 
 	{NULL, NULL, NULL, 0}
 };
@@ -219,8 +240,10 @@ struct tune_ref_entry {
 };
 
 struct tune_ref_entry tune_ref_list[] = {
-	{"Database", "default_room_parent", TYPE_ROOM, &tp_default_room_parent, 0, "Place to parent new rooms to"},
-	{"Database", "player_start", TYPE_ROOM, &tp_player_start, 0, "Place where new players start"},
+	{"Database", "default_room_parent", TYPE_ROOM, &tp_default_room_parent, 0,
+	 "Place to parent new rooms to"},
+	{"Database", "player_start", TYPE_ROOM, &tp_player_start, 0,
+	 "Place where new players start"},
 
 	{NULL, NULL, 0, NULL, 0}
 };
@@ -281,50 +304,74 @@ struct tune_bool_entry {
 };
 
 struct tune_bool_entry tune_bool_list[] = {
-	{"Commands",   "enable_home", &tp_allow_home, 4, "Enable 'home' command"},
-	{"Commands",   "enable_prefix", &tp_enable_prefix, 4, "Enable prefix actions"},
-	{"Commands",   "verbose_clone", &tp_verbose_clone, 4, "Verbose @clone command"},
-	{"Dark",       "exit_darking", &tp_exit_darking, 0, "Allow setting exits dark"},
-	{"Dark",       "thing_darking", &tp_thing_darking, 0, "Allow setting things dark"},
-	{"Dark",       "dark_sleepers", &tp_dark_sleepers, 0, "Make sleeping players dark"},
-	{"Dark",       "who_hides_dark", &tp_who_hides_dark, 4, "Hide dark players from WHO list"},
-	{"Database",   "realms_control", &tp_realms_control, 0, "Enable Realms control"},
-	{"Database",   "compatible_priorities", &tp_compatible_priorities, 0, "Use legacy exit priority levels on things"},
-	{"DB Dumps",   "dbdump_warning", &tp_dbdump_warning, 0, "Enable warning messages for full DB dumps"},
-	{"DB Dumps",   "deltadump_warning", &tp_deltadump_warning, 0, "Enable warning messages for delta DB dumps"},
-	{"DB Dumps",   "dumpdone_warning", &tp_dumpdone_warning, 0, "Enable notification of DB dump completion"},
-	{"Idle Boot",  "idleboot", &tp_idleboot, 0, "Enable booting of idle players"},
-	{"Killing",    "restrict_kill", &tp_restrict_kill, 0, "Restrict kill command to players set Kill_OK"},
-	{"Listeners",  "allow_listeners", &tp_listeners, 0, "Enable programs to listen to player output"},
-	{"Listeners",  "allow_listeners_obj", &tp_listeners_obj, 0, "Allow listeners on things"},
-	{"Listeners",  "allow_listeners_env", &tp_listeners_env, 0, "Allow listeners down environment"},
-	{"Logging",    "log_commands", &tp_log_commands, 4, "Enable logging of player commands"},
-	{"Logging",    "log_failed_commands", &tp_log_failed_commands, 4, "Enable logging of unrecognized commands"},
-	{"Logging",    "log_interactive", &tp_log_interactive, 4, "Enable logging of text sent to MUF"},
-	{"Logging",    "log_programs", &tp_log_programs, 4, "Log programs every time they are saved"},
-	{"Movement",   "teleport_to_player", &tp_teleport_to_player, 0, "Allow teleporting to a player"},
-	{"Movement",   "secure_teleport", &tp_secure_teleport, 0, "Restrict actions to Jump_OK or controlled rooms"},
-	{"Movement",   "secure_thing_movement", &tp_thing_movement, 4, "Moving things act like player"},
-	{"MPI",        "do_mpi_parsing", &tp_do_mpi_parsing, 0, "Enable parsing of mesgs for MPI"},
-	{"MPI",        "lazy_mpi_istype_perm", &tp_lazy_mpi_istype_perm, 0, "Enable looser legacy perms for MPI {istype}"},
-	{"MUF",        "optimize_muf", &tp_optimize_muf, 0, "Enable MUF bytecode optimizer"},
-	{"MUF",        "expanded_debug_trace", &tp_expanded_debug, 0, "MUF debug trace shows array contents"},
-	{"MUF",        "force_mlev1_name_notify", &tp_force_mlev1_name_notify, 0, "MUF notify prepends username at ML1"},
-	{"MUF",        "muf_comments_strict", &tp_muf_comments_strict, 0, "MUF comments are strict and not recursive"},
-	{"Player Max", "playermax", &tp_playermax, 0, "Limit number of concurrent players allowed"},
-	{"Properties", "look_propqueues", &tp_look_propqueues, 0, "When a player looks, trigger _look/ propqueues"},
-	{"Properties", "lock_envcheck", &tp_lock_envcheck, 0, "Locks check environment for properties"},
-	{"Properties", "proplist_int_counter", &tp_proplist_int_counter, 0, "Proplist counter uses an integer property"},
-	{"Registration", "registration", &tp_registration, 0, "Require new players to register manually"},
-	{"RWHO",       "support_rwho", &tp_rwho, 0, "Enable RWHO server support"},
-	{"Tuning",     "periodic_program_purge", &tp_periodic_program_purge, 0, "Periodically free unused MUF programs"},
-	{"WHO",        "use_hostnames", &tp_hostnames, 0, "Resolve IP addresses into hostnames"},
-	{"WHO",        "secure_who", &tp_secure_who, 0, "Disallow WHO command from login screen and programs"},
-	{"WHO",        "who_doing", &tp_who_doing, 0, "Show '_/do' property value in WHO lists"},
-	{"Misc",       "allow_zombies", &tp_zombies, 0, "Enable Zombie things to relay what they hear"},
-	{"Misc",       "wiz_vehicles", &tp_wiz_vehicles, 0, "Only let Wizards set vehicle bits"},
-	{"Misc",       "ignore_support", &tp_ignore_support, 3, "Enable support for @ignoring players"},
-	{"Misc",       "ignore_bidirectional", &tp_ignore_bidirectional, 3, "Enable bidirectional @ignore"},
+	{"Commands", "enable_home", &tp_allow_home, 4, "Enable 'home' command"},
+	{"Commands", "enable_prefix", &tp_enable_prefix, 4, "Enable prefix actions"},
+	{"Commands", "verbose_clone", &tp_verbose_clone, 4, "Verbose @clone command"},
+	{"Dark", "exit_darking", &tp_exit_darking, 0, "Allow setting exits dark"},
+	{"Dark", "thing_darking", &tp_thing_darking, 0, "Allow setting things dark"},
+	{"Dark", "dark_sleepers", &tp_dark_sleepers, 0, "Make sleeping players dark"},
+	{"Dark", "who_hides_dark", &tp_who_hides_dark, 4, "Hide dark players from WHO list"},
+	{"Database", "realms_control", &tp_realms_control, 0, "Enable Realms control"},
+	{"Database", "compatible_priorities", &tp_compatible_priorities, 0,
+	 "Use legacy exit priority levels on things"},
+	{"DB Dumps", "dbdump_warning", &tp_dbdump_warning, 0,
+	 "Enable warning messages for full DB dumps"},
+	{"DB Dumps", "deltadump_warning", &tp_deltadump_warning, 0,
+	 "Enable warning messages for delta DB dumps"},
+	{"DB Dumps", "dumpdone_warning", &tp_dumpdone_warning, 0,
+	 "Enable notification of DB dump completion"},
+	{"Idle Boot", "idleboot", &tp_idleboot, 0, "Enable booting of idle players"},
+	{"Killing", "restrict_kill", &tp_restrict_kill, 0,
+	 "Restrict kill command to players set Kill_OK"},
+	{"Listeners", "allow_listeners", &tp_listeners, 0,
+	 "Enable programs to listen to player output"},
+	{"Listeners", "allow_listeners_obj", &tp_listeners_obj, 0, "Allow listeners on things"},
+	{"Listeners", "allow_listeners_env", &tp_listeners_env, 0,
+	 "Allow listeners down environment"},
+	{"Logging", "log_commands", &tp_log_commands, 4, "Enable logging of player commands"},
+	{"Logging", "log_failed_commands", &tp_log_failed_commands, 4,
+	 "Enable logging of unrecognized commands"},
+	{"Logging", "log_interactive", &tp_log_interactive, 4,
+	 "Enable logging of text sent to MUF"},
+	{"Logging", "log_programs", &tp_log_programs, 4, "Log programs every time they are saved"},
+	{"Movement", "teleport_to_player", &tp_teleport_to_player, 0,
+	 "Allow teleporting to a player"},
+	{"Movement", "secure_teleport", &tp_secure_teleport, 0,
+	 "Restrict actions to Jump_OK or controlled rooms"},
+	{"Movement", "secure_thing_movement", &tp_thing_movement, 4,
+	 "Moving things act like player"},
+	{"MPI", "do_mpi_parsing", &tp_do_mpi_parsing, 0, "Enable parsing of mesgs for MPI"},
+	{"MPI", "lazy_mpi_istype_perm", &tp_lazy_mpi_istype_perm, 0,
+	 "Enable looser legacy perms for MPI {istype}"},
+	{"MUF", "optimize_muf", &tp_optimize_muf, 0, "Enable MUF bytecode optimizer"},
+	{"MUF", "expanded_debug_trace", &tp_expanded_debug, 0,
+	 "MUF debug trace shows array contents"},
+	{"MUF", "force_mlev1_name_notify", &tp_force_mlev1_name_notify, 0,
+	 "MUF notify prepends username at ML1"},
+	{"MUF", "muf_comments_strict", &tp_muf_comments_strict, 0,
+	 "MUF comments are strict and not recursive"},
+	{"Player Max", "playermax", &tp_playermax, 0,
+	 "Limit number of concurrent players allowed"},
+	{"Properties", "look_propqueues", &tp_look_propqueues, 0,
+	 "When a player looks, trigger _look/ propqueues"},
+	{"Properties", "lock_envcheck", &tp_lock_envcheck, 0,
+	 "Locks check environment for properties"},
+	{"Properties", "proplist_int_counter", &tp_proplist_int_counter, 0,
+	 "Proplist counter uses an integer property"},
+	{"Registration", "registration", &tp_registration, 0,
+	 "Require new players to register manually"},
+	{"RWHO", "support_rwho", &tp_rwho, 0, "Enable RWHO server support"},
+	{"Tuning", "periodic_program_purge", &tp_periodic_program_purge, 0,
+	 "Periodically free unused MUF programs"},
+	{"WHO", "use_hostnames", &tp_hostnames, 0, "Resolve IP addresses into hostnames"},
+	{"WHO", "secure_who", &tp_secure_who, 0,
+	 "Disallow WHO command from login screen and programs"},
+	{"WHO", "who_doing", &tp_who_doing, 0, "Show '_/do' property value in WHO lists"},
+	{"Misc", "allow_zombies", &tp_zombies, 0, "Enable Zombie things to relay what they hear"},
+	{"Misc", "wiz_vehicles", &tp_wiz_vehicles, 0, "Only let Wizards set vehicle bits"},
+	{"Misc", "ignore_support", &tp_ignore_support, 3, "Enable support for @ignoring players"},
+	{"Misc", "ignore_bidirectional", &tp_ignore_bidirectional, 3,
+	 "Enable bidirectional @ignore"},
 
 	{NULL, NULL, NULL, 0}
 };
@@ -396,7 +443,8 @@ tune_display_parms(dbref player, char *name)
 	while (ttim->name) {
 		strcpy(buf, ttim->name);
 		if (!*name || equalstr(name, buf)) {
-			snprintf(buf, sizeof(buf), "(time) %-20s = %s", ttim->name, timestr_full(*ttim->tim));
+			snprintf(buf, sizeof(buf), "(time) %-20s = %s", ttim->name,
+					 timestr_full(*ttim->tim));
 			notify(player, buf);
 		}
 		ttim++;
@@ -414,7 +462,8 @@ tune_display_parms(dbref player, char *name)
 	while (tref->name) {
 		strcpy(buf, tref->name);
 		if (!*name || equalstr(name, buf)) {
-			snprintf(buf, sizeof(buf), "(ref)  %-20s = %s", tref->name, unparse_object(player, *tref->ref));
+			snprintf(buf, sizeof(buf), "(ref)  %-20s = %s", tref->name,
+					 unparse_object(player, *tref->ref));
 			notify(player, buf);
 		}
 		tref++;
@@ -423,7 +472,8 @@ tune_display_parms(dbref player, char *name)
 	while (tbool->name) {
 		strcpy(buf, tbool->name);
 		if (!*name || equalstr(name, buf)) {
-			snprintf(buf, sizeof(buf), "(bool) %-20s = %s", tbool->name, ((*tbool->bool) ? "yes" : "no"));
+			snprintf(buf, sizeof(buf), "(bool) %-20s = %s", tbool->name,
+					 ((*tbool->bool) ? "yes" : "no"));
 			notify(player, buf);
 		}
 		tbool++;
@@ -468,8 +518,8 @@ tune_save_parms_to_file(FILE * f)
 }
 
 
-stk_array*
-tune_parms_array(const char* pattern, int mlev)
+stk_array *
+tune_parms_array(const char *pattern, int mlev)
 {
 	struct tune_str_entry *tstr = tune_str_list;
 	struct tune_time_entry *ttim = tune_time_list;
@@ -488,11 +538,12 @@ tune_parms_array(const char* pattern, int mlev)
 			strcpy(buf, tbool->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
+
 				array_set_strkey_strval(&item, "type", "boolean");
 				array_set_strkey_strval(&item, "group", tbool->group);
-				array_set_strkey_strval(&item, "name",  tbool->name);
-				array_set_strkey_intval(&item, "value", *tbool->bool? 1 : 0);
-				array_set_strkey_intval(&item, "mlev",  tbool->security);
+				array_set_strkey_strval(&item, "name", tbool->name);
+				array_set_strkey_intval(&item, "value", *tbool->bool ? 1 : 0);
+				array_set_strkey_intval(&item, "mlev", tbool->security);
 				array_set_strkey_strval(&item, "label", tbool->label);
 
 				temp1.type = PROG_ARRAY;
@@ -509,11 +560,12 @@ tune_parms_array(const char* pattern, int mlev)
 			strcpy(buf, ttim->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
+
 				array_set_strkey_strval(&item, "type", "timespan");
 				array_set_strkey_strval(&item, "group", ttim->group);
-				array_set_strkey_strval(&item, "name",  ttim->name);
+				array_set_strkey_strval(&item, "name", ttim->name);
 				array_set_strkey_intval(&item, "value", *ttim->tim);
-				array_set_strkey_intval(&item, "mlev",  ttim->security);
+				array_set_strkey_intval(&item, "mlev", ttim->security);
 				array_set_strkey_strval(&item, "label", ttim->label);
 
 				temp1.type = PROG_ARRAY;
@@ -530,11 +582,12 @@ tune_parms_array(const char* pattern, int mlev)
 			strcpy(buf, tval->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
+
 				array_set_strkey_strval(&item, "type", "integer");
 				array_set_strkey_strval(&item, "group", tval->group);
-				array_set_strkey_strval(&item, "name",  tval->name);
+				array_set_strkey_strval(&item, "name", tval->name);
 				array_set_strkey_intval(&item, "value", *tval->val);
-				array_set_strkey_intval(&item, "mlev",  tval->security);
+				array_set_strkey_intval(&item, "mlev", tval->security);
 				array_set_strkey_strval(&item, "label", tval->label);
 
 				temp1.type = PROG_ARRAY;
@@ -551,37 +604,38 @@ tune_parms_array(const char* pattern, int mlev)
 			strcpy(buf, tref->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
+
 				array_set_strkey_strval(&item, "type", "dbref");
 				array_set_strkey_strval(&item, "group", tref->group);
-				array_set_strkey_strval(&item, "name",  tref->name);
+				array_set_strkey_strval(&item, "name", tref->name);
 				array_set_strkey_refval(&item, "value", *tref->ref);
-				array_set_strkey_intval(&item, "mlev",  tref->security);
+				array_set_strkey_intval(&item, "mlev", tref->security);
 				array_set_strkey_strval(&item, "label", tref->label);
 				switch (tref->typ) {
-					case NOTYPE:
-						array_set_strkey_strval(&item, "objtype",  "any");
-						break;
-					case TYPE_PLAYER:
-						array_set_strkey_strval(&item, "objtype",  "player");
-						break;
-					case TYPE_THING:
-						array_set_strkey_strval(&item, "objtype",  "thing");
-						break;
-					case TYPE_ROOM:
-						array_set_strkey_strval(&item, "objtype",  "room");
-						break;
-					case TYPE_EXIT:
-						array_set_strkey_strval(&item, "objtype",  "exit");
-						break;
-					case TYPE_PROGRAM:
-						array_set_strkey_strval(&item, "objtype",  "program");
-						break;
-					case TYPE_GARBAGE:
-						array_set_strkey_strval(&item, "objtype",  "garbage");
-						break;
-					default:
-						array_set_strkey_strval(&item, "objtype",  "unknown");
-						break;
+				case NOTYPE:
+					array_set_strkey_strval(&item, "objtype", "any");
+					break;
+				case TYPE_PLAYER:
+					array_set_strkey_strval(&item, "objtype", "player");
+					break;
+				case TYPE_THING:
+					array_set_strkey_strval(&item, "objtype", "thing");
+					break;
+				case TYPE_ROOM:
+					array_set_strkey_strval(&item, "objtype", "room");
+					break;
+				case TYPE_EXIT:
+					array_set_strkey_strval(&item, "objtype", "exit");
+					break;
+				case TYPE_PROGRAM:
+					array_set_strkey_strval(&item, "objtype", "program");
+					break;
+				case TYPE_GARBAGE:
+					array_set_strkey_strval(&item, "objtype", "garbage");
+					break;
+				default:
+					array_set_strkey_strval(&item, "objtype", "unknown");
+					break;
 				}
 
 				temp1.type = PROG_ARRAY;
@@ -598,11 +652,12 @@ tune_parms_array(const char* pattern, int mlev)
 			strcpy(buf, tstr->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
+
 				array_set_strkey_strval(&item, "type", "string");
 				array_set_strkey_strval(&item, "group", tstr->group);
-				array_set_strkey_strval(&item, "name",  tstr->name);
+				array_set_strkey_strval(&item, "name", tstr->name);
 				array_set_strkey_strval(&item, "value", *tstr->str);
-				array_set_strkey_intval(&item, "mlev",  tstr->security);
+				array_set_strkey_intval(&item, "mlev", tstr->security);
 				array_set_strkey_strval(&item, "label", tstr->label);
 
 				temp1.type = PROG_ARRAY;
@@ -718,6 +773,7 @@ void
 tune_freeparms()
 {
 	struct tune_str_entry *tstr = tune_str_list;
+
 	while (tstr->name) {
 		if (!tstr->isdefault) {
 			free((char *) *tstr->str);
@@ -853,7 +909,7 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 {
 	char buf[BUFFER_LEN];
 	char *c, *p;
-	int result=0;
+	int result = 0;
 
 	while (!feof(f) && (cnt < 0 || cnt--)) {
 		fgets(buf, sizeof(buf), f);

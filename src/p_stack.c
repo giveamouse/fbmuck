@@ -123,6 +123,7 @@ prim_at(PRIM_PROTOTYPE)
 	if (temp1.type == PROG_LVAR) {
 		/* LOCALVAR */
 		struct localvars *tmp = localvars_get(fr, program);
+
 		copyinst(&(tmp->lvars[temp1.data.number]), &arg[(*top)++]);
 	} else if (temp1.type == PROG_VAR) {
 		/* GLOBALVAR */
@@ -152,6 +153,7 @@ prim_bang(PRIM_PROTOTYPE)
 	if (oper1->type == PROG_LVAR) {
 		/* LOCALVAR */
 		struct localvars *tmp = localvars_get(fr, program);
+
 		CLEAR(&(tmp->lvars[oper1->data.number]));
 		copyinst(oper2, &(tmp->lvars[oper1->data.number]));
 	} else if (oper1->type == PROG_VAR) {
@@ -616,9 +618,7 @@ prim_checkargs(PRIM_PROTOTYPE)
 				if (stackpos < 0)
 					ABORT_CHECKARGS("Stack underflow.");
 				if (arg[stackpos].type != PROG_VAR &&
-					arg[stackpos].type != PROG_LVAR &&
-					arg[stackpos].type != PROG_SVAR
-				) {
+					arg[stackpos].type != PROG_LVAR && arg[stackpos].type != PROG_SVAR) {
 					ABORT_CHECKARGS("Expected a variable.");
 				}
 				break;
@@ -739,11 +739,11 @@ prim_setmode(PRIM_PROTOTYPE)
 void
 prim_interp(PRIM_PROTOTYPE)
 {
-	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
-	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
-	struct inst *oper3 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper1 = NULL;	/* prevents re-entrancy issues! */
+	struct inst *oper2 = NULL;	/* prevents re-entrancy issues! */
+	struct inst *oper3 = NULL;	/* prevents re-entrancy issues! */
 
-	struct inst *rv=NULL;
+	struct inst *rv = NULL;
 	char buf[BUFFER_LEN];
 	struct frame *tmpfr;
 

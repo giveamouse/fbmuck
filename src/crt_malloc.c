@@ -468,7 +468,7 @@ CrT_timestr(time_t when)
 
 	da_time = localtime(&when);
 	snprintf(buf, sizeof(buf), "%02d%02d%02d%02d",
-			da_time->tm_mday, da_time->tm_hour, da_time->tm_min, da_time->tm_sec);
+			 da_time->tm_mday, da_time->tm_hour, da_time->tm_min, da_time->tm_sec);
 	return buf;
 }
 
@@ -505,18 +505,18 @@ summarize(void (*fn) (char *)
 		sum_totbyts += b->tot_bytes_alloc;
 
 		snprintf(buf, sizeof(buf),
-				"%13s%5d:%7d %8d %7d %8d %8s %7d %8d",
-				b->file,
-				b->line,
-				b->live_blocks,
-				b->live_bytes,
-				b->max_blocks,
-				b->max_bytes,
-				CrT_timestr(b->max_bytes_time), b->tot_allocs_done, b->tot_bytes_alloc);
+				 "%13s%5d:%7d %8d %7d %8d %8s %7d %8d",
+				 b->file,
+				 b->line,
+				 b->live_blocks,
+				 b->live_bytes,
+				 b->max_blocks,
+				 b->max_bytes,
+				 CrT_timestr(b->max_bytes_time), b->tot_allocs_done, b->tot_bytes_alloc);
 		X(buf);
 	}
 	snprintf(buf, sizeof(buf), " Cumulative totals:%7d %8d                           %7d %8d",
-			sum_blks, sum_byts, sum_totblks, sum_totbyts);
+			 sum_blks, sum_byts, sum_totblks, sum_totbyts);
 	X(buf);
 }
 
@@ -551,7 +551,8 @@ CrT_summarize_to_file(const char *file, const char *comment)
 		return;
 	if (comment && *comment) {
 		fprintf(summarize_fd, "%s\n", comment);
-	} {
+	}
+	{
 		time_t lt = time(NULL);
 
 		fprintf(summarize_fd, "%s", ctime(&lt));
@@ -582,7 +583,8 @@ crash(char *err, Header m, const char *file, int line)
 {
 	char buf[256];
 
-	snprintf(buf, sizeof(buf), "Err found at %s:%d in block from %s:%d", file, line, m->b->file, m->b->line);
+	snprintf(buf, sizeof(buf), "Err found at %s:%d in block from %s:%d", file, line,
+			 m->b->file, m->b->line);
 	crash2(buf);				/* Makes above easy to read from dbx 'where'.   */
 }
 

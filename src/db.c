@@ -45,7 +45,8 @@ void getproperties(FILE * f, int obj, const char *pdir);
 dbref
 getparent_logic(dbref obj)
 {
-        if (obj == NOTHING) return NOTHING;
+	if (obj == NOTHING)
+		return NOTHING;
 	if (Typeof(obj) == TYPE_THING && (FLAGS(obj) & VEHICLE)) {
 		obj = THING_HOME(obj);
 		if (obj != NOTHING && Typeof(obj) == TYPE_PLAYER) {
@@ -60,19 +61,19 @@ getparent_logic(dbref obj)
 dbref
 getparent(dbref obj)
 {
-        dbref ptr, oldptr;
+	dbref ptr, oldptr;
 
 	if (tp_thing_movement) {
 		obj = getloc(obj);
 	} else {
-	        ptr = getparent_logic(obj);
+		ptr = getparent_logic(obj);
 		do {
-		        obj = getparent_logic(obj);
+			obj = getparent_logic(obj);
 		} while (obj != (oldptr = ptr = getparent_logic(ptr)) &&
-			 obj != (ptr = getparent_logic(ptr)) &&
-			 obj != NOTHING && Typeof(obj) == TYPE_THING);
+				 obj != (ptr = getparent_logic(ptr)) &&
+				 obj != NOTHING && Typeof(obj) == TYPE_THING);
 		if (obj != NOTHING && (obj == oldptr || obj == ptr)) {
-		        obj = GLOBAL_ENVIRONMENT;
+			obj = GLOBAL_ENVIRONMENT;
 		}
 	}
 	return obj;
@@ -283,10 +284,10 @@ file_line(FILE * f)
 	if (!fgets(buf, BUFFER_LEN, f))
 		return NULL;
 	len = strlen(buf);
-	if (buf[len-1] == '\n') {
+	if (buf[len - 1] == '\n') {
 		buf[--len] = '\0';
 	}
-	if (buf[len-1] == '\r') {
+	if (buf[len - 1] == '\r') {
 		buf[--len] = '\0';
 	}
 	return alloc_string(buf);
@@ -497,8 +498,7 @@ db_write(FILE * f)
 	putstring(f, "***Foxen8 TinyMUCK DUMP Format***");
 
 	putref(f, db_top);
-	putref(f, DB_PARMSINFO
-			);
+	putref(f, DB_PARMSINFO);
 	putref(f, tune_count_parms());
 	tune_save_parms_to_file(f);
 
@@ -618,7 +618,7 @@ number(const char *s)
 		s++;
 	if (*s == '+' || *s == '-')
 		s++;
-	if (!*s) 
+	if (!*s)
 		return 0;
 	for (; *s; s++)
 		if (*s < '0' || *s > '9')
@@ -639,13 +639,13 @@ ifloat(const char *s)
 	if (*s == '+' || *s == '-')
 		s++;
 	/* WORK: for when float parsing is improved.
-	if (!string_compare(s, "inf")) {
-		return 1;
-	}
-	if (!string_compare(s, "nan")) {
-		return 1;
-	}
-	*/
+	   if (!string_compare(s, "inf")) {
+	   return 1;
+	   }
+	   if (!string_compare(s, "nan")) {
+	   return 1;
+	   }
+	 */
 	hold = s;
 	while ((*s) && (*s >= '0' && *s <= '9'))
 		s++;
@@ -736,17 +736,17 @@ db_free_object(dbref i)
 
 	if (Typeof(i) == TYPE_EXIT && o->sp.exit.dest) {
 		free((void *) o->sp.exit.dest);
-    } else if (Typeof(i) == TYPE_PLAYER) {
-        if (PLAYER_PASSWORD(i)) {
-			free((void*)PLAYER_PASSWORD(i));
-        }
-        if (PLAYER_DESCRS(i)){ 
+	} else if (Typeof(i) == TYPE_PLAYER) {
+		if (PLAYER_PASSWORD(i)) {
+			free((void *) PLAYER_PASSWORD(i));
+		}
+		if (PLAYER_DESCRS(i)) {
 			free(PLAYER_DESCRS(i));
 			PLAYER_SET_DESCRS(i, NULL);
 			PLAYER_SET_DESCRCOUNT(i, 0);
-        }
+		}
 		ignore_flush_cache(i);
-    }
+	}
 	if (Typeof(i) == TYPE_THING) {
 		FREE_THING_SP(i);
 	}
@@ -1007,7 +1007,8 @@ db_read(FILE * f)
 				tune_load_parms_from_file(f, NOTHING, parmcnt);
 			}
 			if (dbflags & DB_DRCATS) {
-				fprintf(stderr, "This server is not compiled to read Dr.Cat's compressed databases.\n");
+				fprintf(stderr,
+						"This server is not compiled to read Dr.Cat's compressed databases.\n");
 				return -1;
 			}
 			db_grow(i);
@@ -1044,7 +1045,7 @@ db_read(FILE * f)
 				db_read_object_foxen(f, o, thisref, doing_deltas);
 				break;
 			default:
-				log2file("debug.log","got to end of case for db_load_format");
+				log2file("debug.log", "got to end of case for db_load_format");
 				abort();
 				break;
 			}

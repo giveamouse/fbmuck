@@ -26,7 +26,7 @@ struct mufevent_process {
 	dbref prog;
 	short filtercount;
 	short deleted;
-	char** filters;
+	char **filters;
 	struct frame *fr;
 } *mufevent_processes;
 
@@ -80,7 +80,8 @@ muf_event_process_free(struct mufevent_process *ptr)
  * responsible for freeing the original eventids list passed.
  */
 void
-muf_event_register_specific(dbref player, dbref prog, struct frame *fr, int eventcount, char** eventids)
+muf_event_register_specific(dbref player, dbref prog, struct frame *fr, int eventcount,
+							char **eventids)
 {
 	struct mufevent_process *newproc;
 	struct mufevent_process *ptr;
@@ -96,7 +97,7 @@ muf_event_register_specific(dbref player, dbref prog, struct frame *fr, int even
 	newproc->deleted = 0;
 	newproc->filtercount = eventcount;
 	if (eventcount > 0) {
-		newproc->filters = (char**) malloc(eventcount * sizeof(char**));
+		newproc->filters = (char **) malloc(eventcount * sizeof(char **));
 		for (i = 0; i < eventcount; i++) {
 			newproc->filters[i] = string_dup(eventids[i]);
 		}
@@ -134,7 +135,7 @@ muf_event_register(dbref player, dbref prog, struct frame *fr)
  * 0 otherwise.
  */
 int
-muf_event_read_notify(int descr, dbref player, const char* cmd)
+muf_event_read_notify(int descr, dbref player, const char *cmd)
 {
 	struct mufevent_process *ptr;
 
@@ -195,7 +196,8 @@ static int
 event_has_refs(dbref program, struct mufevent_process *proc)
 {
 	int loop;
-	struct frame* fr = proc->fr;
+	struct frame *fr = proc->fr;
+
 	if (!fr) {
 		return 0;
 	}
@@ -257,7 +259,7 @@ muf_event_dequeue(dbref prog, int killmode)
 }
 
 
-struct frame*
+struct frame *
 muf_event_pid_frame(int pid)
 {
 	struct mufevent_process *ptr = mufevent_processes;
@@ -339,9 +341,9 @@ muf_event_list(dbref player, const char *pat)
 				snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(proc->prog));
 			}
 			snprintf(buf, sizeof(buf), pat, pidstr, "--",
-					time_format_2((long) (rtime - proc->fr->started)),
-					inststr, cpustr, progstr, prognamestr, NAME(proc->player),
-					"EVENT_WAITFOR");
+					 time_format_2((long) (rtime - proc->fr->started)),
+					 inststr, cpustr, progstr, prognamestr, NAME(proc->player),
+					 "EVENT_WAITFOR");
 			if (Wizard(OWNER(player)) || (OWNER(proc->prog) == OWNER(player))
 				|| (proc->player == player))
 				notify_nolisten(player, buf, 1);
@@ -359,12 +361,13 @@ muf_event_list(dbref player, const char *pat)
  * then all processes waiting for mufevents are added.
  */
 stk_array *
-get_mufevent_pids(stk_array *nw, dbref ref)
+get_mufevent_pids(stk_array * nw, dbref ref)
 {
 	struct inst temp1, temp2;
 	int count = 0;
 
 	struct mufevent_process *proc = mufevent_processes;
+
 	while (proc) {
 		if (!proc->deleted) {
 			if (proc->player == ref || proc->prog == ref || proc->fr->trig == ref || ref < 0) {
@@ -384,16 +387,17 @@ get_mufevent_pids(stk_array *nw, dbref ref)
 
 
 stk_array *
-get_mufevent_pidinfo(stk_array* nw, int pid)
+get_mufevent_pidinfo(stk_array * nw, int pid)
 {
 	struct inst temp1, temp2;
-	stk_array*  arr;
-	time_t      rtime = time(NULL);
-	time_t      etime = 0;
-	double      pcnt  = 0.0;
-	int         i;
+	stk_array *arr;
+	time_t rtime = time(NULL);
+	time_t etime = 0;
+	double pcnt = 0.0;
+	int i;
 
 	struct mufevent_process *proc = mufevent_processes;
+
 	while (proc && (proc->deleted || proc->fr->pid != pid)) {
 		proc = proc->next;
 	}
@@ -515,7 +519,7 @@ get_mufevent_pidinfo(stk_array* nw, int pid)
  * Returns how many events are waiting to be processed.
  */
 int
-muf_event_count(struct frame* fr)
+muf_event_count(struct frame *fr)
 {
 	struct mufevent *ptr;
 	int count = 0;
@@ -532,12 +536,12 @@ muf_event_count(struct frame* fr)
  * The eventid passed can be an smatch string.
  */
 int
-muf_event_exists(struct frame* fr, const char* eventid)
+muf_event_exists(struct frame *fr, const char *eventid)
 {
 	struct mufevent *ptr;
 	int count = 0;
 	char pattern[BUFFER_LEN];
-	
+
 	strcpy(pattern, eventid);
 
 	for (ptr = fr->events; ptr; ptr = ptr->next)
@@ -608,7 +612,7 @@ muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive)
  * You will need to call muf_event_free() on the returned data when you
  * are done with it and wish to free it from memory.
  */
-struct mufevent*
+struct mufevent *
 muf_event_pop_specific(struct frame *fr, int eventcount, char **events)
 {
 	struct mufevent *tmp = NULL;
@@ -790,7 +794,7 @@ muf_event_process(void)
 					copyinst(&ev->data, &(proc->fr->argument.st[proc->fr->argument.top]));
 					proc->fr->argument.top++;
 					push(proc->fr->argument.st, &(proc->fr->argument.top),
-							PROG_STRING, MIPSCAST alloc_prog_string(ev->event));
+						 PROG_STRING, MIPSCAST alloc_prog_string(ev->event));
 
 					interp_loop(proc->player, proc->prog, proc->fr, 0);
 
@@ -801,7 +805,7 @@ muf_event_process(void)
 				}
 				muf_event_free(ev);
 
-				proc->fr = NULL;  /* We do NOT want to free this program after every EVENT_WAIT. */
+				proc->fr = NULL;	/* We do NOT want to free this program after every EVENT_WAIT. */
 				proc->deleted = 1;
 			}
 		}

@@ -82,15 +82,15 @@ our_signal(int signo, void (*sighandler) (int))
 void
 set_dumper_signals()
 {
-	our_signal(SIGPIPE, SIG_IGN); /* Ignore Blocked Pipe */
-	our_signal(SIGHUP,  SIG_IGN); /* Ignore Terminal Hangup */
-	our_signal(SIGCHLD, SIG_IGN); /* Ignore Child termination */
-	our_signal(SIGFPE,  SIG_IGN); /* Ignore FP exceptions */
-	our_signal(SIGUSR1, SIG_IGN); /* Ignore SIGUSR1 */
-	our_signal(SIGUSR2, SIG_IGN); /* Ignore SIGUSR2 */
-	our_signal(SIGINT,  SIG_DFL); /* Take Interrupt signal and die! */
-	our_signal(SIGTERM, SIG_DFL); /* Take Terminate signal and die! */
-	our_signal(SIGSEGV, SIG_DFL); /* Take Segfault and die! */
+	our_signal(SIGPIPE, SIG_IGN);	/* Ignore Blocked Pipe */
+	our_signal(SIGHUP, SIG_IGN);	/* Ignore Terminal Hangup */
+	our_signal(SIGCHLD, SIG_IGN);	/* Ignore Child termination */
+	our_signal(SIGFPE, SIG_IGN);	/* Ignore FP exceptions */
+	our_signal(SIGUSR1, SIG_IGN);	/* Ignore SIGUSR1 */
+	our_signal(SIGUSR2, SIG_IGN);	/* Ignore SIGUSR2 */
+	our_signal(SIGINT, SIG_DFL);	/* Take Interrupt signal and die! */
+	our_signal(SIGTERM, SIG_DFL);	/* Take Terminate signal and die! */
+	our_signal(SIGSEGV, SIG_DFL);	/* Take Segfault and die! */
 #ifdef SIGTRAP
 	our_signal(SIGTRAP, SIG_DFL);
 #endif
@@ -107,10 +107,10 @@ set_dumper_signals()
 	our_signal(SIGSYS, SIG_DFL);
 #endif
 #ifdef SIGXCPU
-	our_signal(SIGXCPU, SIG_IGN);  /* CPU usage limit exceeded */
+	our_signal(SIGXCPU, SIG_IGN);	/* CPU usage limit exceeded */
 #endif
 #ifdef SIGXFSZ
-	our_signal(SIGXFSZ, SIG_IGN);  /* Exceeded file size limit */
+	our_signal(SIGXFSZ, SIG_IGN);	/* Exceeded file size limit */
 #endif
 #ifdef SIGVTALRM
 	our_signal(SIGVTALRM, SIG_DFL);
@@ -196,7 +196,8 @@ set_signals(void)
 /*
  * BAIL!
  */
-RETSIGTYPE bailout(int sig)
+RETSIGTYPE
+bailout(int sig)
 {
 	char message[1024];
 
@@ -216,7 +217,8 @@ RETSIGTYPE bailout(int sig)
 /*
  * Spew WHO to file
  */
-RETSIGTYPE sig_dump_status(int i)
+RETSIGTYPE
+sig_dump_status(int i)
 {
 	dump_status();
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
@@ -227,7 +229,8 @@ RETSIGTYPE sig_dump_status(int i)
 /*
  * Gracefully shut the server down.
  */
-RETSIGTYPE sig_shutdown(int i)
+RETSIGTYPE
+sig_shutdown(int i)
 {
 	log_status("SHUTDOWN: via SIGNAL\n");
 	shutdown_flag = 1;
@@ -243,10 +246,11 @@ RETSIGTYPE sig_shutdown(int i)
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
 #define RETSIGVAL 0
 #else
-#define RETSIGVAL 
+#define RETSIGVAL
 #endif
 
-RETSIGTYPE sig_reap(int i)
+RETSIGTYPE
+sig_reap(int i)
 {
 	/* There are two types of children that can die.  First is the
 	 * nameservice resolver.  Second is the database dumper.  If
@@ -265,10 +269,9 @@ RETSIGTYPE sig_reap(int i)
 	int reapedpid = 0;
 
 	reapedpid = waitpid(-1, &status, WNOHANG);
-	if(!reapedpid)
-	{
+	if (!reapedpid) {
 #ifdef DETACH
-		log2file(LOG_ERR_FILE,"SIG_CHILD signal handler called with no pid!");
+		log2file(LOG_ERR_FILE, "SIG_CHILD signal handler called with no pid!");
 #else
 		fprintf(stderr, "SIG_CHILD signal handler called with no pid!\n");
 #endif
@@ -282,7 +285,7 @@ RETSIGTYPE sig_reap(int i)
 				/* If the resolver exited due to a signal, respawn it. */
 				spawn_resolver();
 			}
-		} else if(reapedpid == global_dumper_pid) {
+		} else if (reapedpid == global_dumper_pid) {
 			int warnflag = 0;
 
 			log_status("forked DB dump task exited with status %d\n", status);
@@ -292,21 +295,28 @@ RETSIGTYPE sig_reap(int i)
 			} else if (WIFEXITED(status)) {
 				/* In case NOCOREDUMP is defined, check for panic()s exit codes. */
 				int statres = WEXITSTATUS(status);
+
 				if (statres == 135 || statres == 136) {
 					warnflag = 1;
 				}
 			}
 			if (warnflag) {
-				wall_wizards("# WARNING: The forked DB save process crashed while saving the database.");
-				wall_wizards("# This is probably due to memory corruption, which can crash this server.");
-				wall_wizards("# Unless you have a REALLY good unix programmer around who can try to fix");
-				wall_wizards("# this process live with a debugger, you should try to restart this Muck");
-				wall_wizards("# as soon as possible, and accept the data lost since the previous DB save.");
+				wall_wizards
+						("# WARNING: The forked DB save process crashed while saving the database.");
+				wall_wizards
+						("# This is probably due to memory corruption, which can crash this server.");
+				wall_wizards
+						("# Unless you have a REALLY good unix programmer around who can try to fix");
+				wall_wizards
+						("# this process live with a debugger, you should try to restart this Muck");
+				wall_wizards
+						("# as soon as possible, and accept the data lost since the previous DB save.");
 			}
 			global_dumpdone = 1;
 			global_dumper_pid = 0;
 		} else {
-			fprintf(stderr, "unknown child process (pid %d) exited with status %d\n", reapedpid, status);
+			fprintf(stderr, "unknown child process (pid %d) exited with status %d\n",
+					reapedpid, status);
 		}
 	}
 	return RETSIGVAL;
@@ -314,29 +324,50 @@ RETSIGTYPE sig_reap(int i)
 
 
 
-#else /* WIN32 */
+#else							/* WIN32 */
 
 #include <wincon.h>
 #include <windows.h>
 #define VK_C         0x43
-#define CONTROL_KEY (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) 
+#define CONTROL_KEY (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED)
 
 
 
-void sig_reap(int i) {}
-void sig_shutdown(int i) {}
-void sig_dumpstatus(int i) {}
-void set_signals(void) {}
-void set_sigs_intern(int bail) {}
+void
+sig_reap(int i)
+{
+}
 
-void bailout(int sig) {
+void
+sig_shutdown(int i)
+{
+}
+void
+sig_dumpstatus(int i)
+{
+}
+void
+set_signals(void)
+{
+}
+void
+set_sigs_intern(int bail)
+{
+}
+
+void
+bailout(int sig)
+{
 	char message[1024];
+
 	snprintf(message, sizeof(message), "BAILOUT: caught signal %d", sig);
 	panic(message);
 	exit(7);
 }
 
-void set_console() {
+void
+set_console()
+{
 	HANDLE InputHandle;
 
 	InputHandle = GetStdHandle(STD_INPUT_HANDLE);
@@ -352,13 +383,15 @@ void set_console() {
 
 }
 
-void check_console() {
+void
+check_console()
+{
 
 	HANDLE InputHandle;
 	INPUT_RECORD ipRecord;
 	DWORD EventsWaiting;
 	DWORD EventsRead;
-	DWORD EventCount=0;
+	DWORD EventCount = 0;
 	BOOL result;
 	CHAR c;
 
@@ -371,15 +404,15 @@ void check_console() {
 
 	result = GetNumberOfConsoleInputEvents(InputHandle, &EventsWaiting);
 	if (result) {
-		if (EventsWaiting > 0 ) {
+		if (EventsWaiting > 0) {
 			EventCount = 0;
 			while (EventCount < EventsWaiting) {
 				result = ReadConsoleInput(InputHandle, &ipRecord, 1, &EventsRead);
 				if (result) {
-					switch(ipRecord.EventType) {
+					switch (ipRecord.EventType) {
 					case KEY_EVENT:
 						c = ipRecord.Event.KeyEvent.uChar.AsciiChar;
-						if (3 == c )
+						if (3 == c)
 							bailout(2);
 						break;
 					default:
@@ -400,4 +433,4 @@ void check_console() {
 }
 
 
-#endif /* WIN32 */
+#endif							/* WIN32 */

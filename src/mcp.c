@@ -11,7 +11,7 @@
 #include "mcppkg.h"
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
-#endif /* HAVE_MALLOC_H */
+#endif							/* HAVE_MALLOC_H */
 
 
 #define MCP_MESG_PREFIX		"#$#"
@@ -60,7 +60,7 @@ strncmp_nocase(const char *s1, const char *s2, int cnt)
 
 /* Used internally to escape and quote argument values. */
 int
-msgarg_escape(char* buf, int bufsize, const char* in)
+msgarg_escape(char *buf, int bufsize, const char *in)
 {
 	char *out = buf;
 	int len = 0;
@@ -221,8 +221,10 @@ mcp_initialize(void)
 	mcp_package_register(MCP_NEGOTIATE_PKG, oneoh, twooh, mcp_negotiate_handler, NULL, NULL);
 	mcp_package_register("org-fuzzball-help", oneoh, oneoh, mcppkg_help_request, NULL, NULL);
 	mcp_package_register("org-fuzzball-notify", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
-	mcp_package_register("org-fuzzball-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
-	mcp_package_register("dns-org-mud-moo-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
+	mcp_package_register("org-fuzzball-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL,
+						 NULL);
+	mcp_package_register("dns-org-mud-moo-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL,
+						 NULL);
 }
 
 
@@ -263,11 +265,11 @@ mcp_negotiation_start(McpFrame * mfr)
 /*****************************************************************/
 
 struct McpFrameList_t {
-	McpFrame* mfr;
-	struct McpFrameList_t* next;
+	McpFrame *mfr;
+	struct McpFrameList_t *next;
 };
 typedef struct McpFrameList_t McpFrameList;
-McpFrameList* mcp_frame_list;
+McpFrameList *mcp_frame_list;
 
 
 /*****************************************************************
@@ -283,7 +285,7 @@ McpFrameList* mcp_frame_list;
 void
 mcp_frame_init(McpFrame * mfr, connection_t con)
 {
-	McpFrameList* mfrl;
+	McpFrameList *mfrl;
 
 	mfr->descriptor = con;
 	mfr->version.verminor = 0;
@@ -293,7 +295,7 @@ mcp_frame_init(McpFrame * mfr, connection_t con)
 	mfr->messages = NULL;
 	mfr->enabled = 0;
 
-	mfrl = (McpFrameList*)malloc(sizeof(McpFrameList));
+	mfrl = (McpFrameList *) malloc(sizeof(McpFrameList));
 	mfrl->mfr = mfr;
 	mfrl->next = mcp_frame_list;
 	mcp_frame_list = mfrl;
@@ -317,12 +319,12 @@ mcp_frame_clear(McpFrame * mfr)
 {
 	McpPkg *tmp = mfr->packages;
 	McpMesg *tmp2 = mfr->messages;
-	McpFrameList* mfrl = mcp_frame_list;
-	McpFrameList* prev;
+	McpFrameList *mfrl = mcp_frame_list;
+	McpFrameList *prev;
 
 	if (mfr->authkey) {
-	        free(mfr->authkey);
-	        mfr->authkey = NULL;
+		free(mfr->authkey);
+		mfr->authkey = NULL;
 	}
 	while (tmp) {
 		mfr->packages = tmp->next;
@@ -378,11 +380,11 @@ mcp_frame_clear(McpFrame * mfr)
  *****************************************************************/
 
 void
-mcp_frame_package_renegotiate(const char* package)
+mcp_frame_package_renegotiate(const char *package)
 {
 	McpVer nullver = { 0, 0 };
-	McpFrameList* mfrl = mcp_frame_list;
-	McpFrame* mfr;
+	McpFrameList *mfrl = mcp_frame_list;
+	McpFrame *mfr;
 	McpMesg cando;
 	char verbuf[32];
 	McpPkg *p;
@@ -422,10 +424,10 @@ mcp_frame_package_renegotiate(const char* package)
 	mcp_mesg_clear(&cando);
 
 	/*
-	mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
-	mcp_frame_output_mesg(mfr, &cando);
-	mcp_mesg_clear(&cando);
-	*/
+	   mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
+	   mcp_frame_output_mesg(mfr, &cando);
+	   mcp_mesg_clear(&cando);
+	 */
 }
 
 
@@ -826,7 +828,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 
 	/* If the message is multi-line, make sure it has a _data-tag field. */
 	if (mlineflag) {
-		snprintf(datatag, sizeof(datatag), "%.8lX", (unsigned long)(RANDOM() ^ RANDOM()));
+		snprintf(datatag, sizeof(datatag), "%.8lX", (unsigned long) (RANDOM() ^ RANDOM()));
 		snprintf(out, bufrem, " %s: %s", MCP_DATATAG, datatag);
 		out += strlen(out);
 		bufrem = outbuf + sizeof(outbuf) - out;
@@ -845,7 +847,8 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 
 				while (ap) {
 					*outbuf = '\0';
-					snprintf(outbuf, sizeof(outbuf), "%s* %s %s: %s", MCP_MESG_PREFIX, datatag, anarg->name, ap->value);
+					snprintf(outbuf, sizeof(outbuf), "%s* %s %s: %s", MCP_MESG_PREFIX, datatag,
+							 anarg->name, ap->value);
 					SendText(mfr, outbuf);
 					SendText(mfr, "\r\n");
 					if (!--flushcount) {
@@ -1066,7 +1069,7 @@ mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 {
 	McpArg *ptr = msg->args;
 	int namelen = strlen(argname);
-	int vallen = argval? strlen(argval) : 0;
+	int vallen = argval ? strlen(argval) : 0;
 
 	if (namelen > MAX_MCP_ARGNAME_LEN) {
 		return EMCP_ARGNAMELEN;
@@ -1308,7 +1311,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 			mcp_mesg_init(&reply, MCP_INIT_PKG, "");
 			mcp_mesg_arg_append(&reply, "version", "2.1");
 			mcp_mesg_arg_append(&reply, "to", "2.1");
-			snprintf(authval, sizeof(authval), "%.8lX", (unsigned long)(RANDOM() ^ RANDOM()));
+			snprintf(authval, sizeof(authval), "%.8lX", (unsigned long) (RANDOM() ^ RANDOM()));
 			mcp_mesg_arg_append(&reply, "authentication-key", authval);
 			mfr->authkey = (char *) malloc(strlen(authval) + 1);
 			strcpy(mfr->authkey, authval);
@@ -1349,9 +1352,11 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 				if (strcmp_nocase(p->pkgname, MCP_INIT_PKG)) {
 					mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
 					mcp_mesg_arg_append(&cando, "package", p->pkgname);
-					snprintf(verbuf, sizeof(verbuf), "%d.%d", p->minver.vermajor, p->minver.verminor);
+					snprintf(verbuf, sizeof(verbuf), "%d.%d", p->minver.vermajor,
+							 p->minver.verminor);
 					mcp_mesg_arg_append(&cando, "min-version", verbuf);
-					snprintf(verbuf, sizeof(verbuf), "%d.%d", p->maxver.vermajor, p->maxver.verminor);
+					snprintf(verbuf, sizeof(verbuf), "%d.%d", p->maxver.vermajor,
+							 p->maxver.verminor);
 					mcp_mesg_arg_append(&cando, "max-version", verbuf);
 					mcp_frame_output_mesg(mfr, &cando);
 					mcp_mesg_clear(&cando);
@@ -1732,5 +1737,3 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 		return 1;
 	return 0;
 }
-
-

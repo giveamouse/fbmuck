@@ -95,7 +95,8 @@ unparse_object(dbref player, dbref loc)
 			 ((Typeof(loc) != TYPE_PLAYER) &&
 			  (controls_link(player, loc) || (FLAGS(loc) & CHOWN_OK))))) {
 			/* show everything */
-			snprintf(buf, sizeof(buf), "%.*s(#%d%s)", (BUFFER_LEN / 2), NAME(loc), loc, unparse_flags(loc));
+			snprintf(buf, sizeof(buf), "%.*s(#%d%s)", (BUFFER_LEN / 2), NAME(loc), loc,
+					 unparse_flags(loc));
 			return buf;
 		} else {
 			/* show only the name */
@@ -147,7 +148,8 @@ unparse_boolexp1(dbref player, struct boolexp *b, boolexp_type outer_type, int f
 			if (fullname) {
 				strcpy(buftop, unparse_object(player, b->thing));
 			} else {
-				snprintf(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), "#%d", b->thing);
+				snprintf(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), "#%d",
+						 b->thing);
 			}
 			buftop += strlen(buftop);
 			break;
@@ -155,7 +157,8 @@ unparse_boolexp1(dbref player, struct boolexp *b, boolexp_type outer_type, int f
 			strcpy(buftop, PropName(b->prop_check));
 			strcatn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), ":");
 			if (PropType(b->prop_check) == PROP_STRTYP)
-				strcatn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), PropDataStr(b->prop_check));
+				strcatn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf),
+						PropDataStr(b->prop_check));
 			buftop += strlen(buftop);
 			break;
 		default:

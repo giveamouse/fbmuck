@@ -732,10 +732,11 @@ create_lostandfound(dbref * player, dbref * room)
 		*player = GOD;
 	} else {
 		const char *rpass;
+
 		*player = new_object();
 		NAME(*player) = alloc_string(player_name);
 		LOCATION(*player) = *room;
-		FLAGS(*player) = TYPE_PLAYER |  SANEBIT;
+		FLAGS(*player) = TYPE_PLAYER | SANEBIT;
 		OWNER(*player) = *player;
 		ALLOC_PLAYER_SP(*player);
 		PLAYER_SET_HOME(*player, *room);

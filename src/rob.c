@@ -44,8 +44,8 @@ do_rob(int descr, dbref player, const char *what)
 			snprintf(buf, sizeof(buf), "%s has no %s.", NAME(thing), tp_pennies);
 			notify(player, buf);
 			snprintf(buf, sizeof(buf),
-					"%s tried to rob you, but you have no %s to take.",
-					NAME(player), tp_pennies);
+					 "%s tried to rob you, but you have no %s to take.",
+					 NAME(player), tp_pennies);
 			notify(thing, buf);
 		} else if (can_doit(descr, player, thing, "Your conscience tells you not to.")) {
 			/* steal a penny */
@@ -126,7 +126,7 @@ do_kill(int descr, dbref player, const char *what, int cost)
 				if (GETODROP(victim)) {
 					snprintf(buf, sizeof(buf), "%s killed %s! ", NAME(player), NAME(victim));
 					parse_oprop(descr, player, getloc(player), victim,
-								   MESGPROP_ODROP, buf, "(@Odrop)");
+								MESGPROP_ODROP, buf, "(@Odrop)");
 				} else {
 					snprintf(buf, sizeof(buf), "%s killed %s!", NAME(player), NAME(victim));
 				}
@@ -136,7 +136,7 @@ do_kill(int descr, dbref player, const char *what, int cost)
 				/* maybe pay off the bonus */
 				if (GETVALUE(victim) < tp_max_pennies) {
 					snprintf(buf, sizeof(buf), "Your insurance policy pays %d %s.",
-							tp_kill_bonus, tp_pennies);
+							 tp_kill_bonus, tp_pennies);
 					notify(victim, buf);
 					SETVALUE(victim, GETVALUE(victim) + tp_kill_bonus);
 					DBDIRTY(victim);
@@ -208,27 +208,26 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 		switch (Typeof(who)) {
 		case TYPE_PLAYER:
 			SETVALUE(who, GETVALUE(who) + amount);
-			if(amount >= 0) {
+			if (amount >= 0) {
 				snprintf(buf, sizeof(buf), "You give %d %s to %s.",
-						amount, amount == 1 ? tp_penny : tp_pennies, NAME(who));
+						 amount, amount == 1 ? tp_penny : tp_pennies, NAME(who));
 				notify(player, buf);
 				snprintf(buf, sizeof(buf), "%s gives you %d %s.",
-						NAME(player), amount, amount == 1 ? tp_penny : tp_pennies);
+						 NAME(player), amount, amount == 1 ? tp_penny : tp_pennies);
 				notify(who, buf);
 			} else {
 				snprintf(buf, sizeof(buf), "You take %d %s from %s.",
-						-amount, amount == -1 ? tp_penny : tp_pennies, NAME(who));
+						 -amount, amount == -1 ? tp_penny : tp_pennies, NAME(who));
 				notify(player, buf);
 				snprintf(buf, sizeof(buf), "%s takes %d %s from you!",
-						NAME(player), -amount, -amount == 1 ? tp_penny : tp_pennies);
+						 NAME(player), -amount, -amount == 1 ? tp_penny : tp_pennies);
 				notify(who, buf);
 			}
 			break;
 		case TYPE_THING:
 			SETVALUE(who, (GETVALUE(who) + amount));
 			snprintf(buf, sizeof(buf), "You change the value of %s to %d %s.",
-					NAME(who),
-					GETVALUE(who), GETVALUE(who) == 1 ? tp_penny : tp_pennies);
+					 NAME(who), GETVALUE(who), GETVALUE(who) == 1 ? tp_penny : tp_pennies);
 			notify(player, buf);
 			break;
 		default:

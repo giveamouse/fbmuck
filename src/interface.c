@@ -24,7 +24,7 @@
 #if defined (HAVE_SYS_ERRNO_H)
 # include <sys/errno.h>
 #else
-  extern int errno;
+extern int errno;
 #endif
 #endif
 #include <ctype.h>
@@ -36,7 +36,7 @@
 # include <netdb.h>
 # include <arpa/inet.h>
 #else
-  typedef int socklen_t;
+typedef int socklen_t;
 #endif
 
 #ifdef AIX
@@ -134,6 +134,7 @@ struct descriptor_data *descriptor_list = NULL;
 static int numsocks = 0;
 static int listener_port[MAX_LISTEN_SOCKS];
 static int sock[MAX_LISTEN_SOCKS];
+
 #ifdef USE_SSL
 static int ssl_numsocks = 0;
 static int ssl_listener_port[MAX_LISTEN_SOCKS];
@@ -145,7 +146,6 @@ static int ndescriptors = 0;
 extern void fork_and_dump(void);
 
 extern int rwhocli_setup(const char *server, const char *serverpw, const char *myname,
-
 						 const char *comment);
 extern int rwhocli_shutdown(void);
 extern int rwhocli_pingalive(void);
@@ -168,13 +168,13 @@ void boot_player_off(dbref player);
 const char *addrout(int, struct in6_addr *, unsigned short);
 #else
 const char *addrout(int, long, unsigned short);
-#endif /* USE_IPV6 */
+#endif							/* USE_IPV6 */
 void dump_users(struct descriptor_data *d, char *user);
 struct descriptor_data *new_connection(int port, int sock);
 void parse_connect(const char *msg, char *command, char *user, char *pass);
 void set_userstring(char **userstring, const char *command);
 int do_command(struct descriptor_data *d, char *command);
-int is_interface_command(const char* cmd);
+int is_interface_command(const char *cmd);
 char *strsave(const char *s);
 int make_socket(int);
 int queue_string(struct descriptor_data *, const char *);
@@ -185,26 +185,27 @@ void announce_connect(int, dbref);
 void announce_disconnect(struct descriptor_data *);
 char *time_format_1(long);
 char *time_format_2(long);
-void    init_descriptor_lookup();
-void    init_descr_count_lookup();
-void    remember_descriptor(struct descriptor_data *);
-void    remember_player_descr(dbref player, int);
-void    update_desc_count_table();
-int*    get_player_descrs(dbref player, int* count);
-void    forget_player_descr(dbref player, int);
-void    forget_descriptor(struct descriptor_data *);
-struct descriptor_data* descrdata_by_descr(int i);
-struct descriptor_data* lookup_descriptor(int);
+void init_descriptor_lookup();
+void init_descr_count_lookup();
+void remember_descriptor(struct descriptor_data *);
+void remember_player_descr(dbref player, int);
+void update_desc_count_table();
+int *get_player_descrs(dbref player, int *count);
+void forget_player_descr(dbref player, int);
+void forget_descriptor(struct descriptor_data *);
+struct descriptor_data *descrdata_by_descr(int i);
+struct descriptor_data *lookup_descriptor(int);
 int online(dbref player);
 int online_init(void);
 dbref online_next(int *ptr);
 long max_open_files(void);
+
 #ifdef MUD_ID
 void do_setuid(char *user);
-#endif /* MUD_ID */
+#endif							/* MUD_ID */
 #ifdef MUD_GID
 void do_setgid(char *group);
-#endif /* MUD_GID */
+#endif							/* MUD_GID */
 
 #ifdef SPAWN_HOST_RESOLVER
 void kill_resolver(void);
@@ -220,7 +221,7 @@ ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count);
 #define socket_write(d, buf, count) write(d->descriptor, buf, count)
 #define socket_read(d, buf, count) read(d->descriptor, buf, count)
 #endif
- 
+
 
 void spawn_resolver(void);
 void resolve_hostnames(void);
@@ -239,9 +240,9 @@ extern FILE *delta_outfile;
 short db_conversion_flag = 0;
 short db_decompression_flag = 0;
 short wizonly_mode = 0;
-pid_t global_resolver_pid=0;
-pid_t global_dumper_pid=0;
-short global_dumpdone=0;
+pid_t global_resolver_pid = 0;
+pid_t global_dumper_pid = 0;
+short global_dumpdone = 0;
 
 
 time_t sel_prof_start_time;
@@ -253,28 +254,39 @@ unsigned long sel_prof_idle_use;
 void
 show_program_usage(char *prog)
 {
-	fprintf(stderr, "Usage: %s [<options>] [infile [outfile [portnum [portnum ...]]]]\n", prog);
+	fprintf(stderr, "Usage: %s [<options>] [infile [outfile [portnum [portnum ...]]]]\n",
+			prog);
 	fprintf(stderr, "    Arguments:\n");
-	fprintf(stderr, "        infile           db file loaded at startup.  optional with -dbin.\n");
-	fprintf(stderr, "        outfile          output db file to save to.  optional with -dbout.\n");
-	fprintf(stderr, "        portnum          port num to listen for conns on. (16 ports max)\n");
+	fprintf(stderr,
+			"        infile           db file loaded at startup.  optional with -dbin.\n");
+	fprintf(stderr,
+			"        outfile          output db file to save to.  optional with -dbout.\n");
+	fprintf(stderr,
+			"        portnum          port num to listen for conns on. (16 ports max)\n");
 	fprintf(stderr, "    Options:\n");
-	fprintf(stderr, "        -dbin INFILE     use INFILE as the database to load at startup.\n");
-	fprintf(stderr, "        -dbout OUTFILE   use OUTFILE as the output database to save to.\n");
-	fprintf(stderr, "        -port NUMBER     sets the port number to listen for connections on.\n");
+	fprintf(stderr,
+			"        -dbin INFILE     use INFILE as the database to load at startup.\n");
+	fprintf(stderr,
+			"        -dbout OUTFILE   use OUTFILE as the output database to save to.\n");
+	fprintf(stderr,
+			"        -port NUMBER     sets the port number to listen for connections on.\n");
 #ifdef USE_SSL
 	fprintf(stderr, "        -sport NUMBER    sets the port number for secure connections\n");
 #else
 	fprintf(stderr, "        -sport NUMBER    Ignored.  SSL support isn't compiled in.\n");
 #endif
-	fprintf(stderr, "        -gamedir PATH    changes directory to PATH before starting up.\n");
+	fprintf(stderr,
+			"        -gamedir PATH    changes directory to PATH before starting up.\n");
 	fprintf(stderr, "        -convert         load the db, then save and quit.\n");
 	fprintf(stderr, "        -decompress      when saving db, save in uncompressed format.\n");
 	fprintf(stderr, "        -nosanity        don't do db sanity checks at startup time.\n");
-	fprintf(stderr, "        -insanity        load db, then enter the interactive sanity editor.\n");
-	fprintf(stderr, "        -sanfix          attempt to auto-fix a corrupt db after loading.\n");
+	fprintf(stderr,
+			"        -insanity        load db, then enter the interactive sanity editor.\n");
+	fprintf(stderr,
+			"        -sanfix          attempt to auto-fix a corrupt db after loading.\n");
 	fprintf(stderr, "        -wizonly         only allow wizards to login.\n");
-	fprintf(stderr, "        -godpasswd PASS  reset God(#1)'s password to PASS.  Implies -convert\n");
+	fprintf(stderr,
+			"        -godpasswd PASS  reset God(#1)'s password to PASS.  Implies -convert\n");
 	fprintf(stderr, "        -version         display this server's version.\n");
 	fprintf(stderr, "        -help            display this message.\n");
 	exit(1);
@@ -295,6 +307,7 @@ main(int argc, char **argv)
 	int sanity_interactive;
 	int sanity_autofix;
 	int val;
+
 #ifdef WIN32
 	WORD wVersionRequested;
 	WSADATA wsaData;
@@ -303,8 +316,8 @@ main(int argc, char **argv)
 
 	listener_port[0] = TINYPORT;
 
-    init_descriptor_lookup();
-    init_descr_count_lookup();
+	init_descriptor_lookup();
+	init_descr_count_lookup();
 
 	nomore_options = 0;
 	sanity_skip = 0;
@@ -358,7 +371,7 @@ main(int argc, char **argv)
 					show_program_usage(*argv);
 				}
 #ifdef USE_SSL
-				if ( (ssl_numsocks + numsocks) < MAX_LISTEN_SOCKS)
+				if ((ssl_numsocks + numsocks) < MAX_LISTEN_SOCKS)
 #else
 				if (numsocks < MAX_LISTEN_SOCKS)
 #endif
@@ -368,7 +381,7 @@ main(int argc, char **argv)
 				if (i + 1 >= argc) {
 					show_program_usage(*argv);
 				}
-				if ( (ssl_numsocks + numsocks) < MAX_LISTEN_SOCKS)
+				if ((ssl_numsocks + numsocks) < MAX_LISTEN_SOCKS)
 					ssl_listener_port[ssl_numsocks++] = atoi(argv[++i]);
 #else
 			} else if (!strcmp(argv[i], "-sport")) {
@@ -403,7 +416,7 @@ main(int argc, char **argv)
 					show_program_usage(*argv);
 				}
 #ifdef USE_SSL
-				if ( (ssl_numsocks + numsocks) < MAX_LISTEN_SOCKS)
+				if ((ssl_numsocks + numsocks) < MAX_LISTEN_SOCKS)
 #else
 				if (numsocks < MAX_LISTEN_SOCKS)
 #endif
@@ -420,7 +433,7 @@ main(int argc, char **argv)
 
 	if (!sanity_interactive) {
 
-                log_status("INIT: TinyMUCK %s starting.\n", "version");
+		log_status("INIT: TinyMUCK %s starting.\n", "version");
 
 #ifdef DETACH
 		/* Go into the background unless requested not to */
@@ -461,6 +474,7 @@ main(int argc, char **argv)
 #  ifdef  TIOCNOTTY				/* we can force this, POSIX / BSD */
 			{
 				int fd;
+
 				if ((fd = open("/dev/tty", O_RDWR)) >= 0) {
 					ioctl(fd, TIOCNOTTY, (char *) 0);	/* lose controll TTY */
 					close(fd);
@@ -500,10 +514,10 @@ main(int argc, char **argv)
 	mcp_initialize();
 	gui_initialize();
 
-    sel_prof_start_time = time(NULL); /* Set useful starting time */
-    sel_prof_idle_sec = 0;
-    sel_prof_idle_usec = 0;
-    sel_prof_idle_use = 0;
+	sel_prof_start_time = time(NULL);	/* Set useful starting time */
+	sel_prof_idle_sec = 0;
+	sel_prof_idle_usec = 0;
+	sel_prof_idle_use = 0;
 
 	if (init_game(infile_name, outfile_name) < 0) {
 		fprintf(stderr, "Couldn't load %s!\n", infile_name);
@@ -527,24 +541,22 @@ main(int argc, char **argv)
 			}
 		}
 
-
 #ifdef WIN32
-	wVersionRequested = MAKEWORD( 2, 0 );
- 
-	err = WSAStartup( wVersionRequested, &wsaData );
-	if ( err != 0 ) {
-		perror("Unable to start socket layer");
-		return 1;
-	}
- 
-	if ( LOBYTE( wsaData.wVersion ) != 2 ||
-			HIBYTE( wsaData.wVersion ) != 0 ) {
-		perror("Winsock 2.0 or later is required to run this application.");
-		WSACleanup( );
-		return 1; 
-	}
+		wVersionRequested = MAKEWORD(2, 0);
 
-	set_console(); /* Setup the console to handle CTRL+C */
+		err = WSAStartup(wVersionRequested, &wsaData);
+		if (err != 0) {
+			perror("Unable to start socket layer");
+			return 1;
+		}
+
+		if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 0) {
+			perror("Winsock 2.0 or later is required to run this application.");
+			WSACleanup();
+			return 1;
+		}
+
+		set_console();			/* Setup the console to handle CTRL+C */
 #endif
 
 		/* go do it */
@@ -583,9 +595,9 @@ main(int argc, char **argv)
 		purge_all_free_frames();
 		purge_timenode_free_pool();
 		purge_for_pool();
-		purge_for_pool(); /* have to do this a second time to purge all */
+		purge_for_pool();		/* have to do this a second time to purge all */
 		purge_try_pool();
-		purge_try_pool(); /* have to do this a second time to purge all */
+		purge_try_pool();		/* have to do this a second time to purge all */
 		purge_mfns();
 		cleanup_game();
 		tune_freeparms();
@@ -612,18 +624,18 @@ main(int argc, char **argv)
 			argcnt += ssl_numsocks;
 #endif
 
-			argslist = (char**)calloc(argcnt, sizeof(char*));
+			argslist = (char **) calloc(argcnt, sizeof(char *));
 
 			for (i = 0; i < numsocks; i++) {
 				snprintf(numbuf, sizeof(numbuf), "%d", listener_port[i]);
-				argslist[argnum] = (char*)malloc(strlen(numbuf)+1);
+				argslist[argnum] = (char *) malloc(strlen(numbuf) + 1);
 				strcpy(argslist[argnum++], numbuf);
 			}
 
 #ifdef USE_SSL
 			for (i = 0; i < ssl_numsocks; i++) {
 				snprintf(numbuf, sizeof(numbuf), "-sport %d", ssl_listener_port[i]);
-				argslist[argnum] = (char*)malloc(strlen(numbuf)+1);
+				argslist[argnum] = (char *) malloc(strlen(numbuf) + 1);
 				strcpy(argslist[argnum++], numbuf);
 			}
 #endif
@@ -637,11 +649,12 @@ main(int argc, char **argv)
 
 				fprintf(stderr, "Could not find restart script!\n");
 			}
-#else	/* WIN32 */
-			char* argbuf[1];
+#else							/* WIN32 */
+			char *argbuf[1];
+
 			argbuf[0] = NULL;
 			execv("restart", argbuf);
-#endif	/* WIN32 */
+#endif							/* WIN32 */
 		}
 	}
 
@@ -682,7 +695,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 	const char *ptr2;
 	dbref ref;
 	int di;
-	int* darr;
+	int *darr;
 	int dcount;
 
 	ptr2 = msg;
@@ -697,10 +710,11 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 			ptr2++;
 
 		darr = get_player_descrs(player, &dcount);
-        for (di = 0; di < dcount; di++) {
-            queue_ansi(descrdata_by_descr(darr[di]), buf);
-            if (firstpass) retval++;
-        }
+		for (di = 0; di < dcount; di++) {
+			queue_ansi(descrdata_by_descr(darr[di]), buf);
+			if (firstpass)
+				retval++;
+		}
 
 		if (tp_zombies) {
 			if ((Typeof(player) == TYPE_THING) && (FLAGS(player) & ZOMBIE) &&
@@ -716,16 +730,14 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 
 						*match_args = '\0';
 
-						if (notify_nolisten_level <= 0)
-						{
+						if (notify_nolisten_level <= 0) {
 							notify_nolisten_level++;
 
 							prefix = do_parse_prop(-1, player, player, MESGPROP_PECHO,
-												"(@Pecho)", pbuf, MPI_ISPRIVATE);
+												   "(@Pecho)", pbuf, MPI_ISPRIVATE);
 
 							notify_nolisten_level--;
-						}
-						else
+						} else
 							prefix = 0;
 
 						*match_args = ch;
@@ -733,17 +745,18 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 						if (!prefix || !*prefix) {
 							prefix = NAME(player);
 							snprintf(buf2, sizeof(buf2), "%s> %.*s", prefix,
-									(int)(BUFFER_LEN - (strlen(prefix) + 3)), buf);
+									 (int) (BUFFER_LEN - (strlen(prefix) + 3)), buf);
 						} else {
 							snprintf(buf2, sizeof(buf2), "%s %.*s", prefix,
-									(int)(BUFFER_LEN - (strlen(prefix) + 2)), buf);
+									 (int) (BUFFER_LEN - (strlen(prefix) + 2)), buf);
 						}
 
 						darr = get_player_descrs(OWNER(player), &dcount);
-                        for (di = 0; di < dcount; di++) {
-                            queue_ansi(descrdata_by_descr(darr[di]), buf2);
-                            if (firstpass) retval++;
-                        }
+						for (di = 0; di < dcount; di++) {
+							queue_ansi(descrdata_by_descr(darr[di]), buf2);
+							if (firstpass)
+								retval++;
+						}
 					}
 				}
 			}
@@ -797,12 +810,13 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 
 				*match_args = '\0';
 				prefix = do_parse_prop(-1, from, player, MESGPROP_OECHO,
-										"(@Oecho)", pbuf, MPI_ISPRIVATE);
+									   "(@Oecho)", pbuf, MPI_ISPRIVATE);
 				*match_args = ch;
 
 				if (!prefix || !*prefix)
 					prefix = "Outside>";
-				snprintf(buf, sizeof(buf), "%s %.*s", prefix, (int)(BUFFER_LEN - (strlen(prefix) + 2)), msg);
+				snprintf(buf, sizeof(buf), "%s %.*s", prefix,
+						 (int) (BUFFER_LEN - (strlen(prefix) + 2)), msg);
 				ref = DBFETCH(player)->contents;
 				while (ref != NOTHING) {
 					notify_filtered(from, ref, buf, isprivate);
@@ -962,8 +976,8 @@ queue_immediate(struct descriptor_data *d, const char *msg)
 		strip_ansi(buf, msg);
 	}
 
-	if (d->mcpframe.enabled && !(strncmp(buf, MCP_MESG_PREFIX, 3) && strncmp(buf, MCP_QUOTE_PREFIX, 3)))
-	{
+	if (d->mcpframe.enabled &&
+		!(strncmp(buf, MCP_MESG_PREFIX, 3) && strncmp(buf, MCP_QUOTE_PREFIX, 3))) {
 		quote_len = strlen(MCP_QUOTE_PREFIX);
 		socket_write(d, MCP_QUOTE_PREFIX, quote_len);
 	}
@@ -989,12 +1003,14 @@ idleboot_user(struct descriptor_data *d)
 }
 
 #ifdef USE_SSL
-int pem_passwd_cb(char *buf, int size, int rwflag, void *userdata)
+int
+pem_passwd_cb(char *buf, int size, int rwflag, void *userdata)
 {
-	const char *pw = (const char*)userdata;
+	const char *pw = (const char *) userdata;
 	int pwlen = strlen(pw);
+
 	strncpy(buf, pw, size);
-	return ((pwlen > size)? size : pwlen);
+	return ((pwlen > size) ? size : pwlen);
 }
 #endif
 
@@ -1028,30 +1044,30 @@ shovechars()
 	}
 
 #ifdef USE_SSL
-	SSL_load_error_strings ();
- 	OpenSSL_add_ssl_algorithms (); 
-	ssl_ctx = SSL_CTX_new (SSLv23_server_method ());
- 
-	if (!SSL_CTX_use_certificate_file (ssl_ctx, SSL_CERT_FILE, SSL_FILETYPE_PEM)) {
+	SSL_load_error_strings();
+	OpenSSL_add_ssl_algorithms();
+	ssl_ctx = SSL_CTX_new(SSLv23_server_method());
+
+	if (!SSL_CTX_use_certificate_file(ssl_ctx, SSL_CERT_FILE, SSL_FILETYPE_PEM)) {
 		log_status("Could not load certificate file %s\n", SSL_CERT_FILE);
 		ssl_status_ok = 0;
 	}
 	if (ssl_status_ok) {
 		SSL_CTX_set_default_passwd_cb(ssl_ctx, pem_passwd_cb);
-		SSL_CTX_set_default_passwd_cb_userdata(ssl_ctx, (void*)tp_ssl_keyfile_passwd);
+		SSL_CTX_set_default_passwd_cb_userdata(ssl_ctx, (void *) tp_ssl_keyfile_passwd);
 
-		if (!SSL_CTX_use_PrivateKey_file (ssl_ctx, SSL_KEY_FILE, SSL_FILETYPE_PEM)) {
+		if (!SSL_CTX_use_PrivateKey_file(ssl_ctx, SSL_KEY_FILE, SSL_FILETYPE_PEM)) {
 			log_status("Could not load private key file %s\n", SSL_KEY_FILE);
 			ssl_status_ok = 0;
 		}
 	}
 	if (ssl_status_ok) {
-		if (!SSL_CTX_check_private_key (ssl_ctx)) {
+		if (!SSL_CTX_check_private_key(ssl_ctx)) {
 			log_status("Private key does not check out and appears to be invalid.\n");
 			ssl_status_ok = 0;
 		}
 	}
- 
+
 	if (ssl_status_ok) {
 		for (i = 0; i < ssl_numsocks; i++) {
 			ssl_sock[i] = make_socket(ssl_listener_port[i]);
@@ -1073,7 +1089,7 @@ shovechars()
 		process_commands();
 		muf_event_process();
 #ifdef WIN32
-		check_console(); /* Handle possible CTRL+C */
+		check_console();		/* Handle possible CTRL+C */
 #endif
 
 		for (d = descriptor_list; d; d = dnext) {
@@ -1125,13 +1141,13 @@ shovechars()
 				FD_SET(d->descriptor, &output_set);
 #ifdef USE_SSL
 			if (d->ssl_session) {
-			/* SSL may want to write even if the output queue is empty */
-				if ( ! SSL_is_init_finished(d->ssl_session) ) {
+				/* SSL may want to write even if the output queue is empty */
+				if (!SSL_is_init_finished(d->ssl_session)) {
 					/* log_status("SSL : Init not finished.\n", "version"); */
 					FD_CLR(d->descriptor, &output_set);
 					FD_SET(d->descriptor, &input_set);
-				} 
-				if ( SSL_want_write(d->ssl_session) ) {
+				}
+				if (SSL_want_write(d->ssl_session)) {
 					/* log_status("SSL : Need write.\n", "version"); */
 					FD_SET(d->descriptor, &output_set);
 				}
@@ -1147,7 +1163,7 @@ shovechars()
 			timeout.tv_sec = tmptq + (tp_pause_min / 1000);
 			timeout.tv_usec = (tp_pause_min % 1000) * 1000L;
 		}
-		gettimeofday(&sel_in,NULL);
+		gettimeofday(&sel_in, NULL);
 #ifndef WIN32
 		if (select(maxd, &input_set, &output_set, (fd_set *) 0, &timeout) < 0) {
 			if (errno != EINTR) {
@@ -1162,7 +1178,7 @@ shovechars()
 			}
 #endif
 		} else {
-			gettimeofday(&sel_out,NULL);
+			gettimeofday(&sel_out, NULL);
 			if (sel_out.tv_usec < sel_in.tv_usec) {
 				sel_out.tv_usec += 1000000;
 				sel_out.tv_sec -= 1;
@@ -1183,25 +1199,25 @@ shovechars()
 #ifndef WIN32
 						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE
 							/*
-							*  && errno != ETIMEDOUT
-							*  && errno != ECONNRESET
-							*  && errno != ENOTCONN
-							*  && errno != EPIPE
-							*  && errno != ECONNREFUSED
-							*#ifdef EPROTO
-							*  && errno != EPROTO
-							*#endif
-							*/
+							 *  && errno != ETIMEDOUT
+							 *  && errno != ECONNRESET
+							 *  && errno != ENOTCONN
+							 *  && errno != EPIPE
+							 *  && errno != ECONNREFUSED
+							 *#ifdef EPROTO
+							 *  && errno != EPROTO
+							 *#endif
+							 */
 								) {
 							perror("new_connection");
 							/* return; */
 						}
-#else	/* WIN32 */
+#else							/* WIN32 */
 						if (WSAGetLastError() != WSAEINTR && WSAGetLastError() != EMFILE) {
 							perror("new_connection");
 							/* return; */
 						}
-#endif	/* WIN32 */
+#endif							/* WIN32 */
 					} else {
 						if (newd->descriptor >= maxd)
 							maxd = newd->descriptor + 1;
@@ -1213,11 +1229,7 @@ shovechars()
 				if (FD_ISSET(ssl_sock[i], &input_set)) {
 					if (!(newd = new_connection(ssl_listener_port[i], ssl_sock[i]))) {
 #ifndef WIN32
-						if (errno 
-							&& errno != EINTR 
-							&& errno != EMFILE
-							&& errno != ENFILE
-							) {
+						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
 							perror("new_connection");
 							/* return; */
 						}
@@ -1230,7 +1242,7 @@ shovechars()
 					} else {
 						if (newd->descriptor >= maxd)
 							maxd = newd->descriptor + 1;
-						newd->ssl_session  = SSL_new (ssl_ctx);
+						newd->ssl_session = SSL_new(ssl_ctx);
 						SSL_set_fd(newd->ssl_session, newd->descriptor);
 						cnt = SSL_accept(newd->ssl_session);
 						/* log_status("SSL accept1: %i\n", cnt ); */
@@ -1305,18 +1317,18 @@ wall_and_flush(const char *msg)
 void
 flush_user_output(dbref player)
 {
-    int di;
-    int* darr;
-    int dcount;
+	int di;
+	int *darr;
+	int dcount;
 	struct descriptor_data *d;
 
 	darr = get_player_descrs(OWNER(player), &dcount);
-    for (di = 0; di < dcount; di++) {
-        d = descrdata_by_descr(darr[di]);
-        if (d && !process_output(d)) {
-            d->booted = 1;
-        }
-    }
+	for (di = 0; di < dcount; di++) {
+		d = descrdata_by_descr(darr[di]);
+		if (d && !process_output(d)) {
+			d->booted = 1;
+		}
+	}
 }
 
 
@@ -1354,7 +1366,7 @@ new_connection(int port, int sock)
 	socklen_t addr_len;
 	char hostname[128];
 
-	addr_len = (socklen_t)sizeof(addr);
+	addr_len = (socklen_t) sizeof(addr);
 	newsock = accept(sock, (struct sockaddr *) &addr, &addr_len);
 	if (newsock < 0) {
 		return 0;
@@ -1403,7 +1415,7 @@ spawn_resolver()
 
 	socketpair(AF_UNIX, SOCK_STREAM, 0, resolver_sock);
 	make_nonblocking(resolver_sock[1]);
-	if ((global_resolver_pid=fork())==0) {
+	if ((global_resolver_pid = fork()) == 0) {
 		close(0);
 		close(1);
 		dup(resolver_sock[0]);
@@ -1411,6 +1423,7 @@ spawn_resolver()
 #ifdef BINDIR
 		{
 			char resolverpath[BUFFER_LEN];
+
 			snprintf(resolverpath, sizeof(resolverpath), "%s/fb-resolver", BINDIR);
 			execl(resolverpath, "fb-resolver", NULL);
 			snprintf(resolverpath, sizeof(resolverpath), "%s/resolver", BINDIR);
@@ -1433,7 +1446,7 @@ spawn_resolver()
 		execl("./resolver", "resolver", NULL);
 		execl("resolver", "resolver", NULL);
 #endif
-		log_status("%s","Unable to spawn host resolver!");
+		log_status("%s", "Unable to spawn host resolver!");
 		_exit(1);
 	}
 }
@@ -1591,15 +1604,14 @@ addrout(int lport, long a, unsigned short prt)
 
 #ifdef SPAWN_HOST_RESOLVER
 	snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)%u\n",
-			(a >> 24) & 0xff,
-			(a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt, lport);
+			 (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt, lport);
 	if (tp_hostnames) {
 		write(resolver_sock[1], buf, strlen(buf));
 	}
 #endif
 
 	snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)",
-			(a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt);
+			 (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt);
 #endif
 	return buf;
 }
@@ -1632,7 +1644,7 @@ shutdownsock(struct descriptor_data *d)
 	clearstrings(d);
 	shutdown(d->descriptor, 2);
 	close(d->descriptor);
-    forget_descriptor(d);
+	forget_descriptor(d);
 	freeqs(d);
 	*d->prev = d->next;
 	if (d->next)
@@ -1656,7 +1668,8 @@ SendText(McpFrame * mfr, const char *text)
 void
 FlushText(McpFrame * mfr)
 {
-	struct descriptor_data *d = (struct descriptor_data *)mfr->descriptor;
+	struct descriptor_data *d = (struct descriptor_data *) mfr->descriptor;
+
 	if (d && !process_output(d)) {
 		d->booted = 1;
 	}
@@ -1720,7 +1733,7 @@ initializesock(int s, const char *hostname)
 	d->next = descriptor_list;
 	d->prev = &descriptor_list;
 	descriptor_list = d;
-    remember_descriptor(d);
+	remember_descriptor(d);
 
 	mcp_negotiation_start(&d->mcpframe);
 	welcome_user(d);
@@ -1906,26 +1919,27 @@ make_nonblocking(int s)
 {
 #ifndef WIN32
 # if !defined(O_NONBLOCK) || defined(ULTRIX)	/* POSIX ME HARDER */
-#  ifdef FNDELAY					/* SUN OS */
+#  ifdef FNDELAY				/* SUN OS */
 #   define O_NONBLOCK FNDELAY
 #  else
 #   ifdef O_NDELAY				/* SyseVil */
 #    define O_NONBLOCK O_NDELAY
 #   endif						/* O_NDELAY */
-#  endif							/* FNDELAY */
+#  endif						/* FNDELAY */
 # endif
 
 	if (fcntl(s, F_SETFL, O_NONBLOCK) == -1) {
 		perror("make_nonblocking: fcntl");
 		panic("O_NONBLOCK fcntl failed");
 	}
-#else /* WIN32 */
+#else							/* WIN32 */
 	unsigned long O_NONBLOCK = 1;
+
 	if (ioctlsocket(s, FIONBIO, &O_NONBLOCK) == SOCKET_ERROR) {
 		perror("make_nonblocking: ioctlsocket");
 		panic("O_NONBLOCK ioctlsocket failed");
 	}
-#endif /* WIN32 */
+#endif							/* WIN32 */
 }
 
 void
@@ -1987,13 +2001,13 @@ process_input(struct descriptor_data *d)
 	got = socket_read(d, buf, sizeof buf);
 #ifndef WIN32
 # ifdef USE_SSL
-	if ( (got <= 0) && errno != EWOULDBLOCK ) 
+	if ((got <= 0) && errno != EWOULDBLOCK)
 # else
 	if (got <= 0)
 # endif
 #else
 # ifdef USE_SSL
-	if ( (got <= 0 || got == SOCKET_ERROR) && WSAGetLastError() != EWOULDBLOCK ) 
+	if ((got <= 0 || got == SOCKET_ERROR) && WSAGetLastError() != EWOULDBLOCK)
 # else
 	if (got <= 0 || got == SOCKET_ERROR)
 # endif
@@ -2018,63 +2032,65 @@ process_input(struct descriptor_data *d)
 			p = d->raw_input;
 		} else if (d->inIAC == 1) {
 			switch (*q) {
-				case '\361': /* NOP */
+			case '\361':		/* NOP */
+				d->inIAC = 0;
+				break;
+			case '\363':		/* Break */
+			case '\364':		/* Interrupt Process */
+				save_command(d, BREAK_COMMAND);
+				d->inIAC = 0;
+				break;
+			case '\365':		/* Abort Output */
+				/* could be handy, but for now leave unimplemented */
+				d->inIAC = 0;
+				break;
+			case '\366':		/* AYT */
+				{
+					char sendbuf[] = "[Yes]\r\n";
+
+					socket_write(d, sendbuf, strlen(sendbuf));
 					d->inIAC = 0;
 					break;
-				case '\363': /* Break */
-				case '\364': /* Interrupt Process */
-					save_command(d, BREAK_COMMAND);
-					d->inIAC = 0;
-					break;
-				case '\365': /* Abort Output */
-					/* could be handy, but for now leave unimplemented */
-					d->inIAC = 0;
-					break;
-				case '\366': /* AYT */
-					{
-						char sendbuf[] = "[Yes]\r\n";
-						socket_write(d, sendbuf, strlen(sendbuf));
-						d->inIAC = 0;
-						break;
-					}
-				case '\367': /* Erase character */
-					if (p > d->raw_input)
-						p--;
-					d->inIAC = 0;
-					break;
-				case '\370': /* Erase line */
-					p = d->raw_input;
-					d->inIAC = 0;
-					break;
-				case '\372': /* Go Ahead */
-					/* treat as a NOP (?) */
-					d->inIAC = 0;
-					break;
-				case '\373': /* WILL (option offer) */
-					d->inIAC = 2;
-					break;
-				case '\374': /* WONT (option offer) */
-					d->inIAC = 4;
-					break;
-				case '\375': /* DO (option request) */
-				case '\376': /* DONT (option request) */
-					d->inIAC = 3;
-					break;
-				case '\377': /* IAC a second time */
+				}
+			case '\367':		/* Erase character */
+				if (p > d->raw_input)
+					p--;
+				d->inIAC = 0;
+				break;
+			case '\370':		/* Erase line */
+				p = d->raw_input;
+				d->inIAC = 0;
+				break;
+			case '\372':		/* Go Ahead */
+				/* treat as a NOP (?) */
+				d->inIAC = 0;
+				break;
+			case '\373':		/* WILL (option offer) */
+				d->inIAC = 2;
+				break;
+			case '\374':		/* WONT (option offer) */
+				d->inIAC = 4;
+				break;
+			case '\375':		/* DO (option request) */
+			case '\376':		/* DONT (option request) */
+				d->inIAC = 3;
+				break;
+			case '\377':		/* IAC a second time */
 #if 0
-					/* If we were 8 bit clean, we'd pass this along */
-					*p++ = *q;
+				/* If we were 8 bit clean, we'd pass this along */
+				*p++ = *q;
 #endif
-					d->inIAC = 0;
-					break;
-				default:
-					/* just ignore */
-					d->inIAC = 0;
-					break;
+				d->inIAC = 0;
+				break;
+			default:
+				/* just ignore */
+				d->inIAC = 0;
+				break;
 			}
 		} else if (d->inIAC == 2) {
 			/* We don't negotiate: send back DONT option */
 			char sendbuf[4];
+
 			sendbuf[0] = '\377';
 			sendbuf[1] = '\376';
 			sendbuf[2] = *q;
@@ -2084,6 +2100,7 @@ process_input(struct descriptor_data *d)
 		} else if (d->inIAC == 3) {
 			/* We don't negotiate: send back WONT option */
 			char sendbuf[4];
+
 			sendbuf[0] = '\377';
 			sendbuf[1] = '\374';
 			sendbuf[2] = *q;
@@ -2094,7 +2111,7 @@ process_input(struct descriptor_data *d)
 			/* Ignore WONT option. */
 			d->inIAC = 0;
 		} else if (*q == '\377') {
-			/* Got TELNET IAC, store for next byte */	
+			/* Got TELNET IAC, store for next byte */
 			d->inIAC = 1;
 		} else if (p < pend && isascii(*q)) {
 			if (isprint(*q)) {
@@ -2146,6 +2163,7 @@ process_commands(void)
 			if (d->quota > 0 && (t = d->input.head)) {
 				if (d->connected && PLAYER_BLOCK(d->player) && !is_interface_command(t->start)) {
 					char *tmp = t->start;
+
 					if (!strncmp(tmp, "#$\"", 3)) {
 						/* Un-escape MCP escaped lines */
 						tmp += 3;
@@ -2186,14 +2204,15 @@ process_commands(void)
 }
 
 int
-is_interface_command(const char* cmd)
+is_interface_command(const char *cmd)
 {
-	const char* tmp = cmd;
+	const char *tmp = cmd;
+
 	if (!strncmp(tmp, "#$\"", 3)) {
 		/* dequote MCP quoting. */
 		tmp += 3;
 	}
-	if (!strncmp(cmd, "#$#", 3)) /* MCP mesg. */
+	if (!strncmp(cmd, "#$#", 3))	/* MCP mesg. */
 		return 1;
 	if (!string_compare(tmp, BREAK_COMMAND))
 		return 1;
@@ -2223,8 +2242,8 @@ do_command(struct descriptor_data *d, char *command)
 		ts_lastuseobject(d->player);
 
 	if (!string_compare(command, BREAK_COMMAND)) {
-	        if (!d->connected)
-		        return 0;
+		if (!d->connected)
+			return 0;
 		if (dequeue_prog(d->player, 2)) {
 			if (d->output_prefix) {
 				queue_ansi(d, d->output_prefix);
@@ -2244,9 +2263,9 @@ do_command(struct descriptor_data *d, char *command)
 	} else if (!strcmp(command, QUIT_COMMAND)) {
 		return 0;
 	} else if ((!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1)) ||
-                   (*command == OVERIDE_TOKEN &&
-                    (!strncmp(command+1, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))
-                   )) {
+			   (*command == OVERIDE_TOKEN &&
+				(!strncmp(command + 1, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))
+			   )) {
 		if (d->output_prefix) {
 			queue_ansi(d, d->output_prefix);
 			queue_write(d, "\r\n", 2);
@@ -2263,12 +2282,12 @@ do_command(struct descriptor_data *d, char *command)
 			}
 		} else {
 			if ((!(TrueWizard(OWNER(d->player)) &&
-                              (*command == OVERIDE_TOKEN))) &&
-                            can_move(d->descriptor, d->player, buf, 2)) {
+				   (*command == OVERIDE_TOKEN))) &&
+				can_move(d->descriptor, d->player, buf, 2)) {
 				do_move(d->descriptor, d->player, buf, 2);
 			} else {
-				dump_users(d, command + sizeof(WHO_COMMAND) - 
-                                           ((*command == OVERIDE_TOKEN)?0:1));
+				dump_users(d, command + sizeof(WHO_COMMAND) -
+						   ((*command == OVERIDE_TOKEN) ? 0 : 1));
 			}
 		}
 		if (d->output_suffix) {
@@ -2304,11 +2323,11 @@ interact_warn(dbref player)
 		char buf[BUFFER_LEN];
 
 		snprintf(buf, sizeof(buf), "***  %s  ***",
-				(FLAGS(player) & READMODE) ?
-				"You are currently using a program.  Use \"@Q\" to return to a more reasonable state of control."
-				: (PLAYER_INSERT_MODE(player) ?
-				   "You are currently inserting MUF program text.  Use \".\" to return to the editor, then \"quit\" if you wish to return to your regularly scheduled Muck universe."
-				   : "You are currently using the MUF program editor."));
+				 (FLAGS(player) & READMODE) ?
+				 "You are currently using a program.  Use \"@Q\" to return to a more reasonable state of control."
+				 : (PLAYER_INSERT_MODE(player) ?
+					"You are currently inserting MUF program text.  Use \".\" to return to the editor, then \"quit\" if you wish to return to your regularly scheduled Muck universe."
+					: "You are currently using the MUF program editor."));
 		notify(player, buf);
 	}
 }
@@ -2333,7 +2352,8 @@ check_connect(struct descriptor_data *d, const char *msg)
 				 (tp_playermax && con_players_curr >= tp_playermax_limit)) &&
 				!TrueWizard(player)) {
 				if (wizonly_mode) {
-					queue_ansi(d, "Sorry, but the game is in maintenance mode currently, and only wizards are allowed to connect.  Try again later.");
+					queue_ansi(d,
+							   "Sorry, but the game is in maintenance mode currently, and only wizards are allowed to connect.  Try again later.");
 				} else {
 					queue_ansi(d, tp_playermax_bootmesg);
 				}
@@ -2367,7 +2387,8 @@ check_connect(struct descriptor_data *d, const char *msg)
 		if (!tp_registration) {
 			if (wizonly_mode || (tp_playermax && con_players_curr >= tp_playermax_limit)) {
 				if (wizonly_mode) {
-					queue_ansi(d, "Sorry, but the game is in maintenance mode currently, and only wizards are allowed to connect.  Try again later.");
+					queue_ansi(d,
+							   "Sorry, but the game is in maintenance mode currently, and only wizards are allowed to connect.  Try again later.");
 				} else {
 					queue_ansi(d, tp_playermax_bootmesg);
 				}
@@ -2434,13 +2455,13 @@ parse_connect(const char *msg, char *command, char *user, char *pass)
 int
 boot_off(dbref player)
 {
-    int* darr;
-    int dcount;
+	int *darr;
+	int dcount;
 	struct descriptor_data *last = NULL;
 
 	darr = get_player_descrs(player, &dcount);
 	if (darr) {
-        last = descrdata_by_descr(darr[0]);
+		last = descrdata_by_descr(darr[0]);
 	}
 
 	if (last) {
@@ -2455,18 +2476,18 @@ boot_off(dbref player)
 void
 boot_player_off(dbref player)
 {
-    int di;
-    int* darr;
-    int dcount;
-    struct descriptor_data *d;
- 
+	int di;
+	int *darr;
+	int dcount;
+	struct descriptor_data *d;
+
 	darr = get_player_descrs(player, &dcount);
-    for (di = 0; di < dcount; di++) {
-        d = descrdata_by_descr(darr[di]);
-        if (d) {
-            d->booted = 1;
-        }
-    }
+	for (di = 0; di < dcount; di++) {
+		d = descrdata_by_descr(darr[di]);
+		if (d) {
+			d->booted = 1;
+		}
+	}
 }
 
 
@@ -2607,7 +2628,7 @@ dump_users(struct descriptor_data *e, char *user)
 			if (wizard) {
 				/* don't print flags, to save space */
 				snprintf(pbuf, sizeof(pbuf), "%.*s(#%d)", PLAYER_NAME_LIMIT + 1,
-						NAME(d->player), (int) d->player);
+						 NAME(d->player), (int) d->player);
 #ifdef GOD_PRIV
 				if (!God(e->player))
 #ifdef USE_SSL
@@ -2615,15 +2636,15 @@ dump_users(struct descriptor_data *e, char *user)
 #else
 					snprintf(buf, sizeof(buf), "%-*s [%6d] %10s%4s%c  %s\r\n",
 #endif
-							PLAYER_NAME_LIMIT + 10, pbuf,
-							(int) DBFETCH(d->player)->location,
-							time_format_1(now - d->connected_at),
-							time_format_2(now - d->last_time),
-							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
-#ifdef USE_SSL	
-							(d->ssl_session ? '@' : ' '),
+							 PLAYER_NAME_LIMIT + 10, pbuf,
+							 (int) DBFETCH(d->player)->location,
+							 time_format_1(now - d->connected_at),
+							 time_format_2(now - d->last_time),
+							 ((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
+#ifdef USE_SSL
+							 (d->ssl_session ? '@' : ' '),
 #endif
-							d->hostname);
+							 d->hostname);
 				else
 #endif
 #ifdef USE_SSL
@@ -2631,15 +2652,15 @@ dump_users(struct descriptor_data *e, char *user)
 #else
 					snprintf(buf, sizeof(buf), "%-*s [%6d] %10s %4s%c  %s(%s)\r\n",
 #endif
-							PLAYER_NAME_LIMIT + 10, pbuf,
-							(int) DBFETCH(d->player)->location,
-							time_format_1(now - d->connected_at),
-							time_format_2(now - d->last_time),
-							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
+							 PLAYER_NAME_LIMIT + 10, pbuf,
+							 (int) DBFETCH(d->player)->location,
+							 time_format_1(now - d->connected_at),
+							 time_format_2(now - d->last_time),
+							 ((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
 #ifdef USE_SSL
-							(d->ssl_session ? '@' : ' '),
+							 (d->ssl_session ? '@' : ' '),
 #endif
-							d->hostname, d->username);
+							 d->hostname, d->username);
 			} else {
 				if (tp_who_doing) {
 					/* Modified to take into account PLAYER_NAME_LIMIT changes */
@@ -2648,37 +2669,36 @@ dump_users(struct descriptor_data *e, char *user)
 #else
 					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c  %.*s\r\n",
 #endif
-							PLAYER_NAME_LIMIT + 1,
-							NAME(d->player),
-							time_format_1(now - d->connected_at),
-							time_format_2(now - d->last_time),
-							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
+							 PLAYER_NAME_LIMIT + 1,
+							 NAME(d->player),
+							 time_format_1(now - d->connected_at),
+							 time_format_2(now - d->last_time),
+							 ((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
 #ifdef USE_SSL
-							(d->ssl_session ? '@' : ' '),
-#endif		
-							/* Things must end on column 79. The required columns
-							 * (not counting player name, but counting the forced
-							 * space after it) use up 20 columns.
-							 *
-							 * !! Don't forget to update this if you change that !!
-							 */
-							(int) (79 - (PLAYER_NAME_LIMIT + 20)),
-							GETDOING(d->player) ?
-							GETDOING(d->player)
-							: "");
+							 (d->ssl_session ? '@' : ' '),
+#endif
+							 /* Things must end on column 79. The required columns
+							  * (not counting player name, but counting the forced
+							  * space after it) use up 20 columns.
+							  *
+							  * !! Don't forget to update this if you change that !!
+							  */
+							 (int) (79 - (PLAYER_NAME_LIMIT + 20)),
+							 GETDOING(d->player) ? GETDOING(d->player)
+							 : "");
 				} else {
 #ifdef USE_SSL
 					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c%c\r\n",
 #else
 					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c\r\n",
 #endif
-							(int)(PLAYER_NAME_LIMIT + 1),
-							NAME(d->player),
-							time_format_1(now - d->connected_at),
-							time_format_2(now - d->last_time),
-							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' ')
+							 (int) (PLAYER_NAME_LIMIT + 1),
+							 NAME(d->player),
+							 time_format_1(now - d->connected_at),
+							 time_format_2(now - d->last_time),
+							 ((FLAGS(d->player) & INTERACTIVE) ? '*' : ' ')
 #ifdef USE_SSL
-							,(d->ssl_session ? '@' : ' ')
+							 , (d->ssl_session ? '@' : ' ')
 #endif
 							);
 				}
@@ -2690,7 +2710,7 @@ dump_users(struct descriptor_data *e, char *user)
 	if (players > con_players_max)
 		con_players_max = players;
 	snprintf(buf, sizeof(buf), "%d player%s %s connected.  (Max was %d)\r\n", players,
-			(players == 1) ? "" : "s", (players == 1) ? "is" : "are", con_players_max);
+			 (players == 1) ? "" : "s", (players == 1) ? "is" : "are", con_players_max);
 	queue_ansi(e, buf);
 }
 
@@ -2700,9 +2720,10 @@ time_format_1(long dt)
 	register struct tm *delta;
 	static char buf[64];
 
-	delta = gmtime((time_t *) &dt);
+	delta = gmtime((time_t *) & dt);
 	if (delta->tm_yday > 0)
-		snprintf(buf, sizeof(buf), "%dd %02d:%02d", delta->tm_yday, delta->tm_hour, delta->tm_min);
+		snprintf(buf, sizeof(buf), "%dd %02d:%02d", delta->tm_yday, delta->tm_hour,
+				 delta->tm_min);
 	else
 		snprintf(buf, sizeof(buf), "%02d:%02d", delta->tm_hour, delta->tm_min);
 	return buf;
@@ -2714,7 +2735,7 @@ time_format_2(long dt)
 	register struct tm *delta;
 	static char buf[64];
 
-	delta = gmtime((time_t *) &dt);
+	delta = gmtime((time_t *) & dt);
 	if (delta->tm_yday > 0)
 		snprintf(buf, sizeof(buf), "%dd", delta->tm_yday);
 	else if (delta->tm_hour > 0)
@@ -2852,8 +2873,8 @@ announce_disconnect(struct descriptor_data *d)
 	d->connected = 0;
 	d->player = NOTHING;
 
-    forget_player_descr(player, d->descriptor);
-    update_desc_count_table();
+	forget_player_descr(player, d->descriptor);
+	update_desc_count_table();
 
 	/* queue up all _connect programs referred to by properties */
 	envpropqueue(d->descriptor, player, getloc(player), NOTHING, player, NOTHING,
@@ -2897,7 +2918,7 @@ do_setgid(char *name)
 		exit(1);
 	}
 	if (setgid(gr->gr_gid) == -1) {
-		log_status("can't setgid(%d): ",gr->gr_gid);
+		log_status("can't setgid(%d): ", gr->gr_gid);
 		perror("setgid");
 		exit(1);
 	}
@@ -2913,6 +2934,7 @@ void
 init_descr_count_lookup()
 {
 	int i;
+
 	for (i = 0; i < FD_SETSIZE; i++) {
 		descr_count_table[i] = NULL;
 	}
@@ -2925,10 +2947,8 @@ update_desc_count_table()
 	struct descriptor_data *d;
 
 	current_descr_count = 0;
-	for (c = 0, d = descriptor_list; d; d = d->next)
-	{
-		if (d->connected)
-		{
+	for (c = 0, d = descriptor_list; d; d = d->next) {
+		if (d->connected) {
 			d->con_number = c + 1;
 			descr_count_table[c++] = d;
 			current_descr_count++;
@@ -2951,31 +2971,41 @@ struct descriptor_data *descr_lookup_table[FD_SETSIZE];
 #ifdef WIN32
 int descr_hash_table[FD_SETSIZE];
 
-int sethash_descr(int d) {
-   for (int i = 0; i < FD_SETSIZE; i++) {
-      if (descr_hash_table[i] == -1) { descr_hash_table[i] = d; return i; }
-   }
-   fprintf(stderr,"descr hash table full!", NULL); /* Should NEVER happen */
-   return -1;
+int
+sethash_descr(int d)
+{
+	for (int i = 0; i < FD_SETSIZE; i++) {
+		if (descr_hash_table[i] == -1) {
+			descr_hash_table[i] = d;
+			return i;
+		}
+	}
+	fprintf(stderr, "descr hash table full!", NULL);	/* Should NEVER happen */
+	return -1;
 }
 
-int gethash_descr(int d) {
-   for (int i = 0; i < FD_SETSIZE; i++) {
-      if (descr_hash_table[i] == d) return i;
-   }
-   fprintf(stderr,"descr hash value missing!", NULL); /* Should NEVER happen */
-   return -1;
- 
+int
+gethash_descr(int d)
+{
+	for (int i = 0; i < FD_SETSIZE; i++) {
+		if (descr_hash_table[i] == d)
+			return i;
+	}
+	fprintf(stderr, "descr hash value missing!", NULL);	/* Should NEVER happen */
+	return -1;
+
 }
 
-void unsethash_descr(int d) {
-   for (int i = 0; i < FD_SETSIZE; i++) {
-      if (descr_hash_table[i] == d) {
-         descr_hash_table[i] = -1;
-         return;
-      }
-   }
-   fprintf(stderr,"descr hash value missing!", NULL); /* Should NEVER happen */
+void
+unsethash_descr(int d)
+{
+	for (int i = 0; i < FD_SETSIZE; i++) {
+		if (descr_hash_table[i] == d) {
+			descr_hash_table[i] = -1;
+			return;
+		}
+	}
+	fprintf(stderr, "descr hash value missing!", NULL);	/* Should NEVER happen */
 }
 #endif
 
@@ -2983,6 +3013,7 @@ void
 init_descriptor_lookup()
 {
 	int i;
+
 #ifdef WIN32
 	for (i = 0; i < FD_SETSIZE; i++) {
 		descr_hash_table[i] = -1;
@@ -2997,22 +3028,22 @@ init_descriptor_lookup()
 int
 index_descr(int index)
 {
-    if((index < 0) || (index >= FD_SETSIZE))
+	if ((index < 0) || (index >= FD_SETSIZE))
 		return -1;
-	if(descr_lookup_table[index] == NULL)
+	if (descr_lookup_table[index] == NULL)
 		return -1;
 	return descr_lookup_table[index]->descriptor;
 }
 
 
-int*
-get_player_descrs(dbref player, int* count)
+int *
+get_player_descrs(dbref player, int *count)
 {
-	int* darr;
+	int *darr;
 
 	if (Typeof(player) == TYPE_PLAYER) {
 		*count = PLAYER_DESCRCOUNT(player);
-	    darr = PLAYER_DESCRS(player);
+		darr = PLAYER_DESCRS(player);
 		if (!darr) {
 			*count = 0;
 		}
@@ -3026,8 +3057,8 @@ get_player_descrs(dbref player, int* count)
 void
 remember_player_descr(dbref player, int descr)
 {
-	int  count = 0;
-	int* arr   = NULL;
+	int count = 0;
+	int *arr = NULL;
 
 	if (Typeof(player) != TYPE_PLAYER)
 		return;
@@ -3036,11 +3067,11 @@ remember_player_descr(dbref player, int descr)
 	arr = PLAYER_DESCRS(player);
 
 	if (!arr) {
-		arr = (int*)malloc(sizeof(int));
+		arr = (int *) malloc(sizeof(int));
 		arr[0] = descr;
 		count = 1;
 	} else {
-		arr = (int*)realloc(arr,sizeof(int) * (count+1));
+		arr = (int *) realloc(arr, sizeof(int) * (count + 1));
 		arr[count] = descr;
 		count++;
 	}
@@ -3051,8 +3082,8 @@ remember_player_descr(dbref player, int descr)
 void
 forget_player_descr(dbref player, int descr)
 {
-	int  count = 0;
-	int* arr   = NULL;
+	int count = 0;
+	int *arr = NULL;
 
 	if (Typeof(player) != TYPE_PLAYER)
 		return;
@@ -3064,6 +3095,7 @@ forget_player_descr(dbref player, int descr)
 		count = 0;
 	} else if (count > 1) {
 		int src, dest;
+
 		for (src = dest = 0; src < count; src++) {
 			if (arr[src] != descr) {
 				if (src != dest) {
@@ -3074,10 +3106,10 @@ forget_player_descr(dbref player, int descr)
 		}
 		if (dest != count) {
 			count = dest;
-			arr = (int*)realloc(arr,sizeof(int) * count);
+			arr = (int *) realloc(arr, sizeof(int) * count);
 		}
 	} else {
-		free((void*)arr);
+		free((void *) arr);
 		arr = NULL;
 		count = 0;
 	}
@@ -3113,9 +3145,10 @@ struct descriptor_data *
 lookup_descriptor(int c)
 {
 #ifdef WIN32
-	if ( c < 0 ) return NULL;
+	if (c < 0)
+		return NULL;
 	return descr_lookup_table[gethash_descr(c)];
-#else 
+#else
 	if (c >= FD_SETSIZE || c < 0) {
 		return NULL;
 	}
@@ -3140,7 +3173,7 @@ online(dbref player)
 int
 pcount(void)
 {
-    return current_descr_count;
+	return current_descr_count;
 }
 
 int
@@ -3297,7 +3330,7 @@ least_idle_player_descr(dbref who)
 	struct descriptor_data *d;
 	struct descriptor_data *best_d = NULL;
 	int dcount, di;
-	int* darr;
+	int *darr;
 	long best_time = 0;
 
 	darr = get_player_descrs(who, &dcount);
@@ -3321,7 +3354,7 @@ most_idle_player_descr(dbref who)
 	struct descriptor_data *d;
 	struct descriptor_data *best_d = NULL;
 	int dcount, di;
-	int* darr;
+	int *darr;
 	long best_time = 0;
 
 	darr = get_player_descrs(who, &dcount);
@@ -3353,19 +3386,19 @@ pboot(int c)
 	}
 }
 
-int 
+int
 pdescrboot(int c)
 {
-    struct descriptor_data *d;
+	struct descriptor_data *d;
 
-    d = descrdata_by_descr(c);
+	d = descrdata_by_descr(c);
 
-    if (d) {
+	if (d) {
 		process_output(d);
 		d->booted = 1;
 		/* shutdownsock(d); */
 		return 1;
-    }
+	}
 	return 0;
 }
 
@@ -3415,20 +3448,20 @@ pdescr(int c)
 }
 
 
-int 
+int
 pdescrcount(void)
 {
-    return current_descr_count;
+	return current_descr_count;
 }
 
 
-int 
+int
 pfirstdescr(void)
 {
-    struct descriptor_data *d;
+	struct descriptor_data *d;
 
 	d = descrdata_by_count(1);
-    if (d) {
+	if (d) {
 		return d->descriptor;
 	}
 
@@ -3436,10 +3469,10 @@ pfirstdescr(void)
 }
 
 
-int 
+int
 plastdescr(void)
 {
-    struct descriptor_data *d;
+	struct descriptor_data *d;
 
 	d = descrdata_by_count(current_descr_count);
 	if (d) {
@@ -3454,7 +3487,7 @@ pnextdescr(int c)
 {
 	struct descriptor_data *d;
 
-    d = descrdata_by_descr(c);
+	d = descrdata_by_descr(c);
 	if (d) {
 		d = d->next;
 	}
@@ -3472,7 +3505,7 @@ pdescrcon(int c)
 {
 	struct descriptor_data *d;
 
-    d = descrdata_by_descr(c);
+	d = descrdata_by_descr(c);
 	if (d) {
 		return d->con_number;
 	} else {
@@ -3493,14 +3526,14 @@ pset_user(int c, dbref who)
 		return 0;
 	}
 
-    d = descrdata_by_descr(c);
+	d = descrdata_by_descr(c);
 	if (d && d->connected) {
 		announce_disconnect(d);
 		if (who != NOTHING) {
 			d->player = who;
 			d->connected = 1;
 			update_desc_count_table();
-            remember_player_descr(who, d->descriptor);
+			remember_player_descr(who, d->descriptor);
 			announce_connect(d->descriptor, who);
 		}
 		setuser_depth--;
@@ -3515,7 +3548,7 @@ int
 dbref_first_descr(dbref c)
 {
 	int dcount;
-	int* darr;
+	int *darr;
 
 	darr = get_player_descrs(c, &dcount);
 	if (dcount > 0) {
@@ -3531,7 +3564,7 @@ descr_mcpframe(int c)
 {
 	struct descriptor_data *d;
 
-    d = descrdata_by_descr(c);
+	d = descrdata_by_descr(c);
 	if (d) {
 		return &d->mcpframe;
 	}
@@ -3657,7 +3690,8 @@ welcome_user(struct descriptor_data *d)
 		fclose(f);
 	}
 	if (wizonly_mode) {
-		queue_ansi(d, "## The game is currently in maintenance mode, and only wizards will be able to connect.\r\n");
+		queue_ansi(d,
+				   "## The game is currently in maintenance mode, and only wizards will be able to connect.\r\n");
 	} else if (tp_playermax && con_players_curr >= tp_playermax_limit) {
 		if (tp_playermax_warnmesg && *tp_playermax_warnmesg) {
 			queue_ansi(d, tp_playermax_warnmesg);
@@ -3677,32 +3711,35 @@ dump_status(void)
 	log_status("STATUS REPORT:\n");
 	for (d = descriptor_list; d; d = d->next) {
 		if (d->connected) {
-			snprintf(buf, sizeof(buf), "PLAYING descriptor %d player %s(%d) from host %s(%s), %s.\n",
-					d->descriptor, NAME(d->player), d->player, d->hostname, d->username,
-					(d->last_time) ? "idle %d seconds" : "never used");
+			snprintf(buf, sizeof(buf),
+					 "PLAYING descriptor %d player %s(%d) from host %s(%s), %s.\n",
+					 d->descriptor, NAME(d->player), d->player, d->hostname, d->username,
+					 (d->last_time) ? "idle %d seconds" : "never used");
 		} else {
 			snprintf(buf, sizeof(buf), "CONNECTING descriptor %d from host %s(%s), %s.\n",
-					d->descriptor, d->hostname, d->username,
-					(d->last_time) ? "idle %d seconds" : "never used");
+					 d->descriptor, d->hostname, d->username,
+					 (d->last_time) ? "idle %d seconds" : "never used");
 		}
 		log_status(buf, now - d->last_time);
 	}
 }
 
 #ifdef USE_SSL
-ssize_t socket_read(struct descriptor_data *d, void *buf, size_t count) {
+ssize_t
+socket_read(struct descriptor_data *d, void *buf, size_t count)
+{
 	int i;
- 
-	if (! d->ssl_session) {
+
+	if (!d->ssl_session) {
 		return read(d->descriptor, buf, count);
 	} else {
 		i = SSL_read(d->ssl_session, buf, count);
-		if ( i < 0 ) {
+		if (i < 0) {
 			i = SSL_get_error(d->ssl_session, i);
-			if ( (i == SSL_ERROR_WANT_READ) || (i == SSL_ERROR_WANT_WRITE) ) {
+			if ((i == SSL_ERROR_WANT_READ) || (i == SSL_ERROR_WANT_WRITE)) {
 				/* log_status("SSL read: Return wouldblock.\n", "version"); */
 #ifndef WIN32
- 				errno = EWOULDBLOCK;
+				errno = EWOULDBLOCK;
 #else
 				WSASetLastError(WSAEWOULDBLOCK);
 #endif
@@ -3718,25 +3755,27 @@ ssize_t socket_read(struct descriptor_data *d, void *buf, size_t count) {
 		return i;
 	}
 }
- 
-ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count) {
+
+ssize_t
+socket_write(struct descriptor_data * d, const void *buf, size_t count)
+{
 	int i;
 
-	if (! d->ssl_session) {
+	if (!d->ssl_session) {
 		return write(d->descriptor, buf, count);
 	} else {
 		i = SSL_write(d->ssl_session, buf, count);
-		if ( i < 0 ) {
+		if (i < 0) {
 			i = SSL_get_error(d->ssl_session, i);
-			if ( (i == SSL_ERROR_WANT_READ) || (i == SSL_ERROR_WANT_WRITE) ) {
+			if ((i == SSL_ERROR_WANT_READ) || (i == SSL_ERROR_WANT_WRITE)) {
 				/* log_status("SSL write: Return wouldblock.\n", "version"); */
 #ifndef WIN32
- 				errno = EWOULDBLOCK;
+				errno = EWOULDBLOCK;
 #else
 				WSASetLastError(WSAEWOULDBLOCK);
 #endif
 				return -1;
-			} else { 
+			} else {
 				/* log_status("SSL write: Return EBADF.\n", "version"); */
 #ifndef WIN32
 				errno = EBADF;
@@ -3751,10 +3790,11 @@ ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count) {
 
 /* Ignore support -- Could do with moving into its own file */
 
-static int ignore_is_ignoring_sub(dbref Player, dbref Who)
+static int
+ignore_is_ignoring_sub(dbref Player, dbref Who)
 {
 	int Top, Bottom;
-	dbref* List;
+	dbref *List;
 
 	if (!tp_ignore_support)
 		return 0;
@@ -3765,12 +3805,12 @@ static int ignore_is_ignoring_sub(dbref Player, dbref Who)
 	if ((Who < 0) || (Who >= db_top) || (Typeof(Who) == TYPE_GARBAGE))
 		return 0;
 
-	Player	= OWNER(Player);
-	Who		= OWNER(Who);
+	Player = OWNER(Player);
+	Who = OWNER(Who);
 
 	/* You can't ignore yourself, or an unquelled wizard, */
 	/* and unquelled wizards can ignore no one. */
-	if ((Player == Who) || (Wizard(Player)) || (Wizard(Who))) 
+	if ((Player == Who) || (Wizard(Player)) || (Wizard(Who)))
 		return 0;
 
 	if (PLAYER_IGNORE_LAST(Player) == AMBIGUOUS)
@@ -3783,46 +3823,49 @@ static int ignore_is_ignoring_sub(dbref Player, dbref Who)
 	if ((PLAYER_IGNORE_CACHE(Player) == NULL) && !ignore_prime_cache(Player))
 		return 0;
 
-	Top		= 0;
-	Bottom	= PLAYER_IGNORE_COUNT(Player);
-	List	= PLAYER_IGNORE_CACHE(Player);
+	Top = 0;
+	Bottom = PLAYER_IGNORE_COUNT(Player);
+	List = PLAYER_IGNORE_CACHE(Player);
 
-	while(Top < Bottom)
-	{
+	while (Top < Bottom) {
 		int Middle = Top + (Bottom - Top) / 2;
 
 		if (List[Middle] == Who)
 			break;
 
 		if (List[Middle] < Who)
-			Top		= Middle + 1;
+			Top = Middle + 1;
 		else
-			Bottom	= Middle;
+			Bottom = Middle;
 	}
 
 	if (Top >= Bottom)
 		return 0;
 
 	PLAYER_SET_IGNORE_LAST(Player, Who);
-	
+
 	return 1;
 }
 
-int ignore_is_ignoring(dbref Player, dbref Who)
+int
+ignore_is_ignoring(dbref Player, dbref Who)
 {
-	return ignore_is_ignoring_sub(Player, Who) || (tp_ignore_bidirectional && ignore_is_ignoring_sub(Who, Player));
+	return ignore_is_ignoring_sub(Player, Who) || (tp_ignore_bidirectional &&
+												   ignore_is_ignoring_sub(Who, Player));
 }
 
-static int ignore_dbref_compare(const void* Lhs, const void* Rhs)
+static int
+ignore_dbref_compare(const void *Lhs, const void *Rhs)
 {
-	return *(dbref*)Lhs - *(dbref*)Rhs;
+	return *(dbref *) Lhs - *(dbref *) Rhs;
 }
 
-int ignore_prime_cache(dbref Player)
+int
+ignore_prime_cache(dbref Player)
 {
-	const char* Txt = 0;
-	const char* Ptr = 0;
-	dbref* List = 0;
+	const char *Txt = 0;
+	const char *Ptr = 0;
+	dbref *List = 0;
 	int Count = 0;
 	int i;
 
@@ -3832,40 +3875,36 @@ int ignore_prime_cache(dbref Player)
 	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) != TYPE_PLAYER))
 		return 0;
 
-	if ((Txt = get_property_class(Player, IGNORE_PROP)) == NULL)
-	{
+	if ((Txt = get_property_class(Player, IGNORE_PROP)) == NULL) {
 		PLAYER_SET_IGNORE_LAST(Player, AMBIGUOUS);
 		return 0;
 	}
 
-	while(*Txt && isspace(*Txt))
+	while (*Txt && isspace(*Txt))
 		Txt++;
 
-	if (*Txt == '\0')
-	{
+	if (*Txt == '\0') {
 		PLAYER_SET_IGNORE_LAST(Player, AMBIGUOUS);
 		return 0;
 	}
 
-	for(Ptr = Txt; *Ptr; )
-	{
+	for (Ptr = Txt; *Ptr;) {
 		Count++;
 
 		if (*Ptr == '#')
 			Ptr++;
 
-		while(*Ptr && !isspace(*Ptr))
+		while (*Ptr && !isspace(*Ptr))
 			Ptr++;
 
-		while(*Ptr && isspace(*Ptr))
+		while (*Ptr && isspace(*Ptr))
 			Ptr++;
 	}
 
-	if ((List = (dbref*)malloc(sizeof(dbref) * Count)) == 0)
+	if ((List = (dbref *) malloc(sizeof(dbref) * Count)) == 0)
 		return 0;
 
-	for(Ptr = Txt, i = 0; *Ptr; )
-	{
+	for (Ptr = Txt, i = 0; *Ptr;) {
 		if (*Ptr == '#')
 			Ptr++;
 
@@ -3874,10 +3913,10 @@ int ignore_prime_cache(dbref Player)
 		else
 			List[i++] = NOTHING;
 
-		while(*Ptr && !isspace(*Ptr))
+		while (*Ptr && !isspace(*Ptr))
 			Ptr++;
 
-		while(*Ptr && isspace(*Ptr))
+		while (*Ptr && isspace(*Ptr))
 			Ptr++;
 	}
 
@@ -3889,13 +3928,13 @@ int ignore_prime_cache(dbref Player)
 	return 1;
 }
 
-void ignore_flush_cache(dbref Player)
+void
+ignore_flush_cache(dbref Player)
 {
 	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) != TYPE_PLAYER))
 		return;
 
-	if (PLAYER_IGNORE_CACHE(Player))
-	{
+	if (PLAYER_IGNORE_CACHE(Player)) {
 		free(PLAYER_IGNORE_CACHE(Player));
 		PLAYER_SET_IGNORE_CACHE(Player, NULL);
 		PLAYER_SET_IGNORE_COUNT(Player, 0);
@@ -3904,20 +3943,18 @@ void ignore_flush_cache(dbref Player)
 	PLAYER_SET_IGNORE_LAST(Player, NOTHING);
 }
 
-void ignore_flush_all_cache()
+void
+ignore_flush_all_cache()
 {
 	int i;
 
 	/* Don't touch the database if it's not been loaded yet... */
 	if (db == 0)
 		return;
-	
-	for(i = 0; i < db_top; i++)
-	{
-		if (Typeof(i) == TYPE_PLAYER)
-		{
-			if (PLAYER_IGNORE_CACHE(i))
-			{
+
+	for (i = 0; i < db_top; i++) {
+		if (Typeof(i) == TYPE_PLAYER) {
+			if (PLAYER_IGNORE_CACHE(i)) {
 				free(PLAYER_IGNORE_CACHE(i));
 				PLAYER_SET_IGNORE_CACHE(i, NULL);
 				PLAYER_SET_IGNORE_COUNT(i, 0);
@@ -3928,7 +3965,8 @@ void ignore_flush_all_cache()
 	}
 }
 
-void ignore_add_player(dbref Player, dbref Who)
+void
+ignore_add_player(dbref Player, dbref Who)
 {
 	if (!tp_ignore_support)
 		return;
@@ -3944,7 +3982,8 @@ void ignore_add_player(dbref Player, dbref Who)
 	ignore_flush_cache(OWNER(Player));
 }
 
-void ignore_remove_player(dbref Player, dbref Who)
+void
+ignore_remove_player(dbref Player, dbref Who)
 {
 	if (!tp_ignore_support)
 		return;
@@ -3960,14 +3999,15 @@ void ignore_remove_player(dbref Player, dbref Who)
 	ignore_flush_cache(OWNER(Player));
 }
 
-void ignore_remove_from_all_players(dbref Player)
+void
+ignore_remove_from_all_players(dbref Player)
 {
 	int i;
 
 	if (!tp_ignore_support)
 		return;
 
-	for(i = 0; i < db_top; i++)
+	for (i = 0; i < db_top; i++)
 		if (Typeof(i) == TYPE_PLAYER)
 			reflist_del(i, IGNORE_PROP, Player);
 

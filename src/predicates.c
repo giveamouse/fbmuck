@@ -2,8 +2,13 @@
 
 /*
  * $Log: predicates.c,v $
- * Revision 1.1  2004/01/16 21:34:04  winged
- * Initial revision
+ * Revision 1.2  2004/01/29 09:50:06  wolfwings
+ * Applying .indent.pro across all .c files CVS-wide.
+ * Steps will be taken to 'immunize' the CVS tree using the .indent.pro file if possible.
+ * Until that time, please manually run indent over your code before committing.
+ *
+ * Revision 1.1.1.1  2004/01/16 21:34:04  winged
+ * Exported fbmuck repository, importing into new module
  *
  * Revision 1.11  2004/01/14 16:57:11  wolfwings
  * Further cleanup of #defines across codebase.
@@ -182,8 +187,7 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
 		/* NOTREACHED */
 		break;
 	case TYPE_THING:
-		return (
-				(Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_PLAYER ||
+		return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_PLAYER ||
 				 Typeof(where) == TYPE_THING) && (controls(who, where) || Linkable(where)));
 		/* NOTREACHED */
 		break;
@@ -237,7 +241,8 @@ could_doit(int descr, dbref player, dbref thing)
 			(Typeof(DBFETCH(thing)->location) != TYPE_ROOM)) {
 
 			if ((Typeof(dest) == TYPE_ROOM || Typeof(dest) == TYPE_PLAYER) &&
-				(FLAGS(source) & BUILDER)) return 0;
+				(FLAGS(source) & BUILDER))
+				return 0;
 
 			if (tp_secure_teleport && Typeof(dest) == TYPE_ROOM) {
 				if ((dest != HOME) && (!controls(owner, source))
@@ -293,8 +298,7 @@ can_doit(int descr, dbref player, dbref thing, const char *default_fail_msg)
 			notify(player, default_fail_msg);
 		}
 		if (GETOFAIL(thing) && !Dark(player)) {
-			parse_oprop(descr, player, loc, thing, MESGPROP_OFAIL,
-						   NAME(player), "(@Ofail)");
+			parse_oprop(descr, player, loc, thing, MESGPROP_OFAIL, NAME(player), "(@Ofail)");
 		}
 		return 0;
 	} else {
@@ -303,8 +307,7 @@ can_doit(int descr, dbref player, dbref thing, const char *default_fail_msg)
 			exec_or_notify_prop(descr, player, thing, MESGPROP_SUCC, "(@Succ)");
 		}
 		if (GETOSUCC(thing) && !Dark(player)) {
-			parse_oprop(descr, player, loc, thing, MESGPROP_OSUCC,
-						   NAME(player), "(@Osucc)");
+			parse_oprop(descr, player, loc, thing, MESGPROP_OSUCC, NAME(player), "(@Osucc)");
 		}
 		return 1;
 	}
@@ -484,8 +487,7 @@ ok_name(const char *name)
 			&& *name
 			&& *name != LOOKUP_TOKEN
 			&& *name != REGISTERED_TOKEN
-			&& *name != NUMBER_TOKEN
-			&& !index(name, ARG_DELIMITER)
+			&& *name != NUMBER_TOKEN && !index(name, ARG_DELIMITER)
 			&& !index(name, AND_TOKEN)
 			&& !index(name, OR_TOKEN)
 			&& !index(name, '\r')
@@ -494,9 +496,7 @@ ok_name(const char *name)
 			&& string_compare(name, "me")
 			&& string_compare(name, "home")
 			&& string_compare(name, "here")
-			&& (
-				!*tp_reserved_names ||
-				!equalstr((char*)tp_reserved_names, (char*)name)
+			&& (!*tp_reserved_names || !equalstr((char *) tp_reserved_names, (char *) name)
 			));
 }
 
@@ -507,17 +507,18 @@ ok_player_name(const char *name)
 
 	if (!ok_name(name) || strlen(name) > PLAYER_NAME_LIMIT)
 		return 0;
-	
+
 
 	for (scan = name; *scan; scan++) {
-		if (!(isprint(*scan) && !isspace(*scan)) && *scan != '(' && *scan != ')') {	
-		    /* was isgraph(*scan) */
+		if (!(isprint(*scan) && !isspace(*scan)) && *scan != '(' && *scan != ')') {
+			/* was isgraph(*scan) */
 			return 0;
 		}
 	}
 
 	/* Check the name isn't reserved */
-	if (*tp_reserved_player_names && equalstr((char*)tp_reserved_player_names, (char*)name))
+	if (*tp_reserved_player_names &&
+		equalstr((char *) tp_reserved_player_names, (char *) name))
 		return 0;
 
 	/* lookup name to avoid conflicts */

@@ -146,10 +146,10 @@ do_page(dbref player, const char *arg1, const char *arg2)
 	}
 	if (blank(arg2))
 		snprintf(buf, sizeof(buf), "You sense that %s is looking for you in %s.",
-				NAME(player), NAME(DBFETCH(player)->location));
+				 NAME(player), NAME(DBFETCH(player)->location));
 	else
 		snprintf(buf, sizeof(buf), "%s pages from %s: \"%s\"", NAME(player),
-				NAME(DBFETCH(player)->location), arg2);
+				 NAME(DBFETCH(player)->location), arg2);
 	if (notify_from(player, target, buf))
 		notify(player, "Your message has been sent.");
 	else {
@@ -179,13 +179,14 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
 				char pbuf[BUFFER_LEN];
 				const char *prefix;
 
-				memset(buf,0,BUFFER_LEN); /* Make sure the buffer is zeroed */
+				memset(buf, 0, BUFFER_LEN);	/* Make sure the buffer is zeroed */
 
 				prefix = do_parse_prop(-1, who, obj, MESGPROP_OECHO,
-										"(@Oecho)", pbuf, MPI_ISPRIVATE);
+									   "(@Oecho)", pbuf, MPI_ISPRIVATE);
 				if (!prefix || !*prefix)
 					prefix = "Outside>";
-				snprintf(buf, sizeof(buf), "%s %.*s", prefix, (int)(BUFFER_LEN - 2 - strlen(prefix)), msg);
+				snprintf(buf, sizeof(buf), "%s %.*s", prefix,
+						 (int) (BUFFER_LEN - 2 - strlen(prefix)), msg);
 				ref = DBFETCH(obj)->contents;
 				while (ref != NOTHING) {
 					notify_filtered(who, ref, buf, isprivate);
@@ -232,10 +233,11 @@ notify_except(dbref first, dbref exception, const char *msg, dbref who)
 
 void
 parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname,
-			   const char *prefix, const char *whatcalled)
+			const char *prefix, const char *whatcalled)
 {
-	const char* msg = get_property_class(exit, propname);
+	const char *msg = get_property_class(exit, propname);
 	int ival = 0;
+
 	if (Prop_Blessed(exit, propname))
 		ival |= MPI_ISBLESSED;
 
@@ -257,10 +259,10 @@ parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
 		return;
 
 	/*
-		TODO: Find out if this should be prefixing with NAME(player), or if
-		it should use the prefix argument...  The original code just ignored
-		the prefix argument...
-	*/
+	   TODO: Find out if this should be prefixing with NAME(player), or if
+	   it should use the prefix argument...  The original code just ignored
+	   the prefix argument...
+	 */
 
 	prefix_message(buf, ptr, prefix, BUFFER_LEN, 1);
 

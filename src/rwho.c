@@ -102,7 +102,7 @@ rwhocli_setup(const char *server, const char *serverpw, const char *myname,
 	time(&senttime);
 
 	snprintf(pbuf, sizeof(pbuf), "U\t%.20s\t%.20s\t%.20s\t%.10ld\t0\t%.25s",
-			localnam, password, localnam, senttime, comment);
+			 localnam, password, localnam, senttime, comment);
 	sendto(dgramfd, pbuf, strlen(pbuf), 0, (SOCKADDRPTR) & addr, sizeof(addr));
 	return (0);
 }
@@ -140,7 +140,7 @@ rwhocli_pingalive(void)
 
 	if (dgramfd != -1) {
 		snprintf(pbuf, sizeof(pbuf), "M\t%.20s\t%.20s\t%.20s\t%.10ld\t0\t%.25s",
-				localnam, password, localnam, senttime, lcomment);
+				 localnam, password, localnam, senttime, lcomment);
 		sendto(dgramfd, pbuf, strlen(pbuf), 0, (SOCKADDRPTR) & addr, sizeof(addr));
 	}
 	return (0);
@@ -158,7 +158,7 @@ rwhocli_userlogin(const char *uid, const char *name, time_t tim)
 
 	if (dgramfd != -1) {
 		snprintf(pbuf, sizeof(pbuf), "A\t%.20s\t%.20s\t%.20s\t%.20s\t%.10ld\t0\t%.20s",
-				localnam, password, localnam, uid, tim, name);
+				 localnam, password, localnam, uid, tim, name);
 		sendto(dgramfd, pbuf, strlen(pbuf), 0, (SOCKADDRPTR) & addr, sizeof(addr));
 	}
 	return (0);
@@ -175,7 +175,8 @@ rwhocli_userlogout(const char *uid)
 	char pbuf[512];
 
 	if (dgramfd != -1) {
-		snprintf(pbuf, sizeof(pbuf), "Z\t%.20s\t%.20s\t%.20s\t%.20s", localnam, password, localnam, uid);
+		snprintf(pbuf, sizeof(pbuf), "Z\t%.20s\t%.20s\t%.20s\t%.20s", localnam, password,
+				 localnam, uid);
 		sendto(dgramfd, pbuf, strlen(pbuf), 0, (SOCKADDRPTR) & addr, sizeof(addr));
 	}
 	return (0);

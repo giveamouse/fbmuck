@@ -26,7 +26,7 @@ lookup_player(const char *name)
 
 
 int
-check_password(dbref player, const char* password)
+check_password(dbref player, const char *password)
 {
 	char md5buf[64];
 	const char *processed = password;
@@ -53,7 +53,7 @@ check_password(dbref player, const char* password)
 
 
 void
-set_password_raw(dbref player, const char* password)
+set_password_raw(dbref player, const char *password)
 {
 	PLAYER_SET_PASSWORD(player, password);
 	DBDIRTY(player);
@@ -61,7 +61,7 @@ set_password_raw(dbref player, const char* password)
 
 
 void
-set_password(dbref player, const char* password)
+set_password(dbref player, const char *password)
 {
 	char md5buf[64];
 	const char *processed = password;
@@ -70,7 +70,7 @@ set_password(dbref player, const char* password)
 		MD5base64(md5buf, password, strlen(password));
 		processed = md5buf;
 	}
-	
+
 	if (PLAYER_PASSWORD(player))
 		free((void *) PLAYER_PASSWORD(player));
 
@@ -200,8 +200,8 @@ delete_player(dbref who)
 					} while (lookup_player(namebuf) != NOTHING);
 
 					snprintf(buf, sizeof(buf),
-							"## Renaming %s(#%d) to %s to prevent name collision.",
-							NAME(ren), ren, namebuf);
+							 "## Renaming %s(#%d) to %s to prevent name collision.",
+							 NAME(ren), ren, namebuf);
 					wall_wizards(buf);
 
 					log_status("SANITY NAME CHANGE: %s(#%d) to %s\n", NAME(ren), ren, namebuf);

@@ -168,21 +168,21 @@ log_command(char *format, ...)
 void
 strip_evil_characters(char *badstring)
 {
- 	unsigned char *s = (unsigned char*)badstring;
- 
- 	if (!s)
-  		return;
- 
- 	for (; *s; ++s) {
- 		*s &= 0x7f; /* No high ascii */
- 
- 		if (*s == 0x1b)
- 			*s = '['; /* No escape (Aieeee!) */
- 
- 		if (!isprint(*s))
- 			*s = '_';
-  	}
-  	return;
+	unsigned char *s = (unsigned char *) badstring;
+
+	if (!s)
+		return;
+
+	for (; *s; ++s) {
+		*s &= 0x7f;				/* No high ascii */
+
+		if (*s == 0x1b)
+			*s = '[';			/* No escape (Aieeee!) */
+
+		if (!isprint(*s))
+			*s = '_';
+	}
+	return;
 }
 
 void
@@ -193,17 +193,18 @@ log_user(dbref player, dbref program, char *logmessage)
 	time_t lt = 0;
 	int len = 0;
 
-	*buf='\0';
-	*logformat='\0';
+	*buf = '\0';
+	*logformat = '\0';
 
-	lt=time(NULL);	
+	lt = time(NULL);
 	format_time(buf, 32, "%c", localtime(&lt));
 
-	snprintf(logformat,BUFFER_LEN,"%s(#%d) [%s(#%d)] at %.32s: ", NAME(player), player, NAME(program), program, buf);
-	len = BUFFER_LEN - strlen(logformat)-1;
-	strncat (logformat, logmessage, len);
+	snprintf(logformat, BUFFER_LEN, "%s(#%d) [%s(#%d)] at %.32s: ", NAME(player), player,
+			 NAME(program), program, buf);
+	len = BUFFER_LEN - strlen(logformat) - 1;
+	strncat(logformat, logmessage, len);
 	strip_evil_characters(logformat);
-	log2file(USER_LOG,"%s",logformat);
+	log2file(USER_LOG, "%s", logformat);
 }
 
 void
@@ -214,7 +215,7 @@ notify_fmt(dbref player, char *format, ...)
 
 	va_start(args, format);
 	vsnprintf(bufr, sizeof(bufr), format, args);
-	bufr[sizeof(bufr)-1] = '\0';
+	bufr[sizeof(bufr) - 1] = '\0';
 	notify(player, bufr);
 	va_end(args);
 }
