@@ -190,7 +190,9 @@ panic(const char *message)
 #ifdef NOCOREDUMP
 		_exit(135);
 #else							/* !NOCOREDUMP */
+# ifdef SIGIOT
 		signal(SIGIOT, SIG_DFL);
+# endif
 		abort();
 #endif							/* NOCOREDUMP */
 	} else {
@@ -214,7 +216,9 @@ panic(const char *message)
 #ifdef NOCOREDUMP
 		_exit(135);
 #else							/* !NOCOREDUMP */
+#ifdef SIGIOT
 		signal(SIGIOT, SIG_DFL);
+#endif
 		abort();
 #endif							/* NOCOREDUMP */
 	}
@@ -224,7 +228,9 @@ panic(const char *message)
 #ifdef NOCOREDUMP
 	_exit(136);
 #else							/* !NOCOREDUMP */
+#ifdef SIGIOT
 	signal(SIGIOT, SIG_DFL);
+#endif
 	abort();
 #endif							/* NOCOREDUMP */
 }
