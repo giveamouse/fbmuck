@@ -2,3 +2,5 @@
 -skipposixheaders
 +posixlib
 -I../include
+-temptrans
+

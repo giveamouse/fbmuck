@@ -8,6 +8,7 @@
 #include <time.h>
 #include <ctype.h>
 #include <float.h>
+#include <assert.h>
 #include "db.h"
 #include "tune.h"
 #include "inst.h"
@@ -239,7 +240,6 @@ array_tree_balance_node(array_tree * a)
 }
 
 /*@-nullret -mustfreeonly =branchstate@*/
-/*@null@*/
 array_tree *
 array_tree_alloc_node(array_iter * key)
 {
@@ -272,7 +272,7 @@ array_tree_free_node(array_tree * p)
 	free(p);
 }
 
-/*@-usereleased@*/
+/*@-usereleased -compdef@*/
 static array_tree *
 array_tree_insert(array_tree ** avl, array_iter * key)
 {
@@ -291,7 +291,7 @@ array_tree_insert(array_tree ** avl, array_iter * key)
 			balancep = 0;
 			return (p);
 		}
-		if (balancep) {
+		if (0 != balancep) {
 			*avl = array_tree_balance_node(p);
 		}
 		return ret;
@@ -301,7 +301,7 @@ array_tree_insert(array_tree ** avl, array_iter * key)
 		return (p);
 	}
 }
-/*@=usereleased@*/
+/*@=usereleased =compdef@*/
 
 static array_tree *
 array_tree_getmax(array_tree * avl)
@@ -1642,6 +1642,9 @@ array_get_intkey_strval(stk_array * arr, int key)
 
 /*
  * $Log: array.c,v $
+ * Revision 1.24  2002/02/17 02:30:32  winged
+ * Last set of changes for splint for today.
+ *
  * Revision 1.23  2002/02/17 02:14:01  winged
  * And even MORE changes for splint.  Eesh.
  *
