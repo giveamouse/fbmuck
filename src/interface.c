@@ -1,5 +1,9 @@
 /* $Header$ */
 
+/* Copyright 1992-2001 by Fuzzball Software */
+/* Consider this code protected under the GNU public license, with explicit
+ * permission to distribute when linked against openSSL. */
+
 #include "copyright.h"
 #include "config.h"
 #include "match.h"
