@@ -765,7 +765,7 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 		snprintf(buf, bufsiz, "%c int %s:%d", blesschar, mybuf, PropDataVal(p));
 		break;
 	case PROP_FLTTYP:
-		snprintf(buf, bufsiz, "%c flt %s:%.17lg", blesschar, mybuf, PropDataFVal(p));
+		snprintf(buf, bufsiz, "%c flt %s:%.17g", blesschar, mybuf, PropDataFVal(p));
 		break;
 	case PROP_LOKTYP:
 		if (PropFlags(p) & PROP_ISUNLOADED) {
@@ -1001,7 +1001,7 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
 	case PROP_FLTTYP:
 		if (!PropDataFVal(p))
 			return;
-		snprintf(tbuf, sizeof(tbuf), "%.17lg", PropDataFVal(p));
+		snprintf(tbuf, sizeof(tbuf), "%.17g", PropDataFVal(p));
 		ptr2 = tbuf;
 		break;
 	case PROP_REFTYP:

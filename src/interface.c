@@ -1063,7 +1063,7 @@ shovechars()
 	struct timeval last_slice, current_time;
 	struct timeval next_slice;
 	struct timeval timeout, slice_timeout;
-	int maxd, cnt;
+	int maxd = 0, cnt;
 	struct descriptor_data *d, *dnext;
 	struct descriptor_data *newd;
 	struct timeval sel_in, sel_out;

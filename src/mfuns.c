@@ -476,7 +476,7 @@ mfn_select(MFUNARGS)
 	char propname[BUFFER_LEN];
 	char bestname[BUFFER_LEN];
 	dbref obj = what;
-	dbref bestobj;
+	dbref bestobj = 0;
 	char *pname;
 	const char *ptr;
 	char *out, *in;

@@ -543,27 +543,27 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	switch (Typeof(thing)) {
 	case TYPE_ROOM:
 		snprintf(buf, sizeof(buf), "%.*s  Owner: %s  Parent: ",
-				(BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
+				(int) (BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
 				unparse_object(player, thing),
 				NAME(OWNER(thing)));
 		strcatn(buf, sizeof(buf), unparse_object(player, DBFETCH(thing)->location));
 		break;
 	case TYPE_THING:
 		snprintf(buf, sizeof(buf), "%.*s  Owner: %s  Value: %d",
-				(BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
+				(int) (BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
 				unparse_object(player, thing),
 				NAME(OWNER(thing)), GETVALUE(thing));
 		break;
 	case TYPE_PLAYER:
 		snprintf(buf, sizeof(buf), "%.*s  %s: %d  ", 
-				(BUFFER_LEN - strlen(tp_cpennies) - 35),
+				(int) (BUFFER_LEN - strlen(tp_cpennies) - 35),
 				unparse_object(player, thing),
 				tp_cpennies, GETVALUE(thing));
 		break;
 	case TYPE_EXIT:
 	case TYPE_PROGRAM:
 		snprintf(buf, sizeof(buf), "%.*s  Owner: %s",
-				(BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
+				(int) (BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
 				unparse_object(player, thing),
 				NAME(OWNER(thing)));
 		break;
@@ -773,7 +773,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 			struct timeval tv = PROGRAM_PROFTIME(thing);
 			snprintf(buf, sizeof(buf), "Program compiled size: %d instructions", PROGRAM_SIZ(thing));
 			notify(player, buf);
-			snprintf(buf, sizeof(buf), "Cumulative runtime: %d.%06d seconds ", tv.tv_sec, tv.tv_usec);
+			snprintf(buf, sizeof(buf), "Cumulative runtime: %ld.%06ld seconds ", tv.tv_sec, tv.tv_usec);
 			notify(player, buf);
 		} else {
 			snprintf(buf, sizeof(buf), "Program not compiled.");
@@ -1485,7 +1485,7 @@ void
 do_sweep(int descr, dbref player, const char *name)
 {
 	dbref thing, ref, loc;
-	int flag, tellflag;
+	int flag, tellflag, dummy;
 	struct match_data md;
 	char buf[BUFFER_LEN];
 
@@ -1554,7 +1554,7 @@ do_sweep(int descr, dbref player, const char *name)
 			}
 			exit_match_exists(player, ref, "page", 0);
 			exit_match_exists(player, ref, "whisper", 0);
-			exit_match_exists(player, ref, "pose", 1) ||
+			dummy = exit_match_exists(player, ref, "pose", 1) ||
 				exit_match_exists(player, ref, "pos", 1) ||
 				exit_match_exists(player, ref, "po", 1);
 			exit_match_exists(player, ref, "say", 0);
@@ -1578,7 +1578,7 @@ do_sweep(int descr, dbref player, const char *name)
 
 		exit_match_exists(player, loc, "page", 0);
 		exit_match_exists(player, loc, "whisper", 0);
-		exit_match_exists(player, loc, "pose", 1) ||
+		dummy = exit_match_exists(player, loc, "pose", 1) ||
 			exit_match_exists(player, loc, "pos", 1) ||
 			exit_match_exists(player, loc, "po", 1);
 		exit_match_exists(player, loc, "say", 0);

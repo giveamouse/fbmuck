@@ -997,7 +997,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 	register struct stack_addr *sys;
 	register int instr_count;
 	register int stop;
-	int i, tmp, writeonly, mlev;
+	int i = 0, tmp, writeonly, mlev;
 	static struct inst retval;
 	char dbuf[BUFFER_LEN];
 	int instno_debug_line = get_primitive("debug_line");

@@ -310,7 +310,7 @@ muf_event_list(dbref player, const char *pat)
 	int count = 0;
 	time_t rtime = time((time_t *) NULL);
 	time_t etime;
-	double pcnt;
+	double pcnt = 0;
 	struct mufevent_process *proc = mufevent_processes;
 
 	while (proc) {

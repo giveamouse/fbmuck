@@ -1135,8 +1135,8 @@ prim_parsepropex(PRIM_PROTOTYPE)
 	char*			str = 0;
 	array_iter		idx;
 	extern int		varc; /* from msgparse.c */
-	int				mvarcnt;
-	char*			buffers;
+	int				mvarcnt = 0;
+	char*			buffers = NULL;
 	int				novars;
 	int				hashow = 0;
 	int				i;

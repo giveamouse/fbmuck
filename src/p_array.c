@@ -1357,7 +1357,7 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
 				snprintf(propname, sizeof(propname), "%s%c%d", dir, PROPDIR_DELIMITER, temp1.data.number);
 				break;
 			case PROG_FLOAT:
-				snprintf(propname, sizeof(propname), "%s%c%.15lg", dir, PROPDIR_DELIMITER, temp1.data.fnumber);
+				snprintf(propname, sizeof(propname), "%s%c%.15g", dir, PROPDIR_DELIMITER, temp1.data.fnumber);
 				if (!strchr(propname, '.') && !strchr(propname, 'n') && !strchr(propname, 'e')) {
 					strcatn(propname, sizeof(propname), ".0");
 				}
@@ -1956,7 +1956,7 @@ prim_array_join(PRIM_PROTOTYPE)
 				text = buf;
 				break;
 			case PROG_FLOAT:
-				snprintf(buf, sizeof(buf), "%.15lg", in->data.fnumber);
+				snprintf(buf, sizeof(buf), "%.15g", in->data.fnumber);
 				if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
 					strcatn(buf, sizeof(buf), ".0");
 				}
@@ -2243,7 +2243,7 @@ void
 prim_array_nested_set(PRIM_PROTOTYPE)
 {
 	struct inst nest[16];
-	struct inst *idx;
+	struct inst *idx = NULL;
 	struct inst *dat;
 	struct inst temp;
 	stk_array *arr;
@@ -2321,7 +2321,7 @@ void
 prim_array_nested_del(PRIM_PROTOTYPE)
 {
 	struct inst nest[32];
-	struct inst *idx;
+	struct inst *idx = NULL;
 	struct inst *dat;
 	struct inst temp;
 	stk_array *idxarr;

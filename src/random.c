@@ -338,7 +338,7 @@ Base64Encode(char* outbuf, const void* inbuf, size_t inlen)
 {
 	const char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	const unsigned char* inb = (unsigned char*)inbuf;
-	unsigned char* out;
+	unsigned char* out = NULL;
 	size_t numb;
 	size_t endcnt;
 	size_t i;

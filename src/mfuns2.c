@@ -1492,7 +1492,7 @@ mfn_muf(MFUNARGS)
 		return buf;
 		break;
 	case PROG_FLOAT:
-		snprintf(buf, BUFFER_LEN, "%.15lg", rv->data.fnumber);
+		snprintf(buf, BUFFER_LEN, "%.15g", rv->data.fnumber);
 		CLEAR(rv);
 		return buf;
 		break;

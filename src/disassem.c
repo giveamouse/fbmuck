@@ -57,7 +57,7 @@ disassemble(dbref player, dbref program)
 			snprintf(buf, sizeof(buf), "%d: (line %d) INTEGER: %d", i, curr->line, curr->data.number);
 			break;
 		case PROG_FLOAT:
-			snprintf(buf, sizeof(buf), "%d: (line %d) FLOAT: %.17lg", i, curr->line, curr->data.fnumber);
+			snprintf(buf, sizeof(buf), "%d: (line %d) FLOAT: %.17g", i, curr->line, curr->data.fnumber);
 			break;
 		case PROG_ADD:
 			snprintf(buf, sizeof(buf), "%d: (line %d) ADDRESS: %d", i,
