@@ -2065,6 +2065,7 @@ prim_newprogram(PRIM_PROTOTYPE)
 	OWNER(newprog) = OWNER(player);
 	ALLOC_PROGRAM_SP(newprog);
 	PROGRAM_SET_FIRST(newprog, NULL);
+	PROGRAM_SET_INSTANCES(newprog, 0);
 	PROGRAM_SET_CURR_LINE(newprog, 0);
 	PROGRAM_SET_SIZ(newprog, 0);
 	PROGRAM_SET_CODE(newprog, NULL);
