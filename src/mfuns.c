@@ -95,12 +95,12 @@ mfn_propbang(MFUNARGS)
 		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
-		ABORT_MPI("PROP", "Match failed.");
+		ABORT_MPI("PROP!", "Match failed.");
 	if (obj == PERMDENIED)
-		ABORT_MPI("PROP", "Permission denied.");
+		ABORT_MPI("PROP!", "Permission denied.");
 	ptr = safegetprop_strict(player, obj, perms, pname, mesgtyp, &blessed);
 	if (!ptr)
-		ABORT_MPI("PROP", "Failed read.");
+		ABORT_MPI("PROP!", "Failed read.");
 	return ptr;
 }
 
@@ -212,7 +212,7 @@ mfn_exec(MFUNARGS)
 	} else {
 		mesgtyp &= ~MPI_ISBLESSED;
 	}
-	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname))
+	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname) || Prop_Hidden(pname))
 		trg = obj;
 	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
 	CHECKRETURN(ptr, "EXEC", "propval");
@@ -246,7 +246,7 @@ mfn_execbang(MFUNARGS)
 	} else {
 		mesgtyp &= ~MPI_ISBLESSED;
 	}
-	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname))
+	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname) || Prop_Hidden(pname))
 		trg = obj;
 	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
 	CHECKRETURN(ptr, "EXEC!", "propval");
@@ -257,7 +257,7 @@ mfn_execbang(MFUNARGS)
 const char *
 mfn_index(MFUNARGS)
 {
-	dbref obj = what;
+	dbref trg, obj = what;
 	dbref tmpobj;
 	const char *pname, *ptr;
 	int blessed;
@@ -280,6 +280,16 @@ mfn_index(MFUNARGS)
 	ptr = safegetprop(player, obj, perms, ptr, mesgtyp, &blessed);
 	if (!ptr)
 		ABORT_MPI("INDEX", "Failed read.");
+	trg = what;
+	if (blessed) {
+		mesgtyp |= MPI_ISBLESSED;
+	} else {
+		mesgtyp &= ~MPI_ISBLESSED;
+	}
+	if (Prop_ReadOnly(ptr) || Prop_Private(ptr) || Prop_SeeOnly(ptr) || Prop_Hidden(ptr))
+		trg = obj;
+	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
+	CHECKRETURN(ptr, "INDEX", "listval");
 	return ptr;
 }
 
@@ -288,7 +298,7 @@ mfn_index(MFUNARGS)
 const char *
 mfn_indexbang(MFUNARGS)
 {
-	dbref obj = what;
+	dbref trg, obj = what;
 	dbref tmpobj;
 	const char *pname, *ptr;
 	int blessed;
@@ -298,19 +308,29 @@ mfn_indexbang(MFUNARGS)
 		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
 	}
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
-		ABORT_MPI("INDEX", "Match failed.");
+		ABORT_MPI("INDEX!", "Match failed.");
 	if (obj == PERMDENIED)
-		ABORT_MPI("INDEX", "Permission denied.");
+		ABORT_MPI("INDEX!", "Permission denied.");
 	tmpobj = obj;
 	ptr = safegetprop_strict(player, obj, perms, pname, mesgtyp, &blessed);
 	if (!ptr)
-		ABORT_MPI("INDEX", "Failed read.");
+		ABORT_MPI("INDEX!", "Failed read.");
 	if (!*ptr)
 		return "";
 	obj = tmpobj;
 	ptr = safegetprop_strict(player, obj, perms, ptr, mesgtyp, &blessed);
 	if (!ptr)
-		ABORT_MPI("INDEX", "Failed read.");
+		ABORT_MPI("INDEX!", "Failed read.");
+	trg = what;
+	if (blessed) {
+		mesgtyp |= MPI_ISBLESSED;
+	} else {
+		mesgtyp &= ~MPI_ISBLESSED;
+	}
+	if (Prop_ReadOnly(ptr) || Prop_Private(ptr) || Prop_SeeOnly(ptr) || Prop_Hidden(ptr))
+		trg = obj;
+	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
+	CHECKRETURN(ptr, "INDEX!", "listval");
 	return ptr;
 }
 
@@ -606,7 +626,7 @@ mfn_lexec(MFUNARGS)
 	} else {
 		mesgtyp &= ~MPI_ISBLESSED;
 	}
-	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname))
+	if (Prop_ReadOnly(pname) || Prop_Private(pname) || Prop_SeeOnly(pname) || Prop_Hidden(pname))
 		trg = obj;
 	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
 	CHECKRETURN(ptr, "LEXEC", "listval");
@@ -619,7 +639,7 @@ const char *
 mfn_rand(MFUNARGS)
 {
 	int num;
-	dbref obj = what;
+	dbref trg, obj = what;
 	const char *pname, *ptr;
 	int blessed;
 
@@ -637,6 +657,16 @@ mfn_rand(MFUNARGS)
 	ptr = get_list_item(what, obj, perms, pname, (((RANDOM() / 256) % num) + 1), mesgtyp, &blessed);
 	if (!ptr)
 		ABORT_MPI("RAND", "Failed list read.");
+	trg = what;
+	if (blessed) {
+		mesgtyp |= MPI_ISBLESSED;
+	} else {
+		mesgtyp &= ~MPI_ISBLESSED;
+	}
+	if (Prop_ReadOnly(ptr) || Prop_Private(ptr) || Prop_SeeOnly(ptr) || Prop_Hidden(ptr))
+		trg = obj;
+	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
+	CHECKRETURN(ptr, "RAND", "listval");
 	return ptr;
 }
 
@@ -645,7 +675,7 @@ const char *
 mfn_timesub(MFUNARGS)
 {
 	int num;
-	dbref obj = what;
+	dbref trg, obj = what;
 	const char *pname, *ptr;
 	int period, offset;
 	int blessed;
@@ -671,6 +701,16 @@ mfn_timesub(MFUNARGS)
 	ptr = get_list_item(what, obj, perms, pname, offset + 1, mesgtyp, &blessed);
 	if (!ptr)
 		ABORT_MPI("TIMESUB", "Failed list read.");
+	trg = what;
+	if (blessed) {
+		mesgtyp |= MPI_ISBLESSED;
+	} else {
+		mesgtyp &= ~MPI_ISBLESSED;
+	}
+	if (Prop_ReadOnly(ptr) || Prop_Private(ptr) || Prop_SeeOnly(ptr) || Prop_Hidden(ptr))
+		trg = obj;
+	ptr = mesg_parse(descr, player, obj, trg, ptr, buf, BUFFER_LEN, mesgtyp);
+	CHECKRETURN(ptr, "TIMESUB", "listval");
 	return ptr;
 }
 
@@ -702,6 +742,64 @@ mfn_lit(MFUNARGS)
 		strcpy(buf + len, argv[i]);
 		len += len2;
 	}
+	return buf;
+}
+
+
+const char *
+mfn_eval(MFUNARGS)
+{
+	int i, len, len2;
+	char buf2[BUFFER_LEN];
+	char* ptr;
+
+	strcpy(buf, argv[0]);
+	len = strlen(buf);
+	for (i = 1; i < argc; i++) {
+		len2 = strlen(argv[i]);
+		if (len2 + len + 3 >= BUFFER_LEN) {
+			if (len + 3 < BUFFER_LEN) {
+				strncpy(buf + len, argv[i], (BUFFER_LEN - len - 3));
+				buf[BUFFER_LEN - 3] = '\0';
+			}
+			break;
+		}
+		strcpy(buf + len, ",");
+		strcpy(buf + len, argv[i]);
+		len += len2;
+	}
+	strcpy(buf2, buf);
+	ptr = mesg_parse(descr, player, what, perms, buf2, buf, BUFFER_LEN, (mesgtyp & ~MPI_ISBLESSED));
+	CHECKRETURN(ptr, "EVAL", "arg 1");
+	return buf;
+}
+
+
+const char *
+mfn_evalbang(MFUNARGS)
+{
+	int i, len, len2;
+	char buf2[BUFFER_LEN];
+	char* ptr;
+
+	strcpy(buf, argv[0]);
+	len = strlen(buf);
+	for (i = 1; i < argc; i++) {
+		len2 = strlen(argv[i]);
+		if (len2 + len + 3 >= BUFFER_LEN) {
+			if (len + 3 < BUFFER_LEN) {
+				strncpy(buf + len, argv[i], (BUFFER_LEN - len - 3));
+				buf[BUFFER_LEN - 3] = '\0';
+			}
+			break;
+		}
+		strcpy(buf + len, ",");
+		strcpy(buf + len, argv[i]);
+		len += len2;
+	}
+	strcpy(buf2, buf);
+	ptr = mesg_parse(descr, player, what, perms, buf2, buf, BUFFER_LEN, mesgtyp);
+	CHECKRETURN(ptr, "EVAL!", "arg 1");
 	return buf;
 }
 

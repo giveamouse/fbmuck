@@ -313,6 +313,8 @@ safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int
 	char bbuf[BUFFER_LEN];
 	static char vl[32];
 
+	*blessed = 0;
+
 	if (!inbuf) {
 		notify_nolisten(player, "PropFetch: Propname required.", 1);
 		return NULL;
@@ -324,6 +326,18 @@ safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int
 		return NULL;
 	}
 	strcpy(bbuf, inbuf);
+
+	if (!(mesgtyp & MPI_ISBLESSED)) {
+		if (Prop_Hidden(bbuf)) {
+			notify_nolisten(player, "PropFetch: Permission denied.", 1);
+			return NULL;
+		}
+		if (Prop_Private(bbuf) && OWNER(perms) != OWNER(what)) {
+			notify_nolisten(player, "PropFetch: Permission denied.", 1);
+			return NULL;
+		}
+	}
+
 	ptr = get_property_class(what, bbuf);
 	if (!ptr) {
 		int i;
@@ -346,25 +360,14 @@ safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int
 			ptr = vl;
 		}
 	}
+
 #ifdef COMPRESS
 	ptr = uncompress(ptr);
 #endif
 
-	if (!(mesgtyp & MPI_ISBLESSED)) {
-		if (Prop_Hidden(bbuf)) {
-			notify_nolisten(player, "PropFetch: Permission denied.", 1);
-			return NULL;
-		}
-		if (Prop_Private(bbuf) && OWNER(perms) != OWNER(what)) {
-			notify_nolisten(player, "PropFetch: Permission denied.", 1);
-			return NULL;
-		}
-	}
 	if (ptr) {
 		if (Prop_Blessed(what, bbuf)) {
 			*blessed = 1;
-		} else {
-			*blessed = 0;
 		}
 	}
 	return ptr;

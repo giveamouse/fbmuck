@@ -30,6 +30,8 @@ const char *mfn_dist(MFUNARGS);
 const char *mfn_div(MFUNARGS);
 const char *mfn_eq(MFUNARGS);
 const char *mfn_escape(MFUNARGS);
+const char *mfn_eval(MFUNARGS);
+const char *mfn_evalbang(MFUNARGS);
 const char *mfn_exec(MFUNARGS);
 const char *mfn_execbang(MFUNARGS);
 const char *mfn_exits(MFUNARGS);
