@@ -117,6 +117,7 @@ Added PROGRAM_SETLINES ( ref:Program list:Lines -- )
   Sets all the lines of a program to those given in the array.
 Added DEBUG_ON, DEBUG_OFF, and DEBUG_LINE prims in-server to avoid the stack
   pollution created by the macro versions.
+Added SETLINKS_ARRAY ( ref:Obj arr:Links -- ) Multiple destination setlinking.
 Removed dead concentrater log code.
 Removed dead LOCKOUT code from include/config.h.
 

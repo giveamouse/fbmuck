@@ -44,6 +44,7 @@ extern void prim_checkpassword(PRIM_PROTOTYPE);
 extern void prim_nextowned(PRIM_PROTOTYPE);
 extern void prim_movepennies(PRIM_PROTOTYPE);
 extern void prim_findnext(PRIM_PROTOTYPE);
+extern void prim_setlinks_array(PRIM_PROTOTYPE);
 
 /* new protomuck prims */
 extern void prim_nextentrance(PRIM_PROTOTYPE);
@@ -82,7 +83,9 @@ extern void prim_toadplayer(PRIM_PROTOTYPE);
 	prim_compiledp, prim_newprogram, prim_contents_array,                \
 	prim_exits_array, prim_getlinks_array, prim_compile,                 \
 	prim_uncompile, prim_newpassword, prim_getpids,                      \
-	prim_program_getlines, prim_getpidinfo, prim_program_setlines
+	prim_program_getlines, prim_getpidinfo, prim_program_setlines,		 \
+	prim_setlinks_array
+
 
 
 #define PRIMS_DB_NAMES1 "ADDPENNIES", "MOVETO", "PENNIES",  \
@@ -99,9 +102,10 @@ extern void prim_toadplayer(PRIM_PROTOTYPE);
 	"COMPILED?", "NEWPROGRAM", "CONTENTS_ARRAY",           \
 	"EXITS_ARRAY", "GETLINKS_ARRAY", "COMPILE",            \
 	"UNCOMPILE", "NEWPASSWORD", "GETPIDS",                 \
-	"PROGRAM_GETLINES", "GETPIDINFO", "PROGRAM_SETLINES"
+	"PROGRAM_GETLINES", "GETPIDINFO", "PROGRAM_SETLINES",  \
+	"SETLINKS_ARRAY"
 
-#define PRIMS_DB_CNT1 60
+#define PRIMS_DB_CNT1 61
 
 
 #ifdef SCARY_MUF_PRIMS

@@ -2524,3 +2524,224 @@ prim_program_setlines(PRIM_PROTOTYPE)
 
 	DBDIRTY(program);
 }
+
+void
+prim_setlinks_array(PRIM_PROTOTYPE)
+{
+	array_iter	idx;
+	int			dest_count;
+	dbref		what;
+	stk_array*	arr;
+
+	CHECKOP(2);
+
+	oper2 = POP(); /* arr:Destination(s) */
+	oper1 = POP(); /* ref:Source */
+
+	if (oper1->type != PROG_OBJECT)
+		abort_interp("Non-object argument. (1)");
+	if (oper2->type != PROG_ARRAY)
+		abort_interp("Non-array argument. (3)");
+
+	if (!array_is_homogenous(oper2->data.array, PROG_OBJECT))
+		abort_interp("Argument not an array of dbrefs. (2)");
+
+	if (!valid_object(oper1))
+		abort_interp("Invalid object. (1)");
+
+	if ((mlev < 4) && !permissions(ProgUID, oper1->data.objref))
+		abort_interp("Permission denied. (1)");
+
+	if ((dest_count = array_count(oper2->data.array)) >= MAX_LINKS)
+		abort_interp("Too many destinations. (2)");
+
+	if ((dest_count > 1) && (Typeof(oper1->data.objref) != TYPE_EXIT))
+		abort_interp("Only exit may be linked to multiple destinations.");
+
+	what	= oper1->data.objref;
+	arr		= oper2->data.array;
+	
+	if (array_first(arr, &idx))
+	{
+		int found_prp = 0;
+
+		do
+		{
+			array_data*	val		= array_getitem(arr, &idx);
+			dbref		where	= val->data.objref;
+
+			if ((where != HOME) && !valid_object(val))
+			{
+				CLEAR(&idx);
+				abort_interp("Invalid object. (2)");
+			}
+
+			if (!prog_can_link_to(mlev, ProgUID, Typeof(what), where))
+			{
+				CLEAR(&idx);
+				abort_interp("Can't link source to destination. (2)");
+			}
+
+			switch(Typeof(what))
+			{
+				case TYPE_EXIT:
+					switch(Typeof(where))
+					{
+						case TYPE_PLAYER:
+						case TYPE_ROOM:
+						case TYPE_PROGRAM:
+							if (found_prp != 0)
+							{
+								CLEAR(&idx);
+								abort_interp("Only one player, room, or program destination allowed.");
+							}
+
+							found_prp = 1;
+						break;
+
+						case TYPE_THING:
+						break;
+
+						case TYPE_EXIT:
+							if (exit_loop_check(what, where))
+							{
+								CLEAR(&idx);
+								abort_interp("Destination would create loop.");
+							}
+						break;
+
+						default:
+							CLEAR(&idx);
+							abort_interp("Invalid object. (2)");
+						break;
+					}
+				break;
+
+				case TYPE_PLAYER:
+					if (where == HOME)
+					{
+						CLEAR(&idx);
+						abort_interp("Cannot link player to HOME.");
+					}
+				break;
+
+				case TYPE_THING:
+					if (where == HOME)
+					{
+						CLEAR(&idx);
+						abort_interp("Cannot link thing to HOME.");
+					}
+
+					if (parent_loop_check(what, where))
+					{
+						CLEAR(&idx);
+						abort_interp("That would case a parent paradox.");
+					}
+				break;
+
+				case TYPE_ROOM:
+				break;
+
+				default:
+					CLEAR(&idx);
+					abort_interp("Invalid object. (1)");
+				break;
+			}
+		}
+		while(array_next(arr, &idx));
+	}
+
+	if (Typeof(what) == TYPE_EXIT)
+	{
+		if (MLevRaw(what))
+			SetMLevel(what, 0);
+
+		if (DBFETCH(what)->sp.exit.dest != NULL)
+			free((void*)DBFETCH(what)->sp.exit.dest);
+	}
+
+	if (dest_count <= 0)
+	{
+		switch(Typeof(what))
+		{
+			case TYPE_EXIT:
+				DBSTORE(what, sp.exit.ndest, 0);
+				DBSTORE(what, sp.exit.dest, NULL);
+			break;
+
+			case TYPE_ROOM:
+				DBSTORE(what, sp.room.dropto, NOTHING);
+			break;
+
+			default:
+				abort_interp("Only exits and rooms may be linked to nothing. (1)");
+			break;
+		}
+	}
+	else
+	{
+		switch(Typeof(what))
+		{
+			case TYPE_EXIT:
+			{
+				dbref* dests = (dbref*)malloc(sizeof(dbref) * dest_count);
+
+				if (dests == NULL)
+				{
+					DBSTORE(what, sp.exit.ndest, 0);
+					DBSTORE(what, sp.exit.dest, NULL);
+					abort_interp("Out of memory.");
+				}
+
+				if (array_first(arr, &idx))
+				{
+					int i = 0;
+
+					do
+					{
+						if (i < dest_count)
+							dests[i++] = array_getitem(arr, &idx)->data.objref;
+					}
+					while(array_next(arr, &idx));
+				}
+
+				DBSTORE(what, sp.exit.ndest, dest_count);
+				DBSTORE(what, sp.exit.dest, dests);
+			}
+			break;
+
+			case TYPE_ROOM:
+				if (array_first(arr, &idx))
+				{
+					DBSTORE(what, sp.room.dropto, array_getitem(arr, &idx)->data.objref);
+					CLEAR(&idx);
+				}
+			break;
+
+			case TYPE_PLAYER:
+				if (array_first(arr, &idx))
+				{
+					PLAYER_SET_HOME(what, array_getitem(arr, &idx)->data.objref);
+					CLEAR(&idx);
+				}
+			break;
+
+			case TYPE_THING:
+				if (array_first(arr, &idx))
+				{
+					THING_SET_HOME(what, array_getitem(arr, &idx)->data.objref);
+					CLEAR(&idx);
+				}
+			break;
+
+			default:
+				abort_interp("Invalid object. (1)");
+			break;
+		}
+	}
+
+	DBDIRTY(what);
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+}
