@@ -981,9 +981,9 @@ void
 prim_reflist_find(PRIM_PROTOTYPE)
 {
 	CHECKOP(3);
+	oper3 = POP();   /* dbref */
 	oper2 = POP();   /* propname */
 	oper1 = POP();   /* propobj */
-	oper3 = POP();   /* dbref */
 	if (!valid_object(oper1))
 		abort_interp("Non-object argument (1)");
 	if (oper2->type != PROG_STRING)
@@ -1009,9 +1009,9 @@ void
 prim_reflist_add(PRIM_PROTOTYPE)
 {
 	CHECKOP(3);
+	oper3 = POP();   /* dbref */
 	oper2 = POP();   /* propname */
 	oper1 = POP();   /* propobj */
-	oper3 = POP();   /* dbref */
 	if (!valid_object(oper1))
 		abort_interp("Non-object argument (1)");
 	if (oper2->type != PROG_STRING)
@@ -1036,9 +1036,9 @@ void
 prim_reflist_del(PRIM_PROTOTYPE)
 {
 	CHECKOP(3);
+	oper3 = POP();   /* dbref */
 	oper2 = POP();   /* propname */
 	oper1 = POP();   /* propobj */
-	oper3 = POP();   /* dbref */
 	if (!valid_object(oper1))
 		abort_interp("Non-object argument (1)");
 	if (oper2->type != PROG_STRING)
