@@ -6,6 +6,7 @@ Fixed bug with ARRAY_GETRANGE returning a non-empty array when given a range
 Fixed bug with ARRAY_VALS CLEAR()ing garbage when passed an empty array.
 Added message to confirm exiting of insert mode in muf editor.
 Added preliminary code to support READ mufevents.  This is incomplete.
+Added EXPLODE_ARRAY (s s -- a) muf prim, as the array version of EXPLODE.
 Changed the MUF compiler to use a single control_stack instead of separate
   if_stack and loop_stacks.
 
