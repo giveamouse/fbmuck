@@ -1,1 +1,1 @@
-#define VERSION "Muck2.2fb6.00rc2"
+#define VERSION "Muck2.2fb6.00rc3"
