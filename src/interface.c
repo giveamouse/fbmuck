@@ -550,7 +550,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 
 		darr = get_player_descrs(player, &dcount);
         for (di = 0; di < dcount; di++) {
-            queue_string(descrdata_by_descr(darr[di]), buf);
+            queue_ansi(descrdata_by_descr(darr[di]), buf);
             if (firstpass) retval++;
         }
 
@@ -582,7 +582,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 
 						darr = get_player_descrs(OWNER(player), &dcount);
                         for (di = 0; di < dcount; di++) {
-                            queue_string(descrdata_by_descr(darr[di]), buf2);
+                            queue_ansi(descrdata_by_descr(darr[di]), buf2);
                             if (firstpass) retval++;
                         }
 					}
@@ -1840,8 +1840,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 				 (tp_playermax && con_players_curr >= tp_playermax_limit)) &&
 				!TrueWizard(player)) {
 				if (wizonly_mode) {
-					queue_ansi(d,
-							   "Sorry, but the game is in maintenance mode currently, and only wizards are allowed to connect.  Try again later.");
+					queue_ansi(d, "Sorry, but the game is in maintenance mode currently, and only wizards are allowed to connect.  Try again later.");
 				} else {
 					queue_ansi(d, tp_playermax_bootmesg);
 				}
@@ -1875,8 +1874,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 		if (!tp_registration) {
 			if (wizonly_mode || (tp_playermax && con_players_curr >= tp_playermax_limit)) {
 				if (wizonly_mode) {
-					queue_ansi(d,
-							   "Sorry, but the game is in maintenance mode currently, and only wizards are allowed to connect.  Try again later.");
+					queue_ansi(d, "Sorry, but the game is in maintenance mode currently, and only wizards are allowed to connect.  Try again later.");
 				} else {
 					queue_ansi(d, tp_playermax_bootmesg);
 				}
