@@ -1,0 +1,177 @@
+MUF Prims for TCP Sockets
+	TCP_CONNECT[ str:host int:port    -- str:sockid   ] x
+	TCP_LISTEN[  int:port             -- str:listenid ] x
+	TCP_ACCEPT[  str:listenid         -- str:sockid   ] x
+	TCP_WRITE[   str:data str:sockid  --              ] x
+	TCP_CLOSE[   str:sockid           --              ]
+
+	TCP_SETMODE[ str:sockid int:newlines --           ]
+
+
+MUF Events for TCP
+	"TCP.CONNECT"    Queued when a new connection request is recieved.
+	"TCP.READ"       Queued when a new line is recieved.
+	"TCP.CLOSED"     Queued when the remote side closed the socket.
+	"TCP.ERROR"      Queued when there is some sort of error that closes the socket.
+
+
+
+
+( Sample POP3 client written in MUF )
+
+$def LOGIN_STATE   1
+$def AUTH_STATE    2
+$def ACTIVE_STATE  3
+
+lvar conns
+lvar listenport
+
+: handle-connect[ dict:args str:eventtype -- ]
+	args @ "id" [] TCP_ACCEPT var! sockid
+
+	conns @ sockid @
+	{
+		"state" LOGIN_STATE
+		"data"  ""
+		"user"  ""
+	}dict
+	array_setitem conns !
+;
+  
+: getconvalue[ str:id str:key -- any:val ]
+	conns @ id @ [] key @ []
+;
+
+: putconvalue[ str:id str:key any:val -- ]
+	conns @ id @ []
+	key @ val @ array_setitem
+	conns @ id @ rot array_setitem
+	conns !
+;
+
+: close_conn[ str:id -- ]
+	id @ TCP_CLOSE
+	conns @ id @ array_delitem
+	conns !
+;
+
+: process_line[ str:id str:line -- ]
+	line @ " " split var! args
+	tolower var! cmd
+	cmd @ "quit" strcmp not if
+		( Delete marked mail, and disconnect. )
+		"+OK\r\n" id @ TCP_WRITE
+		id @ close_conn
+		exit
+	then
+	cmd @ "user" strcmp not if
+		id @ "state" getconvalue
+		LOGIN_STATE = if
+			id @ "user" args @ putconvalue
+			id @ "state" AUTH_STATE putconvalue
+			"+OK\r\n" id @ TCP_WRITE
+		    exit
+		then
+		"-ERR User was already specified.\r\n" id @ TCP_WRITE
+		exit
+	then
+	cmd @ "pass" strcmp not if
+		id @ "state" getconvalue
+		AUTH_STATE = if
+			id @ "user" getconvalue pmatch var! user
+			user @ if
+				user @ args @ checkpassword if
+					id @ "state" ACTIVE_STATE putconvalue
+					"+OK\r\n" id @ TCP_WRITE
+					exit
+				then
+			then
+		then
+		"-ERR Bad username or Password\r\n" id @ TCP_WRITE
+		id @ close_conn
+		exit
+	then
+	id @ "state" getconvalue
+	ACTIVE_STATE = if
+		cmd @ "uidl" strcmp not if
+			( List mail messages waiting, with message ids )
+			"+OK\r\n" id @ TCP_WRITE
+			exit
+		then
+		cmd @ "list" strcmp not if
+			( List mail messages waiting )
+			"+OK\r\n" id @ TCP_WRITE
+			exit
+		then
+		cmd @ "stat" strcmp not if
+			( I dunno what this is supposed to do. )
+			"+OK\r\n" id @ TCP_WRITE
+			exit
+		then
+		cmd @ "rset" strcmp not if
+			( I dunno what this is supposed to do. )
+			"+OK\r\n" id @ TCP_WRITE
+			exit
+		then
+		cmd @ "retr" strcmp not if
+			args @ atoi var! mesgnum
+			( Spew out a mail message )
+			"+OK\r\n" id @ TCP_WRITE
+			exit
+		then
+		cmd @ "top" strcmp not if
+			args @ " " split
+			atoi var! lines
+			atoi var! mesgnum
+			( Spew out a length limited mail message )
+			"+OK\r\n" id @ TCP_WRITE
+			exit
+		then
+		cmd @ "dele" strcmp not if
+			args @ atoi var! mesgnum
+			( Mark the mail message for deletion )
+			"+OK\r\n" id @ TCP_WRITE
+			exit
+		then
+		exit
+	then
+	"-ERR Not authenticated.\r\n" id @ TCP_WRITE
+	id @ close_conn
+;
+
+: handle-close[ dict:args str:eventtype -- ]
+	args @ "id"   [] var! sockid
+	sockid @ close_conn
+;
+
+: handle-read[ dict:args str:eventtype -- ]
+	args @ "id"   [] var! sockid
+	args @ "data" [] var! data
+
+	conns @ sockid @ [] var! conn
+
+	conn @ "data" [] data @ strcat data !
+	begin
+		data @
+		dup "\r\n" instr while
+		"\r\n" split data !
+		sockid @ swap process_line
+	repeat
+	conn @ "data" data @ array_setitem conn !
+;
+
+: pop-server[ str:arg -- ]
+    { }dict conns !
+
+	8110 TCP_LISTEN listensock !
+	{
+	}dict
+	{
+		"TCP.CONNECT." listensock @ strcat 'handle-connection
+		"TCP.ERROR.*"   'handle-close
+		"TCP.READ.*"    'handle-read
+		"TCP.CLOSED.*"  'handle-close
+	}dict
+	process_events
+;
+
