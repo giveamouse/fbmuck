@@ -526,7 +526,7 @@ struct player_specific {
 
 
 #define PLAYER_SP(x)		(DBFETCH(x)->sp.player.sp)
-#define ALLOC_PLAYER_SP(x)      { PLAYER_SP(x) = (struct player_specific *)malloc(sizeof(struct player_specific)); }
+#define ALLOC_PLAYER_SP(x)      { PLAYER_SP(x) = (struct player_specific *)malloc(sizeof(struct player_specific)); bzero(PLAYER_SP(x),sizeof(struct player_specific));}
 #define FREE_PLAYER_SP(x)       { dbref foo = x; free(PLAYER_SP(foo)); PLAYER_SP(foo) = NULL; }
 
 #define PLAYER_HOME(x)		(PLAYER_SP(x)->home)
