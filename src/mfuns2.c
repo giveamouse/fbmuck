@@ -811,48 +811,61 @@ mfn_filter(MFUNARGS)
 }
 
 
+int list_contains(char* word, int len, char* list) {
+	char *w, *w2;
+
+	w = w2 = list;
+	do {
+		for(; *w2 && *w2 != '\r'; w2++) {};
+		if(w2 - w == len && !strncmp(word, w, len)) return 1;
+		if(*w2) w = ++w2;
+	} while(*w2);
+
+	return 0;
+}
+
 const char *
 mfn_lremove(MFUNARGS)
 {
 	int iter_limit = MAX_MFUN_LIST_LEN;
-	char *ptr, *ptr2, *p, *q;
+	char *ptr, *ptr2, *endbuf;
 	int len;
-	int outcount = 0;
+	int firstResult = 1;
 
-	ptr = argv[0];
-	*buf = '\0';
-	while (*ptr) {
-		for (ptr2 = ptr; *ptr2 && *ptr2 != '\r'; ptr2++) ;
-		if (*ptr2)
-			*(ptr2++) = '\0';
-		len = strlen(ptr);
-		p = argv[1];
-		do {
-			if (string_prefix(p, ptr) && (!p[len] || p[len] == '\r'))
-				break;
-			while (*p && *p != '\r')
-				p++;
-			if (*p)
-				p++;
-		} while (*p);
-		q = buf;
-		do {
-			if (string_prefix(q, ptr) && (!q[len] || q[len] == '\r'))
-				break;
-			while (*q && *q != '\r')
-				q++;
-			if (*q)
-				q++;
-		} while (*q);
-		if (!*p && !*q) {
-			if (outcount++)
-				strcatn(buf, BUFFER_LEN, "\r");
-			strcatn(buf, BUFFER_LEN, ptr);
+	ptr = argv[0];  // the list we're removing from
+	endbuf = buf;
+	*buf = '\0';  // empty buf; this is what we're returning, I bet
+	while (*ptr) {  // while more of the first list
+		// Find the next word.
+		for (ptr2 = ptr; *ptr2 && *ptr2 != '\r'; ptr2++) {};
+		len = ptr2 - ptr;
+
+		// If the second list contains the string, continue.
+		if(!list_contains(ptr, len, argv[1]) &&
+			/*
+			 * If it's the first result, it already won't be in buf.
+			 * This wouldn't be a problem except buf already contains
+			 * the empty string, so if the first word to add is the
+			 * empty string, it won't be added.
+			 */
+			(firstResult || !list_contains(ptr, len, buf))
+		) {
+			if(firstResult)
+				firstResult = 0;
+			else
+				*(endbuf++) = '\r';
+			strncpy(endbuf, ptr, len);
+			endbuf += len;
+			*endbuf = '\0';
 		}
+
+		// Next word.
+		if(*ptr2) ptr2++;
 		ptr = ptr2;
 		if (!(--iter_limit))
 			ABORT_MPI("LREMOVE", "Iteration limit exceeded");
 	}
+
 	return buf;
 }
 
