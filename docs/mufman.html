@@ -774,6 +774,7 @@
     <td nowrap> &nbsp; <a href="#sysparm">sysparm</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#sysparm_array">sysparm_array</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#systime">systime</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#systime_precise">systime_precise</a> &nbsp; </td>
   </tr>
 </table></blockquote>
 
@@ -7560,13 +7561,16 @@ This primitive requires at least Mucker Level 3.
 <h3><a name="TimeOps">Time Manipulation Operators</a></h3>
 <blockquote><table border=0>
   <tr>
-    <td width="14%"> &nbsp; <a href="#date">date</a> &nbsp; </td>
-    <td width="14%"> &nbsp; <a href="#gmtoffset">gmtoffset</a> &nbsp; </td>
-    <td width="14%"> &nbsp; <a href="#sleep">sleep</a> &nbsp; </td>
-    <td width="14%"> &nbsp; <a href="#systime">systime</a> &nbsp; </td>
-    <td width="14%"> &nbsp; <a href="#time">time</a> &nbsp; </td>
-    <td width="14%"> &nbsp; <a href="#timefmt">timefmt</a> &nbsp; </td>
-    <td width="14%"> &nbsp; <a href="#timesplit">timesplit</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#date">date</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#gmtoffset">gmtoffset</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#sleep">sleep</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#systime">systime</a> &nbsp; </td>
+  </tr>
+  <tr>
+    <td width="25%"> &nbsp; <a href="#systime_precise">systime_precise</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#time">time</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#timefmt">timefmt</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#timesplit">timesplit</a> &nbsp; </td>
   </tr>
 </table></blockquote>
 
@@ -7597,9 +7601,27 @@ date would return 6 2 1992 as three integers on the stack.
 
 <br>
 </a></h4>
-  Returns the number of seconds from Jan 1, 1970. This is compatible with
+  Returns the number of seconds from Jan 1, 1970 GMT. This is compatible with
 the system timestamps and may be broken down into useful values through
 'timesplit'.
+<p><h5>Also see:
+    <a href="#systime_precise">SYSTIME_PRECISE</a>,
+    <a href="#timesplit">TIMESPLIT</a> and
+    <a href="#timestamps">TIMESTAMPS</a>
+</h5>
+<p>
+
+
+<hr><h4><a name="systime_precise">SYSTIME_PRECISE ( -- f )
+<br>
+
+<br>
+</a></h4>
+  Returns the number of seconds from Jan 1, 1970 GMT as a floating point
+number, with microsecond accuracy.
+<p><h5>Also see:
+    <a href="#systime">SYSTIME</a>
+</h5>
 <p>
 
 

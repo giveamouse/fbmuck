@@ -13,6 +13,9 @@ Added ARRAY_NESTED_SET ( ? arr idxarr -- arr' ) muf prim.  Used to set values
   of nested sub-arrays, creating missing subarrays as needed.
 Added ARRAY_NESTED_DEL ( arr idxarr -- arr' ) muf prim.  Used to delete values
   of nested sub-arrays.
+Added SYSTIME_PRECISE ( -- float ) muf prim.  Returns the number of seconds
+  since the systime epoch, like systime does, but as a floating point number
+  with microsecond accuracy.
 Removed annoying 'Cannot access propdir directly' errors from MUF prop prims.
 
 

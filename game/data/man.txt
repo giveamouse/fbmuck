@@ -203,7 +203,7 @@ S's
   string?            stringcmp          stringpfx          strip
   striplead          striptail          strlen             strncmp
   strtof             subst              succ               swap
-  sysparm            sysparm_array      systime            
+  sysparm            sysparm_array      systime            systime_precise
 
 T's
   tan          testlock     textattr     then         thing?       time
@@ -4380,7 +4380,8 @@ This primitive requires at least Mucker Level 3.
 Time Manipulation Operators|TimeOps
 Time Manipulation Operators
 
-date       gmtoffset  sleep      systime    time       timefmt    timesplit
+date               gmtoffset          sleep              systime
+systime_precise    time               timefmt            timesplit
 
 ~----------------------------------------------------------------------------
 ~
@@ -4404,9 +4405,18 @@ date would return 6 2 1992 as three integers on the stack.
 SYSTIME
 SYSTIME ( -- i )
 
-  Returns the number of seconds from Jan 1, 1970. This is compatible with
+  Returns the number of seconds from Jan 1, 1970 GMT. This is compatible with
 the system timestamps and may be broken down into useful values through
 'timesplit'.
+Also see: SYSTIME_PRECISE, TIMESPLIT and TIMESTAMPS
+~
+~
+SYSTIME_PRECISE
+SYSTIME_PRECISE ( -- f )
+
+  Returns the number of seconds from Jan 1, 1970 GMT as a floating point
+number, with microsecond accuracy.
+Also see: SYSTIME
 ~
 ~
 GMTOFFSET

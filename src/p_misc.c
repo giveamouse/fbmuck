@@ -85,6 +85,20 @@ prim_systime(PRIM_PROTOTYPE)
 
 
 void
+prim_systime_precise(PRIM_PROTOTYPE)
+{
+	struct timeval fulltime;
+	double dbltime;
+
+	CHECKOP(0);
+	gettimeofday(&fulltime, (struct timezone *) 0);
+	CHECKOFLOW(2);
+	dbltime = fulltime.tv_sec + (((double)fulltime.tv_usec) / 1.0e6);
+	PushFloat(dbltime);
+}
+
+
+void
 prim_timesplit(PRIM_PROTOTYPE)
 {
 	time_t lt = 0;
