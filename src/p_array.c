@@ -1316,6 +1316,7 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 
 	new = new_array_packed(0);
 	rawstr = get_property_class(ref, dir);
+	rawstr = get_uncompress(rawstr);
 
 	if (rawstr) {
 		while (isspace(*rawstr))
