@@ -28,6 +28,13 @@ Changed DESCRDBREF to return #-1 for an invalid or not-logged-in descriptor.
 Changed MUF stack traces to show floats in short format.
 Changed string translations of floats to show only 15 significant digits.
 Added docs for ARRAY_FMTSTRINGS to muf manual.
+Changed the compiler so that under default conditions (comment_loose),
+  programs will be compiled with recursive comments turned on.  Should a
+  comment-based compile error occur, the compiler will back up and
+  automatically retry with the old-style comment parser instead.  This is
+  done on a line by line basis, and only for brace mis-matches.  Please note
+  that an unrecognized token -might- indicate a comment mis-match, but is
+  not covered by this recompile code.
 Added ARRAY_FILTER_FLAGS ( list:dbrefs str:flags -- list:dbrefsout ) MUF prim.
   Takes a homogenous list array of dbrefs, and filters them for those objects
   that pass the given flag test.  See 'help @find' for flags test info.
@@ -47,6 +54,9 @@ Added RFE #578523: muf-errors log: owner and nicer format
 Added notification of start of comment line in MUF compile failure when
   the error is unterminated comments, overly nested comments or other
   comment-related error.
+Added pragmas $comment_recurse, $comment_strict and $comment_loose.  This
+  forces recursive-comment only compiles, old-style comment compiles, or
+  keeps the status-quo respectively.  (See the compiler changes above.)
 
 
 
