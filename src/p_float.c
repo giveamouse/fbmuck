@@ -306,7 +306,7 @@ prim_dist3d(PRIM_PROTOTYPE)
 void
 prim_diff3(PRIM_PROTOTYPE)
 {
-	float xout, yout zout;
+	float xout, yout, zout;
 	double x, y, z;
 	double x2, y2, z2;
 
