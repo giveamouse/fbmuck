@@ -334,6 +334,7 @@ init_defs(COMPSTATE *cstat)
     insert_intdef(cstat, "bg_mode", BACKGROUND);
     insert_intdef(cstat, "fg_mode", FOREGROUND);
     insert_intdef(cstat, "pr_mode", PREEMPT);
+    insert_intdef(cstat, "max_variable_count", MAX_VAR);
 
     /* make defines for compatability to removed primitives */
     insert_def(cstat, "desc", "\"_/de\" getpropstr");
@@ -354,12 +355,14 @@ init_defs(COMPSTATE *cstat)
     insert_def(cstat, "background", "bg_mode setmode");
     insert_def(cstat, "foreground", "fg_mode setmode");
     insert_def(cstat, "notify_except", "1 swap notify_exclude");
+
+    /* array convenience defines */
     insert_def(cstat, "}list", "} array_make");
     insert_def(cstat, "}dict", "}  2 / array_make_dict");
     insert_def(cstat, "[]", "array_getitem");
     insert_def(cstat, "[..]", "array_getrange");
 
-        /* GUI control types */
+    /* GUI control types */
     insert_def(cstat, "c_datum",     "\"datum\"");
     insert_def(cstat, "c_label",     "\"text\"");
     insert_def(cstat, "c_hrule",     "\"hrule\"");
