@@ -41,26 +41,33 @@ found_sslh="0"
 if test "$SSLTOP" = ""; then
 	AC_CHECK_HEADERS(ssl.h ssl/ssl.h openssl/ssl.h,found_sslh="1")
 else
+	oldinc=$INC
+	INC="-I$SSLTOP $oldinc"
 	AC_CHECK_HEADERS($SSLTOP/ssl.h,
 		AC_DEFINE(HAVE_SSL_H)
-		INC="-I$SSLTOP $INC"
 		found_sslh="1"
 	)
-	AC_CHECK_HEADERS($SSLTOP/include/ssl.h,
-		AC_DEFINE(HAVE_SSL_H)
-		INC="-I$SSLTOP/include $INC"
-		found_sslh="1"
-	)
-	AC_CHECK_HEADERS($SSLTOP/include/ssl/ssl.h,
-		AC_DEFINE(HAVE_SSL_SSL_H)
-		INC="-I$SSLTOP/include $INC"
-		found_sslh="1"
-	)
-	AC_CHECK_HEADERS($SSLTOP/include/openssl/ssl.h,
-		AC_DEFINE(HAVE_OPENSSL_SSL_H)
-		INC="-I$SSLTOP/include $INC"
-		found_sslh="1"
-	)
+	if test "$found_sslh" = "0"; then
+		INC="-I$SSLTOP/include $oldinc"
+		AC_CHECK_HEADERS($SSLTOP/include/ssl.h,
+			AC_DEFINE(HAVE_SSL_H)
+			found_sslh="1"
+		)
+	fi
+	if test "$found_sslh" = "0"; then
+		INC="-I$SSLTOP/include $oldinc"
+		AC_CHECK_HEADERS($SSLTOP/include/ssl/ssl.h,
+			AC_DEFINE(HAVE_SSL_SSL_H)
+			found_sslh="1"
+		)
+	fi
+	if test "$found_sslh" = "0"; then
+		INC="-I$SSLTOP/include $oldinc"
+		AC_CHECK_HEADERS($SSLTOP/include/openssl/ssl.h,
+			AC_DEFINE(HAVE_OPENSSL_SSL_H)
+			found_sslh="1"
+		)
+	fi
 fi
 if test "$found_sslh" = "0"; then
 	AC_MSG_ERROR([cannot locate ssl.h header file.])

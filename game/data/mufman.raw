@@ -118,13 +118,13 @@ How to make a library:
     1) Create a program with several useful generic subroutines.
     2) DOCUMENT those subroutines in a commented out header in the prog.
     3) @set <program>=_docs:<command to list those DOCS you made>
-	4) Set the version number of the code in the library with $version 1.000
-	    This lets you keep track of the code revision installed, separately
-		from the version of the library calling API.
-	5) Set the library API version number with $lib-version 1.000
-		This is the version of the calling interface for this library.
-	    Remember to up this version when you change this library's calls.
-		Remember that 1.19 is less than 1.2, so use numbers like 1.002.
+    4) Set the version number of the code in the library with $version 1.000
+        This lets you keep track of the code revision installed, separately
+        from the version of the library calling API.
+    5) Set the library API version number with $lib-version 1.000
+        This is the version of the calling interface for this library.
+        Remember to up this version when you change this library's calls.
+        Remember that 1.19 is less than 1.2, so use numbers like 1.002.
     6) For each function you want to be externally callable, do the following:
         a) Declare it PUBLIC
         b) Create the caller macro with either:
@@ -2221,6 +2221,71 @@ use a '*' in place of either the width or precision format fields, then
 that integer number will be obtained from the stack.  You may specify a
 negative fieldwidth to obtain left justification of that field.  You may
 not specify a negative precision.
+~~alsosee ARRAY_FMTSTRINGS
+~
+~
+ARRAY_FMTSTRINGS
+ARRAY_FMTSTRINGS ( list:dicts str:format -- list:results )
+
+  Lets you apply a format string, a la FMTSTRING, to each of a list of
+dictionaries of input data, returning a list of strings, one for each
+input dictionary.
+
+  Unlike FMTSTRING, the format string needs to have key markers to
+specify which key of each input dictionary to use to get the data for
+each format field.  You specify the key markers in each format
+subsititution by adding a '[KEY]' before the substitution type letter.
+For example, the code:
+
+~~code
+	{
+		{
+			"username" "Johnny"
+			"count" 4
+			"object" #18
+			4  pi
+		}dict
+		{
+			"username" "Ghaladahsk_Fadja"
+			"count" 123
+			"object" #97
+		}dict
+	}list
+	"%-16.15[username]s %3[count]i %5[object]d %4.2[4]g"
+	array_formatstrings
+	{ me @ }list array_notify
+~~endcode
+
+... would show the following output to the user:
+
+~~code
+    Johnny             4   #18 3.14
+	Ghaladahsk_Fadj  123   #97 0.00
+~~endcode
+
+  Note that if a key does not exist in an input dictionary, then that
+format field will be assumed to either be 0, #-1, or a null string,
+as apropriate for the format type.
+
+  Numeric keys can be referred to as well as string keys.  This also
+means that you may use a list of list arrays as input, instead of a
+list of dictionaries.
+
+  See FMTSTRING for a full description of normal substitution format codes.
+Note that unlike FMTSTRING, the format strings cannot use calculated
+field widths or precisions via '*'.
+
+  Hint: If you want to use this format method on a single dictionary, you
+can do something like:
+
+~~code
+    pid getpidinfo   (to give us a dictionary of data.)
+	1 array_make     (to make a list with that as its single entry)
+	"%-40[player]D %6[pid]i %[called_prog]D" 
+	array_fmtstrings
+	0 []             (to get the formatted result string.)
+~~endcode
+~~alsosee FMTSTRING
 ~
 ~
 PRONOUN_SUB
@@ -5430,9 +5495,9 @@ information about the thrown exception.  The following dictionary entries
 are currently supported:
 
     "error"    The error message string, like what CATCH returns.
-	"instr"    The name string of the instruction which threw the error.
-	"line"     The integer program line number where the error was thrown.
-	"program"  The dbref of the program in which the error was thrown.
+    "instr"    The name string of the instruction which threw the error.
+    "line"     The integer program line number where the error was thrown.
+    "program"  The dbref of the program in which the error was thrown.
 
   The ABORT primitive may be used to throw an arbitrary error anywhere.
 If you need to re-propagate an error, you can use ABORT.

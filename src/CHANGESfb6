@@ -1,3 +1,9 @@
+2.2fb6.01
+Fixed bug with 'configure --with-ssl=SSLTOPDIR' not working.
+Added docs for ARRAY_FMTSTRINGS to muf manual.
+
+
+
 2.2fb6.00rc9
 Fixed crasher in prochelp when given too-long topic titles.
 Fixed infloop problem in vehicles calling envprop when secure_thing_movement
