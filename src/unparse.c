@@ -153,9 +153,9 @@ unparse_boolexp1(dbref player, struct boolexp *b, boolexp_type outer_type, int f
 			break;
 		case BOOLEXP_PROP:
 			strcpy(buftop, PropName(b->prop_check));
-			strcat(buftop, ":");
+			strcatn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), ":");
 			if (PropType(b->prop_check) == PROP_STRTYP)
-				strcat(buftop, PropDataStr(b->prop_check));
+				strcatn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), PropDataStr(b->prop_check));
 			buftop += strlen(buftop);
 			break;
 		default:

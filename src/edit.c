@@ -20,7 +20,7 @@ void editor(int descr, dbref player, const char *command);
 void do_insert(dbref player, dbref program, int arg[], int argc);
 void do_delete(dbref player, dbref program, int arg[], int argc);
 void do_quit(dbref player, dbref program);
-void do_list(dbref player, dbref program, int arg[], int argc);
+void do_list(dbref player, dbref program, int *arg, int argc);
 void insert(dbref player, const char *line);
 struct line *get_new_line(void);
 struct line *read_program(dbref i);
@@ -545,7 +545,7 @@ match_and_list(int descr, dbref player, const char *name, char *linespec)
    if 1 argument, display that line
    if 2 arguments, display all in between   */
 void
-do_list(dbref player, dbref program, int oarg[], int argc)
+do_list(dbref player, dbref program, int *oarg, int argc)
 {
 	struct line *curr;
 	int i, count;

@@ -766,16 +766,16 @@ gui_ctrl_process_layout(McpMesg * msg, int layout)
 
 	buf[0] = '\0';
 	if ((layout & GUI_N))
-		strcat(buf, "n");
+		strcatn(buf, sizeof(buf), "n");
 
 	if ((layout & GUI_S))
-		strcat(buf, "s");
+		strcatn(buf, sizeof(buf), "s");
 
 	if ((layout & GUI_E))
-		strcat(buf, "e");
+		strcatn(buf, sizeof(buf), "e");
 
 	if ((layout & GUI_W))
-		strcat(buf, "w");
+		strcatn(buf, sizeof(buf), "w");
 
 	if (strcmp(buf, ""))
 		mcp_mesg_arg_append(msg, "sticky", buf);

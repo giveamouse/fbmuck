@@ -101,8 +101,8 @@ mfn_links(MFUNARGS)
 				ref2str(obj2, buf2, sizeof(buf2));
 				if (strlen(buf) + strlen(buf2) + 2 < BUFFER_LEN) {
 					if (*buf)
-						strcat(buf, "\r");
-					strcat(buf, buf2);
+						strcatn(buf, BUFFER_LEN, "\r");
+					strcatn(buf, BUFFER_LEN, buf2);
 				}
 			}
 			return buf;
@@ -220,8 +220,8 @@ mfn_contents(MFUNARGS)
 			if ((outlen + nextlen) >= (BUFFER_LEN - 3))
 				break;
 			if (outlen)
-				strcat((buf + (outlen++)), "\r");
-			strcat((buf + outlen), buf2);
+				strcatn((buf + (outlen++)), BUFFER_LEN - outlen, "\r");
+			strcatn((buf + outlen), BUFFER_LEN - outlen, buf2);
 			outlen += nextlen;
 			list_limit--;
 		}
@@ -263,8 +263,8 @@ mfn_exits(MFUNARGS)
 		if ((outlen + nextlen) >= (BUFFER_LEN - 3))
 			break;
 		if (outlen)
-			strcat((buf + (outlen++)), "\r");
-		strcat((buf + outlen), buf2);
+			strcatn((buf + (outlen++)), BUFFER_LEN - outlen, "\r");
+		strcatn((buf + outlen), BUFFER_LEN - outlen, buf2);
 		outlen += nextlen;
 		list_limit--;
 		obj = DBFETCH(obj)->next;
@@ -489,12 +489,12 @@ mfn_sublist(MFUNARGS)
 	pflag = 0;
 	for (i = which; ((i <= end) && (incr == 1)) || ((i >= end) && (incr == -1)); i += incr) {
 		if (pflag) {
-			strcat(buf, sepbuf);
+			strcatn(buf, BUFFER_LEN, sepbuf);
 		} else {
 			pflag++;
 		}
 		ptr = getlitem(buf2, argv[0], sepbuf, i);
-		strcat(buf, ptr);
+		strcatn(buf, BUFFER_LEN, ptr);
 	}
 	return buf;
 }
@@ -795,8 +795,8 @@ mfn_filter(MFUNARGS)
 		CHECKRETURN(dptr, "FILTER", "arg 3");
 		if (truestr(buf2)) {
 			if (outcount++)
-				strcat(buf, sepbuf);
-			strcat(buf, ptr);
+				strcatn(buf, BUFFER_LEN, sepbuf);
+			strcatn(buf, BUFFER_LEN, ptr);
 		}
 		ptr = ptr2;
 		if (!(--iter_limit))
@@ -842,8 +842,8 @@ mfn_lremove(MFUNARGS)
 		} while (*q);
 		if (!*p && !*q) {
 			if (outcount++)
-				strcat(buf, "\r");
-			strcat(buf, ptr);
+				strcatn(buf, BUFFER_LEN, "\r");
+			strcatn(buf, BUFFER_LEN, ptr);
 		}
 		ptr = ptr2;
 		if (!(--iter_limit))
@@ -888,8 +888,8 @@ mfn_lcommon(MFUNARGS)
 		} while (*q);
 		if (*p && !*q) {
 			if (outcount++)
-				strcat(buf, "\r");
-			strcat(buf, ptr);
+				strcatn(buf, BUFFER_LEN, "\r");
+			strcatn(buf, BUFFER_LEN, ptr);
 		}
 		ptr = ptr2;
 		if (!(--iter_limit))
@@ -930,8 +930,8 @@ mfn_lunion(MFUNARGS)
 			if (outlen + nextlen > BUFFER_LEN - 3)
 				break;
 			if (outcount++)
-				strcat((buf + (outlen++)), "\r");
-			strcat((buf + outlen), ptr);
+				strcatn((buf + (outlen++)), BUFFER_LEN - outlen, "\r");
+			strcatn((buf + outlen), BUFFER_LEN - outlen, ptr);
 			outlen += nextlen;
 		}
 		ptr = ptr2;
@@ -958,8 +958,8 @@ mfn_lunion(MFUNARGS)
 			if (outlen + nextlen > BUFFER_LEN - 3)
 				break;
 			if (outcount++)
-				strcat((buf + (outlen++)), "\r");
-			strcat((buf + outlen), ptr);
+				strcatn((buf + (outlen++)), BUFFER_LEN - outlen, "\r");
+			strcatn((buf + outlen), BUFFER_LEN - outlen, ptr);
 			outlen += nextlen;
 		}
 		ptr = ptr2;
@@ -1038,8 +1038,8 @@ mfn_lsort(MFUNARGS)
 	*buf = '\0';
 	for (i = 0; i < count; i++) {
 		if (outcount++)
-			strcat(buf, "\r");
-		strcat(buf, litem[i]);
+			strcatn(buf, BUFFER_LEN, "\r");
+		strcatn(buf, BUFFER_LEN, litem[i]);
 	}
 	if (argc > 1) {
 		free_top_mvar();
@@ -1078,8 +1078,8 @@ mfn_lunique(MFUNARGS)
 		if (!*p) {
 			nextlen = strlen(ptr);
 			if (outcount++)
-				strcat((buf + (outlen++)), "\r");
-			strcat((buf + outlen), ptr);
+				strcatn((buf + (outlen++)),  BUFFER_LEN - outlen,"\r");
+			strcatn((buf + outlen), BUFFER_LEN - outlen, ptr);
 			outlen += nextlen;
 		}
 		ptr = ptr2;
@@ -1155,10 +1155,10 @@ mfn_parse(MFUNARGS)
 		if (outlen + nextlen + oseplen > BUFFER_LEN - 3)
 			break;
 		if (outcount++) {
-			strcat((buf + outlen), sepbuf);
+			strcatn((buf + outlen), BUFFER_LEN - outlen, sepbuf);
 			outlen += oseplen;
 		}
-		strcat((buf + outlen), buf2);
+		strcatn((buf + outlen), BUFFER_LEN - outlen, buf2);
 		outlen += nextlen;
 		ptr = ptr2;
 		if (!(--iter_limit))
@@ -1440,10 +1440,9 @@ mfn_muf(MFUNARGS)
 	if (++mpi_muf_call_levels > 18)
 		ABORT_MPI("MUF", "Too many call levels.");
 
-	strcpy(match_args, argv[1]);
+	strcpyn(match_args, sizeof(match_args), argv[1]);
 	ptr = get_mvar("how");
-	strcpy(match_cmdname, ptr);
-	strcat(match_cmdname, "(MPI)");
+	snprintf(match_cmdname, sizeof(match_cmdname), "%s(MPI)", ptr);
 	tmpfr = interp(descr, player, DBFETCH(player)->location, obj, perms, PREEMPT, STD_HARDUID, 0);
 	if (tmpfr) {
 		rv = interp_loop(player, obj, tmpfr, 1);
@@ -1730,7 +1729,7 @@ mfn_commas(MFUNARGS)
 				free_top_mvar();
 			return buf;
 		}
-		strcat(out, ptr);
+		strcatn(out, BUFFER_LEN - (out - buf), ptr);
 		out += itemlen;
 		switch (count - i) {
 		case 0:
@@ -1745,7 +1744,7 @@ mfn_commas(MFUNARGS)
 					free_top_mvar();
 				return buf;
 			}
-			strcat(out, sepbuf);
+			strcatn(out, BUFFER_LEN - (out - buf), sepbuf);
 			out += itemlen;
 			break;
 		default:
@@ -1754,7 +1753,7 @@ mfn_commas(MFUNARGS)
 					free_top_mvar();
 				return buf;
 			}
-			strcat(out, ", ");
+			strcatn(out, BUFFER_LEN - (out - buf), ", ");
 			out += strlen(out);
 			break;
 		}
@@ -1774,51 +1773,51 @@ mfn_attr(MFUNARGS)
 	buf[0] = '\0';
 	for (i = 0; i < argc - 1; i++) {
 		if (!string_compare(argv[i], "reset")) {
-			strcat(buf, ANSI_RESET);
+			strcatn(buf, BUFFER_LEN, ANSI_RESET);
 		} else if (!string_compare(argv[i], "bold")) {
-			strcat(buf, ANSI_BOLD);
+			strcatn(buf, BUFFER_LEN, ANSI_BOLD);
 		} else if (!string_compare(argv[i], "dim")) {
-			strcat(buf, ANSI_DIM);
+			strcatn(buf, BUFFER_LEN, ANSI_DIM);
 		} else if (!string_compare(argv[i], "uline") || !string_compare(argv[i], "underline")) {
-			strcat(buf, ANSI_UNDERLINE);
+			strcatn(buf, BUFFER_LEN, ANSI_UNDERLINE);
 		} else if (!string_compare(argv[i], "flash")) {
-			strcat(buf, ANSI_FLASH);
+			strcatn(buf, BUFFER_LEN, ANSI_FLASH);
 		} else if (!string_compare(argv[i], "reverse")) {
-			strcat(buf, ANSI_REVERSE);
+			strcatn(buf, BUFFER_LEN, ANSI_REVERSE);
 
 		} else if (!string_compare(argv[i], "black")) {
-			strcat(buf, ANSI_FG_BLACK);
+			strcatn(buf, BUFFER_LEN, ANSI_FG_BLACK);
 		} else if (!string_compare(argv[i], "red")) {
-			strcat(buf, ANSI_FG_RED);
+			strcatn(buf, BUFFER_LEN, ANSI_FG_RED);
 		} else if (!string_compare(argv[i], "yellow")) {
-			strcat(buf, ANSI_FG_YELLOW);
+			strcatn(buf, BUFFER_LEN, ANSI_FG_YELLOW);
 		} else if (!string_compare(argv[i], "green")) {
-			strcat(buf, ANSI_FG_GREEN);
+			strcatn(buf, BUFFER_LEN, ANSI_FG_GREEN);
 		} else if (!string_compare(argv[i], "cyan")) {
-			strcat(buf, ANSI_FG_CYAN);
+			strcatn(buf, BUFFER_LEN, ANSI_FG_CYAN);
 		} else if (!string_compare(argv[i], "blue")) {
-			strcat(buf, ANSI_FG_BLUE);
+			strcatn(buf, BUFFER_LEN, ANSI_FG_BLUE);
 		} else if (!string_compare(argv[i], "magenta")) {
-			strcat(buf, ANSI_FG_MAGENTA);
+			strcatn(buf, BUFFER_LEN, ANSI_FG_MAGENTA);
 		} else if (!string_compare(argv[i], "white")) {
-			strcat(buf, ANSI_FG_WHITE);
+			strcatn(buf, BUFFER_LEN, ANSI_FG_WHITE);
 
 		} else if (!string_compare(argv[i], "bg_black")) {
-			strcat(buf, ANSI_BG_BLACK);
+			strcatn(buf, BUFFER_LEN, ANSI_BG_BLACK);
 		} else if (!string_compare(argv[i], "bg_red")) {
-			strcat(buf, ANSI_BG_RED);
+			strcatn(buf, BUFFER_LEN, ANSI_BG_RED);
 		} else if (!string_compare(argv[i], "bg_yellow")) {
-			strcat(buf, ANSI_BG_YELLOW);
+			strcatn(buf, BUFFER_LEN, ANSI_BG_YELLOW);
 		} else if (!string_compare(argv[i], "bg_green")) {
-			strcat(buf, ANSI_BG_GREEN);
+			strcatn(buf, BUFFER_LEN, ANSI_BG_GREEN);
 		} else if (!string_compare(argv[i], "bg_cyan")) {
-			strcat(buf, ANSI_BG_CYAN);
+			strcatn(buf, BUFFER_LEN, ANSI_BG_CYAN);
 		} else if (!string_compare(argv[i], "bg_blue")) {
-			strcat(buf, ANSI_BG_BLUE);
+			strcatn(buf, BUFFER_LEN, ANSI_BG_BLUE);
 		} else if (!string_compare(argv[i], "bg_magenta")) {
-			strcat(buf, ANSI_BG_MAGENTA);
+			strcatn(buf, BUFFER_LEN, ANSI_BG_MAGENTA);
 		} else if (!string_compare(argv[i], "bg_white")) {
-			strcat(buf, ANSI_BG_WHITE);
+			strcatn(buf, BUFFER_LEN, ANSI_BG_WHITE);
 		} else if (!string_compare(argv[i], "")) {
 		} else {
 			ABORT_MPI("ATTR", "Unrecognized ansi tag.  Try one of reset, bold, dim, underline, reverse, black, red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, bg_green, bg_cyan, bg_blue, bg_magenta, or bg_white.");
@@ -1826,7 +1825,7 @@ mfn_attr(MFUNARGS)
 	}
 	exlen = strlen(buf) + strlen(ANSI_RESET) + 1;
 	strncat(buf, argv[argc - 1], (BUFFER_LEN - exlen));
-	strcat(buf, ANSI_RESET);
+	strcatn(buf, BUFFER_LEN, ANSI_RESET);
 	return buf;
 }
 

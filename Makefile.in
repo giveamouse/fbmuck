@@ -81,6 +81,7 @@ help:
 	cd src && make prochelp
 	cd game/data && ../../src/prochelp mpihelp.raw mpihelp.txt ../../docs/mpihelp.html
 	cd game/data && ../../src/prochelp mufman.raw man.txt ../../docs/mufman.html
+	cd game/data && ../../src/prochelp muckhelp.raw help.txt ../../docs/muckhelp.html
 
 package: help
 	rm -rf ${TMPPKGDIR}
@@ -140,7 +141,7 @@ package: help
 	head -1 `/bin/ls -1d src/CHANGESfb* | sort -nr | head -1` | cut -c6- > ${TMPREV}
 	echo '#define VERSION "Muck2.2fb'`cat ${TMPREV}`'"' > ${TMPPKGDIR}/include/version.h
 	rm -f ${TMPPKGDIR}/prochelp
-	find ${TMPPKGDIR} -type d -name CVS -print | xargs -r -t rm -rf
+	find ${TMPPKGDIR} -type d -name CVS -exec rm -rf {} \; -prune
 	mv -f ${TMPPKGDIR} fbmuck-`cat ${TMPREV}`
 	rm -f fbmuck-`cat ${TMPREV}`.tar.gz
 	tar -cf - fbmuck-`cat ${TMPREV}` | gzip -9 > fbmuck-`cat ${TMPREV}`.tar.gz
@@ -148,7 +149,7 @@ package: help
 
 rpms: package
 	head -1 `/bin/ls -1d src/CHANGESfb* | sort -nr | head -1` | cut -c6- > ${TMPREV}
-	rpm -ta --sign --target=i386 fbmuck-`cat ${TMPREV}`.tar.gz
+	rpm -ta --sign --target i386 fbmuck-`cat ${TMPREV}`.tar.gz
 	rm -rf ${TMPREV}
 
 

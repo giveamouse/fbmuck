@@ -93,7 +93,7 @@ extern struct macrotable
 *new_macro(const char *name, const char *definition, dbref player);
 extern char *macro_expansion(struct macrotable *node, const char *match);
 extern void match_and_list(int descr, dbref player, const char *name, char *linespec);
-extern void do_list(dbref player, dbref program, int oarg[], int argc);
+extern void do_list(dbref player, dbref program, int *oarg, int argc);
 
 /* From game.c */
 extern void do_dump(dbref player, const char *newfile);
@@ -222,6 +222,9 @@ extern void prefix_message(char* Dest, const char* Src, const char* Prefix, int 
 extern int is_prop_prefix(const char* Property, const char* Prefix);
 extern int has_suffix(const char* text, const char* suffix);
 extern int has_suffix_char(const char* text, char suffix);
+extern char* strcatn(char* buf, size_t bufsize, const char* src);
+extern char* strcpyn(char* buf, size_t bufsize, const char* src);
+
 
 #if !defined(MALLOC_PROFILING)
 extern char *string_dup(const char *s);

@@ -97,13 +97,13 @@ show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, 
 	while (linestart <= lineend) {
 		if (strlen(buf) < BUFFER_LEN / 2) {
 			if (*buf)
-				strcat(buf, " ");
+				strcatn(buf, sizeof(buf), " ");
 			if (pc == linestart && markpc) {
-				strcat(buf, " {{");
-				strcat(buf, insttotext(NULL, 0, linestart, buf2, sizeof(buf2), 30, program, 1));
-				strcat(buf, "}} ");
+				strcatn(buf, sizeof(buf), " {{");
+				strcatn(buf, sizeof(buf), insttotext(NULL, 0, linestart, buf2, sizeof(buf2), 30, program, 1));
+				strcatn(buf, sizeof(buf), "}} ");
 			} else {
-				strcat(buf, insttotext(NULL, 0, linestart, buf2, sizeof(buf2), 30, program, 1));
+				strcatn(buf, sizeof(buf), insttotext(NULL, 0, linestart, buf2, sizeof(buf2), 30, program, 1));
 			}
 		} else {
 			break;
@@ -111,7 +111,7 @@ show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, 
 		linestart++;
 	}
 	if (lineend < end && (lineend + 1)->line == thisline)
-		strcat(buf, " ...");
+		strcatn(buf, sizeof(buf), " ...");
 	return buf;
 }
 
@@ -184,28 +184,28 @@ unparse_breakpoint(struct frame *fr, int brk)
 	snprintf(buf, sizeof(buf), "%2d) break", brk + 1);
 	if (fr->brkpt.line[brk] != -1) {
 		snprintf(buf2, sizeof(buf2), " in line %d", fr->brkpt.line[brk]);
-		strcat(buf, buf2);
+		strcatn(buf, sizeof(buf), buf2);
 	}
 	if (fr->brkpt.pc[brk] != NULL) {
 		ref = fr->brkpt.prog[brk];
 		snprintf(buf2, sizeof(buf2), " at %s", unparse_sysreturn(&ref, fr->brkpt.pc[brk] + 1));
-		strcat(buf, buf2);
+		strcatn(buf, sizeof(buf), buf2);
 	}
 	if (fr->brkpt.linecount[brk] != -2) {
 		snprintf(buf2, sizeof(buf2), " after %d line(s)", fr->brkpt.linecount[brk]);
-		strcat(buf, buf2);
+		strcatn(buf, sizeof(buf), buf2);
 	}
 	if (fr->brkpt.pccount[brk] != -2) {
 		snprintf(buf2, sizeof(buf2), " after %d instruction(s)", fr->brkpt.pccount[brk]);
-		strcat(buf, buf2);
+		strcatn(buf, sizeof(buf), buf2);
 	}
 	if (fr->brkpt.prog[brk] != NOTHING) {
 		snprintf(buf2, sizeof(buf2), " in %s(#%d)", NAME(fr->brkpt.prog[brk]), fr->brkpt.prog[brk]);
-		strcat(buf, buf2);
+		strcatn(buf, sizeof(buf), buf2);
 	}
 	if (fr->brkpt.level[brk] != -1) {
 		snprintf(buf2, sizeof(buf2), " on call level %d", fr->brkpt.level[brk]);
-		strcat(buf, buf2);
+		strcatn(buf, sizeof(buf), buf2);
 	}
 	return buf;
 }

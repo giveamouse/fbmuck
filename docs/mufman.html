@@ -1009,15 +1009,22 @@ How to make a library:
     1) Create a program with several useful generic subroutines.
     2) DOCUMENT those subroutines in a commented out header in the prog.
     3) @set &lt;program&gt;=_docs:&lt;command to list those DOCS you made&gt;
-    5) For each function you want to be externally callable, do the following:
+	4) Set the version number of the code in the library with $version 1.000
+	    This lets you keep track of the code revision installed, separately
+		from the version of the library calling API.
+	5) Set the library API version number with $lib-version 1.000
+		This is the version of the calling interface for this library.
+	    Remember to up this version when you change this library's calls.
+		Remember that 1.19 is less than 1.2, so use numbers like 1.002.
+    6) For each function you want to be externally callable, do the following:
         a) Declare it PUBLIC
         b) Create the caller macro with either:
             $libdef FUNCNAME     or
             $pubdef EXPORTEDNAME &quot;$lib/THISLIB&quot; match &quot;FUNCNAME&quot; call
-    6) Make sure the program is set LINK_OK and VIEWABLE.
-    7) Globally register the program with the @register command with a
+    7) Make sure the program is set LINK_OK and VIEWABLE.
+    8) Globally register the program with the @register command with a
         prefix of &quot;lib/&quot;.  ie: @reg lib-strings.muf=lib/strings
-    8) You're done!
+    9) You're done!
 </pre>
 
 Currently standard libraries:
@@ -1266,6 +1273,14 @@ The preferred format is an email address with name comment. ie:
 <pre>
     $author Revar Desmera &lt;revar@belfry.com&gt;
 </pre>
+To denote multiple authors, separate them with commas.  ie:
+<pre>
+    $author Revar Desmera &lt;revar@belfry.com&gt;, Foxen &lt;foxen@belfry.com&gt;
+</pre>
+If you don't want to include your email address, just omit it.  ie:
+<pre>
+    $author Revar, Foxen
+</pre>
 <p>
 
 
@@ -1276,7 +1291,7 @@ The preferred format is an email address with name comment. ie:
 </a></h4>
   Sets the _version string property on the program to &lt;float&gt;.  Version
 numbers should be like 1.009 and 1.010, so that they can be compared using
-floating point comparisons.
+floating point comparisons.  (Remember, 1.9 is greater than 1.10.)
 <p>
 
 
@@ -1287,7 +1302,7 @@ floating point comparisons.
 </a></h4>
   Sets the _lib-version string property on the program to &lt;float&gt;.  Version
 numbers should be like 1.009 and 1.010, so that they can be compared using
-floating point comparisons.
+floating point comparisons.  (Remember, 1.9 is greater than 1.10.)
 <p>
 
 

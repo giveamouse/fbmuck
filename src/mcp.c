@@ -14,13 +14,9 @@
 #endif /* HAVE_MALLOC_H */
 
 
-#define MCP_MESG_DELIMITER	"-"
-#define MCP_ARG_DEFERRED	"*"
+#define MCP_MESG_PREFIX		"#$#"
+#define MCP_QUOTE_PREFIX	"#$\""
 #define MCP_ARG_EMPTY		"\"\""
-#define MCP_ARG_DELIMITER	":"
-#define MCP_ARGLINE_DELIMCHAR1	'\n'
-#define MCP_ARGLINE_DELIMCHAR2	'\r'
-#define MCP_SEPARATOR		" "
 #define MCP_INIT_PKG		"mcp"
 #define MCP_DATATAG			"_data-tag"
 #define MCP_INIT_MESG		"mcp "
@@ -60,6 +56,35 @@ strncmp_nocase(const char *s1, const char *s2, int cnt)
 		return (tolower(*s1) - tolower(*s2));
 	}
 }
+
+
+/* Used internally to escape and quote argument values. */
+int
+msgarg_escape(char* buf, int bufsize, const char* in)
+{
+	char *out = buf;
+	int len = 0;
+
+	if (bufsize < 3) {
+		return 0;
+	}
+	*out++ = '"';
+	len++;
+	while (*in && len < bufsize - 3) {
+		if (*in == '"' || *in == '\\') {
+			*out++ = '\\';
+			len++;
+		}
+		*out++ = *in++;
+		len++;
+	}
+	*out++ = '"';
+	*out = '\0';
+	len++;
+
+	return len;
+}
+
 
 int mcp_internal_parse(McpFrame * mfr, const char *in);
 
@@ -701,6 +726,7 @@ int
 mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 {
 	char outbuf[BUFFER_LEN * 2];
+	int bufrem = sizeof(outbuf);
 	char mesgname[128];
 	char datatag[32];
 	McpArg *anarg = NULL;
@@ -714,21 +740,19 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 	}
 
 	/* Create the message name from the package and message subnames */
-	strncpy(mesgname, msg->package, sizeof(mesgname));
-	mesgname[sizeof(mesgname) - 1] = '\0';
 	if (msg->mesgname && *msg->mesgname) {
-		strcat(mesgname, MCP_MESG_DELIMITER);
-		strncat(mesgname, msg->mesgname, sizeof(mesgname) - strlen(mesgname));
-		mesgname[sizeof(mesgname) - 1] = '\0';
+		snprintf(mesgname, sizeof(mesgname), "%s-%s", msg->package, msg->mesgname);
+	} else {
+		snprintf(mesgname, sizeof(mesgname), "%s", msg->package);
 	}
 
 	strcpy(outbuf, MCP_MESG_PREFIX);
-	strcat(outbuf, mesgname);
+	strcatn(outbuf, sizeof(outbuf), mesgname);
 	if (strcmp_nocase(mesgname, MCP_INIT_PKG)) {
 		McpVer nullver = { 0, 0 };
 
-		strcat(outbuf, " ");
-		strcat(outbuf, mfr->authkey);
+		strcatn(outbuf, sizeof(outbuf), " ");
+		strcatn(outbuf, sizeof(outbuf), mfr->authkey);
 		if (strcmp_nocase(msg->package, MCP_NEGOTIATE_PKG)) {
 			McpVer ver = mcp_frame_package_supported(mfr, msg->package);
 
@@ -746,7 +770,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 			while (ap) {
 				p = ap->value;
 				while (*p) {
-					if (*p == MCP_ARGLINE_DELIMCHAR1 || *p == MCP_ARGLINE_DELIMCHAR2) {
+					if (*p == '\n' || *p == '\r') {
 						McpArgPart *nu = (McpArgPart *) malloc(sizeof(McpArgPart));
 
 						nu->next = ap->next;
@@ -768,16 +792,15 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 
 	/* Build the initial message string */
 	out = outbuf;
+	bufrem = outbuf + sizeof(outbuf) - out;
 	for (anarg = msg->args; anarg; anarg = anarg->next) {
 		out += strlen(out);
-		strcat(out, MCP_SEPARATOR);
+		bufrem = outbuf + sizeof(outbuf) - out;
 		if (!anarg->value) {
 			anarg->was_shown = 1;
-			strcat(out, anarg->name);
+			snprintf(out, bufrem, " %s: %s", anarg->name, MCP_ARG_EMPTY);
 			out += strlen(out);
-			strcat(out, MCP_ARG_DELIMITER);
-			strcat(out, MCP_SEPARATOR);
-			strcat(out, MCP_ARG_EMPTY);
+			bufrem = outbuf + sizeof(outbuf) - out;
 		} else {
 			int totlen = strlen(anarg->value->value) + strlen(anarg->name) + 5;
 
@@ -785,40 +808,28 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 				/* Value is multi-line or too long.  Send on separate line(s). */
 				mlineflag = 1;
 				anarg->was_shown = 0;
-				strcat(out, anarg->name);
-				strcat(out, MCP_ARG_DEFERRED);
-				strcat(out, MCP_ARG_DELIMITER);
-				strcat(out, MCP_SEPARATOR);
-				strcat(out, MCP_ARG_EMPTY);
+				snprintf(out, bufrem, " %s*: %s", anarg->name, MCP_ARG_EMPTY);
 			} else {
 				anarg->was_shown = 1;
-				strcat(out, anarg->name);
-				strcat(out, MCP_ARG_DELIMITER);
-				strcat(out, MCP_SEPARATOR);
+				snprintf(out, bufrem, " %s: ", anarg->name);
 				out += strlen(out);
-				*out++ = '"';
-				p = anarg->value->value;
-				while (*p) {
-					if (*p == '"' || *p == '\\') {
-						*out++ = '\\';
-					}
-					*out++ = *p++;
-				}
-				*out++ = '"';
-				*out = '\0';
+				bufrem = outbuf + sizeof(outbuf) - out;
+
+				msgarg_escape(out, bufrem, anarg->value->value);
+				out += strlen(out);
+				bufrem = outbuf + sizeof(outbuf) - out;
 			}
+			out += strlen(out);
+			bufrem = outbuf + sizeof(outbuf) - out;
 		}
 	}
 
 	/* If the message is multi-line, make sure it has a _data-tag field. */
 	if (mlineflag) {
-		strcat(out, MCP_SEPARATOR);
-		strcat(out, MCP_DATATAG);
-		strcat(out, MCP_ARG_DELIMITER);
-		strcat(out, MCP_SEPARATOR);
-		out += strlen(out);
 		snprintf(datatag, sizeof(datatag), "%.8lX", (unsigned long)(RANDOM() ^ RANDOM()));
-		strcat(out, datatag);
+		snprintf(out, bufrem, " %s: %s", MCP_DATATAG, datatag);
+		out += strlen(out);
+		bufrem = outbuf + sizeof(outbuf) - out;
 	}
 
 	/* Send the initial line. */
@@ -834,16 +845,9 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 
 				while (ap) {
 					*outbuf = '\0';
-					strcpy(outbuf, MCP_MESG_PREFIX);
-					strcat(outbuf, "* ");
-					strcat(outbuf, datatag);
-					strcat(outbuf, MCP_SEPARATOR);
-					strcat(outbuf, anarg->name);
-					strcat(outbuf, MCP_ARG_DELIMITER);
-					strcat(outbuf, MCP_SEPARATOR);
-					strcat(outbuf, ap->value);
-					strcat(outbuf, "\r\n");
+					snprintf(outbuf, sizeof(outbuf), "%s* %s %s: %s", MCP_MESG_PREFIX, datatag, anarg->name, ap->value);
 					SendText(mfr, outbuf);
+					SendText(mfr, "\r\n");
 					if (!--flushcount) {
 						FlushText(mfr);
 						flushcount = 8;
@@ -854,11 +858,9 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 		}
 
 		/* Let the other side know we're done sending multi-line arg vals. */
-		strcpy(outbuf, MCP_MESG_PREFIX);
-		strcat(outbuf, ": ");
-		strcat(outbuf, datatag);
-		strcat(outbuf, "\r\n");
+		snprintf(outbuf, sizeof(outbuf), "%s: %s", MCP_MESG_PREFIX, datatag);
 		SendText(mfr, outbuf);
+		SendText(mfr, "\r\n");
 	}
 
 	return EMCP_SUCCESS;

@@ -437,7 +437,7 @@ include_defs(COMPSTATE * cstat, dbref i)
 	j = first_prop(i, dirname, &pptr, temp);
 	while (j) {
 		strcpy(dirname, "/_defs/");
-		strcat(dirname, temp);
+		strcatn(dirname, sizeof(dirname), temp);
 		tmpptr = uncompress(get_property_class(i, dirname));
 		if (tmpptr && *tmpptr)
 			insert_def(cstat, temp, (char *) tmpptr);
@@ -1574,9 +1574,10 @@ next_token(COMPSTATE * cstat)
 		if (++cstat->macrosubs > SUBSTITUTIONS) {
 			abort_compile(cstat, "Too many macro substitutions.");
 		} else {
-			temp = (char *) malloc(strlen(cstat->next_char) + strlen(expansion) + 21);
+			int templen = strlen(cstat->next_char) + strlen(expansion) + 21;
+			temp = (char *) malloc(templen);
 			strcpy(temp, expansion);
-			strcat(temp, cstat->next_char);
+			strcatn(temp, templen, cstat->next_char);
 			free((void *) expansion);
 			if (cstat->line_copy) {
 				free((void *) cstat->line_copy);

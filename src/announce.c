@@ -46,6 +46,34 @@ char msg[32768];
     typedef unsigned int socklen_t;
 #endif
 
+char*
+strcpyn(char* buf, size_t bufsize, const char* src)
+{
+	int pos = 0;
+	char* dest = buf;
+
+	while (++pos < bufsize && *src) {
+		*dest++ = *src++;
+	}
+	*dest = '\0';
+	return buf;
+}
+
+char*
+strcatn(char* buf, size_t bufsize, const char* src)
+{
+	int pos = strlen(buf);
+	char* dest = &buf[pos];
+
+	while (++pos < bufsize && *src) {
+		*dest++ = *src++;
+	}
+	if (pos < bufsize + 1) {
+		*dest = '\0';
+	}
+	return buf;
+}
+
 int
 notify(int player, const char *msg)
 {
@@ -86,13 +114,13 @@ main(int argc, char *argv[])
 	}
 #endif
 
-	strcpy(msg, "");
-	strcpy(tmp, "");
+	strcpyn(msg, sizeof(msg), "");
+	strcpyn(tmp, sizeof(tmp), "");
 	while (1) {
 		if (fgets(tmp,32766,stdin) == NULL)
 			break;
-		strcat(tmp, "\r\n");
-		strcat(msg, tmp);
+		strcatn(tmp, sizeof(tmp), "\r\n");
+		strcatn(msg, sizeof(msg), tmp);
 	}
 	msg[4095] = '\0';
 	signal(SIGHUP, SIG_IGN);	/* get socket, bind port to it      */

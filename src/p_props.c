@@ -768,7 +768,7 @@ prim_nextprop(PRIM_PROTOTYPE)
 	{
 		char *tmpname;
 
-		pname = next_prop_name(ref, exbuf, buf);
+		pname = next_prop_name(ref, exbuf, sizeof(exbuf), buf);
 
 #ifdef LOG_PROPS
 		log2file("props.log", "#%d (%d) NEXTPROP: o=%d n=\"%s\" on=\"%s\"",
@@ -776,7 +776,7 @@ prim_nextprop(PRIM_PROTOTYPE)
 #endif
 
 		while (pname && !prop_read_perms(ProgUID, ref, pname, mlev)) {
-			tmpname = next_prop_name(ref, exbuf, pname);
+			tmpname = next_prop_name(ref, exbuf, sizeof(exbuf), pname);
 
 #ifdef LOG_PROPS
 			log2file("props.log", "#%d (%d) NEXTPROP: o=%d n=\"%s\" on=\"%s\"",

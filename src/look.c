@@ -345,87 +345,86 @@ flag_description(dbref thing)
 	strcpy(buf, "Type: ");
 	switch (Typeof(thing)) {
 	case TYPE_ROOM:
-		strcat(buf, "ROOM");
+		strcatn(buf, sizeof(buf), "ROOM");
 		break;
 	case TYPE_EXIT:
-		strcat(buf, "EXIT/ACTION");
+		strcatn(buf, sizeof(buf), "EXIT/ACTION");
 		break;
 	case TYPE_THING:
-		strcat(buf, "THING");
+		strcatn(buf, sizeof(buf), "THING");
 		break;
 	case TYPE_PLAYER:
-		strcat(buf, "PLAYER");
+		strcatn(buf, sizeof(buf), "PLAYER");
 		break;
 	case TYPE_PROGRAM:
-		strcat(buf, "PROGRAM");
+		strcatn(buf, sizeof(buf), "PROGRAM");
 		break;
 	case TYPE_GARBAGE:
-		strcat(buf, "GARBAGE");
+		strcatn(buf, sizeof(buf), "GARBAGE");
 		break;
 	default:
-		strcat(buf, "***UNKNOWN TYPE***");
+		strcatn(buf, sizeof(buf), "***UNKNOWN TYPE***");
 		break;
 	}
 
 	if (FLAGS(thing) & ~TYPE_MASK) {
 		/* print flags */
-		strcat(buf, "  Flags:");
+		strcatn(buf, sizeof(buf), "  Flags:");
 		if (FLAGS(thing) & WIZARD)
-			strcat(buf, " WIZARD");
+			strcatn(buf, sizeof(buf), " WIZARD");
 		if (FLAGS(thing) & QUELL)
-			strcat(buf, " QUELL");
+			strcatn(buf, sizeof(buf), " QUELL");
 		if (FLAGS(thing) & STICKY)
-			strcat(buf, (Typeof(thing) == TYPE_PROGRAM) ? " SETUID" :
+			strcatn(buf, sizeof(buf), (Typeof(thing) == TYPE_PROGRAM) ? " SETUID" :
 				   (Typeof(thing) == TYPE_PLAYER) ? " SILENT" : " STICKY");
 		if (FLAGS(thing) & DARK)
-			strcat(buf, (Typeof(thing) != TYPE_PROGRAM) ? " DARK" : " DEBUGGING");
+			strcatn(buf, sizeof(buf), (Typeof(thing) != TYPE_PROGRAM) ? " DARK" : " DEBUGGING");
 		if (FLAGS(thing) & LINK_OK)
-			strcat(buf, " LINK_OK");
+			strcatn(buf, sizeof(buf), " LINK_OK");
 
 		if (FLAGS(thing) & KILL_OK)
-			strcat(buf, " KILL_OK");
+			strcatn(buf, sizeof(buf), " KILL_OK");
 
 		if (MLevRaw(thing)) {
-			strcat(buf, " MUCKER");
+			strcatn(buf, sizeof(buf), " MUCKER");
 			switch (MLevRaw(thing)) {
 			case 1:
-				strcat(buf, "1");
+				strcatn(buf, sizeof(buf), "1");
 				break;
 			case 2:
-				strcat(buf, "2");
+				strcatn(buf, sizeof(buf), "2");
 				break;
 			case 3:
-				strcat(buf, "3");
+				strcatn(buf, sizeof(buf), "3");
 				break;
 			}
 		}
 		if (FLAGS(thing) & BUILDER)
-			strcat(buf, (Typeof(thing) == TYPE_PROGRAM) ? " BOUND" : " BUILDER");
+			strcatn(buf, sizeof(buf), (Typeof(thing) == TYPE_PROGRAM) ? " BOUND" : " BUILDER");
 		if (FLAGS(thing) & CHOWN_OK)
-			strcat(buf, (Typeof(thing) == TYPE_PLAYER) ? " COLOR" : " CHOWN_OK");
+			strcatn(buf, sizeof(buf), (Typeof(thing) == TYPE_PLAYER) ? " COLOR" : " CHOWN_OK");
 		if (FLAGS(thing) & JUMP_OK)
-			strcat(buf, " JUMP_OK");
+			strcatn(buf, sizeof(buf), " JUMP_OK");
 		if (FLAGS(thing) & VEHICLE)
-/*			strcat(buf, " VEHICLE"); */
-			strcat(buf, (Typeof(thing) == TYPE_PROGRAM) ? " VIEWABLE" : " VEHICLE");
+			strcatn(buf, sizeof(buf), (Typeof(thing) == TYPE_PROGRAM) ? " VIEWABLE" : " VEHICLE");
 
 		if (FLAGS(thing) & XFORCIBLE) {
 			if (Typeof(thing) == TYPE_EXIT) {
-				strcat(buf, " XPRESS");
+				strcatn(buf, sizeof(buf), " XPRESS");
 			} else {
-				strcat(buf, " XFORCIBLE");
+				strcatn(buf, sizeof(buf), " XFORCIBLE");
 			}
 		}
 		if (FLAGS(thing) & ZOMBIE)
-			strcat(buf, " ZOMBIE");
+			strcatn(buf, sizeof(buf), " ZOMBIE");
 		if (FLAGS(thing) & HAVEN)
-			strcat(buf,
-				   (Typeof(thing) !=
+			strcatn(buf, sizeof(buf),
+			        (Typeof(thing) !=
 					TYPE_PROGRAM) ? ((Typeof(thing) ==
 									  TYPE_THING) ? " HIDE" : " HAVEN") : " HARDUID");
 		if (FLAGS(thing) & ABODE)
-			strcat(buf,
-				   (Typeof(thing) != TYPE_PROGRAM) ? (Typeof(thing) !=
+			strcatn(buf, sizeof(buf),
+			        (Typeof(thing) != TYPE_PROGRAM) ? (Typeof(thing) !=
 													  TYPE_EXIT ? " ABODE" : " ABATE") :
 				   " AUTOSTART");
 	}
@@ -449,7 +448,7 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
 	strcpy(wld, wild);
 	i = strlen(wld);
 	if (i && wld[i - 1] == PROPDIR_DELIMITER)
-		strcat(wld, "*");
+		strcatn(wld, sizeof(wld), "*");
 	for (wldcrd = wld; *wldcrd == PROPDIR_DELIMITER; wldcrd++) ;
 	if (!strcmp(wldcrd, "**"))
 		recurse = 1;
@@ -555,7 +554,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 				(BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
 				unparse_object(player, thing),
 				NAME(OWNER(thing)));
-		strcat(buf, unparse_object(player, DBFETCH(thing)->location));
+		strcatn(buf, sizeof(buf), unparse_object(player, DBFETCH(thing)->location));
 		break;
 	case TYPE_THING:
 		snprintf(buf, sizeof(buf), "%.*s  Owner: %s  Value: %d",
@@ -1226,8 +1225,8 @@ do_find(dbref player, const char *name, const char *flags)
 	int output_type = init_checkflags(player, flags, &check);
 
 	strcpy(buf, "*");
-	strcat(buf, name);
-	strcat(buf, "*");
+	strcatn(buf, sizeof(buf), name);
+	strcatn(buf, sizeof(buf), "*");
 
 	if (!payfor(player, tp_lookup_cost)) {
 		notify_fmt(player, "You don't have enough %s.", tp_pennies);
@@ -1534,19 +1533,19 @@ do_sweep(int descr, dbref player, const char *name)
 					tellflag = 1;
 					if (!online(OWNER(ref))) {
 						tellflag = 0;
-						strcat(buf, " sleeping");
+						strcatn(buf, sizeof(buf), " sleeping");
 					}
-					strcat(buf, " zombie");
+					strcatn(buf, sizeof(buf), " zombie");
 				}
 				if ((FLAGS(ref) & LISTENER) &&
 					(get_property(ref, "_listen") ||
 					 get_property(ref, "~listen") || get_property(ref, "~olisten"))) {
-					strcat(buf, " listener");
+					strcatn(buf, sizeof(buf), " listener");
 					tellflag = 1;
 				}
-				strcat(buf, " object owned by ");
-				strcat(buf, unparse_object(player, OWNER(ref)));
-				strcat(buf, ".");
+				strcatn(buf, sizeof(buf), " object owned by ");
+				strcatn(buf, sizeof(buf), unparse_object(player, OWNER(ref)));
+				strcatn(buf, sizeof(buf), ".");
 				if (tellflag)
 					notify(player, buf);
 			}

@@ -23,6 +23,8 @@
 /* declarations */
 static const char *dumpfile = 0;
 static int epoch = 0;
+time_t last_monolithic_time = 0;
+static forked_dump_process_flag = 0;
 FILE *input_file;
 FILE *delta_infile;
 FILE *delta_outfile;
@@ -195,7 +197,9 @@ panic(const char *message)
 	fprintf(stderr, "PANIC: %s\n", message);
 
 	/* shut down interface */
-	emergency_shutdown();
+	if (!forked_dump_process_flag) {
+		emergency_shutdown();
+	}
 
 	/* dump panic file */
 	snprintf(panicfile, sizeof(panicfile), "%s.PANIC", dumpfile);
@@ -261,7 +265,6 @@ dump_database(void)
 	log_status("DUMPING: %s.#%d# (done)\n", dumpfile, epoch);
 }
 
-time_t last_monolithic_time = 0;
 
 /*
  * Named "fork_and_dump()" mostly for historical reasons...
@@ -281,6 +284,7 @@ fork_and_dump(void)
 	dump_database_internal();
 #else
 	if ((global_dumper_pid=fork())==0) {
+		forked_dump_process_flag = 1;
 		dump_database_internal();
 		_exit(0);
 	}

@@ -261,7 +261,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
 					}
 					if (((result - buf) + strlen(self_sub)) > (BUFFER_LEN - 2))
 						return buf;
-					strcat(result, self_sub);
+					strcatn(result, sizeof(buf) - (result - buf), self_sub);
 					if (isupper(prn[1]) && islower(*result))
 						*result = toupper(*result);
 					result += strlen(result);
@@ -269,7 +269,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
 					if (temp_sub) {
 						if (((result - buf) + strlen(temp_sub+2)) > (BUFFER_LEN - 2))
 							return buf;
-						strcat(result, temp_sub+2);
+						strcatn(result, sizeof(buf) - (result - buf), temp_sub+2);
 						if (isupper(temp_sub[1]) && islower(*result))
 							*result = toupper(*result);
 						result += strlen(result);
@@ -285,14 +285,14 @@ pronoun_substitute(int descr, dbref player, const char *str)
 					case 'S':
 					case 'r':
 					case 'R':
-						strcat(result, PNAME(player));
+						strcatn(result, sizeof(buf) - (result - buf), PNAME(player));
 						break;
 					case 'a':
 					case 'A':
 					case 'p':
 					case 'P':
-						strcat(result, PNAME(player));
-						strcat(result, "'s");
+						strcatn(result, sizeof(buf) - (result - buf), PNAME(player));
+						strcatn(result, sizeof(buf) - (result - buf), "'s");
 						break;
 					default:
 						result[0] = *str;
@@ -309,27 +309,27 @@ pronoun_substitute(int descr, dbref player, const char *str)
 					switch (c) {
 					case 'a':
 					case 'A':
-						strcat(result, absolute[sex]);
+						strcatn(result, sizeof(buf) - (result - buf), absolute[sex]);
 						break;
 					case 's':
 					case 'S':
-						strcat(result, subjective[sex]);
+						strcatn(result, sizeof(buf) - (result - buf), subjective[sex]);
 						break;
 					case 'p':
 					case 'P':
-						strcat(result, possessive[sex]);
+						strcatn(result, sizeof(buf) - (result - buf), possessive[sex]);
 						break;
 					case 'o':
 					case 'O':
-						strcat(result, objective[sex]);
+						strcatn(result, sizeof(buf) - (result - buf), objective[sex]);
 						break;
 					case 'r':
 					case 'R':
-						strcat(result, reflexive[sex]);
+						strcatn(result, sizeof(buf) - (result - buf), reflexive[sex]);
 						break;
 					case 'n':
 					case 'N':
-						strcat(result, PNAME(player));
+						strcatn(result, sizeof(buf) - (result - buf), PNAME(player));
 						break;
 					default:
 						*result = *str;
@@ -481,7 +481,7 @@ unmangle(dbref player, const char *s)
 
 		is = a64l(name);
 		strcpy(pad, "@knows/");
-		strcat(pad, NAME(is));
+		strcatn(pad, sizeof(pad), NAME(is));
 
 		if ((p = get_property(is, "@disguise")) && PropType(p) == PROP_STRTYP) {
 #ifdef DISKBASE
@@ -501,11 +501,11 @@ unmangle(dbref player, const char *s)
 			else
 			strcpy(pad, NAME(is));
 
-			strcat(ptr, pad);
+			strcatn(ptr, sizeof(buf) - (ptr - buf), pad);
 			ptr += strlen(ptr);
 		}
 
-		strcat(ptr, src);
+		strcatn(ptr, sizeof(buf) - (ptr - buf), src);
 
 		return buf;
 #else
@@ -774,12 +774,14 @@ prepend_string(char** before, char* start, const char* what)
    return len;
 }
 
-int is_valid_pose_separator(char ch)
+int
+is_valid_pose_separator(char ch)
 {
 	return (ch == '\'') || (ch == ' ') || (ch == ',') || (ch == '-');
 }
 
-void prefix_message(char* Dest, const char* Src, const char* Prefix, int BufferLength, int SuppressIfPresent)
+void
+prefix_message(char* Dest, const char* Src, const char* Prefix, int BufferLength, int SuppressIfPresent)
 {
 	int PrefixLength			= strlen(Prefix);
 	int CheckForHangingEnter	= 0;
@@ -832,7 +834,8 @@ void prefix_message(char* Dest, const char* Src, const char* Prefix, int BufferL
 	*Dest = '\0';
 }
 
-int is_prop_prefix(const char* Property, const char* Prefix)
+int
+is_prop_prefix(const char* Property, const char* Prefix)
 {
 	while(*Property == PROPDIR_DELIMITER)
 		Property++;
@@ -852,7 +855,8 @@ int is_prop_prefix(const char* Property, const char* Prefix)
 	return (*Property == '\0') || (*Property == PROPDIR_DELIMITER);
 }
 
-int has_suffix(const char* text, const char* suffix)
+int
+has_suffix(const char* text, const char* suffix)
 {
 	int tlen = text ? strlen(text) : 0;
 	int slen = suffix ? strlen(suffix) : 0;
@@ -863,7 +867,8 @@ int has_suffix(const char* text, const char* suffix)
 	return !string_compare(text + tlen - slen, suffix);
 }
 
-int has_suffix_char(const char* text, char suffix)
+int
+has_suffix_char(const char* text, char suffix)
 {
 	int tlen = text ? strlen(text) : 0;
 
@@ -872,3 +877,32 @@ int has_suffix_char(const char* text, char suffix)
 
 	return text[tlen - 1] == suffix;
 }
+
+char*
+strcpyn(char* buf, size_t bufsize, const char* src)
+{
+	int pos = 0;
+	char* dest = buf;
+
+	while (++pos < bufsize && *src) {
+		*dest++ = *src++;
+	}
+	*dest = '\0';
+	return buf;
+}
+
+char*
+strcatn(char* buf, size_t bufsize, const char* src)
+{
+	int pos = strlen(buf);
+	char* dest = &buf[pos];
+
+	while (++pos < bufsize && *src) {
+		*dest++ = *src++;
+	}
+	if (pos <= bufsize) {
+		*dest = '\0';
+	}
+	return buf;
+}
+

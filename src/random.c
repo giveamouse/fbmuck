@@ -252,7 +252,7 @@ xMD5Transform(word32 buf[4], word32 const in[16])
 
 /* dest buffer MUST be at least 16 bytes long. */
 void
-MD5(void *dest, const void *orig, int len)
+MD5hash(void *dest, const void *orig, int len)
 {
 	struct xMD5Context context;
 
@@ -379,7 +379,7 @@ void
 MD5base64(char *dest, const void *orig, int len)
 {
 	void* tmp = (void*)malloc(16);
-	MD5(tmp, orig, len);
+	MD5hash(tmp, orig, len);
 	Base64Encode(dest, tmp, 16);
 	free(tmp);
 }
@@ -428,7 +428,7 @@ rnd(void *buffer)
 
 	if (!digest)
 		return (0);
-	MD5(digest, digest, sizeof(digest));
+	MD5hash(digest, digest, sizeof(digest));
 	return (digest[0]);
 }
 

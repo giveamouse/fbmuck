@@ -68,6 +68,34 @@ string_compare(register const char *s1, register const char *s2)
 	return (tolower(*s1) - tolower(*s2));
 }
 
+char*
+strcpyn(char* buf, size_t bufsize, const char* src)
+{
+	int pos = 0;
+	char* dest = buf;
+
+	while (++pos < bufsize && *src) {
+		*dest++ = *src++;
+	}
+	*dest = '\0';
+	return buf;
+}
+
+char*
+strcatn(char* buf, size_t bufsize, const char* src)
+{
+	int pos = strlen(buf);
+	char* dest = &buf[pos];
+
+	while (++pos < bufsize && *src) {
+		*dest++ = *src++;
+	}
+	if (pos <= bufsize) {
+		*dest = '\0';
+	}
+	return buf;
+}
+
 #endif
 
 void
@@ -139,7 +167,7 @@ index_file(dbref player, const char *onwhat, const char *file)
 	*topic = '\0';
 	strcpy(topic, onwhat);
 	if (*onwhat) {
-		strcat(topic, "|");
+		strcatn(topic, sizeof(topic), "|");
 	}
 
 	if ((f = fopen(file, "r")) == NULL) {
@@ -230,7 +258,7 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		*topic = '\0';
 		strcpy(topic, onwhat);
 		if (*onwhat) {
-			strcat(topic, "|");
+			strcatn(topic, sizeof(topic), "|");
 		}
 
 		if (!string_compare(valtype, "man")) {
@@ -332,6 +360,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 {
 	char buf[256];
 	struct stat st;
+	int dirnamelen = 0;
 
 #ifdef DIR_AVALIBLE
 	DIR *df;
@@ -378,9 +407,10 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 	/* TO DO: (1) exact match, or (2) partial match, but unique */
 	*buf = 0;
 
-	dirname = (char *) malloc(strlen(dir) + 5);
+	dirnamelen = strlen(dir) + 5;
+	dirname = (char *) malloc(dirnamelen);
 	strcpy(dirname, dir);
-	strcat(dirname, "*.*");
+	strcatn(dirname, dirnamelen, "*.*");
 	hFind = FindFirstFile(dirname,&finddata);
 	bMore = (hFind != (HANDLE) -1);
 
@@ -501,6 +531,8 @@ do_info(dbref player, const char *topic, const char *seg)
 	char *buf;
 	int f;
 	int cols;
+	int dirnamelen = 0;
+	int buflen = 80;
 
 #ifdef DIR_AVALIBLE
 	DIR *df;
@@ -519,7 +551,7 @@ do_info(dbref player, const char *topic, const char *seg)
 		}
 	} else {
 #ifdef DIR_AVALIBLE
-		buf = (char *) calloc(1, 80);
+		buf = (char *) calloc(1, buflen);
 		(void) strcpy(buf, "    ");
 		f = 0;
 		cols = 0;
@@ -531,10 +563,11 @@ do_info(dbref player, const char *topic, const char *seg)
 						notify(player, "Available information files are:");
 					if ((cols++ > 2) || ((strlen(buf) + strlen(dp->d_name)) > 63)) {
 						notify(player, buf);
-						(void) strcpy(buf, "    ");
+						strcpy(buf, "    ");
 						cols = 0;
 					}
-					(void) strcat(strcat(buf, dp->d_name), " ");
+					strcatn(buf, buflen, dp->d_name);
+					strcatn(buf, buflen, " ");
 					f = strlen(buf);
 					while ((f % 20) != 4)
 						buf[f++] = ' ';
@@ -549,14 +582,15 @@ do_info(dbref player, const char *topic, const char *seg)
 			notify(player, "No information files are available.");
 		free(buf);
 #elif WIN32
-		buf = (char *) calloc(1,80);
+		buf = (char *) calloc(1,buflen);
 		(void) strcpy(buf, "    ");
 		f = 0;
 		cols = 0;
 
-		dirname = (char *) malloc(strlen(INFO_DIR) + 4);
+		dirnamelen = strlen(INFO_DIR) + 4;
+		dirname = (char *) malloc(dirnamelen);
 		strcpy(dirname, INFO_DIR);
-		strcat(dirname, "*.*");
+		strcatn(dirname, dirnamelen, "*.*");
 		hFind = FindFirstFile(dirname,&finddata);
 		bMore = (hFind != (HANDLE) -1);
 
@@ -571,7 +605,8 @@ do_info(dbref player, const char *topic, const char *seg)
 					(void) strcpy(buf, "    ");
 					cols = 0;
 				}
-			    (void) strcat(strcat(buf, finddata.cFileName), " ");
+			    strcatn(buf, buflen, finddata.cFileName);
+			    strcatn(buf, buflen, " ");
 				f = strlen(buf);
 				while((f %20) != 4)
 					buf[f++] = ' ';

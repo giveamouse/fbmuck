@@ -400,7 +400,7 @@ mfn_listprops(MFUNARGS)
 	*buf = '\0';
 	endbuf = buf;
 	do {
-		ptr = next_prop_name(obj, tmpbuf, pname);
+		ptr = next_prop_name(obj, tmpbuf, sizeof(tmpbuf), pname);
 		if (ptr && *ptr) {
 			flag = 1;
 			if (Prop_System(ptr)) {
@@ -529,7 +529,7 @@ mfn_select(MFUNARGS)
 	bestval = 0;
 	baselen = strlen(origprop);
 	for (; obj != NOTHING; obj = getparent(obj)) {
-		pname = next_prop_name(obj, propname, origprop);
+		pname = next_prop_name(obj, propname, sizeof(propname), origprop);
 		while (pname && string_prefix(pname, origprop)) {
 			ptr = pname + baselen;
 			if (*ptr == '#') ptr++;
@@ -542,7 +542,7 @@ mfn_select(MFUNARGS)
 				propname2[sublen++] = PROPDIR_DELIMITER;
 				propname2[sublen] = '\0';
 
-				pname2 = next_prop_name(obj, propname2, pname2);
+				pname2 = next_prop_name(obj, propname2, sizeof(propname2), pname2);
 				while (pname2) {
 					ptr = pname2 + sublen;
 					if (number(ptr)) {
@@ -553,7 +553,7 @@ mfn_select(MFUNARGS)
 							strcpy(bestname, pname2);
 						}
 					}
-					pname2 = next_prop_name(obj, propname2, pname2);
+					pname2 = next_prop_name(obj, propname2, sizeof(propname2), pname2);
 				}
 			}
 			ptr = pname + baselen;
@@ -565,7 +565,7 @@ mfn_select(MFUNARGS)
 					strcpy(bestname, pname);
 				}
 			}
-			pname = next_prop_name(obj, propname, pname);
+			pname = next_prop_name(obj, propname, sizeof(propname), pname);
 		}
 	}
 	
@@ -849,8 +849,8 @@ mfn_mklist(MFUNARGS)
 		len = strlen(argv[i]);
 		if (tlen + len + 2 < BUFFER_LEN) {
 			if (outcount++)
-				strcat(buf, "\r");
-			strcat(buf, argv[i]);
+				strcatn(buf, BUFFER_LEN, "\r");
+			strcatn(buf, BUFFER_LEN, argv[i]);
 			tlen += len;
 		} else {
 			ABORT_MPI("MKLIST", "Max string length exceeded.");
@@ -928,11 +928,11 @@ mfn_online(MFUNARGS)
 	*buf = '\0';
 	while (count && list_limit--) {
 		if (*buf)
-			strcat(buf, "\r");
+			strcatn(buf, BUFFER_LEN, "\r");
 		ref2str(pdbref(count), buf2, sizeof(buf2));
 		if ((strlen(buf) + strlen(buf2)) >= (BUFFER_LEN - 3))
 			break;
-		strcat(buf, buf2);
+		strcatn(buf, BUFFER_LEN, buf2);
 		count--;
 	}
 	return buf;
@@ -1615,30 +1615,30 @@ mfn_ltimestr(MFUNARGS)
 	if (dy) {
 		snprintf(buf2, BUFFER_LEN, "%d day%s", dy, (dy == 1) ? "" : "s");
 		if (*buf) {
-			strcat(buf, ", ");
+			strcatn(buf, BUFFER_LEN, ", ");
 		}
-		strcat(buf, buf2);
+		strcatn(buf, BUFFER_LEN, buf2);
 	}
 	if (hr) {
 		snprintf(buf2, BUFFER_LEN, "%d hour%s", hr, (hr == 1) ? "" : "s");
 		if (*buf) {
-			strcat(buf, ", ");
+			strcatn(buf, BUFFER_LEN, ", ");
 		}
-		strcat(buf, buf2);
+		strcatn(buf, BUFFER_LEN, buf2);
 	}
 	if (mn) {
 		snprintf(buf2, BUFFER_LEN, "%d min%s", mn, (mn == 1) ? "" : "s");
 		if (*buf) {
-			strcat(buf, ", ");
+			strcatn(buf, BUFFER_LEN, ", ");
 		}
-		strcat(buf, buf2);
+		strcatn(buf, BUFFER_LEN, buf2);
 	}
 	if (tm || !*buf) {
 		snprintf(buf2, BUFFER_LEN, "%d sec%s", tm, (tm == 1) ? "" : "s");
 		if (*buf) {
-			strcat(buf, ", ");
+			strcatn(buf, BUFFER_LEN, ", ");
 		}
-		strcat(buf, buf2);
+		strcatn(buf, BUFFER_LEN, buf2);
 	}
 	return buf;
 }

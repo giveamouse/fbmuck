@@ -893,7 +893,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 		outbuf[maxchars - 1] = '\0';
 		return NULL;
 	}
-	strcpy(wbuf, inbuf);
+	strcpyn(wbuf, sizeof(wbuf), inbuf);
 	for (p = q = 0; wbuf[p] && (p < maxchars - 1) && q < (maxchars - 1); p++) {
 		if (wbuf[p] == '\\') {
 			p++;

@@ -17,10 +17,12 @@ Fixed a crasher bug with earlier memory cleanups.
 Fixed bug #659195: ldup causes (muf) stack protection fault.
 Fixed bug #666898: _default pronouns for any miss, not only empty.
 Fixed bug with TRY not honoring stack locking itself.
+Fixed bug with redundant MCP init message, when resending welcome screen.
 Fixed bug where programs placed in @flocks weren't run from {force}.
 Fixed bug with optimiser crashing on div/mod by zero.
 Fixed bug with TRY not honoring stack locking itself.
 Fixed bug #695251: Colour not stripped from leave_mesg for !C.
+Fixed bug with crashed background saves @booting people off the main process.
 Fixed recursion problem with puppet @pecho's
 Changed help.txt into a muckhelp.raw file that is processed by prochelp.
 Changed property loading routines to not abort(), but to instead log corrupt
@@ -28,6 +30,8 @@ Changed property loading routines to not abort(), but to instead log corrupt
 Changed db_putprop() to use snprintf() instead of manually constructing the
   property's disk format.
 Changed a few new sprintf() calls to snprintf().  sprintf() is verboten!
+Changed a lot of strcat() calls to strcatn().
+Changed resolver reaper code to respawn resolver if it crashes.
 Changed struct match_data and match_exits to not partially match Xpress exits
   unless specifically matching exits, or partial exit matching is requested
   in the match_data struct.
@@ -42,6 +46,8 @@ Added SYSTIME_PRECISE ( -- float ) muf prim.  Returns the number of seconds
   with microsecond accuracy.
 Added CATCH_DETAILED ( -- dict ) muf prim as a more detailed alternative to
   the CATCH statement.
+Added strcatn() to stringutils.c.  Like strncat(), but is given buffer size.
+Added strcpyn() to stringutils.c.  Like strncpy(), but always null terminated.
 Added option to selected between (uni/bi)directional in-server ignore support.
 Removed annoying 'Cannot access propdir directly' errors from MUF prop prims.
 

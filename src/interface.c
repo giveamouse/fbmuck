@@ -1333,7 +1333,7 @@ wall_and_flush(const char *msg)
 	if (!msg || !*msg)
 		return;
 	strcpy(buf, msg);
-	strcat(buf, "\r\n");
+	strcatn(buf, sizeof(buf), "\r\n");
 
 	for (d = descriptor_list; d; d = dnext) {
 		dnext = d->next;
@@ -1377,7 +1377,7 @@ wall_wizards(const char *msg)
 #endif							/* COMPRESS */
 
 	strcpy(buf, msg);
-	strcat(buf, "\r\n");
+	strcatn(buf, sizeof(buf), "\r\n");
 
 	for (d = descriptor_list; d; d = dnext) {
 		dnext = d->next;
@@ -1438,9 +1438,16 @@ kill_resolver(void)
 
 
 
+static time_t resolver_spawn_time = 0;
+
 void
 spawn_resolver()
 {
+	if (time(NULL) - resolver_spawn_time < 5) {
+		return;
+	}
+	resolver_spawn_time = time(NULL);
+
 	socketpair(AF_UNIX, SOCK_STREAM, 0, resolver_sock);
 	make_nonblocking(resolver_sock[1]);
 	if ((global_resolver_pid=fork())==0) {
@@ -1459,6 +1466,8 @@ spawn_resolver()
 #endif
 		execl("/usr/local/bin/fb-resolver", "resolver", NULL);
 		execl("/usr/local/bin/resolver", "resolver", NULL);
+		execl("/usr/bin/fb-resolver", "resolver", NULL);
+		execl("/usr/bin/resolver", "resolver", NULL);
 		execl("./fb-resolver", "resolver", NULL);
 		execl("./resolver", "resolver", NULL);
 #if 0
@@ -1760,6 +1769,7 @@ initializesock(int s, const char *hostname)
 	descriptor_list = d;
     remember_descriptor(d);
 
+	mcp_negotiation_start(&d->mcpframe);
 	welcome_user(d);
 	return d;
 }
@@ -2289,9 +2299,9 @@ do_command(struct descriptor_data *d, char *command)
 			queue_write(d, "\r\n", 2);
 		}
 		strcpy(buf, "@");
-		strcat(buf, WHO_COMMAND);
-		strcat(buf, " ");
-		strcat(buf, command + sizeof(WHO_COMMAND) - 1);
+		strcatn(buf, sizeof(buf), WHO_COMMAND);
+		strcatn(buf, sizeof(buf), " ");
+		strcatn(buf, sizeof(buf), command + sizeof(WHO_COMMAND) - 1);
 		if (!d->connected || (FLAGS(d->player) & INTERACTIVE)) {
 			if (tp_secure_who) {
 				queue_ansi(d, "Sorry, WHO is unavailable at this point.\r\n");
@@ -2560,7 +2570,7 @@ do_armageddon(dbref player, const char *msg)
 	}
 	snprintf(buf, sizeof(buf), "\r\nImmediate shutdown initiated by %s.\r\n", NAME(player));
 	if (msg || *msg)
-		strcat(buf, msg);
+		strcatn(buf, sizeof(buf), msg);
 	log_status("ARMAGEDDON initiated by %s(%d): %s\n", NAME(player), player, msg);
 	fprintf(stderr, "ARMAGEDDON initiated by %s(%d): %s\n", NAME(player), player, msg);
 	close_sockets(buf);
@@ -3678,8 +3688,6 @@ welcome_user(struct descriptor_data *d)
 	FILE *f;
 	char *ptr;
 	char buf[BUFFER_LEN];
-
-	mcp_negotiation_start(&d->mcpframe);
 
 	if ((f = fopen(WELC_FILE, "r")) == NULL) {
 		queue_ansi(d, DEFAULT_WELCOME_MESSAGE);

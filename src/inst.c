@@ -84,7 +84,7 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 		/* we know we won't overflow, so don't set length */
 		snprintf(buffer, buflen, "\"%1.*s\"", (strmax - 1), theinst->data.string->data);
 		if (theinst->data.string->length > strmax)
-			strcat(buffer, "_");
+			strcatn(buffer, buflen, "_");
 		break;
 	case PROG_MARK:
 		if (buflen > 4)
@@ -121,19 +121,19 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 					char *inststr;
 
 					if (arrcount++ >= 8) {
-					    strcat(buffer, "_");
+					    strcatn(buffer, buflen, "_");
 					    break;
 					}
 
 					if (!firstflag) {
-						strcat(buffer, " ");
+						strcatn(buffer, buflen, " ");
 						length--;
 					}
 					firstflag = 0;
 					oper2 = array_getitem(theinst->data.array, &temp1);
 
 					if (length <= 2) { /* no space left, let's not pass a buflen of 0 */
-					    strcat(buffer, "_");
+					    strcatn(buffer, buflen, "_");
 					    break;
 					}
 
@@ -141,15 +141,15 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 					inststr = insttotext(fr, lev, &temp1, buf2, length - 2, strmax, program, 0);
 					if (!*inststr) {
 					    /* overflow problem. */
-					    strcat(buffer,"_");
+					    strcatn(buffer, buflen, "_");
 					    break;
 					}
 					length -= strlen(inststr) + 1;
-					strcat(buffer, inststr);
-					strcat(buffer, ":");
+					strcatn(buffer, buflen, inststr);
+					strcatn(buffer, buflen, ":");
 
 					if (length <= 2) { /* no space left, let's not pass a buflen of 0 */
-					    strcat(buffer,"_");
+					    strcatn(buffer, buflen, "_");
 					    break;
 					}
 
@@ -157,23 +157,23 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 					if (!*inststr) {
 					    /* we'd overflow if we did that */
 					    /* as before add a "_" and let it be. */
-					    strcat(buffer,"_");
+					    strcatn(buffer, buflen, "_");
 					    break;
 					}
 					length -= strlen(inststr);
-					strcat(buffer, inststr);
+					strcatn(buffer, buflen, inststr);
 
 					if (length < 2) {
 						/* we should have a length of exactly 1, if we get here.
 						 * So we just have enough room for a '_' now.
 						 * Just append the "_" and stop this madness. */
-						strcat(buffer, "_");
+						strcatn(buffer, buflen, "_");
 						length--;
 						break;
 					}
 				} while (array_next(theinst->data.array, &temp1));
 			}
-			strcat(buffer, "}");
+			strcatn(buffer, buflen, "}");
 		} else {
 			length = snprintf(buffer, buflen, "%d{...}", theinst->data.array->items);
 		}
@@ -356,7 +356,7 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *sta
 	    length -= prepend_string(&bend, bstart, ptr);
 	} else {
 		strcpy(buffer, buf3);
-		strcat(buffer, " ... ) ...");
+		strcatn(buffer, buflen, " ... ) ...");
 		return buffer;
 	}
 	

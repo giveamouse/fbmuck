@@ -167,7 +167,7 @@ extern struct plist *copy_prop(dbref old);
 
 extern PropPtr first_prop(dbref player, const char *dir, PropPtr * list, char *name);
 extern PropPtr next_prop(PropPtr list, PropPtr prop, char *name);
-extern char *next_prop_name(dbref player, char *outbuf, char *name);
+extern char *next_prop_name(dbref player, char *outbuf, int outbuflen, char *name);
 
 extern int is_propdir(dbref player, const char *dir);
 

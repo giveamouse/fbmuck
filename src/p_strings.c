@@ -158,22 +158,22 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				sfmt[0] = '%';
 				sfmt[1] = '\0';
 				if (slrj == 1)
-					strcat(sfmt, "-");
+					strcatn(sfmt, sizeof(sfmt), "-");
 				if (spad1) {
 					if (spad1 == 1)
-						strcat(sfmt, "+");
+						strcatn(sfmt, sizeof(sfmt), "+");
 					else
-						strcat(sfmt, " ");
+						strcatn(sfmt, sizeof(sfmt), " ");
 				}
 				if (spad2)
-					strcat(sfmt, "0");
+					strcatn(sfmt, sizeof(sfmt), "0");
 				if (slen1 != 0) {
 					snprintf(tbuf, sizeof(tbuf), "%d", slen1);
-					strcat(sfmt, tbuf);
+					strcatn(sfmt, sizeof(sfmt), tbuf);
 				}
 				if (slen2 != -1) {
 					snprintf(tbuf, sizeof(tbuf), ".%d", slen2);
-					strcat(sfmt, tbuf);
+					strcatn(sfmt, sizeof(sfmt), tbuf);
 				}
 
 				if (sstr[scnt] == '~') {
@@ -200,7 +200,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				}
 				switch (sstr[scnt]) {
 				case 'i':
-					strcat(sfmt, "d");
+					strcatn(sfmt, sizeof(sfmt), "d");
 					if (oper2->type != PROG_INTEGER)
 						abort_interp("Format specified integer argument not found.");
 					snprintf(tbuf, sizeof(tbuf), sfmt, oper2->data.number);
@@ -220,13 +220,13 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					if (tlen + result > BUFFER_LEN)
 						abort_interp("Resultant string would overflow buffer.");
 					buf[result] = '\0';
-					strcat(buf, tbuf);
+					strcatn(buf, sizeof(buf), tbuf);
 					result += tlen;
 					CLEAR(oper2);
 					break;
 				case 'S':
 				case 's':
-					strcat(sfmt, "s");
+					strcatn(sfmt, sizeof(sfmt), "s");
 					if (oper2->type != PROG_STRING)
 						abort_interp("Format specified string argument not found.");
 					snprintf(tbuf, sizeof(tbuf), sfmt,
@@ -247,12 +247,12 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					if (strlen(tbuf) + result > BUFFER_LEN)
 						abort_interp("Resultant string would overflow buffer.");
 					buf[result] = '\0';
-					strcat(buf, tbuf);
+					strcatn(buf, sizeof(buf), tbuf);
 					result += strlen(tbuf);
 					CLEAR(oper2);
 					break;
 				case '?':
-					strcat(sfmt, "s");
+					strcatn(sfmt, sizeof(sfmt), "s");
 					switch (oper2->type) {
 					case PROG_OBJECT:
 						strcpy(hold, "OBJECT");
@@ -319,12 +319,12 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					if (strlen(tbuf) + result > BUFFER_LEN)
 						abort_interp("Resultant string would overflow buffer.");
 					buf[result] = '\0';
-					strcat(buf, tbuf);
+					strcatn(buf, sizeof(buf), tbuf);
 					result += strlen(tbuf);
 					CLEAR(oper2);
 					break;
 				case 'd':
-					strcat(sfmt, "s");
+					strcatn(sfmt, sizeof(sfmt), "s");
 					if (oper2->type != PROG_OBJECT)
 						abort_interp("Format specified object not found.");
 					snprintf(hold, sizeof(hold), "#%d", oper2->data.objref);
@@ -345,12 +345,12 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					if (strlen(tbuf) + result > BUFFER_LEN)
 						abort_interp("Resultant string would overflow buffer.");
 					buf[result] = '\0';
-					strcat(buf, tbuf);
+					strcatn(buf, sizeof(buf), tbuf);
 					result += strlen(tbuf);
 					CLEAR(oper2);
 					break;
 				case 'D':
-					strcat(sfmt, "s");
+					strcatn(sfmt, sizeof(sfmt), "s");
 					if (oper2->type != PROG_OBJECT)
 						abort_interp("Format specified object not found.");
 					if (!valid_object(oper2))
@@ -381,12 +381,12 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					if (strlen(tbuf) + result > BUFFER_LEN)
 						abort_interp("Resultant string would overflow buffer.");
 					buf[result] = '\0';
-					strcat(buf, tbuf);
+					strcatn(buf, sizeof(buf), tbuf);
 					result += strlen(tbuf);
 					CLEAR(oper2);
 					break;
 				case 'l':
-					strcat(sfmt, "s");
+					strcatn(sfmt, sizeof(sfmt), "s");
 					if (oper2->type != PROG_LOCK)
 						abort_interp("Format specified lock not found.");
 					strcpy(hold, unparse_boolexp(ProgUID, oper2->data.lock, 1));
@@ -407,16 +407,16 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					if (strlen(tbuf) + result > BUFFER_LEN)
 						abort_interp("Resultant string would overflow buffer.");
 					buf[result] = '\0';
-					strcat(buf, tbuf);
+					strcatn(buf, sizeof(buf), tbuf);
 					result += strlen(tbuf);
 					CLEAR(oper2);
 					break;
 				case 'f':
 				case 'e':
 				case 'g':
-					strcat(sfmt, "l");
+					strcatn(sfmt, sizeof(sfmt), "l");
 					snprintf(hold, sizeof(hold), "%c", sstr[scnt]);
-					strcat(sfmt, hold);
+					strcatn(sfmt, sizeof(sfmt), hold);
 					if (oper2->type != PROG_FLOAT)
 						abort_interp("Format specified float not found.");
 					snprintf(tbuf, sizeof(tbuf), sfmt, oper2->data.fnumber);
@@ -436,7 +436,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					if (strlen(tbuf) + result > BUFFER_LEN)
 						abort_interp("Resultant string would overflow buffer.");
 					buf[result] = '\0';
-					strcat(buf, tbuf);
+					strcatn(buf, sizeof(buf), tbuf);
 					result += strlen(tbuf);
 					CLEAR(oper2);
 					break;
@@ -639,22 +639,22 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 						sfmt[0] = '%';
 						sfmt[1] = '\0';
 						if (slrj == 1)
-							strcat(sfmt, "-");
+							strcatn(sfmt, sizeof(sfmt), "-");
 						if (spad1) {
 							if (spad1 == 1)
-								strcat(sfmt, "+");
+								strcatn(sfmt, sizeof(sfmt), "+");
 							else
-								strcat(sfmt, " ");
+								strcatn(sfmt, sizeof(sfmt), " ");
 						}
 						if (spad2)
-							strcat(sfmt, "0");
+							strcatn(sfmt, sizeof(sfmt), "0");
 						if (slen1 != -1) {
 							snprintf(tbuf, sizeof(tbuf), "%d", slen1);
-							strcat(sfmt, tbuf);
+							strcatn(sfmt, sizeof(sfmt), tbuf);
 						}
 						if (slen2 != -1) {
 							snprintf(tbuf, sizeof(tbuf), ".%d", slen2);
-							strcat(sfmt, tbuf);
+							strcatn(sfmt, sizeof(sfmt), tbuf);
 						}
 						if (sstr[scnt] == '~') {
 							switch (oper3->type) {
@@ -681,7 +681,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 						}
 						switch (sstr[scnt]) {
 						case 'i':
-							strcat(sfmt, "d");
+							strcatn(sfmt, sizeof(sfmt), "d");
 							if (oper3->type != PROG_INTEGER)
 								abort_interp("Format specified integer argument not found.");
 							snprintf(tbuf, sizeof(tbuf), sfmt, oper3->data.number);
@@ -701,12 +701,12 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							if (tlen + result > BUFFER_LEN)
 								abort_interp("Resultant string would overflow buffer.");
 							buf[result] = '\0';
-							strcat(buf, tbuf);
+							strcatn(buf, sizeof(buf), tbuf);
 							result += tlen;
 							break;
 						case 'S':
 						case 's':
-							strcat(sfmt, "s");
+							strcatn(sfmt, sizeof(sfmt), "s");
 							if (oper3->type != PROG_STRING)
 								abort_interp("Format specified string argument not found.");
 							snprintf(tbuf, sizeof(tbuf), sfmt, DoNullInd(oper3->data.string));
@@ -726,11 +726,11 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							if (strlen(tbuf) + result > BUFFER_LEN)
 								abort_interp("Resultant string would overflow buffer.");
 							buf[result] = '\0';
-							strcat(buf, tbuf);
+							strcatn(buf, sizeof(buf), tbuf);
 							result += strlen(tbuf);
 							break;
 						case '?':
-							strcat(sfmt, "s");
+							strcatn(sfmt, sizeof(sfmt), "s");
 							switch (oper3->type) {
 							case PROG_OBJECT:
 								strcpy(hold, "OBJECT");
@@ -797,11 +797,11 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							if (strlen(tbuf) + result > BUFFER_LEN)
 								abort_interp("Resultant string would overflow buffer.");
 							buf[result] = '\0';
-							strcat(buf, tbuf);
+							strcatn(buf, sizeof(buf), tbuf);
 							result += strlen(tbuf);
 							break;
 						case 'd':
-							strcat(sfmt, "s");
+							strcatn(sfmt, sizeof(sfmt), "s");
 							if (oper3->type != PROG_OBJECT)
 								abort_interp("Format specified object not found.");
 							snprintf(hold, sizeof(hold), "#%d", oper3->data.objref);
@@ -822,11 +822,11 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							if (strlen(tbuf) + result > BUFFER_LEN)
 								abort_interp("Resultant string would overflow buffer.");
 							buf[result] = '\0';
-							strcat(buf, tbuf);
+							strcatn(buf, sizeof(buf), tbuf);
 							result += strlen(tbuf);
 							break;
 						case 'D':
-							strcat(sfmt, "s");
+							strcatn(sfmt, sizeof(sfmt), "s");
 							if (oper3->type != PROG_OBJECT)
 								abort_interp("Format specified object not found.");
 							if (!valid_object(oper3))
@@ -855,11 +855,11 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							if (strlen(tbuf) + result > BUFFER_LEN)
 								abort_interp("Resultant string would overflow buffer.");
 							buf[result] = '\0';
-							strcat(buf, tbuf);
+							strcatn(buf, sizeof(buf), tbuf);
 							result += strlen(tbuf);
 							break;
 						case 'l':
-							strcat(sfmt, "s");
+							strcatn(sfmt, sizeof(sfmt), "s");
 							if (oper3->type != PROG_LOCK)
 								abort_interp("Format specified lock not found.");
 							strcpy(hold, unparse_boolexp(ProgUID, oper3->data.lock, 1));
@@ -880,15 +880,15 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							if (strlen(tbuf) + result > BUFFER_LEN)
 								abort_interp("Resultant string would overflow buffer.");
 							buf[result] = '\0';
-							strcat(buf, tbuf);
+							strcatn(buf, sizeof(buf), tbuf);
 							result += strlen(tbuf);
 							break;
 						case 'f':
 						case 'e':
 						case 'g':
-							strcat(sfmt, "l");
+							strcatn(sfmt, sizeof(sfmt), "l");
 							snprintf(hold, sizeof(hold), "%c", sstr[scnt]);
-							strcat(sfmt, hold);
+							strcatn(sfmt, sizeof(sfmt), hold);
 							if (oper3->type != PROG_FLOAT)
 								abort_interp("Format specified float not found.");
 							snprintf(tbuf, sizeof(tbuf), sfmt, oper3->data.fnumber);
@@ -908,7 +908,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							if (strlen(tbuf) + result > BUFFER_LEN)
 								abort_interp("Resultant string would overflow buffer.");
 							buf[result] = '\0';
-							strcat(buf, tbuf);
+							strcatn(buf, sizeof(buf), tbuf);
 							result += strlen(tbuf);
 							break;
 						default:
@@ -1682,7 +1682,7 @@ prim_subst(PRIM_PROTOTYPE)
 				if (!strncmp(xbuf + i, match, oper1->data.string->length)) {
 					if ((j + k + 1) > BUFFER_LEN)
 						abort_interp("Operation would result in overflow.");
-					strcat(buf, replacement);
+					strcatn(buf, sizeof(buf), replacement);
 					i += oper1->data.string->length;
 					j += k;
 				} else {
@@ -2027,52 +2027,52 @@ prim_textattr(PRIM_PROTOTYPE)
 			case ',':{
 					*ptr2++ = '\0';
 					if (!string_compare(attr, "reset")) {
-						strcat(buf, ANSI_RESET);
+						strcatn(buf, sizeof(buf), ANSI_RESET);
 					} else if (!string_compare(attr, "bold")) {
-						strcat(buf, ANSI_BOLD);
+						strcatn(buf, sizeof(buf), ANSI_BOLD);
 					} else if (!string_compare(attr, "dim")) {
-						strcat(buf, ANSI_DIM);
+						strcatn(buf, sizeof(buf), ANSI_DIM);
 					} else if (!string_compare(attr, "uline") ||
 							   !string_compare(attr, "underline")) {
-						strcat(buf, ANSI_UNDERLINE);
+						strcatn(buf, sizeof(buf), ANSI_UNDERLINE);
 					} else if (!string_compare(attr, "flash")) {
-						strcat(buf, ANSI_FLASH);
+						strcatn(buf, sizeof(buf), ANSI_FLASH);
 					} else if (!string_compare(attr, "reverse")) {
-						strcat(buf, ANSI_REVERSE);
+						strcatn(buf, sizeof(buf), ANSI_REVERSE);
 
 					} else if (!string_compare(attr, "black")) {
-						strcat(buf, ANSI_FG_BLACK);
+						strcatn(buf, sizeof(buf), ANSI_FG_BLACK);
 					} else if (!string_compare(attr, "red")) {
-						strcat(buf, ANSI_FG_RED);
+						strcatn(buf, sizeof(buf), ANSI_FG_RED);
 					} else if (!string_compare(attr, "yellow")) {
-						strcat(buf, ANSI_FG_YELLOW);
+						strcatn(buf, sizeof(buf), ANSI_FG_YELLOW);
 					} else if (!string_compare(attr, "green")) {
-						strcat(buf, ANSI_FG_GREEN);
+						strcatn(buf, sizeof(buf), ANSI_FG_GREEN);
 					} else if (!string_compare(attr, "cyan")) {
-						strcat(buf, ANSI_FG_CYAN);
+						strcatn(buf, sizeof(buf), ANSI_FG_CYAN);
 					} else if (!string_compare(attr, "blue")) {
-						strcat(buf, ANSI_FG_BLUE);
+						strcatn(buf, sizeof(buf), ANSI_FG_BLUE);
 					} else if (!string_compare(attr, "magenta")) {
-						strcat(buf, ANSI_FG_MAGENTA);
+						strcatn(buf, sizeof(buf), ANSI_FG_MAGENTA);
 					} else if (!string_compare(attr, "white")) {
-						strcat(buf, ANSI_FG_WHITE);
+						strcatn(buf, sizeof(buf), ANSI_FG_WHITE);
 
 					} else if (!string_compare(attr, "bg_black")) {
-						strcat(buf, ANSI_BG_BLACK);
+						strcatn(buf, sizeof(buf), ANSI_BG_BLACK);
 					} else if (!string_compare(attr, "bg_red")) {
-						strcat(buf, ANSI_BG_RED);
+						strcatn(buf, sizeof(buf), ANSI_BG_RED);
 					} else if (!string_compare(attr, "bg_yellow")) {
-						strcat(buf, ANSI_BG_YELLOW);
+						strcatn(buf, sizeof(buf), ANSI_BG_YELLOW);
 					} else if (!string_compare(attr, "bg_green")) {
-						strcat(buf, ANSI_BG_GREEN);
+						strcatn(buf, sizeof(buf), ANSI_BG_GREEN);
 					} else if (!string_compare(attr, "bg_cyan")) {
-						strcat(buf, ANSI_BG_CYAN);
+						strcatn(buf, sizeof(buf), ANSI_BG_CYAN);
 					} else if (!string_compare(attr, "bg_blue")) {
-						strcat(buf, ANSI_BG_BLUE);
+						strcatn(buf, sizeof(buf), ANSI_BG_BLUE);
 					} else if (!string_compare(attr, "bg_magenta")) {
-						strcat(buf, ANSI_BG_MAGENTA);
+						strcatn(buf, sizeof(buf), ANSI_BG_MAGENTA);
 					} else if (!string_compare(attr, "bg_white")) {
-						strcat(buf, ANSI_BG_WHITE);
+						strcatn(buf, sizeof(buf), ANSI_BG_WHITE);
 					} else {
 						abort_interp
 								("Unrecognized attribute tag.  Try one of reset, bold, dim, underline, reverse, black, red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, bg_green, bg_cyan, bg_blue, bg_magenta, or bg_white.");
@@ -2098,9 +2098,9 @@ prim_textattr(PRIM_PROTOTYPE)
 		if (totallen >= BUFFER_LEN) {
 			abort_interp("Operation would result in too long of a string.");
 		}
-		strcat(buf, oper1->data.string->data);
+		strcatn(buf, sizeof(buf), oper1->data.string->data);
 	}
-	strcat(buf, ANSI_RESET);
+	strcatn(buf, sizeof(buf), ANSI_RESET);
 
 	CLEAR(oper1);
 	CLEAR(oper2);

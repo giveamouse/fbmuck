@@ -49,7 +49,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 		FLAGS(player) |= LISTENER;
 	}
 
-	w = strcpy(buf, pname);
+	w = strcpyn(buf, sizeof(buf), pname);
 
 	/* truncate propnames with a ':' in them at the ':' */
 	n = index(buf, PROP_DELIMITER);
@@ -252,7 +252,7 @@ remove_property_nofetch(dbref player, const char *pname)
 	char buf[BUFFER_LEN];
 	char *w;
 
-	w = strcpy(buf, pname);
+	w = strcpyn(buf, sizeof(buf), pname);
 
 	l = DBFETCH(player)->properties;
 	l = propdir_delete_elem(l, w);
@@ -349,8 +349,7 @@ has_property_strict(int descr, dbref player, dbref what, const char *pname, cons
 									(MPI_ISPRIVATE | MPI_ISLOCK |
 									((PropFlags(p) & PROP_BLESSED)? MPI_ISBLESSED : 0)));
 			} else {
-				strncpy(buf, str, sizeof(buf)); 
-				buf[sizeof(buf)-1] = '\0';
+				strcpyn(buf, sizeof(buf), str); 
 				ptr = buf;
 			}
 			has_prop_recursion_limit++;
@@ -655,7 +654,7 @@ next_prop(PropPtr list, PropPtr prop, char *name)
  */
 
 char *
-next_prop_name(dbref player, char *outbuf, char *name)
+next_prop_name(dbref player, char *outbuf, int outbuflen, char *name)
 {
 	char *ptr;
 	char buf[BUFFER_LEN];
@@ -673,7 +672,8 @@ next_prop_name(dbref player, char *outbuf, char *name)
 			*outbuf = '\0';
 			return NULL;
 		}
-		strcat(strcpy(outbuf, name), PropName(p));
+		strcpyn(outbuf, outbuflen, name);
+		strcatn(outbuf, outbuflen, PropName(p));
 	} else {
 		l = DBFETCH(player)->properties;
 		p = propdir_next_elem(l, buf);
@@ -1219,16 +1219,15 @@ reflist_add(dbref obj, const char* propname, dbref toadd)
 			}
 			if (pat && !*pat) {
 				if (charcount > 0) {
-					strncpy(outbuf, list, charcount - 1);
-					outbuf[charcount-1] = '\0';
+					strcpyn(outbuf, charcount, list);
 				}
-				strcat(outbuf, temp);
+				strcatn(outbuf, sizeof(outbuf), temp);
 			} else {
-				strcpy(outbuf, list);
+				strcpyn(outbuf, sizeof(outbuf), list);
 			}
 			snprintf(buf, sizeof(buf), " #%d", toadd);
 			if (strlen(outbuf) + strlen(buf) < BUFFER_LEN) {
-				strcat(outbuf, buf);
+				strcatn(outbuf, sizeof(outbuf), buf);
 				for (temp = outbuf; isspace(*temp); temp++);
 				add_property(obj, propname, temp, 0);
 			}
@@ -1295,10 +1294,9 @@ reflist_del(dbref obj, const char* propname, dbref todel)
 			}
 			if (pat && !*pat) {
 				if (charcount > 0) {
-					strncpy(outbuf, list, charcount - 1);
-					outbuf[charcount-1] = '\0';
+					strcpyn(outbuf, charcount, list);
 				}
-				strcat(outbuf, temp);
+				strcatn(outbuf, sizeof(outbuf), temp);
 				for (temp = outbuf; isspace(*temp); temp++);
 				add_property(obj, propname, temp, 0);
 			}

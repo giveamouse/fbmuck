@@ -203,7 +203,7 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild
 	strcpy(wld, wild);
 	i = strlen(wld);
 	if (i && wld[i - 1] == PROPDIR_DELIMITER)
-		strcat(wld, "*");
+		strcatn(wld, sizeof(wld), "*");
 	for (wldcrd = wld; *wldcrd == PROPDIR_DELIMITER; wldcrd++) ;
 	if (!strcmp(wldcrd, "**"))
 		recurse = 1;

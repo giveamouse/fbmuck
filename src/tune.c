@@ -868,16 +868,16 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 				}
 				switch (result) {
 				case TUNESET_SUCCESS:
-					strcat(p, ": Parameter set.");
+					strcatn(buf, sizeof(buf), ": Parameter set.");
 					break;
 				case TUNESET_UNKNOWN:
-					strcat(p, ": Unknown parameter.");
+					strcatn(buf, sizeof(buf), ": Unknown parameter.");
 					break;
 				case TUNESET_SYNTAX:
-					strcat(p, ": Bad parameter syntax.");
+					strcatn(buf, sizeof(buf), ": Bad parameter syntax.");
 					break;
 				case TUNESET_BADVAL:
-					strcat(p, ": Bad parameter value.");
+					strcatn(buf, sizeof(buf), ": Bad parameter value.");
 					break;
 				}
 				if (result && player != NOTHING)

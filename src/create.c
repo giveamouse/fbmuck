@@ -656,7 +656,7 @@ do_prog(int descr, dbref player, const char *name)
 		PLAYER_SET_CURR_PROG(player, i);
 		notify(player, "Entering editor.");
 		/* list current line */
-		do_list(player, i, 0, 0);
+		do_list(player, i, NULL, 0);
 		DBDIRTY(i);
 	}
 	FLAGS(player) |= INTERACTIVE;
@@ -704,7 +704,7 @@ do_edit(int descr, dbref player, const char *name)
 	PLAYER_SET_CURR_PROG(player, i);
 	notify(player, "Entering editor.");
 	/* list current line */
-	do_list(player, i, 0, 0);
+	do_list(player, i, NULL, 0);
 	FLAGS(player) |= INTERACTIVE;
 	DBDIRTY(i);
 	DBDIRTY(player);

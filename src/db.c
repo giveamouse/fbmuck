@@ -242,9 +242,12 @@ putproperties_rec(FILE * f, const char *dir, dbref obj)
 	while (pref) {
 		p = pref;
 		db_putprop(f, dir, p);
-		strcat(strcpy(buf, dir), name);
-		if (PropDir(p))
-			putproperties_rec(f, strcat(buf, "/"), obj);
+		strcpy(buf, dir);
+		strcatn(buf, sizeof(buf), name);
+		if (PropDir(p)) {
+			strcatn(buf, sizeof(buf), "/");
+			putproperties_rec(f, buf, obj);
+		}
 		pref = next_prop(pptr, pref, name);
 	}
 }
@@ -282,8 +285,8 @@ fetch_propvals(dbref obj, const char *dir)
 		cnt = (cnt || propfetch(obj, p));
 		if (PropDir(p) || (PropFlags(p) & PROP_DIRUNLOADED)) {
 			strcpy(buf, dir);
-			strcat(buf, name);
-			strcat(buf, "/");
+			strcatn(buf, sizeof(buf), name);
+			strcatn(buf, sizeof(buf), "/");
 			if (PropFlags(p) & PROP_DIRUNLOADED) {
 				SetPFlags(p, (PropFlags(p) & ~PROP_DIRUNLOADED));
 				if (FLAGS(obj) & SAVED_DELTA) {

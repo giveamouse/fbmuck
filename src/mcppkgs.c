@@ -133,7 +133,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 					content = mcp_mesg_arg_getline(msg, "content", line);
 					if (line > 0) {
 						if (left >= 1) {
-							strcat(buf, "\r");
+							strcatn(buf, sizeof(buf), "\r");
 							left--;
 						} else {
 							break;
@@ -145,7 +145,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 						left = 0;
 						break;
 					} else {
-						strcat(buf, content);
+						strcatn(buf, sizeof(buf), content);
 						left -= len;
 					}
 				}

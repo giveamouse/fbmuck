@@ -344,15 +344,22 @@ How to make a library:
     1) Create a program with several useful generic subroutines.
     2) DOCUMENT those subroutines in a commented out header in the prog.
     3) @set <program>=_docs:<command to list those DOCS you made>
-    5) For each function you want to be externally callable, do the following:
+	4) Set the version number of the code in the library with $version 1.000
+	    This lets you keep track of the code revision installed, separately
+		from the version of the library calling API.
+	5) Set the library API version number with $lib-version 1.000
+		This is the version of the calling interface for this library.
+	    Remember to up this version when you change this library's calls.
+		Remember that 1.19 is less than 1.2, so use numbers like 1.002.
+    6) For each function you want to be externally callable, do the following:
         a) Declare it PUBLIC
         b) Create the caller macro with either:
             $libdef FUNCNAME     or
             $pubdef EXPORTEDNAME "$lib/THISLIB" match "FUNCNAME" call
-    6) Make sure the program is set LINK_OK and VIEWABLE.
-    7) Globally register the program with the @register command with a
+    7) Make sure the program is set LINK_OK and VIEWABLE.
+    8) Globally register the program with the @register command with a
         prefix of "lib/".  ie: @reg lib-strings.muf=lib/strings
-    8) You're done!
+    9) You're done!
 
 Currently standard libraries:
     $lib/strings      Functions for manipulating strings.
@@ -524,6 +531,10 @@ $AUTHOR <rest_of_line>
   Sets the _author string property on the program to <rest_of_line>.
 The preferred format is an email address with name comment. ie:
     $author Revar Desmera <revar@belfry.com>
+To denote multiple authors, separate them with commas.  ie:
+    $author Revar Desmera <revar@belfry.com>, Foxen <foxen@belfry.com>
+If you don't want to include your email address, just omit it.  ie:
+    $author Revar, Foxen
 ~
 ~
 $VERSION
@@ -531,7 +542,7 @@ $VERSION <float>
 
   Sets the _version string property on the program to <float>.  Version
 numbers should be like 1.009 and 1.010, so that they can be compared using
-floating point comparisons.
+floating point comparisons.  (Remember, 1.9 is greater than 1.10.)
 ~
 ~
 $LIB-VERSION
@@ -539,7 +550,7 @@ $LIB-VERSION <float>
 
   Sets the _lib-version string property on the program to <float>.  Version
 numbers should be like 1.009 and 1.010, so that they can be compared using
-floating point comparisons.
+floating point comparisons.  (Remember, 1.9 is greater than 1.10.)
 ~
 ~
 $NOTE
