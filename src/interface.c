@@ -41,7 +41,13 @@
 #endif
 
 #ifdef USE_SSL
-#include <openssl/ssl.h>
+# if defined (HAVE_OPENSSL_SSL_H)
+#  include <openssl/ssl.h>
+# elif defined (HAVE_SSL_SSL_H)
+#  include <ssl/ssl.h>
+# elif defined (HAVE_SSL_H)
+#  include <ssl.h>
+# endif
 #endif
 
 #include "db.h"

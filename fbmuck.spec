@@ -34,6 +34,7 @@ make CFLAGS="$RPM_OPT_FLAGS"
 
 %install
 make prefix=$RPM_BUILD_ROOT/usr install
+make prefix=$RPM_BUILD_ROOT/usr install-inits
 
 %files
 %defattr(-,root,root)
@@ -66,4 +67,7 @@ make prefix=$RPM_BUILD_ROOT/usr install
 
 * Wed Apr 18 2001 Revar Desmera <revar@belfry.com>
 - First try at making the packages
+
+* Thu Jun 06 2002 Revar Desmera <revar@belfry.com>
+- added make install-inits
 

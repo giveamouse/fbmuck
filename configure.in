@@ -42,6 +42,7 @@ AC_DEFINE(USE_SSL)
 AC_SUBST(DEFS)
 AC_SUBST(INC)
 AC_SUBST(SSLTOP)
+AC_CHECK_HEADERS(ssl.h ssl/ssl.h openssl/ssl.h)
 ])
 
 AC_ARG_WITH(lint,

@@ -116,6 +116,15 @@
 /* Define if you have the <varargs.h> header file.  */
 #undef HAVE_VARARGS_H
 
+/* Define if you have the <openssl/ssl.h> header file.  */
+#undef HAVE_OPENSSL_SSL_H
+
+/* Define if you have the <ssl/ssl.h> header file.  */
+#undef HAVE_SSL_SSL_H
+
+/* Define if you have the <ssl.h> header file.  */
+#undef HAVE_SSL_H
+
 /* Define if you have the m library (-lm).  */
 #undef HAVE_LIBM
 

@@ -20,6 +20,11 @@ install:	Makefile
 	@echo "for use in allowing secure encrypted SSL connections to your Muck."
 	@echo " "
 
+install-inits:	Makefile
+	for d in ${subdirs}; do \
+		cd $${d} && ${MAKE} install-inits; \
+	done
+
 cert game/server.pem:
 	@if grep "^#define USE_SSL" include/autoconf.h > /dev/null; then \
 		echo; \
