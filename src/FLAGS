@@ -11,7 +11,7 @@ QUELL       ||  x        |  x         |  X         |   x        |  X
 STICKY      ||  X        | SILENT     | SILENT     |   X        | SETUID     
 VEHICLE     ||  X        |  X         |  x         |   X        | VIEWABLE      
 WIZARD      ||  x        |  x         |  X         |   x        |  X         
-XFORCIBLE   ||           |            |  X         |   X        |            
+XFORCIBLE   ||           | XPRESS     |  X         |   X        |            
 ZOMBIE      ||  X        |  X         |  x         |   X        |       
 ------------||-----------|------------|------------|------------|------------
 KILL_OK     ||           |            |  X         |            |             
