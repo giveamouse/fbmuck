@@ -1,16 +1,18 @@
 2.2fb6.00b5
 Fixed infinite loop parenting bug.  I think.
-Fixed a lot of uninitialized struct frame variables in chile of FORK.
+Fixed a lot of uninitialized struct frame variables in child of FORK.
 Fixed two-byte buffer overrun in {listprops}
+Fixed uninitialized program instance count in @prog.
 Changed DESCRSECURE? to be ML3, not wizbit.
 Changed input quotas to not count MCP messages.
 Changed command logging to not list null commands.
 Changed READ to _not_ return blank lines unless the process asked for them.
+Changed ANSI code handling to use ^[[0m instead of ^[[m at EOL for resetting.
 Added READ_WANTS_BLANKS ( -- ) muf primitive, to indicate the process wants
   READ to be able to return blank "" lines.
 Added new @tune -- default_room_parent. This is the dbref used to parent
-rooms as the case of last resort, and defaults to #0 (which was previously
-the only thing used). Closes feature request #476091.
+  rooms as the case of last resort, and defaults to #0 (which was previously
+  the only thing used). Closes feature request #476091.
 
 
 

@@ -708,7 +708,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	cleanup(&cstat);
 
 	/* Set PROGRAM_INSTANCES to zero (cuz they don't get set elsewhere) */
-	PROGRAM_INSTANCES(cstat.program) = 0;
+	PROGRAM_SET_INSTANCES(cstat.program, 0);
 
 	/* restart AUTOSTART program. */
 	if ((FLAGS(cstat.program) & ABODE) && TrueWizard(OWNER(cstat.program)))

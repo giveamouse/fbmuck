@@ -2,6 +2,10 @@
 
 /*
  * $Log: stringutil.c,v $
+ * Revision 1.6  2001/11/09 17:56:05  revar
+ * Fixed uninitialized program instance count in @prog.
+ * Changed ANSI code handling to use ^[[0m instead of ^[[m at EOL for resetting.
+ *
  * Revision 1.5  2001/07/07 07:20:59  revar
  * Memory leak fixes, and cleanup code to make memory leaks more obvious when
  *   using MALLOC_PROFILING.
@@ -748,13 +752,14 @@ strip_bad_ansi(char *buf, const char *input)
 	const char *is;
 	char *os;
 	int aflag = 0;
+	int limit = BUFFER_LEN - 5;
 
 	buf[0] = '\0';
 	os = buf;
 
 	is = input;
 
-	while (*is) {
+	while (*is && limit-->0) {
 		if (*is == ESCAPE_CHAR) {
 			if (is[1] == '\0') {
 				is++;
@@ -780,6 +785,7 @@ strip_bad_ansi(char *buf, const char *input)
 	if (aflag) {
 		*os++ = '\033';
 		*os++ = '[';
+		*os++ = '0';
 		*os++ = 'm';
 	}
 	*os = '\0';

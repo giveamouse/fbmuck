@@ -2,6 +2,10 @@
 
 /*
  * $Log: create.c,v $
+ * Revision 1.6  2001/11/09 17:56:05  revar
+ * Fixed uninitialized program instance count in @prog.
+ * Changed ANSI code handling to use ^[[0m instead of ^[[m at EOL for resetting.
+ *
  * Revision 1.5  2001/10/29 19:36:15  fentonator
  *
  * Resolution for feature request #476091 (Tuneable room parent default).
@@ -652,6 +656,7 @@ do_prog(int descr, dbref player, const char *name)
 		PROGRAM_SET_PROFTIME(newprog, 0, 0);
 		PROGRAM_SET_PROFSTART(newprog, 0);
 		PROGRAM_SET_PROF_USES(newprog, 0);
+		PROGRAM_SET_INSTANCES(newprog, 0);
 
 		PLAYER_SET_CURR_PROG(player, newprog);
 
