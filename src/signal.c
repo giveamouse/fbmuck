@@ -15,6 +15,7 @@
 #endif
 
 #include "config.h"
+#include "interface.h"
 
 #include <signal.h>
 
@@ -36,6 +37,7 @@
 void set_signals(void);
 RETSIGTYPE bailout(int);
 RETSIGTYPE sig_dump_status(int i);
+RETSIGTYPE sig_shutdown(int i);
 RETSIGTYPE sig_reap_resolver(int i);
 
 #ifdef _POSIX_VERSION
@@ -106,7 +108,7 @@ set_sigs_intern(int bail)
 	/* catch these because we might as well */
 /*  our_signal(SIGQUIT, SET_BAIL);  */
 #ifdef SIGTRAP
-	our_signal(SIGTRAP, SET_BAIL);
+	our_signal(SIGTRAP, SET_IGN);
 #endif
 #ifdef SIGIOT
 	our_signal(SIGIOT, SET_BAIL);
@@ -122,7 +124,7 @@ set_sigs_intern(int bail)
 #endif
 	our_signal(SIGFPE, SET_BAIL);
 	our_signal(SIGSEGV, SET_BAIL);
-	our_signal(SIGTERM, SET_BAIL);
+	our_signal(SIGTERM, bail ? SET_BAIL : sig_shutdown);
 #ifdef SIGXCPU
 	our_signal(SIGXCPU, SET_BAIL);
 #endif
@@ -175,6 +177,19 @@ RETSIGTYPE bailout(int sig)
 RETSIGTYPE sig_dump_status(int i)
 {
 	dump_status();
+#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
+	return 0;
+#endif
+}
+
+/*
+ * Gracefully shut the server down.
+ */
+RETSIGTYPE sig_shutdown(int i)
+{
+	log_status("SHUTDOWN: via SIGNAL\n");
+	shutdown_flag = 1;
+	restart_flag = 0;
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
 	return 0;
 #endif
