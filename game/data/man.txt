@@ -153,7 +153,7 @@ Misc:
   pname-ok?   prog            random       recycle       rmatch
   set         setlink         setown       setseed       setsysparm
   srand       stats           sysparm      timestamps    toadplayer
-  trig        version
+  trig        userlog         version
   
 In the documentation some primitives are grouped together as:
   MATH OPERATORS
