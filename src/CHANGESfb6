@@ -77,9 +77,8 @@ Added ARRAY_COMPARE ( a1 a2 -- i ) muf primitive.  Compares two arrays
   a positive value.  If the second array is considered greater, this
   returns a negative value.  I'm not sure if the greater/lesser-than
   comparison results are really useful, though.
-Added DIFF3 ( fx1 fy1 fz1 fx2 fy2 fz2 -- fx' fy' fz' ) muf primitive.
-  Returns three floats, being the differences of fx1 - fx2, fy1 - fy2, and
-  fz1 - fz2, respectively.
+Added DESCRSECURE? (d -- i) muf primitive.  Returns 1 if the descriptor
+  number corresponds to a secure connection, and 0 otherwise.
 Added MCP_MUF_MLEV @tune option to specify the mucker level required to
   use MCP and MCP-GUI muf calls.
 Added support for encrypted SSL connections.  See README.ssl
