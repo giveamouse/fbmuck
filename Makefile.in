@@ -15,21 +15,25 @@ install:	Makefile cert
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} install; \
 	done
+	@echo "You can use 'make cert' to generate a self-signed server certificate"
+	@echo "for use in allowing secure encrypted SSL connections to your Muck."
 
 cert game/server.pem:
 	@if grep "^#define USE_SSL" include/autoconf.h > /dev/null; then \
 		echo; \
-		if [ -r game/server.pem ]; then \
-			echo "Will not overwrite game/server.pem"; \
-			echo "Remove this file to re-create it"; \
+		if [ -r game/data/server.pem ]; then \
+			echo "Will not overwrite game/data/server.pem"; \
+			echo "Remove that file and do 'make cert' again";\
+			echo "to create a new certificate."; \
 			echo; \
 		else \
 			if [ ! -r ${HOME}/.rnd ]; then \
 				$(SSLTOP)/bin/openssl rand -rand /etc/hosts:/etc/passwd 0; \
 			fi; \
-			echo "Creating secure certificate. Please answer all the questions"; \
+			echo "Creating secure certificate. Please answer all the questions."; \
+			echo "The key and certificate will be stored in the game/data/server.pem file."; \
 			echo; \
-			openssl req -x509 -nodes -out game/server.pem -keyout server.pem -config fuzzball.cnf -new; \
+			openssl req -x509 -nodes -out game/data/server.pem -keyout game/data/server.pem -config fuzzball.cnf -new; \
 		fi; \
 	fi
 
