@@ -28,6 +28,7 @@ cleaner:
 # Packaging stuff.
 #
 
+### DESTDIR=/tmp/tmp_fbmuck_pkg
 TMPPKGDIR=/tmp/tmp_fbmuck_pkg
 TMPREV=/tmp/tmp_fbmuck_rev
 

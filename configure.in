@@ -4,8 +4,8 @@ dnl
 dnl TinyMUCK fb5.x auto-config script writen by: Peter "WhiteFire" Torkelson
 dnl
 AC_REVISION($Revision$)dnl
-AC_INIT(game.c)
-AC_CONFIG_HEADER(../include/autoconf.h)
+AC_INIT(src/game.c)
+AC_CONFIG_HEADER(include/autoconf.h)
 echo " "
 echo "TinyMUCK fb6.x auto-configure script."
 echo " "
@@ -74,8 +74,11 @@ AC_DEFINE_UNQUOTED(UNAME_VALUE, "`uname -a`")
 dnl
 dnl An in the end, there was no more.
 dnl
-AC_OUTPUT(Makefile)
+AC_OUTPUT(
+	Makefile
+	src/Makefile
+)
 echo " "
-echo "You should review the options in ../include/config.h, and"
+echo "You should review the options in include/config.h, and"
 echo "then type make to build your system."
 echo " "

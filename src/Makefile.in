@@ -36,9 +36,21 @@ INCLUDE= ${ROOT}/include
 
 # The root of the directory tree to install to.
 INSTALL_ROOT= /usr/local/fbmuck
-
 # Destination for binaries
 INSTALL_BINDIR= ${INSTALL_ROOT}/bin
+
+# ${DESTDIR} is used by the Debian packaging system to build the .debs
+# and is defined by the debian/rules file.
+
+# The game binaries should go into /usr/lib/fbmuck as they are meant
+# to be called by the startup scripts and generally not manually.
+
+###INSTALL_BINDIR= ${DESTDIR}/usr/lib/fbmuck/fb60/bin
+
+# The default 2-object and 68-object game dbs should be considered
+# 'example documentation' and go into /usr/share/doc/fbmuck/examples
+# and be stored as compressed tarfiles.
+
 
 # #######################################################################
 # 		Variables set by the configure script.
@@ -224,6 +236,8 @@ install: all
 	fi
 	${CHMOD} 755 ${TARGETS}
 	${MV} ${TARGETS} ${INSTALL_BINDIR}
+
+	${INSTALL} ${TARGETS} ${DESTDIR}/${bindir}
 
 # #######################################################################
 # #######################################################################
