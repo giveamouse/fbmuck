@@ -60,7 +60,7 @@ void (*prim_func[]) (PRIM_PROTOTYPE) = {
 	PRIMS_ERROR_FUNCS,
 	PRIMS_MCP_FUNCS,
 	PRIMS_INTERNAL_FUNCS,
-	(void *) NULL
+	NULL
 };
 
 struct localvars*
