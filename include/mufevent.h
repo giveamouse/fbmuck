@@ -24,5 +24,7 @@ void muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusiv
 void muf_event_remove(struct frame *fr, char *event, int which);
 void muf_event_purge(struct frame *fr);
 void muf_event_process(void);
+stk_array *get_mufevent_pids(stk_array* nw, dbref ref);
+stk_array *get_mufevent_pidinfo(stk_array* nw, int pid);
 
 #endif /* MUF_EVENT_H */

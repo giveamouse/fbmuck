@@ -337,4 +337,8 @@ void log_status(char *format, ...);
 void kill_resolver(void);
 
 int add_mpi_event(int delay, int descr, dbref player, dbref loc, dbref trig, const char *mpi, const char *cmdstr, const char *argstr, int listen_p, int omesg_p, int bless_p);
+stk_array *get_pids(dbref ref);
+stk_array *get_pidinfo(int pid);
+
+
 #endif /* _EXTERNS_H */

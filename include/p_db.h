@@ -45,7 +45,26 @@ extern void prim_nextowned(PRIM_PROTOTYPE);
 extern void prim_movepennies(PRIM_PROTOTYPE);
 extern void prim_findnext(PRIM_PROTOTYPE);
 
-#define PRIMS_DB_FUNCS prim_addpennies, prim_moveto, prim_pennies,       \
+/* new protomuck prims */
+extern void prim_nextentrance(PRIM_PROTOTYPE);
+extern void prim_newplayer(PRIM_PROTOTYPE);
+extern void prim_copyplayer(PRIM_PROTOTYPE);
+extern void prim_objmem(PRIM_PROTOTYPE);
+extern void prim_instances(PRIM_PROTOTYPE);
+extern void prim_compiledp(PRIM_PROTOTYPE);
+extern void prim_newprogram(PRIM_PROTOTYPE);
+extern void prim_contents_array(PRIM_PROTOTYPE);
+extern void prim_exits_array(PRIM_PROTOTYPE);
+extern void prim_getlinks_array(PRIM_PROTOTYPE);
+extern void prim_newpassword(PRIM_PROTOTYPE);
+extern void prim_compile(PRIM_PROTOTYPE);
+extern void prim_uncompile(PRIM_PROTOTYPE);
+extern void prim_getpids(PRIM_PROTOTYPE);
+
+/* WORK: Add these prims */
+extern void prim_toadplayer(PRIM_PROTOTYPE);
+
+#define PRIMS_DB_FUNCS1 prim_addpennies, prim_moveto, prim_pennies,       \
     prim_dbcomp, prim_dbref, prim_contents, prim_exits, prim_next,       \
     prim_name, prim_setname, prim_match, prim_rmatch, prim_copyobj,      \
     prim_set, prim_mlevel, prim_flagp, prim_playerp, prim_thingp,        \
@@ -54,9 +73,14 @@ extern void prim_findnext(PRIM_PROTOTYPE);
     prim_newroom, prim_newexit, prim_lockedp, prim_recycle,              \
     prim_setlockstr, prim_getlockstr, prim_part_pmatch, prim_controls,   \
     prim_truename, prim_checkpassword, prim_nextowned, prim_getlinks,    \
-    prim_pmatch, prim_movepennies, prim_findnext
+    prim_pmatch, prim_movepennies, prim_findnext, prim_nextentrance,     \
+	prim_newplayer, prim_copyplayer, prim_objmem, prim_instances,        \
+	prim_compiledp, prim_newprogram, prim_contents_array,                \
+	prim_exits_array, prim_getlinks_array, prim_compile,                 \
+	prim_uncompile, prim_newpassword, prim_getpids
 
-#define PRIMS_DB_NAMES "ADDPENNIES", "MOVETO", "PENNIES",  \
+
+#define PRIMS_DB_NAMES1 "ADDPENNIES", "MOVETO", "PENNIES",  \
     "DBCMP", "DBREF", "CONTENTS", "EXITS", "NEXT",         \
     "NAME", "SETNAME", "MATCH", "RMATCH", "COPYOBJ",       \
     "SET", "MLEVEL", "FLAG?", "PLAYER?", "THING?",         \
@@ -65,9 +89,27 @@ extern void prim_findnext(PRIM_PROTOTYPE);
     "NEWROOM", "NEWEXIT", "LOCKED?", "RECYCLE",            \
     "SETLOCKSTR", "GETLOCKSTR", "PART_PMATCH", "CONTROLS", \
     "TRUENAME", "CHECKPASSWORD", "NEXTOWNED", "GETLINKS",  \
-    "PMATCH", "MOVEPENNIES", "FINDNEXT"
+    "PMATCH", "MOVEPENNIES", "FINDNEXT", "NEXTENTRANCE",   \
+	"NEWPLAYER", "COPYPLAYER", "OBJMEM", "INSTANCES",      \
+	"COMPILED?", "NEWPROGRAM", "CONTENTS_ARRAY",           \
+	"EXITS_ARRAY", "GETLINKS_ARRAY", "COMPILE",            \
+	"UNCOMPILE", "NEWPASSWORD", "GETPIDS"
 
-#define PRIMS_DB_CNT 43
+#define PRIMS_DB_CNT1 57
+
+
+#ifdef SCARY_MUF_PRIMS
+
+ /* These add dangerous, but possibly useful prims. */
+# define PRIMS_DB_FUNCS PRIMS_DB_FUNCS1, prim_toadplayer
+# define PRIMS_DB_NAMES PRIMS_DB_NAMES1, "TOADPLAYER"
+# define PRIMS_DB_CNT (PRIMS_DB_CNT1 + 1)
+
+#else
+# define PRIMS_DB_FUNCS PRIMS_DB_FUNCS1
+# define PRIMS_DB_NAMES PRIMS_DB_NAMES1
+# define PRIMS_DB_CNT PRIMS_DB_CNT1
+#endif
 
 #endif /* _P_DB_H */
 

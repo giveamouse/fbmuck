@@ -1,3 +1,54 @@
+2.2fb6.00b3
+Fixed a crasher bug with uninitialized watchpid-related variables.
+Added NEXTENTRANCE ( d1 d2 -- d3 ) muf primitive.  Searches the database for
+  the next object after d2 that is linked to d1.  You can begin a search by
+  passing #-1 as d2.  The search currently scans upwards through the database,
+  but this ordering is not guaranteed.  If an object is found that links to
+  d1, then the dbref of that object is returned.  If no more such objects
+  are found in the db, then #-1 is returned.
+Added NEWPLAYER ( s1 s2 -- d ) muf primitive.  Creates a new player object,
+  with the name s1, and the password s2.  This returns the dbref of the new
+  player object.
+Added COPYPLAYER ( d1 s1 s2 -- d2 ) muf primitive.  Creates a new player
+  object with the name s1, and the password s2, and the properties, flags,
+  links, etc. of the template object d1.  This returns the dbref of the
+  newly created player object.
+Added OBJMEM ( d -- i ) muf primitive.  Returns the current number of bytes
+  in use by the given object.
+Added INSTANCES ( d -- i ) muf primitive.  Returns the number of active
+  instances of the given program.  Ie: the number of active processes that
+  are running, using the given program.
+Added COMPILED? ( d -- i ) muf primitive.  Returns 0 if the given program
+  is not compiled.  Otherwise returns the number of compiled instructions.
+Added NEWPROGRAM ( s -- d ) muf primitive.  Creates a new program object
+  with the given name, and returns its dbref.
+Added CONTENTS_ARRAY ( d -- a ) muf primitive.  Returns a list array that
+  contains the dbref of every object contained within the given object.  If
+  a #-1 is returned as the last list item, then there were too many objects
+  to return all of them.
+Added EXITS_ARRAY ( d -- a ) muf primitive.  Returns a list array that
+  contains the dbref of every exit attached to the given object.  If a
+  #-1 is returned as the last list item, then there were too many exits
+  to return all of them.
+Added GETLINKS_ARRAY ( d -- a ) muf primitive.  Returns a list array that
+  contains the dbref of every object that the given object is linked to.
+Added NEWPASSWORD ( d s -- ) muf primitive.  Changed the password of the
+  given player d to s.
+Added COMPILE ( d i1 -- i2 ) muf primitive.  Compiles the given program.
+  If i1 is true, errors and warnings are printed out to the user.  If the
+  program fails to compile, this returns 0.  If the compile is successful,
+  this returns the number of compiled instructions.  This will throw an
+  error if the program has any current instances running.
+Added UNCOMPILE ( d -- ) muf primitive.  Uncompiles the given muf program.
+  This will throw an error if the program has any current instances running.
+Added GETPIDS ( d -- a ) muf primitive.  Returns a list array containing the
+  pids of all the processes running the given program.  If #-1 is passed to
+  this, then the array will contain the pids of all active processes.
+Added TOADPLAYER ( d1 d2 -- ) muf primitive.  @toads player d2, and chowns
+  all their posessions to player d1.  You can't toad wizard players.
+
+
+
 2.2fb6.00b2
 Fixed bug with MCP not properly dealing with \r's in arg strings.
 Fixed bug where being set !C didn't strip ANSI color from muf NOTIFYs.
@@ -6,6 +57,8 @@ Changed MCP GUI code to limit to 256 "values" per dialog.
 Changed EVENT_SEND to send a dictionary instead of just a value.  The array
   will contain "data" with the value, "caller_pid" with the pid of the caller,
   and "caller_prog" with the dbref of the caller.
+Changed VEHICLE flag for muf progs to mean VIEWABLE, to let you @list them.
+  Programs set LINK_OK are _not_ @listable unless they are also set VIEWABLE.
 Added inserver muf define for C_MENU.
 Added support for "valname" option to MCP GUI control creation.
 Added a __fuzzball__ inserver MUF $define, set to 1, to let programmers
@@ -61,16 +114,16 @@ Added WATCHPID ( i -- ) muf primitive.  Sends a "PROC.EXIT.pid" event to
   type will be "PROC.EXIT." with the pid of the process appended to it.
   The pid will also be returned as the data value from the event.  This
   primitive requires at least Mucker Level 3.
+Added BLESSED? (d s -- i) muf prim.  Given an object and a property string,
+  returns a boolean telling if that property is blessed.
 Added four new data entries to USER muf event contexts sent by SEND_EVENT.
   "descr" contains the descriptor that initiated the sending program.
   "trigger" contains the dbref of the trigger that ran the sending program.
   "player" contains the dbref of the player that ran the sending program.
   "prog_uid" contains the dbref of the player used for permissions in the
   sending program.
-Setting a program VEHICLE (VIEWABLE) allows it to be @listed (LINK_OK is
-  no longer checked)
-Added BLESSED? (d s -- i) muf prim: given an object and a property string,
-  returns a boolean telling if that property is blessed.
+
+
 
 2.2fb6.00b1
 Fixed STOD to allow for trailing spaces after a number argument.
@@ -194,6 +247,7 @@ Changed the 'log_reads' @tune to 'log_interactive' to be compatible with fb5.
 Changed EVENT_EXISTS to allow matching by smatch wildcard pattern.
 Changes @bless and @unbless to (un)bless all props that match the given
   wildcard property name.
+
 
 
 2.2fb6.00a33

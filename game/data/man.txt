@@ -20,8 +20,8 @@ MISCELLANEOUS       - Random bits of information.
 ~                                   MUF
 ~XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ~
-~(NOTE: Some of the ordering was changed so the server would read the file
-~correctly)
+~(NOTE: Some ordering was changed so the server would read the file correctly)
+~
 PRIMITIVES|
   
 Stack Manipulation:
@@ -32,9 +32,9 @@ Variable Handling:
    !   @   lvar   var   localvar   variable
   
 Control Structures:
-  if     else  then     call   execute   exit   jmp     public  wizcall
-  begin  for   while    break  continue  until  repeat  foreach interp
-  try    catch endcatch
+  if     else   then     call   execute   exit   jmp     public   wizcall
+  begin  for    while    break  continue  until  repeat  foreach  interp
+  try    catch  endcatch
   
 Stack Types and Object Types:
   string?  dbref?  address?  lock?  int?   array?  dictionary?
@@ -135,14 +135,22 @@ MCP GUI Package Defines:
   c_combobox      c_listbox      c_spinner     c_scale      c_menu
   c_frame         c_notebook
   
+MUF Program and Process Meta-Primitives.
+  instances   compiled?   compile   uncompile   getpids
+  
 Misc:
-  set     mlevel    next      checkargs  location    newroom    pennies
-  flag?   caller    force     sysparm    contents    newexit    addpennies
-  prog    match     random    version    controls    newobject  timestamps
-  trig    stats     rmatch    getlink    setown      recycle    part_pmatch
-  dbtop   exits     moveto    setlink    owner       copyobj    checkpassword
-  srand   setseed   getseed   getlinks   cancall?    nextowned  setsysparm 
-  pmatch  findnext  name-ok?  pname-ok?  force_level
+  addpennies  caller          cancall?     checkargs     checkpassword
+  contents    contents_array  controls     copyobj       copyplayer
+  dbtop       exits           exits_array  findnext      flag?
+  force       force_level     getlink      getlinks      getlinks_array
+  getseed     location        match        mlevel        moveto
+  name-ok?    newexit         newobject    newpassword   newplayer
+  newprogram  newroom         next         nextentrance  nextowned
+  objmem      owner           part_pmatch  pennies       pmatch
+  pname-ok?   prog            random       recycle       rmatch
+  set         setlink         setown       setseed       setsysparm
+  srand       stats           sysparm      timestamps    toadplayer
+  trig        version
   
 In the documentation some primitives are grouped together as:
   MATH OPERATORS
@@ -3542,3 +3550,85 @@ will be sent immediately.  The exit event can be retrieved by a call to
 EVENT_WAIT.  The event type will be "PROC.EXIT." wit the pid of the process
 appended to it.  The pid will also be returned as the data value from the
 event.  This primitive requires at least Mucker Level 3.
+~
+NEXTENTRANCE|
+NEXTENTRANCE ( d1 d2 -- d3 )
+Searches the database for the next object after d2 that is linked to d1.
+You can begin a search by passing #-1 as d2.  The search currently scans
+upwards through the database, but this ordering is not guaranteed.  If an
+object is found that links to d1, then the dbref of that object is returned.
+If no more such objects are found in the db, then #-1 is returned.
+~
+NEWPLAYER|
+NEWPLAYER ( s1 s2 -- d )
+Creates a new player object, with the name s1, and the password s2.
+This returns the dbref of the new player object.
+~
+COPYPLAYER|
+COPYPLAYER ( d1 s1 s2 -- d2 )
+Creates a new player object with the name s1, and the password s2, and the
+properties, flags, links, etc. of the template object d1.  This returns
+the dbref of the newly created player object.
+~
+OBJMEM|
+OBJMEM ( d -- i )
+Returns the current number of bytes in use by the given object.
+~
+INSTANCES|
+INSTANCES ( d -- i )
+Returns the number of active instances of the given program.  Ie: the
+number of active processes that are running, using the given program.
+~
+COMPILED?|
+COMPILED? ( d -- i )
+Returns 0 if the given program is not compiled.  Otherwise returns the
+number of compiled instructions.
+~
+NEWPROGRAM|
+NEWPROGRAM ( s -- d )
+Creates a new program object with the given name, and returns its dbref.
+~
+CONTENTS_ARRAY|
+CONTENTS_ARRAY ( d -- a )
+Returns a list array that contains the dbref of every object contained
+within the given object.  If a #-1 is returned as the last list item,
+then there were too many objects to return all of them.
+~
+EXITS_ARRAY|
+EXITS_ARRAY ( d -- a )
+Returns a list array that contains the dbref of every exit attached to the
+given object.  If a #-1 is returned as the last list item, then there were
+too many exits to return all of them.
+~
+GETLINKS_ARRAY|
+GETLINKS_ARRAY ( d -- a )
+Returns a list array that contains the dbref of every object that the
+given object is linked to.
+~
+NEWPASSWORD|
+NEWPASSWORD ( d s -- )
+Changed the password of the given player d to s.
+~
+COMPILE|
+COMPILE ( d i1 -- i2 )
+Compiles the given program.  If i1 is true, errors and warnings are printed
+out to the user.  If the program fails to compile, this returns 0.  If the
+compile is successful, this returns the number of compiled instructions.
+This will throw an error if the program has any current instances running.
+~
+UNCOMPILE|
+UNCOMPILE ( d -- )
+Uncompiles the given muf program.  This will throw an error if the program
+has any current instances running.
+~
+GETPIDS|
+GETPIDS ( d -- a )
+Returns a list array containing the pids of all the processes running the
+given program.  If #-1 is passed to this, then the array will contain the
+pids of all active processes.
+~
+TOADPLAYER|
+TOADPLAYER ( d1 d2 -- )
+@toads player d2, and chowns all their posessions to player d1.
+You can't toad wizard players.
+

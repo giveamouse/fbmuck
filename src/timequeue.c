@@ -14,6 +14,7 @@
 #include "interface.h"
 #include "externs.h"
 #include "mufevent.h"
+#include "interp.h"
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -755,6 +756,154 @@ list_events(dbref player)
 	count += muf_event_list(player, "%8d %4s %4s %5d %4.1f #%-6d %-16s %.512s");
 	sprintf(buf, "%d events.", count);
 	notify_nolisten(player, buf, 1);
+}
+
+stk_array *
+get_pids(dbref ref)
+{
+	struct inst temp1, temp2;
+	stk_array  *nw;
+	int count = 0;
+
+	timequeue ptr = tqhead;
+	nw = new_array_packed(0);
+	while (ptr) {
+		if (((ptr->typ != TQ_MPI_TYP) ? (ptr->called_prog == ref) : (ptr->trig == ref)) ||
+			(ptr->uid == ref) || (ref < 0) ) {
+			temp2.type = PROG_INTEGER;
+			temp2.data.number = ptr->eventnum;
+			temp1.type = PROG_INTEGER;
+			temp1.data.number = count++;
+			array_setitem(&nw, &temp1, &temp2);
+			CLEAR(&temp1);
+			CLEAR(&temp2);
+		}
+		ptr = ptr->next;
+	}
+	nw = get_mufevent_pids(nw, ref);
+	return nw;
+}
+
+stk_array *
+get_pidinfo(int pid)
+{
+	struct inst temp1, temp2;
+	stk_array  *nw;
+	time_t      rtime = time(NULL);
+	time_t      etime = 0;
+	double      pcnt  = 0.0;
+
+	timequeue ptr = tqhead;
+	nw = new_array_dictionary();
+	while (ptr && (ptr->eventnum != pid)) {
+		ptr = ptr->next;
+	}
+	if (ptr && (ptr->eventnum == pid)) {
+		if (ptr->fr) {
+			etime = rtime - ptr->fr->started;
+			if (etime > 0) {
+				pcnt = ptr->fr->totaltime.tv_sec;
+				pcnt += ptr->fr->totaltime.tv_usec / 1000000;
+				pcnt = pcnt * 100 / etime;
+				if (pcnt > 100.0) {
+					pcnt = 100.0;
+				}
+			} else {
+				pcnt = 0.0;
+			}
+		}
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string("PID");
+		temp2.type = PROG_INTEGER;
+		temp2.data.number = ptr->eventnum;
+		array_setitem(&nw, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string("CALLED_PROG");
+		temp2.type = PROG_OBJECT;
+		temp2.data.objref = ptr->called_prog;
+		array_setitem(&nw, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string("TRIG");
+		temp2.type = PROG_OBJECT;
+		temp2.data.objref = ptr->trig;
+		array_setitem(&nw, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string("PLAYER");
+		temp2.type = PROG_OBJECT;
+		temp2.data.objref = ptr->uid;
+		array_setitem(&nw, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string("CALLED_DATA");
+		temp2.type = PROG_STRING;
+		temp2.data.string = alloc_prog_string(ptr->called_data);
+		array_setitem(&nw, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string("INSTCNT");
+		temp2.type = PROG_INTEGER;
+		temp2.data.number = ptr->fr->instcnt;
+		array_setitem(&nw, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string("DESCR");
+		temp2.type = PROG_INTEGER;
+		temp2.data.number = ptr->descr;
+		array_setitem(&nw, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string("CPU");
+		temp2.type = PROG_FLOAT;
+		temp2.data.fnumber = (float) pcnt;
+		array_setitem(&nw, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string("NEXTRUN");
+		temp2.type = PROG_INTEGER;
+		temp2.data.number = (int) ptr->when;
+		array_setitem(&nw, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string("STARTED");
+		temp2.type = PROG_INTEGER;
+		temp2.data.number = (int) ptr->fr->started;
+		array_setitem(&nw, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string("TYPE");
+		temp2.type = PROG_STRING;
+		temp2.data.string = 	(ptr->typ == TQ_MUF_TYP) ? alloc_prog_string("MUF") :
+						(ptr->typ == TQ_MPI_TYP) ? alloc_prog_string("MPI") : alloc_prog_string("UNK") ;
+		array_setitem(&nw, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+		temp1.type = PROG_STRING;
+		temp1.data.string = alloc_prog_string("SUBTYPE");
+		temp2.type = PROG_STRING;
+		temp2.data.string = 	(ptr->typ == TQ_MUF_READ) ? alloc_prog_string("READ") :
+						(ptr->typ == TQ_MUF_TREAD) ? alloc_prog_string("TREAD") :
+						(ptr->typ == TQ_MUF_TIMER) ? alloc_prog_string("TIMER") :
+						(ptr->typ == TQ_MUF_DELAY) ? alloc_prog_string("DELAY") : alloc_prog_string("");
+		array_setitem(&nw, &temp1, &temp2);
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+	} else {
+		nw = get_mufevent_pidinfo(nw, pid);
+	}
+	return nw;
 }
 
 /*

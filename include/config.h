@@ -82,6 +82,17 @@
  */
 #undef USE_IPV6
 
+/*
+ * There's a set of MUF prims that are considered dangerous.
+ * Currently these include only:
+ *     TOADPLAYER which can @toad players.
+ * These require wizbits, but if someone finds a new way to hack the
+ * system to get wizbit perms, these can cause damage that may require
+ * a reversion to a previous database to fix.
+ * Define this, to make these MUF prims available.
+ */
+#undef SCARY_MUF_PRIMS
+
 
 /************************************************************************
    Game Options

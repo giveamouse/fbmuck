@@ -1515,6 +1515,24 @@ array_set_strkey(stk_array ** harr, const char *key, struct inst *val)
 
 
 int
+array_set_intkey(stk_array ** harr, int key, struct inst *val)
+{
+	struct inst name;
+	int result;
+
+	name.type = PROG_INTEGER;
+	name.data.number = key;
+
+	result = array_setitem(harr, &name, val);
+
+	CLEAR(&name);
+
+	return result;
+}
+
+
+
+int
 array_set_strkey_intval(stk_array ** arr, const char *key, int val)
 {
 	struct inst value;
@@ -1559,6 +1577,23 @@ array_set_strkey_refval(stk_array ** harr, const char *key, dbref val)
 	value.data.objref = val;
 
 	result = array_set_strkey(harr, key, &value);
+
+	CLEAR(&value);
+
+	return result;
+}
+
+
+int
+array_set_intkey_strval(stk_array ** harr, int key, const char *val)
+{
+	struct inst value;
+	int result;
+
+	value.type = PROG_STRING;
+	value.data.string = alloc_prog_string(val);
+
+	result = array_set_intkey(harr, key, &value);
 
 	CLEAR(&value);
 
