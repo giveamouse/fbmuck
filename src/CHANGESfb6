@@ -13,6 +13,8 @@ Added ARRAY_NESTED_SET ( ? arr idxarr -- arr' ) muf prim.  Used to set values
   of nested sub-arrays, creating missing subarrays as needed.
 Added ARRAY_NESTED_DEL ( arr idxarr -- arr' ) muf prim.  Used to delete values
   of nested sub-arrays.
+Removed annoying 'Cannot access propdir directly' errors from MUF prop prims.
+
 
 
 
