@@ -46,7 +46,7 @@ DELTAS="$GAMEDIR/data/deltas-file"
 # change this unless you renamed the server program to something other than
 # netmuck.
 #
-SERVER="$GAMEDIR/netmuck"
+SERVER="/usr/local/fbmuck/bin/netmuck"
 
 
 #
@@ -176,6 +176,5 @@ touch $RESTARTS_LOGFILE
 echo "`date` - `who am i`" >> $RESTARTS_LOGFILE
 
 # echo "Server started at: `date`"
-$SERVER $DBIN $DBOUT $PORT > $STDOUTERR_LOGFILE 2>&1 &
-# echo "Server stopped at: `date`"
+$SERVER -gamedir $GAMEDIR -dbin $DBIN -dbout $DBOUT -port $PORT > $STDOUTERR_LOGFILE 2>&1 &
 

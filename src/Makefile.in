@@ -34,8 +34,11 @@ ROOT= ..
 # Where the include files are
 INCLUDE= ${ROOT}/include
 
+# The root of the directory tree to install to.
+INSTALL_ROOT= /usr/local/fbmuck
+
 # Destination for binaries
-DEST=${ROOT}/game
+INSTALL_BINDIR= ${INSTALL_ROOT}/bin
 
 # #######################################################################
 # 		Variables set by the configure script.
@@ -59,6 +62,7 @@ CFLAGS= ${OPTIM} ${DEFS} -I${INCLUDE}
 #
 MV= -mv -f
 RM= -rm -f
+CHMOD= chmod
 
 #
 # Misc stuff for odd targets.
@@ -199,7 +203,16 @@ nuke:
 	-${CLEAN} *
 
 install: all
-	${MV} ${TARGETS} ${DEST}
+	if [ ! -d "${INSTALL_ROOT}" ] ; then \
+		mkdir ${INSTALL_ROOT} ; \
+		${CHMOD} 755 ${INSTALL_ROOT} ; \
+	fi
+	if [ ! -d "${INSTALL_BINDIR}" ] ; then \
+		mkdir ${INSTALL_BINDIR} ; \
+		${CHMOD} 755 ${INSTALL_BINDIR} ; \
+	fi
+	${CHMOD} 755 ${TARGETS}
+	${MV} ${TARGETS} ${INSTALL_BINDIR}
 
 # #######################################################################
 # #######################################################################

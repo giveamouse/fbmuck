@@ -2,6 +2,12 @@
 
 /*
  * $Log: interface.c,v $
+ * Revision 1.10  2000/07/29 02:27:06  revar
+ * Changed 'make install' to install programs to /usr/local/fbmuck/bin/
+ * Changed restart script to use the netmuck binary in /usr/local/fbmuck/bin/
+ * Changed netmuck to also look for the resolver in /usr/local/fbmuck/bin/
+ *  places.
+ *
  * Revision 1.9  2000/07/22 10:39:58  winged
  * Changes for autodetecting errno
  *
@@ -1089,7 +1095,7 @@ spawn_resolver()
 		execl("./resolver", "resolver", NULL);
 		execl("./bin/resolver", "resolver", NULL);
 		execl("/usr/lib/fbmuck/resolver", "resolver", NULL);
-		execl("/usr/local/lib/fbmuck/resolver", "resolver", NULL);
+		execl("/usr/local/fbmuck/bin/resolver", "resolver", NULL);
 		execl("/usr/local/bin/resolver", "resolver", NULL);
 		execl("../src/resolver", "resolver", NULL);
 		execl("resolver", "resolver", NULL);
