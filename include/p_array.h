@@ -28,6 +28,7 @@ extern void prim_array_matchkey(PRIM_PROTOTYPE);
 extern void prim_array_extract(PRIM_PROTOTYPE);
 extern void prim_array_excludeval(PRIM_PROTOTYPE);
 extern void prim_array_sort(PRIM_PROTOTYPE);
+extern void prim_array_sort_indexed(PRIM_PROTOTYPE);
 extern void prim_array_join(PRIM_PROTOTYPE);
 extern void prim_array_cut(PRIM_PROTOTYPE);
 
@@ -61,7 +62,7 @@ extern void prim_array_put_reflist(PRIM_PROTOTYPE);
 		prim_array_put_reflist, prim_array_appenditem, prim_array_findval, \
 		prim_array_excludeval, prim_array_sort, prim_array_matchval, \
 		prim_array_matchkey, prim_array_extract, prim_array_join, \
-		prim_array_cut, prim_array_compare
+		prim_array_cut, prim_array_compare, prim_array_sort_indexed
 
 #define PRIMS_ARRAY_NAMES "ARRAY_MAKE", "ARRAY_MAKE_DICT", \
         "ARRAY_EXPLODE", "ARRAY_VALS", "ARRAY_KEYS", \
@@ -77,9 +78,9 @@ extern void prim_array_put_reflist(PRIM_PROTOTYPE);
 		"ARRAY_PUT_REFLIST", "ARRAY_APPENDITEM", "ARRAY_FINDVAL", \
 		"ARRAY_EXCLUDEVAL", "ARRAY_SORT", "ARRAY_MATCHVAL", \
 		"ARRAY_MATCHKEY", "ARRAY_EXTRACT", "ARRAY_JOIN", \
-		"ARRAY_CUT", "ARRAY_COMPARE"
+		"ARRAY_CUT", "ARRAY_COMPARE", "ARRAY_SORT_INDEXED"
 
-#define PRIMS_ARRAY_CNT 40
+#define PRIMS_ARRAY_CNT 41
 
 #endif /* _P_ARRAY_H */
 

@@ -100,7 +100,7 @@ Array Manipulation:
   array_get_reflist  array_put_reflist  array_get_proplist array_put_proplist
   array_get_propvals array_put_propvals array_get_propdirs array_filter_prop
   array_matchkey     array_matchval     array_extract      array_join
-  array_excludeval
+  array_excludeval   array_sort_indexed
   
 Connection Management:
   awake?        online         online_array    concount
@@ -389,13 +389,47 @@ sort type.  This can sort strings, integers, floats, dbrefs, or mixes
 of types.  Integers are sorted in with floats, but strings sort after
 all numbers.  Dbrefs sort after the other number types, but before
 string types.  Other stack item types will sort separately, but in
-an undefined consistent order.  The valid sort types are 0 - 4, which
-have the following inserver muf macro $defines:
-  0 SORTTYPE_CASE_ASCEND     Case sensitive and ascending order.
-  1 SORTTYPE_NOCASE_ASCEND   Case insensitive and ascending order.
-  2 SORTTYPE_CASE_DESCEND    Case sensitive and descending order.
-  3 SORTTYPE_NOCASE_DESCEND  Case insensitive and descending order.
-  4 SORTTYPE_SHUFFLE         Randomize list.
+an undefined consistent order.
+ 
+The SortType argument is an integer, and its default value of 0 means
+that the sorting should be case sensitive and in ascending order.  You
+can change either of those by using one or more of the following inserver
+$defines BITORed or added together:
+  $def SORTTYPE_CASEINSENS 1   (Sort is to be case insensitive.)
+  $def SORTTYPE_DESCENDING 2   (Sort is to be in reversed order.)
+  $def SORTTYPE_SHUFFLE    4   (Randomize list completely.)
+ 
+The above sort types can be added or bitor'ed together to get the
+following inserver $defines as listed below.
+  $def SORTTYPE_CASE_ASCEND    0 (Case sensitive and ascending order.)
+  $def SORTTYPE_NOCASE_ASCEND  SORTTYPE_CASEINSENS
+  $def SORTTYPE_CASE_DESCEND   SORTTYPE_DESCENDING
+  $def SORTTYPE_NOCASE_DESCEND SORTTYPE_CASEINSENS SORTTYPE_DESCENDING +
+~
+ARRAY_SORT_INDEXED|
+ARRAY_SORT_INDEXED (arrData intSortType idxIndex -- arrSorted)
+This takes a list array of arrays, and will sort them, based on the
+value of an indexed value in each subarray, based on the given sort
+type.  For example:
+	{
+		{ "name" "One"     "num" 1 }dict
+		{ "name" "Two"     "num" 2 }dict
+		{ "name" "Three"   "num" 3 }dict
+	}list
+	SORTTYPE_DESCENDING "num" ARRAY_SORT_INDEXED
+Would return an array of dictionaries, sorted in descending order by the
+value of their "num" entries.  ie, the same as:
+	{
+		{ "name" "Three"   "num" 3 }dict
+		{ "name" "Two"     "num" 2 }dict
+		{ "name" "One"     "num" 1 }dict
+	}list
+This can be used with an array of list arrays, just like with an array of
+dictionaries.  For list arrays, you just use an integer for the index.
+NOTE: arrays that don't have an item matching the given index, will be
+sorted as lesser than arrays that do.
+ 
+See ARRAY_SORT for more information on sort ordering.
 ~
 ARRAY_NINTERSECT|
 array_nintersect ( {a} -- a )

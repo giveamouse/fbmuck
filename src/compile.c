@@ -443,6 +443,8 @@ include_internal_defs(COMPSTATE * cstat)
 	insert_intdef(cstat, "fg_mode", FOREGROUND);
 	insert_intdef(cstat, "pr_mode", PREEMPT);
 	insert_intdef(cstat, "max_variable_count", MAX_VAR);
+	insert_intdef(cstat, "sorttype_caseinsens", SORTTYPE_CASEINSENS);
+	insert_intdef(cstat, "sorttype_descending", SORTTYPE_DESCENDING);
 	insert_intdef(cstat, "sorttype_case_ascend", SORTTYPE_CASE_ASCEND);
 	insert_intdef(cstat, "sorttype_nocase_ascend", SORTTYPE_NOCASE_ASCEND);
 	insert_intdef(cstat, "sorttype_case_descend", SORTTYPE_CASE_DESCEND);
