@@ -2,6 +2,10 @@
 
 /*
  * $Log: edit.c,v $
+ * Revision 1.3  2000/07/13 01:13:12  winged
+ *
+ * Added feedback for leaving insert mode, in insert().
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -794,6 +798,7 @@ insert(dbref player, const char *line)
 	program = PLAYER_CURR_PROG(player);
 	if (!string_compare(line, EXIT_INSERT)) {
 		PLAYER_SET_INSERT_MODE(player, 0);	/* turn off insert mode */
+		notify_nolisten(player, "Exiting insert mode.", 1);
 		return;
 	}
 	i = PROGRAM_CURR_LINE(program) - 1;
