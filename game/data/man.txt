@@ -75,9 +75,10 @@ Message Management:
   setdrop  setosucc  setofail  setodrop
   
 Property Management:
-  getprop   getpropval  getpropfval getpropstr  addprop      remove_prop
-  envprop   envpropstr  nextprop    propdir?    parseprop    setprop
-  blessprop unblessprop reflist_add reflist_del reflist_find blessed?
+  getprop     getpropval  getpropfval getpropstr  addprop      remove_prop
+  envprop     envpropstr  nextprop    propdir?    parseprop    setprop
+  blessprop   unblessprop reflist_add reflist_del reflist_find blessed?
+  parsepropex
   
 I/O:
   read   tread   notify   notify_except   notify_exclude   array_notify
@@ -4002,22 +4003,34 @@ This primitive requires at least Mucker Level 3.
 ~
 REGEXP|
 REGEXP ( str:Text str:Pattern int:Flag -- list:SubMatchVals list:SubMatchIdx )
-  Apply the regular expression "Pattern" to "Text", returns a list array of
-  the matched substrings in SubMatchVals.  (The first element of the list is
-  the entire matched string.)  The indices into "Text" of the submatches are
-  returned in SubMatchIdx.
+Apply the regular expression "Pattern" to "Text", returns a list array of
+the matched substrings in SubMatchVals.  (The first element of the list is
+the entire matched string.)  The indices into "Text" of the submatches are
+returned in SubMatchIdx.
  
-  The "Flag" argument may be a combination, or none of the following:
+The "Flag" argument may be a combination, or none of the following:
  
-  $def REG_ICASE    1   (Case insensitive match)
+    $def REG_ICASE    1   (Case insensitive match)
 ~
 REGSUB|
 REGSUB ( str:Text str:Pattern str:Replace int:Flag -- str:Result )
-  Performs a regular expression substitution using "Pattern" against "Text",
-  replacing the match with "Replace".  "Replace" may contain \digit to
-  specify a submatch.
+Performs a regular expression substitution using "Pattern" against "Text",
+replacing the match with "Replace".  "Replace" may contain \digit to
+specify a submatch.
  
-  The "Flag" argument may be a combination, or none of the following:
+The "Flag" argument may be a combination, or none of the following:
  
-  $def REG_ICASE    1   (Case insensitive match)
-  $def REG_ALL      2   (Substitute all matches, rather than just the first)
+    $def REG_ICASE    1   (Case insensitive match)
+    $def REG_ALL      2   (Substitute all matches, rather than just the first)
+~
+PARSEPROPEX|
+PARSEPROPEX ( ref:Obj str:Prop dict:Vars int:Private -- dict:Vars str:Result )
+MPI parses "Prop" on "Obj".  The dictionary "var" will be used to setup mpi
+variables, the key as the variable name, the value as the content of the
+variable.  The content of the variables after the parse will be returned in
+the resulting dictionary.  If "Private" is set to 1 the result of any {delay}
+will be sent to the player only, otherwise if it is set to 0 the result will
+be sent to the rest of the players in the room.  This prim is most useful for
+passing values between MPI and MUF, rather than having to resort to formatting
+the data into the {&how} variable, or the return value.
+This primitives requires at least Mucker level 3.
