@@ -96,15 +96,19 @@ extern int arith_type(struct inst *op1, struct inst *op2);
 #define CHECKOP_READONLY(N) \
 { \
     nargs = (N); \
-    if (*top < nargs) \
+    if (*top < nargs) { \
+		nargs = 0; \
         abort_interp("Stack underflow."); \
+	} \
 }
 
 #define CHECKOP(N) \
 { \
 	CHECKOP_READONLY(N); \
-    if (fr->trys.top && *top - fr->trys.st->depth < nargs) \
+    if (fr->trys.top && *top - fr->trys.st->depth < nargs)  { \
+		nargs = 0; \
         abort_interp("Stack protection fault."); \
+	} \
 }
 
 extern void do_abort_interp(dbref player, const char *msg, struct inst *pc,
