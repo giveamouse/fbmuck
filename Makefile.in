@@ -148,7 +148,7 @@ package: help
 
 rpms: package
 	head -1 `/bin/ls -1d src/CHANGESfb* | sort -nr | head -1` | cut -c6- > ${TMPREV}
-	rpm -ta --sign fbmuck-`cat ${TMPREV}`.tar.gz
+	rpm -ta --sign --target=i386 fbmuck-`cat ${TMPREV}`.tar.gz
 	rm -rf ${TMPREV}
 
 
