@@ -149,7 +149,7 @@ prim_userlog(PRIM_PROTOTYPE)
 	if (mlev < tp_userlog_mlev)
 		abort_interp("Permission Denied (mlev < tp_userlog_mlev)");
 	if(oper1->data.string) {
-		strcpy(buf,oper1->data.string->data);
+		snprintf(buf,BUFFER_LEN,"%s",oper1->data.string->data);
 	} else {
 		*buf='\0';
 	}
