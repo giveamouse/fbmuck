@@ -666,6 +666,15 @@ or #<number>, or as 'me' or 'here'. Boolean expressions are allowed, using
 '&' (and), '|' (or), '!' (not), and parentheses ('(' and ')') for grouping.
 To lock to a player, prefix their name with '*' (ex. '*Igor').  A key may
 be a player, an object, or 'property:value'.
+
+  Examples:
+~~code
+    @lock thingy=*Igor
+    @lock thingy=me|#1234
+    @lock here=me|Other Thingy
+    @lock west=sex:female
+    @lock east=((*Igor|*JohnDoe)&sex:male)
+~~endcode
 ~
 ~
 @UNLOCK
@@ -763,6 +772,26 @@ allowed to take possession of objects, rooms, and actions, provided the
 CHOWN_OK flag is set.  Mortals cannot take ownership of a room unless they
 are standing in it, and may not take ownership of an object unless they
 are holding it.  Wizards have absolute power over all ownership.
+~
+~
+@CHOWN_LOCK|@CHLOCK
+@CHLOCK <object>=<key>
+@CHOWN_LOCK <object>=<key>
+
+  @chown-locks <object> so that only players who pass the given <key> can
+@chown it.  Boolean expressions are allowed, using '&' (and), '|' (or),
+'!' (not), and parentheses ('(' and ')') for grouping.  To lock to a remote
+player, prefix their name with '*' (ex. '*Igor').  A key may be a player,
+an object, or 'property:value'.
+
+  Examples:
+~~code
+    @chlock here=*Igor
+    @chlock thingy=*Igor|*JohnDoe|me
+	@chlock here=!sex:neuter
+    @chlock here=me|((*Igor|*JohnDoe)&sex:male)&!_flight?:yes
+~~endcode
+~~alsosee @LOCK,@CHOWN,CHOWN_OK
 ~
 ~
 @TELEPORT
