@@ -1081,7 +1081,7 @@ recycle(int descr, dbref player, dbref thing)
 			 * reasoning with it.  DRAG the player out.
 			 */
 			if (DBFETCH(first)->location == thing) {
-				notify_fmt(player, "Escaping teleport loop!");
+				notify_fmt(player, "Escaping teleport loop!  Going home.");
 				moveto(first, HOME);
 			}
 		} else {
