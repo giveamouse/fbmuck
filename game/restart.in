@@ -96,7 +96,8 @@ ulimit -t unlimited   ;# Max amount of cpu time in seconds
 if [ -r $PIDFILE -a -s $PIDFILE ]; then
 	muckpid=`cat $PIDFILE`
 	if [ "x$muckpid" != "x" ]; then
-		muck=`${PS} | awk '{print $1}' | egrep "\\<${muckpid}\\>" | wc -l`
+		serverexec=`basename $SERVER`
+		muck=`${PS} | grep "${serverexec}" | awk '{print $1}' | egrep "\\<${muckpid}\\>" | wc -l`
 		if [ $muck -gt 0 ]; then
 			echo "This server is already running.  Restart aborted."
 			exit 0
