@@ -73,6 +73,9 @@ extern void write_program(struct line *first, dbref i);
 extern char *show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, int markpc);
 extern dbref db_write_deltas(FILE * f);
 
+/* From oldcompress.c */
+const char *old_uncompress(const char *s);
+
 
 /* From create.c */
 extern void do_open(int descr, dbref player, const char *direction, const char *linkto);
