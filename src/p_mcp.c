@@ -196,7 +196,7 @@ muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *con
 		} else {
 			sprintf(buf, "MCP.%.128s", pkgname);
 		}
-		muf_event_add(destfr, buf, &argval);
+		muf_event_add(destfr, buf, &argval, 0);
 		CLEAR(&argval);
 	}
 }
@@ -571,7 +571,7 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 	}
 
 	sprintf(buf, "GUI.%s", dlogid);
-	muf_event_add(fr, buf, &temp);
+	muf_event_add(fr, buf, &temp, 0);
 	CLEAR(&temp);
 }
 

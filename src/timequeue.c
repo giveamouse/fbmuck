@@ -541,7 +541,7 @@ next_timequeue_event()
 					temp.type = PROG_INTEGER;
 					temp.data.number = event->when;
 					event->fr->timercount--;
-					muf_event_add(event->fr, event->called_data, &temp);
+					muf_event_add(event->fr, event->called_data, &temp, 0);
 				} else if (event->subtyp == TQ_MUF_TREAD) {
 					handle_read_event(event->descr, event->uid, NULL);
 				} else {

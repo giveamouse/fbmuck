@@ -221,34 +221,6 @@ muf_event_count(struct frame* fr)
 }
 
 
-/* void muf_event_add(struct frame* fr, char* event, struct inst* val)
- * Adds a MUF event to the event queue for the given program instance.
- */
-void
-muf_event_add(struct frame *fr, char *event, struct inst *val)
-{
-	struct mufevent *newevent;
-	struct mufevent *ptr;
-
-	newevent = (struct mufevent *) malloc(sizeof(struct mufevent));
-
-	newevent->event = string_dup(event);
-	copyinst(val, &newevent->data);
-	newevent->next = NULL;
-
-	ptr = fr->events;
-	while (ptr && ptr->next) {
-		ptr = ptr->next;
-	}
-	if (!ptr) {
-		fr->events = newevent;
-	} else {
-		ptr->next = newevent;
-	}
-}
-
-
-
 /* static void muf_event_free(struct mufevent* ptr)
  * Frees up a MUF event once you are done with it.  This shouldn't be used
  * outside this module.
@@ -262,6 +234,91 @@ muf_event_free(struct mufevent *ptr)
 	ptr->next = NULL;
 	free(ptr);
 }
+
+
+/* void muf_event_add(struct frame* fr, char* event, struct inst* val, int exclusive)
+ * Adds a MUF event to the event queue for the given program instance.
+ * If the exclusive flag is true, and if an item of the same event type
+ * already exists in the queue, the new one will NOT be added.
+ */
+void
+muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive)
+{
+	struct mufevent *newevent;
+	struct mufevent *ptr;
+
+	ptr = fr->events;
+	while (ptr && ptr->next) {
+		if (exclusive && !strcmp(event, ptr->event)) {
+			return;
+		}
+		ptr = ptr->next;
+	}
+
+	if (exclusive && !strcmp(event, ptr->event)) {
+		return;
+	}
+
+	newevent = (struct mufevent *) malloc(sizeof(struct mufevent));
+	newevent->event = string_dup(event);
+	copyinst(val, &newevent->data);
+	newevent->next = NULL;
+
+	if (!ptr) {
+		fr->events = newevent;
+	} else {
+		ptr->next = newevent;
+	}
+}
+
+
+
+/* void muf_event_remove(struct frame* fr, char* event, int doall)
+ * Removes a given MUF event type from the event queue of the given
+ * program instance.  If which is MUFEVENT_ALL, all instances are removed.
+ * If which is MUFEVENT_FIRST, only the first instance is removed.
+ * If which is MUFEVENT_LAST, only the last instance is removed.
+ */
+void
+muf_event_remove(struct frame *fr, char *event, int which)
+{
+	struct mufevent *tmp = NULL;
+	struct mufevent *ptr = NULL;
+
+	while (fr->events && !strcmp(event, fr->events->event)) {
+		if (which == MUFEVENT_LAST) {
+			tmp = fr->events;
+			break;
+		} else {
+			tmp = fr->events;
+			fr->events = tmp->next;
+			muf_event_free(tmp);
+			if (which == MUFEVENT_FIRST) {
+				return;
+			}
+		}
+	}
+
+	ptr = fr->events;
+	while (ptr && ptr->next) {
+		if (!strcmp(event, ptr->next->event)) {
+			if (which == MUFEVENT_LAST) {
+				tmp = ptr;
+				ptr = ptr->next;
+			} else {
+				tmp = ptr->next;
+				ptr->next = tmp->next;
+				muf_event_free(tmp);
+				if (which == MUFEVENT_FIRST) {
+					return;
+				}
+			}
+		} else {
+			ptr = ptr->next;
+		}
+	}
+}
+
 
 
 /* static struct mufevent* muf_event_pop(struct frame* fr)
