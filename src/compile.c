@@ -1322,7 +1322,7 @@ process_special(COMPSTATE * cstat, const char *token)
 				abort_compile(cstat, "Variable limit exceeded.");
 			if (tok)
 				free((void *) tok);
-			cstat->curr_proc->in.data.mufproc->args++;
+			cstat->curr_proc->in.data.mufproc->vars++;
 		} else {
 			tok = next_token(cstat);
 			if (!tok)
@@ -1350,7 +1350,7 @@ process_special(COMPSTATE * cstat, const char *token)
 			new->no = cstat->nowords++;
 			new->in.type = PROG_SVAR;
 			new->in.line = cstat->lineno;
-			new->in.data.number = cstat->curr_proc->in.data.mufproc->args++;
+			new->in.data.number = cstat->curr_proc->in.data.mufproc->vars++;
 
 			curr = (new->next = new_inst(cstat));
 			curr->no = cstat->nowords++;
