@@ -1,4 +1,13 @@
 2.2fb6.00b4
+Changed password-change errors more informative, so "Sorry." isn't seen.
+Fixed bug #233181 -- now DETACH won't if -convert or -insanity is specified
+  on the commandline.
+Added new @tune -- lazy_mpi_istype_perm.  This changes the permissions for
+  {istype} to be the lazy, pre-5.56 method, allowing {istype} to reference
+  remote objects.
+Changed default setting for GOD_PRIV to be defined, not undef'd.
+Fixed crasher #201633 -- Server crashes when program FORCEs itself to be
+  @recycled.
 Fixed a memory leak with using 'var!' in MUF.
 Fixed interp_loop() based MUF prims to honor TRY-CATCH stack locks.
 Fixed a bug in GUI_VALUE_SET that checked for 2 args, but popped 3.
