@@ -963,59 +963,77 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			notify_nolisten(player, m, 1);
 		}
 		if (fr->brkpt.debugging) {
-			if (fr->brkpt.count) {
+			short breakflag = 0;
+			if (stop == 1 &&
+					!fr->brkpt.bypass &&
+					pc->type == PROG_PRIMITIVE &&
+					pc->data.number == IN_RET
+			) {
+				/* Program is about to EXIT */
+				notify_nolisten(player, "Program is about to EXIT.", 1);
+				breakflag = 1;
+			} else if (fr->brkpt.count) {
 				for (i = 0; i < fr->brkpt.count; i++) {
 					if ((!fr->brkpt.pc[i] || pc == fr->brkpt.pc[i]) &&
 						/* pc matches */
 						(fr->brkpt.line[i] == -1 ||
-						 (fr->brkpt.lastline != pc->line && fr->brkpt.line[i] == pc->line)) &&
+						 (fr->brkpt.lastline != pc->line &&
+						  fr->brkpt.line[i] == pc->line)) &&
 						/* line matches */
-						(fr->brkpt.level[i] == -1 || stop <= fr->brkpt.level[i]) &&
+						(fr->brkpt.level[i] == -1 ||
+						 stop <= fr->brkpt.level[i]) &&
 						/* level matches */
-						(fr->brkpt.prog[i] == NOTHING || fr->brkpt.prog[i] == program) &&
+						(fr->brkpt.prog[i] == NOTHING ||
+						 fr->brkpt.prog[i] == program) &&
 						/* program matches */
 						(fr->brkpt.linecount[i] == -2 ||
-						 (fr->brkpt.lastline != pc->line && fr->brkpt.linecount[i]-- <= 0)) &&
+						 (fr->brkpt.lastline != pc->line &&
+						  fr->brkpt.linecount[i]-- <= 0)) &&
 						/* line count matches */
 						(fr->brkpt.pccount[i] == -2 ||
-						 (fr->brkpt.lastpc != pc && fr->brkpt.pccount[i]-- <= 0))
+						 (fr->brkpt.lastpc != pc &&
+						  fr->brkpt.pccount[i]-- <= 0))
 						/* pc count matches */
-							) {
+					) {
 						if (fr->brkpt.bypass) {
 							if (fr->brkpt.pccount[i] == -1)
 								fr->brkpt.pccount[i] = 0;
 							if (fr->brkpt.linecount[i] == -1)
 								fr->brkpt.linecount[i] = 0;
 						} else {
-							char *m;
-							char buf[BUFFER_LEN];
-
-							add_muf_read_event(fr->descr, player, program, fr);
-							reload(fr, atop, stop);
-							fr->pc = pc;
-							fr->brkpt.isread = 0;
-							fr->brkpt.breaknum = i;
-							fr->brkpt.lastlisted = 0;
-							fr->brkpt.bypass = 0;
-							PLAYER_SET_CURR_PROG(player, program);
-							PLAYER_SET_BLOCK(player, 0);
-							interp_depth--;
-							if (!fr->brkpt.showstack) {
-								m = debug_inst(pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
-								notify_nolisten(player, m, 1);
-							}
-							if (pc <= PROGRAM_CODE(program) || (pc - 1)->line != pc->line) {
-								list_proglines(player, program, fr, pc->line, 0);
-							} else {
-								m = show_line_prims(program, pc, 15, 1);
-								sprintf(buf, "     %s", m);
-								notify_nolisten(player, buf, 1);
-							}
-							calc_profile_timing(program,fr);
-							return NULL;
+							breakflag = 1;
+							break;
 						}
 					}
 				}
+			}
+			if (breakflag) {
+				char *m;
+				char buf[BUFFER_LEN];
+
+				add_muf_read_event(fr->descr, player, program, fr);
+				reload(fr, atop, stop);
+				fr->pc = pc;
+				fr->brkpt.isread = 0;
+				fr->brkpt.breaknum = i;
+				fr->brkpt.lastlisted = 0;
+				fr->brkpt.bypass = 0;
+				PLAYER_SET_CURR_PROG(player, program);
+				PLAYER_SET_BLOCK(player, 0);
+				interp_depth--;
+				if (!fr->brkpt.showstack) {
+					m = debug_inst(pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
+					notify_nolisten(player, m, 1);
+				}
+				if (pc <= PROGRAM_CODE(program) || (pc - 1)->line != pc->line) {
+					list_proglines(player, program, fr, pc->line, 0);
+				} else {
+					m = show_line_prims(program, pc, 15, 1);
+					sprintf(buf, "     %s", m);
+					notify_nolisten(player, buf, 1);
+				}
+				calc_profile_timing(program,fr);
+				return NULL;
 			}
 			fr->brkpt.lastline = pc->line;
 			fr->brkpt.lastpc = pc;
@@ -1523,7 +1541,9 @@ interp_err(dbref player, dbref program, struct inst *pc,
 		   struct inst *arg, int atop, dbref origprog, const char *msg1, const char *msg2)
 {
 	char buf[BUFFER_LEN];
+	char tbuf[40];
 	int errcount;
+	time_t lt;
 
 	err++;
 
@@ -1538,18 +1558,23 @@ interp_err(dbref player, dbref program, struct inst *pc,
 	sprintf(buf, "%s(#%d), line %d; %s: %s", NAME(program), program, pc->line, msg1, msg2);
 	notify_nolisten(player, buf, 1);
 
+	lt = time(NULL);
+	format_time(tbuf, 32, "%c", localtime(&lt));
+
 	errcount = get_property_value(origprog, ".debug/errcount");
 	errcount++;
 	add_property(origprog, ".debug/errcount", NULL, errcount);
 	add_property(origprog, ".debug/lasterr", buf, 0);
-	add_property(origprog, ".debug/lastcrash", NULL, (int) time(NULL));
+	add_property(origprog, ".debug/lastcrash", NULL, (int)lt);
+	add_property(origprog, ".debug/lastcrashtime", tbuf, 0);
 
 	if (origprog != program) {
 		errcount = get_property_value(program, ".debug/errcount");
 		errcount++;
 		add_property(program, ".debug/errcount", NULL, errcount);
 		add_property(program, ".debug/lasterr", buf, 0);
-		add_property(program, ".debug/lastcrash", NULL, (int) time(NULL));
+		add_property(program, ".debug/lastcrash", NULL, (int)lt);
+		add_property(program, ".debug/lastcrashtime", tbuf, 0);
 	}
 }
 
