@@ -696,12 +696,12 @@ prim_set(PRIM_PROTOTYPE)
 		|| (tmp == MUCKER) || (tmp == SMUCKER) || (tmp == XFORCIBLE)
 			)
 		abort_interp("Permission denied.");
-	if (result && Typeof(ref) == TYPE_THING) {
+	if (result && Typeof(ref) == TYPE_THING && tmp == VEHICLE) {
 		dbref obj = DBFETCH(ref)->contents;
 
 		for (; obj != NOTHING; obj = DBFETCH(obj)->next) {
 			if (Typeof(obj) == TYPE_PLAYER) {
-				abort_interp("Permission denied.");
+				abort_interp("That vehicle still has players in it!");
 			}
 		}
 	}

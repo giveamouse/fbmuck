@@ -1,7 +1,8 @@
 2.2fb6.00a34
-Fixed crasher bug in {listprops} with too many properties.
+Fixed a permissions error in muf's SET primitive, with setting vehicle's bits.
 Fixed crasher bug with the MUF code ': main repeat ;'
 Fixed possible security hole in {testlock} with @props.
+Fixed crasher bug in {listprops} with too many properties.
 Added @bless and @unbless commands for granting wizbit mpi permissions to
   individual properties.  Syntax is @[un]bless object=propname.
 Added MPI {bless:propname[,object]} command to bless a property.  Requires
