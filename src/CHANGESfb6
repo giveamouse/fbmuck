@@ -46,6 +46,9 @@ Added PROGRAM_GETLINES ( d i1 i2 -- a ) muf primitive.  Returns a list array
   with a single string element.  The target program must be controlled by
   the current program's UID, be set VIEWABLE, or the current program must
   be running with wizard permissions.
+Added DIFF3 ( fx1 fy1 fz1 fx2 fy2 fz2 -- fx' fy' fz' ) muf primitive.
+  Returns three floats, being the differences of fx1 - fx2, fy1 - fy2, and
+  fz1 - fz2, respectively.
 Added MCP_MUF_MLEV @tune option to specify the mucker level required to
   use MCP and MCP-GUI muf calls.
 Added support for encrypted SSL connections.  See README.ssl
