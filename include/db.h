@@ -133,39 +133,24 @@ typedef int dbref;				/* offset into db */
 #define SETOECHO(x,y)	SETMESG(x, MESGPROP_OECHO, y)
 #define SETPECHO(x,y)	SETMESG(x, MESGPROP_PECHO, y)
 
-#define LOADMESG(x,y,z)    {add_prop_nofetch(x,y,z,0); DBDIRTY(x);}
-#define LOADDESC(x,y)	LOADMESG(x, MESGPROP_DESC, y)
-#define LOADIDESC(x,y)	LOADMESG(x, MESGPROP_IDESC, y)
-#define LOADSUCC(x,y)	LOADMESG(x, MESGPROP_SUCC, y)
-#define LOADFAIL(x,y)	LOADMESG(x, MESGPROP_FAIL, y)
-#define LOADDROP(x,y)	LOADMESG(x, MESGPROP_DROP, y)
-#define LOADOSUCC(x,y)	LOADMESG(x, MESGPROP_OSUCC, y)
-#define LOADOFAIL(x,y)	LOADMESG(x, MESGPROP_OFAIL, y)
-#define LOADODROP(x,y)	LOADMESG(x, MESGPROP_ODROP, y)
-
 #define GETLOCK(x)    (get_property_lock(x, MESGPROP_LOCK))
 #define SETLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_LOCK, &mydat);}
-#define LOADLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_LOCK, &mydat); DBDIRTY(x);}
 #define CLEARLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_LOCK, &mydat); DBDIRTY(x);}
 
 #define GETFLOCK(x)    (get_property_lock(x, MESGPROP_FLOCK))
 #define SETFLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_FLOCK, &mydat);}
-#define LOADFLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_FLOCK, &mydat); DBDIRTY(x);}
 #define CLEARFLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_FLOCK, &mydat); DBDIRTY(x);}
 
 #define GETCONLOCK(x)    (get_property_lock(x, MESGPROP_CONLOCK))
 #define SETCONLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_CONLOCK, &mydat);}
-#define LOADCONLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_CONLOCK, &mydat); DBDIRTY(x);}
 #define CLEARCONLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_CONLOCK, &mydat); DBDIRTY(x);}
 
 #define GETCHLOCK(x)    (get_property_lock(x, MESGPROP_CHLOCK))
 #define SETCHLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_CHLOCK, &mydat);}
-#define LOADCHLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_CHLOCK, &mydat); DBDIRTY(x);}
 #define CLEARCHLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_CHLOCK, &mydat); DBDIRTY(x);}
 
 #define GETVALUE(x)	get_property_value(x, MESGPROP_VALUE)
 #define SETVALUE(x,y)	add_property(x, MESGPROP_VALUE, NULL, y)
-#define LOADVALUE(x,y)	add_prop_nofetch(x, MESGPROP_VALUE, NULL, y)
 
 #define DB_PARMSINFO     0x0001
 #define DB_DRCATS        0x0002
