@@ -1250,11 +1250,15 @@ spawn_resolver()
 #ifdef BINDIR
 		{
 			char resolverpath[1025];
-			sprintf(resolverpath,"%s/resolver",BINDIR);
-			execl(resolverpath,"resolver",NULL);
+			sprintf(resolverpath, "%s/fb-resolver", BINDIR);
+			execl(resolverpath, "fb-resolver", NULL);
+			sprintf(resolverpath, "%s/resolver", BINDIR);
+			execl(resolverpath, "resolver", NULL);
 		}
 #endif
+		execl("/usr/local/bin/fb-resolver", "resolver", NULL);
 		execl("/usr/local/bin/resolver", "resolver", NULL);
+		execl("./fb-resolver", "resolver", NULL);
 		execl("./resolver", "resolver", NULL);
 #if 0
 		execl("@bindir@/resolver", "resolver", NULL);
