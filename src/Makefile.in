@@ -40,6 +40,8 @@ INCLUDE= ${ROOT}/include
 INSTALL_ROOT= /usr/local/fbmuck
 # Destination for binaries
 INSTALL_BINDIR= ${INSTALL_ROOT}/bin
+# Destination for binaries
+INSTALL_HELPDIR= ${INSTALL_ROOT}/help
 
 # ${DESTDIR} is used by the Debian packaging system to build the .debs
 # and is defined by the debian/rules file.
@@ -75,6 +77,7 @@ CFLAGS= ${OPTIM} ${DEFS} -I${INCLUDE}
 # for saving old copies.
 #
 MV= -mv -f
+CP= -cp -f
 RM= -rm -f
 CHMOD= chmod
 
@@ -133,8 +136,9 @@ EOBJ= oldcompress.o diskprop.o property.o propdirs.o props.o stringutil.o \
 	unparse.o utils.o predicates.o db.o boolexp.o log.o
 
 OBJ= ${COBJ} ${ROBJ} ${LOBJ} ${MOBJ}
-TARGETS= netmuck resolver olddecompress topwords announce
-OLDTARGETS = netmuck~ resolver~ olddecompress~ topwords~ announce~
+TARGETS= netmuck resolver olddecompress topwords announce fbhelp
+OLDTARGETS = netmuck~ resolver~ olddecompress~ topwords~ announce~ fbhelp~
+HELPFILES= ../game/data/man.txt ../game/data/help.txt ../game/data/mpihelp.txt
 
 .c.o:
 	${PRE} ${CC} ${CFLAGS} -c $*.c
@@ -170,6 +174,13 @@ olddecompress: olddecomp.o oldcompress.o ${LOBJ} Makefile
 announce: ${ANNOBJ} ${LOBJ} Makefile
 	${MV} announce announce~
 	${CC} ${ANNOBJ} -o announce ${LIBR} ${LOBJ}
+
+fbhelp.o: help.c
+	${CC} ${CFLAGS} -c help.c -o fbhelp.o -DSTANDALONE_HELP -DHELPFILE_DIR='"${INSTALL_HELPDIR}"'
+
+fbhelp: fbhelp.o Makefile
+	${MV} fbhelp fbhelp~
+	${CC} ${CFLAGS} fbhelp.o -o fbhelp
 
 #############################################################
 # Funky stuff for debugging and coding work.
@@ -234,8 +245,13 @@ install: all
 		mkdir ${INSTALL_BINDIR} ; \
 		${CHMOD} 755 ${INSTALL_BINDIR} ; \
 	fi
+	if [ ! -d "${INSTALL_HELPDIR}" ] ; then \
+		mkdir ${INSTALL_HELPDIR} ; \
+		${CHMOD} 755 ${INSTALL_HELPDIR} ; \
+	fi
 	${CHMOD} 755 ${TARGETS}
 	${MV} ${TARGETS} ${INSTALL_BINDIR}
+	${CP} ${HELPFILES} ${INSTALL_HELPDIR}
 
 # Err, what the heck is this following line?
 #	 ${INSTALL} ${TARGETS} ${DESTDIR}/${bindir}

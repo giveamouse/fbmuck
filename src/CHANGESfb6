@@ -42,6 +42,10 @@ Added NAME-OK? ( s -- i ) muf primitive.  Returns true if the given string
   could be a valid object name.
 Added FORCE_LEVEL ( -- i ) muf primitive.  Returns the current force_level.
   This will tell you if the current program was run as a result of an @force.
+Added 'fbhelp' compile target, to allow unix users to get FB help, man, and
+  mpi documentation from the command line, without having to log in.  This
+  only works if you did a 'make install', which copies the helpfiles to a
+  useful place in the filesystem.  (/usr/local/fbmuck/help/*)
 
 
 

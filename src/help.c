@@ -1,60 +1,6 @@
-
 /* $Header$ */
 
-/*
- * $Log: help.c,v $
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:44  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 02:22:36  foxen
- * Initial revision
- *
- * Revision 5.19  1994/04/03  19:58:01  foxen
- * Fixed the man, mpi, and help commands for ULTRIX
- *
- * Revision 5.18  1994/03/21  11:00:42  foxen
- * Autoconfiguration mods.
- *
- * Revision 5.17  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.16  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.15  1994/01/18  19:55:14  foxen
- * man, mpi, help, and news now look for seperate topic files before looking
- * in the single delimited helpfile.
- *
- * Revision 5.14  1994/01/14  01:42:08  foxen
- * added newline to error message when help file is not found.
- *
- * Revision 5.13  1994/01/08  05:38:19  foxen
- * removes setvbuf() calls.
- *
- * Revision 5.12  1994/01/06  03:12:12  foxen
- * version 5.12
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.1  90/07/19  23:03:38  casie
- * Initial revision
- *
- *
- */
 
-#include "copyright.h"
 #include "config.h"
 
 /* commands for giving help */
@@ -92,6 +38,30 @@
 
 #if defined(HAVE_DIRENT_H) || defined(_POSIX_VERSION) || defined(HAVE_SYS_NDIR_H) || defined(HAVE_SYS_DIR_H) || defined(HAVE_NDIR_H)
 # define DIR_AVALIBLE
+#endif
+
+#if defined(STANDALONE_HELP)
+# define notify(xx,yy) printf("%s\n", yy)
+# define dbref int
+
+int
+string_prefix(register const char *string, register const char *prefix)
+{
+	while (*string && *prefix && tolower(*string) == tolower(*prefix))
+				string++, prefix++;
+		return *prefix == '\0';
+}
+
+
+int
+string_compare(register const char *s1, register const char *s2)
+{
+	while (*s1 && tolower(*s1) == tolower(*s2))
+		s1++, s2++;
+
+	return (tolower(*s1) - tolower(*s2));
+}
+
 #endif
 
 void
@@ -276,6 +246,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 }
 
 
+#if !defined(STANDALONE_HELP)
 void
 do_man(dbref player, char *topic, char *seg)
 {
@@ -411,3 +382,52 @@ do_info(dbref player, const char *topic, const char *seg)
 #endif							/* !DIR_AVALIBLE */
 	}
 }
+#else /* STANDALONE_HELP */
+
+int
+main(int argc, char**argv)
+{
+	char* helpfile = NULL;
+	char* topic = NULL;
+	char buf[BUFFER_LEN];
+	if (argc < 2) {
+			fprintf(stderr, "Usage: %s muf|mpi|help [topic]\n", argv[0]);
+		exit(-1);
+	} else if (argc == 2 || argc == 3) {
+		if (argc == 2) {
+			topic = "";
+		} else {
+			topic = argv[2];
+		}
+		if (!strcmp(argv[1], "man")) {
+			helpfile = MAN_FILE;
+		} else if (!strcmp(argv[1], "muf")) {
+			helpfile = MAN_FILE;
+		} else if (!strcmp(argv[1], "mpi")) {
+			helpfile = MPI_FILE;
+		} else if (!strcmp(argv[1], "help")) {
+			helpfile = HELP_FILE;
+		} else {
+			fprintf(stderr, "Usage: %s muf|mpi|help [topic]\n", argv[0]);
+			exit(-2);
+		}
+
+		helpfile = rindex(helpfile, '/');
+		helpfile++;
+#ifdef HELPFILE_DIR
+		sprintf(buf, "%s/%s", HELPFILE_DIR, helpfile);
+#else
+		sprintf(buf, "%s/%s", "/usr/local/fbmuck/help", helpfile);
+#endif
+
+		index_file(1, topic, buf);
+		exit(0);
+	} else if (argc > 3) {
+		fprintf(stderr, "Usage: %s muf|mpi|help [topic]\n", argv[0]);
+		exit(-1);
+	}
+	return 0;
+}
+
+#endif /* STANDALONE_HELP */
+
