@@ -1,12 +1,19 @@
 Installation is fairly simple:
 
-edit include/config.h to fit your preferences and your system.
-edit include/params.h also.
-edit game/restart to refer to the apropriate paths and database files.
+	Edit include/config.h to fit your preferences and your system.
+	Edit include/params.h also.
 
-./configure          # This configures the source for your system.
-make                 # This compiles the binaries.
-make install         # This puts the binaries in /usr/local/fbmuck/bin
-cd ../game
-./restart            # This starts the server.
+		./configure     # This configures the source for your system.
+		make            # This compiles the binaries.
+
+	If you have root access on your system, do the following as root:
+		make install    # This puts the binaries in /usr/local/fbmuck/bin
+
+	If you do NOT have root access on your system, do this instead:
+		cp src/netmuck src/resolver game
+
+	Edit game/restart to refer to the apropriate paths and database files.
+	To start the muck, do the following:
+		cd game
+		./restart
 
