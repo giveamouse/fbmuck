@@ -2,6 +2,9 @@
 
 /*
  * $Log: disassem.c,v $
+ * Revision 1.7  2000/07/18 23:44:13  winged
+ * Removed ptrdiff_t cast from disassemble()'s sprintf()s
+ *
  * Revision 1.6  2000/07/18 18:15:02  winged
  * Various fixes to support warning-free compiling under -Wall -Wstrict-prototypes -Wno-format -- not all warnings fixed or found yet
  *
@@ -126,17 +129,17 @@ disassemble(dbref player, dbref program)
 			sprintf(buf, " %d: (line %d) FLOAT: %g", i, curr->line, curr->data.fnumber);
 			break;
 		case PROG_ADD:
-			sprintf(buf, "%d: (line %d) ADDRESS: %td", i,
-					curr->line, (ptrdiff_t) (curr->data.addr->data - codestart));
+			sprintf(buf, "%d: (line %d) ADDRESS: %d", i,
+					curr->line, (curr->data.addr->data - codestart));
 			break;
 		case PROG_IF:
-			sprintf(buf, "%d: (line %d) IF: %td", i, curr->line, (ptrdiff_t) (curr->data.call - codestart));
+			sprintf(buf, "%d: (line %d) IF: %d", i, curr->line, (curr->data.call - codestart));
 			break;
 		case PROG_JMP:
-			sprintf(buf, "%d: (line %d) JMP: %td", i, curr->line, (ptrdiff_t) (curr->data.call - codestart));
+			sprintf(buf, "%d: (line %d) JMP: %d", i, curr->line, (curr->data.call - codestart));
 			break;
 		case PROG_EXEC:
-			sprintf(buf, "%d: (line %d) EXEC: %td", i, curr->line, (ptrdiff_t) (curr->data.call - codestart));
+			sprintf(buf, "%d: (line %d) EXEC: %d", i, curr->line, (curr->data.call - codestart));
 			break;
 		case PROG_OBJECT:
 			sprintf(buf, "%d: (line %d) OBJECT REF: %d", i, curr->line, curr->data.number);
