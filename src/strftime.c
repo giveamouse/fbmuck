@@ -264,13 +264,13 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 					int2str(tmp, tmval->tm_year + 1900, 4, '0');
 					break;
 				case 'Z':
-#ifdef HAVE_TM_ZONE
+#ifdef HAVE_STRUCT_TM_TM_ZONE
 					strcpy(tmp, tmval->tm_zone);
-#else							/* !HAVE_TM_ZONE */
+#else							/* !HAVE_STRUCT_TM_TM_ZONE */
 # ifdef HAVE_TZNAME
 					strcpy(tmp, tzname[tmval->tm_isdst]);
 # endif
-#endif							/* !HAVE_TM_ZONE */
+#endif							/* !HAVE_STRUCT_TM_TM_ZONE */
 					break;
 				case '%':
 					tmp[0] = '%';

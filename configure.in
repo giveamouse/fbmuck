@@ -2,11 +2,14 @@ dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl TinyMUCK fb5.x auto-config script writen by: Peter "WhiteFire" Torkelson
-dnl Revised for fb6.x by revar@belfry.com
+dnl Rewritten for fb6.x by revar@belfry.com
 dnl
 AC_REVISION($Revision$)dnl
-AC_INIT(src/game.c)
-AC_CONFIG_HEADER(include/autoconf.h)
+AC_PREREQ(2.57)
+AC_INIT(fbmuck, 6.02, [revar@belfry.com])
+AC_CONFIG_AUX_DIR(auto)
+AC_CONFIG_HEADER([include/autoconf.h])
+
 echo " "
 echo "TinyMUCK fb6.x auto-configure script."
 echo " "
@@ -20,6 +23,7 @@ dnl Find the compiler first.
 dnl
 AC_PROG_CC
 AC_PROG_CPP
+AC_PROG_INSTALL
 dnl AC_PROG_CXX for finding the C++ compiler.
 
 dnl
@@ -28,81 +32,75 @@ dnl
 AC_ISC_POSIX
 AC_MINIX
 
+dnl
+dnl Libraries and functions.
+dnl
+AC_CHECK_LIB(m, cos)
+AC_CHECK_LIB(socket, shutdown)
+AC_CHECK_LIB(nsl, gethostbyname)
+AC_CHECK_LIB(pcre, pcre_free)
+AC_FUNC_VPRINTF
+
+
+checkssldir() { :
+    if test -f "$1/include/openssl/ssl.h"; then
+        AC_DEFINE(HAVE_OPENSSL, [], [ssl headers are under openssl dir.])
+        ssldir="$1"
+        return 0
+    fi
+    if test -f "$1/include/ssl.h"; then
+        ssldir="$1"
+        return 0
+    fi
+    return 1
+}
+
+dnl Check for SSL directory
+AC_MSG_CHECKING([for SSL directory])
 AC_ARG_WITH(ssl,
-[  --with-ssl[=ssltop_path]   use ssl encryption and authorization],
-[
-if test "$withval" = yes; then
-	SSLTOP=
-else
-	SSLTOP=$withval
+    [  --with-ssl=DIR          location of installed SSL libraries/include files],
+    [
+        dnl Check the specified localtion only
+        checkssldir "$withval"
+    ],
+    [
+        dnl Search default localtions of SSL library
+        for maindir in /usr/local /usr/lib /usr/pkg /usr /var/ssl /opt; do
+            for dir in $maindir $maindir/openssl $maindir/ssl; do
+                checkssldir $dir && break 2
+            done
+        done
+    ]
+)
+if test -z "$ssldir"; then
+    AC_MSG_RESULT([Not found])
+    echo
+    echo "Couldn't find your SSL library installation dir."
+    echo "Use --with-ssl option to fix this problem, if you want ssl support"
+    echo
 fi
+AC_MSG_RESULT([$ssldir])
+AC_SUBST(ssldir)
+AC_DEFINE_UNQUOTED(ssldir, "$ssldir", [The base path to the installation for openssl.  Usually /usr.])
 
-found_sslh="0"
-if test "$SSLTOP" = ""; then
-	AC_CHECK_HEADERS(ssl.h ssl/ssl.h openssl/ssl.h,found_sslh="1")
-else
-	oldinc=$INC
-	INC="-I$SSLTOP $oldinc"
-	AC_CHECK_HEADERS($SSLTOP/ssl.h,
-		AC_DEFINE(HAVE_SSL_H)
-		found_sslh="1"
-	)
-	if test "$found_sslh" = "0"; then
-		INC="-I$SSLTOP/include $oldinc"
-		AC_CHECK_HEADERS($SSLTOP/include/ssl.h,
-			AC_DEFINE(HAVE_SSL_H)
-			found_sslh="1"
-		)
-	fi
-	if test "$found_sslh" = "0"; then
-		INC="-I$SSLTOP/include $oldinc"
-		AC_CHECK_HEADERS($SSLTOP/include/ssl/ssl.h,
-			AC_DEFINE(HAVE_SSL_SSL_H)
-			found_sslh="1"
-		)
-	fi
-	if test "$found_sslh" = "0"; then
-		INC="-I$SSLTOP/include $oldinc"
-		AC_CHECK_HEADERS($SSLTOP/include/openssl/ssl.h,
-			AC_DEFINE(HAVE_OPENSSL_SSL_H)
-			found_sslh="1"
-		)
-	fi
+if test "$ssldir"; then
+	INC="$INC -I$ssldir/include"
+	LIBS="$LIBS -L$ssldir/lib -lssl"
+	AC_CHECK_LIB(ssl, SSL_read)
 fi
-if test "$found_sslh" = "0"; then
-	AC_MSG_ERROR([cannot locate ssl.h header file.])
-fi
-
-found_ssl_lib="0"
-if test "$SSLTOP" = ""; then
-	AC_TRY_LINK_FUNC(SSL_accept, found_ssl_lib="1")
-	AC_CHECK_LIB(ssl, SSL_accept,
-		LIBS="-lssl -lcrypto $LIBS"
-		found_ssl_lib="1"
-	)
-else
-	LIBS="-L$SSLTOP/lib -lssl -lcrypto $LIBS"
-	AC_CHECK_LIB(ssl, SSL_accept, found_ssl_lib="1")
-fi
-if test "$found_ssl_lib" = "0"; then
-	AC_MSG_ERROR([cannot locate libssl library.])
-fi
-
-AC_DEFINE(USE_SSL)
-AC_SUBST(DEFS)
 AC_SUBST(INC)
-AC_SUBST(SSLTOP)
-])
+
+
 
 AC_ARG_WITH(lint,
 [  --with-lint[=lint_path]    use lint at lint_path, defaults to splint],
-[AC_DEFINE(LINT)
+[AC_DEFINE(LINT, [], [Configures which LINT to use to evaluate the sources.])
 if test "$withval" = yes; then
   LINT=splint
 else
   LINT=$withval
 fi
-AC_DEFINE(WITH_LINT)
+AC_DEFINE(WITH_LINT, [], [Makefile is configured to run lint on sources.])
 AC_SUBST(LINT)
 ])
 
@@ -113,8 +111,8 @@ if test "$enableval" = yes; then
 	AC_DEFINE(MALLOC_PROFILING)
 else
 	if test "$enableval" = debug; then
-		AC_DEFINE(MALLOC_PROFILING)
-		AC_DEFINE(CRT_DEBUG_ALSO)
+		AC_DEFINE(MALLOC_PROFILING, [], [Enables memory usage profiling.])
+		AC_DEFINE(CRT_DEBUG_ALSO, [], [With MALLOC_PROFILING, can detect double-frees, buffer overruns, etc.])
 	fi
 fi
 ])
@@ -124,7 +122,7 @@ AC_ARG_ENABLE(ipv6,
 [  --enable-ipv6              use IPv6 instead of IPv4 for network connections],
 [
 if test "$enableval" = yes; then
-	AC_DEFINE(USE_IPV6)
+	AC_DEFINE(USE_IPV6, [], [Use IPv6 instead of IPv4 sockets.])
 
 	found_ipv6_h="0"
 	AC_CHECK_HEADERS(in6.h,
@@ -160,7 +158,7 @@ dnl Header files
 dnl
 AC_CHECK_HEADERS(malloc.h memory.h string.h unistd.h sys/resource.h sys/signal.h)
 AC_CHECK_HEADERS(sys/time.h timebits.h)
-AC_CHECK_HEADERS(varargs.h stdarg.h stdint.h)
+AC_CHECK_HEADERS(varargs.h stdarg.h stdint.h inttypes.h)
 AC_HEADER_STDC
 AC_HEADER_DIRENT
 AC_HEADER_TIME
@@ -169,17 +167,17 @@ AC_CHECK_HEADERS(errno.h sys/errno.h)
 echo -n "checking for tm_gmtoff..."
 found_gmt_offset=0
 AC_EGREP_HEADER(\<tm_gmtoff[[ 	]]*;, time.h,
-	AC_DEFINE(HAVE_TM_GMTOFF)
+	AC_DEFINE(HAVE_TM_GMTOFF, [], [tm_gmtoff field exists in struct tm.])
 	found_gmt_offset=1
 	echo -n " time.h"
 )
 AC_EGREP_HEADER(\<tm_gmtoff[[ 	]]*;, sys/time.h,
-	AC_DEFINE(HAVE_SYS_TM_GMTOFF)
+	AC_DEFINE(HAVE_SYS_TM_GMTOFF, [], [tm_gmtoff is in sys/time.h])
 	found_gmt_offset=1
 	echo -n " sys/time.h"
 )
 AC_EGREP_HEADER(\<_timezone\>, time.h,
-	AC_DEFINE(HAVE__TIMEZONE)
+	AC_DEFINE(HAVE__TIMEZONE, [], [_timezone exists in time.h])
 	found_gmt_offset=1
 	echo -n " _timezone"
 )
@@ -190,19 +188,15 @@ else
 fi
 
 
-dnl
-dnl Libraries and functions.
-dnl
-AC_CHECK_LIB(m, cos)
-AC_CHECK_LIB(socket, shutdown)
-AC_CHECK_LIB(nsl, gethostbyname)
-AC_FUNC_VPRINTF
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(int)
+
 AC_CHECK_FUNCS(mallinfo getrlimit getrusage random snprintf vsnprintf)
-AC_EGREP_HEADER([[^_a-zA-Z]]hblks;, malloc.h, AC_DEFINE(HAVE_MALLINFO_HBLKS))
-AC_EGREP_HEADER([[^_a-zA-Z]]keepcost;, malloc.h, AC_DEFINE(HAVE_MALLINFO_KEEPCOST))
-AC_EGREP_HEADER([[^_a-zA-Z]]treeoverhead;, malloc.h, AC_DEFINE(HAVE_MALLINFO_TREEOVERHEAD))
-AC_EGREP_HEADER([[^_a-zA-Z]]grain;, malloc.h, AC_DEFINE(HAVE_MALLINFO_GRAIN))
-AC_EGREP_HEADER([[^_a-zA-Z]]allocated;, malloc.h, AC_DEFINE(HAVE_MALLINFO_ALLOCATED))
+AC_EGREP_HEADER([[^_a-zA-Z]]hblks;, malloc.h, AC_DEFINE(HAVE_MALLINFO_HBLKS, [], [struct mallinfo has hblks member.]))
+AC_EGREP_HEADER([[^_a-zA-Z]]keepcost;, malloc.h, AC_DEFINE(HAVE_MALLINFO_KEEPCOST, [], [struct mallinfo has keepcost member.]))
+AC_EGREP_HEADER([[^_a-zA-Z]]treeoverhead;, malloc.h, AC_DEFINE(HAVE_MALLINFO_TREEOVERHEAD, [], [struct mallinfo has treeoverhead member.]))
+AC_EGREP_HEADER([[^_a-zA-Z]]grain;, malloc.h, AC_DEFINE(HAVE_MALLINFO_GRAIN, [], [struct mallinfo has grain member.]))
+AC_EGREP_HEADER([[^_a-zA-Z]]allocated;, malloc.h, AC_DEFINE(HAVE_MALLINFO_ALLOCATED, [], [struct mallinfo has allocated member.]))
 
 dnl
 dnl Types and structures
@@ -211,6 +205,7 @@ AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_SIGNAL
 AC_STRUCT_TIMEZONE
+AC_STRUCT_TM
 
 dnl
 dnl Check if socklen_t is defined in sys/socker.h.
@@ -226,7 +221,7 @@ AC_DEFUN([TYPE_SOCKLEN_T],
     ac_cv_type_socklen_t=no)
   ])
   if test $ac_cv_type_socklen_t != yes; then
-    AC_DEFINE(socklen_t, int)
+    AC_DEFINE(socklen_t, int, [The type that holds socket length values on this system.])
   fi
 ])
 TYPE_SOCKLEN_T
@@ -242,7 +237,16 @@ dnl
 dnl Uname -a, just because.
 dnl
 echo "checking value of uname -a"
-AC_DEFINE_UNQUOTED(UNAME_VALUE, "`uname -a`")
+AC_DEFINE_UNQUOTED(UNAME_VALUE, "`uname -a`", [The value of the uname -a command.])
+
+dnl
+dnl Configure subpackages.
+dnl
+oldcwd=`pwd`
+cd src
+test -d pcre || ( gzip -d -c pcre-4.3.tar.gz | tar -xf - ; mv pcre-4.3 pcre )
+cd $oldcwd
+AC_CONFIG_SUBDIRS(src/pcre)
 
 dnl
 dnl And in the end, there was no more.

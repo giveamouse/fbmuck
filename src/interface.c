@@ -53,12 +53,14 @@
 # endif
 #endif
 
+#ifdef HAVE_LIBSSL
+# define USE_SSL
+#endif
+
 #ifdef USE_SSL
-# if defined (HAVE_OPENSSL_SSL_H)
+# ifdef HAVE_OPENSSL
 #  include <openssl/ssl.h>
-# elif defined (HAVE_SSL_SSL_H)
-#  include <ssl/ssl.h>
-# elif defined (HAVE_SSL_H)
+# else
 #  include <ssl.h>
 # endif
 #endif

@@ -63,6 +63,11 @@ INSTALL_DBSDIR=@datadir@/fbmuck/starter_dbs
 # #######################################################################
 # 		Variables set by the configure script.
 # #######################################################################
+INSTALL=@INSTALL@
+INSTALL_PROGRAM=@INSTALL_PROGRAM@
+INSTALL_SCRIPT=@INSTALL_SCRIPT@
+INSTALL_DATA=@INSTALL_DATA@
+
 CC=@CC@
 CPP=@CPP@
 DEFS=@DEFS@ -DBINDIR=\"${INSTALL_BINDIR}\" -DINSTALL_HELPDIR=\"${INSTALL_HELPDIR}\"
@@ -160,7 +165,7 @@ all: ${TARGETS}
 fbmuck: libpcre.a ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversion.sh Makefile
 	sh mkversion.sh
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c version.c
-	if [ -e fbmuck ]; then ${MV} fbmuck fbmuck~ ; fi
+	if [ -f fbmuck ]; then ${MV} fbmuck fbmuck~ ; fi
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${COBJ} ${MALLOBJ} interface.o version.o \
 	  ${LIBR} ${LOBJ} libpcre.a
 
@@ -183,20 +188,10 @@ fbhelp.o: help.c
 fbhelp: fbhelp.o ${MALLOBJ} Makefile
 	${CC} ${CFLAGS} ${INCL} ${DEFS} fbhelp.o -o fbhelp ${MALLOBJ}
 
-pcre:
-	gzip -d -c pcre-4.3.tar.gz | tar -xf -
-	mv pcre-4.3 pcre
-
-pcre-config: pcre
-	cd pcre && ./configure --cache-file=../../config.cache \
-		--enable-static --enable-newline-is-cr
-
-pcre/Makefile: pcre-config
-
-libpcre.a: pcre pcre/Makefile
-	cd pcre && make
+libpcre.a:
+	cd pcre && ${MAKE}
 	-${RM} -f libpcre.a
-	ln pcre/.libs/libpcre.a
+	cp -p pcre/.libs/libpcre.a . || ln -s pcre/.libs/libpcre.a
 
 #############################################################
 # Funky stuff for debugging and coding work.
@@ -244,10 +239,13 @@ Makefile: Makefile.in
 
 clean:
 	-${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${MALLOBJ} ${ANNOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o libpcre.a
-	-${RM} -rf pcre
+	cd pcre && ${MAKE} clean
 
 cleaner: clean
 	-${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp
+	-${RM} -rf pcre
+
+distclean: cleaner
 
 clobber: cleaner
 	-${RM} tags *~ *.bak *.orig
@@ -259,31 +257,23 @@ nuke:
 	-${CLEAN} *
 
 install: all
-	../mkdir_recursive ${INSTALL_BINDIR}
-	for f in ${TARGETS}; do \
-		${CP} $$f ${INSTALL_BINDIR} ; \
-		${CHMOD} 755 ${INSTALL_BINDIR}/$$f ; \
-	done
-	../mkdir_recursive ${INSTALL_HELPDIR}
-	for f in ${HELPFILES}; do \
-		${CP} ../game/data/$$f ${INSTALL_HELPDIR} ; \
-		${CHMOD} 644 ${INSTALL_HELPDIR}/$$f ; \
-	done
-	${CP} ../game/restart ${INSTALL_HELPDIR}/restart-script
-	${CHMOD} 755 ${INSTALL_HELPDIR}/restart-script
+	${INSTALL} -d ${INSTALL_BINDIR}
+	${INSTALL_PROGRAM} ${TARGETS} ${INSTALL_BINDIR}
+	${INSTALL} -d ${INSTALL_HELPDIR}
+	cd ../game/data && ${INSTALL_DATA} ${HELPFILES} ${INSTALL_HELPDIR}
+	${INSTALL_SCRIPT} ../game/restart ${INSTALL_HELPDIR}/restart-script
 	@echo " "
-	@echo "You may run 'make install-inits' to install SysV style init scripts."
+	@echo "You may run 'make install-sysv-inits' to install SysV style init scripts."
 	@echo " "
 
 # FIXME: Implement fb-addmuck
 # FIXME: Check base and minimal dbs into CVS as unpacked file trees under dbs/
 # FIXME: Create man pages for fbmuck, fbhelp, fb-addmuck, fb-announce, topwords
 
-install-inits: all
+install-sysv-inits: all
 	-[ -f /etc/fbmucks ] || echo "#MUCKNAME   USERNAME    MUCK_ROOT_PATH           SCRIPTNAME  PORTS" > /etc/fbmucks
-	-[ -f /etc/redhat-release ] && ${CP} ../scripts/fbmuck-redhat-init /etc/rc.d/init.d/fbmuck
-	-[ ! -f /etc/redhat-release ] && ${CP} ../scripts/fbmuck-sysvinit /etc/rc.d/init.d/fbmuck
-	${CHMOD} 755 /etc/rc.d/init.d/fbmuck
+	-[ -f /etc/redhat-release ] && ${INSTALL_SCRIPT} ../scripts/fbmuck-redhat-init /etc/rc.d/init.d/fbmuck
+	-[ ! -f /etc/redhat-release ] && ${INSTALL_SCRIPT} ../scripts/fbmuck-sysvinit /etc/rc.d/init.d/fbmuck
 	-chkconfig --add fbmuck || ( \
 		for d in 0 1 2 3 4 5 6; do rm -f /etc/rc.d/rc$$d.d/S??fbmuck; done ; \
 		for d in 0 1 2 3 4 5 6; do rm -f /etc/rc.d/rc$$d.d/K??fbmuck; done ; \
@@ -291,11 +281,10 @@ install-inits: all
 		for d in     2 3 4 5  ; do ln -s ../init.d/fbmuck /etc/rc.d/rc$$d.d/S82fbmuck; done ; \
 	)
 
-#	${CHMOD} 755 ../scripts/fb-addmuck
-#	../mkdir_recursive ${INSTALL_SBINDIR}
-#	${CP} ../scripts/fb-addmuck ${INSTALL_SBINDIR}
+#	${INSTALL} -d ${INSTALL_SBINDIR}
+#	${INSTALL_SCRIPT} ../scripts/fb-addmuck ${INSTALL_SBINDIR}
 #
-#	../mkdir_recursive ${INSTALL_DBSDIR}
+#	${INSTALL} -d ${INSTALL_DBSDIR}
 #	for d in minimal base; do \
 #		cd dbs/${d} && tar cf ${INSTALL_DBSDIR}/${d}db.tar *; \
 #		gzip ${INSTALL_DBSDIR}/${d}db.tar; \

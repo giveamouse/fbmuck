@@ -16,14 +16,13 @@ install:	Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} install; \
 	done
-	@echo " "
 	@echo "You can use 'make cert' to generate a self-signed server certificate"
 	@echo "for use in allowing secure encrypted SSL connections to your Muck."
 	@echo " "
 
-install-inits:	Makefile
+install-sysv-inits:	Makefile
 	for d in ${subdirs}; do \
-		cd $${d} && ${MAKE} install-inits; \
+		cd $${d} && ${MAKE} install-sysv-inits; \
 	done
 
 cert game/server.pem:
