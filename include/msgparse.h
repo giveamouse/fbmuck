@@ -45,7 +45,7 @@ dbref mesg_dbref(int descr, dbref player, dbref what, dbref perms, char *buf, in
 dbref mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp);
 dbref mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp);
 
-char *ref2str(dbref obj, char *buf);
+char *ref2str(dbref obj, char *buf, size_t buflen);
 int truestr(char *buf);
 
 int new_mvar(const char *varname, char *buf);
