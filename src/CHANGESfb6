@@ -1,6 +1,7 @@
 2.2fb6.00rc4
-Added MUF bytecode optimizer.  Currently only optimizes SVAR @ and SVAR !.
+Added MUF bytecode optimizer.
 Added optimize_muf boolean @tune parameter.
+Fixed bug in MCP where _datatag wasn't being preceeded by a separator space.
 
 
 
