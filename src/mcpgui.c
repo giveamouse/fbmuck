@@ -362,6 +362,7 @@ int
 gui_dlog_closeall_descr(int descr)
 {
 	DlogData *ptr;
+	McpMesg msg;
 
 	ptr = dialog_list;
 	while (ptr) {
@@ -375,7 +376,13 @@ gui_dlog_closeall_descr(int descr)
 			return 0;
 		}
 		if (ptr->callback) {
-			ptr->callback(ptr->descr, ptr->id, "_closed", "buttonpress", NULL, 1, ptr->context);
+			mcp_mesg_init(&msg, GUI_PACKAGE, "ctrl-event");
+			mcp_mesg_arg_append(&msg, "dlogid", ptr->id);
+			mcp_mesg_arg_append(&msg, "id", "_closed");
+			mcp_mesg_arg_append(&msg, "dismissed", "1");
+			mcp_mesg_arg_append(&msg, "event", "buttonpress");
+			ptr->callback(ptr->descr, ptr->id, "_closed", "buttonpress", &msg, 1, ptr->context);
+			mcp_mesg_clear(&msg);
 		}
 		ptr = ptr->next;
 	}
