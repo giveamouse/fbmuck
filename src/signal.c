@@ -403,5 +403,4 @@ void check_console() {
 }
 
 
-#endif // WIN32
-
+#endif /* WIN32 */

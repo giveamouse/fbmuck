@@ -503,7 +503,9 @@ db_write_object(FILE * f, dbref i)
 {
 	struct object *o = DBFETCH(i);
 	int j;
+#ifdef DISKBASE
 	long tmppos;
+#endif							/* DISKBASE */
 
 	putstring(f, NAME(i));
 	putref(f, o->location);

@@ -91,12 +91,13 @@ const char* muf_re_error(int err)
 	}
 }
 
+#define MATCH_ARR_SIZE 30
+
 void
 prim_regexp(PRIM_PROTOTYPE)
 {
 	stk_array*	nu_val	= 0;
 	stk_array*	nu_idx	= 0;
-	const int   MATCH_ARR_SIZE = 30;
 	int			matches[MATCH_ARR_SIZE];
 	muf_re*		re;
 	char*		text;
@@ -237,7 +238,6 @@ prim_regexp(PRIM_PROTOTYPE)
 void
 prim_regsub(PRIM_PROTOTYPE)
 {
-	const int   MATCH_ARR_SIZE = 30;
 	int			matches[MATCH_ARR_SIZE];
 	int			flags		= 0;
 	char*		write_ptr	= buf;

@@ -1063,9 +1063,9 @@ db_dump_props_rec(dbref obj, FILE * f, const char *dir, PropPtr p)
 	char buf[BUFFER_LEN];
 #ifdef DISKBASE
 	long tpos=0L;
-#endif
 	int flg;
 	short wastouched = 0;
+#endif
 	int count = 0;
 	int pdcount;
 

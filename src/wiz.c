@@ -422,8 +422,10 @@ do_stats(dbref player, const char *name)
 	int total;
 	int altered = 0;
 	int oldobjs = 0;
+#ifdef DISKBASE
 	int loaded = 0;
 	int changed = 0;
+#endif
 	time_t currtime = time(NULL);
 	dbref i;
 	dbref owner=NOTHING;
