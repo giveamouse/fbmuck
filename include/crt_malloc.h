@@ -4,7 +4,11 @@
 #define _CRT_MALLOC_H
 
 #include <sys/types.h>
-#include <malloc.h>
+#ifdef HAVE_MALLOC_H
+# include <malloc.h>
+#else
+# include <stdlib.h>
+#endif
 
 extern void CrT_check(const char *, int);
 extern int CrT_check_everything(const char *, int);

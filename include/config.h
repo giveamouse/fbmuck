@@ -318,7 +318,7 @@
  * Include some of the useful local headers here.
  */
 #ifdef MALLOC_PROFILING
-#include "crt_malloc.h"
+# include "crt_malloc.h"
 #endif
 
 /******************************************************************/
