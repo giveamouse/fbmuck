@@ -24,7 +24,7 @@
 # -Wall -pedantic	Good way to get spammed with warnings from GCC.
 # -ftest-coverage -fprofile-arcs  Generate test coverage debug code for gcov.
 #
-OPTIM= -O -g
+OPTIM= -g
 
 #
 # Paths
@@ -37,7 +37,8 @@ ROOT= ..
 INCLUDE= ${ROOT}/include
 
 # The root of the directory tree to install to.
-INSTALL_ROOT= /usr/local/fbmuck
+# INSTALL_ROOT= /usr/local/fbmuck
+INSTALL_ROOT=@prefix@
 # Destination for binaries
 INSTALL_BINDIR= ${INSTALL_ROOT}/bin
 # Destination for binaries
@@ -112,7 +113,7 @@ CSRC= array.c boolexp.c compile.c compress.c create.c db.c \
 	p_math.c p_mcp.c p_misc.c p_props.c p_stack.c p_strings.c property.c \
 	propdirs.c props.c random.c rob.c rwho.c sanity.c set.c signal.c \
 	smatch.c speech.c strftime.c stringutil.c timequeue.c timestamp.c \
-	tune.c unparse.c utils.c wiz.c
+	tune.c unparse.c utils.c wiz.c snprintf.c
 
 LSRC= copyright.c
 MSRC= olddecomp.c reconst.c interface.c
@@ -128,7 +129,7 @@ COBJ= array.o boolexp.o compile.o compress.o create.o db.o \
 	p_math.o p_mcp.o p_misc.o p_props.o p_stack.o p_strings.o property.o \
 	propdirs.o props.o random.o rob.o rwho.o sanity.o signal.o set.o \
 	smatch.o speech.o strftime.o stringutil.o timequeue.o timestamp.o \
-	tune.o unparse.o utils.o wiz.o
+	tune.o unparse.o utils.o wiz.o snprintf.o
 
 LOBJ= copyright.o
 MOBJ= olddecomp.o sanity.o reconst.o interface.o resolver.o topwords.o

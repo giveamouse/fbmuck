@@ -1,5 +1,4 @@
 /* $Header$ */
-
 #ifndef _EXTERNS_H
 #define _EXTERNS_H
 #include "copyright.h"
@@ -52,6 +51,7 @@ extern void envpropqueue(int descr, dbref player, dbref where, dbref trigger, db
 
 						 int mlev, int mt);
 extern int scan_instances(dbref program);
+extern int program_active(dbref program);
 
 /* from db.c */
 extern int number(const char *s);
@@ -202,6 +202,7 @@ extern int string_prefix(const char *string, const char *prefix);
 extern const char *string_match(const char *src, const char *sub);
 extern char *pronoun_substitute(int descr, dbref player, const char *str);
 extern char *intostr(int i);
+extern int prepend_string(char** before, char* start, const char* what);
 
 #if !defined(MALLOC_PROFILING)
 extern char *string_dup(const char *s);

@@ -33,6 +33,7 @@ dnl Header files
 dnl
 AC_CHECK_HEADERS(malloc.h memory.h string.h unistd.h sys/resource.h sys/signal.h)
 AC_CHECK_HEADERS(sys/time.h timebits.h)
+AC_CHECK_HEADERS(varargs.h stdarg.h)
 AC_HEADER_STDC
 AC_HEADER_DIRENT
 AC_HEADER_TIME
@@ -49,7 +50,7 @@ AC_CHECK_LIB(m, cos)
 AC_CHECK_LIB(socket, shutdown)
 AC_CHECK_LIB(nsl, gethostbyname)
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(mallinfo getrlimit getrusage random)
+AC_CHECK_FUNCS(mallinfo getrlimit getrusage random snprintf vsnprintf)
 AC_EGREP_HEADER([[^_a-zA-Z]]hblks;, malloc.h, AC_DEFINE(HAVE_MALLINFO_HBLKS))
 AC_EGREP_HEADER([[^_a-zA-Z]]keepcost;, malloc.h, AC_DEFINE(HAVE_MALLINFO_KEEPCOST))
 AC_EGREP_HEADER([[^_a-zA-Z]]treeoverhead;, malloc.h, AC_DEFINE(HAVE_MALLINFO_TREEOVERHEAD))
@@ -69,11 +70,12 @@ dnl Compiler characteristics
 dnl
 AC_C_CONST
 AC_C_INLINE
+AC_C_LONG_DOUBLE
 
 dnl
 dnl Uname -a, just because.
 dnl
-echo "Checking value of uname -a"
+echo "checking value of uname -a"
 AC_DEFINE_UNQUOTED(UNAME_VALUE, "`uname -a`")
 
 dnl

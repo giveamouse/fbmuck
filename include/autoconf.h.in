@@ -1,10 +1,13 @@
-/* ../include/autoconf.h.in.  Generated automatically from configure.in by autoheader.  */
+/* include/autoconf.h.in.  Generated automatically from configure.in by autoheader.  */
 
 /* Define to empty if the keyword does not work.  */
 #undef const
 
 /* Define if you don't have vprintf but do have _doprnt.  */
 #undef HAVE_DOPRNT
+
+/* Define if the `long double' type works.  */
+#undef HAVE_LONG_DOUBLE
 
 /* Define if your struct tm has tm_zone.  */
 #undef HAVE_TM_ZONE
@@ -59,8 +62,17 @@
 /* Define if you have the random function.  */
 #undef HAVE_RANDOM
 
+/* Define if you have the snprintf function.  */
+#undef HAVE_SNPRINTF
+
+/* Define if you have the vsnprintf function.  */
+#undef HAVE_VSNPRINTF
+
 /* Define if you have the <dirent.h> header file.  */
 #undef HAVE_DIRENT_H
+
+/* Define if you have the <errno.h> header file.  */
+#undef HAVE_ERRNO_H
 
 /* Define if you have the <malloc.h> header file.  */
 #undef HAVE_MALLOC_H
@@ -71,11 +83,17 @@
 /* Define if you have the <ndir.h> header file.  */
 #undef HAVE_NDIR_H
 
+/* Define if you have the <stdarg.h> header file.  */
+#undef HAVE_STDARG_H
+
 /* Define if you have the <string.h> header file.  */
 #undef HAVE_STRING_H
 
 /* Define if you have the <sys/dir.h> header file.  */
 #undef HAVE_SYS_DIR_H
+
+/* Define if you have the <sys/errno.h> header file.  */
+#undef HAVE_SYS_ERRNO_H
 
 /* Define if you have the <sys/ndir.h> header file.  */
 #undef HAVE_SYS_NDIR_H
@@ -95,23 +113,29 @@
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
 
-/* if tm_gmtoff is defined in time.h, define this */
-#undef HAVE_TM_GMTOFF
+/* Define if you have the <varargs.h> header file.  */
+#undef HAVE_VARARGS_H
 
-/* if tm_gmtoff is defined in sys/time.h, define this */
+/* Define if you have the m library (-lm).  */
+#undef HAVE_LIBM
+
+/* Define if you have the nsl library (-lnsl).  */
+#undef HAVE_LIBNSL
+
+/* Define if you have the socket library (-lsocket).  */
+#undef HAVE_LIBSOCKET
+
+/* if tm_gmtoff is defined in sys/time.h define this */
 #undef HAVE_SYS_TM_GMTOFF
+
+/* if tm_gmtoff is defiend in time.h define this */
+#undef HAVE_TM_GMTOFF
 
 /* if _timezone is defined in time.h, define this */
 #undef HAVE__TIMEZONE
 
 /* uname -a output for certain local programs. */
-#undef UNAME_VALUE
-
-/* if your system has errno.h */
-#undef HAVE_ERRNO_H
-
-/* if your system has sys/errno.h */
-#undef HAVE_SYS_ERRNO_H
+#undef UNAME_VALUE 
 
 /* if your system has an hblks field in it's mallinfo struct in malloc.h */
 #undef HAVE_MALLINFO_HBLKS
@@ -127,4 +151,5 @@
 
 /* if your system has an 'allocated' field in it's mallinfo struct in malloc.h */
 #undef HAVE_MALLINFO_ALLOCATED
+
 

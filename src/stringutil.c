@@ -2,6 +2,19 @@
 
 /*
  * $Log: stringutil.c,v $
+ * Revision 1.4  2001/04/13 19:55:55  wog
+ * Fixed bug #407427: Big arrays crash with expanded_debug
+ * I hope.
+ * In the process made inst.c's routines honor their buflen arguments.
+ * As a side effect of this snprintf is used and a portable implementation has
+ * been taken and slightly modified from
+ * http://www.fiction.net/~blong/programs/snprintf.c
+ * Changes were made to Makefile.in, autoconf.h.in and configure.in to accomadate
+ * this.
+ *
+ * Additionally a prepend_string has been added to stringutil.c since debug_inst
+ * now works from the top of the stack down to construct it's stack listing.
+ *
  * Revision 1.3  2000/07/19 01:33:18  revar
  * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
  * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
@@ -771,4 +784,23 @@ strip_bad_ansi(char *buf, const char *input)
 	*os = '\0';
 
 	return buf;
+}
+
+/* Prepends what before before, granted it doesn't come
+ * before start in which case it returns 0.
+ * Otherwise it modifies *before to point to that new location,
+ * and it returns the number of chars prepended.
+ */
+int
+prepend_string(char** before, char* start, const char* what)
+{
+   char* ptr;
+   size_t len;
+   len = strlen(what);
+   ptr = *before - len;
+   if (ptr < start)
+       return 0;
+   memcpy((void*) ptr, (const void*) what, len);
+   *before = ptr;
+   return len;
 }
