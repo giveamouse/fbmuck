@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# From configure.in Revision: 1.1 # Guess values for system-dependent variables and create Makefiles.
+# From configure.in Revision: 1.1.1.1 # Guess values for system-dependent variables and create Makefiles.
 # Generated automatically using autoconf version 2.13 
 # Copyright (C) 1992, 93, 94, 95, 96 Free Software Foundation, Inc.
 #
@@ -1979,7 +1979,7 @@ fi
 
 trap 'rm -f $CONFIG_STATUS conftest*; exit 1' 1 2 15
 
-DEFS=
+DEFS=-DHAVE_CONFIG_H
 
 # Without the "./", some shells look in PATH for config.status.
 : ${CONFIG_STATUS=./config.status}
