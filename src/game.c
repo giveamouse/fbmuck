@@ -616,7 +616,7 @@ process_command(int descr, dbref player, char *command)
 			switch (command[1]) {
 			case 'a':
 			case 'A':
-				/* @action, @attach */
+				/* @action, @armageddon, @attach */
 				switch (command[2]) {
 				case 'c':
 				case 'C':
@@ -640,6 +640,7 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'b':
 			case 'B':
+				/* @bless, @boot */
 				switch (command[2]) {
 				case 'l':
 				case 'L':
@@ -657,7 +658,8 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'c':
 			case 'C':
-				/* chown, contents, create */
+				/* @chlock, @chown, @chown_lock, @clone,
+				   @conlock, @contents, @create, @credits */
 				switch (command[2]) {
 				case 'h':
 				case 'H':
@@ -718,7 +720,8 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'd':
 			case 'D':
-				/* describe, dequeue, dig, or dump */
+				/* @dbginfo, @delta, @describe, @dig, @dlt,
+				   @doing, @drop, @dump */
 				switch (command[2]) {
 				case 'b':
 				case 'B':
@@ -774,6 +777,7 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'e':
 			case 'E':
+				/* @edit, @entrances, @examine */
 				switch (command[2]) {
 				case 'd':
 				case 'D':
@@ -796,7 +800,7 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'f':
 			case 'F':
-				/* fail, find, or force */
+				/* @fail, @find, @flock, @force, @force_lock */
 				switch (command[2]) {
 				case 'a':
 				case 'A':
@@ -829,17 +833,19 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'i':
 			case 'I':
+				/* @idescribe */
 				Matched("@idescribe");
 				do_idescribe(descr, player, arg1, arg2);
 				break;
 			case 'k':
 			case 'K':
+				/* @kill */
 				Matched("@kill");
 				do_dequeue(descr, player, arg1);
 				break;
 			case 'l':
 			case 'L':
-				/* lock or link */
+				/* @link, @list, @lock */
 				switch (command[2]) {
 				case 'i':
 				case 'I':
@@ -869,6 +875,8 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'm':
 			case 'M':
+				/* @mcpedit, @mcpprogram, @memory, @mpitops,
+				   @muftops */
 				switch (command[2]) {
 				case 'c':
 				case 'C':
@@ -902,7 +910,7 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'n':
 			case 'N':
-				/* @name or @newpassword */
+				/* @name, @newpassword */
 				switch (command[2]) {
 				case 'a':
 				case 'A':
@@ -921,6 +929,8 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'o':
 			case 'O':
+				/* @odrop, @oecho, @ofail, @open, @osuccess,
+				   @owned */
 				switch (command[2]) {
 				case 'd':
 				case 'D':
@@ -958,6 +968,8 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'p':
 			case 'P':
+				/* @password, @pcreate, @pecho, @program, 
+				   @proginfo, @propset, @ps */
 				switch (command[2]) {
 				case 'a':
 				case 'A':
@@ -1000,6 +1012,7 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'r':
 			case 'R':
+				/* @recycle, @restart, @restrict */
 				switch (command[3]) {
 				case 'c':
 				case 'C':
@@ -1022,7 +1035,8 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 's':
 			case 'S':
-				/* set, shutdown, success */
+				/* @sanity, @sanchange, @sanfix, @set, 
+				   @shutdown, @stats, @success, @sweep */
 				switch (command[2]) {
 				case 'a':
 				case 'A':
@@ -1068,6 +1082,7 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 't':
 			case 'T':
+				/* @teleport, @toad, @trace, @tune */
 				switch (command[2]) {
 				case 'e':
 				case 'E':
@@ -1100,6 +1115,8 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'u':
 			case 'U':
+				/* @unbless, @unlink, @unlock, @uncompile,
+				   @usage */
 				switch (command[2]) {
 				case 'N':
 				case 'n':
@@ -1135,11 +1152,13 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'v':
 			case 'V':
+				/* @version */
 				Matched("@version");
 				notify(player, VERSION);
 				break;
 			case 'w':
 			case 'W':
+				/* @wall */
 				if (strcmp(command, "@wall"))
 					goto bad;
 				do_wall(player, full_command);
@@ -1150,6 +1169,7 @@ process_command(int descr, dbref player, char *command)
 			break;
 		case 'd':
 		case 'D':
+			/* disembark, drop */
 			switch (command[1]) {
 			case 'i':
 			case 'I':
@@ -1167,12 +1187,13 @@ process_command(int descr, dbref player, char *command)
 			break;
 		case 'e':
 		case 'E':
+			/* examine */
 			Matched("examine");
 			do_examine(descr, player, arg1, arg2);
 			break;
 		case 'g':
 		case 'G':
-			/* get, give, go, or gripe */
+			/* get, give, goto, gripe */
 			switch (command[1]) {
 			case 'e':
 			case 'E':
@@ -1201,11 +1222,13 @@ process_command(int descr, dbref player, char *command)
 			break;
 		case 'h':
 		case 'H':
+			/* help */
 			Matched("help");
 			do_help(player, arg1, arg2);
 			break;
 		case 'i':
 		case 'I':
+			/* inventory, info */
 			if (string_compare(command, "info")) {
 				Matched("inventory");
 				do_inventory(player);
@@ -1216,11 +1239,13 @@ process_command(int descr, dbref player, char *command)
 			break;
 		case 'k':
 		case 'K':
+			/* kill */
 			Matched("kill");
 			do_kill(descr, player, arg1, atoi(arg2));
 			break;
 		case 'l':
 		case 'L':
+			/* leave, look */
 			if (string_prefix("look", command)) {
 				Matched("look");
 				do_look_at(descr, player, arg1, arg2);
@@ -1232,6 +1257,7 @@ process_command(int descr, dbref player, char *command)
 			}
 		case 'm':
 		case 'M':
+			/* man, motd, move, mpi */
 			if (string_prefix(command, "move")) {
 				do_move(descr, player, arg1, 0);
 				break;
@@ -1255,6 +1281,7 @@ process_command(int descr, dbref player, char *command)
 			break;
 		case 'p':
 		case 'P':
+			/* page, pose, put */
 			switch (command[1]) {
 			case 'a':
 			case 'A':
@@ -1277,6 +1304,7 @@ process_command(int descr, dbref player, char *command)
 			break;
 		case 'r':
 		case 'R':
+			/* read, rob */
 			switch (command[1]) {
 			case 'e':
 			case 'E':
@@ -1294,7 +1322,7 @@ process_command(int descr, dbref player, char *command)
 			break;
 		case 's':
 		case 'S':
-			/* say, "score" */
+			/* say, score */
 			switch (command[1]) {
 			case 'a':
 			case 'A':
@@ -1312,6 +1340,7 @@ process_command(int descr, dbref player, char *command)
 			break;
 		case 't':
 		case 'T':
+			/* take, throw */
 			switch (command[1]) {
 			case 'a':
 			case 'A':
@@ -1329,6 +1358,7 @@ process_command(int descr, dbref player, char *command)
 			break;
 		case 'w':
 		case 'W':
+			/* whisper */
 			Matched("whisper");
 			do_whisper(descr, player, arg1, arg2);
 			break;
