@@ -252,6 +252,7 @@ prim_regsub(PRIM_PROTOTYPE)
 	int			write_left	= BUFFER_LEN - 1;
 	muf_re*		re;
 	char*		text;
+	char*		prevtext;
 	int			nosubs, err, len;
 
 	CHECKOP(4);
@@ -278,8 +279,9 @@ prim_regsub(PRIM_PROTOTYPE)
 	if ((re = muf_re_get(oper2->data.string, flags, &err)) == NULL)
 		abort_interp(muf_re_error(err));
 
-	text		= DoNullInd(oper1->data.string);
-	nosubs		= re->re.re_nsub + 1;
+	text     = DoNullInd(oper1->data.string);
+	prevtext = text;
+	nosubs   = re->re.re_nsub + 1;
 
 	if ((matches = (regmatch_t*)malloc(sizeof(regmatch_t) * nosubs)) == NULL)
 		abort_interp("Out of memory");
@@ -381,6 +383,12 @@ prim_regsub(PRIM_PROTOTYPE)
 
 			break;
 		}
+
+		if (text == prevtext && *text) {
+			*write_ptr++ = *text++;
+			write_left--;
+		}
+		prevtext = text;
 	}
 
 	free(matches);
