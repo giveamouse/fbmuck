@@ -2,6 +2,12 @@
 
 /*
  * $Log: edit.c,v $
+ * Revision 1.4  2001/02/08 14:37:53  mcclure
+ * Added VIEWABLE "flag" - actually setting a program VEHICLE -
+ * to enable program @listing.
+ *
+ * Updated helpfiles.
+ *
  * Revision 1.3  2000/07/13 01:13:12  winged
  *
  * Added feedback for leaving insert mode, in insert().
@@ -577,7 +583,8 @@ match_and_list(int descr, dbref player, const char *name, char *linespec)
 		notify(player, "You can't list anything but a program.");
 		return;
 	}
-	if (!(controls(player, thing) || Linkable(thing))) {
+/*	if (!(controls(player, thing) || Linkable(thing))) { */
+	if (!(controls(player, thing) || (FLAGS(thing) & VEHICLE))) {
 		notify(player, "Permission denied.");
 		return;
 	}

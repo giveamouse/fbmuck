@@ -407,7 +407,9 @@ flag_description(dbref thing)
 		if (FLAGS(thing) & JUMP_OK)
 			strcat(buf, " JUMP_OK");
 		if (FLAGS(thing) & VEHICLE)
-			strcat(buf, " VEHICLE");
+/*			strcat(buf, " VEHICLE"); */
+			strcat(buf, (Typeof(thing) == TYPE_PROGRAM) ? " VIEWABLE" : " VEHICLE");
+
 		if (FLAGS(thing) & XFORCIBLE) {
 			if (Typeof(thing) == TYPE_EXIT) {
 				strcat(buf, " XPRESS");

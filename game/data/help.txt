@@ -174,7 +174,7 @@ more than one thing, specified in a list separated by semi-colons.
 ~~~
 @list
 @list <program>  [=[line1] [-] [line2]].  Lists  lines  in a  program,
-provided you control it or  it is LINK_OK.   Zero, one,  or  two  line
+provided you control it or it is VIEWABLE.   Zero, one,  or  two  line
 numbers may be specified, denoting the range of lines to list.   If no
 lines are given, the entire program is listed.
 ~~~
@@ -274,10 +274,10 @@ properties to an object, or remove properties from an object.
   
 Using the first format, you may set flags, which are: WIZARD, LINK_OK,
 DARK [DEBUG], FILTER, STICKY [SETUID], JUMP_OK, BUILDER [BOUND], QUELL,
-CHOWN_OK, HAVEN [HARDUID], ABODE [AUTOSTART], VEHICLE, ZOMBIE, or
-MUCKER.  You can also set the MUCKER (or Priority) Level of an object by
-using 0, 1, 2, or 3 as the flag name.  An optional flag which may or may
-not be on a given site is KILL_OK.
+CHOWN_OK, HAVEN [HARDUID], ABODE [AUTOSTART], VEHICLE [VIEWABLE], ZOMBIE,
+or MUCKER.  You can also set the MUCKER (or Priority) Level of an object
+by using 0, 1, 2, or 3 as the flag name.  An optional flag which may or
+may not be on a given site is KILL_OK.
   
 The second format sets <property> on <object> to <string>, or if <string>
 is not given, removes <property>.
@@ -827,11 +827,12 @@ from the same room that it is in, and you cannot use far links to enter
 it.  This prevents the use of vehicles to get around locks.  Inside the
 vehicle, you will see it's @idesc, instead of it's @desc, and you will
 not be shown it's @succ or @fail.  Objects dropped in a vehicle will not
-go away to the their homes, as a vehicle cannot have a dropto set in it.
-  
+go away to the their homes, as a vehicle cannot have a dropto set in it.  
 Things with the VEHICLE flag set cannot enter rooms or use exits that
 have the VEHICLE flag set.  This allows a way to prevent vehicles from
 entering areas where it would be illogical for them to be.
+When VEHICLE is set on a program, it is called VIEWABLE, and enables the
+program to be @listed.
 ~~~
 whisper
 whisper <player>=<message>. Whispers the message to the named person, if they

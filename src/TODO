@@ -8,7 +8,6 @@ These items are deferred:
   Add CONTENTS_ARRAY muf primitive.  (Hmm.  On #0 this could be bad.)
 
   Separate MPI perms away from Builder bit a la ProtoMUCK.
-  Implement Viewable flag for MUF program @listing.
   Add Per-User CPU usage throttles.
 
   ISO-Latin high-bit character support.
