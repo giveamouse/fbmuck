@@ -77,17 +77,28 @@ PIDFILE="$GAMEDIR/netmuck.pid"
 #############################################################################
 
 
+if [ -x /usr/ucb/ps ]; then
+	PS="/usr/ucb/ps x"
+elif [ "x`uname -s`" = "xSunOS" -a `uname -r | cut -d . -f 1` -ge 5 ]; then
+	PS="ps -e"
+else
+	PS="ps x"
+fi
+
 cd $GAMEDIR
 echo "Restarting at: `date`"
 
 umask 077
-ulimit -n unlimited   ;# Max open files/descriptors
+
+# Max open files/descriptors
+( ulimit -n 1024 >> /dev/null 2>&1 ) && ( ulimit -n unlimited >> /dev/null 2>&1 )
+
 ulimit -t unlimited   ;# Max amount of cpu time in seconds
 
-if [ -r $PIDFILE ]; then
+if [ -e $PIDFILE -a -r $PIDFILE -a -s $PIDFILE ]; then
 	muckpid=`cat $PIDFILE`
-	if [ "$muckpid" ]; then
-		muck=`ps x | awk '{print $1}' | egrep "\\<${muckpid}\\>" | wc -l`
+	if [ "x$muckpid" != "x" ]; then
+		muck=`${PS} | awk '{print $1}' | egrep "\\<${muckpid}\\>" | wc -l`
 		if [ $muck -gt 0 ]; then
 			echo "This server is already running.  Restart aborted."
 			exit 0
@@ -100,7 +111,7 @@ datestamp=`date +%m%d%y%H%M`
 PANICDB="${DBOUT}.PANIC"
 if [ -r $PANICDB ]; then
     end=`tail -1 $PANICDB`
-    if [ "$end" = "***END OF DUMP***" ]; then
+    if [ "x$end" = "x***END OF DUMP***" ]; then
 		mv $PANICDB $DBOUT
 		rm -f $DELTAS
     else
@@ -127,7 +138,7 @@ if [ ! -r $DBIN ]; then
 fi
 
 end=`tail -1 $DBIN`
-if [ "$end" != '***END OF DUMP***' ]; then
+if [ "x$end" != 'x***END OF DUMP***' ]; then
 	echo "WARNING\!  The "$DBIN" file is incomplete and therefore corrupt\!"
 	echo "Restart attempt aborted."
 	exit
@@ -139,7 +150,7 @@ fi
 if [ -r $DELTAS ]; then
 	echo "Restoring from delta."
 	end=`tail -1 $DELTAS`
-	if [ "$end" = "***END OF DUMP***" ]; then
+	if [ "x$end" = "x***END OF DUMP***" ]; then
 		cat $DELTAS >> $DBIN
 	else
 		echo "Last delta is incomplete.  Truncating to previous dump."
@@ -168,7 +179,7 @@ if [ $diskfree -lt $diskneeded ]; then
     echo "old log files, etc. to free up about ${spacediff}K more disk space."
 fi
 
-if [ "$1" ]; then
+if [ "x$1" != "x" ]; then
     PORT=$1
 fi
 
