@@ -6,6 +6,7 @@ Fixed bug with muf errors getting stored in .debug/lasterr with ANSI codes.
 Fixed 'make install-inits' so that it works.
 Fixed fbmuck.spec to do an additional 'make install-inits'.
 Fixed configure script to auto-find ssl.h location.
+Fixed crasher bug with @killing invalid pids.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 
 

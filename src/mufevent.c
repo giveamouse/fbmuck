@@ -249,7 +249,7 @@ muf_event_pid_frame(int pid)
 int
 muf_event_controls(dbref player, int pid)
 {
-	struct mufevent_process *proc;
+	struct mufevent_process *proc = mufevent_processes;
 
 	while (proc && pid != proc->fr->pid) {
 		proc = proc->next;
