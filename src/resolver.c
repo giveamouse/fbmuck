@@ -18,9 +18,13 @@
 #include <string.h>
 
 #ifdef USE_IPV6
-#ifndef __FreeBSD__
-#include <netinet6/in6.h>
-#endif
+# ifdef HAVE_NETINET6_IN6_H
+#  include <netinet6/in6.h>
+# elif defined(HAVE_LINUX_IN6_H)
+#  include <linux/in6.h>
+# elif defined(HAVE_IN6_H)
+#  include <in6.h>
+# endif
 #endif
 
 /*

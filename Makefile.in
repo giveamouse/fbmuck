@@ -5,6 +5,7 @@ subdirs=src
 RM=rm -f
 
 SSLTOP=@SSLTOP@
+RPMDIR="/usr/src/RPM/"
 
 all:	Makefile
 	for d in ${subdirs}; do \
@@ -81,12 +82,10 @@ help:
 	cd game/data && ../../src/prochelp mpihelp.raw mpihelp.txt ../../docs/mpihelp.html
 	cd game/data && ../../src/prochelp mufman.raw man.txt ../../docs/mufman.html
 
-package:
+package: help
 	rm -rf ${TMPPKGDIR}
 	mkdir ${TMPPKGDIR}
-	cd src && make prochelp
-	mv -f src/prochelp ${TMPPKGDIR}
-	cd src && make cleaner
+	# cd src && make cleaner
 	cp -fp configure Makefile.in mkdir_recursive fbmuck.spec fuzzball.cnf INSTALLATION README ${TMPPKGDIR}
 	ln -s src/CHANGESfb  ${TMPPKGDIR}/CHANGESfb
 	ln -s src/CHANGESfb2 ${TMPPKGDIR}/CHANGESfb2
@@ -130,7 +129,6 @@ package:
 	cp -fpr game/data/news*             ${TMPPKGDIR}/game/data
 	cp -fpr game/data/info              ${TMPPKGDIR}/game/data
 	cp -fpr game/data/mpihelp*          ${TMPPKGDIR}/game/data
-	cd ${TMPPKGDIR}/game/data && ${TMPPKGDIR}/prochelp mpihelp.raw mpihelp.txt ../../docs/mpihelp.html
 	rm -f ${TMPPKGDIR}/game/data/info/CHANGESfb*
 	rm -f ${TMPPKGDIR}/game/data/info/changesfb*
 	cp -f src/CHANGESfb  ${TMPPKGDIR}/game/data/info/changesfb
@@ -148,11 +146,9 @@ package:
 	tar -cf - fbmuck-`cat ${TMPREV}` | gzip -9 > fbmuck-`cat ${TMPREV}`.tar.gz
 	rm -rf fbmuck-`cat ${TMPREV}` ${TMPREV}
 
-srpm: package
-	head -1 `/bin/ls -1d src/CHANGESfb* | sort -nr | head -1` | cut -c4- > ${TMPREV}
-	cp -f fbmuck-`cat ${TMPREV}`.tar.gz /usr/src/redhat/SOURCES
-	cp -f fbmuck.spec /usr/src/redhat/SPECS/fbmuck.spec
-	cd /usr/src/redhat/SPECS && rpm -ba fbmuck.spec
+rpms: package
+	head -1 `/bin/ls -1d src/CHANGESfb* | sort -nr | head -1` | cut -c6- > ${TMPREV}
+	rpm -ta --sign fbmuck-`cat ${TMPREV}`.tar.gz
 	rm -rf ${TMPREV}
 
 

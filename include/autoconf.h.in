@@ -163,3 +163,23 @@
 
 /* if you want to use SSL */
 #undef USE_SSL
+
+/* if you want to do some memory usage profiling and leak detection. */
+#undef MALLOC_PROFILING
+
+/* With MALLOC_PROFILING, can detect double-frees, buffer overruns, etc. */
+#undef CRT_DEBUG_ALSO
+
+/* Use IPv6 instead of IPv4 for network connections. */
+#undef USE_IPV6
+
+/* if your system has the netinet6/in6.h header file */
+#undef HAVE_NETINET6_IN6_H
+
+/* if your linux system has the linux/in6.h header file */
+#undef HAVE_LINUX_IN6_H
+
+/* if your system has the in6.h header file */
+#undef HAVE_IN6_H
+
+

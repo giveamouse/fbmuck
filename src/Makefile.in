@@ -65,8 +65,9 @@ INSTALL_DBSDIR=@datadir@/fbmuck/starter_dbs
 # #######################################################################
 CC=@CC@
 CPP=@CPP@
-DEFS=@DEFS@
+DEFS=@DEFS@ -DBINDIR=\"${INSTALL_BINDIR}\" -DINSTALL_HELPDIR=\"${INSTALL_HELPDIR}\"
 LIBR=@LIBS@
+INCL=@INC@ -I${INCLUDE}
 
 # #######################################################################
 #  	   Usualy don't need to change anything past here.
@@ -75,8 +76,7 @@ LIBR=@LIBS@
 #
 # Include path, Cflags...
 #
-CFLAGS= ${OPTIM} ${DEFS} -I${INCLUDE} @INC@ -DBINDIR=\"${INSTALL_BINDIR}\" \
-	-DINSTALL_HELPDIR=\"${INSTALL_HELPDIR}\"
+CFLAGS= ${OPTIM}
 
 #
 # for saving old copies.
@@ -97,7 +97,7 @@ MKTAGS= ctags --c-types=-m
 # for RCS only
 GET= co
 CLEAN= rcsclean
-LINTFLAGS= -I${INCLUDE} @INC@
+LINTFLAGS= ${INCL}
 
 ##########################################################################
 #            You should not have to change anything below here           #
@@ -111,82 +111,75 @@ ANNOBJ= announce.o
 
 MISCSRC= Makefile.in ChangeLog COPYING mkversion.sh
 
-CSRC= array.c boolexp.c compile.c compress.c create.c db.c debugger.c \
+CSRCS= array.c boolexp.c compile.c compress.c create.c db.c debugger.c \
 	disassem.c diskprop.c edit.c events.c game.c hashtab.c help.c inst.c \
 	interp.c log.c look.c match.c mcp.c mcpgui.c mcppkgs.c mfuns2.c \
 	mfuns.c move.c msgparse.c mufevent.c oldcompress.c p_array.c \
 	p_connects.c p_db.c p_error.c p_float.c player.c p_math.c p_mcp.c \
-	p_misc.c p_props.c predicates.c propdirs.c property.c props.c \
-	p_stack.c p_strings.c random.c rob.c rwho.c sanity.c set.c signal.c \
-	smatch.c snprintf.c speech.c strftime.c stringutil.c timequeue.c \
-	timestamp.c tune.c unparse.c utils.c wiz.c p_regex.c
+	p_misc.c p_props.c p_regex.c predicates.c propdirs.c property.c \
+	props.c p_stack.c p_strings.c random.c rob.c rwho.c sanity.c set.c \
+	signal.c smatch.c snprintf.c speech.c strftime.c stringutil.c \
+	timequeue.c timestamp.c tune.c unparse.c utils.c wiz.c
 
+CSRC= $(sort $(CSRCS))
 LSRC= copyright.c
-MSRC= olddecomp.c reconst.c interface.c
+MSRC= olddecomp.c reconst.c interface.c resolver.c topwords.c
+
+
+COBJ= $(patsubst %.c,%.o,$(CSRC))
+LOBJ= $(patsubst %.c,%.o,$(LSRC))
+MOBJ= $(patsubst %.c,%.o,$(MSRC))
 
 SRC= ${MISCSRC} ${CSRC} ${LSRC} ${MSRC}
-
-
-COBJ= array.o boolexp.o compile.o compress.o create.o db.o debugger.o \
-	disassem.o diskprop.o edit.o events.o game.o hashtab.o help.o inst.o \
-	interp.o log.o look.o match.o mcpgui.o mcp.o mcppkgs.o mfuns2.o \
-	mfuns.o move.o msgparse.o mufevent.o oldcompress.o p_array.o \
-	p_connects.o p_db.o p_error.o p_float.o player.o p_math.o p_mcp.o \
-	p_misc.o p_props.o predicates.o propdirs.o property.o props.o \
-	p_stack.o p_strings.o random.o rob.o rwho.o sanity.o set.o signal.o \
-	smatch.o snprintf.o speech.o strftime.o stringutil.o timequeue.o \
-	timestamp.o tune.o unparse.o utils.o wiz.o p_regex.o
-
-LOBJ= copyright.o
-MOBJ= olddecomp.o sanity.o reconst.o interface.o resolver.o topwords.o
-EOBJ= boolexp.o db.o diskprop.o log.o oldcompress.o predicates.o propdirs.o \
-	property.o props.o stringutil.o unparse.o utils.o
-
 OBJ= ${COBJ} ${ROBJ} ${LOBJ} ${MOBJ}
+
+
+
+
 TARGETS= fbmuck fbhelp fb-resolver fb-olddecompress fb-topwords fb-announce
 OLDTARGETS = fbmuck~ fbhelp~ fb-resolver~ fb-olddecompress~ fb-topwords~ fb-announce~
 HELPFILES= man.txt help.txt mpihelp.txt
 
 .c.o:
-	${PRE} ${CC} ${CFLAGS} -c $*.c
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c $*.c
 
 .c.cpp:
-	${PRE} ${CPP} ${CFLAGS} -c $*.c -o $*.cpp
+	${PRE} ${CPP} ${CFLAGS} ${INCL} ${DEFS} -c $*.c -o $*.cpp
 
 all: ${TARGETS} 
 
 fbmuck: ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversion.sh Makefile
 	sh mkversion.sh
-	${PRE} ${CC} ${CFLAGS} -c version.c
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c version.c
 	-${MV} fbmuck fbmuck~
-	${PRE} ${CC} ${CFLAGS} -o fbmuck ${COBJ} ${MALLOBJ} interface.o version.o \
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${COBJ} ${MALLOBJ} interface.o version.o \
 	  ${LIBR} ${LOBJ}
 
 fb-resolver: resolver.o ${LOBJ} ${MALLOBJ} Makefile
-	${PRE} ${CC} ${CFLAGS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} ${LOBJ}
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} ${LOBJ}
 
 fb-topwords: topwords.o hashtab.o ${MALLOBJ} Makefile
-	${CC} ${CFLAGS} -o fb-topwords topwords.o hashtab.o ${MALLOBJ} ${LIBR}
+	${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-topwords topwords.o hashtab.o ${MALLOBJ} ${LIBR}
 
 fb-olddecompress: olddecomp.o oldcompress.o ${LOBJ} ${MALLOBJ} Makefile
-	${CC} ${CFLAGS} -o fb-olddecompress olddecomp.o oldcompress.o ${LIBR} \
+	${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-olddecompress olddecomp.o oldcompress.o ${LIBR} \
 	  ${MALLOBJ} ${LOBJ}
 
 fb-announce: ${ANNOBJ} ${LOBJ} ${MALLOBJ} Makefile
 	${CC} ${ANNOBJ} -o fb-announce ${MALLOBJ} ${LIBR} ${LOBJ}
 
 fbhelp.o: help.c
-	${CC} ${CFLAGS} -c help.c -o fbhelp.o -DSTANDALONE_HELP -DHELPFILE_DIR='"${INSTALL_HELPDIR}"'
+	${CC} ${CFLAGS} ${INCL} ${DEFS} -c help.c -o fbhelp.o -DSTANDALONE_HELP -DHELPFILE_DIR='"${INSTALL_HELPDIR}"'
 
 fbhelp: fbhelp.o ${MALLOBJ} Makefile
-	${CC} ${CFLAGS} fbhelp.o -o fbhelp ${MALLOBJ}
+	${CC} ${CFLAGS} ${INCL} ${DEFS} fbhelp.o -o fbhelp ${MALLOBJ}
 
 #############################################################
 # Funky stuff for debugging and coding work.
 #
 
 saber_src:
-	#load ${CFLAGS} ${CSRC}
+	#load ${CFLAGS} ${INCL} ${DEFS} ${CSRC}
 
 saber_obj: ${CSRC} interface.o
 	#load ${OBJ} interface.o
@@ -210,7 +203,7 @@ names:
 	@for i in ${SRC} ${MALLSRC}; do echo ${SRC_PREFIX}$$i; done
 
 depend:
-	${MKDEPEND} -- ${CFLAGS} -- ${CSRC} ${MALLSRC} ${MSRC} ${LSRC}
+	${MKDEPEND} -- ${CFLAGS} ${INCL} ${DEFS} -- ${CSRC} ${MALLSRC} ${MSRC} ${LSRC}
 	echo chmod -w Makefile
 	chmod -w Makefile
 

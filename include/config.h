@@ -14,6 +14,7 @@
 #define _CONFIG_H
 
 #include "copyright.h"
+#include "autoconf.h"
 
 /************************************************************************
    Administrative Options 
@@ -71,18 +72,6 @@
  * run from.
  */
 #define SPAWN_HOST_RESOLVER
-
-/*
- * The Internet will eventually be moving to IP protocol revision 6 from
- * the current revision 4 protocol.  Define this to support IPv6.  You
- * will also have to add -lresolv to the LIBR= line in the Makefile.  This
- * assumes that the necessary IPv6 include files reside in the directory
- * /usr/include/netinet6, and that the libresolv from the release of bind
- * 4.9.4 is available as libresolv.  If you have no clue what I'm talking
- * about, leave this undefined.  Currently, very little of the net supports
- * IPv6.
- */
-#undef USE_IPV6
 
 /*
  * There's a set of MUF prims that are considered dangerous.
@@ -201,17 +190,6 @@
 /* if do_memory() in wiz.c gives you problems compiling, define this */
 #undef NO_MEMORY_COMMAND
 
-/* This gives some debug malloc profiling, but also eats some overhead,
-   so only define if your using it. */
-#undef MALLOC_PROFILING
-/* If MALLOC_PROFILING is defined, you can also debug the [cm]alloc calls as
-   well.  This causes magic numbers to be added at the beginning and end of the
-   allocated memory, which are checked whenever the memory allocation code is
-   entered.  DO NOT USE THIS UNLESS YOU ARE DEBUGGING MEMORY PROBLEMS. */
-#ifdef MALLOC_PROFILING
-#undef CRT_DEBUG_ALSO
-#endif /* MALLOC_PROFILING */
-
 /************************************************************************/
 /************************************************************************/
 /*    FOR INTERNAL USE ONLY.  DON'T CHANGE ANYTHING PAST THIS POINT.    */
@@ -257,8 +235,6 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/types.h>
-
-#include "autoconf.h"
 
 #ifdef STDC_HEADERS
 # include <stdlib.h>

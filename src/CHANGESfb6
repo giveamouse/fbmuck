@@ -7,10 +7,13 @@ Changed FMTSTRING and ARRAY_FMTSTRINGS MUF prims to be ANSI-aware.
 Changed all sprintf()s in the code to snprintf()s.
 Changed parsing so commands starting with ';' exit delimiters will now trigger
   actions named 'delimiter', similar to how ':' triggers pose actions.
-Changed MCP-GUI package version to 1.1 (1.001 as MUF sees it.)
+Changed MCP-GUI package version to 1.2 (1.002 as MUF sees it.)
 Changed NOTIFY_EXCLUDE so excluding the room excludes environmental listeners.
 Changed TOKENSPLIT to allow a delimiter token to also be an escape char.
 Changed floats in MUF to be of double precision.
+Changed MALLOC_PROFILING to be a --enable-memprof configure argument.
+Changed CRT_ALSO_DEBUG to be a --enable-memprof=debug configure argument.
+Changed USE_IPV6 to be a --enable-ipv6 configure argument.
 Fixed bug with non-DISKBASE mucks where third save message wouldn't get sent.
 Fixed bug with non-DISKBASE mucks where @dump would drop SSL users.
 Fixed bug with reporting of incorrect line numbers in muf backtraces.
@@ -66,6 +69,7 @@ Fixed bug #515341: "pid getpidinfo" returns empty array.
 Fixed bug where listen and queued programs wouldn't get the pids they initially
   claimed they were going to get.
 Fixed BLESSPROP and UNBLESSPROP to be wizbit instead of ML3.
+Fixed packaging bug with 'make srpm'.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.

@@ -43,6 +43,7 @@ string_compare(const char *s1, const char *s2)
 	return strcmp(s1, s2);
 }
 
+#ifndef MALLOC_PROFILING
 char *
 string_dup(const char *s)
 {
@@ -51,6 +52,7 @@ string_dup(const char *s)
 	strcpy(p, s);
 	return p;
 }
+#endif
 
 
 void
