@@ -30,43 +30,6 @@ extern char *alloc_string(const char *);
 
 extern short db_conversion_flag;
 
-static dbref
-getparent_logic(dbref obj)
-{
-	if (obj == NOTHING)
-		return NOTHING;
-	if (Typeof(obj) == TYPE_THING && (FLAGS(obj) & VEHICLE)) {
-		obj = THING_HOME(obj);
-		if (obj != NOTHING && Typeof(obj) == TYPE_PLAYER) {
-			obj = PLAYER_HOME(obj);
-		}
-	} else {
-		obj = getloc(obj);
-	}
-	return obj;
-}
-
-dbref
-getparent(dbref obj)
-{
-	dbref ptr, oldptr;
-
-	if (tp_thing_movement) {
-		obj = getloc(obj);
-	} else {
-		ptr = getparent_logic(obj);
-		do {
-			obj = getparent_logic(obj);
-		} while (obj != (oldptr = ptr = getparent_logic(ptr)) &&
-				 obj != (ptr = getparent_logic(ptr)) && obj != NOTHING &&
-				 Typeof(obj) == TYPE_THING);
-		if (obj != NOTHING && (obj == oldptr || obj == ptr)) {
-			obj = GLOBAL_ENVIRONMENT;
-		}
-	}
-	return obj;
-}
-
 void
 free_line(struct line *l)
 {
