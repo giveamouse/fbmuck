@@ -1,5 +1,8 @@
 /* $Header$
  * $Log: match.h,v $
+ * Revision 1.4  2003/04/07 18:37:00  cutevixy
+ * Changed struct match_data and match_exits to not partially match Xpress exits unless specifically matching exits, or partial exit matching is requested in the match_data struct.
+ *
  * Revision 1.3  2000/07/18 18:18:19  winged
  * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
  *
@@ -57,6 +60,7 @@ struct match_data {
 	int longest_match;			/* longest matched string */
 	int match_level;			/* the highest priority level so far */
 	int block_equals;			/* block matching of same name exits */
+	int partial_exits;			/* if non-zero, allow exits to match partially */
 };
 
 /* match functions */

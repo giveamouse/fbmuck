@@ -28,6 +28,9 @@ Changed property loading routines to not abort(), but to instead log corrupt
 Changed db_putprop() to use snprintf() instead of manually constructing the
   property's disk format.
 Changed a few new sprintf() calls to snprintf().  sprintf() is verboten!
+Changed struct match_data and match_exits to not partially match Xpress exits
+  unless specifically matching exits, or partial exit matching is requested
+  in the match_data struct.
 Added ARRAY_NESTED_GET ( arr idxarr -- ? ) muf prim.  Used to fetch values of
   nested subvalues of an array.
 Added ARRAY_NESTED_SET ( ? arr idxarr -- arr' ) muf prim.  Used to set values

@@ -35,6 +35,7 @@ init_match(int descr, dbref player, const char *name, int type, struct match_dat
 	md->longest_match = 0;
 	md->match_level = 0;
 	md->block_equals = 0;
+	md->partial_exits = (TYPE_EXIT == type);
 }
 
 void
@@ -291,7 +292,7 @@ match_exits(dbref first, struct match_data *md)
 				if (Typeof((DBFETCH(exit)->sp.exit.dest)[i]) == TYPE_PROGRAM)
 					exitprog = 1;
 		}
-		if (tp_enable_prefix && exitprog &&
+		if (tp_enable_prefix && exitprog && md->partial_exits &&
 			(FLAGS(exit) & XFORCIBLE) && FLAGS(OWNER(exit)) & WIZARD) {
 			partial = 1;
 		} else {
