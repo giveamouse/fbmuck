@@ -724,10 +724,19 @@ strip_bad_ansi(char *buf, const char *input)
 		}
 	}
 	if (aflag) {
+		int termrn = 0;
+		if (*(os - 2) == '\r' && *(os - 1) == '\n') {
+			termrn = 1;
+			os -= 2;
+		}
 		*os++ = '\033';
 		*os++ = '[';
 		*os++ = '0';
 		*os++ = 'm';
+		if (termrn) {
+			*os++ = '\r';
+			*os++ = '\n';
+		}
 	}
 	*os = '\0';
 

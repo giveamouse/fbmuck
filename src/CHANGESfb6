@@ -10,6 +10,7 @@ Fixed crasher with GETLINKS primitive.
 Fixed $author and $note directives to stop them from storing garbage.
 Fixed crasher bug in ARRAY_FILTER_PROP.
 Fixed error in ARRAY_FILTER_PROP processing of compressed strings.
+Fixed error with ANSI reset codes being sent _after_ CRLFs.
 Changed SSL cert/key load failures to just disable SSL, instead of exiting.
 Changed SSL cert/key load failure error reporting to show file path/name.
 Changed commandline to accept -sport with a warning when SSL not supported.
