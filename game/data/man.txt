@@ -620,7 +620,7 @@ Returns the cosine of a float.  Only operates in the range of
 -PI/4 to PI/4.
 ~
 CTOI|
-ctoi ( s - i )
+ctoi ( s -- i )
 Converts the first character in s into its ASCII equivilent.
 See also ITOC.
 ~
@@ -2681,8 +2681,8 @@ PARSELOCK, UNPARSELOCK, PRETTYLOCK, and TESTLOCK.
 SETPROP|
 SETPROP (d s ? -- )
 Stores a lock, dbref, integer, or string into the named property on the
-given object.  Permissions are the same as for ADDPROP.  Also see SETPROP,
-ADDPROP, REMOVE_PROP, GETPROPSTR, and GETPROPVAL.
+given object.  Permissions are the same as for ADDPROP.  Also see ADDPROP,
+REMOVE_PROP, GETPROPSTR, and GETPROPVAL.
 ~~~~
 PARSELOCK|
 PARSELOCK (s -- l)
@@ -2846,6 +2846,22 @@ SETSYSPARM|
 SETSYSPARM ( s1 s2 -- )
 Assigns the @tunable parameter s1 a value given by s2.  s2 must contain a
 legal value for s1.  (wizbit only)
+~
+SYSPARM_ARRAY|
+SYSPARM_ARRAY ( str:pattern -- list:sysparminfo )
+Given an smatch wildcard string pattern, returns a list of dictionaries,
+one per each matched @tune parameter (sysparm), containing the information
+about each sysparm.  This will only return items for which your program has
+permission to read the data.
+
+Each dictionary contains the following data, keyed with these strings:
+    "name"     The name of the @tune setting.
+	"group"    The logical group that this parameter belongs to.
+	"type"     One of "string", "integer", "timespam", "dbref", or "boolean".
+	"mlev"     The mucker level required to read the value of this sysparm.
+	"value"    The value of the sysparm.  May be an int, string, or dbref.
+
+See also SETSYSPARM, SYSPARM
 ~
 DESCR_SETUSER|
 DESCR_SETUSER ( i d s -- i )
@@ -3737,7 +3753,7 @@ name-ok? (s -- i)
 Returns true if the given string would be okay as a general object's name.
 ~
 PNAME-OK?|
-name-ok? (s -- i)
+pname-ok? (s -- i)
 Returns true if the given string would be okay as a player name.
 ~
 WATCHPID
