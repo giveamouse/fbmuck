@@ -63,7 +63,7 @@ String Handling:
   toupper      tolower       strip        striplead    striptail
   split        rsplit        subst        midstr       fmtstring
   tokensplit   textattr      ansi_strip   ansi_strlen  ansi_strcut
-  ansi_midstr  explode_array
+  ansi_midstr  explode_array regexp       regsub
                                                                 
 Data Type Conversion:
   atoi   intostr   dbref   int    ctoi    itoc    stod   strtof ftostr 
