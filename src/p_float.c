@@ -567,26 +567,63 @@ prim_pow(PRIM_PROTOTYPE)
 	PushFloat(fresult);
 }
 
+/* Helper function - generate a float rand from an int rand. */
+static float _int_f_rand( void )
+{
+	return((float) rand() / RAND_MAX);
+}
+
 void
 prim_frand(PRIM_PROTOTYPE)
 {
-	int tresult;
-
 	CHECKOP(0);
-	result = rand();
-	tresult = rand();
-	if ((result < tresult) && (result != tresult)) {
-		fresult = (float)result / (float)tresult;
-	} else {
-		if (result != 0) {
-			fresult = (float)tresult / (float)result;
-		} else {
-			fresult = 0.0;
-			/* 0 is what we want here, no error.error */
-		}
-	}
 	CHECKOFLOW(1);
-	PushFloat(fresult);
+	fresult = _int_f_rand();
+	PushFloat( fresult );
+}
+
+void prim_gaussian(PRIM_PROTOTYPE)
+{
+	/* We use these two statics to prevent lost work. */
+	float srca, srcb;
+	float resulta;
+	float radius = 1.0;
+	static float resultb;
+	static char second_call = 0;
+
+	CHECKOP(2);
+	oper1 = POP(); /* Arg1 - mean */
+	oper2 = POP(); /* Arg2 - std dev. */
+	if (oper2->type != PROG_FLOAT)
+		abort_interp("Non-float argument. (1)");
+        if (oper1->type != PROG_FLOAT)
+		abort_interp("Non-float argument. (2)");
+
+	/* This is a Box-Muller polar conversion.
+	 * Taken in part from code as demonstrated by Everett F. Carter, Jr.
+	 * This code is not copyrighted. */
+	if( second_call ) {
+		/* We should have a correlated value to use from the
+		 * previous call, still. */
+		resulta = resultb;
+		second_call = 0;
+	} else {
+		while( radius >= 1.0 ) {
+			srca = 2.0 * _int_f_rand() - 1.0;
+			srcb = 2.0 * _int_f_rand() - 1.0;
+			radius = srca * srca + srcb * srcb;
+		}
+
+		radius = sqrt( (-2.0 * log(radius) ) / radius );
+		resulta = srca * radius;
+		resultb = srcb * radius;
+		second_call = 1; /* Prime for next call in. */
+	}
+
+	fresult = oper1->data.fnumber + resulta * oper2->data.fnumber;
+	CLEAR(oper1);
+	CLEAR(oper2);
+	PushFloat( fresult );
 }
 
 void

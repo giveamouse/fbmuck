@@ -1,6 +1,8 @@
 2.2fb6.04
 Added NICEVAL in params.h to set the dumper process nice() priority.
+Added GAUSSIAN primitive to float.  Takes std-deviation and mean and returns a floating point random value with the given gaussian distribution.
 Fixed crasher bug in {debugif} MPI command.
+Changed FRAND primitive to be much more efficient and have a more uniform distribution.
 
 
 
