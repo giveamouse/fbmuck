@@ -1059,3 +1059,35 @@ prim_reflist_del(PRIM_PROTOTYPE)
 }
 
 
+void
+prim_blessedp(PRIM_PROTOTYPE)
+{
+	/* dbref prop -- int */
+	CHECKOP(2);
+	oper2 = POP();				/* prop name */
+	oper1 = POP();				/* dbref */
+	if (mlev < 2)
+		abort_interp("Permission denied.");
+	if (oper1->type != PROG_OBJECT)
+		abort_interp("Argument must be a dbref (1)");
+	if (!valid_object(oper1))
+		abort_interp("Invalid dbref (1)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Argument not a string. (2)");
+	if (!oper2->data.string)
+		abort_interp("Null string not allowed. (2)");
+	ref = oper1->data.objref;
+	(void) strcpy(buf, oper2->data.string->data ? oper2->data.string->data : "");
+	CLEAR(oper1);
+	CLEAR(oper2);
+
+	result = Prop_Blessed(ref, buf) ? 1 : 0;
+
+#ifdef LOG_PROPS
+	log2file("props.log", "#%d (%d) BLESSED?: o=%d n=\"%s\" v=%d",
+			 program, pc->line, ref, buf, result);
+#endif
+
+	PushInt(result);
+}
+

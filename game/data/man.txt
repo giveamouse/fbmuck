@@ -78,7 +78,7 @@ Message Management:
 Property Management:
   getprop   getpropval  getpropfval getpropstr  addprop      remove_prop
   envprop   envpropstr  nextprop    propdir?    parseprop    setprop
-  blessprop unblessprop reflist_add reflist_del reflist_find
+  blessprop unblessprop reflist_add reflist_del reflist_find blessed?
   
 I/O:
   read   notify   notify_except   notify_exclude   tread
@@ -460,6 +460,12 @@ not in the list, then 0 is returned.  Otherwise the position of the
 dbref in the list is returned, with the first dbref being in position 1,
 the second dbref in 2, etc.
 ~
+BLESSED?|
+blessed? (d s -- i)
+Takes a dbref and a property name, and returns a boolean integer that
+tells if that property has been blessed.
+(Requires Mucker Level 2)
+~ 
 ARRAY_GET_PROPLIST|
 ARRAY_GET_PROPLIST ( d s -- a )
 Reads in properties from a classic style proplist, and returns them
@@ -1695,7 +1701,7 @@ PROPDIR?|
 propdir? (d s -- i)
 Takes a dbref and a property name, and returns a boolean integer that
 tells if that property is a propdir that contains other props.
-(Requires Mucker Level 3)
+(Requires Mucker Level 2)
 ~
 ENVPROP|
 envprop ( d s -- d ? )
