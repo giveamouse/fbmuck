@@ -115,29 +115,38 @@ dump_database_internal(void)
 	if ((f = fopen(tmpfile, "w")) != NULL) {
 		db_write(f);
 		fclose(f);
+
+#ifdef DISKBASE
+#ifdef FLUSHCHANGED
+		fclose(input_file);
+
+#ifdef DELTADUMPS
+		fclose(delta_outfile);
+		fclose(delta_infile);
+#endif
+
+#endif
+#endif
+
 		if (rename(tmpfile, dumpfile) < 0)
 			perror(tmpfile);
 
 #ifdef DISKBASE
-
 #ifdef FLUSHCHANGED
-		fclose(input_file);
 		free((void *) in_filename);
 		in_filename = string_dup(dumpfile);
 		if ((input_file = fopen(in_filename, "r")) == NULL)
 			perror(dumpfile);
 
 #ifdef DELTADUMPS
-		fclose(delta_outfile);
 		if ((delta_outfile = fopen(DELTAFILE_NAME, "w")) == NULL)
 			perror(DELTAFILE_NAME);
 
-		fclose(delta_infile);
 		if ((delta_infile = fopen(DELTAFILE_NAME, "r")) == NULL)
 			perror(DELTAFILE_NAME);
 #endif
-#endif
 
+#endif
 #endif
 
 	} else {
