@@ -1,4 +1,7 @@
 2.2fb6.00rc7
+Changed spawn_resolver behavior -- now prints to status log if it can't spawn
+  the resolver properly.  Previously used perror(), and didn't send it to
+  error.log properly if it failed.
 Fixed bug with non-DISKBASE mucks where third save message wouldn't get sent.
 Fixed bug with non-DISKBASE mucks where @dump would drop SSL users.
 Fixed bug with reporting of incorrect line numbers in muf backtraces.
