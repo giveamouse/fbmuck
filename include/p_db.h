@@ -1,3 +1,6 @@
+#ifndef _P_DB_H
+#define _P_DB_H
+
 extern void prim_addpennies(PRIM_PROTOTYPE);
 extern void prim_moveto(PRIM_PROTOTYPE);
 extern void prim_pennies(PRIM_PROTOTYPE);
@@ -64,3 +67,5 @@ extern void prim_movepennies(PRIM_PROTOTYPE);
     "PMATCH", "MOVEPENNIES"
 
 #define PRIMS_DB_CNT 42
+
+#endif /* _P_DB_H */

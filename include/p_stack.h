@@ -1,3 +1,7 @@
+#ifndef _P_STACK_H
+#define _P_STACK_H
+
+
 extern void prim_pop(PRIM_PROTOTYPE);	/*     ? --              */
 extern void prim_dup(PRIM_PROTOTYPE);	/*     ? -- ? ?          */
 extern void prim_at(PRIM_PROTOTYPE);	/*   V|v -- ?            */
@@ -67,3 +71,5 @@ extern void prim_findmark(PRIM_PROTOTYPE);	/* m ?n ... ?1 -- ?n ... ?1 i    */
 #define PRIMS_INTERNAL_NAMES " FORITER", " FORPOP"
 
 #define PRIMS_INTERNAL_CNT 2
+
+#endif /* _P_STACK_H */

@@ -1,3 +1,5 @@
+#ifndef _TUNE_H
+#define _TUNE_H
 
 /* strings */
 extern const char *tp_dumpwarn_mesg;
@@ -118,6 +120,8 @@ extern int tp_thing_movement;
 extern int tp_expanded_debug;
 extern int tp_proplist_int_counter;
 
-extern int tune_count_parms();
+extern int tune_count_parms(void);
 extern void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
 extern void tune_save_parms_to_file(FILE * f);
+
+#endif /* _TUNE_H */

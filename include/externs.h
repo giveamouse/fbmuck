@@ -1,6 +1,9 @@
 /* $Header$
  * 
  * $Log: externs.h,v $
+ * Revision 1.7  2000/07/18 18:18:19  winged
+ * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
+ *
  * Revision 1.6  2000/07/07 18:41:04  revar
  * Fixed a db corruption bug with @toading players.
  *
@@ -29,64 +32,22 @@
  * Revision 1.1.1.1  1999/12/12 07:28:12  revar
  * Initial Sourceforge checkin, fb6.00a29
  *
- * Revision 1.1.1.1  1999/12/12 07:28:12  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/17 17:29:45  foxen
- * Initial revision
- *
- * Revision 5.15  1994/03/19  06:56:39  foxen
- * strdup -> string_dup
- *
- * Revision 5.14  1994/02/13  13:58:53  foxen
- * Bugfix for compiling with MALLOC_PROFILING, with Strdup.
- *
- * Revision 5.13  1994/02/11  05:55:59  foxen
- * memory monitoring code and memory cleanup mods.
- *
- * Revision 5.12  1994/01/06  03:16:30  foxen
- * Version 5.12
- *
- * Revision 5.1  1993/12/17  00:35:54  foxen
- * initial revision.
- *
- * Revision 1.12  90/09/18  08:06:03  rearl
- * Added hash tables for players and primitives.
- * 
- * Revision 1.11  90/09/13  06:33:47  rearl
- * do_dump() and do_toad() prototypes changed.
- * 
- * Revision 1.10  90/09/10  02:24:17  rearl
- * Changed NL line termination to CR/LF pairs.
- * 
- * Revision 1.9  90/09/01  06:03:56  rearl
- * Put do_drop() back like it was.
- * 
- * Revision 1.8  90/08/27  14:06:53  rearl
- * Added support for environments: @trace, mods to drop and @dig commands.
- * 
- * Revision 1.7  90/08/15  03:11:00  rearl
- * Messed around with pronoun_substitute, just like in stringutil.c.
- * 
- * Revision 1.6  90/08/06  02:47:24  rearl
- * Put can_link() back, added restricted() from predicates.c.
- * 
- * Revision 1.5  90/07/30  00:10:47  rearl
- * Added @owned command.
- * 
- * Revision 1.4  90/07/29  17:18:22  rearl
- * Fixed the functions containing the = bug.
- * 
- * Revision 1.3  90/07/20  11:43:06  casie
- * Added new function declarations for log.c
- * 
- * Revision 1.2  90/07/19  23:14:18  casie
- * Removed log comments from top.
- * 
  */
+
+#ifndef _EXTERNS_H
+#define _EXTERNS_H
 #include "copyright.h"
 
+/* Definition of 'dbref' */
 #include "db.h"
+/* Definition of 'McpFrame' */
+#include "mcp.h"
+/* Definition of PropPtr, among other things */
+#include "props.h"
+/* Definition of match_data */
+#include "match.h"
+/* Auto-generated list of extern functions */
+#include "externs-auto.h"
 
 /* Prototypes for externs not defined elsewhere */
 
@@ -94,21 +55,21 @@ extern char match_args[];
 extern char match_cmdname[];
 
 /* from event.c */
-extern long next_muckevent_time();
-extern void next_muckevent();
+extern long next_muckevent_time(void);
+extern void next_muckevent(void);
 
 /* from timequeue.c */
 extern void handle_read_event(int descr, dbref player, const char *command);
 extern int add_muf_read_event(int descr, dbref player, dbref prog, struct frame *fr);
-extern add_muf_queue_event(int descr, dbref player, dbref loc, dbref trig, dbref prog,
+extern int add_muf_queue_event(int descr, dbref player, dbref loc, dbref trig, dbref prog,
 						   const char *argstr, const char *cmdstr, int listen_p);
 extern int add_event(int event_type, int subtyp, int dtime, int descr, dbref player,
 					 dbref loc, dbref trig, dbref program, struct frame *fr,
 					 const char *strdata, const char *strcmd, const char *str3);
-extern void next_timequeue_event();
+extern void next_timequeue_event(void);
 extern int in_timequeue(int pid);
 extern struct frame* timequeue_pid_frame(int pid);
-extern long next_event_time();
+extern long next_event_time(void);
 extern void list_events(dbref program);
 extern int dequeue_prog(dbref program, int sleeponly);
 extern int dequeue_process(int procnum);
@@ -123,6 +84,7 @@ extern void envpropqueue(int descr, dbref player, dbref where, dbref trigger, db
 						 dbref xclude, const char *propname, const char *toparg,
 
 						 int mlev, int mt);
+extern int scan_instances(dbref program);
 
 /* from db.c */
 extern int number(const char *s);
@@ -133,11 +95,13 @@ extern void free_line(struct line *l);
 extern void db_free_object(dbref i);
 extern void db_clear_object(dbref i);
 extern void macrodump(struct macrotable *node, FILE * f);
-extern void macroload();
+extern void macroload(FILE * f);
 extern void free_prog_text(struct line *l);
 extern struct line *read_program(dbref i);
 extern void write_program(struct line *first, dbref i);
 extern char *show_line_prims(dbref program, struct inst *pc, int maxprims, int markpc);
+extern dbref db_write_deltas(FILE * f);
+
 
 /* From create.c */
 extern void do_open(int descr, dbref player, const char *direction, const char *linkto);
@@ -145,8 +109,10 @@ extern void do_link(int descr, dbref player, const char *name, const char *room_
 extern void do_dig(int descr, dbref player, const char *name, const char *pname);
 extern void do_create(dbref player, char *name, char *cost);
 extern void do_prog(int descr, dbref player, const char *name);
+extern void do_attach(int descr, dbref player, const char *action_name, const char *source_name);
 extern int unset_source(dbref player, dbref loc, dbref action);
 extern int link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list);
+extern void do_action(int descr, dbref player, const char *action_name, const char *source_name);
 
 /* from edit.c */
 extern struct macrotable
@@ -158,6 +124,9 @@ extern void do_list(dbref player, dbref program, int oarg[], int argc);
 /* From game.c */
 extern void do_dump(dbref player, const char *newfile);
 extern void do_shutdown(dbref player);
+extern void dump_warning(void);
+extern void dump_deltas(void);
+extern void fork_and_dump(void);
 
 /* From hashtab.c */
 extern hash_data *find_hash(const char *s, hash_tab * table, unsigned size);
@@ -244,6 +213,8 @@ extern void do_unlock(int descr, dbref player, const char *name);
 extern void do_unlink(int descr, dbref player, const char *name);
 extern void do_chown(int descr, dbref player, const char *name, const char *newobj);
 extern void do_set(int descr, dbref player, const char *name, const char *flag);
+extern void do_chlock(int descr, dbref player, const char *name, const char *keyname);
+extern void do_conlock(int descr, dbref player, const char *name, const char *keyname);
 
 /* From speech.c */
 extern void do_wall(dbref player, const char *message);
@@ -280,6 +251,8 @@ extern void do_toad(int descr, dbref player, const char *name, const char *recip
 extern void do_boot(dbref player, const char *name);
 extern void do_pcreate(dbref player, const char *arg1, const char *arg2);
 extern void do_usage(dbref player);
+extern void do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2);
+
 
 /* From boolexp.c */
 extern int eval_boolexp(int descr, dbref player, struct boolexp *b, dbref thing);
@@ -318,6 +291,7 @@ extern void init_primitives(void);
 extern struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);
 extern struct frame *interp(int descr, dbref player, dbref location, dbref program,
 							dbref source, int nosleeping, int whichperms);
+extern void purge_for_pool(void);
 
 /* declared in log.c */
 extern void log2file(char *myfilename, char *format, ...);
@@ -329,6 +303,7 @@ extern void log_status(char *format, ...);
 extern void log_other(char *format, ...);
 extern void notify_fmt(dbref player, char *format, ...);
 extern void log_program_text(struct line *first, dbref player, dbref i);
+extern void log_command(char *format, ...);
 
 /* From timestamp.c */
 extern void ts_newobject(struct object *thing);
@@ -341,8 +316,6 @@ extern int equalstr(char *s, char *t);
 
 extern void CrT_summarize(dbref player);
 
-extern long get_tz_offset();
-
 extern int force_level;
 
 extern void do_credits(dbref player);
@@ -353,3 +326,29 @@ extern void disassemble(dbref player, dbref program);
 void *init_seed(char *seed);
 void delete_seed(void *buffer);
 unsigned long rnd(void *buffer);
+
+/* from mcppkgs.c */
+extern void show_mcp_error(McpFrame * mfr, char *topic, char *text);
+
+/* from diskprop.c */
+extern void dispose_all_oldprops(void);
+
+/* from rwho.c */
+extern int rwhocli_shutdown(void);
+extern int rwhocli_setup(const char *server, const char *serverpw, const char *myname, const char *comment);
+
+/* from interface.c */
+extern void update_rwho(void);
+extern void do_armageddon(dbref player, const char *msg);
+
+/* from events.c */
+extern void dump_db_now(void);
+extern void delta_dump_now(void);
+
+/* from mesgparse.c */
+extern void mesg_init(void);
+
+/* from tune.c */
+extern void tune_load_parmsfile(dbref player);
+
+#endif /* _EXTERNS_H */

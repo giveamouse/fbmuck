@@ -1,3 +1,6 @@
+#ifndef _P_MISC_H
+#define _P_MISC_H
+
 extern void prim_time(PRIM_PROTOTYPE);
 extern void prim_date(PRIM_PROTOTYPE);
 extern void prim_gmtoffset(PRIM_PROTOTYPE);
@@ -43,3 +46,5 @@ extern void prim_event_send(PRIM_PROTOTYPE);
 
 #define PRIMS_MISC_CNT 26
 
+
+#endif /* _P_MISC_H */

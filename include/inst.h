@@ -1,3 +1,5 @@
+#ifndef _INST_H
+#define _INST_H
 
 #include "copyright.h"
 
@@ -23,3 +25,5 @@ extern char *insttotext(struct inst *, char *, int, int, dbref);
 
 /* and declare debug instruction diagnostic routine */
 extern char *debug_inst(struct inst *, struct inst *, char *, int, int, dbref);
+
+#endif /* _INST_H */

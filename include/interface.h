@@ -1,6 +1,9 @@
 
 /* $Header$
  * $Log: interface.h,v $
+ * Revision 1.3  2000/07/18 18:18:19  winged
+ * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
+ *
  * Revision 1.2  2000/03/29 12:21:01  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -29,6 +32,10 @@
  * 
  * 
  */
+
+#ifndef _INTERFACE_H
+#define _INTERFACE_H
+
 #include "copyright.h"
 
 #include "db.h"
@@ -46,7 +53,7 @@ extern void emergency_shutdown(void);
 extern int boot_off(dbref player);
 extern void boot_player_off(dbref player);
 extern int online(dbref player);
-extern int pcount();
+extern int pcount(void);
 extern int pidle(int c);
 extern int pdbref(int c);
 extern int pontime(int c);
@@ -74,3 +81,5 @@ extern void do_look_around(int descr, dbref player);
 extern int init_game(const char *infile, const char *outfile);
 extern void dump_database(void);
 extern void panic(const char *);
+
+#endif /* _INTERFACE_H */

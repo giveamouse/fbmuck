@@ -1,5 +1,8 @@
 /* $Header$
  * $Log: params.h,v $
+ * Revision 1.4  2000/07/18 18:18:19  winged
+ * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
+ *
  * Revision 1.3  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -56,6 +59,9 @@
  * 
  * 
  */
+
+#ifndef _PARAMS_H
+#define _PARAMS_H
 
 #include "copyright.h"
 #include "version.h"
@@ -179,3 +185,5 @@
 #define ANSI_BG_BLUE	"\033[44m"
 #define ANSI_BG_MAGENTA	"\033[45m"
 #define ANSI_BG_WHITE	"\033[47m"
+
+#endif /* _PARAMS_H */

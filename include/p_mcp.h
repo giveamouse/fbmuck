@@ -1,3 +1,6 @@
+#ifndef _P_MCP_H
+#define _P_MCP_H
+
 extern void prim_mcp_register(PRIM_PROTOTYPE);
 extern void prim_mcp_register_event(PRIM_PROTOTYPE);
 extern void prim_mcp_bind(PRIM_PROTOTYPE);
@@ -25,3 +28,5 @@ extern void prim_gui_ctrl_create(PRIM_PROTOTYPE);
 
 
 #define PRIMS_MCP_CNT 12
+
+#endif /* _P_MCP_H */

@@ -1,3 +1,5 @@
+#ifndef _MFUNLIST_H
+#define _MFUNLIST_H
 
 /*********************************************************************
  *  mfunlist.h   MPI functions list.    7/30/94
@@ -152,3 +154,5 @@ MFNDAT mfun_list[] = {
 
 	{NULL, NULL, 0, 0, 0, 0, 0}	/* Ends the mfun list */
 };
+
+#endif /* _MFUNLIST_H */

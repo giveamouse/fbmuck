@@ -1,5 +1,8 @@
 /* $Header$ */
 
+#ifndef _STRINGS_H
+#define _STRINGS_H
+
 /*
  * (c) 1990 Chelsea Dyerman, University of California, Berkeley (XCF)
  *
@@ -36,7 +39,12 @@ char	*index();
 char	*rindex();
 */
 
-const char *name_mangle();
-const char *unmangle();
+/* Definition of dbref */
+#include "db.h"
+
+const char *name_mangle(dbref obj);
+const char *unmangle(dbref player, char *s);
 const char *strencrypt(const char *, const char *);
 const char *strdecrypt(const char *, const char *);
+
+#endif /* _STRINGS_H */

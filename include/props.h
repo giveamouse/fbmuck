@@ -1,3 +1,7 @@
+#ifndef _PROPS_H
+#define _PROPS_H
+
+
 union pdata_u {
 	char *str;
 	struct boolexp *lok;
@@ -189,3 +193,5 @@ extern void db_putprop(FILE * f, const char *dir, PropPtr p);
 extern int db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdir);
 extern void db_getprops(FILE * f, dbref obj, const char *pdir);
 extern void db_dump_props(FILE * f, dbref obj);
+
+#endif /* _PROPS_H */

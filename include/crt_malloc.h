@@ -1,5 +1,8 @@
 /* CrT's own silly little malloc wrappers for debugging purposes: */
 
+#ifndef _CRT_MALLOC_H
+#define _CRT_MALLOC_H
+
 #include <sys/types.h>
 #include <malloc.h>
 
@@ -19,3 +22,5 @@ extern char *CrT_alloc_string(const char *, const char *, int);
 #define free(x)         CrT_free(        x,    __FILE__, __LINE__)
 #define string_dup(x)   CrT_string_dup(  x,    __FILE__, __LINE__)
 #define alloc_string(x) CrT_alloc_string(x,    __FILE__, __LINE__)
+
+#endif /* _CRT_MALLOC_H */

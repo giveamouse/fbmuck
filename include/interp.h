@@ -1,3 +1,5 @@
+#ifndef _INTERP_H
+#define _INTERP_H
 
 /* Stuff the interpreter needs. */
 /* Some icky machine/compiler #defines. --jim */
@@ -135,3 +137,5 @@ extern int nargs;				/* DO NOT TOUCH THIS VARIABLE */
 #include "p_stack.h"
 #include "p_mcp.h"
 #include "p_strings.h"
+
+#endif /* _INTERP_H */

@@ -1,5 +1,8 @@
 /* $Header$
  * $Log: match.h,v $
+ * Revision 1.3  2000/07/18 18:18:19  winged
+ * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
+ *
  * Revision 1.2  2000/03/29 12:21:01  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -34,6 +37,9 @@
  * 
  * 
  */
+
+#ifndef _MATCH_H
+#define _MATCH_H
 
 #include "copyright.h"
 #include "db.h"
@@ -124,3 +130,5 @@ extern dbref noisy_match_result(struct match_data *md);
 				/* wrapper for match_result */
 				/* noisily notifies player */
 				/* returns matched object or NOTHING */
+
+#endif /* _MATCH_H */

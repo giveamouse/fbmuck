@@ -1,3 +1,6 @@
+#ifndef _DEFAULTS_H
+#define _DEFAULTS_H
+
 #define DUMPWARN_MESG   "## Game will pause to save the database in a few minutes. ##"
 #define DELTAWARN_MESG  "## Game will pause to save changed objects in a few minutes. ##"
 #define DUMPDELTAS_MESG "## Saving changed objects ##"
@@ -283,3 +286,4 @@
 /* Specifies the maximum number of timers allowed per process. */
 #define PROCESS_TIMER_LIMIT 4
 
+#endif /* _DEFAULTS_H */

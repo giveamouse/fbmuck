@@ -20,6 +20,6 @@ int muf_event_count(struct frame* fr);
 void muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive);
 void muf_event_remove(struct frame *fr, char *event, int which);
 void muf_event_purge(struct frame *fr);
-void muf_event_process();
+void muf_event_process(void);
 
-#endif
+#endif /* MUF_EVENT_H */

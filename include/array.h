@@ -28,7 +28,7 @@ typedef struct stk_array_t {
 	} data;
 } stk_array;
 
-stk_array *new_array_dictionary();
+stk_array *new_array_dictionary(void);
 stk_array *new_array_packed(int size);
 stk_array *array_clone(stk_array * arr);
 void array_free(stk_array * arr);

@@ -9,6 +9,10 @@
  *
  * Most of the goodies that used to be here are now in @tune.
  */
+
+#ifndef _CONFIG_H
+#define _CONFIG_H
+
 #include "copyright.h"
 
 /************************************************************************
@@ -22,7 +26,7 @@
  * keeping a terminal line open and such. Logs normal output to a file
  * and writes out a netmuck.pid file 
  */
-#undef DETACH
+#define DETACH
 
 /* VampMUCK's Anonimity system -- It works on its own but it's pretty useless
  * without the proper MUF code. 
@@ -288,6 +292,7 @@
 # define SYS_TYPE "Linux"
 # define LINUX
 # define SYSV
+# define SYS_POSIX		/* Linux is POSIX */
 # define NO_MEMORY_COMMAND
 #endif
 
@@ -345,3 +350,5 @@
 /* Final line of defense for self configuration, systems we know  */
 /* need special treatment.                                        */
 /******************************************************************/
+
+#endif /* _CONFIG_H */

@@ -292,7 +292,7 @@ typedef struct McpFrame_T {
 
 
 
-void mcp_initialize();
+void mcp_initialize(void);
 
 void mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver,
 						  McpPkg_CB callback, void *context, ContextCleanup_CB cleanup);

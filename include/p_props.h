@@ -1,3 +1,6 @@
+#ifndef _P_PROPS_H
+#define _P_PROPS_H
+
 extern void prim_getpropval(PRIM_PROTOTYPE);
 extern void prim_getpropfval(PRIM_PROTOTYPE);
 extern void prim_getpropstr(PRIM_PROTOTYPE);
@@ -20,3 +23,5 @@ extern void prim_setprop(PRIM_PROTOTYPE);
     "PARSEPROP", "GETPROP", "SETPROP", "GETPROPFVAL"
 
 #define PRIMS_PROPS_CNT 12
+
+#endif /* _P_PROPS_H */

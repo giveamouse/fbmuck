@@ -1,3 +1,5 @@
+#ifndef _MPI_H
+#define _MPI_H
 
 /* MPI msgparse.c header file. */
 
@@ -12,3 +14,5 @@ extern char *mesg_parse(int descr, dbref player, dbref what, dbref perms,
 
 extern char *do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf,
 						   const char *abuf, char *outbuf, int mesgtyp);
+
+#endif /* _MPI_H */

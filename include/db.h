@@ -1,6 +1,9 @@
 /* $Header$
  *
  * $Log: db.h,v $
+ * Revision 1.8  2000/07/18 18:18:18  winged
+ * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
+ *
  * Revision 1.7  2000/07/02 23:19:00  revar
  * Added support for the planned C-like language to muf-bytecode compiler.
  * Changed compiler to use a linking lookup table for address resolution.
@@ -730,7 +733,7 @@ extern char *alloc_string(const char *);
 
 extern struct shared_string *alloc_prog_string(const char *);
 
-extern dbref new_object();		/* return a new object */
+extern dbref new_object(void);		/* return a new object */
 
 extern dbref getref(FILE *);	/* Read a database reference from a file. */
 

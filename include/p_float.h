@@ -1,3 +1,7 @@
+#ifndef _P_FLOAT_H
+#define _P_FLOAT_H
+
+
 extern void prim_ceil(PRIM_PROTOTYPE);
 extern void prim_floor(PRIM_PROTOTYPE);
 extern void prim_float(PRIM_PROTOTYPE);
@@ -41,3 +45,5 @@ extern void prim_dist3d(PRIM_PROTOTYPE);
 	"POLAR_TO_XYZ"
 
 #define PRIMS_FLOAT_CNT 27
+
+#endif /* _P_FLOAT_H */

@@ -1,3 +1,6 @@
+#ifndef _P_MATH_H
+#define _P_MATH_H
+
 extern void prim_add(PRIM_PROTOTYPE);
 extern void prim_subtract(PRIM_PROTOTYPE);
 extern void prim_multiply(PRIM_PROTOTYPE);
@@ -32,3 +35,5 @@ extern void prim_setseed(PRIM_PROTOTYPE);
     ">=", "RANDOM", "INT", "SRAND", "SETSEED", "GETSEED"
 
 #define PRIMS_MATH_CNT 22
+
+#endif /* _P_MATH_H */

@@ -1,3 +1,6 @@
+#ifndef _P_STRINGS_H
+#define _P_STRINGS_H
+
 extern void prim_fmtstring(PRIM_PROTOTYPE);
 extern void prim_split(PRIM_PROTOTYPE);
 extern void prim_rsplit(PRIM_PROTOTYPE);
@@ -60,3 +63,5 @@ extern void prim_ansi_midstr(PRIM_PROTOTYPE);
 
 #define PRIMS_STRINGS_CNT 39
 
+
+#endif /* _P_STRINGS_H */

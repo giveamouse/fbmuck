@@ -1,3 +1,5 @@
+#ifndef _MESGPARSE_H
+#define _MESGPARSE_H
 
 #define MAX_MFUN_NAME_LEN 16
 #define MAX_MFUN_LIST_LEN 512
@@ -49,7 +51,7 @@ int truestr(char *buf);
 
 int new_mvar(const char *varname, char *buf);
 char *get_mvar(const char *varname);
-int free_top_mvar();
+int free_top_mvar(void);
 
 int new_mfunc(const char *funcname, const char *buf);
 const char *get_mfunc(const char *funcname);
@@ -67,3 +69,5 @@ int free_mfuncs(int downto);
 typedef char argv_typ[10][BUFFER_LEN];
 
 #define MesgParse(in,out) mesg_parse(descr, player, what, perms, (in), (out), BUFFER_LEN, mesgtyp)
+
+#endif /* _MESGPARSE_H */

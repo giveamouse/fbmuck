@@ -1,3 +1,7 @@
+#ifndef _P_ARRAY_H
+#define _P_ARRAY_H
+
+
 extern void prim_array_make(PRIM_PROTOTYPE);
 extern void prim_array_make_dict(PRIM_PROTOTYPE);
 extern void prim_array_explode(PRIM_PROTOTYPE);
@@ -65,3 +69,5 @@ extern void prim_array_put_reflist(PRIM_PROTOTYPE);
 		"ARRAY_EXCLUDEVAL"
 
 #define PRIMS_ARRAY_CNT 41
+
+#endif /* _P_ARRAY_H */
