@@ -2695,9 +2695,9 @@ dump_users(struct descriptor_data *e, char *user)
 				if (tp_who_doing) {
 					/* Modified to take into account PLAYER_NAME_LIMIT changes */
 #ifdef USE_SSL
-					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c%c %*s\r\n",
+					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c%c %.*s\r\n",
 #else
-					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c  %*s\r\n",
+					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c  %.*s\r\n",
 #endif
 							PLAYER_NAME_LIMIT + 1,
 							NAME(d->player),
@@ -2707,7 +2707,13 @@ dump_users(struct descriptor_data *e, char *user)
 #ifdef USE_SSL
 							(d->ssl_session ? '@' : ' '),
 #endif		
-							(int) (44 - (PLAYER_NAME_LIMIT - 16)),
+							/* Things must end on column 79. The required columns
+							 * (not counting player name, but counting the forced
+							 * space after it) use up 20 columns.
+							 *
+							 * !! Don't forget to update this if you change that !!
+							 */
+							(int) (79 - (PLAYER_NAME_LIMIT + 20)),
 							GETDOING(d->player) ?
 #ifdef COMPRESS
 							uncompress(GETDOING(d->player))
