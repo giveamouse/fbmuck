@@ -65,8 +65,6 @@ extern void db_free_object(dbref i);
 extern void db_clear_object(dbref i);
 extern void macroload(FILE * f);
 extern void free_prog_text(struct line *l);
-extern struct line *read_program(dbref i);
-extern void write_program(struct line *first, dbref i);
 extern char *show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, int markpc);
 extern dbref db_write_deltas(FILE * f);
 
@@ -92,6 +90,8 @@ extern struct macrotable
 *new_macro(const char *name, const char *definition, dbref player);
 extern char *macro_expansion(struct macrotable *node, const char *match);
 extern void match_and_list(int descr, dbref player, const char *name, char *linespec);
+extern struct line *read_program(dbref i);
+extern void write_program(struct line *first, dbref i);
 extern void do_list(dbref player, dbref program, int *oarg, int argc);
 
 /* From game.c */

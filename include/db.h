@@ -714,6 +714,14 @@ extern char *alloc_string(const char *);
 extern struct shared_string *alloc_prog_string(const char *);
 #endif
 
+extern void putref(FILE * f, dbref ref);
+extern void putstring(FILE * f, const char *s);
+extern void putproperties(FILE * f, dbref obj);
+extern int do_peek(FILE * f);
+extern dbref getref(FILE * f);
+extern const char *getstring(FILE * f);
+extern void getproperties(FILE * f, dbref obj, const char *pdir);
+
 extern dbref new_object(void);		/* return a new object */
 
 extern struct boolexp *getboolexp(FILE *);	/* get a boolexp */
