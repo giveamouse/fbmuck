@@ -605,6 +605,7 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 	temp2.type = PROG_ARRAY;
 	temp2.data.array = nu;
 	array_set_strkey(&temp.data.array, "values", &temp2);
+	CLEAR(&temp2);
 
 	lines = mcp_mesg_arg_linecount(msg, "data");
 	if (lines > 0) {
