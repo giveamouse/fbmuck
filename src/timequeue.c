@@ -13,6 +13,7 @@
 #include "props.h"
 #include "interface.h"
 #include "externs.h"
+#include "mufevent.h"
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -567,6 +568,8 @@ in_timequeue(int pid)
 
 	if (!pid)
 		return 0;
+	if (muf_event_pid_frame(pid))
+		return 1;
 	if (!tqhead)
 		return 0;
 	while ((ptr) && (ptr->eventnum != pid))
@@ -574,6 +577,28 @@ in_timequeue(int pid)
 	if (ptr)
 		return 1;
 	return 0;
+}
+
+
+struct frame*
+timequeue_pid_frame(int pid)
+{
+	struct frame *out = NULL;
+	timequeue ptr = tqhead;
+
+	if (!pid)
+		return NULL;
+	out = muf_event_pid_frame(pid);
+	if (out != NULL)
+		return out;
+
+	if (!tqhead)
+		return NULL;
+	while ((ptr) && (ptr->eventnum != pid))
+		ptr = ptr->next;
+	if (ptr)
+		return ptr->fr;
+	return NULL;
 }
 
 

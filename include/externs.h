@@ -1,6 +1,11 @@
 /* $Header$
  * 
  * $Log: externs.h,v $
+ * Revision 1.4  2000/04/29 10:01:01  revar
+ * Fixed bug with ISPID? and {ispid} failing to correctly deal with muf progs
+ *   that are in EVENT_WAIT.
+ * Added EVENT_SEND (intPid strEventId ? -- ) MUF prim for IPC.
+ *
  * Revision 1.3  2000/04/29 04:16:04  revar
  * Added PROCESS_TIMER_LIMIT @tune.
  * Added TIMER_START muf prim.
@@ -96,6 +101,7 @@ extern int add_event(int event_type, int subtyp, int dtime, int descr, dbref pla
 					 const char *strdata, const char *strcmd, const char *str3);
 extern void next_timequeue_event();
 extern int in_timequeue(int pid);
+extern struct frame* timequeue_pid_frame(int pid);
 extern long next_event_time();
 extern void list_events(dbref program);
 extern int dequeue_prog(dbref program, int sleeponly);

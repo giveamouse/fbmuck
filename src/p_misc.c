@@ -697,3 +697,33 @@ prim_event_count(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
+
+void
+prim_event_send(PRIM_PROTOTYPE)
+{
+	struct frame* destfr;
+
+	CHECKOP(3);
+	oper3 = POP();				/* any: data to pass */
+	oper2 = POP();				/* string: event id */
+	oper1 = POP();				/* int: process id to send to */
+
+	if (mlev < 3)
+		abort_interp("Requires Mucker level 3 or better.");
+	if (oper1->type != PROG_INTEGER)
+		abort_interp("Expected an integer process id. (1)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Expected a string event id. (2)");
+
+	destfr = timequeue_pid_frame(oper1->data.number);
+	if (destfr) {
+		sprintf(buf, "USER.%.32s", DoNullInd(oper2->data.string));
+		muf_event_add(destfr, buf, oper3);
+	}
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
+}
+
+

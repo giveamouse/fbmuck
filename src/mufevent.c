@@ -138,6 +138,20 @@ muf_event_dequeue(dbref prog)
 
 
 
+struct frame*
+muf_event_pid_frame(int pid)
+{
+	struct mufevent_process *ptr = mufevent_processes;
+
+	while (ptr) {
+		if (ptr->fr && ptr->fr->pid == pid)
+			return ptr->fr;
+		ptr = ptr->next;
+	}
+	return NULL;
+}
+
+
 /* int muf_event_controls(dbref player, int pid)
  * Returns true if the given player controls the given PID.
  */

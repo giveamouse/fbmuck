@@ -24,6 +24,15 @@ Added an ERR_IBOUNDS?    convenience macro define for '4 is_set?'
 Added a D_SIMPLE inserver define for specifying "simple" dialogs.
 Added a D_TABBED inserver define for specifying "tabbed" dialogs.
 Added a D_HELPER inserver define for specifying "helper" dialogs.
+Added EVENT_SEND ( i s ? -- ) MUF prim.  Sends a "USER." event to
+  the process referred to by the given pid.  The target process will
+  receive an event that can be read with EVENT_WAIT.  The event type
+  will be "USER." with the given event id string appended to it.
+  The given event id string will be truncated at 32 characters.  The
+  given arbitrary stack element will be passed on to the new process.
+  ie: '23 "foobar" 3.1416 event_send' will send an event to process
+  23, with an eventid of "USER.foobar", and a floating point data
+  value of 3.1416.  This primitive requires at least Mucker Level 3.
 Added TIMER_START ( i s -- ) MUF prim.  Requests that a timer event
   be sent to this program in i seconds, with an event name of "TIMER."
   with the given string appended.  ie: '5 "one" timer_start' will
