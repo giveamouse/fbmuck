@@ -9,6 +9,7 @@ Fixed @dlt, @delta and @usage commands to give a more specific error message
   to wizzes when not compiled in.
 Fixed compiler warnings about incompatible pointer types in calls to time(3), 
   ctime(3), gmtime(3)
+Fixes @sweep to not list both pose and page with 'p' actions.
 Changed help.txt into a muckhelp.raw file that is processed by prochelp.
 Changed property loading routines to not abort(), but to instead log corrupt
   properties when they are found.

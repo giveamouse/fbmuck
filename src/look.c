@@ -1440,7 +1440,7 @@ do_contents(int descr, dbref player, const char *name, const char *flags)
 }
 
 static int
-exit_matches_name(dbref exit, const char *name)
+exit_matches_name(dbref exit, const char *name, int exactMatch)
 {
 	char buf[BUFFER_LEN];
 	char *ptr, *ptr2;
@@ -1453,27 +1453,30 @@ exit_matches_name(dbref exit, const char *name)
 			*ptr2++ = '\0';
 		while (*ptr2 == ';')
 			ptr2++;
-		if (string_prefix(name, ptr) && DBFETCH(exit)->sp.exit.ndest &&
+		if ((exactMatch ? !strcasecmp(name, ptr) : string_prefix(name, ptr)) &&
+			DBFETCH(exit)->sp.exit.ndest &&
 			Typeof((DBFETCH(exit)->sp.exit.dest)[0]) == TYPE_PROGRAM)
 			return 1;
 	}
 	return 0;
 }
 
-void
-exit_match_exists(dbref player, dbref obj, const char *name)
+int
+exit_match_exists(dbref player, dbref obj, const char *name, int exactMatch)
 {
 	dbref exit;
 	char buf[BUFFER_LEN];
 
 	exit = DBFETCH(obj)->exits;
 	while (exit != NOTHING) {
-		if (exit_matches_name(exit, name)) {
+		if (exit_matches_name(exit, name, exactMatch)) {
 			snprintf(buf, sizeof(buf), "  %ss are trapped on %.2048s", name, unparse_object(player, obj));
 			notify(player, buf);
+			return 1;
 		}
 		exit = DBFETCH(exit)->next;
 	}
+	return 0;
 }
 
 void
@@ -1547,10 +1550,12 @@ do_sweep(int descr, dbref player, const char *name)
 				if (tellflag)
 					notify(player, buf);
 			}
-			exit_match_exists(player, ref, "page");
-			exit_match_exists(player, ref, "whisper");
-			exit_match_exists(player, ref, "pose");
-			exit_match_exists(player, ref, "say");
+			exit_match_exists(player, ref, "page", 0);
+			exit_match_exists(player, ref, "whisper", 0);
+			exit_match_exists(player, ref, "pose", 1) ||
+				exit_match_exists(player, ref, "pos", 1) ||
+				exit_match_exists(player, ref, "po", 1);
+			exit_match_exists(player, ref, "say", 0);
 			break;
 		}
 	}
@@ -1569,10 +1574,12 @@ do_sweep(int descr, dbref player, const char *name)
 			notify(player, buf);
 		}
 
-		exit_match_exists(player, loc, "page");
-		exit_match_exists(player, loc, "whisper");
-		exit_match_exists(player, loc, "pose");
-		exit_match_exists(player, loc, "say");
+		exit_match_exists(player, loc, "page", 0);
+		exit_match_exists(player, loc, "whisper", 0);
+		exit_match_exists(player, loc, "pose", 1) ||
+			exit_match_exists(player, loc, "pos", 1) ||
+			exit_match_exists(player, loc, "po", 1);
+		exit_match_exists(player, loc, "say", 0);
 
 		loc = getparent(loc);
 	}
