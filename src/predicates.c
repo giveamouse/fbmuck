@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.6  2001/05/16 22:23:11  wog
+ * Made ( and ) restricted to only player names.
+ *
  * Revision 1.5  2001/05/16 22:14:34  wog
  * Prevented player names with ( or ) in them.
  *
@@ -427,8 +430,6 @@ ok_name(const char *name)
 			&& *name != LOOKUP_TOKEN
 			&& *name != REGISTERED_TOKEN
 			&& *name != NUMBER_TOKEN
-			&& !index(name, ')')
-			&& !index(name, '(')
 			&& !index(name, ARG_DELIMITER)
 			&& !index(name, AND_TOKEN)
 			&& !index(name, OR_TOKEN)
@@ -447,9 +448,11 @@ ok_player_name(const char *name)
 
 	if (!ok_name(name) || strlen(name) > PLAYER_NAME_LIMIT)
 		return 0;
+	
 
 	for (scan = name; *scan; scan++) {
-		if (!(isprint(*scan) && !isspace(*scan))) {	/* was isgraph(*scan) */
+		if (!(isprint(*scan) && !isspace(*scan)) && *scan != '(' && *scan != ')') {	
+		    /* was isgraph(*scan) */
 			return 0;
 		}
 	}
