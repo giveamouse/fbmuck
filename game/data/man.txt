@@ -129,13 +129,13 @@ F's
   frand        ftostr       ftostrc      
 
 G's
-  getlink            getlinks           getlinks_array     getlockstr
-  getpidinfo         getpids            getprop            getpropfval
-  getpropstr         getpropval         getseed            gmtoffset
-  gui-options        gui_available      gui_ctrl_command   gui_ctrl_create
-  gui_dlog_close     gui_dlog_create    gui_dlog_helper    gui_dlog_show
-  gui_dlog_simple    gui_dlog_tabbed    gui_value_get      gui_value_set
-  gui_values_get     
+  gaussian           getlink            getlinks           getlinks_array
+  getlockstr         getpidinfo         getpids            getprop
+  getpropfval        getpropstr         getpropval         getseed
+  gmtoffset          gui-options        gui_available      gui_ctrl_command
+  gui_ctrl_create    gui_dlog_close     gui_dlog_create    gui_dlog_helper
+  gui_dlog_show      gui_dlog_simple    gui_dlog_tabbed    gui_value_get
+  gui_value_set      gui_values_get     
 
 I's
   if           ignore_add   ignore_del   ignoring?    inf          instances
@@ -1931,7 +1931,7 @@ RANDOM ( -- i )
   Returns a random integer from 0 to the MAXINT of the system running the MUCK.
 In general this number is (2^31)-1 or 2,147,483,647 (2.1 billion).  This is
 based on the standard C random() function, so it's not very secure.
-Also see: SETSEED, GETSEED, SRAND and FRAND
+Also see: SETSEED, GETSEED, SRAND, FRAND and GAUSSIAN
 ~
 ~
 BITOR
@@ -1972,10 +1972,10 @@ acos           asin           atan           atan2          ceil
 clear          clear_error    cos            diff3          dist3d
 epsilon        error?         error_bit      error_name     error_num
 error_str      exp            fabs           float          floor
-fmod           frand          ftostr         ftostrc        inf
-is_set?        log            log10          modf           pi
-polar_to_xyz   pow            round          set_error      sin
-sqrt           strtof         tan            xyz_to_polar   
+fmod           frand          ftostr         ftostrc        gaussian
+inf            is_set?        log            log10          modf
+pi             polar_to_xyz   pow            round          set_error
+sin            sqrt           strtof         tan            xyz_to_polar   
 
 ~----------------------------------------------------------------------------
 ~
@@ -2211,6 +2211,14 @@ FRAND
 FRAND ( -- f )
 
   Returns a random floating point number between 0 and 1.
+~
+~
+GAUSSIAN
+GAUSSIAN ( fs fm -- f )
+
+  Given the standard deviation, and the mean, return a floating point random
+number with the given normalization.  Note that this may be any value between
+-INF and INF.
 ~
 ~
 CLEAR
