@@ -114,14 +114,21 @@ package:
 	cp -f src/CHANGESfb4 ${TMPPKGDIR}/game/data/info/changesfb4
 	cp -f src/CHANGESfb5 ${TMPPKGDIR}/game/data/info/changesfb5
 	cp -f src/CHANGESfb6 ${TMPPKGDIR}/game/data/info/changesfb6
-	head -1 `/bin/ls -1d src/CHANGESfb* | sort -nr | head -1` | cut -c4- > ${TMPREV}
-	echo '#define VERSION "Muck2.2'`cat ${TMPREV}`'"' > ${TMPPKGDIR}/include/version.h
+	head -1 `/bin/ls -1d src/CHANGESfb* | sort -nr | head -1` | cut -c6- > ${TMPREV}
+	echo '#define VERSION "Muck2.2fb'`cat ${TMPREV}`'"' > ${TMPPKGDIR}/include/version.h
 	rm -f ${TMPPKGDIR}/prochelp
 	find ${TMPPKGDIR} -type d -name CVS -print | xargs -r -t rm -rf
-	mv -f ${TMPPKGDIR} `cat ${TMPREV}`
-	rm -f `cat ${TMPREV}`.tar.gz
-	tar -cf - `cat ${TMPREV}` | gzip -9 > `cat ${TMPREV}`.tar.gz
-	rm -rf `cat ${TMPREV}` ${TMPREV}
+	mv -f ${TMPPKGDIR} fbmuck-`cat ${TMPREV}`
+	rm -f fbmuck-`cat ${TMPREV}`.tar.gz
+	tar -cf - fbmuck-`cat ${TMPREV}` | gzip -9 > fbmuck-`cat ${TMPREV}`.tar.gz
+	rm -rf fbmuck-`cat ${TMPREV}` ${TMPREV}
+
+sprm: package
+	head -1 `/bin/ls -1d src/CHANGESfb* | sort -nr | head -1` | cut -c4- > ${TMPREV}
+	cp -f fbmuck-`cat ${TMPREV}`.tar.gz /usr/src/redhat/SOURCES
+	cp -f fbmuck.spec /usr/src/redhat/SPECS/fbmuck.spec
+	cd /usr/src/redhat/SPECS && rpm -ba fbmuck.spec
+	rm -rf ${TMPREV}
 
 
 # #######################################################################
