@@ -970,20 +970,45 @@ max_open_files(void)
 #endif							/* !POSIX */
 }
 
+int
+queue_immediate(struct descriptor_data *d, const char *msg)
+{
+	char buf[BUFFER_LEN + 8];
+	int quote_len = 0;
+
+	if (d->connected) {
+		if (FLAGS(d->player) & CHOWN_OK) {
+			strip_bad_ansi(buf, msg);
+		} else {
+			strip_ansi(buf, msg);
+		}
+	} else {
+		strip_ansi(buf, msg);
+	}
+
+	if (d->mcpframe.enabled && !(strncmp(buf, MCP_MESG_PREFIX, 3) && strncmp(buf, MCP_QUOTE_PREFIX, 3)))
+	{
+		quote_len = strlen(MCP_QUOTE_PREFIX);
+		socket_write(d, MCP_QUOTE_PREFIX, quote_len);
+	}
+
+	return socket_write(d, buf, strlen(buf)) + quote_len;
+}
+
 void
 goodbye_user(struct descriptor_data *d)
 {
-	socket_write(d, "\r\n", 2);
-	socket_write(d, tp_leave_mesg, strlen(tp_leave_mesg));
-	socket_write(d, "\r\n\r\n", 4);
+	queue_immediate(d, "\r\n");
+	queue_immediate(d, tp_leave_mesg);
+	queue_immediate(d, "\r\n\r\n");
 }
 
 void
 idleboot_user(struct descriptor_data *d)
 {
-	socket_write(d, "\r\n", 2);
-	socket_write(d, tp_idle_mesg, strlen(tp_idle_mesg));
-	socket_write(d, "\r\n\r\n", 4);
+	queue_immediate(d, "\r\n");
+	queue_immediate(d, tp_idle_mesg);
+	queue_immediate(d, "\r\n\r\n");
 	d->booted = 1;
 }
 

@@ -14,8 +14,6 @@
 #endif /* HAVE_MALLOC_H */
 
 
-#define MCP_MESG_PREFIX		"#$#"
-#define MCP_QUOTE_PREFIX	"#$\""
 #define MCP_MESG_DELIMITER	"-"
 #define MCP_ARG_DEFERRED	"*"
 #define MCP_ARG_EMPTY		"\"\""

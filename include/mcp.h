@@ -4,6 +4,8 @@
 /* the type used to specify the connection */
 typedef void *connection_t;
 
+#define MCP_MESG_PREFIX     "#$#"
+#define MCP_QUOTE_PREFIX    "#$\""
 
 #define EMCP_SUCCESS		 0	/* successful result */
 #define EMCP_NOMCP			-1	/* MCP isn't supported on this connection. */
