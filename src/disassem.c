@@ -2,6 +2,11 @@
 
 /*
  * $Log: disassem.c,v $
+ * Revision 1.5  2000/07/02 23:19:00  revar
+ * Added support for the planned C-like language to muf-bytecode compiler.
+ * Changed compiler to use a linking lookup table for address resolution.
+ * Added PROG_SVAR_BANG and PROG_SVAR_AT support, for one-instr var get/set.
+ *
  * Revision 1.4  2000/05/12 03:22:12  revar
  * Optimized CLEAR() and RCLEAR()
  * Optimized copyinst()
@@ -138,6 +143,12 @@ disassemble(dbref player, dbref program)
 			break;
 		case PROG_SVAR:
 			sprintf(buf, "%d: (line %d) SCOPEDVAR: %d", i, curr->line, curr->data.number);
+			break;
+		case PROG_SVAR_AT:
+			sprintf(buf, "%d: (line %d) GET SCOPEDVAR: %d", i, curr->line, curr->data.number);
+			break;
+		case PROG_SVAR_BANG:
+			sprintf(buf, "%d: (line %d) SET SCOPEDVAR: %d", i, curr->line, curr->data.number);
 			break;
 		case PROG_LVAR:
 			sprintf(buf, "%d: (line %d) LOCALVAR: %d", i, curr->line, curr->data.number);

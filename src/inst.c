@@ -156,6 +156,12 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 	case PROG_SVAR:
 		sprintf(buffer, "SV%d", theinst->data.number);
 		break;
+	case PROG_SVAR_AT:
+		sprintf(buffer, "SV%d @", theinst->data.number);
+		break;
+	case PROG_SVAR_BANG:
+		sprintf(buffer, "SV%d !", theinst->data.number);
+		break;
 	case PROG_LVAR:
 		sprintf(buffer, "LV%d", theinst->data.number);
 		break;

@@ -772,6 +772,38 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			atop++;
 			break;
 
+		case PROG_SVAR_AT:
+			{
+				struct inst *tmp;
+				if (atop >= STACK_SIZE)
+					abort_loop("Stack overflow.", NULL, NULL);
+
+				tmp = scopedvar_get(fr, pc->data.number);
+				if (!tmp)
+					abort_loop("Scoped variable number out of range.", NULL, NULL);
+
+				copyinst(tmp, arg + atop);
+				pc++;
+				atop++;
+			}
+			break;
+
+		case PROG_SVAR_BANG:
+			{
+				struct inst *tmp;
+				if (atop < 1)
+					abort_loop("Stack Underflow.", NULL, NULL);
+
+				tmp = scopedvar_get(fr, pc->data.number);
+				if (!tmp)
+					abort_loop("Scoped variable number out of range.", NULL, NULL);
+
+				CLEAR(tmp);
+				copyinst(arg + --atop, tmp);
+				pc++;
+			}
+			break;
+
 		case PROG_FUNCTION:
 			{
 				int i = pc->data.mufproc->args;

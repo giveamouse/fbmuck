@@ -1,6 +1,11 @@
 /* $Header$
  *
  * $Log: db.h,v $
+ * Revision 1.7  2000/07/02 23:19:00  revar
+ * Added support for the planned C-like language to muf-bytecode compiler.
+ * Changed compiler to use a linking lookup table for address resolution.
+ * Added PROG_SVAR_BANG and PROG_SVAR_AT support, for one-instr var get/set.
+ *
  * Revision 1.6  2000/05/15 09:52:57  revar
  * Rewrote how lvars work, to be per program, rather than per call-level.
  *
@@ -329,16 +334,29 @@ struct line {
 	struct line *next, *prev;	/* the next line and the previous line */
 };
 
+/* constants and defines for MUV data types */
+#define MUV_ARRAY_OFFSET		16
+#define MUV_ARRAY_MASK			(0xff << MUV_ARRAY_OFFSET)
+#define MUV_ARRAYOF(x)			(x + (1 << MUV_ARRAY_OFFSET))
+#define MUV_TYPEOF(x)			(x & ~MUV_ARRAY_MASK)
+#define MUV_ARRAYSETLEVEL(x,l)	((l << MUV_ARRAY_OFFSET) | MUF_TYPEOF(x))
+#define MUV_ARRAYGETLEVEL(x)	((x & MUV_ARRAY_MASK) >> MUV_ARRAY_OFFSET)
+
+
 /* stack and object declarations */
 /* Integer types go here */
+#define PROG_VARIES      255    /* MUV flag denoting variable number of args */
+#define PROG_VOID        254    /* MUV void return type */
+#define PROG_UNTYPED     253    /* MUV unknown var type */
+
 #define PROG_CLEARED     0
 #define PROG_PRIMITIVE   1		/* forth prims and hard-coded C routines */
 #define PROG_INTEGER     2		/* integer types */
 #define PROG_FLOAT       3		/* float types */
 #define PROG_OBJECT      4		/* database objects */
 #define PROG_VAR         5		/* variables */
-#define PROG_LVAR        6		/* variables */
-#define PROG_SVAR        7		/* variables */
+#define PROG_LVAR        6		/* local variables, unique per program */
+#define PROG_SVAR        7		/* scoped variables, unique per procedure */
 
 /* Pointer types go here, numbered *AFTER* PROG_STRING */
 #define PROG_STRING      9		/* string types */
@@ -350,6 +368,8 @@ struct line {
 #define PROG_JMP         15		/* JMP shortcut */
 #define PROG_ARRAY       16		/* Array of other stack items. */
 #define PROG_MARK        17		/* Stack marker for [ and ] */
+#define PROG_SVAR_AT     18		/* @ shortcut for scoped vars */
+#define PROG_SVAR_BANG   19		/* ! shortcut for scoped vars */
 
 #define MAX_VAR         54		/* maximum number of variables including the
 								   * basic ME, LOC, TRIGGER, and COMMAND vars */

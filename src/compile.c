@@ -41,7 +41,6 @@ static int IN_FORITER;
 static int IN_FOREACH;
 static int IN_FORPOP;
 static int IN_FOR;
-static int IN_BANG;
 
 
 static hash_tab primitive_list[COMP_HASH_SIZE];
@@ -61,6 +60,7 @@ struct IF_STACK {
 
 struct PROC_LIST {
 	const char *name;
+	int returntype;
 	struct INTERMEDIATE *code;
 	struct PROC_LIST *next;
 };
@@ -93,12 +93,21 @@ typedef struct COMPILE_STATE_T {
 	struct publics *currpubs;
 	int nested_fors;
 
+	/* Address resolution data.  Used to relink addresses after compile. */
+	struct INTERMEDIATE **addrlist; /* list of addresses to resolve */
+	int *addroffsets;               /* list of offsets from instrs */
+	int addrmax;                    /* size of current addrlist array */
+	int addrcount;                  /* number of allocated addresses */
+
 	/* variable names.  The index into cstat->variables give you what position
 	 * the variable holds.
 	 */
 	const char *variables[MAX_VAR];
+	int variabletypes[MAX_VAR];
 	const char *localvars[MAX_VAR];
+	int localvartypes[MAX_VAR];
 	const char *scopedvars[MAX_VAR];
+	int scopedvartypes[MAX_VAR];
 
 	struct line *curr_line;		/* current line */
 	int lineno;					/* current line number */
@@ -138,6 +147,7 @@ const char *do_string(COMPSTATE *);
 void do_comment(COMPSTATE *);
 void do_directive(COMPSTATE *, char *direct);
 struct prog_addr *alloc_addr(COMPSTATE *, int, struct inst *);
+struct INTERMEDIATE *prealloc_inst(COMPSTATE * cstat);
 struct INTERMEDIATE *new_inst(COMPSTATE *);
 struct INTERMEDIATE *locate_if(COMPSTATE *);
 struct INTERMEDIATE *find_if(COMPSTATE *);
@@ -149,16 +159,16 @@ struct INTERMEDIATE *find_while(COMPSTATE *);
 void cleanpubs(struct publics *mypub);
 void clean_mcpbinds(struct mcp_binding *mcpbinds);
 void cleanup(COMPSTATE *);
-void add_proc(COMPSTATE *, const char *, struct INTERMEDIATE *);
+void add_proc(COMPSTATE *, const char *, struct INTERMEDIATE *, int rettype);
 void addif(COMPSTATE *, struct INTERMEDIATE *);
 void addelse(COMPSTATE *, struct INTERMEDIATE *);
 void addbegin(COMPSTATE *, struct INTERMEDIATE *);
 void addfor(COMPSTATE *, struct INTERMEDIATE *);
 void addwhile(COMPSTATE *, struct INTERMEDIATE *);
 void resolve_loop_addrs(COMPSTATE *, int where);
-int add_variable(COMPSTATE *, const char *);
-int add_localvar(COMPSTATE *, const char *);
-int add_scopedvar(COMPSTATE *, const char *);
+int add_variable(COMPSTATE *, const char *, int valtype);
+int add_localvar(COMPSTATE *, const char *, int valtype);
+int add_scopedvar(COMPSTATE *, const char *, int valtype);
 int special(const char *);
 int call(COMPSTATE *, const char *);
 int quoted(COMPSTATE *, const char *);
@@ -202,7 +212,13 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
 		return;
 	}
 	if (cstat->nextinst) {
-		free(cstat->nextinst);
+		struct INTERMEDIATE* ptr;
+		while (cstat->nextinst)
+		{
+			ptr = cstat->nextinst;
+			cstat->nextinst = ptr->next;
+			free(ptr);
+		}
 		cstat->nextinst = NULL;
 	}
 	cleanup(cstat);
@@ -220,6 +236,95 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
 
 /* abort compile for void functions */
 #define v_abort_compile(ST,C) { do_abort_compile(ST,C); return; }
+
+
+/*****************************************************************/
+
+
+#define ADDRLIST_ALLOC_CHUNK_SIZE 256
+
+int
+get_address(COMPSTATE* cstat, struct INTERMEDIATE* dest, int offset)
+{
+	int i;
+
+	if (!cstat->addrlist)
+	{
+		cstat->addrcount = 0;
+		cstat->addrmax = ADDRLIST_ALLOC_CHUNK_SIZE;
+		cstat->addrlist = (struct INTERMEDIATE**)
+			malloc(cstat->addrmax * sizeof(struct INTERMEDIATE*));
+		cstat->addroffsets = (int*)
+			malloc(cstat->addrmax * sizeof(int));
+	}
+
+	for (i = 0; i < cstat->addrcount; i++)
+		if (cstat->addrlist[i] == dest && cstat->addroffsets[i] == offset)
+			return i;
+
+    if (cstat->addrcount >= cstat->addrmax)
+	{
+		cstat->addrmax += ADDRLIST_ALLOC_CHUNK_SIZE;
+		cstat->addrlist = (struct INTERMEDIATE**)
+			realloc(cstat->addrlist, cstat->addrmax * sizeof(struct INTERMEDIATE*));
+		cstat->addroffsets = (int*)
+			realloc(cstat->addroffsets, cstat->addrmax * sizeof(int));
+	}
+
+	cstat->addrlist[cstat->addrcount] = dest;
+	cstat->addroffsets[cstat->addrcount] = offset;
+	return cstat->addrcount++;
+}
+
+
+void
+fix_addresses(COMPSTATE* cstat)
+{
+	struct INTERMEDIATE* ptr;
+	struct publics* pub;
+	int count = 0;
+
+	/* renumber the instruction chain */
+	for (ptr = cstat->first_word; ptr; ptr = ptr->next)
+		ptr->no = count++;
+
+	/* repoint publics to targets */
+	for (pub = cstat->currpubs; pub; pub = pub->next)
+		pub->addr.no = cstat->addrlist[pub->addr.no]->no +
+			cstat->addroffsets[pub->addr.no];
+
+	/* repoint addresses to targets */
+	for (ptr = cstat->first_word; ptr; ptr = ptr->next)
+	{
+		switch (ptr->in.type) {
+		case PROG_ADD:
+		case PROG_IF:
+		case PROG_JMP:
+		case PROG_EXEC:
+			ptr->in.data.number = cstat->addrlist[ptr->in.data.number]->no +
+				cstat->addroffsets[ptr->in.data.number];
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+
+void
+free_addresses(COMPSTATE* cstat)
+{
+	cstat->addrcount = 0;
+	cstat->addrmax = 0;
+	if (cstat->addrlist)
+		free(cstat->addrlist);
+	if (cstat->addroffsets)
+		free(cstat->addroffsets);
+	cstat->addrlist = NULL;
+}
+
+
+/*****************************************************************/
 
 
 void
@@ -288,7 +393,7 @@ insert_def(COMPSTATE * cstat, const char *defname, const char *deff)
 void
 insert_intdef(COMPSTATE * cstat, const char *defname, int deff)
 {
-	char buf[BUFFER_LEN];
+	char buf[sizeof(int) * 3];
 
 	sprintf(buf, "%d", deff);
 	insert_def(cstat, defname, buf);
@@ -488,8 +593,11 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	cstat.nested_fors = 0;
 	for (i = 0; i < MAX_VAR; i++) {
 		cstat.variables[i] = NULL;
+		cstat.variabletypes[i] = 0;
 		cstat.localvars[i] = NULL;
+		cstat.localvartypes[i] = 0;
 		cstat.scopedvars[i] = NULL;
+		cstat.scopedvartypes[i] = 0;
 	}
 	cstat.curr_line = PROGRAM_FIRST(program_in);
 	cstat.lineno = 1;
@@ -502,12 +610,18 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	cstat.line_copy = NULL;
 	cstat.macrosubs = 0;
 	cstat.nextinst = NULL;
+	cstat.addrlist = NULL;
+	cstat.addroffsets = NULL;
 	init_defs(&cstat);
 
 	cstat.variables[0] = "ME";
+	cstat.variabletypes[0] = PROG_OBJECT;
 	cstat.variables[1] = "LOC";
+	cstat.variabletypes[1] = PROG_OBJECT;
 	cstat.variables[2] = "TRIGGER";
+	cstat.variabletypes[2] = PROG_OBJECT;
 	cstat.variables[3] = "COMMAND";
+	cstat.variabletypes[3] = PROG_STRING;
 
 	/* free old stuff */
 	(void) dequeue_prog(cstat.program, 1);
@@ -549,12 +663,19 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 		v_abort_compile(&cstat, "Missing procedure definition.");
 
 	/* do copying over */
+	fix_addresses(&cstat);
 	copy_program(&cstat);
 	fixpubs(cstat.currpubs, PROGRAM_CODE(cstat.program));
 	PROGRAM_SET_PUBS(cstat.program, cstat.currpubs);
 
 	if (cstat.nextinst) {
-		free(cstat.nextinst);
+		struct INTERMEDIATE* ptr;
+		while (cstat.nextinst)
+		{
+			ptr = cstat.nextinst;
+			cstat.nextinst = ptr->next;
+			free(ptr);
+		}
 		cstat.nextinst = NULL;
 	}
 	if (cstat.compile_err)
@@ -1046,7 +1167,7 @@ process_special(COMPSTATE * cstat, const char *token)
 					} else {
 						varname = varspec;
 					}
-					if (add_scopedvar(cstat, varname) < 0)
+					if (add_scopedvar(cstat, varname, PROG_UNTYPED) < 0)
 						abort_compile(cstat, "Variable limit exceeded.");
 
 					new->in.data.mufproc->vars++;
@@ -1057,7 +1178,7 @@ process_special(COMPSTATE * cstat, const char *token)
 			} while(!argsdone);
 		}
 
-		add_proc(cstat, proc_name, new);
+		add_proc(cstat, proc_name, new, PROG_UNTYPED);
 
 		return new;
 	} else if (!string_compare(token, ";")) {
@@ -1099,7 +1220,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		new->in.data.call = 0;
 		addelse(cstat, new);
 
-		eef->in.data.number = cstat->nowords;
+		eef->in.data.number = get_address(cstat, new, 1);
 		return new;
 	} else if (!string_compare(token, "THEN")) {
 		/* can't use 'if' because it's a reserved word */
@@ -1109,9 +1230,11 @@ process_special(COMPSTATE * cstat, const char *token)
 		if (!eef)
 			abort_compile(cstat, "THEN without IF.");
 
-		eef->in.data.number = cstat->nowords;
+		prealloc_inst(cstat);
+		eef->in.data.number = get_address(cstat, cstat->nextinst, 0);
 		return NULL;
 	} else if (!string_compare(token, "BEGIN")) {
+		prealloc_inst(cstat);
 		addbegin(cstat, cstat->nextinst);
 		return NULL;
 	} else if (!string_compare(token, "FOR")) {
@@ -1162,7 +1285,9 @@ process_special(COMPSTATE * cstat, const char *token)
 		struct INTERMEDIATE *beef;
 		struct INTERMEDIATE *curr;
 
-		resolve_loop_addrs(cstat, cstat->nowords + 1);
+		prealloc_inst(cstat);
+		resolve_loop_addrs(cstat, get_address(cstat, cstat->nextinst, 1));
+
 		curr = locate_for(cstat);
 		eef = find_begin(cstat);
 		if (!eef)
@@ -1174,7 +1299,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		new->no = cstat->nowords++;
 		new->in.type = PROG_IF;
 		new->in.line = cstat->lineno;
-		new->in.data.number = eef->no;
+		new->in.data.number = get_address(cstat, eef, 0);
 		if (curr) {
 			curr = (new->next = new_inst(cstat));
 			curr->no = cstat->nowords++;
@@ -1225,7 +1350,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		new->no = cstat->nowords++;
 		new->in.type = PROG_JMP;
 		new->in.line = cstat->lineno;
-		new->in.data.number = beef->no;
+		new->in.data.number = get_address(cstat, beef, 0);
 
 		return new;
 	} else if (!string_compare(token, "REPEAT")) {
@@ -1234,7 +1359,9 @@ process_special(COMPSTATE * cstat, const char *token)
 		struct INTERMEDIATE *beef;
 		struct INTERMEDIATE *curr;
 
-		resolve_loop_addrs(cstat, cstat->nowords + 1);
+		prealloc_inst(cstat);
+		resolve_loop_addrs(cstat, get_address(cstat, cstat->nextinst, 1));
+
 		curr = locate_for(cstat);
 		eef = find_begin(cstat);
 		if (!eef)
@@ -1246,7 +1373,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		new->no = cstat->nowords++;
 		new->in.type = PROG_JMP;
 		new->in.line = cstat->lineno;
-		new->in.data.number = eef->no;
+		new->in.data.number = get_address(cstat, eef, 0);
 
 		if (curr) {
 			curr = (new->next = new_inst(cstat));
@@ -1288,7 +1415,7 @@ process_special(COMPSTATE * cstat, const char *token)
 			cstat->currpubs->subname = (char *) string_dup(tok);
 			if (tok)
 				free((void *) tok);
-			cstat->currpubs->addr.no = p->code->no;
+			cstat->currpubs->addr.no = get_address(cstat, p->code, 0);
 			cstat->currpubs->mlev = wizflag ? 4 : 1;
 			return 0;
 		}
@@ -1306,7 +1433,7 @@ process_special(COMPSTATE * cstat, const char *token)
 					pub->subname = (char *) string_dup(tok);
 					if (tok)
 						free((void *) tok);
-					pub->addr.no = p->code->no;
+					pub->addr.no = get_address(cstat, p->code, 0);
 					pub->mlev = wizflag ? 4 : 1;
 					pub = NULL;
 				}
@@ -1318,7 +1445,7 @@ process_special(COMPSTATE * cstat, const char *token)
 			tok = next_token(cstat);
 			if (!tok)
 				abort_compile(cstat, "Unexpected end of program.");
-			if (add_scopedvar(cstat, tok) < 0)
+			if (add_scopedvar(cstat, tok, PROG_UNTYPED) < 0)
 				abort_compile(cstat, "Variable limit exceeded.");
 			if (tok)
 				free((void *) tok);
@@ -1327,7 +1454,7 @@ process_special(COMPSTATE * cstat, const char *token)
 			tok = next_token(cstat);
 			if (!tok)
 				abort_compile(cstat, "Unexpected end of program.");
-			if (!add_variable(cstat, tok))
+			if (!add_variable(cstat, tok, PROG_UNTYPED))
 				abort_compile(cstat, "Variable limit exceeded.");
 			if (tok)
 				free((void *) tok);
@@ -1341,22 +1468,16 @@ process_special(COMPSTATE * cstat, const char *token)
 			tok = next_token(cstat);
 			if (!tok)
 				abort_compile(cstat, "Unexpected end of program.");
-			if (add_scopedvar(cstat, tok) < 0)
+			if (add_scopedvar(cstat, tok, PROG_UNTYPED) < 0)
 				abort_compile(cstat, "Variable limit exceeded.");
 			if (tok)
 				free((void *) tok);
 
 			new = new_inst(cstat);
 			new->no = cstat->nowords++;
-			new->in.type = PROG_SVAR;
+			new->in.type = PROG_SVAR_BANG;
 			new->in.line = cstat->lineno;
 			new->in.data.number = cstat->curr_proc->in.data.mufproc->vars++;
-
-			curr = (new->next = new_inst(cstat));
-			curr->no = cstat->nowords++;
-			curr->in.type = PROG_PRIMITIVE;
-			curr->in.line = cstat->lineno;
-			curr->in.data.number = IN_BANG;
 
 			return new;
 		} else {
@@ -1367,7 +1488,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		if (cstat->curr_proc)
 			abort_compile(cstat, "Local variable declared within procedure.");
 		tok = next_token(cstat);
-		if (!tok || (add_localvar(cstat, tok) == -1))
+		if (!tok || (add_localvar(cstat, tok, PROG_UNTYPED) == -1))
 			abort_compile(cstat, "Local variable limit exceeded.");
 		if (tok)
 			free((void *) tok);
@@ -1465,7 +1586,7 @@ call_word(COMPSTATE * cstat, const char *token)
 		if (!string_compare(p->name, token))
 			break;
 
-	new->in.data.number = p->code->no;
+	new->in.data.number = get_address(cstat, p->code, 0);
 	return new;
 }
 
@@ -1483,7 +1604,7 @@ quoted_word(COMPSTATE * cstat, const char *token)
 		if (!string_compare(p->name, token))
 			break;
 
-	new->in.data.number = p->code->no;
+	new->in.data.number = get_address(cstat, p->code, 0);
 	return new;
 }
 
@@ -1574,13 +1695,14 @@ object_word(COMPSTATE * cstat, const char *token)
 
 /* add procedure to procedures list */
 void
-add_proc(COMPSTATE * cstat, const char *proc_name, struct INTERMEDIATE *place)
+add_proc(COMPSTATE * cstat, const char *proc_name, struct INTERMEDIATE *place, int rettype)
 {
 	struct PROC_LIST *new;
 
 	new = (struct PROC_LIST *) malloc(sizeof(struct PROC_LIST));
 
 	new->name = alloc_string(proc_name);
+	new->returntype = rettype;
 	new->code = place;
 	new->next = cstat->procs;
 	cstat->procs = new;
@@ -1796,7 +1918,7 @@ resolve_loop_addrs(COMPSTATE * cstat, int where)
 
 /* adds variable.  Return 0 if no space left */
 int
-add_variable(COMPSTATE * cstat, const char *varname)
+add_variable(COMPSTATE * cstat, const char *varname, int valtype)
 {
 	int i;
 
@@ -1808,13 +1930,14 @@ add_variable(COMPSTATE * cstat, const char *varname)
 		return 0;
 
 	cstat->variables[i] = alloc_string(varname);
+	cstat->variabletypes[i] = valtype;
 	return i;
 }
 
 
 /* adds local variable.  Return 0 if no space left */
 int
-add_scopedvar(COMPSTATE * cstat, const char *varname)
+add_scopedvar(COMPSTATE * cstat, const char *varname, int valtype)
 {
 	int i;
 
@@ -1826,13 +1949,14 @@ add_scopedvar(COMPSTATE * cstat, const char *varname)
 		return -1;
 
 	cstat->scopedvars[i] = alloc_string(varname);
+	cstat->scopedvartypes[i] = valtype;
 	return i;
 }
 
 
 /* adds local variable.  Return 0 if no space left */
 int
-add_localvar(COMPSTATE * cstat, const char *varname)
+add_localvar(COMPSTATE * cstat, const char *varname, int valtype)
 {
 	int i;
 
@@ -1844,6 +1968,7 @@ add_localvar(COMPSTATE * cstat, const char *varname)
 		return -1;
 
 	cstat->localvars[i] = alloc_string(varname);
+	cstat->localvartypes[i] = valtype;
 	return i;
 }
 
@@ -2000,15 +2125,21 @@ clean_mcpbinds(struct mcp_binding *mypub)
 	}
 }
 
-void
-cleanup(COMPSTATE * cstat)
-{
-	struct INTERMEDIATE *wd, *tempword;
-	struct IF_STACK *eef, *tempif;
-	struct PROC_LIST *p, *tempp;
-	int i;
 
-	for (wd = cstat->first_word; wd; wd = tempword) {
+void
+append_intermediate_chain(struct INTERMEDIATE *chain, struct INTERMEDIATE *add)
+{
+	while (chain->next)
+		chain = chain->next;
+	chain->next = add;
+}
+
+
+void
+free_intermediate_chain(struct INTERMEDIATE *wd)
+{
+	struct INTERMEDIATE* tempword;
+	while (wd) {
 		tempword = wd->next;
 		if (wd->in.type == PROG_STRING) {
 			if (wd->in.data.string)
@@ -2019,7 +2150,19 @@ cleanup(COMPSTATE * cstat)
 			free((void*)wd->in.data.mufproc);
 		}
 		free((void *) wd);
+		wd = tempword;
 	}
+}
+
+void
+cleanup(COMPSTATE * cstat)
+{
+	struct INTERMEDIATE *wd, *tempword;
+	struct IF_STACK *eef, *tempif;
+	struct PROC_LIST *p, *tempp;
+	int i;
+
+	free_intermediate_chain(cstat->first_word);
 	cstat->first_word = 0;
 
 	for (eef = cstat->if_stack; eef; eef = tempif) {
@@ -2042,6 +2185,7 @@ cleanup(COMPSTATE * cstat)
 	cstat->procs = 0;
 
 	purge_defs(cstat);
+	free_addresses(cstat);
 
 	for (i = RES_VAR; i < MAX_VAR && cstat->variables[i]; i++) {
 		free((void *) cstat->variables[i]);
@@ -2085,6 +2229,8 @@ copy_program(COMPSTATE * cstat)
 		case PROG_PRIMITIVE:
 		case PROG_INTEGER:
 		case PROG_SVAR:
+		case PROG_SVAR_AT:
+		case PROG_SVAR_BANG:
 		case PROG_LVAR:
 		case PROG_VAR:
 			code[i].data.number = curr->in.data.number;
@@ -2126,6 +2272,8 @@ void
 set_start(COMPSTATE * cstat)
 {
 	PROGRAM_SET_SIZ(cstat->program, cstat->nowords);
+
+	/* address instr no is resolved before this gets called. */
 	PROGRAM_SET_START(cstat->program, (PROGRAM_CODE(cstat->program) + cstat->procs->code->no));
 }
 
@@ -2147,6 +2295,28 @@ alloc_inst()
 }
 
 struct INTERMEDIATE *
+prealloc_inst(COMPSTATE * cstat)
+{
+	struct INTERMEDIATE *ptr;
+	struct INTERMEDIATE *new;
+
+	/* only allocate at most one extra instr */
+	if (cstat->nextinst)
+		return NULL;
+
+	new = alloc_inst();
+
+	if (!cstat->nextinst) {
+		cstat->nextinst = new;
+	} else {
+		for (ptr = cstat->nextinst; ptr->next; ptr = ptr->next);
+		ptr->next = new;
+	}
+
+	return new;
+}
+
+struct INTERMEDIATE *
 new_inst(COMPSTATE * cstat)
 {
 	struct INTERMEDIATE *new;
@@ -2155,7 +2325,8 @@ new_inst(COMPSTATE * cstat)
 	if (!new) {
 		new = alloc_inst();
 	}
-	cstat->nextinst = alloc_inst();
+	cstat->nextinst = new->next;
+	new->next = NULL;
 
 	return new;
 }
@@ -2264,7 +2435,6 @@ init_primitives(void)
 	for (i = BASE_MIN; i <= BASE_MAX; i++) {
 		add_primitive(i);
 	}
-	IN_BANG = get_primitive("!");
 	IN_FORPOP = get_primitive(" FORPOP");
 	IN_FORITER = get_primitive(" FORITER");
 	IN_FOR = get_primitive(" FOR");
