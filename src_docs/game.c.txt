@@ -122,7 +122,7 @@ Notes:		If DELTADUMPS is not defined, this function is not compiled.
 Function name:	init_game
 Arguments:	const char *	(infile)
 		const char *	(outfile)
-Returns:	int		(status)
+Returns:	int		(boolean)
 Called from:	main		(interface.c)
 Calls:		fopen, log_status, macroload, fclose, string_dup, db_free,
 		init_primitives, mesg_init, SRANDOM, tune_load_parmsfile,
@@ -147,7 +147,7 @@ Function name:	process_command
 Arguments:	int		(descriptor of player)
 		dbref		(player issuing command)
 		char *		(the command)
-Returns:	int		(status)
+Returns:	int		(boolean)
 Called from:	do_command	(interface.c)
 Calls:		abort, Typeof, log_status, Wizard, OWNER, FLAGS, log_command,
 		NAME, DBFETCH, interactive, isspace, sprintf, TrueWizard,
@@ -176,6 +176,9 @@ Notes:		the #define Matched() is only used in this function.
 
 /*
 * $Log: game.c.txt,v $
+* Revision 1.5  2000/02/18 14:26:42  mcclure
+* Terminology change for returned booleans.
+*
 * Revision 1.4  2000/02/18 13:30:00  mcclure
 *
 * Removed #define field from format.
