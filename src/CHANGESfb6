@@ -1,0 +1,875 @@
+2.2fb6.00a29
+Added boolean secure_thing_movement @tune param.  Enables triggering of the
+  _arrive/, _depart/, etc. propqueues for Thing objects as well as Players.
+  This can cause server processing overhead, but it allows more certain
+  tracking of object movement via MUF/MPI.
+
+
+
+2.2fb6.00a28
+Fixed a possible crasher bug with blank MUF program lines.
+Fixed @mcpedit so it will display compile errors.
+Fixed bug where MCP wouldn't split up multiline MUF strings with \r chars.
+Fixed a crashing bug in the MUF INTERP primitive.
+Fixed a crashing bug with @ps listing of MPI processes for non-wizards.
+Fixed a reference count bug in array_getitem muf primitive.
+Fixed a different reference count bug in many array_* prims.
+Changed Boolexp parsing code to make it re-entrant.
+Changed muf instruction display code to make it re-entrant.
+Removed buggy propdir_diskbasing code completely.
+Added \r\n's to the ends of the shutdown messages.
+Added the ability to print the contents of scoped vars in the muf debugger.
+Added the WIZCALL MUF keyword.  Used like the PUBLIC keyword, but the calling
+  program requires wizbit permissions to call the function.
+Added the following MUF primitives:
+	CANCALL?  (d s -- i)
+		Will return true if the given program has a public or wizcall function
+		that the current program has permissions to call.  Returns false,
+		otherwise.
+	ONLINE_ARRAY  ( -- a)
+		This is the same as the ONLINE primitive, except it returns a single
+		stack item which is an array of dbrefs instead of pushing every dbref
+		separately onto the stack.
+	DESCR_ARRAY  (d -- a)
+		This returns an array of descriptors that are associated with the
+		given dbref.  This is effectively the same as the sequence
+		'descriptors array_make'.
+	{  ( -- mark)
+		Pushes a marker onto the stack, for use with the }, }LIST, and }DICT
+		commands.
+	}  ( mark ?n ... ?1 -- ?n ... ?1 i )
+		Returns the count of how many stack items exist between the topmost
+		stack marker and the top of the stack.  That stack marker is removed
+		from the stack, and the count is pushed onto the top of the stack.
+		This is useful for automatically counting a number of static strings,
+		and other such things.
+	}LIST  ( mark ?n ... ?i -- array )
+		MUF primitive.  This takes all the stack items above the topmost stack
+		marker, and makes a list from them, a la array_make.  In fact, this is
+		implemented as an inserver macro with a definition of '} array_make'.
+	}DICT  ( mark @n ?n ... @1 ?1 -- dict )
+		This takes all the pairs of names (@s) and values (?s) between the
+		top of the stack and the topmost stack marker, and makes them into
+		a dictionary, a la the array_make_dict primitive.  In fact, this is
+		implemented as an inserver macro with a definition of
+		'} 2 / array_make_dict'.
+	DESCR  ( -- i)
+		Returns the connection descriptor that invoked the currently running
+		program.  This may return -1 for some listener or autostart programs.
+	TOKENSPLIT  (strString strDelim strEscape -- strPre strPost strChar)
+		Searches strString for the first character that matches any character
+		in strDelim, so long as it is not escaped by the character passed in
+		strEscape.  Returns the unescaped string before the found character,
+		the raw string after that character, and the character that was found.
+	GUI_AVAILABLE  (intDescr -- fltVersion)
+		Returns the floating point version number of the MCP GUI protocol
+		supported by the given descriptor's connection.  The version is
+		encoded in the number such that major version 8, minor version 12
+		is represented as 8.012.  If the MCP protocol is not available on
+		that descriptor, then 0.0 is returned.
+	GUI_DLOG_SIMPLE  (intDescr strTitle -- strDlogID)
+		If a user has a client that can support the MCP GUI protocol, then
+		this primitive can be used to generate a simple dialog on their
+		screen.  By "simple" I mean just an empty window with no controls.
+		The intDescr argument specifies what connection descriptor to
+		create the dialog for (ie: what user's screen to show it on), and
+		the strTitle arg specifies what the title of the dialog will be.
+		This returns a string containing the dialogid, used by other prims
+		to add controls or make various changes.  This dialog will be hidden
+		and not shown to the user until it has been displayed with the
+		GUI_DLOG_SHOW command.
+	GUI_DLOG_TABBED  (intDescr strTitle dictPages -- strDlogID)
+		If a user has a client that can support the MCP GUI protocol, then
+		this primitive can be used to generate a tabbed dialog on their
+		screen.  By "tabbed" I mean a window with a tabbed notebook, similar
+		to Win95 "property sheets", with three standard buttons at the bottom.
+		The standard buttons return values of "_ok", "_cancel", and "_apply".
+		The intDescr argument specifies what connection descriptor to create
+		the dialog for (ie: what user's screen to show it on).  The strTitle
+		arg specifies what the title of the dialog will be.  The dictPages
+		argument is a dictionary array of page ids and display names to be
+		created.  (ids as dictionary keys, display names as vals) This prim
+		returns a string containing the dialogid, used by other prims to add
+		controls or make various changes.  When you create a new control, you
+		can specify which page to put it in by passing a pageid in as the
+		value of the "pane" argument.  This dialog will be hidden and not
+		shown to the user until it has been displayed with the GUI_DLOG_SHOW
+		command.
+	GUI_DLOG_HELPER  (intDescr strTitle dictPages -- strDlogID)
+		If a user has a client that can support the MCP GUI protocol, then
+		this primitive can be used to generate a helper dialog on their
+		screen.  By "helper" I mean a dialog similar to a Win95 wizard dialog.
+		The standard buttons return values of "_cancel", and "_finish".
+		The intDescr argument specifies what connection descriptor to
+		create the dialog for (ie: what user's screen to show it on), and
+		the strTitle arg specifies what the title of the dialog will be.
+		The dictPages argument is a dictionary array of page ids and display
+		names to be created.  (ids as dictionary keys, display names as vals)
+		This returns a string containing the dialogid, used by other prims
+		to add controls or make various changes.  When you create a new
+		control, you can specify which page to put it in by passing a pageid
+		in as the value of the "pane" argument.  This dialog will be hidden
+		and not shown to the user until it has been displayed with the
+		GUI_DLOG_SHOW command.
+	GUI_DLOG_SHOW  (strDlogID -- )
+		Forces a given dialog to be shown to the user.  The strDlogId is what
+		was returned by the GUI_DLOG_CREATE (or similar) command.
+	GUI_DLOG_CLOSE  (strDlogID -- )
+		Forces a given dialog to be closed and destroyed.  The strDlogId is
+		what was returned by the GUI_DLOG_CREATE (or similar) command.
+	GUI_CTRL_CREATE  (strDlogID strType strCtrlID dictArgs -- )
+		Creates a new control in a given dialog.  strDlogID contains the
+		dlogid returned from a GUI_DLOG_SIMPLE (or similar) command.  strType
+		contains the control type.  To make debugging easier and faster,
+		MUF $defs have been provided for each control type.  They are:
+		C_DATUM, C_LABEL, C_HRULE, C_VRULE, C_BUTTON, C_CHECKBOX, C_EDIT,
+		C_MULTIEDIT, C_COMBOBOX, C_SPINNER, C_SCALE, C_LISTBOX, C_FRAME,
+		and C_NOTEBOOK.  If you use these instead of the actual type name
+		strings, then if you mistype one, it will throw an error when trying
+		to compile, instead of when you try to run it.  The strCtrlID arg
+		is the id to give the control, for use in reading the values back
+		later, or modifying the control.  dictArgs is used to pass any other
+		arguments needed to create the control.  This will be used by almost
+		all controls.  It is a dictionary array that contains argnames as
+		keys, each with an argument value.
+	GUI_VALUES_GET   (strDlogID -- dictValues)
+		Returns a dictionary containing all the control values for the given
+		dialog.  The keys are the control ids.
+	GUI_VALUE_SET    (strDlogID strCtrlID strValue -- )
+		Sets the value of a given control in a given dialog.
+	EVENT_WAIT       ( -- dictContext eventID)
+		Waits for an event to occur, pausing the MUF program.  Currently, the
+		only events are GUI events.  GUI events have eventID strings that are
+		created by prepending "GUI." to the dlogID of the dialog that generated
+		the event.
+    []    (a @ -- ?)
+        Defined to be the same as array_getitem
+    [..]    (a @1 @2 -- a')
+        Defined to be the same as array_getrange
+
+
+
+2.2fb6.00a27
+Fixed a bug in the MALLOC_PROFILING code.  (Thanks, Cynbe!)
+Fixed a few compiler warnings about main() not returning int.
+Fixed a bug in the ITOC muf primitive that returned random words for
+  values greater than 127.
+Added the ATAN2 (fy fx -- f) MUF primitive.  Equivalent to atan(fy/fx),
+  but takes the signs of the arguments into account, and avoids DIVBY0.
+Added the DIST3D (fx fy fz -- f) MUF primitive.  Returns the distance of
+  XYZ coords (fx, fy, fz) from the origin.
+Added the XYZ_TO_POLAR (fx fy fz -- fr ft fp) MUF primitive.  This converts
+  the XYZ coordinate (fx, fy, fz) to the spherical polar coord (fr, ft, fp).
+Added the POLAR_TO_XYZ (fr ft fp -- fx fy fz) MUF primitive.  This converts
+  the spherical polar coordinate (fr, ft, fp) to the XYZ coord (fx, fy, fz).
+Added MOVEPENNIES (d1 d2 i -- ) moves i pennies from player/thing d1 to play-
+  er/thing d2.  I think the perms on this will need to be rewritten as soon
+  as we figure out what they SHOULD be.  This is the first step towards mak-
+  ing ADDPENNIES require at least ML3 (or wizbit), for enabling economies.
+  Thanks to David McClure for this mod.
+Added @tune autolook_cmd to allow changing what action to run when entering
+  a room.  This defaults to "look".  This was a feature request.  Thanks to
+  Loki for this mod.
+
+
+
+2.2fb6.00a26
+Fixed a crasher bug with multi-line MCP messages.
+Fixed several parsing bugs with the dns-org-mud-moo-simpleedit MCP package.
+
+
+
+2.2fb6.00a25
+Fixed a crasher bug in MCP introduced in a previous bugfix.
+
+
+
+2.2fb6.00a24
+Fixed several related crasher bugs, triggered by failure to run MUF progs.
+
+
+
+2.2fb6.00a23
+Fixed a crasher bug caused by a wild pointer in the MCP negotiation code.
+
+
+
+2.2fb6.00a22
+Log Read/Interactive ability added.  By setting the boolean @tune option
+ 'log_reads' to 'yes' (default 'no'), any commands entered while in the
+ interactive or read mode (due to server action or MUF 'read' prim) will
+ be sent to the server command log with appropriate annotation.  Be
+ warned that this could cause quite a bit of spammage in your log file,
+ and certainly will replicate (though not in nice order), some information
+ that is included under program logging.
+Enable/Disable 'Home'.  By setting the boolean @tune option 'enable_home'
+ to 'no' (default 'yes'), the global in-server 'home' command will cease
+ to work.  This allows the MUCK administrator to create a programmatic
+ or other customized 'home' action, or to have none at all for MUCKs where
+ the 'home' command would not be in-theme.
+Xpress or prefix commands.  By setting the @tune option 'enable_prefix'
+ to 'yes' (default 'no'), the server gains the ability to do internal
+ matches against actions much in the way the in-server '"' and ':' work.
+ To set up a prefix command, create an action linked to a program as you
+ normally would.  Make sure the action is owned by a wizard.  Then have
+ the wizard set the 'X' flag on the command and make sure the @tune
+ option is set.  At this point, any of the 'names' set on the action
+ are now 'prefix' names and will be matched against the beginning of
+ the user's command string.  For example, a prefix action called '&;foo'
+ will match both '&yadda' and 'fooBar'.
+Bug fix for prim_online.  A rare crashing bug was found in the MUF
+ 'online' primitive, where when the exact number of people online were
+ exactly two more than the remaining MUF stack size, the stack top
+ limit would be exceeded, causing a SEGV further down MUF execution.
+
+
+
+2.2fb6.00a21
+Fixed usage of first_prop() and first_prop_nofetch() to be 64bit clean.
+Fixed a string termination bug in @open.
+Fixed a crasher bug with reading float props stored as 1 instead of 1.0.
+Fixed a compile-time bug with #undefing DISKBASE.
+Fixed a crasher bug with the {parse} mpi primitive.
+Changed the search restrictions for MPI _msgmacs/ macros.  Now when MPI
+  looks for a macro, it uses the following algorithm:
+      Check the owner of the trigger.
+      Check the Trigger itself.
+      Check each object down the environment from the trigger that is
+	owned by the same player as the trigger.
+      Check #0.
+Changed mpi {store} permissions, to refuse to store props to properties
+  under _msgmacs/ unless the mpi has wizardly permissions.
+Changed muf to require at least mucker level 3 to store any properties
+  in or under _msgmacs/ propdirs.
+Changed the muf compiler to be thread-safe. (Planning for future.)
+Removed Balloc for not being very useful, and not being 64bit clean.
+Added low-level MCP (Mud-Client Protocol) support.  This is a protocol
+  used to allow the server to communicate data to client programs.
+Added the following MCP primitives to support MCP:
+  MCP_REGISTER ( strPkgName fltMinVers fltMaxVers -- )
+      Registers an MCP package so that clients can know what is supported.
+      The minimum and maximum versions supported are represented as floating
+      point numbers, with the minor version number being divided by 1000.
+      For example, an MCP package of version 1.1 is represented as 1.001,
+      and a version of 1.23 is represented as 1.023.  This lets you use
+      mathematical compares to check version numbers.
+  MCP_BIND ( strPkgName strMesgName addrCallback -- )
+      Binds a specific message, so if it is received, the given function is
+      called.  The callback function is assumed to accept the args:
+      ( intDescr dictArgs -- ) where dictArgs is a dictionary array contain-
+      ing key-value pairs that represent the arguments of the message.  Each
+      argument can either have a string value, or a list array of strings,
+      where the list array is used for multi-line values.
+  MCP_SUPPORTED ( intDescr strPkgName -- fltVersion )
+      Returns the version number of this package that is supported by this
+      connection descriptor.  If this package isn't supported, returns 0.0
+      The version number is represented as a floating point number, with the
+      minor version number being divided by 1000.  For example, an MCP
+      package of version 1.1 is represented as 1.001, and a version of 1.23
+      is represented as 1.023.  This lets you use mathematical compares to
+      check version numbers.
+  MCP_SEND ( intDescr strPkgName strMsgName dictArgs -- )
+      Sends an MCP message for the given package to the given connection
+      descriptor.  dictArgs contains key-value pairs, where each key is
+      an argument name, and the value is the argument value.  Values can
+      be strings, floats, dbrefs, integers, or array lists of strings.
+      They all get translated into an appropriate string format before
+      getting sent.
+
+
+
+
+2.2fb6.00a20
+Changed the packaging scripts to preserve modification dates on source files.
+Changed all calls to set_property() to be 64 bit clean.
+Fixed a bug in the debugger's "prim" command.
+Fixed an error that excluded topwords.c from the release packages.
+Fixed a crasher bug with 63 & 64 character filenames in the data/info dir.
+Added ARRAY_NOTIFY (a1 a2 -- ) muf primitive.  a1 is an array of strings to
+  notify to all the dbrefs in array a2.
+
+
+
+2.2fb6.00a19
+Added ARRAY_NUNION ({a} -- a) MUF prim, to return a list array, containing the
+  union of values of all the given arrays.
+Added ARRAY_NINTERSECT ({a} -- a) prim, to return a list array, containing the
+  intersection of all the given arrays.  Multiple arrays are consecutively
+  processed against the results of the previous intersection, from the top of
+  the stack down.
+Added ARRAY_NDIFF ({a} -- a) MUF prim, to return a list array, containing the
+  difference of all the given arrays.  Multiple arrays are consecutively
+  processed against the results of the previous difference, from the top of
+  the stack down.
+Added SRAND ( -- i ) to muf.  Generates a seeded random number.
+Added SETSEED ( s -- ) to muf.  Sets the seed for SRAND.  Only the first
+  thirty-two characters are significant.  If SRAND is called before SETSEED
+  is called, then SRAND is seeded with a semi-random value.
+Added GETSEED ( -- s ) to muf.  Returns the the current SRAND seed string.
+Fixed bug with compiling under Linux using glibc2.
+Updated configure script using a much newer autoconf program.
+
+
+
+2.2fb6.00a18
+Added FOREACH ( a -- @ ? ) as a loop start construct.  Use similar to FOR.
+Added ARRAY? ( ? -- i ) to test if a stack item is an array.
+Added DICTIONARY? ( ? -- i ) to test if a stack item is a dictionary array.
+
+
+
+2.2fb6.00a17
+Fixed a crasher bug with FORKing a muf process with any scoped vars.
+Changed MUF time related primitives to be cleaner under 64 bit systems.
+Added ARRAY stack item type to MUF.
+Added the following primitives:  (@ represents an index int, string, or float)
+  ARRAY_MAKE       ( {?} -- a )   Makes a list array from a stackrange.
+  ARRAY_MAKE_DICT  ( {@ ?} -- a ) Makes a dictionary associative array from
+                                    a stackrange of index/value pairs.
+  ARRAY_EXPLODE    ( a -- {@ ?} ) Explodes array into stackrange of index/value
+                                    pairs. ie:  "idx0" "val0" "idx1" "val1" 2
+  ARRAY_KEYS       ( a -- {@} )   Returns the keys of an array in a stackrange.
+  ARRAY_VALS       ( a -- {?} )   Returns the vals of an array in a stackrange.
+  ARRAY_COUNT      ( a -- i )     Returns count of items in array
+  ARRAY_FIRST      ( a -- @ i )   Returns first index in array, and a boolean.
+                                    Bool is false if no items are in array.
+  ARRAY_LAST       ( a -- @ i )   Returns last index in array, and a boolean.
+                                    Bool is false if no items are in array.
+  ARRAY_PREV       ( a @ -- @ i ) Returns previous index in array, & a boolean.
+                                    Bool is false if no items left.
+  ARRAY_NEXT       ( a @ -- @ i ) Returns next index in array, and a boolean.
+                                    Bool is false if no items left.
+  ARRAY_GETITEM    ( a @ -- ? )   Gets a given item from an array.
+  ARRAY_DELITEM    ( a @ -- a' )  Removes a given item from an array.
+  ARRAY_SETITEM    ( ? a @ -- a') Overwrites a given array item with value
+  ARRAY_INSERTITEM ( ? a @ -- a') Inserts a given value into an array.
+  ARRAY_GETRANGE  ( a @ @ -- a' ) Gets range between two indexes (inclusive)
+                                    from an array, returning it as an array.
+  ARRAY_DELRANGE  ( a @ @ -- a' ) Deletes a range of items from an array,
+                                    between two indexes, inclusive. Returns
+                                    the resulting array.
+  ARRAY_SETRANGE  (a1 @ a2 -- a') Sets items in list a1 to vals from list a2,
+                                    starting at the given index.  Returns the
+                                    resulting array.
+  ARRAY_INSERTRANGE (a1 @ a2 -- a') Inserts items from array a2 into a1,
+				      starting at the given index.  Returns
+				      the resulting array.
+
+
+
+2.2fb6.00a16
+Added PMATCH (s -- d) prim to MUF to avoid costly calls to wizbit libraries.
+Added function-scoped variables to MUF.  They are local to each invocation
+  of the given function, and recursive calls will get their own scoped vars.
+  You declare a function-scoped var by using 'var VARNAME' inside a function.
+
+
+
+2.2fb6.00a15
+Fixed a bug in popn that caused wierd system behaviour.
+Fixed a crasher bug in dupn.  Similar to the dup bug fixed recently.
+Fixed a crasher bug in ldup.  Similar to the dup bug fixed recently.
+Changed ldup and dupn to accept 0 as a valid value.
+
+
+
+2.2fb6.00a14
+Fixed a few bugs where some changed objects would fail to get delta dumped
+  under certain circumstances.
+
+
+
+2.2fb6.00a13
+Fixed a crasher bug with the newobject primitive.
+Fixed a crasher bug with the copyobj primitive.
+
+
+
+2.2fb6.00a12
+Fixed a crasher bug with doing a pop in the muf debugger on an empty stack.
+
+
+
+2.2fb6.00a11
+Changed all references to THING specific structures to go through macros.
+Fixed (I think) a crasher bug with @forcing zombies and vehicles.
+
+
+
+2.2fb6.00a10
+Added patches to allow entry of empty lines.
+Fixed crasher bugs in MUF compiler with empty lines.
+Fixed a bug with the MPI {links} command regarding metalinks.
+Fixed many small memory leaks.
+Fixed a crasher in @pcreate caused by player specific struct mods.
+
+
+
+2.2fb6.00a9
+Fixed a hanging bug with FOR loops.
+Fixed a crashing bug with overflowing an omessage string buffer from MPI.
+Optimized memory usage by allocating structures for player and program specific
+  data, instead of wasting space in the specific union shared by all objects.
+Changed all references to player or program specific data to go through macros.
+Changed {otell} to fix restrictions on nameless messages.
+
+
+
+2.2fb6.00a8
+Fixed a crashing bug in freeing of unused propdirs, with propdirs diskbasing.
+Fixed a crasher bug in MPI caused by a buffer overflow.
+Fixed a bug in announce when not using IPV6.
+Fixed a string termination bug in with '@mpi {foo'
+Fixed a bug where DESCR_SETUSER wasn't checking for stack underflow correctly.
+Fixed a bug in freeing unused propdirs from memory.  This _might_ fix the bug
+  with losing entire propdirs of properties after the first deltadump. [Nope.]
+Fixed a bug with _listen programs that SLEEP.  This might fix the "Tried to
+  free an already freed program frame" crasher bug. (Thanks, Fre'ta!)
+Fixed the restart script to be more friendly to having multiple mucks on the
+  same machine.  It now uses the netmuck.pid file to determine if a particular
+  muck is running from a particular directory, from a particular account,
+  instead of just greping for all 'netmuck' programs running on the machine.
+Edited edit-help.txt slightly for formatting, and corrected a slight error.
+Added rwho_inet_addr() to rwho.c to fix lack of portability with inet_addr().
+Added -version command line option, to see what version the server binary is.
+Added -gamedir command line option.  Server cd's to this dir before starting.
+Added -dbin, -dbout, and -port command line options for specifying the input
+  and output db files, and the port number.  This is an alternative to the old
+  syntax of 'netmuck infile outfile portnum'.
+Added GETLINKS ( d -- dn..d1 n ) muf primitive, for getting info on metalinks.
+  Returns 0 when the obj is an unlinked exit, or if the obj is a program.
+  Returns 0 if the obj is a room with no dropto.  Returns #-3 and a count of 1
+  if the dropto is linked to HOME.
+Optimized database dumping slightly.
+Changed {list} and {lexec} to return a null string if the list wasn't found.
+  ie: they no longer error out with a "Failed list read."
+
+
+
+2.2fb6.00a7
+Added USE_IPV6 #define option to config.h, to allow support for the future
+  IP version 6 Internet Protocol.  The code for IPv6 support was contributed
+  by Kim Liu.
+Added NEXTOWNED (d -- d) primitive to MUF.  When called with a player dbref,
+  this returns the dbref of the first object they own.  When called with that
+  dbref, this returns the next object owned by the same player.  When there
+  are no more objects left owned by that player, then #-1 is returned.  The
+  order of the objects is not guarenteed, but when used correctly, each object
+  owned by that player will be returned exactly once.  The player object itself
+  will NOT be returned.  This is used similarly to the NEXT primitive.  Ex:
+      me @ begin dup while dup unparseobj .tell nextowned repeat
+Added LDUP ( {?} -- {?} {?} ) to duplicate a stackrange on top of the stack.
+Added DUPN ( ?n...?1 i -- ?n...?1 ?n...?1 ) to duplicate the top N stack items.
+Added POPN ( ?n...?1 i -- ) to pop the top N stack items.
+Added LREVERSE ( ?n...?1 i -- ?1...?n i ) reverses top N items, leaving count.
+Changed REVERSE back to ( ?n...?1 i -- ?1...?n )  ie: no count left on top.
+Replaced edit-help.txt with a more understandable editor help screen.
+
+
+
+2.2fb6.00a6
+Fixed a crasher bug with propdir based diskbasing.
+Changed DB dumping routines to free unused propdirs from memory after saving.
+Documented {default} in mpihelp.txt.
+Changed ITOC primitive to allow creating an escape char.
+
+
+
+2.2fb6.00a5
+Added boolean @tune option for diskbase_propdirs to enable propdir diskbasing.
+Added ability to diskbase by propdirs.  This means that the server only loads
+  properties that are in propdirs that are being accessed.  Hopefully this will
+  reduce the memory usage of FB.
+Fixed bug with INTOSTR not correctly handling negative numbers,
+Fixed loophole in {otell} that allowed spoofing.
+Fixed some minor bugs in MPI list and looping functions, to correctly return 
+  empty initial list items.
+Fixed {parse} to deal correctly with a null output separator.
+Changed MUF debugger to make it always print line numbers before souce code.
+Changed REVERSE primitive to keep the count: ( ?n ... ?1 N -- ?1 ... ?n N )
+  To obtain the old behavior, just pop off the count.
+Changed {otell} and {tell} to allow _listeners to hear them.
+Changed MUF's NAME and TRUENAME prims to return "<garbage>" on recycled objs.
+
+
+
+
+2.2fb6.00a4
+Fixed math bug in ROUND that rounded 1.5000 down to 1.0.
+Fixed bug where MUF debug trace would print 1.000 as 1 without decimal point.
+Fixed range checking bugs in several floating point MUF primitives.
+Changed FTOSTR to always include a decimal point.
+Added REVERSE (?n ... ?1 n -- ?1 ... ?n) MUF primitive.  Reverses the stack
+  order of the top n stack items.
+Added %~ format code to FMTSTRING.  Will take any stack item type and output
+  the default format representation for that type.  If passed a float, the
+  format "%12.8~" will act like "%12.8g".  If passed a string, it will act
+  like "%12.8s".  Et cetera.
+Changed ROUND MUF primitive to take a float and an integer argument, the
+  integer setting the 'precision' of the rounding in decimal places.
+
+
+
+2.2fb6.00a3
+Changed examine code to display Haven flag on Things as HIDE, since it's used
+  on objects of type Thing to hide the contents when you look at them.
+Added {ESCAPE:text} MPI function.  Lets you keep {eval:{escape:{&arg}}} from
+  evaluating any MPI code that the user may have entered.  Basically quotes
+  and escapes text so that when evaluated, the original text is returned.
+Added DESCRFLUSH (i -- ) to MUF.  Flushes output text on the given descriptor.
+  If -1 is passed as the descriptor, it flushes output on all connections.
+Added calls to sync() after database dumps to make sure the databases are
+  physically saved to disk quickly after a dump.
+
+----------------------START Mods by Points -----------------------
+Programmer's notes for 6.00 MUF primitive additions.
+Additions and notes by Points.
+
+Major changes:
+
+  In this version, a number of changes and additions have been made to
+the MUF server.  MUF now supports a new type, floating point, as well
+as hosts a variety of new primitives in several categories.  A
+floating point library has been created.  To support this, a number of
+new property handling primitives have been creates and modified to
+allow float-types to be stored to and read from props.  In addition,
+the new math library supports range error checking.  The old integer
+math library has been expanded and now uses the new error routines as
+well.  Finally, a handful of new string operations have been added to
+both speed up string manipulations as well as make some basic
+manipulations much easier for the programmer.
+
+Floating Point:
+
+  The following floating-point math functions have been added -
+        CEIL - returns the next highest integer number (as floating point).
+        FLOOR - returns the next lowest integer number (as floating point).
+        FLOAT - converts an integer into a floating point number.
+        SQRT - gives a square root.
+        POW - returns x to the power of y.
+        FRAND - returns a random floating point number between 0 and 1.
+        SIN - returns the sine of a number.
+        COS - returns the cosine of a number.
+        TAN - returns the tangent of a number.
+        ASIN - returns the inverse sine of a number.
+        ACOS - returns the inverse cosine of a number.
+        ATAN - returns the inverse tangent of a number.
+        EXP - returns the value of e raised to the x power.
+        LOG - returns the natural log of a number.
+        LOG10 - returns the log base 10 of a number.
+        FABS - returns the absolute value of a number.
+        STRTOF - converts a string to a floating point value.
+        FTOSTR - converts a floating point value to a string.
+        FMOD - floating point remainder of x/y.
+        MODF - Returns the integral and fractional parts of x, both as
+                floating point values.
+        PI - gives PI.
+        INF - returns an infinite result.
+        ROUND - rounds to the nearest integer, returned as a floating
+                point value.
+
+  Related functions -
+        GETPROPFVAL - retrieves a float value stored in a property.
+        FLOAT? - returns true if the next item on the stack is a 
+                floating point value.
+
+  Some notes regarding range -
+        SIN, COS and TAN only operate in the ranges between -pi/4 and
+pi/4.  It may be nessecary for the programmer to have to check these
+values and set the sign as appropriate after processing.  ASIN and
+ATAN only operate in the ranges between -pi/2 and pi/2 while ACOS
+operates within the range of 0 to pi.  Most functions will not accept
+INF as a legal input.  SQRT expects a value greater than or equal to
+zero.  LOG and LOG10 require a value greater than zero.  Very small
+values will return INF.  Finally, POW requires that for x^y, if x is
+zero, y must be greater than 0, and if x is less than zero, y must be
+an integer value.
+
+  Some notes regarding string formatting -
+        STRTOF recognizes most standard forms of floating point
+notation.  This includes the xxx.yyy format as well as the x.yyyEzz
+forms.  Conversely, FTOSTR can return either form, depending on which
+will contain the fewer number of characters for the given value.  Use
+FMTSTRING (see below) to fix the output style.
+
+Other math changes:
+
+  For the standard math functions (+,-,/,*,etc.), the following types
+are allowed -
+        x       OP      y       result
+       -------------------------------
+        INT             INT     INT
+        DBREF           INT     DBREF
+        VAR             INT     VAR
+        LVAR            INT     LVAR
+        FLOAT           FLOAT   FLOAT
+        FLOAT           INT     FLOAT
+        INT             FLOAT   FLOAT
+
+  FLOAT types are not allowed to be used in the MOD command.
+  All bit operations on FLOAT types will be converted to INT types.
+  It is no longer nessevary to use DBCMP to compare for equality
+between two differnet dbref numbers.  Dbrefs can now use the standard
+comparison operations (>,<,=,>=,<=).  DBCMP has been retained for
+backwards compatibility.
+  INT will convert FLOAT types to INT as well as DBREF, VAR and LVAR
+types.  In the cases of VAR and LVAR, INT will return the index number
+of the variable.
+
+Math error functions:
+
+  The new MUF math functions now report when certain math errors have
+occurred.  Among these errors would be such items as division by zero,
+overflow, underflow, using INF as an input or input values out of
+range.  In most cases, an error condition will return a zero value
+(except in the case of integer math, which will wrap around on an
+overflow or underflow condition).  It is possible to poll for error
+conditions after every math operation, or when a '0' result is found.
+
+  The error primitives are -
+        CLEAR - this clears all error flags.
+        CLEAR_ERROR - this will clear a specific error flag.
+        ERROR? - will return true if any error flags have been set.
+        SET_ERROR - sets a specific error flag on.
+        IS_SET? - checks to see if a specific error flag is set.
+        ERROR_STR - given an error identifier, returns a user-readable error
+                string.
+        ERROR_NAME - given the error flag bit identifier, returns the string
+                name for the error flag.
+        ERROR_BIT - given the error flag string name, returns the bit
+                identifier.
+        ERROR_NUM - returns the total number of error flag types.
+
+  The current error flags supported are -
+        DIV_ZERO  - (0) Division by zero attempted.
+        NAN       - (1) Result was not a number.
+        IMAGINARY - (2) Result would be imaginary.
+        FBOUNDS   - (3) Floating-point inputs were out of range.
+        IBOUNDS   - (4) Calculation resulted in an integer overflow or
+                        underflow.
+
+New string functions:
+
+  The new string primitives are -
+        TREAD - acts like a timed READ call.  If the user does not provide
+                input within the given number of seconds, the READ call will
+                time-out and return a failure to the program, otherwise it
+                returns a success and the string value entered.
+        MIDSTR - returns the string specified from within a given string.
+        CTOI - converts a character (first character in a string) to its
+                ASCII equivilent.
+        ITOC - converts an integer to its ASCII equivilent character.  If it
+                is not a valid display character, a null string is returned.
+        STOD - takes a string and attempts to extract a dbref number from it.
+                Recognizes both plain numbers as well as numbers prepended
+                with the '#' sign.
+        SPLIT - given a string and a string token, will split the first string
+                at the first found instance of the token.  The split string
+                will be the original string and a null if no token matches.
+        RSPLIT - as SPLIT, but finds the last matching token.
+        FMTSTRING - allows for string formatting with format substitutions as
+                per C's printf.  See below for further implementation details.
+
+  FMTSTRING usage -
+        FMTSTRING can be used to format complicated and long strings, as well
+                as multi-lined (with embedded new-lines) strings.  These
+                strings can consist entirely of user-specified text, formatted
+                variable entries (as values taken from the stack) or a
+                combination of both.
+
+  The syntax for the format string is as follows:
+
+  Format -+---+-%[-,|][+, ][0][number][.number]type->+----->
+          ^   |                                      |
+          |   +-text-------------------------------->|
+          |                                          |
+          +------------------------------------------+
+
+  Here, text can be any string that does not contain a '%'.  This can
+be circumvented by replacing any occurance of a '%' with '%%'.  'Number'
+is any standard integer number, and type should be one of the following
+single character identifiers (case is important):
+
+        i - integer argument
+        s - string argument
+        ? - unknown type argument, will print a string stating what the
+            variable type is
+        d - dbref number, in the form of #123
+        D - dbref name reference; given a dbref, will print the associated
+            name for that object - terminates on bad reference
+        l - pretty-lock, given a lock, will print the description
+        f - float in xxx.yyy form
+        e - float in x.yyEzz form
+        g - shorter of forms e or f
+
+  A sample format string might look something like:
+
+        "There are %i apples in the box."
+
+  If there was an integer value of '5' on the stack, this would return:
+
+        "There are 5 apples in the box."
+
+  Variables can be formatted in very specific manners.  For numeric
+entries, zero padding can be specified, as well as control over the
+sign field.  The total output field size for the variable can be
+specified, as well as the minimum and maximum output lengths.  Within
+a field, output can be left, right or center justified.  The [-,|]
+denotes the justification style to use.  With no argument, a field will
+be right justified.  A '-' will change this to left and a '|' will make
+the field centered.  If justification is to be used, the first
+numeric entry must be specified.  This denotes the total size of the
+variable field.  If the output of the variable is not limited by the
+maximum output number (see below), and the total size of the output is
+greater than the given field width, justification will have no meaning.
+The second number field (after the period) specifies the maximum number
+of characters to be printed for string variables, or the precision for
+numerics.  When dealing with numerics, the '+', ' ' and '0' characters
+also can be used before the numeric fields.  Specifing '+' will make
+sure that a sign character is always printed before the number, wether
+it be a plus or a minus.  Default is to only print a minus sign as
+needed.  If a ' ' is used instead of the '+', a positive number will
+be prefaced with a space instead of a plus-sign.  When a '0' is given,
+zeros will be prefaced to the printed number in order to fill the
+field width.
+  Tabbing and new-lines are allowed within the format strings as well.
+Tabs are defaulted to the equivilent of eight spaces.  Starting a new
+line with '\r' will reset the tab count.  Unless explicitly reset with
+a new-line character, tab will continue to count in mod-eight across
+the given output line.  To insert a tab character, use '\t'.
+  Variables should be on the stack 'under' the format string, and should
+be in order of reference.  The first variable referenced by the format
+string should be the next item in the stack, and so forth.
+
+Primitive prototypes:
+
+        CEIL    [ f - f ]
+        FLOOR   [ f - f ]
+        FLOAT   [ i - f ]
+        SQRT    [ f - f ]
+        POW     [ f f - f ]
+        FRAND   [ - f ]
+        SIN     [ f - f ]
+        COS     [ f - f ]
+        TAN     [ f - f ]
+        ASIN    [ f - f ]
+        ACOS    [ f - f ]
+        ATAN    [ f - f ]
+        EXP     [ f - f ]
+        LOG     [ f - f ]
+        LOG10   [ f - f ]
+        FABS    [ f - f ]
+        STRTOF  [ s - f ]
+        FTOSTR  [ f - s ]
+        FMOD    [ f f - f ]
+        MODF    [ f - f f ]
+        PI      [ - f ]
+        INF     [ - f ]
+        ROUND   [ f - f ]
+        GETPROPFVAL [ d s - f ]
+        FLOAT?  [ ? - i ]
+        CLEAR   [ - ]
+        CLEAR_ERROR [ s|i - i ]
+        ERROR?  [ - i ]
+        SET_ERROR [ s|i - i ]
+        IS_SET? [ s|i - i ]
+        ERROR_STR [ s|i - s ]
+        ERROR_NAME [ i - s ]
+        ERROR_BIT [ s - i ]
+        ERROR_NUM [ - i ]
+        TREAD   [ i - s i ]
+        MIDSTR  [ s i i - s ]
+        CTOI    [ s - i ]
+        ITOC    [ i - s ]
+        STOD    [ s - d ]
+        SPLIT   [ s s - s s ]
+        RSPLIT  [ s s - s s ]
+        FMTSTRING [ ?1 ... ?n s - s ]
+
+All changes completed as of 10/1/96.
+----------------------END Mods by Points --------------------------
+
+
+
+
+2.2fb5.56b
+Fixed a bug in {testlock} that always tested the lock against the using player,
+  regardless of who it was told to test against.
+Optimized the MUF INTOSTR primitive to be faster and more efficient.
+Optimized the MUF CON* primitives to be faster and more efficient.
+Optimized property trees to remove redundant searches and unneeded recursion.
+Optimized fetching of property values from disk.
+Added the DIM attribute option to {attr} and TEXTATTR
+
+
+
+2.2fb5.56a
+
+Fixed compile bugs when GOD_PRIV was undefined.
+
+Changed permissions on {istype} to make it only match local objects.
+
+Various changes to man.txt, including very brief docs on the muf debugger.
+
+Added FOR (i1 i2 i3 -- i) MUF loop, to loop from i1 to i2, with a step of
+  i3.  The current count is pushed onto the stack at each iteration.  FOR is
+  used just like BEGIN, marking the beginning of a loop, with REPEAT or
+  UNTIL marking the end.  However unlike other loops, FOR loops are
+  limited to a ridiculously high nesting of 512, enforced at runtime.
+  The FOR primitive is actually (i1 i2 i3 -- ) and the FORITER primitive,
+  used to control the iteration count is ( -- [i] i1) where i1 is a
+  boolean signaling weather or not to continue, and if continuing, i is
+  the currnet count.  The primitive FORPOP ( -- ) cleans up the FOR
+  nesting stack by popping off the data for the nested loop.
+
+Fixed a bug where a reference to a loop right after the BEGIN would cause
+  either a MUF error in the case of a non-nested loop, or incorrect code,
+  in the case of a nested loop.
+
+Made the MUF compiler less recursive and more iterative.
+
+Added reporting of file:line when an instruction that has been CLEAR()ed
+  is unparsed for display.
+
+Added ANSI color ability to the server.  Players only see the ANSI codes if
+  they have their COLOR bit set.  To add an escape sequence to a string, use
+  \[ to represent the escape char.  (Similar to \r for carriage returns.)
+  This works in both MUF and in MPI.  Only color, bold, underline, reverse,
+  and flash attributes are allowed.  All other escape sequences are stripped.
+
+Added the {attr:} function to MPI, to allow setting attributes of text for
+  players who have clients that can display them.  The syntax for the {attr}
+  function is:  {attr:ATTRIBUTE,...,TEXT} where you may specify up to eight
+  attributes to give to the specified TEXT.  Ie:: {attr:bold,red,WARNING!}
+  would print WARNING! in bold red text, then reset back to the default text
+  style for anything after the {attr:} command.  {ATTR} commands do not nest
+  well, yet, so don't put {ATTR}s inside other {ATTR}s.
+
+Added TEXTATTR (textstr attrstr -- codedstr) command to MUF.  Takes a plain
+  text string and adds the neccesary codes to make the output codedstr display
+  with the given attributes, when shown with an appropriate client.  The attri-
+  butes are passed to TEXTATTR in the attrstr, as a series of comma separated
+  attribute names. ie:  "WARNING!" "bold,red" TEXTATTR ME @ SWAP NOTIFY
+
+  The attributes supported by the MPI {ATTR} function and the MUF TEXTATTR
+  command are: reset, bold, flash, underline, reverse, black, magenta, red,
+  yellow, green, cyan, blue, white, bg_black, bg_magenta, bg_red, bg_yellow,
+  bg_green, bg_cyan, bg_blue, or bg_white.  The bg_* series of attributes set
+  the background color.  The colors without the bg_ prefix set the foreground
+  color attributes.  Reset will reset the text attributes back to normal.
+
+  It is best to use {ATTR} or TEXTATTR instead of directly making ANSI escape
+  codes with \[, since it is planned to make {ATTR} and TEXTATTR optionally
+  send HTML codes instead of escape sequences, for those client programs what
+  will be able to use it.  Besides, it's easier to read {attr:bold,text}
+  instead of \[[1mtext.
+
+Changed name setting code to always reject putting escape chars in names.
+
+Fixed a bug with compiling under Linux with DETACH defined.
+
+Fixed a sporatic crasher bug that ocurred when the number of processes on the
+  timequeue was exactly ten, and all were due.
+
+
+
