@@ -1398,7 +1398,7 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 
 			if (*buf)
 				*out++ = ' ';
-			strcat(out, buf2);
+			strcpy(out, buf2);
 			out += len;
 		} while (array_next(arr, &temp1));
 	}
