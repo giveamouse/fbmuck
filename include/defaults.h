@@ -52,6 +52,10 @@
 #define AUTOLOOK_CMD "look"
 
 /* Format of standardized property lists. */
+#define PROPLIST_INT_COUNTER 1       /* Specifies that the proplist counter
+                                        property should be stored as an integer
+                                        property instead of as a string. */
+
 #define PROPLIST_COUNTER_FORMAT "P#" /* The prop that has the count of lines. */
                                      /* Define as empty string for no counter. */
                                      /* P substitutes the proplist name */

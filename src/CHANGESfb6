@@ -29,6 +29,12 @@ Added ARRAY_PUT_PROPVALS ( d s a -- ) MUF prim.  Takes the values in
   with the key as the name, and the value as the property value.
   Be aware that dictionary entries with keys starting with one of
   @ ~ _ or . may require special permissions to save.
+Added ARRAY_PUT_REFLIST ( d s a -- ) MUF prim.  Takes a list array of
+  dbrefs, and stores them in a property as a space delimited string of
+  dbrefs.  ie:  "#1234 #6646 #1026 #7104"
+Added ARRAY_GET_REFLIST ( d s -- a ) MUF prim.  Reads in list of space
+  delimited dbrefs from a string property, and returns them as a list
+  array of dbrefs.  See ARRAY_PUT_REFLIST for property syntax.
 Added ARRAY_GET_PROPLIST ( d s -- a ) MUF prim.  Reads in properties from
   a classic style proplist, and returns them in a dictionary, keyed by
   propname.  Proplists can be in any of the common proplist styles:
@@ -47,6 +53,8 @@ Added PROPLIST_COUNTER_FMT @tune, to specify the system standard naming
   string will be replaced by the proplist name.  All other characters
   will be taken literally.  The default is: "P#" which will make for
   proplists which store their count in props like  _list#:3
+Added PROPLIST_INT_COUNTER @tune, to specify whether the system standard
+  for proplist storage is to use integer or string props for the counter.
 Added PROPLIST_ENTRY_FMT @tune, to specify the system standard naming
   format for proplists.  ie: lists of data stored in properties like
   _list#:3    _list#/1:One    _list#/2:Two    _list#/3:Three

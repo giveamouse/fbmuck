@@ -1053,7 +1053,7 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
     if (oper2->type != PROG_STRING)
 		abort_interp("String required. (2)");
     if (oper3->type != PROG_ARRAY)
-		abort_interp("Array required. (2)");
+		abort_interp("Array required. (3)");
 
     ref = oper1->data.objref;
 	strcpy(dir, DoNullInd(oper2->data.string));
@@ -1139,7 +1139,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
     if (oper2->type != PROG_STRING)
 		abort_interp("String required. (2)");
     if (oper3->type != PROG_ARRAY)
-		abort_interp("Array required. (2)");
+		abort_interp("Array required. (3)");
     if (oper3->data.array && oper3->data.array->type != ARRAY_PACKED)
         abort_interp("Argument must be a list type array. (3)");
 
@@ -1166,8 +1166,14 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 	if (!prop_write_perms(ProgUID, ref, propname, mlev))
 		abort_interp("Permission denied while trying to set protected property.");
 
-	propdat.flags = PROP_INTTYP;
-	propdat.data.val = array_count(arr);
+	if (tp_proplist_int_counter) {
+		propdat.flags = PROP_INTTYP;
+		propdat.data.val = array_count(arr);
+	} else {
+		sprintf(buf, "%d", array_count(arr));
+		propdat.flags = PROP_STRTYP;
+		propdat.data.str = buf;
+	}
 	set_property(ref, propname, &propdat);
 
     if (array_first(arr, &temp1)) {
@@ -1259,5 +1265,126 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
     CLEAR(oper2);
     CLEAR(oper3);
 }
+
+
+void
+prim_array_get_reflist(PRIM_PROTOTYPE)
+{
+    stk_array* new;
+    const char* rawstr;
+    char       dir[BUFFER_LEN];
+	int count = 0;
+	int val = 0;
+
+	/* dbref strPropDir -- array */
+    CHECKOP(2);
+    oper2 = POP();
+    oper1 = POP();
+    if (oper1->type != PROG_OBJECT)
+		abort_interp("Dbref required. (1)");
+    if (!valid_object(oper1))
+		abort_interp("Invalid dbref. (1)");
+    if (oper2->type != PROG_STRING)
+		abort_interp("String required. (2)");
+    if (!oper2->data.string)
+		abort_interp("Non-null string required. (2)");
+
+    ref = oper1->data.objref;
+	strcpy(dir, oper2->data.string->data);
+
+	if (!prop_read_perms(ProgUID, ref, dir, mlev))
+		abort_interp("Permission denied.");
+
+    new = new_array_packed(0);
+	rawstr = get_property_class(ref, dir);
+
+	while (isspace(*rawstr)) rawstr++;
+	while (*rawstr) {
+		if (*rawstr == '#')
+		    rawstr++;
+		if (!isdigit(*rawstr))
+			break;
+		result = atoi(rawstr);
+		while (*rawstr && !isspace(*rawstr)) rawstr++;
+		while (isspace(*rawstr)) rawstr++;
+
+		temp1.type = PROG_INTEGER;
+		temp1.data.number = count;
+
+		temp2.type = PROG_OBJECT;
+		temp2.data.number = result;
+
+		array_setitem(&new, &temp1, &temp2);
+		count++;
+
+		CLEAR(&temp1);
+		CLEAR(&temp2);
+    }
+
+    PushArrayRaw(new);
+}
+
+
+void
+prim_array_put_reflist(PRIM_PROTOTYPE)
+{
+    stk_array* arr;
+    char       buf2[BUFFER_LEN];
+    char       dir[BUFFER_LEN];
+	char*      out;
+	PData      propdat;
+	int len;
+
+	/* dbref strPropDir array -- */
+    CHECKOP(3);
+    oper3 = POP();
+    oper2 = POP();
+    oper1 = POP();
+    if (oper1->type != PROG_OBJECT)
+		abort_interp("Dbref required. (1)");
+    if (!valid_object(oper1))
+		abort_interp("Invalid dbref. (1)");
+    if (oper2->type != PROG_STRING)
+		abort_interp("String required. (2)");
+    if (oper3->type != PROG_ARRAY)
+        abort_interp("Argument must be a list array of dbrefs. (3)");
+    if (oper3->data.array && oper3->data.array->type != ARRAY_PACKED)
+        abort_interp("Argument must be a list array of dbrefs. (3)");
+    if (!array_is_homogenous(oper3->data.array, PROG_OBJECT))
+        abort_interp("Argument must be a list array of dbrefs. (3)");
+
+    ref = oper1->data.objref;
+	strcpy(dir, DoNullInd(oper2->data.string));
+	arr = oper3->data.array;
+	buf[0] = '\0';
+
+	out = buf;
+    if (array_first(arr, &temp1)) {
+        do {
+            oper4 = array_getitem(arr, &temp1);
+			len = sprintf(buf2, "#%d", oper4->data.objref);
+
+			if (out + len - buf >= BUFFER_LEN - 3)
+				abort_interp("Operation would result in string length overflow.");
+
+			if (*buf)
+				*out++ = ' ';
+			strcat(out, buf2);
+			out += len;
+        } while (array_next(arr, &temp1));
+    }
+
+	if (!prop_write_perms(ProgUID, ref, dir, mlev))
+		abort_interp("Permission denied while trying to set protected property.");
+
+	propdat.flags = PROP_STRTYP;
+	propdat.data.str = buf;
+	set_property(ref, dir, &propdat);
+
+    CLEAR(oper1);
+    CLEAR(oper2);
+    CLEAR(oper3);
+}
+
 
 
