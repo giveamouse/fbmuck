@@ -56,18 +56,20 @@ do_dump(dbref player, const char *newfile)
 	}
 }
 
-#ifdef DELTADUMPS
 void
 do_delta(dbref player)
 {
 	if (Wizard(player)) {
+#ifdef DELTADUMPS
 		notify(player, "Dumping deltas...");
 		delta_dump_now();
+#else
+		notify(player, "Sorry, this server was compiled without DELTADUMPS.");
+#endif
 	} else {
 		notify(player, "Sorry, you are in a no dumping zone.");
 	}
 }
-#endif
 
 void
 do_shutdown(dbref player)
@@ -730,30 +732,24 @@ process_command(int descr, dbref player, char *command)
 					break;
 				case 'e':
 				case 'E':
-#ifdef DELTADUMPS
 					if(command[3] == 'l' || command[3] == 'L') {
 						Matched("@delta");
 						do_delta(player);
 					} else {
-#endif /* DELTADUMPS */
 						Matched("@describe");
 						do_describe(descr, player, arg1, arg2);
-#ifdef DELTADUMPS						
 					}
-#endif /* DELTADUMPS */						
 					break;
 				case 'i':
 				case 'I':
 					Matched("@dig");
 					do_dig(descr, player, arg1, arg2);
 					break;
-#ifdef DELTADUMPS
 				case 'l':
 				case 'L':
 					Matched("@dlt");
 					do_delta(player);
 					break;
-#endif
 				case 'o':
 				case 'O':
 					Matched("@doing");
@@ -1142,13 +1138,11 @@ process_command(int descr, dbref player, char *command)
 					}
 					break;
 
-#ifndef NO_USAGE_COMMAND
 				case 'S':
 				case 's':
 					Matched("@usage");
 					do_usage(player);
 					break;
-#endif
 
 				default:
 					goto bad;

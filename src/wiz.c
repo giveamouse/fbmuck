@@ -798,7 +798,6 @@ do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2)
 }
 
 
-#ifndef NO_USAGE_COMMAND
 long max_open_files(void);		/* from interface.c */
 
 void
@@ -814,6 +813,7 @@ do_usage(dbref player)
 		notify(player, "Permission denied.");
 		return;
 	}
+#ifndef NO_USAGE_COMMAND
 	pid = getpid();
 #ifdef HAVE_GETRUSAGE
 	psize = getpagesize();
@@ -842,9 +842,14 @@ do_usage(dbref player)
 	notify_fmt(player, "Integral resident memory: %ldk",
 			   (long) (usage.ru_idrss * (psize / 1024)));
 #endif							/* HAVE_GETRUSAGE */
-}
+
+#else							/* NO_USAGE_COMMAND */
+
+	notify(player, "Sorry, this server was compiled with NO_USAGE_COMMAND.");
 
 #endif							/* NO_USAGE_COMMAND */
+}
+
 
 
 void
