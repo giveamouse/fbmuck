@@ -1,18 +1,20 @@
 MUF Prims for TCP Sockets
-	TCP_CONNECT[ str:host int:port    -- str:sockid   ] x
-	TCP_LISTEN[  int:port             -- str:listenid ] x
-	TCP_ACCEPT[  str:listenid         -- str:sockid   ] x
-	TCP_WRITE[   str:data str:sockid  --              ] x
+	TCP_LISTEN[  int:port             -- str:listenid ]
+	TCP_ACCEPT[  str:listenid         -- str:sockid   ]
+	TCP_CONNECT[ str:host int:port    -- str:sockid   ]
+	TCP_SEND[    str:data str:sockid  --              ]
 	TCP_CLOSE[   str:sockid           --              ]
+	TCP_STATUS[  str:sockid           -- str:status   ]
 
-	TCP_SETMODE[ str:sockid int:newlines --           ]
+	TCP_SETMODE[ str:sockid dict:opts --              ]
+	TCP_GETMODE[ str:sockid str:name  -- varies:value ]
 
 
 MUF Events for TCP
-	"TCP.CONNECT"    Queued when a new connection request is recieved.
-	"TCP.READ"       Queued when a new line is recieved.
-	"TCP.CLOSED"     Queued when the remote side closed the socket.
-	"TCP.ERROR"      Queued when there is some sort of error that closes the socket.
+	"TCP.CONNECT.sockid"  Queued when a new connection request is recieved.
+	"TCP.READ.sockid"     Queued when a new line is recieved.
+	"TCP.CLOSED.sockid"   Queued when the remote side closed the socket.
+	"TCP.ERROR.sockid"    Queued when there is an error that closes the socket.
 
 
 
