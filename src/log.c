@@ -153,18 +153,21 @@ log_command(char *format, ...)
 void
 strip_evil_characters(char *badstring)
 {
-	int s;
-	int stringlen;
-	if(badstring == NULL)
-		return;
-	stringlen=strlen(badstring);
-	for (s = 0; s<stringlen,badstring[s]!='\0'; s++)
-	{
-		badstring[s] &= 0x7f;      /* high ascii */
-		badstring[s] = (badstring[s] == '\033')? '[' : badstring[s];
-		badstring[s] = isprint(badstring[s])? badstring[s] : '_';
-	}
-	return;
+ 	unsigned char *s = badstring;
+ 
+ 	if (!s)
+  		return;
+ 
+ 	for (; *s; ++s) {
+ 		*s &= 0x7f; /* No high ascii */
+ 
+ 		if (*s == 0x1b)
+ 			*s = '['; /* No escape (Aieeee!) */
+ 
+ 		if (!isprint(*s))
+ 			*s = '_';
+  	}
+  	return;
 }
 
 void
@@ -172,9 +175,8 @@ log_user(dbref player, dbref program, char *logmessage)
 {
 	char logformat[BUFFER_LEN];
 	char buf[40];
-	time_t lt=0;
-	int len=0,i=0;
-	char buf2[BUFFER_LEN];
+	time_t lt = 0;
+	int len = 0;
 
 	*buf='\0';
 	*logformat='\0';
