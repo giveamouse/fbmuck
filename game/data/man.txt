@@ -57,13 +57,15 @@ Stack Manipulation:
   ldup  dupn  popn  {     }    }list   }dict  depth  lreverse
 
 Array Manipulation:
-  array_make_dict array_make
-  array_explode   array_keys      array_vals         array_count
-  array_notify    array_nunion    array_nintersect   array_ndiff
-  array_union     array_intersect array_diff
-  array_first     array_last      array_next         array_getitem
-  array_delitem   array_setitem   array_insertitem   array_getrange
-  array_delrange  array_setrange  array_insertrange
+  array_make         array_make_dict    array_notify       array_appenditem
+  array_getitem      array_delitem      array_setitem      array_insertitem
+  array_getrange     array_delrange     array_setrange     array_insertrange
+  array_first        array_last         array_prev         array_next
+  array_explode      array_keys         array_vals         array_count
+  array_nunion       array_nintersect   array_ndiff        array_reverse
+  array_union        array_intersect    array_diff         array_findval
+  array_get_reflist  array_put_reflist  array_get_proplist array_put_proplist
+  array_get_propvals array_put_propvals array_get_propdirs
   
 Message Management:
   desc     succ      fail      name      truename
@@ -91,10 +93,10 @@ Connection Management:
   descrflush   conboot
   
 String Handling:
-  toupper    tolower  instring    rinstring  instr   rinstr   striplead
-  striptail  strip    unparseobj  strlen     strcat  strcut   subst
-  explode    textattr pronoun_sub midstr     split   rsplit   fmtstring
-  tokensplit
+  toupper    tolower     instring    rinstring  instr   rinstr   striplead
+  striptail  strip       unparseobj  strlen     strcat  strcut   subst
+  explode    textattr    pronoun_sub midstr     split   rsplit   fmtstring
+  ansi_strip ansi_strlen ansi_strcut tokensplit
   
 Lock Handling:
   locked?   getlockstr   setlockstr   parselock   unparselock
@@ -103,20 +105,24 @@ Lock Handling:
 Bitwise Operators:
   bitor   bitand   bitxor   bitshift
   
+MUF Event Support:
+  event_wait      event_count      timer_start      timer_stop
+  
 MCP Mud Client Protocol commands:
   mcp_register  mcp_bind  mcp_supports  mcp_send
   
-MCP GUI Package Support
-  gui_available   gui_dlog_simple   gui_dlog_tabbed   gui_dlog_helper
-  gui_dlog_show   gui_dlog_close    gui_ctrl_create   gui_values_get
-  gui_value_set   event_wait
-
-MCP GUI Package Control Defines
+MCP GUI Package Support:
+  gui_dlog_create   gui_dlog_simple   gui_dlog_tabbed   gui_dlog_helper
+  gui_available     gui_dlog_show     gui_dlog_close    gui_ctrl_create
+  gui_values_get    gui_value_set
+  
+MCP GUI Package Defines:
+  d_simple        d_tabbed          d_helper
   c_datum         c_label           c_hrule           c_vrule
   c_button        c_checkbox        c_edit            c_multiedit
   c_combobox      c_listbox         c_spinner         c_scale
   c_frame         c_notebook
-
+  
 Misc:
   set    mlevel  next    checkargs  location  newroom     pennies
   flag?  caller  force   sysparm    contents  newexit     addpennies
