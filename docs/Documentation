@@ -1,0 +1,33 @@
+Documents bundled:
+
+Documentation
+MIPS:			MIPS port notes.
+MUCK.doc:		TinyMUCK non-programming documentation
+MUD.doc:		Standard MUD documentation
+MUF-tutorial		Beginner's tutorial on MUF
+MUF.examples		Examples of MUF code
+MUF.manual		MUF programmer's manual
+README.CON:		Information on Virus' concentrator and how to use it.
+README:			Standard MUD distribution stuff
+forth.ref:		MUF cheatsheet
+minimal.db.README:	How to set up a MUD database.
+technical.doc:		For technical people only.
+
+Non-Documentation
+COPYING:	Copying conditions
+REPORTING:	How to report bugs
+SUPPORT:	When there's a bug, in the neighbourhood,
+		Who're you gonna call?
+		BUG BUSTERS!
+
+Acknowledgements:
+
+MUD.doc written by Chysalis and Three.
+(jdstone@uokmax.uucp && martin@grunt.berkeley.edu)
+
+HAVEN, ABODE, page with message done by Random (russ@uokmax.uucp)
+
+@recycle by Jimbo (jmattson@ucsd.edu)
+
+@#, MUF macros, MUF tutorial by Stinglai
+(blojo%ocf.berkeley.edu@lilac.berkeley.edu)

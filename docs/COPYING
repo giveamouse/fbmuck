@@ -1,0 +1,41 @@
+TinyMUCK 2.2, being a deriviative work of TinyMUD 1.5.2 and TinyMUCK
+1.1 is subject to all conditions listed in "copyright.h"
+
+In addition, I, named ChupChup throughout this work, request that you
+follow the following conditions:
+
+1. Should you make a substantial addition to this work and choose to
+distribute it, please inform me first.  If that is not possible, in
+your distribution, you should either:
+
+	a) Not use the name TinyMUCK as the program, and note and
+	acknowledge it's deriviative nature.
+
+	b) Use the name TinyMUCK and it's version number, but append
+	a suffix to distinguish it from the original.
+
+2. You should distribute the source with the binaries (if binaries are
+provided), and update the documentation to reflect the changes you
+made.  If you are unable to do the latter, you must state the changes
+in some way evident to the user when either running the software or
+when unpacking the archive.
+
+3. Inform me of any note-worthy uses of this software.
+
+Any text file with seperate copying permissions specifications will
+have these specifications overridden by those unless the files have
+not been written by me, the author.
+
+The author may be reached at
+
+	rearl@belch.berkeley.edu
+
+ChupChup
+Robert Earl
+
+
+----------------------
+
+Furthermore, the authors of the 2.2fb mods agrees with the above.
+The main supporting author of the 2.2fb mods may be reached at:
+	foxen@netcom.com
