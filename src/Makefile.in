@@ -216,7 +216,9 @@ depend:
 
 Makefile: Makefile.in
 	cd .. && ./configure
+	@echo " "
 	@echo Please re-run Make, as the Makefile was re-generated.
+	@echo " "
 	false
 
 ########################################################
@@ -238,10 +240,6 @@ nuke:
 	-${RM} Makefile config.status ${INCLUDE}/autoconf.h
 	-${CLEAN} *
 
-# FIXME: Implement fb-addmuck
-# FIXME: Check base and minimal dbs into CVS as unpacked file trees under dbs/
-# FIXME: Create man pages for fbmuck, fbhelp, fb-addmuck, fb-announce, topwords
-
 install: all
 	../mkdir_recursive ${INSTALL_BINDIR}
 	for f in ${TARGETS}; do \
@@ -255,6 +253,15 @@ install: all
 	done
 	${CP} ../game/restart ${INSTALL_HELPDIR}/restart-script
 	${CHMOD} 755 ${INSTALL_HELPDIR}/restart-script
+	@echo " "
+	@echo "You may run 'make install-inits' to install SysV style init scripts."
+	@echo " "
+
+# FIXME: Implement fb-addmuck
+# FIXME: Check base and minimal dbs into CVS as unpacked file trees under dbs/
+# FIXME: Create man pages for fbmuck, fbhelp, fb-addmuck, fb-announce, topwords
+
+install-inits: all
 	-[ -f /etc/fbmucks ] || echo "#MUCKNAME   USERNAME    MUCK_ROOT_PATH           SCRIPTNAME  PORTS" > /etc/fbmucks
 	-[ -f /etc/redhat-release ] && ${CP} ../scripts/fbmuck-redhat-init /etc/rc.d/init.d/fbmuck
 	-[ ! -f /etc/redhat-release ] && ${CP} ../scripts/fbmuck-sysvinit /etc/rc.d/init.d/fbmuck

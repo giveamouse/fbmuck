@@ -22,6 +22,8 @@ Fixed crasher bug in FMTSTRING with dynamic fieldwidths.
 Changed SSL cert/key load failures to just disable SSL, instead of exiting.
 Changed SSL cert/key load failure error reporting to show file path/name.
 Changed commandline to accept -sport with a warning when SSL not supported.
+Changed makefiles so that 'make install-init' installs SysV init scripts,
+  instead of 'make install'.  This should help Debian and BSD folks.
 
 
 

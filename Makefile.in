@@ -11,12 +11,14 @@ all:	Makefile
 		cd $${d} && ${MAKE} all; \
 	done
 
-install:	Makefile cert
+install:	Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} install; \
 	done
+	@echo " "
 	@echo "You can use 'make cert' to generate a self-signed server certificate"
 	@echo "for use in allowing secure encrypted SSL connections to your Muck."
+	@echo " "
 
 cert game/server.pem:
 	@if grep "^#define USE_SSL" include/autoconf.h > /dev/null; then \

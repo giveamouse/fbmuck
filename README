@@ -52,9 +52,13 @@ much of a problem with current versions of the server, as databases now
 store a count of their objects, and the entire database generally gets
 allocated in one chunk.
 
-In almost all cases, just running './configure' will set up the makefile
-and configuration for your system, then typing 'make' will compile the
-server.
+To compile fbmuck:
+  ./configure --with-ssl    # if you want SSL support.  Otherwise...
+  ./configure               # if you don't/can't.
+  make                      # to compile fbmuck.
+  make install              # to install binaries in /usr/local/bin
+  make install-inits        # to install SysV style init scripts.
+
 
 =========================================================================
 
@@ -122,11 +126,16 @@ sanity
 
 topwords
 
- Usage: topwords < db-file | sort > wordlist.txt
+ Usage: topwords < db-file | sort > words.txt
 
- This program will find the 4096 words which will give you the best compression
- with the new style dictionary based compression.  This is used by the optimdb
- script to re-optimize the compression of a database.
+ WARNING: DO NOT RUN TOPWORDS MANUALLY UNLESS YOU KNOW WHAT YOU ARE DOING.
+ This program will find the 4096 (max) words which will give you the best
+ compression with the new style dictionary based compression.  This is
+ used by the optimdb script to re-optimize the compression of a database.
+ If the database you provide has fewer than 4096 words, this will _not_
+ return 4096 words and can cause severe problems.  The optimdb script
+ takes this into account by using 4096 seed words.  You should use the
+ optimdb script instead of running this manually.
 
 
 
