@@ -1250,7 +1250,7 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms, const char *in
 			snprintf(howvar, sizeof(howvar), "%s Out of MPI variables.", abuf);
 			notify_nolisten(player, howvar, 1);
 			varc = mvarcnt;
-			return NULL;
+			return outbuf;
 		}
 		strcpy(howvar, abuf);
 	}
@@ -1260,7 +1260,7 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms, const char *in
 		snprintf(cmdvar, sizeof(cmdvar), "%s Out of MPI variables.", abuf);
 		notify_nolisten(player, cmdvar, 1);
 		varc = mvarcnt;
-		return NULL;
+		return outbuf;
 	}
 	strcpy(cmdvar, match_cmdname);
 	strcpy(tmpcmd, match_cmdname);
@@ -1270,7 +1270,7 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms, const char *in
 		snprintf(argvar, sizeof(argvar), "%s Out of MPI variables.", abuf);
 		notify_nolisten(player, argvar, 1);
 		varc = mvarcnt;
-		return NULL;
+		return outbuf;
 	}
 	strcpy(argvar, match_args);
 	strcpy(tmparg, match_args);
