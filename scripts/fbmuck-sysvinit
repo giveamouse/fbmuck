@@ -46,7 +46,7 @@ mucknames=$@
 case "$cmd" in
   start)
     # Start mucks.
-	echo -n "Starting fbmucks: "
+    echo -n "Starting fbmucks: "
     cat /etc/fbmucks | \
     grep -v '^[ 	]*#' |\
     grep -v '^[ 	]*$' |\
@@ -76,11 +76,11 @@ case "$cmd" in
             done
         fi
     done
-	echo ""
+    echo ""
     ;;
   stop)
     # Stop mucks.
-	echo -n "Shutting down fbmucks: "
+    echo -n "Shutting down fbmucks: "
     cat /etc/fbmucks | \
     grep -v '^[ 	]*#' |\
     grep -v '^[ 	]*$' |\
@@ -125,7 +125,7 @@ case "$cmd" in
             fi
         fi
     done
-	echo ""
+    echo ""
     ;;
   restart)
     $0 stop
