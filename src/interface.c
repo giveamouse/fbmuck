@@ -2,6 +2,9 @@
 
 /*
  * $Log: interface.c,v $
+ * Revision 1.5  2000/07/09 09:46:52  revar
+ * Fixed stupid error with checking PLAYER_BLOCK on not-yet connected descriptor.
+ *
  * Revision 1.4  2000/07/09 09:21:37  revar
  * Marked places that need code for handling READ Mufevents.
  *
@@ -1752,9 +1755,9 @@ process_commands(void)
 		for (d = descriptor_list; d; d = dnext) {
 			dnext = d->next;
 			if (d->quota > 0 && (t = d->input.head)) {
-				if (PLAYER_BLOCK(d->player)) {
+				if (d->connected && PLAYER_BLOCK(d->player)) {
 					/* WORK: send player's foreground/preempt programs an exclusive READ mufevent */
-				} else if (!d->connected) {
+				} else {
 					d->quota--;
 					nprocessed++;
 					if (!do_command(d, t->start)) {
