@@ -311,7 +311,13 @@ fork_and_dump(void)
 #else
 # ifndef WIN32
 	if ((global_dumper_pid=fork())==0) {
+	/* We are the child. */
 		forked_dump_process_flag = 1;
+#  ifdef NICEVAL
+	/* Requested by snout of SPR, reduce the priority of the
+	 * dumper child. */
+		nice(NICEVAL);
+#  endif /* NICEVAL */
 		set_dumper_signals();
 		dump_database_internal();
 		_exit(0);

@@ -1,3 +1,6 @@
+2.2fb6.04
+Added NICEVAL in params.h to set the dumper process nice() priority.
+
 2.2fb6.03
 Added improved SSL error reporting, via stderr.
 Added feature #563307: array_filter_prop matching non-strings
