@@ -2,6 +2,9 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.9  2001/06/25 07:53:56  winged
+ * Fixed a build error (case TYPEOF instead of Typeof).  Ooops.
+ *
  * Revision 1.8  2001/06/25 07:48:55  winged
  * Adding additional checks for trying to @recycle running programs from FORCE.
  *
@@ -903,7 +906,7 @@ recycle(int descr, dbref player, dbref thing)
 			notify(player, "ERROR: Cannot recycle an object FORCEing you!");
 			return;
 		}
-		if((TYPEOF(thing) == TYPE_PROGRAM) && (PROGRAM_INSTANCES(thing) != 0)) {
+		if((Typeof(thing) == TYPE_PROGRAM) && (PROGRAM_INSTANCES(thing) != 0)) {
 			log_status("SANITYCHECK: Trying to recycle a running program (#%d) from FORCE!", thing);
 			notify(player, "ERROR: Cannot recycle a running program from FORCE.");
 			return;
