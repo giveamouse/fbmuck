@@ -112,8 +112,12 @@ prim_moveto(PRIM_PROTOTYPE)
 	oper2 = POP();
 	if (fr->level > 8)
 		abort_interp("Interp call loops not allowed.");
-	if (!(valid_object(oper1) && valid_object(oper2)) && !is_home(oper1))
-		abort_interp("Non-object argument.");
+	/* Needs to be an object, and object needs to be valid */
+	if (!(oper2->type == PROG_OBJECT && valid_object(oper2)))
+		abort_interp("Non-object argument. (2)");
+	/* Needs to be an object, and object needs to be valid or HOME */
+	if (!(oper1->type == PROG_OBJECT && (valid_object(oper1) || is_home(oper1))))
+		abort_interp("Non-object argument. (1)");
 	{
 		dbref victim, dest;
 
