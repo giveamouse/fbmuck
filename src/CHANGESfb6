@@ -1,13 +1,9 @@
 2.2fb6.00b4
 Fixed bug #424057 -- MATCH and PMATCH primitives now strip ansi sequences
   before processing.
-Changed password-change errors more informative, so "Sorry." isn't seen.
+Fixed _msgmacs searching to allow blessed environment room msgmacs.
 Fixed bug #233181 -- now DETACH won't if -convert or -insanity is specified
   on the commandline.
-Added new @tune -- lazy_mpi_istype_perm.  This changes the permissions for
-  {istype} to be the lazy, pre-5.56 method, allowing {istype} to reference
-  remote objects.
-Changed default setting for GOD_PRIV to be defined, not undef'd.
 Fixed crasher #201633 -- Server now does not crash when program FORCEs
   itself to be @recycled.  As a side result of this, there is now another
   statuslog line prefix to be aware of: 'SANITYCHECK:'.  If this prefix shows
@@ -30,6 +26,9 @@ Fixed some tiny buffer overrun errors with muf debugging.
 Fixed 'PID KILL' to kill the current program, without triggering a CATCH.
 Fixed erroneous error messages in GUI_CTRL_COMMAND.
 Fixed MCP GUI event handlers to return multi-line 'data' args.
+Added new @tune -- lazy_mpi_istype_perm.  This changes the permissions for
+  {istype} to be the lazy, pre-5.56 method, allowing {istype} to reference
+  remote objects.
 Added docs of supported MCP GUI ctrl-commands to the GUI_CTRL_COMMAND muf
   manual entry.
 Added "data" argument for MCP GUI events context.  This is the data for the
@@ -50,6 +49,10 @@ Changed @list to view only muf programs set VIEWABLE, as opposed to LINK_OK.
 Changed commands_per_time input quotas to not count MCP messages.
 Changes player name checks to prohibit ( and ) in player names.
 Changed MCP GUI event callback arguments to include the McpMesg.
+Changed password-change errors more informative, so "Sorry." isn't seen.
+Changed default setting for GOD_PRIV to be defined, not undef'd.
+Changed database format to Foxen6.  Programs in earlier databases that are
+  set LINK_OK will also get their VIEWABLE flag set.
 
 
 

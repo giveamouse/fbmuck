@@ -297,7 +297,7 @@ putprops_copy(FILE * f, dbref obj)
 		putproperties(f, obj);
 		return;
 	}
-	if (db_load_format < 7 || db_conversion_flag) {
+	if (db_load_format < 8 || db_conversion_flag) {
 		if (fetchprops_priority(obj, 1, NULL) || fetch_propvals(obj, "/")) {
 			fseek(f, 0L, 2);
 		}
@@ -582,7 +582,7 @@ db_write_list(FILE * f, int mode)
 dbref
 db_write(FILE * f)
 {
-	putstring(f, "***Foxen5 TinyMUCK DUMP Format***");
+	putstring(f, "***Foxen6 TinyMUCK DUMP Format***");
 
 	putref(f, db_top);
 	putref(f, DB_PARMSINFO
@@ -615,7 +615,7 @@ dbref
 db_write_deltas(FILE * f)
 {
 	fseek(f, 0L, 2);			/* seek end of file */
-	putstring(f, "***Foxen5 Deltas Dump Extention***");
+	putstring(f, "***Foxen6 Deltas Dump Extention***");
 	db_write_list(f, 0);
 
 	fseek(f, 0L, 2);
@@ -1191,7 +1191,7 @@ db_read_object_new(FILE * f, struct object *o, dbref objno)
 	}
 }
 
-/* Reads in Foxen, Foxen[234], WhiteFire, Mage or Lachesis DB Formats */
+/* Reads in Foxen, Foxen[23456], WhiteFire, Mage or Lachesis DB Formats */
 void
 db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int read_before)
 {
@@ -1358,6 +1358,10 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		PROGRAM_SET_PROFSTART(objno, 0);
 		PROGRAM_SET_PROF_USES(objno, 0);
 
+		if (dtype < 8 && (FLAGS(objno) & LINK_OK)) {
+			/* set Viewable flag on Link_ok programs. */
+			FLAGS(objno) |= VEHICLE;
+		}
 		if (dtype < 5 && MLevel(objno) == 0)
 			SetMLevel(objno, 2);
 
@@ -1446,6 +1450,23 @@ db_read(FILE * f)
 #endif
 			}
 			db_grow(i);
+		} else if (!strcmp(special, "**Foxen6 TinyMUCK DUMP Format***")) {
+			db_load_format = 8;
+			i = getref(f);
+			dbflags = getref(f);
+			if (dbflags & DB_PARMSINFO) {
+				parmcnt = getref(f);
+				tune_load_parms_from_file(f, NOTHING, parmcnt);
+			}
+			if (dbflags & DB_COMPRESSED) {
+#ifdef COMPRESS
+				init_compress_from_file(f);
+#else
+				fprintf(stderr, "This server is not compiled to read compressed databases.\n");
+				return -1;
+#endif
+			}
+			db_grow(i);
 		} else if (!strcmp(special, "***Foxen Deltas Dump Extention***")) {
 			db_load_format = 4;
 			doing_deltas = 1;
@@ -1457,6 +1478,9 @@ db_read(FILE * f)
 			doing_deltas = 1;
 		} else if (!strcmp(special, "***Foxen5 Deltas Dump Extention***")) {
 			db_load_format = 7;
+			doing_deltas = 1;
+		} else if (!strcmp(special, "***Foxen6 Deltas Dump Extention***")) {
+			db_load_format = 8;
 			doing_deltas = 1;
 		}
 		if (doing_deltas && !db) {
@@ -1498,6 +1522,7 @@ db_read(FILE * f)
 			case 5:
 			case 6:
 			case 7:
+			case 8:
 				db_read_object_foxen(f, o, thisref, db_load_format, doing_deltas);
 				break;
 			}
@@ -1514,48 +1539,45 @@ db_read(FILE * f)
 			} else {
 				free((void *) special);
 				special = getstring(f);
-				if (!special || strcmp(special, "***Foxen Deltas Dump Extention***")) {
-					if (!special || strcmp(special, "***Foxen2 Deltas Dump Extention***")) {
-						if (!special || strcmp(special, "***Foxen4 Deltas Dump Extention***")) {
-							if (!special || strcmp(special,
-												   "***Foxen5 Deltas Dump Extention***")) {
-								if (special)
-									free((void *) special);
-								if (main_db_format == 7 && (dbflags & DB_PARMSINFO)) {
-									rewind(f);
-									free((void *) getstring(f));
-									getref(f);
-									getref(f);
-									parmcnt = getref(f);
-									tune_load_parms_from_file(f, NOTHING, parmcnt);
-								}
-								for (i = 0; i < db_top; i++) {
-									if (Typeof(i) == TYPE_GARBAGE) {
-										DBFETCH(i)->next = recyclable;
-										recyclable = i;
-									}
-								}
-								autostart_progs();
-								return db_top;
-							} else {
-								free((void *) special);
-								db_load_format = 7;
-								doing_deltas = 1;
-							}
-						} else {
-							free((void *) special);
-							db_load_format = 6;
-							doing_deltas = 1;
-						}
-					} else {
-						free((void *) special);
-						db_load_format = 5;
-						doing_deltas = 1;
-					}
-				} else {
+				if (special && !strcmp(special, "***Foxen Deltas Dump Extention***")) {
 					free((void *) special);
 					db_load_format = 4;
 					doing_deltas = 1;
+				} else if (special && !strcmp(special, "***Foxen2 Deltas Dump Extention***")) {
+					free((void *) special);
+					db_load_format = 5;
+					doing_deltas = 1;
+				} else if (special && !strcmp(special, "***Foxen4 Deltas Dump Extention***")) {
+					free((void *) special);
+					db_load_format = 6;
+					doing_deltas = 1;
+				} else if (special && !strcmp(special, "***Foxen5 Deltas Dump Extention***")) {
+					free((void *) special);
+					db_load_format = 7;
+					doing_deltas = 1;
+				} else if (special && !strcmp(special, "***Foxen6 Deltas Dump Extention***")) {
+					free((void *) special);
+					db_load_format = 8;
+					doing_deltas = 1;
+				} else {
+					if (special)
+						free((void *) special);
+					if (main_db_format >= 7 && (dbflags & DB_PARMSINFO)) {
+						rewind(f);
+						free((void *) getstring(f));
+						getref(f);
+						getref(f);
+						parmcnt = getref(f);
+						tune_load_parms_from_file(f, NOTHING, parmcnt);
+					}
+					for (i = 0; i < db_top; i++) {
+						if (Typeof(i) == TYPE_GARBAGE) {
+							DBFETCH(i)->next = recyclable;
+							recyclable = i;
+						}
+					}
+					autostart_progs();
+					return db_top;
 				}
 			}
 			break;
