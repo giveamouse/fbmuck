@@ -1492,7 +1492,7 @@ next_token_raw(COMPSTATE * cstat)
 	}
 	/* take care of comments */
 	if (*cstat->next_char == BEGINCOMMENT) {
-	        cstat->start_comment = cstat->lineno;
+		cstat->start_comment = cstat->lineno;
 		if (cstat->force_comment == 1) {
 		  do_comment(cstat, -1);
 		} else {
@@ -1980,7 +1980,11 @@ do_directive(COMPSTATE * cstat, char *direct)
 		if (!tmpname) {
 			v_abort_compile(cstat, "Unexpected end of file looking for $ifdef condition.");
 		}
-		strcpy(temp, tmpname);
+		if (*tmpname == '"') {
+			strcpy(temp, tmpname+1);
+		} else {
+			strcpy(temp, tmpname);
+		}
 		free(tmpname);
 		for (i = 1; temp[i] && (temp[i] != '=') && (temp[i] != '>') && (temp[i] != '<'); i++) ;
 		tmpname = &(temp[i]);
@@ -2250,28 +2254,42 @@ do_directive(COMPSTATE * cstat, char *direct)
 	} else if (!string_compare(temp, "endif")) {
 
 	} else if (!string_compare(temp, "pragma")) {
-	  /* TODO - move pragmas to its own section for easy expansion. */
-	  while (*cstat->next_char && isspace(*cstat->next_char))
-	    cstat->next_char++;
-	  if (!*cstat->next_char || !(tmpptr = (char *)next_token_raw(cstat)))
-	    v_abort_compile(cstat, "Pragma requires at least one argument.");
-	  if (!string_compare(tmpptr, "comment_strict")) {
-	    /* Do non-recursive comments (old style) */
-	    cstat->force_comment = 1;
-	  } else if (!string_compare(tmpptr, "comment_recurse")) {
-	    /* Do recursive comments ((new) style) */
-	    cstat->force_comment = 2;
-	  } else if (!string_compare(tmpptr, "comment_loose")) {
-	    /* Try to compile with recursive and non-recursive comments
-	       doing recursive first, then strict on a comment-based
-	       compile error.  Only throw an error if both fail.  This is
-	       the default mode. */
-	    cstat->force_comment = 0;
-	  }
-	  /* If the pragma is not recognized, it is silently ignored. */
-	  free(tmpptr);
-	  if (*cstat->next_char)
-	    advance_line(cstat);
+		/* TODO - move pragmas to its own section for easy expansion. */
+		while (*cstat->next_char && isspace(*cstat->next_char))
+			cstat->next_char++;
+		if (!*cstat->next_char || !(tmpptr = (char *)next_token_raw(cstat)))
+			v_abort_compile(cstat, "Pragma requires at least one argument.");
+		if (!string_compare(tmpptr, "comment_strict")) {
+			/* Do non-recursive comments (old style) */
+			cstat->force_comment = 1;
+		} else if (!string_compare(tmpptr, "comment_recurse")) {
+			/* Do recursive comments ((new) style) */
+			cstat->force_comment = 2;
+		} else if (!string_compare(tmpptr, "comment_loose")) {
+			/* Try to compile with recursive and non-recursive comments
+			doing recursive first, then strict on a comment-based
+			compile error.  Only throw an error if both fail.  This is
+			the default mode. */
+			cstat->force_comment = 0;
+		} else {
+			/* If the pragma is not recognized, it is ignored, with a warning. */
+			compiler_warning(
+					cstat,
+					"Warning on line %i: Pragma %.64s unrecognized.  Ignoring.",
+					cstat->lineno, tmpptr
+				);
+			while (*cstat->next_char)
+				cstat->next_char++;
+		}
+		free(tmpptr);
+		if (*cstat->next_char) {
+			compiler_warning(
+					cstat,
+					"Warning on line %i: Ignoring extra pragma arguments: %.256s",
+					cstat->lineno, cstat->next_char
+				);
+			advance_line(cstat);
+		}
 	} else {
 		v_abort_compile(cstat, "Unrecognized compiler directive.");
 	}

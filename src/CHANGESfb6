@@ -27,14 +27,15 @@ Fixed various compiler warnings given with -Wall.
 Changed DESCRDBREF to return #-1 for an invalid or not-logged-in descriptor.
 Changed MUF stack traces to show floats in short format.
 Changed string translations of floats to show only 15 significant digits.
-Added docs for ARRAY_FMTSTRINGS to muf manual.
 Changed the compiler so that under default conditions (comment_loose),
   programs will be compiled with recursive comments turned on.  Should a
   comment-based compile error occur, the compiler will back up and
   automatically retry with the old-style comment parser instead.  This is
-  done on a line by line basis, and only for brace mis-matches.  Please note
+  done on a line by line basis, and only for paren mis-matches.  Please note
   that an unrecognized token -might- indicate a comment mis-match, but is
   not covered by this recompile code.
+Changed $ifdef to allow for syntax like: $ifdef "__muckname=Foo Bar Muck"
+Added docs for ARRAY_FMTSTRINGS to muf manual.
 Added ARRAY_FILTER_FLAGS ( list:dbrefs str:flags -- list:dbrefsout ) MUF prim.
   Takes a homogenous list array of dbrefs, and filters them for those objects
   that pass the given flag test.  See 'help @find' for flags test info.
@@ -56,12 +57,12 @@ Added notification of start of comment line in MUF compile failure when
   comment-related error.
 Added $pragma compiler directive.  Format is '$pragma argument'.  The rest
   of the line following a pragma is skipped.  If a pragma argument is not
-  recognized, it is silently skipped.  Pragmas should be used for future
-  compiler expansions and features that are non-mandatory.  This allows for
-  easier portability between versions.
+  recognized, it is ignored.  Pragmas should be used for future compiler
+  expansions and features that are non-mandatory.  This allows for easier
+  portability between versions.
 Added pragmas $pragma comment_recurse, $pragma comment_strict and
   $pragma comment_loose.  This forces recursive-comment only compiles,
-  old-style comment compiles, or keeps the status-quo respectively.
+  old-style comment compiles, or uses best-guess respectively.
   (See the compiler changes above.)
 
 
