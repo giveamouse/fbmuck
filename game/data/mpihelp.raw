@@ -718,6 +718,22 @@ a room, or an exit on a room, and if the message doesn't already begin with
 the user's name, then the user's name will be prepended to the message.
 ~
 ~
+ATTR
+{attr:attribute,string}
+{attr:attribute,attribute,string}
+{attr:attribute,...,attribute,string}
+    This will surround the given string with the neccesary ANSI escape codes
+to cause the text to display with the given attributes.  You may specify up
+to eight attributes, though this shouldn't ever be neccesary.  The supported
+attributes are: null, reset, bold, dim, flash, underline, reverse, black,
+red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, 
+bg_green, bg_cyan, bg_blue, bg_magenta, and bg_white.
+	Not all clients will display all these attributes, and those that do 
+won't always show them the same way.  Players who do not have their Color 
+flag set will not see the ANSI codes or colors at all.  Nesting {attr}
+commands probably just won't work.
+~
+~
 ~
 ~#----------------------------------------------------------------------------
 ~~section Math Functions|Math|MathFuncs

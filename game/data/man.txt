@@ -218,24 +218,31 @@ get an angle from X-Y coordinates.
 DIST3D|
 dist3D ( fx fy fz -- f )
 Returns the distance of the XYZ coordinate (fx,fy,fz) from the origin.
+To do a 2D distance calculation, simply use a Z value (fz) of 0.
 ~
 XYZ_TO_POLAR|
 xyz_to_polar ( fx fy fz -- fr ft fp )
 Converts the XYZ coordinate (fx, fy, fz) to the spherical polar coordinate
 (fr, ft, fp).  fr is the radius, ft is theta (the plane angle), and fp is phi
-(the elevation angle)
+(the elevation angle)  To do 2D X-Y to radius and angle conversion, simply use
+a Z coordinate (fz) of 0, and discard phi (fp).
+
+See also: POLAR_TO_XYZ, DIST3D, SIN, COS, TAN
 ~
 POLAR_TO_XYZ|
 polar_to_xyz ( fr ft fp -- fx fy fz )
 Converts the spherical polar coordinate (fr, ft, fp) to the XYZ coordinate
 (fx, fy, fz).  fr is the radius, ft is theta (the plane angle), and fp is phi
-(the elevation angle)
+(the elevation angle)  To do 2D radius and angle to X-Y conversion, simply use
+a phi angle (fp) of 0, and discard Z (fz).
 ~
 ~
 ARRAY?|
 array? ( ? -- i )
 Tests if stack item is an array.  Returns i as 1 if so, 0 if
 otherwise.
+
+See also: DICTIONARY?, INT?, DBREF?, ARRAY_MAKE_DICT, ARRAY_MAKE
 ~
 ARRAY_COUNT|
 array_count ( a -- i )
@@ -576,9 +583,11 @@ desc ( d -- s )
 Takes object d and returns its description (@desc) string field.
 ~
 DICTIONARY?|
-dictionary ( ? -- i )
+dictionary? ( ? -- i )
 Tests if stack item is an array of dictionary type.  Returns i as 1
 if so, 0 if otherwise.
+
+See also: ARRAY?, INT?, DBREF?, ARRAY_MAKE_DICT, ARRAY_MAKE
 ~
 DROP|
 drop ( d -- s )
