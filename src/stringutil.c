@@ -226,6 +226,12 @@ pronoun_substitute(int descr, dbref player, const char *str)
 				if (!self_sub) {
 					self_sub = uncompress(get_property_class(0, globprop));
 				}
+				if (!self_sub && (sex == GENDER_UNASSIGNED)) {
+					snprintf(globprop, sizeof(globprop), "_pronouns/_default/%s", prn);
+
+					if (!(self_sub = uncompress(get_property_class(player, globprop))))
+						self_sub = uncompress(get_property_class(0, globprop));
+				}
 #else
 				snprintf(globprop, sizeof(globprop), "_pronouns/%.64s/%s", sexstr, prn);
 				if (d == 'A' || d == 'S' || d == 'O' || d == 'P' || d == 'R' || d == 'N') {
@@ -238,6 +244,12 @@ pronoun_substitute(int descr, dbref player, const char *str)
 				}
 				if (!self_sub) {
 					self_sub = get_property_class(0, globprop);
+				}
+				if (!self_sub && (sex == GENDER_UNASSIGNED)) {
+					snprintf(globprop, sizeof(globprop), "_pronouns/_default/%s", prn);
+
+					if (!(self_sub = get_property_class(player, globprop)))
+						self_sub = get_property_class(0, globprop);
 				}
 #endif
 
