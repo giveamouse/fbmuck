@@ -632,11 +632,11 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		snprintf(buf, sizeof(buf), "Doing: %s", GETDOING(thing));
 		notify(player, buf);
 	}
-	if (tp_who_doing && GETOECHO(thing)) {
+	if (GETOECHO(thing)) {
 		snprintf(buf, sizeof(buf), "Oecho: %s", GETOECHO(thing));
 		notify(player, buf);
 	}
-	if (tp_who_doing && GETPECHO(thing)) {
+	if (GETPECHO(thing)) {
 		snprintf(buf, sizeof(buf), "Pecho: %s", GETPECHO(thing));
 		notify(player, buf);
 	}
