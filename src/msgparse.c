@@ -307,7 +307,7 @@ safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp)
 
 
 const char *
-safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp)
+safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp, int* blessed)
 {
 	const char *ptr;
 	char bbuf[BUFFER_LEN];
@@ -360,18 +360,25 @@ safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int
 			return NULL;
 		}
 	}
+	if (ptr) {
+		if (Prop_Blessed(what, bbuf)) {
+			*blessed = 1;
+		} else {
+			*blessed = 0;
+		}
+	}
 	return ptr;
 }
 
 
 const char *
-safegetprop_limited(dbref player, dbref what, dbref whom, dbref perms, const char *inbuf, int mesgtyp)
+safegetprop_limited(dbref player, dbref what, dbref whom, dbref perms, const char *inbuf, int mesgtyp, int* blessed)
 {
 	const char *ptr;
 
 	while (what != NOTHING) {
 		if (OWNER(what) == whom) {
-			ptr = safegetprop_strict(player, what, perms, inbuf, mesgtyp);
+			ptr = safegetprop_strict(player, what, perms, inbuf, mesgtyp, blessed);
 			if (!ptr || *ptr)
 				return ptr;
 		}
@@ -382,12 +389,12 @@ safegetprop_limited(dbref player, dbref what, dbref whom, dbref perms, const cha
 
 
 const char *
-safegetprop(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp)
+safegetprop(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp, int* blessed)
 {
 	const char *ptr;
 
 	while (what != NOTHING) {
-		ptr = safegetprop_strict(player, what, perms, inbuf, mesgtyp);
+		ptr = safegetprop_strict(player, what, perms, inbuf, mesgtyp, blessed);
 		if (!ptr || *ptr)
 			return ptr;
 		what = getparent(what);
@@ -438,45 +445,45 @@ string_substitute(const char *str, const char *oldstr, const char *newstr, char 
 
 
 const char *
-get_list_item(dbref player, dbref what, dbref perms, const char *listname, int itemnum, int mesgtyp)
+get_list_item(dbref player, dbref what, dbref perms, const char *listname, int itemnum, int mesgtyp, int* blessed)
 {
 	char buf[BUFFER_LEN];
 	const char *ptr;
 
 	sprintf(buf, "%.512s#/%d", listname, itemnum);
-	ptr = safegetprop(player, what, perms, buf, mesgtyp);
+	ptr = safegetprop(player, what, perms, buf, mesgtyp, blessed);
 	if (!ptr || *ptr)
 		return ptr;
 
 	sprintf(buf, "%.512s/%d", listname, itemnum);
-	ptr = safegetprop(player, what, perms, buf, mesgtyp);
+	ptr = safegetprop(player, what, perms, buf, mesgtyp, blessed);
 	if (!ptr || *ptr)
 		return ptr;
 
 	sprintf(buf, "%.512s%d", listname, itemnum);
-	return (safegetprop(player, what, perms, buf, mesgtyp));
+	return (safegetprop(player, what, perms, buf, mesgtyp, blessed));
 }
 
 
 int
-get_list_count(dbref player, dbref obj, dbref perms, const char *listname, int mesgtyp)
+get_list_count(dbref player, dbref obj, dbref perms, const char *listname, int mesgtyp, int* blessed)
 {
 	char buf[BUFFER_LEN];
 	const char *ptr;
 	int i;
 
 	sprintf(buf, "%.512s#", listname);
-	ptr = safegetprop(player, obj, perms, buf, mesgtyp);
+	ptr = safegetprop(player, obj, perms, buf, mesgtyp, blessed);
 	if (ptr && *ptr)
 		return (atoi(ptr));
 
 	sprintf(buf, "%.512s/#", listname);
-	ptr = safegetprop(player, obj, perms, buf, mesgtyp);
+	ptr = safegetprop(player, obj, perms, buf, mesgtyp, blessed);
 	if (ptr && *ptr)
 		return (atoi(ptr));
 
 	for (i = 1; i < MAX_MFUN_LIST_LEN; i++) {
-		ptr = get_list_item(player, obj, perms, listname, i, mesgtyp);
+		ptr = get_list_item(player, obj, perms, listname, i, mesgtyp, blessed);
 		if (!ptr)
 			return 0;
 		if (!*ptr)
@@ -491,13 +498,19 @@ get_list_count(dbref player, dbref obj, dbref perms, const char *listname, int m
 
 char *
 get_concat_list(dbref player, dbref what, dbref perms, dbref obj, const char *listname,
-				char *buf, int maxchars, int mode, int mesgtyp)
+				char *buf, int maxchars, int mode, int mesgtyp, int* blessed)
 {
 	int line_limit = MAX_MFUN_LIST_LEN;
 	int i;
 	const char *ptr;
 	char *pos = buf;
-	int cnt = get_list_count(what, obj, perms, listname, mesgtyp);
+	int tmpbless;
+	int cnt = get_list_count(what, obj, perms, listname, mesgtyp, &tmpbless);
+	*blessed = 1;
+
+	if (!tmpbless) {
+		*blessed = 0;
+	}
 
 	if (cnt == 0) {
 		return NULL;
@@ -505,8 +518,11 @@ get_concat_list(dbref player, dbref what, dbref perms, dbref obj, const char *li
 	maxchars -= 2;
 	*buf = '\0';
 	for (i = 1; ((pos - buf) < (maxchars - 1)) && i <= cnt && line_limit--; i++) {
-		ptr = get_list_item(what, obj, perms, listname, i, mesgtyp);
+		ptr = get_list_item(what, obj, perms, listname, i, mesgtyp, &tmpbless);
 		if (ptr) {
+			if (!tmpbless) {
+				*blessed = 0;
+			}
 			while (mode && isspace(*ptr))
 				ptr++;
 			if (pos > buf) {
@@ -797,6 +813,7 @@ msg_is_macro(dbref player, dbref what, dbref perms, const char *name, int mesgty
 	const char *ptr;
 	char buf2[BUFFER_LEN];
 	dbref obj;
+	int blessed;
 
 	if (!*name)
 		return 0;
@@ -804,11 +821,11 @@ msg_is_macro(dbref player, dbref what, dbref perms, const char *name, int mesgty
 	obj = what;
 	ptr = get_mfunc(name);
 	if (!ptr || !*ptr)
-		ptr = safegetprop_strict(player, OWNER(obj), perms, buf2, mesgtyp);
+		ptr = safegetprop_strict(player, OWNER(obj), perms, buf2, mesgtyp, &blessed);
 	if (!ptr || !*ptr)
-		ptr = safegetprop_limited(player, obj, OWNER(obj), perms, buf2, mesgtyp);
+		ptr = safegetprop_limited(player, obj, OWNER(obj), perms, buf2, mesgtyp, &blessed);
 	if (!ptr || !*ptr)
-		ptr = safegetprop_strict(player, 0, perms, buf2, mesgtyp);
+		ptr = safegetprop_strict(player, 0, perms, buf2, mesgtyp, &blessed);
 	if (!ptr || !*ptr)
 		return 0;
 	return 1;
@@ -825,17 +842,18 @@ msg_unparse_macro(dbref player, dbref what, dbref perms, char *name, int argc, a
 	char buf2[BUFFER_LEN];
 	dbref obj;
 	int i, p = 0;
+	int blessed;
 
 	strcpy(buf, rest);
 	sprintf(buf2, "_msgmacs/%s", name);
 	obj = what;
 	ptr = get_mfunc(name);
 	if (!ptr || !*ptr)
-		ptr = safegetprop_strict(player, OWNER(obj), perms, buf2, mesgtyp);
+		ptr = safegetprop_strict(player, OWNER(obj), perms, buf2, mesgtyp, &blessed);
 	if (!ptr || !*ptr)
-		ptr = safegetprop_limited(player, obj, OWNER(obj), perms, buf2, mesgtyp);
+		ptr = safegetprop_limited(player, obj, OWNER(obj), perms, buf2, mesgtyp, &blessed);
 	if (!ptr || !*ptr)
-		ptr = safegetprop_strict(player, 0, perms, buf2, mesgtyp);
+		ptr = safegetprop_strict(player, 0, perms, buf2, mesgtyp, &blessed);
 	while (ptr && *ptr && p < (maxchars - 1)) {
 		if (*ptr == '\\') {
 			if (*(ptr + 1) == 'r') {
