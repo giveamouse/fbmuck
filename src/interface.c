@@ -3620,7 +3620,7 @@ pdescrsecure(int c)
 
 	d = descrdata_by_descr(c);
 
-	if (d->ssl_session)
+	if (d && d->ssl_session)
 		return 1;
 	else
 		return 0;

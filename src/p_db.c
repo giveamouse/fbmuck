@@ -2269,6 +2269,8 @@ prim_exits_array(PRIM_PROTOTYPE)
 		abort_interp("Invalid dbref (1)");
 	ref = oper1->data.objref;
 	CHECKREMOTE(oper1->data.objref);
+	if ((mlev < 3) && !permissions(ProgUID, ref))
+		abort_interp("Permission denied.");
 	if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT))
 		abort_interp("Dbref cannot be a program nor exit (1)");
 	nw = new_array_packed(0);

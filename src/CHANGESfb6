@@ -1,6 +1,8 @@
 2.2fb6.01
 Fixed bug with configure script not finding tm_gmtoff under OS X.
 Fixed bug with 'configure --with-ssl=SSLTOPDIR' not working.
+Fixed bug #734827: descrsecure? crashes on invalid descr.
+Fixed bug #734813: exits_array is entirely M1.
 Changed DESCRDBREF to return #-1 for an invalid or not-logged-in descriptor.
 Added docs for ARRAY_FMTSTRINGS to muf manual.
 
