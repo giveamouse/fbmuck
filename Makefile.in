@@ -16,11 +16,11 @@ install:	Makefile cert
 		cd $${d} && ${MAKE} install; \
 	done
 
-cert game/fuzzball.pem:
+cert game/server.pem:
 	@if grep "^#define USE_SSL" include/autoconf.h > /dev/null; then \
 		echo; \
-		if [ -r game/fuzzball.pem ]; then \
-			echo "Will not overwrite game/fuzzball.pem"; \
+		if [ -r game/server.pem ]; then \
+			echo "Will not overwrite game/server.pem"; \
 			echo "Remove this file to re-create it"; \
 			echo; \
 		else \
@@ -29,7 +29,7 @@ cert game/fuzzball.pem:
 			fi; \
 			echo "Creating secure certificate. Please answer all the questions"; \
 			echo; \
-			openssl req -x509 -nodes -out game/fuzzball.pem -keyout fuzzball.pem -config fuzzball.cnf -new; \
+			openssl req -x509 -nodes -out game/server.pem -keyout server.pem -config fuzzball.cnf -new; \
 		fi; \
 	fi
 

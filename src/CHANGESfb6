@@ -29,6 +29,7 @@ Added PROGRAM_GETLINES ( d -- a ) or ( d i1 -- a ) or ( d i1 i2 -- a )
   be running with wizard permissions.
 Added MCP_MUF_MLEV @tune option to specify the mucker level required to
   use MCP and MCP-GUI muf calls.
+Added support for encrypted SSL connections.  See README.ssl
 Changed muf PMATCH primitive to accept "me", returning the player.
 Changed @list to view only muf programs set VIEWABLE, as opposed to LINK_OK.
 Changed commands_per_time input quotas to not count MCP messages.

@@ -85,6 +85,9 @@
 #define RWHO_PASSWD "potrzebie"
 #define RWHO_SERVER "riemann.math.okstate.edu"
 
+/* Information needed for SSL */
+#define SSL_KEYFILE_PASSWD ""
+
 /* amount of object endowment, based on cost */
 #define MAX_OBJECT_ENDOWMENT 100
 

@@ -184,7 +184,6 @@ void kill_resolver(void);
 #ifdef USE_SSL
 ssize_t socket_read(struct descriptor_data *d, void *buf, size_t count);
 ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count);
-#define CERT_FILE "fuzzball.pem"
 #else
 #define socket_write(d, buf, count) write(d->descriptor, buf, count)
 #define socket_read(d, buf, count) read(d->descriptor, buf, count)
@@ -854,6 +853,16 @@ idleboot_user(struct descriptor_data *d)
 	d->booted = 1;
 }
 
+#ifdef USE_SSL
+int pem_passwd_cb(char *buf, int size, int rwflag, void *userdata)
+{
+	const char *pw = (const char*)userdata;
+	int pwlen = strlen(pw);
+	strncpy(buf, pw, size);
+	return ((pwlen > size)? size : pwlen);
+}
+#endif
+
 static int con_players_max = 0;	/* one of Cynbe's good ideas. */
 static int con_players_curr = 0;	/* for playermax checks. */
 extern void purge_free_frames(void);
@@ -883,11 +892,14 @@ shovechars()
  	OpenSSL_add_ssl_algorithms (); 
 	ssl_ctx = SSL_CTX_new (SSLv23_server_method ());
  
-	if (!SSL_CTX_use_certificate_file (ssl_ctx, CERT_FILE, SSL_FILETYPE_PEM)) {
+	if (!SSL_CTX_use_certificate_file (ssl_ctx, SSL_CERT_FILE, SSL_FILETYPE_PEM)) {
 		log_status("Could not load certificate file\n");
 		exit(1); /* SJP  handle errors better */
 	}
-	if (!SSL_CTX_use_PrivateKey_file (ssl_ctx, CERT_FILE, SSL_FILETYPE_PEM)) {
+	SSL_CTX_set_default_passwd_cb(ssl_ctx, pem_passwd_cb);
+	SSL_CTX_set_default_passwd_cb_userdata(ssl_ctx, (void*)tp_ssl_keyfile_passwd);
+
+	if (!SSL_CTX_use_PrivateKey_file (ssl_ctx, SSL_KEY_FILE, SSL_FILETYPE_PEM)) {
 		log_status("Could not load private key file\n");
 		exit(1); /* SJP  handle errors better */
 	}
@@ -1220,6 +1232,7 @@ spawn_resolver()
 		close(1);
 		dup(resolver_sock[0]);
 		dup(resolver_sock[0]);
+		execl("/usr/local/bin/resolver", "resolver", NULL);
 		execl("./resolver", "resolver", NULL);
 #if 0
 		execl("@bindir@/resolver", "resolver", NULL);
@@ -1228,6 +1241,7 @@ spawn_resolver()
 		execl("/usr/local/fbmuck/bin/resolver", "resolver", NULL);
 		execl("/usr/local/bin/resolver", "resolver", NULL);
 		execl("../src/resolver", "resolver", NULL);
+		execl("./resolver", "resolver", NULL);
 		execl("resolver", "resolver", NULL);
 #endif
 		perror("resolver execlp");

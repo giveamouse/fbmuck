@@ -33,6 +33,8 @@ const char *tp_autolook_cmd = AUTOLOOK_CMD;
 const char *tp_proplist_counter_fmt = PROPLIST_COUNTER_FORMAT;
 const char *tp_proplist_entry_fmt = PROPLIST_ENTRY_FORMAT;
 
+const char *tp_ssl_keyfile_passwd = SSL_KEYFILE_PASSWD;
+
 struct tune_str_entry {
 	const char *name;
 	const char **str;
@@ -62,6 +64,7 @@ struct tune_str_entry tune_str_list[] = {
 	{"autolook_cmd", &tp_autolook_cmd, 0, 1},
 	{"proplist_counter_fmt", &tp_proplist_counter_fmt, 0, 1},
 	{"proplist_entry_fmt", &tp_proplist_entry_fmt, 0, 1},
+	{"ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, 4, 1},
 	{NULL, NULL, 0, 0}
 };
 
