@@ -1265,23 +1265,23 @@ do_memory(dbref who)
 		notify_fmt(who, "Small block count:             %6d", mi.smblks);
 		notify_fmt(who, "Small block mem alloced:       %6dk", (mi.usmblks / 1024));
 		notify_fmt(who, "Small block memory free:       %6dk", (mi.fsmblks / 1024));
-#ifdef HAVE_MALLINFO_HBLKS
+#ifdef HAVE_STRUCT_MALLINFO_HBLKS
 		notify_fmt(who, "Number of mmapped regions:     %6d", mi.hblks);
 #endif
 		notify_fmt(who, "Total memory mmapped:          %6dk", (mi.hblkhd / 1024));
 		notify_fmt(who, "Total memory malloced:         %6dk", (mi.uordblks / 1024));
 		notify_fmt(who, "Mem allocated overhead:        %6dk", ((mi.arena - mi.uordblks) / 1024));
 		notify_fmt(who, "Memory free:                   %6dk", (mi.fordblks / 1024));
-#ifdef HAVE_MALLINFO_KEEPCOST
+#ifdef HAVE_STRUCT_MALLINFO_KEEPCOST
 		notify_fmt(who, "Top-most releasable chunk size:%6dk", (mi.keepcost / 1024));
 #endif
-#ifdef HAVE_MALLINFO_TREEOVERHEAD
+#ifdef HAVE_STRUCT_MALLINFO_TREEOVERHEAD
 		notify_fmt(who, "Memory free overhead:    %6dk", (mi.treeoverhead / 1024));
 #endif
-#ifdef HAVE_MALLINFO_GRAIN
+#ifdef HAVE_STRUCT_MALLINFO_GRAIN
 		notify_fmt(who, "Small block grain: %6d", mi.grain);
 #endif
-#ifdef HAVE_MALLINFO_ALLOCATED
+#ifdef HAVE_STRUCT_MALLINFO_ALLOCATED
 		notify_fmt(who, "Mem chunks alloced:%6d", mi.allocated);
 #endif
 	}

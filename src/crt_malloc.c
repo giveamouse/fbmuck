@@ -79,8 +79,8 @@
  * 
  * The code adds 8 bytes overhead per ram block allocated.
  *
- * In addition, by defining CRT_DEBUG_ALSO to be TRUE, this file can
- * be configured to check for heap-trashing bugs, free()s of
+ * In addition, by defining MALLOC_PROFILING_EXTRA to be TRUE, this file
+ * can be configured to check for heap-trashing bugs, free()s of
  * unallocated memory, and so forth.  As configured, (CRT_NEW_TO_CHECK
  * and CRT_OLD_TO_CHECK both set to 128) this option takes ABOUT 10x
  * MORE CPU TIME THAN VANILLA FUZZBALL.  You may reduce these numbers
@@ -119,7 +119,7 @@
 /* per allocated block, but can be some    */
 /* help in tracking down obscure memory    */
 /* trashing pointer bugs.                  */
-/* #define CRT_DEBUG_ALSO                  */
+/* #define MALLOC_PROFILING_EXTRA                  */
 
 /* When debugging is selected, we check the */
 /* last CRT_NEW_TO_CHECK blocks allocated   */
@@ -138,7 +138,7 @@
 #define CRT_OLD_TO_CHECK (128)
 #endif
 
-/* When CRT_DEBUG_ALSO is true, we add the  */
+/* When MALLOC_PROFILING_EXTRA is true, we add the  */
 /* following value to the end of block, so  */
 /* we can later check to see if it got      */
 /* overwritten by something:                */
@@ -183,7 +183,7 @@ static Block block_list = NULL;
 struct CrT_header_rec {
 	Block b;
 	size_t size;
-#ifdef CRT_DEBUG_ALSO
+#ifdef MALLOC_PROFILING_EXTRA
 	struct CrT_header_rec *next;
 	struct CrT_header_rec *prev;
 	char *end;
@@ -195,7 +195,7 @@ typedef struct CrT_header_rec *Header;
 /* }}} */
 /* {{{ Globals supporting debug functionality.				*/
 
-#ifdef CRT_DEBUG_ALSO
+#ifdef MALLOC_PROFILING_EXTRA
 static A_Block Root_Owner = {
 
 	__FILE__,					/* file */
@@ -300,7 +300,7 @@ static int next_touched = 0;	/* Always indexes above. */
 #undef free
 
 /* Number of bytes of overhead we add to a block: */
-#ifdef CRT_DEBUG_ALSO
+#ifdef MALLOC_PROFILING_EXTRA
 #define CRT_OVERHEAD_BYTES (sizeof(A_Header) +1)
 #else
 #define CRT_OVERHEAD_BYTES (sizeof(A_Header)   )
@@ -564,7 +564,7 @@ CrT_summarize_to_file(const char *file, const char *comment)
 
 /* }}} */
 
-#ifdef CRT_DEBUG_ALSO
+#ifdef MALLOC_PROFILING_EXTRA
 
 /* Debug support functions: */
 /* {{{ CrT_check -- abort if we can find any trashed malloc blocks.	*/
@@ -671,7 +671,7 @@ CrT_malloc(size_t size, const char *file, int line)
 
 
 
-#ifdef CRT_DEBUG_ALSO
+#ifdef MALLOC_PROFILING_EXTRA
 	/* Look around for trashed ram blocks: */
 	CrT_check(file, line);
 
@@ -725,7 +725,7 @@ CrT_calloc(size_t num, size_t siz, const char *file, int line)
 
 
 
-#ifdef CRT_DEBUG_ALSO
+#ifdef MALLOC_PROFILING_EXTRA
 
 	/* Look around for trashed ram blocks: */
 	CrT_check(file, line);
@@ -770,7 +770,7 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
 	Header m = ((Header) p) - 1;
 	Block b = m->b;
 
-#ifdef CRT_DEBUG_ALSO
+#ifdef MALLOC_PROFILING_EXTRA
 	/* Look around for trashed ram blocks: */
 	check_block(m, __FILE__, __LINE__);
 	CrT_check(file, line);
@@ -804,7 +804,7 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
 
 	m->size = size;
 
-#ifdef CRT_DEBUG_ALSO
+#ifdef MALLOC_PROFILING_EXTRA
 
 	/* Remember where end of block is: */
 	m->end = &((char *) m)[size + (CRT_OVERHEAD_BYTES - 1)];
@@ -839,7 +839,7 @@ CrT_free(void *p, const char *file, int line)
 	Header m = ((Header) p) - 1;
 	Block b = m->b;
 
-#ifdef CRT_DEBUG_ALSO
+#ifdef MALLOC_PROFILING_EXTRA
 	/* Look around for trashed ram blocks: */
 	if (*m->end == CRT_FREE_MAGIC)
 		crash("Duplicate free()", m, file, line);

@@ -302,12 +302,12 @@ get_tz_offset(void)
  * a structure. This makes it very hard (at best) to check for,
  * therefor I'm checking for tm_gmtoff. --WF
  */
-#if defined(HAVE_TM_GMTOFF) || defined(HAVE_SYS_TM_GMTOFF)
+#ifdef HAVE_STRUCT_TM_TM_GMTOFF
 	time_t now;
 
 	time(&now);
 	return (localtime(&now)->tm_gmtoff);
-#elif defined(HAVE__TIMEZONE)
+#elif defined(HAVE_DECL__TIMEZONE)
 	/* CygWin uses _timezone instead of timezone. */
 	return _timezone;
 #else

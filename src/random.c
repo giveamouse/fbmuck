@@ -33,7 +33,7 @@ typedef uint8_t byte;
 # include <inttypes.h>
 typedef uint32_t word32;
 typedef uint8_t byte;
-#elif SIZEOF_LONG==4
+#elif SIZEOF_LONG_INT==4
 typedef unsigned long word32;
 typedef unsigned char byte;
 #elif SIZEOF_INT==4

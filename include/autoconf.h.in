@@ -1,8 +1,5 @@
 /* include/autoconf.h.in.  Generated from configure.in by autoheader.  */
 
-/* With MALLOC_PROFILING, can detect double-frees, buffer overruns, etc. */
-#undef CRT_DEBUG_ALSO
-
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
 #undef HAVE_DIRENT_H
@@ -49,21 +46,6 @@
 
 /* Define to 1 if you have the `mallinfo' function. */
 #undef HAVE_MALLINFO
-
-/* struct mallinfo has allocated member. */
-#undef HAVE_MALLINFO_ALLOCATED
-
-/* struct mallinfo has grain member. */
-#undef HAVE_MALLINFO_GRAIN
-
-/* struct mallinfo has hblks member. */
-#undef HAVE_MALLINFO_HBLKS
-
-/* struct mallinfo has keepcost member. */
-#undef HAVE_MALLINFO_KEEPCOST
-
-/* struct mallinfo has treeoverhead member. */
-#undef HAVE_MALLINFO_TREEOVERHEAD
 
 /* Define to 1 if you have the <malloc.h> header file. */
 #undef HAVE_MALLOC_H
@@ -127,17 +109,11 @@
 /* Define to 1 if you have the <sys/time.h> header file. */
 #undef HAVE_SYS_TIME_H
 
-/* tm_gmtoff is in sys/time.h */
-#undef HAVE_SYS_TM_GMTOFF
-
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
 /* Define to 1 if you have the <timebits.h> header file. */
 #undef HAVE_TIMEBITS_H
-
-/* tm_gmtoff field exists in struct tm. */
-#undef HAVE_TM_GMTOFF
 
 /* Define to 1 if your `struct tm' has `tm_zone'. Deprecated, use
    `HAVE_STRUCT_TM_TM_ZONE' instead. */
@@ -159,14 +135,14 @@
 /* Define to 1 if you have the `vsnprintf' function. */
 #undef HAVE_VSNPRINTF
 
-/* _timezone exists in time.h */
-#undef HAVE__TIMEZONE
-
 /* Configures which LINT to use to evaluate the sources. */
 #undef LINT
 
 /* Enables memory usage profiling. */
 #undef MALLOC_PROFILING
+
+/* With MALLOC_PROFILING, can detect double-frees, buffer overruns, etc. */
+#undef MALLOC_PROFILING_EXTRA
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
@@ -189,8 +165,8 @@
 /* The size of a `int', as computed by sizeof. */
 #undef SIZEOF_INT
 
-/* The size of a `long', as computed by sizeof. */
-#undef SIZEOF_LONG
+/* The size of a `long int', as computed by sizeof. */
+#undef SIZEOF_LONG_INT
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
@@ -223,6 +199,9 @@
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
+/* Define to `int' if <sys/types.h> doesn't define. */
+#undef gid_t
+
 /* Define as `__inline' if that's what the C compiler calls it, or to nothing
    if it is not supported. */
 #undef inline
@@ -238,3 +217,28 @@
 
 /* The base path to the installation for openssl. Usually /usr. */
 #undef ssldir
+
+/* Define to `int' if <sys/types.h> doesn't define. */
+#undef uid_t
+
+/* Defined to 1 if _timezone is defined. */
+#undef HAVE_DECL__TIMEZONE
+
+/* Defined to 1 if struct tm.tm_gmtoff exists. */
+#undef HAVE_STRUCT_TM_TM_GMTOFF
+
+/* Defined to 1 if struct mallinfo.hblks exists. */
+#undef HAVE_STRUCT_MALLINFO_HBLKS
+
+/* Defined to 1 if struct mallinfo.keepcost exists. */
+#undef HAVE_STRUCT_MALLINFO_KEEPCOST
+
+/* Defined to 1 if struct mallinfo.treeoverhead exists. */
+#undef HAVE_STRUCT_MALLINFO_TREEOVERHEAD
+
+/* Defined to 1 if struct mallinfo.grain exists. */
+#undef HAVE_STRUCT_MALLINFO_GRAIN
+
+/* Defined to 1 if struct mallinfo.allocated exists. */
+#undef HAVE_STRUCT_MALLINFO_ALLOCATED
+
