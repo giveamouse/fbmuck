@@ -63,6 +63,7 @@ extern void prim_getpids(PRIM_PROTOTYPE);
 extern void prim_getpidinfo(PRIM_PROTOTYPE);
 
 extern void prim_program_getlines(PRIM_PROTOTYPE);
+extern void prim_program_setlines(PRIM_PROTOTYPE);
 
 /* WORK: Add these prims */
 extern void prim_toadplayer(PRIM_PROTOTYPE);
@@ -81,7 +82,7 @@ extern void prim_toadplayer(PRIM_PROTOTYPE);
 	prim_compiledp, prim_newprogram, prim_contents_array,                \
 	prim_exits_array, prim_getlinks_array, prim_compile,                 \
 	prim_uncompile, prim_newpassword, prim_getpids,                      \
-	prim_program_getlines, prim_getpidinfo
+	prim_program_getlines, prim_getpidinfo, prim_program_setlines
 
 
 #define PRIMS_DB_NAMES1 "ADDPENNIES", "MOVETO", "PENNIES",  \
@@ -98,9 +99,9 @@ extern void prim_toadplayer(PRIM_PROTOTYPE);
 	"COMPILED?", "NEWPROGRAM", "CONTENTS_ARRAY",           \
 	"EXITS_ARRAY", "GETLINKS_ARRAY", "COMPILE",            \
 	"UNCOMPILE", "NEWPASSWORD", "GETPIDS",                 \
-	"PROGRAM_GETLINES", "GETPIDINFO"
+	"PROGRAM_GETLINES", "GETPIDINFO", "PROGRAM_SETLINES"
 
-#define PRIMS_DB_CNT1 59
+#define PRIMS_DB_CNT1 60
 
 
 #ifdef SCARY_MUF_PRIMS

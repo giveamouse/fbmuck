@@ -16,6 +16,7 @@
 #include "tune.h"
 #include "strings.h"
 #include "interp.h"
+#include "inst.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;
@@ -1019,3 +1020,24 @@ prim_ignore_del(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 }
 
+void
+prim_debug_on(PRIM_PROTOTYPE)
+{
+	FLAGS(program) |= DARK;
+}
+
+void
+prim_debug_off(PRIM_PROTOTYPE)
+{
+	FLAGS(program) &= ~DARK;
+}
+
+void
+prim_debug_line(PRIM_PROTOTYPE)
+{
+	if (((FLAGS(program) & DARK) == 0) && controls(player, program))
+	{
+		char* msg = debug_inst(fr, 0, pc, fr->pid, arg, buf, sizeof(buf), *top, program);
+		notify_nolisten(player, msg, 1);
+	}
+}

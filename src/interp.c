@@ -983,6 +983,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 	int i, tmp, writeonly, mlev;
 	static struct inst retval;
 	char dbuf[BUFFER_LEN];
+	int instno_debug_line = get_primitive("debug_line");
 
 
 	fr->level = ++interp_depth;	/* increment interp level */
@@ -1061,9 +1062,13 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		}
 		if (FLAGS(program) & DARK ||
 			(fr->brkpt.debugging && fr->brkpt.showstack && !fr->brkpt.bypass)) {
-			char *m = debug_inst(fr, 0, pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
 
-			notify_nolisten(player, m, 1);
+			if ((pc->type != PROG_PRIMITIVE) || (pc->data.number != instno_debug_line))
+			{
+				char *m = debug_inst(fr, 0, pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
+
+				notify_nolisten(player, m, 1);
+			}
 		}
 		if (fr->brkpt.debugging) {
 			short breakflag = 0;

@@ -113,6 +113,10 @@ Added REGSUB ( str:Text str:Pattern str:Replace int:Flags -- str:Result )
   Performs a regex substitution on text using pattern and replace.
 Added PARSEPROPEX ( ref:Obj str:Prop dict:Vars int:Pri -- dict:Vars str:Out )
   Similar to parseprop, although allows precreation of MPI variables.
+Added PROGRAM_SETLINES ( ref:Program list:Lines -- )
+  Sets all the lines of a program to those given in the array.
+Added DEBUG_ON, DEBUG_OFF, and DEBUG_LINE prims in-server to avoid the stack
+  pollution created by the macro versions.
 Removed dead concentrater log code.
 Removed dead LOCKOUT code from include/config.h.
 

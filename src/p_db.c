@@ -23,6 +23,7 @@ static int tmp, result;
 static dbref ref;
 static char buf[BUFFER_LEN];
 
+extern struct line* get_new_line(void);
 
 void
 copyobj(dbref player, dbref old, dbref nu)
@@ -2500,3 +2501,67 @@ prim_program_getlines(PRIM_PROTOTYPE)
 	PushArrayRaw(ary);
 }
 
+void
+prim_program_setlines(PRIM_PROTOTYPE)
+{
+	struct line*	lines	= 0;
+	struct line*	prev	= 0;
+	array_iter		idx;
+
+	CHECKOP(2);
+
+	oper2 = POP(); /* list:Lines */
+	oper1 = POP(); /* ref:Program */
+
+	if (mlev < 4)
+		abort_interp("Mucker level 4 or greater required.");
+
+	if (oper1->type != PROG_OBJECT)
+		abort_interp("Non-object argument. (1)");
+	if (oper2->type != PROG_ARRAY)
+		abort_interp("Non-array argument. (2)");
+
+	if (!valid_object(oper1))
+		abort_interp("Invalid object. (1)");
+	if (Typeof(oper1->data.objref) != TYPE_PROGRAM)
+		abort_interp("Non-program object. (1)");
+	if (oper2->data.array && (oper2->data.array->type != ARRAY_PACKED))
+		abort_interp("Array list type required. (2)");
+	if (!array_is_homogenous(oper2->data.array, PROG_STRING))
+		abort_interp("Argument not an array of strings. (2)");
+
+	if (!controls(ProgUID, oper1->data.objref))
+		abort_interp("Permission denied.");
+
+	if (FLAGS(oper1->data.objref) & INTERNAL)
+		abort_interp("Program already being edited.");
+
+	if (array_first(oper2->data.array, &idx))
+	{
+		do
+		{
+			array_data*		val	= array_getitem(oper2->data.array, &idx);
+			struct line*	ln	= get_new_line();
+
+			ln->this_line = alloc_string(val->data.string ? val->data.string->data : " ");
+
+			if (prev)
+			{
+				prev->next	= ln;
+				ln->prev	= prev;
+			}
+			else
+				lines = ln;
+
+			prev = ln;
+		}
+		while(array_next(oper2->data.array, &idx));
+	}
+
+	write_program(lines, oper1->data.objref);
+
+	free_prog_text(lines);
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+}
