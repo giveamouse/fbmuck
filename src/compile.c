@@ -605,14 +605,14 @@ do_proginfo(dbref player, const char *arg)
 						tsize += csize = size_object(i, 0);
 						timem += cimem = size_prog(i);
 						tinst += cinst = PROGRAM_SIZ(i);
-						sprintf(buf, "%4d %6d %6d %5d %s by %s",
+						snprintf(buf, sizeof(buf), "%4d %6d %6d %5d %s by %s",
 							ccnt, csize, cimem, cinst,
 							unparse_object(player, i), NAME(OWNER(i))
 						);
 						notify_nolisten(player, buf, 1);
 					}
 				}
-				sprintf(buf, "%4d %6d %6d %5d Total",
+				snprintf(buf, sizeof(buf), "%4d %6d %6d %5d Total",
 					tcnt, tsize, timem, tinst);
 				notify_nolisten(player, buf, 1);
 			} else {
@@ -640,7 +640,7 @@ do_proginfo(dbref player, const char *arg)
 	}
 
 	notify_nolisten(player, "1 = cleanable, 0 = used recently", 1);
-	sprintf( buf, "AI: %d Age: %d Instances: %d==0?",
+	snprintf(buf, sizeof(buf), "AI: %d Age: %d Instances: %d==0?",
 		!(FLAGS(thing) & (ABODE|INTERNAL)),
 		(now - DBFETCH(thing)->ts.lastused) > tp_clean_interval,
 		PROGRAM_INSTANCES(thing)
@@ -1747,13 +1747,13 @@ do_directive(COMPSTATE * cstat, char *direct)
 				char *temppropstr = NULL;
 
 				(void) *tmpname++;
-				sprintf(propname, "/_defs/%s", tmpname);
+				snprintf(propname, sizeof(propname), "/_defs/%s", tmpname);
 				temppropstr = (char *) get_property_class(cstat->program, propname);
 				if (temppropstr ) {
 					doitset = 0;
 				}
 			} else {
-				sprintf(propname, "/_defs/%s", tmpname);
+				snprintf(propname, sizeof(propname), "/_defs/%s", tmpname);
 			}
 
 			snprintf(defstr, sizeof(defstr), "#%i \"%s\" call", cstat->program, tmpname);

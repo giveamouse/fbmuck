@@ -392,7 +392,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 				(!partial && !string_compare(finddata.cFileName,topic))
 				)
 			{
-				sprintf(buf, "%s/%s", dir, finddata.cFileName);
+				snprintf(buf, sizeof(buf), "%s/%s", dir, finddata.cFileName);
 				break;
 			}
 		}

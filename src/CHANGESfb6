@@ -22,6 +22,7 @@ Changed property loading routines to not abort(), but to instead log corrupt
   properties when they are found.
 Changed db_putprop() to use snprintf() instead of manually constructing the
   property's disk format.
+Changed a few new sprintf() calls to snprintf().  sprintf() is verboten!
 Added ARRAY_NESTED_GET ( arr idxarr -- ? ) muf prim.  Used to fetch values of
   nested subvalues of an array.
 Added ARRAY_NESTED_SET ( ? arr idxarr -- arr' ) muf prim.  Used to set values

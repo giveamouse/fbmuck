@@ -267,7 +267,7 @@ void set_signals(void) {}
 void set_sigs_intern(int bail) {}
 void bailout(int sig) {
 	char message[1024];
-	sprintf(message, "BAILOUT: caught signal %d", sig);
+	snprintf(message, sizeof(message), "BAILOUT: caught signal %d", sig);
 	panic(message);
 	_exit(7);
 }
