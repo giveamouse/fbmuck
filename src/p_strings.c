@@ -1678,12 +1678,14 @@ prim_ansi_strcut(PRIM_PROTOTYPE)
 		CLEAR(oper2);
 		PushString(buf);
 		PushNullStr;
+		return;
 	} else if (oper2->data.number <= 0) {
 		strcpy(buf, oper1->data.string->data);
 		CLEAR(oper1);
 		CLEAR(oper2);
 		PushNullStr;
 		PushString(buf);
+		return;
 	}
 
 	ptr = oper1->data.string->data;
