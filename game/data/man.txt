@@ -2888,10 +2888,19 @@ Returns the number of pending events waiting to be processed with EVENT_WAIT.
 ~
 EVENT_WAIT|
 EVENT_WAIT ( -- ? s )
-Waits for an event to occur, pausing the MUF program.  When an event is
-available to read, this returns an event-specific context data item, and
-an eventID string.
-  
+This is an inserver muf macro, that expands to '0 array_make event_waitfor'
+~
+EVENT_WAITFOR|
+EVENT_WAITFOR (a -- ? s )
+Waits for an event to occur that matches one of the eventIDs given in the
+string list array.  The comparison is case sensitive.  If a matching
+event isn't in the event queue already, this will pause the MUF process
+until a matching event is added to the queue.  The first matching event
+to become available will be removed from the event queue.  This returns
+an event-specific context data item, and the matching eventID string.
+If an empty list array is passed to this primitive, then it will match
+any and all events, and return the first one pending.
+
 Timer events have eventID strings that are created by prepending "TIMER." to
 the id string passed to the TIMER_START call.  The context for Timer events
 is an integer systime value, specifying when the timer was scheduled for.
@@ -2930,6 +2939,10 @@ The context for MCP events is a dictionary containing the following keys:
   package   Holds the string message name within that package.
   args      Holds a dictionary, containing the message arguments.
               Each mesg arg has an array list of strings as a value.
+
+Read events have eventID strings of just "READ".  The context of Read events
+  is the integer descriptor of the first waiting line to be READ.  To get the
+  actual line sent by the user you need to use the READ primitive.
 ~
 C_DATUM
 C_DATUM
