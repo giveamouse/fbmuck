@@ -690,6 +690,10 @@ do_mcpedit(int descr, dbref player, const char *name)
 		return;
 	}
 
+	if (!*name) {
+		notify(player, "No program name given.");
+		return;
+	}
 	init_match(descr, player, name, TYPE_PROGRAM, &md);
 
 	match_possession(&md);
@@ -721,6 +725,18 @@ do_mcpprogram(int descr, dbref player, const char* name)
 	struct match_data md;
 	int jj;
 
+	if (Typeof(player) != TYPE_PLAYER) {
+		notify(player, "Only players can edit programs.");
+		return;
+	}
+	if (!Mucker(player)) {
+		notify(player, "You're no programmer!");
+		return;
+	}
+	if (!*name) {
+		notify(player, "No program name given.");
+		return;
+	}
 	init_match(descr, player, name, TYPE_PROGRAM, &md);
 
 	match_possession(&md);

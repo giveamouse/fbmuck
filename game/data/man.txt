@@ -430,24 +430,24 @@ ARRAY_SORT_INDEXED (arrData intSortType idxIndex -- arrSorted)
 This takes a list array of arrays, and will sort them, based on the
 value of an indexed value in each subarray, based on the given sort
 type.  For example:
-	{
-		{ "name" "One"     "num" 1 }dict
-		{ "name" "Two"     "num" 2 }dict
-		{ "name" "Three"   "num" 3 }dict
-	}list
-	SORTTYPE_DESCENDING "num" ARRAY_SORT_INDEXED
+    {
+        { "name" "One"     "num" 1 }dict
+        { "name" "Two"     "num" 2 }dict
+        { "name" "Three"   "num" 3 }dict
+    }list
+    SORTTYPE_DESCENDING "num" ARRAY_SORT_INDEXED
 Would return an array of dictionaries, sorted in descending order by the
 value of their "num" entries.  ie, the same as:
-	{
-		{ "name" "Three"   "num" 3 }dict
-		{ "name" "Two"     "num" 2 }dict
-		{ "name" "One"     "num" 1 }dict
-	}list
+    {
+        { "name" "Three"   "num" 3 }dict
+        { "name" "Two"     "num" 2 }dict
+        { "name" "One"     "num" 1 }dict
+    }list
 This can be used with an array of list arrays, just like with an array of
 dictionaries.  For list arrays, you just use an integer for the index.
 NOTE: arrays that don't have an item matching the given index, will be
 sorted as lesser than arrays that do.
- 
+
 See ARRAY_SORT for more information on sort ordering.
 ~
 ARRAY_NINTERSECT|
@@ -2268,18 +2268,18 @@ __version
   Contains the same string that the VERSION primitive returns.
   
 $version <float>
-	Sets the _version string property on the program to <float>.
+    Sets the _version string property on the program to <float>.
 
 $lib-version <float>
-	Sets the _lib-version string property on the program to <float>.
+    Sets the _lib-version string property on the program to <float>.
 
 $author <rest_of_line>
-	Sets the _author string property on the program to <rest_of_line>.
-	The preferred format is an email address with name comment. ie:
-	   $author Revar Desmera <revar@belfry.com>
+    Sets the _author string property on the program to <rest_of_line>.
+    The preferred format is an email address with name comment. ie:
+    $author Revar Desmera <revar@belfry.com>
 
 $note <rest_of_line>
-	Sets the _note string property on the program to <rest_of_line>.
+    Sets the _note string property on the program to <rest_of_line>.
 
 $abort [<message>]
     Aborts compiling and prints out the error message.
@@ -2295,7 +2295,7 @@ $pubdef \<defname> <rest_of_line>
     $pubdef <def name> <definition> = Sets that public _def/
     $pubdef \<def name> <definition> = Only sets _def/ if not already set.
     E.g.: $pubdef tell me @ swap notify
-       would put a _defs/tell:me @ swap notify prop on the program object.
+    would put a _defs/tell:me @ swap notify prop on the program object.
     Def names cannot have ':' nor '/' in them.
 
 $cleardefs [ALL]
@@ -2305,16 +2305,16 @@ $cleardefs [ALL]
 
 $ifdef <condition> <compile this if true> $else <compile if false> $endif
 $ifndef <condition> <compile this if true> $else <compile if false> $endif
-  where <condition> is either a $defined name, or a test that consists of
-  a $defined name, a comparator (=, <, or >) and a test value, all in one
-  word without space.  The $else clause is optional.  Compiler directives
-  are nestable also.  Some examples:
-  $ifndef __version>Muck2.2fb3.5 $define envprop .envprop $enddef $endif
-  $define ploc $ifdef proplocs .proploc $else $endif $enddef
-  
+where <condition> is either a $defined name, or a test that consists of
+a $defined name, a comparator (=, <, or >) and a test value, all in one
+word without space.  The $else clause is optional.  Compiler directives
+are nestable also.  Some examples:
+$ifndef __version>Muck2.2fb3.5 $define envprop .envprop $enddef $endif
+$define ploc $ifdef proplocs .proploc $else $endif $enddef
+
 In the following directives, you can replace <library/prog dbref> with
-  the word "this" to indicate the program being compiled. These are all
-  $if $else $endif type constructions.
+the word "this" to indicate the program being compiled. These are all
+$if $else $endif type constructions.
 $ifver      <library/dbref> <float>    <...> $else <...> $endif
 $ifnver     <library/dbref> <integer>  <...> $else <...> $endif
 $iflibver   <library/dbref> <float>    <...> $else <...> $endif
@@ -2325,39 +2325,39 @@ $ifcancall  <library/dbref> <function> <...> $else <...> $endif
 $ifncancall <library/dbref> <function> <...> $else <...> $endif
 
 $include <dbref|progreg>
-  Sets a bunch of $defines from the properties in the /_defs/ propdir.
-  For example, if object #345 had the following properties:
+Sets a bunch of $defines from the properties in the /_defs/ propdir.
+For example, if object #345 had the following properties:
     /_defs/desc: "_/de" getpropstr
     /_defs/setpropstr: dup if 0 addprop else pop remove_prop then
     /_defs/setpropval: dup if "" swap addprop else pop remove_prop then
     /_defs/setprop: dup int? if setpropval else setpropstr then
-  then if a program contained '$include #345' in it, then all subsequent
-  references to 'desc', 'setpropstr', 'setpropval', and 'setprop' would
-  be expanded to the string values of their respective programs. ie:
-  'desc' would be replaced throughout the program with '"_/de" getpropstr'
-  NOTE:  You cannot have a slash in a definition name.  ie: The property
-  _defs/a/b:foo  will NOT make a definition named a/b.
-  
+then if a program contained '$include #345' in it, then all subsequent
+references to 'desc', 'setpropstr', 'setpropval', and 'setprop' would
+be expanded to the string values of their respective programs. ie:
+'desc' would be replaced throughout the program with '"_/de" getpropstr'
+NOTE:  You cannot have a slash in a definition name.  ie: The property
+_defs/a/b:foo  will NOT make a definition named a/b.
+
 You can escape a token in MUF so that it will be interpreted literally.
-  ie:  \.pmatch will try to compile '.pmatch' without expanding it as a
-  macro.  This lets you make special things with $defines such as:
-  $define addprop over over or if \addprop else pop pop remove_prop $enddef
-  so that all the 'addprop's in the program will be expanded to the
-  definition, but the 'addprop' in the definition will not try to expand
-  recursively.  It will call the actual addprop.
+ie:  \.pmatch will try to compile '.pmatch' without expanding it as a
+macro.  This lets you make special things with $defines such as:
+$define addprop over over or if \addprop else pop pop remove_prop $enddef
+so that all the 'addprop's in the program will be expanded to the
+definition, but the 'addprop' in the definition will not try to expand
+recursively.  It will call the actual addprop.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 LIBRARIES|
 Libraries:
-  
+
 How to use a library:
     1) Use "@register lib" to list what libraries exist.
     2) Use "@view $lib/<libraryname>" to list the docs on that library.
     3) When you've found the library and the function you want, then all
         you have to do in your program is, at the beginning of it,
-          $include $lib/<libraryname>
+        $include $lib/<libraryname>
         then just use the function name to invoke it later in your program
         and it will run as if it were a function in your program.
-  
+
 How to make a library:
     1) create a program with several useful generic subroutines.
     2) DOCUMENT those subroutines in a commented out header in the prog.
@@ -2368,14 +2368,14 @@ How to make a library:
         prefix of "lib/".  ie: @reg lib-strings=lib/strings
     7) Set up the interface for each function on the program. To do this,
         you will need to set properties on the program in the form
-          _defs/<callname>:"$<libname>" match "<funcname>" call
+        _defs/<callname>:"$<libname>" match "<funcname>" call
         where <callname> is the name that you want to have people use to
         invoke it in their programs, <libname> is the registered name you
         gave it (ie: lib/strings), and <funcname> is the actual name of
         the function in the program.  Example:
-          @set lib-strings=_defs/.split:"$lib/strings" match "split" call
+        @set lib-strings=_defs/.split:"$lib/strings" match "split" call
     8) You're done!
-  
+
 Currently standard libraries:
     $lib/strings      Functions for manipulating strings.
     $lib/props        Routines for searching for properties, or setting them.
@@ -2391,185 +2391,185 @@ Currently standard libraries:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 LOOPS|
 Loops:
-  
+
 The BEGIN or FOR statement marks the beginning of a loop.
 Either the UNTIL or the REPEAT statement marks the end of the loop.
-  REPEAT will do an unconditional jump back to the BEGIN or FOR statement.
-  UNTIL checks to see if the value on the stack is false.  If it is, it
+REPEAT will do an unconditional jump back to the BEGIN or FOR statement.
+UNTIL checks to see if the value on the stack is false.  If it is, it
     jumps back to the BEGIN or FOR statement, otherwise, it falls through
     on execution to the statement after the UNTIL.
 Within a loop, even within IF-ELSE-THEN structures within the loop
-  structure, you can place WHILE, CONTINUE, or BREAK statements.  There
-  is no limit as to how many, or in what combinations these instructions
-  are used.
-  A WHILE statement checks to see if the value on the stack is false.
+structure, you can place WHILE, CONTINUE, or BREAK statements.  There
+is no limit as to how many, or in what combinations these instructions
+are used.
+A WHILE statement checks to see if the value on the stack is false.
     If it is, execution jumps to the first statement after the end of
     the loop.  If the value was true, execution falls through to the
     statement after the WHILE.
-  The CONTINUE statement forces execution to jump to the beginning of
+The CONTINUE statement forces execution to jump to the beginning of
     the loop, at the BEGIN or FOR.
-  The BREAK statement forces execution to jump to the end of the loop,
+The BREAK statement forces execution to jump to the end of the loop,
     at the statement after the REPEAT or UNTIL, effectively exiting the
     loop.
 Note: You can nest loops complexly, but WHILE, BREAK, and CONTINUE
-  statements only refer to the innermost loop structure.
+statements only refer to the innermost loop structure.
 For an example of a BEGIN-REPEAT and BEGIN-UNTIL loops, see LOOP-EXAMPLE1.
 For an example of a complex loop, see LOOP-EXAMPLE2.
 For an example of FOR and FOREACH loops, see LOOP-EXAMPLE3.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 LOOP-EXAMPLE1|
 Example of a BEGIN-REPEAT loop:
-  0 begin
+0 begin
     dup 10 < while
     1 +
     me @ over intostr notify
-  repeat
+repeat
 Example of the same loop as a BEGIN-UNTIL loop:
-  0 begin
+0 begin
     1 +
     me @ over intostr notify
     dup 10 =
-  until
+until
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 LOOP-EXAMPLE2|
 Example of a complex loop structure:
-  101 begin                       (BEGIN the outer loop)
+101 begin                       (BEGIN the outer loop)
     dup while 1 -                 (This WHILE, ...)
     dup not if break then         (this BREAK, and..)
     dup 2 % not if continue then  (this CONTINUE refer to the outer loop)
     dup 10 % not if
-      15 begin                    (BEGIN inner loop)
+    15 begin                    (BEGIN inner loop)
         dup while 1 -             (This WHILE, and.. )
         dup 5 % not if break then (... this BREAK, refer to inner loop)
-      repeat                      (This REPEAT statement ends inner loop.)
+    repeat                      (This REPEAT statement ends inner loop.)
     then
     dup 7 % not if continue then  (This CONTINUE, and...)
     dup 3 % not if dup 9 % while then (this WHILE refer to the outer loop)
     dup intostr me @ swap notify
-  dup 1 = until pop               (This UNTIL ends the outer loop)
+dup 1 = until pop               (This UNTIL ends the outer loop)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 LOOP-EXAMPLE3|
 Example of a FOR loop:
-  1 10 1 for
+1 10 1 for
     me @ swap intostr notify
-  repeat
+repeat
 Example of nested FOR loops:
-  1 5 1 for
+1 5 1 for
     "" swap 1 -1 for
-      intostr strcat
+    intostr strcat
     repeat
     me @ swap notify
-  repeat
+repeat
 Example of complex FOR loop:
-  -10 10 1 for
+-10 10 1 for
     me @ over intostr notify
     not
-  until
+until
 Example of a FOREACH loop:
-  "index1" "value1" "index2" "value2" 2 array_make_dict
-  foreach
+"index1" "value1" "index2" "value2" 2 array_make_dict
+foreach
     " = " swap strcat strcat me @ swap notify
-  repeat
+repeat
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 CREDITS|
 Credits:
 The people responsible (at fault?) for this manual are:
-  Revar (foxen@belfry.com), who wrote the original terrible docs, and
-  WhiteFire (kinomon@glia.biostr.washington.edu), who cleaned them up a lot.
-  Fre'ta (tiger@tyger.org), who fixed sme errors.
-  
+Revar (foxen@belfry.com), who wrote the original terrible docs, and
+WhiteFire (kinomon@glia.biostr.washington.edu), who cleaned them up a lot.
+Fre'ta (tiger@tyger.org), who fixed sme errors.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 FLAGS|HARDUID|SETUID|AUTOSTART|BOUND|
 Flags that have importance to MUF:
-  
+
 If a program is set DARK (DEBUG), then when it is run, it will print out
-  a stack trace for each instruction executed, to the player running the
-  program.  This is useful for debugging programs.
-  
+a stack trace for each instruction executed, to the player running the
+program.  This is useful for debugging programs.
+
 If a program is set ZOMBIE, then when the owner runs it, they will enter an
-  interactive debugger, useful for following a program as it runs and
-  changing it to see what different situations do.  See also DEBUGGER.
-  
+interactive debugger, useful for following a program as it runs and
+changing it to see what different situations do.  See also DEBUGGER.
+
 On dbload, if a program is set ABODE (AUTOSTART), *AND* it is owned by
-  a wizard, then it will be placed in the timequeue with a delay of 0 and
-  a string parm of "Startup".  Autostart programs run with the location
-  NOTHING (#-1) rather than the location of the owner of the program.
-  
+a wizard, then it will be placed in the timequeue with a delay of 0 and
+a string parm of "Startup".  Autostart programs run with the location
+NOTHING (#-1) rather than the location of the owner of the program.
+
 If a program has the HAVEN flag set on it (HARDUID) then it runs with
-  the uid and permissions of the owner of the trigger of the program.
-  If the program is a timequeue event with trigger of #-1, then it
-  will run with the permissions and uid of the program owner as in SETUID.
-  
+the uid and permissions of the owner of the trigger of the program.
+If the program is a timequeue event with trigger of #-1, then it
+will run with the permissions and uid of the program owner as in SETUID.
+
 If a program is set both SETUID and HARDUID, and it is owned by a wizard,
-  then it inherits the uid and mucker level of the program that called it.
-  If it was not called by a program, then it runs SETUID.  This is useful
-  for writing libraries.
-  
+then it inherits the uid and mucker level of the program that called it.
+If it was not called by a program, then it runs SETUID.  This is useful
+for writing libraries.
+
 Programs set BUILDER (BOUND) run in preempt mode, regardless of the mode
-  of the program.  ie: a foreground program, while running in a program set
-  BOUND, will run pre-empt, with the multitasking effectively shut off.
-  
+of the program.  ie: a foreground program, while running in a program set
+BOUND, will run pre-empt, with the multitasking effectively shut off.
+
 A program that is set WIZARD ignores almost all permissions checking.
-  
+
 The Mucker Level of the program also has a great deal of influence on what
-  a program can and cannot do.  See MUCKER LEVELS for more information.
+a program can and cannot do.  See MUCKER LEVELS for more information.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 MISCELLANEOUS|LISTENERS|_LISTEN|_CONNECT|_DISCONNECT|COMMAND|CONNECT|DISCONNECT|
 When a message is notify_except'ed or notify_exclude'ed to a room, and
-  LISTENERS and LISTENERS_ENV are defined, then it will run ALL the
-  programs referred to in all the _listen properties down the environment
-  tree,  And in all of the objects in the room with LISTENERS_OBJ defined.
-  Also, the muf NOTIFY primitive was changed to run the _listen program
-  on an object or player if a message is sent to them that way.
-  
+LISTENERS and LISTENERS_ENV are defined, then it will run ALL the
+programs referred to in all the _listen properties down the environment
+tree,  And in all of the objects in the room with LISTENERS_OBJ defined.
+Also, the muf NOTIFY primitive was changed to run the _listen program
+on an object or player if a message is sent to them that way.
+
 There is a COMMAND variable, similar to ME, LOC, and TRIGGER, except that
-  it contains a string.  The string contains the command the user typed
-  that triggered the the program, without the command line arguments.  ie:
-  if there was an exit named "abracadabra;foo bar;frozzboz" that was linked
-  to the program, and the user typed in "foo bar baz", then the program
-  would run with "baz" on the stack, and "foo bar" in the global COMMAND
-  variable.
-  
+it contains a string.  The string contains the command the user typed
+that triggered the the program, without the command line arguments.  ie:
+if there was an exit named "abracadabra;foo bar;frozzboz" that was linked
+to the program, and the user typed in "foo bar baz", then the program
+would run with "baz" on the stack, and "foo bar" in the global COMMAND
+variable.
+
 Programs are compiled when they are run or called, or when explicitly
-  compiled in the editor.  They are compiled with the uid of the owner of
-  the program.  After unuse, programs will be removed from memory until
-  needed again.
-  
+compiled in the editor.  They are compiled with the uid of the owner of
+the program.  After unuse, programs will be removed from memory until
+needed again.
+
 A room or player may have a "_connect" property set that contains the
-  dbref of a program to run when a player connects.  The program must be
-  either link_ok or must be owned by the player connecting.  When the
-  program is run, the string on the stack will be "Connect", the "loc @"
-  will be the location of the connecting player, the "me @" will be the
-  connecting player, and the "trigger @" (and "trig") will be the object
-  that had the _connect property on it.  All programs referred to by
-  _connect properties on the player, and on rooms down the environment tree
-  from the player, will be QUEUEd up to run.  When a player disconnects,
-  programs referred to by _disconnect properties will be run in a similar
-  manner.  (connect and disconnect _actions_ are also implemented.)
-  
+dbref of a program to run when a player connects.  The program must be
+either link_ok or must be owned by the player connecting.  When the
+program is run, the string on the stack will be "Connect", the "loc @"
+will be the location of the connecting player, the "me @" will be the
+connecting player, and the "trigger @" (and "trig") will be the object
+that had the _connect property on it.  All programs referred to by
+_connect properties on the player, and on rooms down the environment tree
+from the player, will be QUEUEd up to run.  When a player disconnects,
+programs referred to by _disconnect properties will be run in a similar
+manner.  (connect and disconnect _actions_ are also implemented.)
+
 Programs referred to by props in _depart/_arrive/_connect/_disconnect
-  propdirs will all be queued up, eliminating the need for a dispatcher
-  program.  An example would be _connect/announce:1234  That would queue up
-  program #1234 when a player connects.  The name ("announce") is not
-  important, and can be anything you want, but they are queued up in
-  alphabetic order.
-  
+propdirs will all be queued up, eliminating the need for a dispatcher
+program.  An example would be _connect/announce:1234  That would queue up
+program #1234 when a player connects.  The name ("announce") is not
+important, and can be anything you want, but they are queued up in
+alphabetic order.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PUT|
 PUT ( nx...n1 ni i -- nx...ni...n1 )
-  Replaces the i'th item from the top of the stack with the value of ni.
+Replaces the i'th item from the top of the stack with the value of ni.
 1 put is equivalent to swap pop
 Example:
-  "a" "b" "c" "d" "e" 3 put
+"a" "b" "c" "d" "e" 3 put
 would return on the stack:
-  "a", "e", "c", "d"
+"a", "e", "c", "d"
 ~~~~~
 ABORT|
 ABORT ( s -- )
-  Aborts the MUF program with an error.  ie:  '"Bad vibes." abort' would
+Aborts the MUF program with an error.  ie:  '"Bad vibes." abort' would
 Stop the MUF program and tell the user a message like:
-  Programmer error.  Please tell Revar the following message:
-  #1234 (line 23) ABORT: Bad vibes.
+Programmer error.  Please tell Revar the following message:
+#1234 (line 23) ABORT: Bad vibes.
 ~~~~~
 CHECKARGS|
 CHECKARGS (??? s -- )
@@ -2579,30 +2579,30 @@ do not match what the expression says should be there, then it aborts
 the running program with an appropriate Program Error Message.  The
 expression is formed from single character argument tests that refer
 to different argument types.  The tests are:
-  
-   a - function address.
-   d - dbref.  (#-1, #-2, #-3 are okay)
-   D - valid, non-garbage dbref.  (#-1, #-2 NOT allowed.  #-3 is okay)
-   e - exit dbref.  (#-1, #-2 allowed)
-   E - exit dbref.  (#-1, #-2 NOT allowed)
-   f - program dbref.  (#-1, #-2 allowed)
-   F - program dbref.  (#-1, #-2 NOT allowed)
-   i - integer.
-   l - lock boolean expression.
-   p - player dbref.  (#-1, #-2 allowed)
-   P - player dbref.  (#-1, #-2 NOT allowed)
-   r - room dbref.  (#-1, #-2 allowed)  (#-3 is a room)
-   R - room dbref.  (#-1, #-2 NOT allowed)  (#-3 is a room)
-   s - string.
-   S - non-null string.
-   t - thing dbref.  (#-1, #-2 allowed)
-   T - thing dbref.  (#-1, #-2 NOT allowed)
-   v - local or global variable.
-   ? - any stack item type.
-  
+
+a - function address.
+d - dbref.  (#-1, #-2, #-3 are okay)
+D - valid, non-garbage dbref.  (#-1, #-2 NOT allowed.  #-3 is okay)
+e - exit dbref.  (#-1, #-2 allowed)
+E - exit dbref.  (#-1, #-2 NOT allowed)
+f - program dbref.  (#-1, #-2 allowed)
+F - program dbref.  (#-1, #-2 NOT allowed)
+i - integer.
+l - lock boolean expression.
+p - player dbref.  (#-1, #-2 allowed)
+P - player dbref.  (#-1, #-2 NOT allowed)
+r - room dbref.  (#-1, #-2 allowed)  (#-3 is a room)
+R - room dbref.  (#-1, #-2 NOT allowed)  (#-3 is a room)
+s - string.
+S - non-null string.
+t - thing dbref.  (#-1, #-2 allowed)
+T - thing dbref.  (#-1, #-2 NOT allowed)
+v - local or global variable.
+? - any stack item type.
+
 Tests can be repeated multiple times by following the test with a number.
 ie: '"i12" checkargs' would test the stack for 12 integers.
-  
+
 The last test in the string expression will be done on the top stack item.
 Tests are done from the top of the stack down, in order, so the last test
 that fails in a string expression will be the one that the Program Error
@@ -2610,22 +2610,22 @@ will be given for.  ie: '"sdSi" checkargs' will test that the top stack
 item is an integer, then it tests that the next item down is a non-null
 string, then it tests the third item from the top to see if it is a dbref,
 and lastly it tests to make sure that the 4th item from the top is a string.
-  
+
 Spaces are ignored, so "s d i" is the same as "sdi".  However, multipliers
 are ignored if they follow a space, so "s 4d i" is also the same as "sdi".
 This is because you are basically telling it to repeat the space 4 times,
 and since spaces are ignored, it has no effect.
-  
+
 If you have a function that takes a stack item of any type, you can use
 the "?" test.  "?" will match a string, integer, dbref, or any other type.
-  
+
 Since sometimes arguments are passed in ranges, such as the way that the
 explode primitive returns multiple strings with an integer count on top,
 there is a way to group arguments, to show that you expect to receive a
 range of that type.  ie: '"{s}" checkargs' would test the stack for a set
 of strings like '"first" "second" "third" "fourth" 4' where the top stack
 item tells how many strings to expect within the range.
-  
+
 Sometimes a function takes a range of paired arguments, such as:
 '"one" 1 "two" 2 "three" 3 "four" 4 4' where the count on the top of the
 range refers to the number of pairs.  To test for the range given above,
@@ -2634,16 +2634,16 @@ a range of paired strings and integers.  You can group as many argument
 tests together in a range as you would like.  ie: you could use "{sida}"
 as an expression to test for a range of related strings, integers, dbrefs,
 and function addresses.
-  
+
 Since the argument multipliers refer to the previous test OR range, you
 can test for two string ranges with the test '"{s}2" checkargs'.  ie:
 It would succeed on a stack of: '"one" "two" "three" 3 "four" "five" 2'.
 '"{s2}" checkargs', however, would test for one range of paired strings.
 ie: It would succeed with a stack of: '"one" "1" "two" "2" "three" "3" 3'.
-  
+
 If, for some reason, you need to pass a range of ranges to a function,
 you can test for it by nesting the braces.  ie: '"{{s}}" checkargs'
-  
+
 Now, as one last example, the primitive notify_exclude, if we were to test
 the arguments passed to it manually, would use the test '"R{p}s" checkargs'
 to test for a valid room dbref, a range of player dbrefs or #-1s, and a
@@ -2750,7 +2750,7 @@ PARSEPROP with a mucker level of less than 3.
 ~~~~
 JMP|
 JMP (a -- )
-  The JMP primitive takes an address like those supplied by 'funcname and
+The JMP primitive takes an address like those supplied by 'funcname and
 moves execution to that point.  It's one early way that was used to do
 tail-recursion loops without as much overhead, and without failing due to
 system stack overflows.  It's mostly obsolete now, except that it's one
@@ -2758,14 +2758,14 @@ of the three or four internal primitives used to implement if-else-then and
 begin-while-repeat loops and such.  You shouldn't use JMP explicitly in
 in modern MUF code, as it is deprecated.  NOTE: Using JMP to jump into a
 different function can have problems, and is not recommended.
-  
+
 Example of JMP as a tail-recursion optimization:
     : countforever ( i -- )
         1 +
         dup intostr .tell
         'countforever jmp
     ;
-  
+
 A better ways to do the same thing with looping primitives would be:
     : countforever ( i -- )
         begin
@@ -2787,7 +2787,7 @@ containing the number of seconds, a dbref is returned in standard dbref
 format, and boolean is returned as 'yes' or 'no'
 Checking an invalid parameter or a parameter requiring higher permissions
 than the program has will return an empty string.
-  
+
 Parameters available:
 (str)  dumpwarn_mesg        - Message to warn of a coming DB dump
 (str)  deltawarn_mesg       - Message to warn of a coming delta dump
@@ -2888,15 +2888,15 @@ permission to read the data.
 
 Each dictionary contains the following data, keyed with these strings:
     "name"     The name of the @tune setting.
-	"group"    The logical group that this parameter belongs to.
-	"type"     One of "string", "integer", "timespam", "dbref", or "boolean".
-	"mlev"     The mucker level required to read the value of this sysparm.
-	"value"    The value of the sysparm.  May be an int, string, or dbref.
+    "group"    The logical group that this parameter belongs to.
+    "type"     One of "string", "integer", "timespam", "dbref", or "boolean".
+    "mlev"     The mucker level required to read the value of this sysparm.
+    "value"    The value of the sysparm.  May be an int, string, or dbref.
 
 If a given entry is of the "dbref" type, it will also have the extra field:
     "objtype"  The type of object the dbref is restricted to.  Can be one of
-	            the strings "player", "thing", "room", "exit", "program",
-				"garbage", or "any".
+                the strings "player", "thing", "room", "exit", "program",
+                "garbage", or "any".
 
 See also SETSYSPARM, SYSPARM
 ~
@@ -2926,17 +2926,17 @@ Wizbit only.
 ~
 DEBUGGER|ZOMBIE|DEBUGGING|
 To use the interactive debugger, set the ZOMBIE (Z) flag on a program.  When
-  you run a programm you own which is set ZOMBIE, you will be placed in the
-  interactive MUF debugger.
+you run a programm you own which is set ZOMBIE, you will be placed in the
+interactive MUF debugger.
 When you enter the debugger, the program counter will be placed at the entry
-  point of the MUF.  This should always be the start of a function.  From
-  there, you may set breakpoints, examine or change the stack or variables,
-  list lines of code, step through, or continue execution.
+point of the MUF.  This should always be the start of a function.  From
+there, you may set breakpoints, examine or change the stack or variables,
+list lines of code, step through, or continue execution.
 Every time execution halts and returns you to the debugger, the argument
-  stack is displayed, as well as a dump of the current line.  If execution
-  is at the beginning of the line, the actual line of source will be
-  displayed, otherwise the compiled instructions will be displayed with the
-  current instruction marked by surrounding braces.
+stack is displayed, as well as a dump of the current line.  If execution
+is at the beginning of the line, the actual line of source will be
+displayed, otherwise the compiled instructions will be displayed with the
+current instruction marked by surrounding braces.
 For more information, see DEBUGGER-COMMANDS, BREAKPOINTS, and NOTATION.
 ~
 DEBUGGER-COMMANDS|
@@ -2970,16 +2970,16 @@ quit            stop execution here.
 ~
 BREAKPOINTS|
 Breakpoints can be set on a specefic line number, or on execution of a
-  specific word.  To set a breakpoint, simply enter 'break LINE', as in
-  'break 123', or 'break WORD', as in 'break do-something'.  To list current
-  breakpoints, simply enter the command 'breaks'.  To delete a breakpoint,
-  'delete NUM', where NUM is the number 'breaks' listed for that breakpoint.
+specific word.  To set a breakpoint, simply enter 'break LINE', as in
+'break 123', or 'break WORD', as in 'break do-something'.  To list current
+breakpoints, simply enter the command 'breaks'.  To delete a breakpoint,
+'delete NUM', where NUM is the number 'breaks' listed for that breakpoint.
 An implied breakpoint is always triggered on return of words after an
-  execute, or an EXEC, when the line they were called from was stepped with
-  next.
+execute, or an EXEC, when the line they were called from was stepped with
+next.
 A breakpoint is triggered after execution of the program has continued with
-  either 'continue', 'finish', or while in a word called when 'next' or
-  'nexti' is used.
+either 'continue', 'finish', or while in a word called when 'next' or
+'nexti' is used.
 ~
 NOTATION|
 Instruction notation as given by DEBUG dumps and the MUF debugger:
@@ -3014,7 +3014,7 @@ before the JMP or EXIT for each nexted FOR loop.
 ~
 MCP_REGISTER|
 MCP_REGISTER ( strPkgName fltMinVers fltMaxVers -- )
-  Registers an MCP package so that clients can know what is supported.
+Registers an MCP package so that clients can know what is supported.
 The minimum and maximum versions supported are represented as floating
 point numbers, with the minor version number being divided by 1000.
 For example, an MCP package of version 1.1 is represented as 1.001,
@@ -3042,7 +3042,7 @@ stored in variables, or on the stack, is kept.
 ~
 MCP_BIND|
 MCP_BIND ( strPkgName strMesgName addrCallback -- )
-  Binds a specific message, so if it is received, the given function is
+Binds a specific message, so if it is received, the given function is
 called.  The callback function is assumed to accept the args:
 ( intDescr dictArgs -- ) where dictArgs is a dictionary array contain-
 ing key-value pairs that represent the arguments of the message.  Each
@@ -3051,7 +3051,7 @@ where the list array is used for multi-line values.
 ~
 MCP_SUPPORTS|
 MCP_SUPPORTS ( intDescr strPkgName -- fltVersion )
-  Returns the version number of this package that is supported by this
+Returns the version number of this package that is supported by this
 connection descriptor.  If this package isn't supported, returns 0.0
 The version number is represented as a floating point number, with the
 minor version number being divided by 1000.  For example, an MCP
@@ -3061,7 +3061,7 @@ check version numbers.
 ~
 MCP_SEND|
 MCP_SEND ( intDescr strPkgName strMsgName dictArgs -- )
-  Sends an MCP message for the given package to the given connection
+Sends an MCP message for the given package to the given connection
 descriptor.  dictArgs contains key-value pairs, where each key is
 an argument name, and the value is the argument value.  Values can
 be strings, floats, dbrefs, integers, or array lists of strings.
@@ -3070,7 +3070,7 @@ getting sent.
 ~
 TOKENSPLIT|
 TOKENSPLIT (strString strDelim strEscape -- strPre strPost strChar)
-  Searches strString for the first character that matches any character in
+Searches strString for the first character that matches any character in
 strDelim, so long as it is not escaped by the character given in strEscape.  
 Returns the unescaped string before the found character, the raw string after
 that character, and the character that was found.  For example:
@@ -3080,28 +3080,28 @@ returns the values:
 ~
 DESCR|
 DESCR ( -- i)
-  Returns the descriptor number that invoked this program.  The value
+Returns the descriptor number that invoked this program.  The value
 returned may be -1 in the case of listener or autostart programs.
 ~
 {|
 {  ( -- marker)
-  Pushes a marker onto the stack, to be used with } or }list or }dict.
+Pushes a marker onto the stack, to be used with } or }list or }dict.
 ~
 }|
 }  ( marker ?n ... ?1 -- ?n ... ?1 i )
-  Finds the topmost marker in the stack, and counts how many stack items
+Finds the topmost marker in the stack, and counts how many stack items
 are between it and the top of the stack.  The marker is removed from the
 stack, and the count is pushed onto the stack.
 ~
 }LIST|
 }LIST  ( marker ?n ... ?1 -- array )
-  Takes all stack items from the top of the stack to the topmost stack
+Takes all stack items from the top of the stack to the topmost stack
 marker and creates a list array from them.  This is actually an inserver
 macro, defined to '} array_make'.
 ~
 }DICT|
 }DICT  ( marker @n ?n ... @1 ?1 -- dictionary )
-  Takes pairs of stack items from the top of the stack to the topmost stack
+Takes pairs of stack items from the top of the stack to the topmost stack
 marker and creates a dictionary array from them.  Each @ item is used as an
 index value for the corresponding ? value.  This is actually an inserver
 macro, defined to '} 2 / array_make_dict'.  Be careful to make sure that
@@ -3109,12 +3109,12 @@ there are an even number of stack items between the { and the }dict.
 ~
 CANCALL?|
 CANCALL?  (d s -- i)
-  Returns true if the given program has a public or wizcall function that the
+Returns true if the given program has a public or wizcall function that the
 current program has permissions to call.  Returns false, otherwise.
 ~
 WIZCALL|
 WIZCALL <funcname>
-  Specifies that the given function is a WIZCALL function.  A WIZCALL function
+Specifies that the given function is a WIZCALL function.  A WIZCALL function
 is like a PUBLIC function, except it can only be called by wizbit programs.
 ~
 GUI_AVAILABLE|
@@ -3135,12 +3135,12 @@ for strType are D_SIMPLE, D_TABBED, or D_HELPER.  The strTitle argument
 is the title to show in the titlebar of the dialog.  dictArgs is a
 dictionary array that contains extra optional arguments for creating
 the dialog.
- 
+
 This primitive returns a string containing the dialogid, used by other
 prims to add controls or make various changes.  This dialog will be
 hidden and not shown to the user until it has been displayed with the
 GUI_DLOG_SHOW command.
- 
+
 Supported optional args are:
     names      list of user-viewable pane names for D_TABBED & D_HELPER dlogs.
     panes      list of pane ids for D_TABBED and D_HELPER dialogs.
@@ -3221,9 +3221,9 @@ Creates a new control in a given dialog.  strDlogID contains the dlogid
 returned from a GUI_DLOG_SIMPLE (or similar) command.  strType contains
 the control type.  To make debugging easier and faster, MUF $defs have
 been provided for each control type.  They are:
-  C_DATUM, C_LABEL, C_IMAGE, C_HRULE, C_VRULE, C_BUTTON, C_CHECKBOX,
-  C_RADIOBTN, C_EDIT, C_MULTIEDIT, C_COMBOBOX, C_SPINNER, C_SCALE,
-  C_LISTBOX, C_MENU, C_FRAME, C_NOTEBOOK.
+C_DATUM, C_LABEL, C_IMAGE, C_HRULE, C_VRULE, C_BUTTON, C_CHECKBOX,
+C_RADIOBTN, C_EDIT, C_MULTIEDIT, C_COMBOBOX, C_SPINNER, C_SCALE,
+C_LISTBOX, C_MENU, C_FRAME, C_NOTEBOOK.
 If you use these instead of the actual type name strings, then if you
 mistype one, it will throw an error when trying to compile, instead of
 when you try to run it.  The strCtrlID arg is the id to give the control,
@@ -3250,38 +3250,38 @@ GUI_CTRL_COMMAND|
 GUI_CTRL_COMMAND (strDlogID strCtrlID strCommand dictArgs -- )
 This is the generic primitive for executing a GUI control specific command.
 The dictionary contains the arguments for the given command.
-  
+
 At the time of this writing, the following commands are supported:
-  
+
 "insert" Inserts text or list items into the given control.
-         Takes the following arguments:
-           "values" list of values or text to insert.
-           "before" position in widget to insert before.  Defaults to "end".
-  
+        Takes the following arguments:
+        "values" list of values or text to insert.
+        "before" position in widget to insert before.  Defaults to "end".
+
 "delete" Deletes text or list items from the given control.
-         Takes the following arguments if the widget is a listbox:
-           "items" The list of listbox items to delete, given by index.
-         Takes the following arguments if the widget is not a listbox:
-           "first" gives the first item to delete.
-           "last"  gives the last item of the range to delete.  If not given,
-                   this defaults to the same value as "first".
-  
+        Takes the following arguments if the widget is a listbox:
+        "items" The list of listbox items to delete, given by index.
+        Takes the following arguments if the widget is not a listbox:
+        "first" gives the first item to delete.
+        "last"  gives the last item of the range to delete.  If not given,
+                this defaults to the same value as "first".
+
 "select" Selects text or list items in the given control.
-         Takes the following arguments if the widget is a listbox:
-           "items" The list of listbox items to select, given by index.
-                   All other items will be deselected.
-         Takes the following arguments if the widget is not a listbox:
-           "first" gives the first character to select.
-           "last"  gives the last character of the range to select.  If not
-                   given, this defaults to the same value as "first".
-  
+        Takes the following arguments if the widget is a listbox:
+        "items" The list of listbox items to select, given by index.
+                All other items will be deselected.
+        Takes the following arguments if the widget is not a listbox:
+        "first" gives the first character to select.
+        "last"  gives the last character of the range to select.  If not
+                given, this defaults to the same value as "first".
+
 "show"   Scrolls the given item or character into view.
-         Takes the following arguments:
-           "position" The item or character position to make visible.
-  
+        Takes the following arguments:
+        "position" The item or character position to make visible.
+
 "cursor" Moves the cursor of the given control.
-         Takes the following arguments:
-           "position" The item or character to move the cursor to or before.
+        Takes the following arguments:
+        "position" The item or character to move the cursor to or before.
 ~
 ANSI_MIDSTR|
 ANSI_MIDSTR ( s i i -- s' )
@@ -3320,9 +3320,9 @@ ARRAY_FINDVAL|
 ARRAY_FINDVAL (a1 ? -- a2)
 Returns a list array containing the keys of every element in the array
 a1 whose values match the given value.  For example:
-  
+
     { #5 #10 #15 #10 #20 }list #10 array_findval
-  
+
 will return a list containing 1 and 3, being the keys (indexes) of the
 matching items.
 ~
@@ -3330,18 +3330,18 @@ ARRAY_EXCLUDEVAL|
 ARRAY_EXCLUDEVAL (a1 ? -- a2)
 Returns a list array containing the keys of every element in the array
 a1 whose values did NOT match the given value.  For example:
-  
+
     { #5 #10 #15 #10 #20 }list #10 array_excludeval
-  
+
 will return a list containing 0, 2 and 4, being the keys (indexes) of the
 items that didn't match.  If you want the values, use ARRAY_DIFF or
 ARRAY_EXTRACT.
 Ie:
-  
+
     { #5 #10 #15 #10 #20 }list { #10 }list array_diff
-  
+
 or
-  
+
     { #5 #10 #15 #10 #20 }list dup #10 array_excludeval array_extract
 
 which will both return a list containing #5, #15, and #20.  The main
@@ -3407,36 +3407,36 @@ from the event queue.  This returns an event-specific context data item,
 and the matching eventID string.  If an empty list array is passed to this
 primitive, then it will match any and all events, and return the first one
 pending.
-  
+
 Timer events have eventID strings that are created by prepending "TIMER."
 to the timerID passed to the TIMER_START primitive.  The context for Timer
 events is an integer, representing the systime that the timer event was
 scheduled to occur at.  This might not be the time that the event is actually
 processed at, due to system delays.
-  
+
 GUI events have eventID strings that are created by prepending "GUI." to
 the dlogID of the dialog that generated the event.  The context for GUI
 events is a dictionary contains the following keys:
-  descr      Holds the descriptor that generated the event.
-  dlogid     Holds the DlogID of the dialog that generated the event.
-  id         Holds the ID of the control that generated the event.
-  dismissed  Holds 1 if the dialog was dismissed, 0 otherwise.
-  event      Holds the type of gui event.  ie: buttonpress, menuselect.
-  values     Holds the dictionary of control values, keyed by control name.
-  data       Holds array of extra gui-event specific data.
-  
+descr      Holds the descriptor that generated the event.
+dlogid     Holds the DlogID of the dialog that generated the event.
+id         Holds the ID of the control that generated the event.
+dismissed  Holds 1 if the dialog was dismissed, 0 otherwise.
+event      Holds the type of gui event.  ie: buttonpress, menuselect.
+values     Holds the dictionary of control values, keyed by control name.
+data       Holds array of extra gui-event specific data.
+
 User events have eventID strings that are created by prepending "USER." to
 the eventID given to the EVENT_SEND muf primitive.  The context for User
 events is a dictionary containing the following keys:
-  caller_pid   Holds the integer Process ID of the sending program.
-  caller_prog  Holds the dbref of the sending program.
-  data         Holds the stack item sent by the EVENT_SEND primitive.
-  descr        Holds the descr that initiated the calling program.
-  trigger      Holds the trigger dbref that initiated the calling program.
-  player       Holds the player dbref that ran the calling program.
-  prog_uid     Holds the dbref of the player whose permissions the caller
+caller_pid   Holds the integer Process ID of the sending program.
+caller_prog  Holds the dbref of the sending program.
+data         Holds the stack item sent by the EVENT_SEND primitive.
+descr        Holds the descr that initiated the calling program.
+trigger      Holds the trigger dbref that initiated the calling program.
+player       Holds the player dbref that ran the calling program.
+prog_uid     Holds the dbref of the player whose permissions the caller
                 program is running as.
-  
+
 MCP events have eventID strings formatted like "MCP.packagename-mesgname"
 where 'packagename' is the name of the MCP package being invoked, and
 'mesgname' is the specific message in the package being invoked.  If the
@@ -3450,14 +3450,14 @@ The context for MCP events is a dictionary containing the following keys:
     message   Holds the string message name within that package.
     args      Holds a dictionary, containing the message arguments.
                 Each mesg arg has an array list of strings as a value.
-  
+
 Read events have eventID strings of just "READ".  The context of Read events
-  is the integer descriptor of the first waiting line to be READ.  To get the
-  actual line sent by the user you need to use the READ primitive.
-  
+is the integer descriptor of the first waiting line to be READ.  To get the
+actual line sent by the user you need to use the READ primitive.
+
 Process exit events have eventID strings that are created by prepending
-  "PROC.EXIT." to the pid of the watched process that exited.  The context
-  is the pid of the process that exited.
+"PROC.EXIT." to the pid of the watched process that exited.  The context
+is the pid of the process that exited.
 ~
 BLESSPROP|
 BLESSPROP (dbrefObject strPropname -- )
@@ -3474,50 +3474,50 @@ in dialog.  These options are common to almost all control types.  They
 are as follows:
     value     Holds the value of the control.
     valname   Specifies the name used with GUI_VALUE_GET/SET, to refer to the
-               value for this control.  Multiple controls can share the same
-               valname, in the case of radio buttons and the like.
+            value for this control.  Multiple controls can share the same
+            valname, in the case of radio buttons and the like.
     report    If set to 1, image, checkbox, and radiobutton controls will send
-               a 'buttonpress' event when the user clicks on them.  All other
-               control types send a 'valchanged' gui event when their value
-               is changed If the value is changed several times within a few
-               seconds, only the final value is guaranteed to have a valchanged
-               event.  It is possible to receive valchanged events even though
-               the value appears to have not changed.
+            a 'buttonpress' event when the user clicks on them.  All other
+            control types send a 'valchanged' gui event when their value
+            is changed If the value is changed several times within a few
+            seconds, only the final value is guaranteed to have a valchanged
+            event.  It is possible to receive valchanged events even though
+            the value appears to have not changed.
     pane      The pane in which to place this control.  Some controls, like
-               the notebook or frame controls, create new panes in which you
-               can place controls.
+            the notebook or frame controls, create new panes in which you
+            can place controls.
     newline   If 1, next control will be at the beginning of the next row.
-               If 0, next control will be in the next column to the right,
-               taking into account colspan and colskip.  Defaults to 1.
+            If 0, next control will be in the next column to the right,
+            taking into account colspan and colskip.  Defaults to 1.
     sticky    Which sides of the cell this control sticks to.  This is a
-               string with any or all of the letters 'n', 's', 'e', or 'w',
-               corresponding to north, south, east, and west.
+            string with any or all of the letters 'n', 's', 'e', or 'w',
+            corresponding to north, south, east, and west.
     row       If given, forces the control to be placed in the given row.
     column    If given, forces the control to be placed in the given column.
     rowspan   Number of rows this control spans across.  Defaults to 1.
     colspan   Number of columns this control spans across.  Defaults to 1.
     colskip   Number of columns to skip before placing this control.
-               Defaults to 0.
+            Defaults to 0.
     minwidth  Minimum width of control in pixels.
     minheight Minimum width of control in pixels.
     hweight   How much the starting column of this control should expand.
-               When filling unused space, if there are two columns, one with
-               hweight 2 and the other with hweight 1, then the column with
-               hweight 2 will be expanded twice as much as the other column.
-               The default hweight is 0.  Note that the last control in the
-               given column sets the hweight for the column.  If no hweights
-               are given in a pane, then if the pane is forced to be wider
-               than the contained controls, the empty space will be placed
-               in the right side of the pane.
+            When filling unused space, if there are two columns, one with
+            hweight 2 and the other with hweight 1, then the column with
+            hweight 2 will be expanded twice as much as the other column.
+            The default hweight is 0.  Note that the last control in the
+            given column sets the hweight for the column.  If no hweights
+            are given in a pane, then if the pane is forced to be wider
+            than the contained controls, the empty space will be placed
+            in the right side of the pane.
     vweight   How much the starting row of this control should expand.
-               When filling unused space, if there are two rows, one with
-               vweight 2 and the other with vweight 1, then the row with
-               vweight 2 will be expanded twice as much as the other row.
-               The default hweight is 0.  Note that the last control in the
-               given row sets the vweight for the row.  If no vweights
-               are given in a pane, then if the pane is forced to be taller
-               than the contained controls, the empty space will be placed
-               in the bottom of the pane.
+            When filling unused space, if there are two rows, one with
+            vweight 2 and the other with vweight 1, then the row with
+            vweight 2 will be expanded twice as much as the other row.
+            The default hweight is 0.  Note that the last control in the
+            given row sets the vweight for the row.  If no vweights
+            are given in a pane, then if the pane is forced to be taller
+            than the contained controls, the empty space will be placed
+            in the bottom of the pane.
     toppad    Number of pixels padding to add above this control.
     leftpad   Number of pixels padding to add to the left of this control.
 ~
@@ -3553,7 +3553,7 @@ a text label, nothing more.
 The control options specific to this type of control are:
     value    Contains the text to be displayed.
     justify  Which way to justify the text, if word wrapped.  Can be one of
-             left, right, or center.
+            left, right, or center.
     maxwidth The max width in pixels for the label, before it word wraps.
 
 See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
@@ -3599,7 +3599,7 @@ The control options specific to this type of control are:
     text     The text label that will show on the button face.
     width    Number of characters text the button should be able to hold.
     dismiss  If 1, the dialog will be dismissed when this button is pressed.
-             Defaults to 1.
+            Defaults to 1.
 
 See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
@@ -3613,7 +3613,7 @@ The control options specific to this type of control are:
     onvalue  The value this control should have when checked.
     offvalue The value this control should have when not checked.
     value    The current state/value of the control.  This should match either
-             the value of the "onvalue" or "offvalue" argument.
+            the value of the "onvalue" or "offvalue" argument.
 
 See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
@@ -3625,11 +3625,11 @@ The radio button control is used for selecting one of a number of options.
 The control options specific to this type of control are:
     text     The text label that will show to the right of the radio button.
     valname  The name used to refer to the value of this radio button group.
-             A radio button group is defined as radio buttons that share the
-             same valname.
+            A radio button group is defined as radio buttons that share the
+            same valname.
     selvalue The value of this radio button group, when this is selected.
     value    The current state/value of the radio button group.  This should
-             match one of the selvalues of a radio button in this group.
+            match one of the selvalues of a radio button in this group.
 
 See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
@@ -3640,16 +3640,16 @@ to create a single-line text Edit control in a GUI dialog.
 The Edit control is used for single-line text string editing.
 The control options specific to this type of control are:
     text     The text label that will show to the left of the control.
-             Defaults to "" (no label).  If there is a label, then this
-             control will be split across two columns, with the label in
-             the first one, the edit control in the second.
+            Defaults to "" (no label).  If there is a label, then this
+            control will be split across two columns, with the label in
+            the first one, the edit control in the second.
     value    The current contents/value of the control.
     maxlen   The maximum string length allowed.  Defaults to 1024 chars.
     width    Number of average character widths wide this control should be.
-             Defaults to 40 characters wide.
+            Defaults to 40 characters wide.
     height   Number of lines high this control will be.  Defaults to 1.
-             If this is greater than 1, then text will wrap as you type it,
-             but you still won't be able to insert carriage returns.
+            If this is greater than 1, then text will wrap as you type it,
+            but you still won't be able to insert carriage returns.
 
 See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
@@ -3661,7 +3661,7 @@ The MultiEdit control is used for multi-line text string editing.
 The control options specific to this type of control are:
     value    The current contents/value of the control.
     width    Number of average character widths wide this control should be.
-             Defaults to 40 characters wide.
+            Defaults to 40 characters wide.
     height   Number of lines high this control will be.  Defaults to 1.
     font     Specifies whether the font used is "fixed" or "proportional".
 
@@ -3675,17 +3675,17 @@ The ComboBox control is used for selecting from multiple standard options
 in a compact form factor.  Optionally the user can enter arbitrary data.
 The control options specific to this type of control are:
     text     The text label that will show to the left of the control.
-             Defaults to "" (no label).  If there is a label, then this
-             control will be split across two columns, with the label in
-             the first one, the combobox control in the second.
+            Defaults to "" (no label).  If there is a label, then this
+            control will be split across two columns, with the label in
+            the first one, the combobox control in the second.
     value    The current contents/value of the control.
     width    Number of average character widths wide this control should be.
-             Defaults to 20 characters wide.
+            Defaults to 20 characters wide.
     options  Contains a list of entries for the combobox pulldown menu, one
-             per line.
+            per line.
     editable If 1, the user can edit the value arbitrarily.  If 0, then the
-             user can only pick a value from the combobox pulldown menu.
-             Defaults to 0
+            user can only pick a value from the combobox pulldown menu.
+            Defaults to 0
     sorted   Causes the contents of the pulldown menu to be auto-sorted.
 
 See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
@@ -3697,15 +3697,15 @@ to create a ListBox control in a GUI dialog.  The ListBox control is used
 for selecting one or more entries from a list of options.
 The control options specific to this type of control are:
     value    The list of the currently selected list items, given as a list
-             of integers that refer to list positions.  0 is the first item.
+            of integers that refer to list positions.  0 is the first item.
     font     Specifies whether the font used is "fixed" or "proportional".
     width    Number of average character widths wide this control should be.
-             Defaults to 40 characters wide.
+            Defaults to 40 characters wide.
     height   Number of lines high this control will be.  Defaults to 10.
     options  The list of entries for the listbox contents, one per line.
     selectmode  One of "single", "multiple", or "extended".  Specifies how
-             list item selection is performed, and whether more than one item
-             can be selected at a time.
+            list item selection is performed, and whether more than one item
+            can be selected at a time.
 
 See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
@@ -3721,7 +3721,7 @@ The control options specific to this type of control are:
     minval   The minimum integer value that this control can be set to.
     maxval   The maximum integer value that this control can be set to.
     width    Number of digits that this control should be able to hold.
-             Defaults to 12 digits.
+            Defaults to 12 digits.
 
 See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
@@ -3742,9 +3742,9 @@ The control options specific to this type of control are:
     digits     The number of significant digits of resolution for the value.
     orient     The orientation, "horiz" or "vert".  (Defaults to horiz.)
     length     The length of the long axis of the scale, in pixels.
-               Defaults to 100 pixels.
+            Defaults to 100 pixels.
     width      The length of the short axis of the scale, in pixels.
-               Defaults to 15 pixels.
+            Defaults to 15 pixels.
 
 See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
@@ -3968,7 +3968,7 @@ USERLOG ( str:mesg -- )
 Logs an arbitrary message to the user log file.  (#defined in config.h
 as USER_LOG, defaults to the "logs/user" file.)  The log entry will be
 formatted like:
-  Winged(#4023) [newaction.muf(#666)] 06/11/02 03:09:31: <string>
+Winged(#4023) [newaction.muf(#666)] 06/11/02 03:09:31: <string>
 The program must be running at a mucker level at least equal to the @tune
 value 'userlog_mlev' (defaults to 3) to write this log entry.
 
