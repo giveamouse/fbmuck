@@ -7,6 +7,18 @@ proc init {args} {
 
 init
 
+proc new_section {window} {
+}
+
+proc edit_section {window} {
+}
+
+proc new_topic {window} {
+}
+
+proc edit_topic {window} {
+}
+
 proc mk_main_window {base} {
     toplevel $base
     wm protocol $base WM_DELETE_WINDOW exit
@@ -29,10 +41,10 @@ proc mk_main_window {base} {
     pack $base.treefr.tree -side left -fill both -expand 1
     pack $base.treefr.scroll -side left -fill y
 
-    button $base.newsect -text "New Section"
-    button $base.editsect -text "Edit Section"
-    button $base.newtopic -text "New Topic"
-    button $base.edittopic -text "Edit Topic"
+    button $base.newsect   -text "New Section"  -command "new_section $base"
+    button $base.editsect  -text "Edit Section" -command "edit_section $base"
+    button $base.newtopic  -text "New Topic"    -command "new_topic $base"
+    button $base.edittopic -text "Edit Topic"   -command "edit_topic $base"
 
     pack $base.treefr -side left -fill both -expand 1
     pack $base.newsect -side top -fill x -padx 10 -pady 5

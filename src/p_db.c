@@ -1095,10 +1095,10 @@ prim_setlink(PRIM_PROTOTYPE)
 	oper2 = POP();				/* dbref: source */
 	if ((oper1->type != PROG_OBJECT) || (oper2->type != PROG_OBJECT))
 		abort_interp("setlink requires two dbrefs.");
-	if (!valid_object(oper2) && oper2->data.objref != HOME)
+	if (!valid_object(oper2))
 		abort_interp("Invalid object. (1)");
 	ref = oper2->data.objref;
-	if (oper1->data.objref == -1) {
+	if (oper1->data.objref == NOTHING) {
 		if ((mlev < 4) && !permissions(ProgUID, ref))
 			abort_interp("Permission denied.");
 		switch (Typeof(ref)) {
@@ -1118,7 +1118,7 @@ prim_setlink(PRIM_PROTOTYPE)
 			abort_interp("Invalid object. (1)");
 		}
 	} else {
-		if (!valid_object(oper1))
+		if (oper1->data.objref != HOME && !valid_object(oper1))
 			abort_interp("Invalid object. (2)");
 		if (Typeof(ref) == TYPE_PROGRAM)
 			abort_interp("Program objects are not linkable. (1)");
@@ -1126,11 +1126,10 @@ prim_setlink(PRIM_PROTOTYPE)
 			abort_interp("Can't link source to destination.");
 		switch (Typeof(ref)) {
 		case TYPE_EXIT:
-			if (DBFETCH(ref)->sp.exit.ndest != 0) {
-				if ((mlev < 4) && !permissions(ProgUID, ref))
-					abort_interp("Permission denied.");
+			if ((mlev < 4) && !permissions(ProgUID, ref))
+				abort_interp("Permission denied.");
+			if (DBFETCH(ref)->sp.exit.ndest != 0)
 				abort_interp("Exit is already linked.");
-			}
 			if (exit_loop_check(ref, oper1->data.objref))
 				abort_interp("Link would cause a loop.");
 			DBFETCH(ref)->sp.exit.ndest = 1;
@@ -1141,12 +1140,16 @@ prim_setlink(PRIM_PROTOTYPE)
 		case TYPE_PLAYER:
 			if ((mlev < 4) && !permissions(ProgUID, ref))
 				abort_interp("Permission denied.");
+			if (oper1->data.objref == HOME)
+				abort_interp("Cannot link player to HOME.");
 			PLAYER_SET_HOME(ref, oper1->data.objref);
 			DBDIRTY(ref);
 			break;
 		case TYPE_THING:
 			if ((mlev < 4) && !permissions(ProgUID, ref))
 				abort_interp("Permission denied.");
+			if (oper1->data.objref == HOME)
+				abort_interp("Cannot link thing to HOME.");
 			if (parent_loop_check(ref, oper1->data.objref))
 				abort_interp("That would cause a parent paradox.");
 			THING_SET_HOME(ref, oper1->data.objref);
