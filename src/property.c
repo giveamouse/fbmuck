@@ -13,8 +13,6 @@
 #include <string.h>
 #include <math.h>
 
-#define alloc_compressed(x) alloc_string(compress(x))
-
 /* property.c
    A whole new lachesis mod.
    Adds property manipulation routines to TinyMUCK.   */
@@ -57,10 +55,6 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 	clear_propnode(p);
 
 	SetPFlagsRaw(p, dat->flags);
-	if (PropFlags(p) & PROP_ISUNLOADED) {
-		SetPDataUnion(p, dat->data);
-		return;
-	}
 	switch (PropType(p)) {
 	case PROP_STRTYP:
 		if (!dat->data.str || !*(dat->data.str)) {
@@ -70,10 +64,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 				remove_property_nofetch(player, pname);
 			}
 		} else {
-			SetPDataStr(p, alloc_compressed(dat->data.str));
-#ifdef COMPRESS
-			SetPFlagsRaw(p, (dat->flags | PROP_COMPRESSED));
-#endif
+			SetPDataStr(p, alloc_string(dat->data.str));
 		}
 		break;
 	case PROP_INTTYP:
@@ -120,13 +111,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 void
 set_property(dbref player, const char *name, PData * dat)
 {
-#ifdef DISKBASE
-	fetchprops(player, propdir_name(name));
 	set_property_nofetch(player, name, dat);
-	dirtyprops(player);
-#else
-	set_property_nofetch(player, name, dat);
-#endif
 	DBDIRTY(player);
 }
 
@@ -170,14 +155,7 @@ add_prop_nofetch(dbref player, const char *pname, const char *strval, int value)
 void
 add_property(dbref player, const char *pname, const char *strval, int value)
 {
-
-#ifdef DISKBASE
-	fetchprops(player, propdir_name(pname));
 	add_prop_nofetch(player, pname, strval, value);
-	dirtyprops(player);
-#else
-	add_prop_nofetch(player, pname, strval, value);
-#endif
 	DBDIRTY(player);
 }
 
@@ -216,10 +194,6 @@ remove_property_list(dbref player, int all)
 	PropPtr p;
 	PropPtr n;
 
-#ifdef DISKBASE
-	fetchprops(player, NULL);
-#endif
-
 	if ((l = DBFETCH(player)->properties) != NULL) {
 		p = first_node(l);
 		while (p) {
@@ -229,10 +203,6 @@ remove_property_list(dbref player, int all)
 			p = n;
 		}
 	}
-
-#ifdef DISKBASE
-	dirtyprops(player);
-#endif
 
 	DBDIRTY(player);
 }
@@ -257,15 +227,7 @@ remove_property_nofetch(dbref player, const char *pname)
 void
 remove_property(dbref player, const char *pname)
 {
-#ifdef DISKBASE
-	fetchprops(player, propdir_name(pname));
-#endif
-
 	remove_property_nofetch(player, pname);
-
-#ifdef DISKBASE
-	dirtyprops(player);
-#endif
 }
 
 
@@ -275,10 +237,6 @@ get_property(dbref player, const char *pname)
 	PropPtr p;
 	char buf[BUFFER_LEN];
 	char *w;
-
-#ifdef DISKBASE
-	fetchprops(player, propdir_name(pname));
-#endif
 
 	w = strcpy(buf, pname);
 
@@ -327,11 +285,8 @@ has_property_strict(int descr, dbref player, dbref what, const char *pname, cons
 	p = get_property(what, pname);
 
 	if (p) {
-#ifdef DISKBASE
-		propfetch(what, p);
-#endif
 		if (PropType(p) == PROP_STRTYP) {
-			str = uncompress(DoNull(PropDataStr(p)));
+			str = DoNull(PropDataStr(p));
 
 			if (has_prop_recursion_limit-->0) {
 				ptr = do_parse_mesg(descr, player, what, str, "(Lock)", buf,
@@ -362,9 +317,6 @@ get_property_class(dbref player, const char *pname)
 
 	p = get_property(player, pname);
 	if (p) {
-#ifdef DISKBASE
-		propfetch(player, p);
-#endif
 		if (PropType(p) != PROP_STRTYP)
 			return (char *) NULL;
 		return (PropDataStr(p));
@@ -382,9 +334,6 @@ get_property_value(dbref player, const char *pname)
 	p = get_property(player, pname);
 
 	if (p) {
-#ifdef DISKBASE
-		propfetch(player, p);
-#endif
 		if (PropType(p) != PROP_INTTYP)
 			return 0;
 		return (PropDataVal(p));
@@ -401,9 +350,6 @@ get_property_fvalue(dbref player, const char *pname)
 
 	p = get_property(player, pname);
 	if (p) {
-#ifdef DISKBASE
-		propfetch(player, p);
-#endif
 		if (PropType(p) != PROP_FLTTYP)
 			return 0.0;
 		return (PropDataFVal(p));
@@ -421,9 +367,6 @@ get_property_dbref(dbref player, const char *pname)
 	p = get_property(player, pname);
 	if (!p)
 		return NOTHING;
-#ifdef DISKBASE
-	propfetch(player, p);
-#endif
 	if (PropType(p) != PROP_REFTYP)
 		return NOTHING;
 	return PropDataRef(p);
@@ -439,11 +382,6 @@ get_property_lock(dbref player, const char *pname)
 	p = get_property(player, pname);
 	if (!p)
 		return TRUE_BOOLEXP;
-#ifdef DISKBASE
-	propfetch(player, p);
-	if (PropFlags(p) & PROP_ISUNLOADED)
-		return TRUE_BOOLEXP;
-#endif
 	if (PropType(p) != PROP_LOKTYP)
 		return TRUE_BOOLEXP;
 	return PropDataLok(p);
@@ -476,9 +414,6 @@ clear_property_flags(dbref player, const char *pname, int flags)
 	p = get_property(player, pname);
 	if (p) {
 		SetPFlags(p, (PropFlags(p) & ~flags));
-#ifdef DISKBASE
-		dirtyprops(player);
-#endif
 	}
 }
 
@@ -493,9 +428,6 @@ set_property_flags(dbref player, const char *pname, int flags)
 	p = get_property(player, pname);
 	if (p) {
 		SetPFlags(p, (PropFlags(p) | flags));
-#ifdef DISKBASE
-		dirtyprops(player);
-#endif
 	}
 }
 
@@ -521,10 +453,6 @@ PropPtr
 copy_prop(dbref old)
 {
 	PropPtr p, n = NULL;
-
-#ifdef DISKBASE
-	fetchprops(old, NULL);
-#endif
 
 	p = DBFETCH(old)->properties;
 	copy_proplist(old, &n, p);
@@ -584,11 +512,6 @@ first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name)
 PropPtr
 first_prop(dbref player, const char *dir, PropPtr * list, char *name)
 {
-
-#ifdef DISKBASE
-	fetchprops(player, (char *) dir);
-#endif
-
 	return (first_prop_nofetch(player, dir, list, name));
 }
 
@@ -630,10 +553,6 @@ next_prop_name(dbref player, char *outbuf, int outbuflen, char *name)
 	char buf[BUFFER_LEN];
 	PropPtr p, l;
 
-#ifdef DISKBASE
-	fetchprops(player, propdir_name(name));
-#endif
-
 	strcpy(buf, name);
 	if (!*name || name[strlen(name) - 1] == PROPDIR_DELIMITER) {
 		l = DBFETCH(player)->properties;
@@ -665,12 +584,6 @@ next_prop_name(dbref player, char *outbuf, int outbuflen, char *name)
 long
 size_properties(dbref player, int load)
 {
-#ifdef DISKBASE
-	if (load) {
-		fetchprops(player, NULL);
-		fetch_propvals(player, "/");
-	}
-#endif
 	return size_proplist(DBFETCH(player)->properties);
 }
 
@@ -693,11 +606,6 @@ is_propdir_nofetch(dbref player, const char *pname)
 int
 is_propdir(dbref player, const char *pname)
 {
-
-#ifdef DISKBASE
-	fetchprops(player, propdir_name(pname));
-#endif
-
 	return (is_propdir_nofetch(player, pname));
 }
 
@@ -709,10 +617,6 @@ envprop(dbref * where, const char *propname, int typ)
 
 	while (*where != NOTHING) {
 		temp = get_property(*where, propname);
-#ifdef DISKBASE
-		if (temp)
-			propfetch(*where, temp);
-#endif
 		if (temp && (!typ || PropType(temp) == typ))
 			return temp;
 		*where = getparent(*where);
@@ -747,9 +651,6 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 		snprintf(buf, bufsiz, "%s: No such property.", name);
 		return buf;
 	}
-#ifdef DISKBASE
-	propfetch(obj, p);
-#endif
 	if (PropFlags(p) & PROP_BLESSED)
 		blesschar = 'B';
 	pdflag = (PropDir(p) != NULL);
@@ -768,12 +669,8 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 		snprintf(buf, bufsiz, "%c flt %s:%.17lg", blesschar, mybuf, PropDataFVal(p));
 		break;
 	case PROP_LOKTYP:
-		if (PropFlags(p) & PROP_ISUNLOADED) {
-			snprintf(buf, bufsiz, "%c lok %s:*UNLOCKED*", blesschar, mybuf);
-		} else {
-			snprintf(buf, bufsiz, "%c lok %s:%.*s", blesschar, mybuf, (BUFFER_LEN / 2),
-					unparse_boolexp(player, PropDataLok(p), 1));
-		}
+		snprintf(buf, bufsiz, "%c lok %s:%.*s", blesschar, mybuf, (BUFFER_LEN / 2),
+				unparse_boolexp(player, PropDataLok(p), 1));
 		break;
 	case PROP_DIRTYP:
 		snprintf(buf, bufsiz, "%c dir %s:(no value)", blesschar, mybuf);
@@ -783,11 +680,9 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 }
 
 
-
 #define DOWNCASE(x) (tolower(x))
 
 extern short db_conversion_flag;
-extern short db_decompression_flag;
 
 
 int
@@ -798,19 +693,10 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 	int flg;
 	long tpos=0L;
 	struct boolexp *lok;
-	short do_diskbase_propvals;
 	PData mydat;
-
-#ifdef DISKBASE
-	do_diskbase_propvals = tp_diskbase_propvals;
-#else
-	do_diskbase_propvals = 0;
-#endif
 
 	if (pos) {
 		fseek(f, pos, 0);
-	} else if (do_diskbase_propvals) {
-		tpos = ftell(f);
 	}
 	name = fgets(getprop_buf, sizeof(getprop_buf), f);
 	if (!name) {
@@ -865,47 +751,23 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 
 	switch (flg & PROP_TYPMASK) {
 	case PROP_STRTYP:
-		if (!do_diskbase_propvals || pos) {
-			flg &= ~PROP_ISUNLOADED;
-#ifdef COMPRESS
-			if (!(flg & PROP_COMPRESSED)) {
-				value = (char *) old_uncompress(value);
-			}
-#endif
-			if (pnode) {
-				SetPDataStr(pnode, alloc_compressed(value));
-#ifdef COMPRESS
-				flg |= PROP_COMPRESSED;
-#endif
-				SetPFlagsRaw(pnode, flg);
-			} else {
-				mydat.flags = flg;
-				mydat.data.str = value;
-				set_property_nofetch(obj, name, &mydat);
-			}
+		if (pnode) {
+			SetPDataStr(pnode, alloc_string(value));
+			SetPFlagsRaw(pnode, flg);
 		} else {
-			flg |= PROP_ISUNLOADED;
 			mydat.flags = flg;
-			mydat.data.val = tpos;
+			mydat.data.str = value;
 			set_property_nofetch(obj, name, &mydat);
 		}
 		break;
 	case PROP_LOKTYP:
-		if (!do_diskbase_propvals || pos) {
-			lok = parse_boolexp(-1, (dbref) 1, value, 32767);
-			flg &= ~PROP_ISUNLOADED;
-			if (pnode) {
-				SetPDataLok(pnode, lok);
-				SetPFlagsRaw(pnode, flg);
-			} else {
-				mydat.flags = flg;
-				mydat.data.lok = lok;
-				set_property_nofetch(obj, name, &mydat);
-			}
+		lok = parse_boolexp(-1, (dbref) 1, value, 32767);
+		if (pnode) {
+			SetPDataLok(pnode, lok);
+			SetPFlagsRaw(pnode, flg);
 		} else {
-			flg |= PROP_ISUNLOADED;
 			mydat.flags = flg;
-			mydat.data.val = tpos;
+			mydat.data.lok = lok;
 			set_property_nofetch(obj, name, &mydat);
 		}
 		break;
@@ -986,7 +848,7 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
 	char buf[BUFFER_LEN * 2];
 	const char *ptr2;
 	char tbuf[50];
-	int outflags = (PropFlagsRaw(p) & ~(PROP_TOUCHED | PROP_ISUNLOADED | PROP_DIRUNLOADED));
+	int outflags = PropFlagsRaw(p);
 
 	if (PropType(p) == PROP_DIRTYP)
 		return;
@@ -1012,15 +874,9 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
 	case PROP_STRTYP:
 		if (!*PropDataStr(p))
 			return;
-		if (db_decompression_flag) {
-			ptr2 = uncompress(PropDataStr(p));
-		} else {
-			ptr2 = PropDataStr(p);
-		}
+		ptr2 = PropDataStr(p);
 		break;
 	case PROP_LOKTYP:
-		if (PropFlags(p) & PROP_ISUNLOADED)
-			return;
 		if (PropDataLok(p) == TRUE_BOOLEXP)
 			return;
 		ptr2 = unparse_boolexp((dbref) 1, PropDataLok(p), 0);
@@ -1042,11 +898,6 @@ int
 db_dump_props_rec(dbref obj, FILE * f, const char *dir, PropPtr p)
 {
 	char buf[BUFFER_LEN];
-#ifdef DISKBASE
-	long tpos=0L;
-	int flg;
-	short wastouched = 0;
-#endif
 	int count = 0;
 	int pdcount;
 
@@ -1055,31 +906,7 @@ db_dump_props_rec(dbref obj, FILE * f, const char *dir, PropPtr p)
 
 	count += db_dump_props_rec(obj, f, dir, AVL_LF(p));
 
-#ifdef DISKBASE
-	wastouched = (PropFlags(p) & PROP_TOUCHED);
-	if (tp_diskbase_propvals) {
-		tpos = ftell(f);
-	}
-	if (wastouched) {
-		count++;
-	}
-	if (propfetch(obj, p)) {
-		fseek(f, 0L, 2);
-	}
-#endif
-
 	db_putprop(f, dir, p);
-
-#ifdef DISKBASE
-	if (tp_diskbase_propvals && !wastouched) {
-		if (PropType(p) == PROP_STRTYP || PropType(p) == PROP_LOKTYP) {
-			flg = PropFlagsRaw(p) | PROP_ISUNLOADED;
-			clear_propnode(p);
-			SetPFlagsRaw(p, flg);
-			SetPDataVal(p, tpos);
-		}
-	}
-#endif
 
 	if (PropDir(p)) {
 		const char *iptr;
@@ -1114,7 +941,7 @@ untouchprop_rec(PropPtr p)
 {
 	if (!p)
 		return;
-	SetPFlags(p, (PropFlags(p) & ~PROP_TOUCHED));
+	SetPFlags(p, PropFlags(p));
 	untouchprop_rec(AVL_LF(p));
 	untouchprop_rec(AVL_RT(p));
 	untouchprop_rec(PropDir(p));
@@ -1155,13 +982,10 @@ reflist_add(dbref obj, const char* propname, dbref toadd)
 	if (ptr) {
 		const char *pat = NULL;
 
-#ifdef DISKBASE
-		propfetch(obj, ptr);
-#endif
 		switch (PropType(ptr)) {
 		case PROP_STRTYP:
 			*outbuf = '\0';
-			list = temp = uncompress(PropDataStr(ptr));
+			list = temp = PropDataStr(ptr);
 			snprintf(buf, sizeof(buf), "%d", toadd);
 			while (*temp) {
 				if (*temp == '#') {
@@ -1230,13 +1054,10 @@ reflist_del(dbref obj, const char* propname, dbref todel)
 	if (ptr) {
 		const char *pat = NULL;
 
-#ifdef DISKBASE
-		propfetch(obj, ptr);
-#endif
 		switch (PropType(ptr)) {
 		case PROP_STRTYP:
 			*outbuf = '\0';
-			list = temp = uncompress(PropDataStr(ptr));
+			list = temp = PropDataStr(ptr);
 			snprintf(buf, sizeof(buf), "%d", todel);
 			while (*temp) {
 				if (*temp == '#') {
@@ -1291,12 +1112,9 @@ reflist_find(dbref obj, const char* propname, dbref tofind)
 	if (ptr) {
 		const char *pat = NULL;
 
-#ifdef DISKBASE
-		propfetch(obj, ptr);
-#endif
 		switch (PropType(ptr)) {
 		case PROP_STRTYP:
-			temp = uncompress(PropDataStr(ptr));
+			temp = PropDataStr(ptr);
 			snprintf(buf, sizeof(buf), "%d", tofind);
 			while (*temp) {
 				if (*temp == '#') {

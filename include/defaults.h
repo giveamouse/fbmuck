@@ -122,10 +122,6 @@
 #define COMMAND_TIME_MSEC 1000	/* time slice length in milliseconds    */
 
 
-/* Max %of db in unchanged objects allowed to be loaded.  Generally 5% */
-/* This is only needed if you defined DISKBASED in config.h */
-#define MAX_LOADED_OBJS 5
-
 /* Max # of timequeue events allowed. */
 #define MAX_PROCESS_LIMIT 400
 
@@ -305,9 +301,6 @@
 
 /* Define to 1 to allow locks to check down the environment for props. */
 #define LOCK_ENVCHECK 0
-
-/* Define to 0 to prevent diskbasing of property values, or to 1 to allow. */
-#define DISKBASE_PROPVALS 1
 
 /* Define to 1 to cause muf debug tracing to display expanded arrays. */
 #define EXPANDED_DEBUG_TRACE 1

@@ -69,7 +69,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
 	char tmpcmd[BUFFER_LEN];
 	char tmparg[BUFFER_LEN];
 
-	p = (char *) uncompress((char *) message);
+	p = (char *) message;
 
 	if (*p == EXEC_SIGNAL) {
 		int i;
@@ -291,10 +291,6 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 				snprintf(buf, sizeof(buf), "%s", detail);
 			}
 
-#ifdef DISKBASE
-			fetchprops(thing, "/_details/");
-#endif
-
 			lastmatch = NULL;
 			propadr = first_prop(thing, "_details/", &pptr, propname);
 			while (propadr) {
@@ -310,9 +306,6 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 				propadr = next_prop(pptr, propadr, propname);
 			}
 			if (lastmatch && PropType(lastmatch) == PROP_STRTYP) {
-#ifdef DISKBASE
-				propfetch(thing, lastmatch);	/* DISKBASE PROPVALS */
-#endif
 				exec_or_notify(descr, player, thing, PropDataStr(lastmatch), "(@detail)",
 					(PropFlags(lastmatch) & PROP_BLESSED)? MPI_ISBLESSED : 0);
 			} else if (ambig_flag) {

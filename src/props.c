@@ -173,28 +173,24 @@ alloc_propnode(const char *name)
 void
 free_propnode(PropPtr p)
 {
-	if (!(PropFlags(p) & PROP_ISUNLOADED)) {
-		if (PropType(p) == PROP_STRTYP)
-			free((void *) PropDataStr(p));
-		if (PropType(p) == PROP_LOKTYP)
-			free_boolexp(PropDataLok(p));
-	}
+	if (PropType(p) == PROP_STRTYP)
+		free((void *) PropDataStr(p));
+	if (PropType(p) == PROP_LOKTYP)
+		free_boolexp(PropDataLok(p));
 	free(p);
 }
 
 void
 clear_propnode(PropPtr p)
 {
-	if (!(PropFlags(p) & PROP_ISUNLOADED)) {
- 	        if (PropType(p) == PROP_STRTYP) {
-			free((void *) PropDataStr(p));
-			PropDataStr(p) = NULL;
-	        }
-		if (PropType(p) == PROP_LOKTYP)
-			free_boolexp(PropDataLok(p));
-	}
+        if (PropType(p) == PROP_STRTYP) {
+		free((void *) PropDataStr(p));
+		PropDataStr(p) = NULL;
+        }
+	if (PropType(p) == PROP_LOKTYP)
+		free_boolexp(PropDataLok(p));
 	SetPDataVal(p, 0);
-	SetPFlags(p, (PropFlags(p) & ~PROP_ISUNLOADED));
+	SetPFlags(p, PropFlags(p));
 	SetPType(p, PROP_DIRTYP);
 }
 
@@ -364,9 +360,6 @@ copy_proplist(dbref obj, PropPtr * nu, PropPtr old)
 	PropPtr p;
 
 	if (old) {
-#ifdef DISKBASE
-		propfetch(obj, old);
-#endif
 		p = new_prop(nu, PropName(old));
 		SetPFlagsRaw(p, PropFlagsRaw(old));
 		switch (PropType(old)) {
@@ -374,12 +367,7 @@ copy_proplist(dbref obj, PropPtr * nu, PropPtr old)
 			SetPDataStr(p, alloc_string(PropDataStr(old)));
 			break;
 		case PROP_LOKTYP:
-			if (PropFlags(old) & PROP_ISUNLOADED) {
-				SetPDataLok(p, TRUE_BOOLEXP);
-				SetPFlags(p, (PropFlags(p) & ~PROP_ISUNLOADED));
-			} else {
-				SetPDataLok(p, copy_bool(PropDataLok(old)));
-			}
+			SetPDataLok(p, copy_bool(PropDataLok(old)));
 			break;
 		case PROP_DIRTYP:
 			SetPDataVal(p, 0);
@@ -413,17 +401,15 @@ size_proplist(PropPtr avl)
 	bytes += sizeof(struct plist);
 
 	bytes += strlen(PropName(avl));
-	if (!(PropFlags(avl) & PROP_ISUNLOADED)) {
-		switch (PropType(avl)) {
-		case PROP_STRTYP:
-			bytes += strlen(PropDataStr(avl)) + 1;
-			break;
-		case PROP_LOKTYP:
-			bytes += size_boolexp(PropDataLok(avl));
-			break;
-		default:
-			break;
-		}
+	switch (PropType(avl)) {
+	case PROP_STRTYP:
+		bytes += strlen(PropDataStr(avl)) + 1;
+		break;
+	case PROP_LOKTYP:
+		bytes += size_boolexp(PropDataLok(avl));
+		break;
+	default:
+		break;
 	}
 	bytes += size_proplist(AVL_LF(avl));
 	bytes += size_proplist(AVL_RT(avl));

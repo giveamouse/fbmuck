@@ -164,8 +164,6 @@ safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int
 		}
 	}
 
-	ptr = uncompress(ptr);
-
 	if (ptr) {
 		if (Prop_Blessed(what, bbuf)) {
 			*blessed = 1;
@@ -1235,8 +1233,6 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms, const char *in
 	int tmprec_cnt = mesg_rec_cnt;
 	int tmpinst_cnt = mesg_instr_cnt;
 
-	abuf = uncompress(abuf);
-
 	*outbuf = '\0';
 
 	if ((mesgtyp & MPI_NOHOW) == 0)
@@ -1270,8 +1266,6 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms, const char *in
 	}
 	strcpy(argvar, match_args);
 	strcpy(tmparg, match_args);
-
-	inbuf = uncompress(inbuf);
 
 	dptr = MesgParse(inbuf, outbuf);
 	if (!dptr) {

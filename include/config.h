@@ -33,17 +33,6 @@
  */
 #define GOD_PRIV
 
-/* Use to compress string data (recomended)
- */
-#define COMPRESS
-
-/* To use a simple disk basing scheme where properties aren't loaded
- * from the input file until they are needed, define this. (Note: if
- * this is not defined, the MUCK will fork into the background to dump
- * the database, eliminating save delays.)
- */
-#undef DISKBASE
-
 /* To make the server save using fast delta dumps that only write out the
  * changed objects, except when @dump or @shutdown are used, or when too
  * many deltas have already been saved to disk, #define this. 
@@ -136,7 +125,6 @@
 
 #define DELTAFILE_NAME "data/deltas-file"	/* The file for deltas */
 #define PARMFILE_NAME "data/parmfile.cfg"	/* The file for config parms */
-#define WORDLIST_FILE "data/wordlist.txt"	/* File for compression dict. */
 
 #define LOG_CMD_TIMES "logs/cmd-times"	/* Command times Log */
 #define LOG_GRIPE   "logs/gripes"	/* Gripes Log */
@@ -222,7 +210,6 @@
  * Memory/malloc stuff.
  */
 #undef LOG_PROPS
-#undef LOG_DISKBASE
 #undef DEBUGDBDIRTY
 
 /*

@@ -451,7 +451,7 @@ include_defs(COMPSTATE * cstat, dbref i)
 	while (j) {
 		strcpy(dirname, "/_defs/");
 		strcatn(dirname, sizeof(dirname), temp);
-		tmpptr = uncompress(get_property_class(i, dirname));
+		tmpptr = get_property_class(i, dirname);
 		if (tmpptr && *tmpptr)
 			insert_def(cstat, temp, (char *) tmpptr);
 		j = next_prop(pptr, j, temp);
@@ -2174,8 +2174,6 @@ do_directive(COMPSTATE * cstat, char *direct)
 			tmpptr = (char*)malloc(4 * sizeof(char));
 			strcpy(tmpptr, "0.0");
 			needFree = 1;
-		} else { 
-			uncompress(tmpptr);	
 		}
 		tmpname = (char *) next_token_raw(cstat);
 		if (!tmpname || !*tmpname) {

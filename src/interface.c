@@ -240,9 +240,7 @@ short db_conversion_flag = 0;
 short db_decompression_flag = 0;
 short wizonly_mode = 0;
 pid_t global_resolver_pid=0;
-#ifndef DISKBASE
 pid_t global_dumper_pid=0;
-#endif
 short global_dumpdone=0;
 
 
@@ -419,12 +417,6 @@ main(int argc, char **argv)
 	if (!infile_name || !outfile_name) {
 		show_program_usage(*argv);
 	}
-#ifdef DISKBASE
-	if (!strcmp(infile_name, outfile_name)) {
-		fprintf(stderr, "Output file must be different from the input file.");
-		exit(3);
-	}
-#endif
 
 	if (!sanity_interactive) {
 
@@ -597,12 +589,8 @@ main(int argc, char **argv)
 		purge_mfns();
 		cleanup_game();
 		tune_freeparms();
-		free_compress_dictionary();
 #endif
 
-#ifdef DISKBASE
-		fclose(input_file);
-#endif
 #ifdef DELTADUMPS
 		fclose(delta_infile);
 		fclose(delta_outfile);
@@ -693,11 +681,9 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 	char *ptr1;
 	const char *ptr2;
 	dbref ref;
-    int di;
-    int* darr;
-    int dcount;
-
-	msg = uncompress(msg);
+	int di;
+	int* darr;
+	int dcount;
 
 	ptr2 = msg;
 	while (ptr2 && *ptr2) {
@@ -781,7 +767,7 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 {
 	const char *ptr;
 
-	ptr = uncompress(msg);
+	ptr = msg;
 
 	if (tp_listeners) {
 		if (tp_listeners_obj || Typeof(player) == TYPE_ROOM) {
@@ -1300,8 +1286,6 @@ wall_and_flush(const char *msg)
 	struct descriptor_data *d, *dnext;
 	char buf[BUFFER_LEN + 2];
 
-	msg = uncompress(msg);
-
 	if (!msg || !*msg)
 		return;
 	strcpy(buf, msg);
@@ -1341,8 +1325,6 @@ wall_wizards(const char *msg)
 {
 	struct descriptor_data *d, *dnext;
 	char buf[BUFFER_LEN + 2];
-
-	msg = uncompress(msg);
 
 	strcpy(buf, msg);
 	strcatn(buf, sizeof(buf), "\r\n");
@@ -2682,7 +2664,7 @@ dump_users(struct descriptor_data *e, char *user)
 							 */
 							(int) (79 - (PLAYER_NAME_LIMIT + 20)),
 							GETDOING(d->player) ?
-							uncompress(GETDOING(d->player))
+							GETDOING(d->player)
 							: "");
 				} else {
 #ifdef USE_SSL
@@ -3850,7 +3832,7 @@ int ignore_prime_cache(dbref Player)
 	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) != TYPE_PLAYER))
 		return 0;
 
-	if ((Txt = uncompress(get_property_class(Player, IGNORE_PROP))) == NULL)
+	if ((Txt = get_property_class(Player, IGNORE_PROP)) == NULL)
 	{
 		PLAYER_SET_IGNORE_LAST(Player, AMBIGUOUS);
 		return 0;

@@ -1237,9 +1237,6 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 	if (((the_prog = get_property_dbref(what, propname)) != NOTHING) ||
 		(tmpchar = get_property_class(what, propname))) {
 
-		if (tmpchar)
-			tmpchar = uncompress(tmpchar);
-
 		if ((tmpchar && *tmpchar) || the_prog != NOTHING) {
 			if (tmpchar) {
 				if (*tmpchar == '&') {
@@ -1362,7 +1359,6 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
 		(tmpchar = get_property_class(what, propname))) {
 
 		if (tmpchar) {
-			tmpchar = uncompress(tmpchar);
 			sep = tmpchar;
 			while (*sep) {
 				if (*sep == '\\') {

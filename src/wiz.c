@@ -422,10 +422,6 @@ do_stats(dbref player, const char *name)
 	int total;
 	int altered = 0;
 	int oldobjs = 0;
-#ifdef DISKBASE
-	int loaded = 0;
-	int changed = 0;
-#endif
 	time_t currtime = time(NULL);
 	dbref i;
 	dbref owner=NOTHING;
@@ -447,14 +443,6 @@ do_stats(dbref player, const char *name)
 				return;
 			}
 			for (i = 0; i < db_top; i++) {
-
-#ifdef DISKBASE
-				if ((OWNER(i) == owner) && DBFETCH(i)->propsmode != PROPS_UNLOADED)
-					loaded++;
-				if ((OWNER(i) == owner) && DBFETCH(i)->propsmode == PROPS_CHANGED)
-					changed++;
-#endif
-
 				/* count objects marked as changed. */
 				if ((OWNER(i) == owner) && (FLAGS(i) & OBJECT_CHANGED))
 					altered++;
@@ -493,14 +481,6 @@ do_stats(dbref player, const char *name)
 			}
 		} else {
 			for (i = 0; i < db_top; i++) {
-
-#ifdef DISKBASE
-				if (DBFETCH(i)->propsmode != PROPS_UNLOADED)
-					loaded++;
-				if (DBFETCH(i)->propsmode == PROPS_CHANGED)
-					changed++;
-#endif
-
 				/* count objects marked as changed. */
 				if (FLAGS(i) & OBJECT_CHANGED)
 					altered++;
@@ -549,15 +529,6 @@ do_stats(dbref player, const char *name)
 		notify_fmt(player,
 				   "%7d total object%s                     %7d old & unused",
 				   total, (total == 1) ? " " : "s", oldobjs);
-
-#ifdef DISKBASE
-		if (Wizard(OWNER(player))) {
-			notify_fmt(player,
-					   "%7d proploaded object%s                %7d propchanged object%s",
-					   loaded, (loaded == 1) ? " " : "s", changed, (changed == 1) ? "" : "s");
-
-		}
-#endif
 
 #ifdef DELTADUMPS
 		{
@@ -769,12 +740,6 @@ do_pcreate(dbref player, const char *user, const char *password)
 }
 
 
-
-#ifdef DISKBASE
-extern long propcache_hits;
-extern long propcache_misses;
-#endif
-
 void
 do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2)
 {
@@ -786,12 +751,6 @@ do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2)
 		notify(player, "Usage: @dbginfo [cache|guitest|misc]");
 		return;
 	}
-#ifdef DISKBASE
-	if (string_prefix(arg1, "cache")) {
-		notify(player, "Cache info:");
-		diskbase_debug(player);
-	} else
-#endif
 	if (string_prefix(arg1, "guitest")) {
 		do_post_dlog(descr, arg2);
 	}

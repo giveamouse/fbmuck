@@ -187,20 +187,13 @@ prim_getprop(PRIM_PROTOTYPE)
 		CLEAR(oper1);
 		CLEAR(oper2);
 		if (prptr) {
-#ifdef DISKBASE
-			propfetch(obj2, prptr);
-#endif
 			switch (PropType(prptr)) {
 			case PROP_STRTYP:
-				temp = uncompress(PropDataStr(prptr));
+				temp = PropDataStr(prptr);
 				PushString(temp);
 				break;
 			case PROP_LOKTYP:
-				if (PropFlags(prptr) & PROP_ISUNLOADED) {
-					PushLock(TRUE_BOOLEXP);
-				} else {
-					PushLock(PropDataLok(prptr));
-				}
+				PushLock(PropDataLok(prptr));
 				break;
 			case PROP_REFTYP:
 				PushObject(PropDataRef(prptr));
@@ -259,12 +252,9 @@ prim_getpropstr(PRIM_PROTOTYPE)
 		if (!ptr) {
 			temp = "";
 		} else {
-#ifdef DISKBASE
-			propfetch(oper2->data.objref, ptr);
-#endif
 			switch (PropType(ptr)) {
 			case PROP_STRTYP:
-				temp = uncompress(PropDataStr(ptr));
+				temp = PropDataStr(ptr);
 				break;
 				/*
 				 *case PROP_INTTYP:
@@ -277,11 +267,7 @@ prim_getpropstr(PRIM_PROTOTYPE)
 				temp = buf;
 				break;
 			case PROP_LOKTYP:
-				if (PropFlags(ptr) & PROP_ISUNLOADED) {
-					temp = "*UNLOCKED*";
-				} else {
-					temp = unparse_boolexp(ProgUID, PropDataLok(ptr), 1);
-				}
+				temp = unparse_boolexp(ProgUID, PropDataLok(ptr), 1);
 				break;
 			default:
 				temp = "";
@@ -387,12 +373,9 @@ prim_envprop(PRIM_PROTOTYPE)
 			result = 0;
 			PushInt(result);
 		} else {
-#ifdef DISKBASE
-			propfetch(what, ptr);
-#endif
 			switch (PropType(ptr)) {
 			case PROP_STRTYP:
-				PushString(uncompress(PropDataStr(ptr)));
+				PushString(PropDataStr(ptr));
 				break;
 			case PROP_INTTYP:
 				result = PropDataVal(ptr);
@@ -406,11 +389,7 @@ prim_envprop(PRIM_PROTOTYPE)
 				PushObject(ref);
 				break;
 			case PROP_LOKTYP:
-				if (PropFlags(ptr) & PROP_ISUNLOADED) {
-					PushLock(TRUE_BOOLEXP);
-				} else {
-					PushLock(PropDataLok(ptr));
-				}
+				PushLock(PropDataLok(ptr));
 				break;
 			default:
 				result = 0;
@@ -452,12 +431,9 @@ prim_envpropstr(PRIM_PROTOTYPE)
 		if (!ptr) {
 			temp = "";
 		} else {
-#ifdef DISKBASE
-			propfetch(what, ptr);
-#endif
 			switch (PropType(ptr)) {
 			case PROP_STRTYP:
-				temp = uncompress(PropDataStr(ptr));
+				temp = PropDataStr(ptr);
 				break;
 				/*
 				 *case PROP_INTTYP:
@@ -470,11 +446,7 @@ prim_envpropstr(PRIM_PROTOTYPE)
 				temp = buf;
 				break;
 			case PROP_LOKTYP:
-				if (PropFlags(ptr) & PROP_ISUNLOADED) {
-					temp = "*UNLOCKED*";
-				} else {
-					temp = unparse_boolexp(ProgUID, PropDataLok(ptr), 1);
-				}
+				temp = unparse_boolexp(ProgUID, PropDataLok(ptr), 1);
 				break;
 			default:
 				temp = "";
@@ -879,9 +851,6 @@ prim_parseprop(PRIM_PROTOTYPE)
 		}
 
 		temp = get_property_class(oper3->data.objref, type);
-		if (temp) {
-			temp = uncompress(temp);
-		}
 #ifdef LOG_PROPS
 		log2file("props.log", "#%d (%d) GETPROPSTR: o=%d n=\"%s\" s=\"%s\"",
 				 program, pc->line, oper3->data.objref, type, temp);
@@ -957,7 +926,6 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 				if (prop_read_perms(ProgUID, ref, prop, mlev)) {
 					ptr = get_property_class(ref, prop);
 					if (ptr) {
-						ptr = uncompress(ptr);
 						strcpy(buf, ptr);
 					} else {
 						strcpy(buf, "");
@@ -1152,7 +1120,7 @@ prim_parsepropex(PRIM_PROTOTYPE)
 		tname[len] = '\0';
 	}
 
-	mpi		= uncompress(get_property_class(oper1->data.objref, tname));
+	mpi		= get_property_class(oper1->data.objref, tname);
 	vars	= oper3->data.array;
 	novars	= array_count(vars);
 

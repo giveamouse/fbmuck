@@ -39,12 +39,6 @@ do_dump(dbref player, const char *newfile)
 	char buf[BUFFER_LEN];
 
 	if (Wizard(player)) {
-#ifndef DISKBASE
-		if (global_dumper_pid != 0) {
-			notify(player, "Sorry, there is already a dump currently in progress.");
-			return;
-		}
-#endif
 		if (*newfile
 #ifdef GOD_PRIV
 			&& God(player)
@@ -106,11 +100,6 @@ do_restart(dbref player)
 }
 
 
-#ifdef DISKBASE
-extern long propcache_hits;
-extern long propcache_misses;
-#endif
-
 static void
 dump_database_internal(void)
 {
@@ -126,10 +115,6 @@ dump_database_internal(void)
 		db_write(f);
 		fclose(f);
 
-#ifdef DISKBASE
-		fclose(input_file);
-#endif
-
 #ifdef DELTADUMPS
 		fclose(delta_outfile);
 		fclose(delta_infile);
@@ -141,13 +126,6 @@ dump_database_internal(void)
 
 		if (rename(tmpfile, dumpfile) < 0)
 			perror(tmpfile);
-
-#ifdef DISKBASE
-		free((void *) in_filename);
-		in_filename = string_dup(dumpfile);
-		if ((input_file = fopen(in_filename, "rb")) == NULL)
-			perror(dumpfile);
-#endif
 
 #ifdef DELTADUMPS
 		if ((delta_outfile = fopen(DELTAFILE_NAME, "wb")) == NULL)
@@ -180,17 +158,6 @@ dump_database_internal(void)
 		perror(tmpfile);
 	}
 	sync();
-
-#ifdef DISKBASE
-	/* Only show dumpdone mesg if not doing background saves. */
-	if (tp_dbdump_warning && tp_dumpdone_warning)
-		wall_and_flush(tp_dumpdone_mesg);
-#endif
-
-#ifdef DISKBASE
-	propcache_hits = 0L;
-	propcache_misses = 1L;
-#endif
 }
 
 void
@@ -280,29 +247,18 @@ fork_and_dump(void)
 {
 	epoch++;
 
-#ifndef DISKBASE
-	if (global_dumper_pid != 0) {
-		wall_wizards("## Dump already in progress.  Skipping redundant scheduled dump.");
-		return;
-	}
-#endif
-
 	last_monolithic_time = time(NULL);
 	log_status("CHECKPOINTING: %s.#%d#\n", dumpfile, epoch);
 
 	if (tp_dbdump_warning)
 		wall_and_flush(tp_dumping_mesg);
 
-#ifdef DISKBASE
-	dump_database_internal();
-#else
 	if ((global_dumper_pid=fork())==0) {
 		forked_dump_process_flag = 1;
 		set_dumper_signals();
 		dump_database_internal();
 		_exit(0);
 	}
-#endif
 }
 
 #ifdef DELTADUMPS
@@ -379,10 +335,6 @@ dump_deltas(void)
 	if (tp_deltadump_warning && tp_dumpdone_warning)
 		wall_and_flush(tp_dumpdone_mesg);
 
-#ifdef DISKBASE
-	propcache_hits = 0L;
-	propcache_misses = 1L;
-#endif
 }
 #endif
 

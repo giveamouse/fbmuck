@@ -43,15 +43,6 @@ copyobj(dbref player, dbref old, dbref nu)
 	newp->location = NOTHING;
 	moveto(nu, player);
 
-#ifdef DISKBASE
-	newp->propsfpos = 0;
-	newp->propsmode = PROPS_UNLOADED;
-	newp->propstime = 0;
-	newp->nextold = NOTHING;
-	newp->prevold = NOTHING;
-	dirtyprops(nu);
-#endif
-
 	DBDIRTY(nu);
 }
 
@@ -1773,14 +1764,6 @@ prim_copyplayer(PRIM_PROTOTYPE)
 	newp->exits = NOTHING;
 	newp->contents = NOTHING;
 	newp->next = NOTHING;
-#ifdef DISKBASE
-	newp->propsfpos = 0;
-	newp->propsmode = PROPS_UNLOADED;
-	newp->propstime = 0;
-	newp->nextold = NOTHING;
-	newp->prevold = NOTHING;
-	dirtyprops(newplayer);
-#endif
 
 	PLAYER_SET_HOME(newplayer, PLAYER_HOME(ref));
 	SETVALUE(newplayer, GETVALUE(newplayer) + GETVALUE(ref));

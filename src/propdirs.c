@@ -266,10 +266,6 @@ propdir_unloaded(PropPtr root, const char *path)
 		if (!p) {
 			return NULL;
 		}
-		if (PropFlags(p) & PROP_DIRUNLOADED) {
-			SetPFlags(p, (PropFlags(p) & ~PROP_DIRUNLOADED));
-			return buf + 1;
-		}
 		root = PropDir(p);
 	}
 	return NULL;

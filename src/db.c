@@ -18,14 +18,6 @@ dbref db_top = 0;
 dbref recyclable = NOTHING;
 int db_load_format = 0;
 
-#define OBSOLETE_ANTILOCK            0x8	/* negates key (*OBSOLETE*) */
-#define OBSOLETE_GENDER_MASK      0x3000	/* 2 bits of gender */
-#define OBSOLETE_GENDER_SHIFT         12	/* 0x1000 is 12 bits over (for shifting) */
-#define OBSOLETE_GENDER_UNASSIGNED   0x0	/* unassigned - the default */
-#define OBSOLETE_GENDER_NEUTER       0x1	/* neuter */
-#define OBSOLETE_GENDER_FEMALE       0x2	/* for women */
-#define OBSOLETE_GENDER_MALE         0x3	/* for men */
-
 #ifndef DB_INITIAL_SIZE
 #define DB_INITIAL_SIZE 10000
 #endif							/* DB_INITIAL_SIZE */
@@ -43,7 +35,6 @@ extern char *alloc_string(const char *);
 #endif
 
 extern short db_conversion_flag;
-extern short db_decompression_flag;
 
 int number(const char *s);
 int ifloat(const char *s);
@@ -184,14 +175,6 @@ db_clear_object(dbref i)
 	o->next = NOTHING;
 	o->properties = 0;
 
-#ifdef DISKBASE
-	o->propsfpos = 0;
-	o->propstime = 0;
-	o->propsmode = PROPS_UNLOADED;
-	o->nextold = NOTHING;
-	o->prevold = NOTHING;
-#endif
-
 	/* DBDIRTY(i); */
 	/* flags you must initialize yourself */
 	/* type-specific fields you must also initialize */
@@ -277,85 +260,6 @@ putproperties(FILE * f, dbref obj)
 extern FILE *input_file;
 extern FILE *delta_infile;
 extern FILE *delta_outfile;
-
-#ifdef DISKBASE
-
-int
-fetch_propvals(dbref obj, const char *dir)
-{
-	PropPtr p, pptr;
-	int cnt = 0;
-	char buf[BUFFER_LEN];
-	char name[BUFFER_LEN];
-
-	p = first_prop_nofetch(obj, dir, &pptr, name);
-	while (p) {
-		cnt = (cnt || propfetch(obj, p));
-		if (PropDir(p) || (PropFlags(p) & PROP_DIRUNLOADED)) {
-			strcpy(buf, dir);
-			strcatn(buf, sizeof(buf), name);
-			strcatn(buf, sizeof(buf), "/");
-			if (PropFlags(p) & PROP_DIRUNLOADED) {
-				SetPFlags(p, (PropFlags(p) & ~PROP_DIRUNLOADED));
-				if (FLAGS(obj) & SAVED_DELTA) {
-					getproperties(delta_infile, obj, buf);
-				} else {
-					getproperties(input_file, obj, buf);
-				}
-			}
-			fetch_propvals(obj, buf);
-		}
-		p = next_prop(pptr, p, name);
-	}
-	return cnt;
-}
-
-
-void
-putprops_copy(FILE * f, dbref obj)
-{
-	char buf[BUFFER_LEN * 3];
-	char *ptr;
-	FILE *g;
-
-	if (DBFETCH(obj)->propsmode != PROPS_UNLOADED) {
-		if (fetch_propvals(obj, "/")) {
-			fseek(f, 0L, 2);
-		}
-		putproperties(f, obj);
-		return;
-	}
-	if (db_load_format < 8 || db_conversion_flag) {
-		if (fetchprops_priority(obj, 1, NULL) || fetch_propvals(obj, "/")) {
-			fseek(f, 0L, 2);
-		}
-		putproperties(f, obj);
-		return;
-	}
-	if (FLAGS(obj) & SAVED_DELTA) {
-		g = delta_infile;
-	} else {
-		g = input_file;
-	}
-	putstring(f, "*Props*");
-	if (DBFETCH(obj)->propsfpos) {
-		fseek(g, DBFETCH(obj)->propsfpos, 0);
-		ptr = fgets(buf, sizeof(buf), g);
-		if (!ptr)
-			abort();
-		for (;;) {
-			ptr = fgets(buf, sizeof(buf), g);
-			if (!ptr)
-				abort();
-			if (!string_compare(ptr, "*End*\n"))
-				break;
-			fputs(buf, f);
-		}
-	}
-	putstring(f, "*End*");
-}
-
-#endif							/* DISKBASE */
 
 
 void
@@ -511,9 +415,6 @@ db_write_object(FILE * f, dbref i)
 {
 	struct object *o = DBFETCH(i);
 	int j;
-#ifdef DISKBASE
-	long tmppos;
-#endif							/* DISKBASE */
 
 	putstring(f, NAME(i));
 	putref(f, o->location);
@@ -527,14 +428,7 @@ db_write_object(FILE * f, dbref i)
 	putref(f, o->ts.modified);
 
 
-#ifdef DISKBASE
-	tmppos = ftell(f) + 1;
-	putprops_copy(f, i);
-	o->propsfpos = tmppos;
-	undirtyprops(i);
-#else							/* !DISKBASE */
 	putproperties(f, i);
-#endif							/* DISKBASE */
 
 
 	switch (Typeof(i)) {
@@ -591,14 +485,6 @@ db_write_list(FILE * f, int mode)
 			if (fprintf(f, "#%d\n", i) < 0)
 				abort();
 			db_write_object(f, i);
-#ifdef DISKBASE
-			if (mode == 1) {
-				FLAGS(i) &= ~SAVED_DELTA;	/* clear delta flag */
-			} else {
-				FLAGS(i) |= SAVED_DELTA;	/* set delta flag */
-				deltas_count++;
-			}
-#endif
 			FLAGS(i) &= ~OBJECT_CHANGED;	/* clear changed flag */
 		}
 	}
@@ -612,18 +498,9 @@ db_write(FILE * f)
 
 	putref(f, db_top);
 	putref(f, DB_PARMSINFO
-#ifdef COMPRESS
-		   + (db_decompression_flag ? 0 : DB_COMPRESSED)
-#endif
 			);
 	putref(f, tune_count_parms());
 	tune_save_parms_to_file(f);
-
-#ifdef COMPRESS
-	if (!db_decompression_flag) {
-		save_compress_words_to_file(f);
-	}
-#endif
 
 	db_write_list(f, 1);
 
@@ -809,15 +686,6 @@ getproperties(FILE * f, dbref obj, const char *pdir)
 	char buf[BUFFER_LEN * 3], *p;
 	int datalen;
 
-#ifdef DISKBASE
-	/* if no props, then don't bother looking. */
-	if (!DBFETCH(obj)->propsfpos)
-		return;
-
-	/* seek to the proper file position. */
-	fseek(f, DBFETCH(obj)->propsfpos, 0);
-#endif
-
 	/* get rid of first line */
 	fgets(buf, sizeof(buf), f);
 
@@ -852,38 +720,6 @@ getproperties(FILE * f, dbref obj, const char *pdir)
 	}
 }
 
-#ifdef DISKBASE
-void
-skipproperties(FILE * f, dbref obj)
-{
-	char buf[BUFFER_LEN * 3];
-	int islisten = 0;
-
-	/* get rid of first line */
-	fgets(buf, sizeof(buf), f);
-
-	fgets(buf, sizeof(buf), f);
-	while (strcmp(buf, "***Property list end ***\n") && strcmp(buf, "*End*\n")) {
-		if (!islisten) {
-			if (string_prefix(buf, "_listen"))
-				islisten = 1;
-			if (string_prefix(buf, "~listen"))
-				islisten = 1;
-			if (string_prefix(buf, "~olisten"))
-				islisten = 1;
-		}
-		fgets(buf, sizeof(buf), f);
-	}
-	if (islisten) {
-		FLAGS(obj) |= LISTENER;
-	} else {
-		FLAGS(obj) &= ~LISTENER;
-	}
-}
-
-#endif
-
-
 
 void
 db_free_object(dbref i)
@@ -894,13 +730,9 @@ db_free_object(dbref i)
 	if (NAME(i))
 		free((void *) NAME(i));
 
-#ifdef DISKBASE
-	unloadprops_with_prejudice(i);
-#else
 	if (o->properties) {
 		delete_proplist(o->properties);
 	}
-#endif
 
 	if (Typeof(i) == TYPE_EXIT && o->sp.exit.dest) {
 		free((void *) o->sp.exit.dest);
@@ -1006,243 +838,9 @@ read_program(dbref i)
 	return first;
 }
 
-#ifdef COMPRESS
-# define getstring_oldcomp_noalloc(foo) old_uncompress(getstring_noalloc(foo))
-#else
-# define getstring_oldcomp_noalloc(foo) getstring_noalloc(foo)
-#endif
-
+/* Reads in Foxen8 DB Formats */
 void
-db_read_object_old(FILE * f, struct object *o, dbref objno)
-{
-	dbref exits;
-	int pennies;
-	const char *password;
-
-	db_clear_object(objno);
-	FLAGS(objno) = 0;
-	NAME(objno) = getstring(f);
-	LOADDESC(objno, getstring_oldcomp_noalloc(f));
-	o->location = getref(f);
-	o->contents = getref(f);
-	exits = getref(f);
-	o->next = getref(f);
-	LOADLOCK(objno, getboolexp(f));
-	LOADFAIL(objno, getstring_oldcomp_noalloc(f));
-	LOADSUCC(objno, getstring_oldcomp_noalloc(f));
-	LOADOFAIL(objno, getstring_oldcomp_noalloc(f));
-	LOADOSUCC(objno, getstring_oldcomp_noalloc(f));
-	OWNER(objno) = getref(f);
-	pennies = getref(f);
-
-	/* timestamps mods */
-	o->ts.created = time(NULL);
-	o->ts.lastused = time(NULL);
-	o->ts.usecount = 0;
-	o->ts.modified = time(NULL);
-
-	FLAGS(objno) |= getref(f);
-	/*
-	 * flags have to be checked for conflict --- if they happen to coincide
-	 * with chown_ok flags and jump_ok flags, we bump them up to the
-	 * corresponding HAVEN and ABODE flags
-	 */
-	if (FLAGS(objno) & CHOWN_OK) {
-		FLAGS(objno) &= ~CHOWN_OK;
-		FLAGS(objno) |= HAVEN;
-	}
-	if (FLAGS(objno) & JUMP_OK) {
-		FLAGS(objno) &= ~JUMP_OK;
-		FLAGS(objno) |= ABODE;
-	}
-	password = getstring(f);
-	/* convert GENDER flag to property */
-	switch ((FLAGS(objno) & OBSOLETE_GENDER_MASK) >> OBSOLETE_GENDER_SHIFT) {
-	case OBSOLETE_GENDER_NEUTER:
-		add_property(objno, "sex", "neuter", 0);
-		break;
-	case OBSOLETE_GENDER_FEMALE:
-		add_property(objno, "sex", "female", 0);
-		break;
-	case OBSOLETE_GENDER_MALE:
-		add_property(objno, "sex", "male", 0);
-		break;
-	default:
-		break;
-	}
-	/* For downward compatibility with databases using the */
-	/* obsolete ANTILOCK flag. */
-	if (FLAGS(objno) & OBSOLETE_ANTILOCK) {
-		LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
-				FLAGS(objno) &= ~OBSOLETE_ANTILOCK;
-	}
-	switch (FLAGS(objno) & TYPE_MASK) {
-	case TYPE_THING:
-		ALLOC_THING_SP(objno);
-		THING_SET_HOME(objno, exits);
-		LOADVALUE(objno, pennies);
-		o->exits = NOTHING;
-		break;
-	case TYPE_ROOM:
-		o->sp.room.dropto = o->location;
-		o->location = NOTHING;
-		o->exits = exits;
-		break;
-	case TYPE_EXIT:
-		if (o->location == NOTHING) {
-			o->sp.exit.ndest = 0;
-			o->sp.exit.dest = NULL;
-		} else {
-			o->sp.exit.ndest = 1;
-			o->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
-			(o->sp.exit.dest)[0] = o->location;
-		}
-		o->location = NOTHING;
-		break;
-	case TYPE_PLAYER:
-		ALLOC_PLAYER_SP(objno);
-		PLAYER_SET_HOME(objno, exits);
-		o->exits = NOTHING;
-		LOADVALUE(objno, pennies);
-		set_password_raw(objno, NULL);
-		set_password(objno, password);
-		if (password)
-			free((void*) password);
-		PLAYER_SET_CURR_PROG(objno, NOTHING);
-		PLAYER_SET_INSERT_MODE(objno, 0);
-		PLAYER_SET_DESCRS(objno, NULL);
-		PLAYER_SET_DESCRCOUNT(objno, 0);
-		PLAYER_SET_IGNORE_CACHE(objno, NULL);
-		PLAYER_SET_IGNORE_COUNT(objno, 0);
-		PLAYER_SET_IGNORE_LAST(objno, NOTHING);
-		break;
-	case TYPE_GARBAGE:
-		OWNER(objno) = NOTHING;
-		o->next = recyclable;
-		recyclable = objno;
-
-#ifdef DISKBASE
-		dirtyprops(objno);
-#endif
-
-		free((void *) NAME(objno));
-		NAME(objno) = "<garbage>";
-		SETDESC(objno, "<recyclable>");
-		break;
-	}
-}
-
-void
-db_read_object_new(FILE * f, struct object *o, dbref objno)
-{
-	int j;
-	const char *password;
-
-	db_clear_object(objno);
-	FLAGS(objno) = 0;
-	NAME(objno) = getstring(f);
-	LOADDESC(objno, getstring_noalloc(f));
-	o->location = getref(f);
-	o->contents = getref(f);
-	/* o->exits = getref(f); */
-	o->next = getref(f);
-	LOADLOCK(objno, getboolexp(f));
-	LOADFAIL(objno, getstring_oldcomp_noalloc(f));
-	LOADSUCC(objno, getstring_oldcomp_noalloc(f));
-	LOADOFAIL(objno, getstring_oldcomp_noalloc(f));
-	LOADOSUCC(objno, getstring_oldcomp_noalloc(f));
-
-	/* timestamps mods */
-	o->ts.created = time(NULL);
-	o->ts.lastused = time(NULL);
-	o->ts.usecount = 0;
-	o->ts.modified = time(NULL);
-
-	/* OWNER(objno) = getref(f); */
-	/* o->pennies = getref(f); */
-	FLAGS(objno) |= getref(f);
-
-	/*
-	 * flags have to be checked for conflict --- if they happen to coincide
-	 * with chown_ok flags and jump_ok flags, we bump them up to the
-	 * corresponding HAVEN and ABODE flags
-	 */
-	if (FLAGS(objno) & CHOWN_OK) {
-		FLAGS(objno) &= ~CHOWN_OK;
-		FLAGS(objno) |= HAVEN;
-	}
-	if (FLAGS(objno) & JUMP_OK) {
-		FLAGS(objno) &= ~JUMP_OK;
-		FLAGS(objno) |= ABODE;
-	}
-	/* convert GENDER flag to property */
-	switch ((FLAGS(objno) & OBSOLETE_GENDER_MASK) >> OBSOLETE_GENDER_SHIFT) {
-	case OBSOLETE_GENDER_NEUTER:
-		add_property(objno, "sex", "neuter", 0);
-		break;
-	case OBSOLETE_GENDER_FEMALE:
-		add_property(objno, "sex", "female", 0);
-		break;
-	case OBSOLETE_GENDER_MALE:
-		add_property(objno, "sex", "male", 0);
-		break;
-	default:
-		break;
-	}
-
-	/* o->password = getstring(f); */
-	/* For downward compatibility with databases using the */
-	/* obsolete ANTILOCK flag. */
-	if (FLAGS(objno) & OBSOLETE_ANTILOCK) {
-		LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
-				FLAGS(objno) &= ~OBSOLETE_ANTILOCK;
-	}
-	switch (FLAGS(objno) & TYPE_MASK) {
-	case TYPE_THING:
-		ALLOC_THING_SP(objno);
-		THING_SET_HOME(objno, getref(f));
-		o->exits = getref(f);
-		OWNER(objno) = getref(f);
-		LOADVALUE(objno, getref(f));
-		break;
-	case TYPE_ROOM:
-		o->sp.room.dropto = getref(f);
-		o->exits = getref(f);
-		OWNER(objno) = getref(f);
-		break;
-	case TYPE_EXIT:
-		o->sp.exit.ndest = getref(f);
-		o->sp.exit.dest = (dbref *) malloc(sizeof(dbref)
-										   * o->sp.exit.ndest);
-		for (j = 0; j < o->sp.exit.ndest; j++) {
-			(o->sp.exit.dest)[j] = getref(f);
-		}
-		OWNER(objno) = getref(f);
-		break;
-	case TYPE_PLAYER:
-		ALLOC_PLAYER_SP(objno);
-		PLAYER_SET_HOME(objno, getref(f));
-		o->exits = getref(f);
-		LOADVALUE(objno, getref(f));
-		password = getstring(f);
-		set_password_raw(objno, NULL);
-		set_password(objno, password);
-		if (password)
-			free((void*) password);
-		PLAYER_SET_CURR_PROG(objno, NOTHING);
-		PLAYER_SET_INSERT_MODE(objno, 0);
-		PLAYER_SET_DESCRS(objno, NULL);
-		PLAYER_SET_DESCRCOUNT(objno, 0);
-		PLAYER_SET_IGNORE_CACHE(objno, NULL);
-		PLAYER_SET_IGNORE_COUNT(objno, 0);
-		PLAYER_SET_IGNORE_LAST(objno, NOTHING);
-		break;
-	}
-}
-
-/* Reads in Foxen, Foxen[2-8], WhiteFire, Mage or Lachesis DB Formats */
-void
-db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int read_before)
+db_read_object_foxen(FILE * f, struct object *o, dbref objno, int read_before)
 {
 	int tmp, c, prop_flag = 0;
 	int j = 0;
@@ -1255,59 +853,24 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 
 	FLAGS(objno) = 0;
 	NAME(objno) = getstring(f);
-	if (dtype <= 3) {
-		LOADDESC(objno, getstring_oldcomp_noalloc(f));
-	}
 	o->location = getref(f);
 	o->contents = getref(f);
 	o->next = getref(f);
-	if (dtype < 6) {
-		LOADLOCK(objno, getboolexp(f));
-	}
-	if (dtype == 3) {
-		/* Mage timestamps */
-		o->ts.created = getref(f);
-		o->ts.modified = getref(f);
-		o->ts.lastused = getref(f);
-		o->ts.usecount = 0;
-	}
-	if (dtype <= 3) {
-		/* Lachesis, WhiteFire, and Mage messages */
-		LOADFAIL(objno, getstring_oldcomp_noalloc(f));
-		LOADSUCC(objno, getstring_oldcomp_noalloc(f));
-		LOADDROP(objno, getstring_oldcomp_noalloc(f));
-		LOADOFAIL(objno, getstring_oldcomp_noalloc(f));
-		LOADOSUCC(objno, getstring_oldcomp_noalloc(f));
-		LOADODROP(objno, getstring_oldcomp_noalloc(f));
-	}
 	tmp = getref(f);			/* flags list */
-	if (dtype >= 4)
-		tmp &= ~DUMP_MASK;
+	tmp &= ~DUMP_MASK;
 	FLAGS(objno) |= tmp;
 
 	FLAGS(objno) &= ~SAVED_DELTA;
 
-	if (dtype != 3) {
-		/* Foxen and WhiteFire timestamps */
-		o->ts.created = getref(f);
-		o->ts.lastused = getref(f);
-		o->ts.usecount = getref(f);
-		o->ts.modified = getref(f);
-	}
+	/* timestamps */
+	o->ts.created = getref(f);
+	o->ts.lastused = getref(f);
+	o->ts.usecount = getref(f);
+	o->ts.modified = getref(f);
+
 	c = getc(f);
 	if (c == '*') {
-
-#ifdef DISKBASE
-		o->propsfpos = ftell(f);
-		if (o->propsmode == PROPS_CHANGED) {
-			getproperties(f, objno, NULL);
-		} else {
-			skipproperties(f, objno);
-		}
-#else
 		getproperties(f, objno, NULL);
-#endif
-
 		prop_flag++;
 	} else {
 		/* do our own getref */
@@ -1329,33 +892,6 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		j = atol(buf);
 		if (sign)
 			j = -j;
-
-		if (dtype < 10) {
-			/* set gender stuff */
-			/* convert GENDER flag to property */
-			switch ((FLAGS(objno) & OBSOLETE_GENDER_MASK) >> OBSOLETE_GENDER_SHIFT) {
-			case OBSOLETE_GENDER_NEUTER:
-				add_property(objno, "sex", "neuter", 0);
-				break;
-			case OBSOLETE_GENDER_FEMALE:
-				add_property(objno, "sex", "female", 0);
-				break;
-			case OBSOLETE_GENDER_MALE:
-				add_property(objno, "sex", "male", 0);
-				break;
-			default:
-				break;
-			}
-		}
-	}
-
-        if (dtype < 10) {
-		/* For downward compatibility with databases using the */
-		/* obsolete ANTILOCK flag. */
-		if (FLAGS(objno) & OBSOLETE_ANTILOCK) {
-			LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
-					FLAGS(objno) &= ~OBSOLETE_ANTILOCK;
-		}
 	}
 
 	switch (FLAGS(objno) & TYPE_MASK) {
@@ -1367,8 +903,6 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 			THING_SET_HOME(objno, home);
 			o->exits = getref(f);
 			OWNER(objno) = getref(f);
-			if (dtype < 10)
-				LOADVALUE(objno, getref(f));
 			break;
 		}
 	case TYPE_ROOM:
@@ -1389,16 +923,8 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		ALLOC_PLAYER_SP(objno);
 		PLAYER_SET_HOME(objno, (prop_flag ? getref(f) : j));
 		o->exits = getref(f);
-		if (dtype < 10)
-			LOADVALUE(objno, getref(f));
 		password = getstring(f);
-		if (dtype <= 8 && password) {
-			set_password_raw(objno, NULL);
-			set_password(objno, password);
-			free((void*) password);
-		} else {
-			set_password_raw(objno, password);
-		}
+		set_password_raw(objno, password);
 		PLAYER_SET_CURR_PROG(objno, NOTHING);
 		PLAYER_SET_INSERT_MODE(objno, 0);
 		PLAYER_SET_DESCRS(objno, NULL);
@@ -1422,14 +948,6 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		PROGRAM_SET_PROFSTART(objno, 0);
 		PROGRAM_SET_PROF_USES(objno, 0);
 		PROGRAM_SET_INSTANCES(objno, 0);
-
-		if (dtype < 8 && (FLAGS(objno) & LINK_OK)) {
-			/* set Viewable flag on Link_ok programs. */
-			FLAGS(objno) |= VEHICLE;
-		}
-		if (dtype < 5 && MLevel(objno) == 0)
-			SetMLevel(objno, 2);
-
 		break;
 	case TYPE_GARBAGE:
 		break;
@@ -1471,7 +989,6 @@ db_read(FILE * f)
 	struct object *o;
 	const char *special;
 	int doing_deltas;
-	int main_db_format = 0;
 	int parmcnt;
 	int dbflags = 0;
 	char c;
@@ -1481,75 +998,7 @@ db_read(FILE * f)
 
 	if ((c = getc(f)) == '*') {
 		special = getstring(f);
-		if (!strcmp(special, "**TinyMUCK DUMP Format***")) {
-			db_load_format = 1;
-		} else if (!strcmp(special, "**Lachesis TinyMUCK DUMP Format***") ||
-				   !strcmp(special, "**WhiteFire TinyMUCK DUMP Format***")) {
-			db_load_format = 2;
-		} else if (!strcmp(special, "**Mage TinyMUCK DUMP Format***")) {
-			db_load_format = 3;
-		} else if (!strcmp(special, "**Foxen TinyMUCK DUMP Format***")) {
-			db_load_format = 4;
-		} else if (!strcmp(special, "**Foxen2 TinyMUCK DUMP Format***")) {
-			db_load_format = 5;
-		} else if (!strcmp(special, "**Foxen3 TinyMUCK DUMP Format***")) {
-			db_load_format = 6;
-		} else if (!strcmp(special, "**Foxen4 TinyMUCK DUMP Format***")) {
-			db_load_format = 6;
-			i = getref(f);
-			db_grow(i);
-		} else if (!strcmp(special, "**Foxen5 TinyMUCK DUMP Format***")) {
-			db_load_format = 7;
-			i = getref(f);
-			dbflags = getref(f);
-			if (dbflags & DB_PARMSINFO) {
-				parmcnt = getref(f);
-				tune_load_parms_from_file(f, NOTHING, parmcnt);
-			}
-			if (dbflags & DB_COMPRESSED) {
-#ifdef COMPRESS
-				init_compress_from_file(f);
-#else
-				fprintf(stderr, "This server is not compiled to read compressed databases.\n");
-				return -1;
-#endif
-			}
-			db_grow(i);
-		} else if (!strcmp(special, "**Foxen6 TinyMUCK DUMP Format***")) {
-			db_load_format = 8;
-			i = getref(f);
-			dbflags = getref(f);
-			if (dbflags & DB_PARMSINFO) {
-				parmcnt = getref(f);
-				tune_load_parms_from_file(f, NOTHING, parmcnt);
-			}
-			if (dbflags & DB_COMPRESSED) {
-#ifdef COMPRESS
-				init_compress_from_file(f);
-#else
-				fprintf(stderr, "This server is not compiled to read compressed databases.\n");
-				return -1;
-#endif
-			}
-			db_grow(i);
-		} else if (!strcmp(special, "**Foxen7 TinyMUCK DUMP Format***")) {
-			db_load_format = 9;
-			i = getref(f);
-			dbflags = getref(f);
-			if (dbflags & DB_PARMSINFO) {
-				parmcnt = getref(f);
-				tune_load_parms_from_file(f, NOTHING, parmcnt);
-			}
-			if (dbflags & DB_COMPRESSED) {
-#ifdef COMPRESS
-				init_compress_from_file(f);
-#else
-				fprintf(stderr, "This server is not compiled to read compressed databases.\n");
-				return -1;
-#endif
-			}
-			db_grow(i);
-		} else if (!strcmp(special, "**Foxen8 TinyMUCK DUMP Format***")) {
+		if (!strcmp(special, "**Foxen8 TinyMUCK DUMP Format***")) {
 			db_load_format = 10;
 			i = getref(f);
 			dbflags = getref(f);
@@ -1557,33 +1006,11 @@ db_read(FILE * f)
 				parmcnt = getref(f);
 				tune_load_parms_from_file(f, NOTHING, parmcnt);
 			}
-			if (dbflags & DB_COMPRESSED) {
-#ifdef COMPRESS
-				init_compress_from_file(f);
-#else
-				fprintf(stderr, "This server is not compiled to read compressed databases.\n");
+			if (dbflags & DB_DRCATS) {
+				fprintf(stderr, "This server is not compiled to read Dr.Cat's compressed databases.\n");
 				return -1;
-#endif
 			}
 			db_grow(i);
-		} else if (!strcmp(special, "***Foxen Deltas Dump Extention***")) {
-			db_load_format = 4;
-			doing_deltas = 1;
-		} else if (!strcmp(special, "***Foxen2 Deltas Dump Extention***")) {
-			db_load_format = 5;
-			doing_deltas = 1;
-		} else if (!strcmp(special, "***Foxen4 Deltas Dump Extention***")) {
-			db_load_format = 6;
-			doing_deltas = 1;
-		} else if (!strcmp(special, "***Foxen5 Deltas Dump Extention***")) {
-			db_load_format = 7;
-			doing_deltas = 1;
-		} else if (!strcmp(special, "***Foxen6 Deltas Dump Extention***")) {
-			db_load_format = 8;
-			doing_deltas = 1;
-		} else if (!strcmp(special, "***Foxen7 Deltas Dump Extention***")) {
-			db_load_format = 9;
-			doing_deltas = 1;
 		} else if (!strcmp(special, "***Foxen8 Deltas Dump Extention***")) {
 			db_load_format = 10;
 			doing_deltas = 1;
@@ -1593,8 +1020,6 @@ db_read(FILE * f)
 			return -1;
 		}
 		free((void *) special);
-		if (!doing_deltas)
-			main_db_format = db_load_format;
 		c = getc(f);			/* get next char */
 	}
 	for (i = 0;; i++) {
@@ -1615,22 +1040,8 @@ db_read(FILE * f)
 			/* read it in */
 			o = DBFETCH(thisref);
 			switch (db_load_format) {
-			case 0:
-				db_read_object_old(f, o, thisref);
-				break;
-			case 1:
-				db_read_object_new(f, o, thisref);
-				break;
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 8:
-			case 9:
 			case 10:
-				db_read_object_foxen(f, o, thisref, db_load_format, doing_deltas);
+				db_read_object_foxen(f, o, thisref, doing_deltas);
 				break;
 			default:
 				log2file("debug.log","got to end of case for db_load_format");
@@ -1650,38 +1061,14 @@ db_read(FILE * f)
 			} else {
 				free((void *) special);
 				special = getstring(f);
-				if (special && !strcmp(special, "***Foxen Deltas Dump Extention***")) {
-					free((void *) special);
-					db_load_format = 4;
-					doing_deltas = 1;
-				} else if (special && !strcmp(special, "***Foxen2 Deltas Dump Extention***")) {
-					free((void *) special);
-					db_load_format = 5;
-					doing_deltas = 1;
-				} else if (special && !strcmp(special, "***Foxen4 Deltas Dump Extention***")) {
-					free((void *) special);
-					db_load_format = 6;
-					doing_deltas = 1;
-				} else if (special && !strcmp(special, "***Foxen5 Deltas Dump Extention***")) {
-					free((void *) special);
-					db_load_format = 7;
-					doing_deltas = 1;
-				} else if (special && !strcmp(special, "***Foxen6 Deltas Dump Extention***")) {
-					free((void *) special);
-					db_load_format = 8;
-					doing_deltas = 1;
-				} else if (special && !strcmp(special, "***Foxen7 Deltas Dump Extention***")) {
-					free((void *) special);
-					db_load_format = 9;
-					doing_deltas = 1;
-				} else if (special && !strcmp(special, "***Foxen8 Deltas Dump Extention***")) {
+				if (special && !strcmp(special, "***Foxen8 Deltas Dump Extention***")) {
 					free((void *) special);
 					db_load_format = 10;
 					doing_deltas = 1;
 				} else {
 					if (special)
 						free((void *) special);
-					if (main_db_format >= 7 && (dbflags & DB_PARMSINFO)) {
+					if (dbflags & DB_PARMSINFO) {
 						rewind(f);
 						free((void *) getstring(f));
 						getref(f);

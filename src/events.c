@@ -135,9 +135,6 @@ check_clean_time(void)
 		purge_for_pool();
 		if (tp_periodic_program_purge)
 			free_unused_programs();
-#ifdef DISKBASE
-		dispose_all_oldprops();
-#endif
 	}
 }
 

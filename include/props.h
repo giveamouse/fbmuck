@@ -1,7 +1,6 @@
 #ifndef _PROPS_H
 #define _PROPS_H
 
-
 union pdata_u {
 	char *str;
 	struct boolexp *lok;
@@ -16,8 +15,8 @@ struct pdata {
 	unsigned short flags;
 	union pdata_u data;
 };
-typedef struct pdata PData;
 
+typedef struct pdata PData;
 
 /* Property struct */
 struct plist {
@@ -37,7 +36,6 @@ typedef struct plist *PropPtr;
 #define PROPS_PRIORITY 0x2
 #define PROPS_CHANGED  0x3
 
-
 /* property value types */
 #define PROP_DIRTYP   0x0
 #define PROP_STRTYP   0x2
@@ -47,26 +45,11 @@ typedef struct plist *PropPtr;
 #define PROP_FLTTYP   0x6
 #define PROP_TYPMASK  0x7
 
-/* If set, this prop's string value uses Dr.Cat's compression code. */
-#define PROP_COMPRESSED  0x0008
-
-/* Property flags.  Unimplemented as yet. */
-#define PROP_UREAD       0x0010
-#define PROP_UWRITE      0x0020
-#define PROP_WREAD       0x0040
-#define PROP_WWRITE      0x0080
-
 /* half implemented.  Will be used for stuff like password props. */
 #define PROP_SYSPERMS    0x0100
 
-/* Internally used prop flags.  Never stored on disk. */
-#define PROP_ISUNLOADED  0x0200
-#define PROP_TOUCHED     0x0400
-#define PROP_DIRUNLOADED 0x0800
-
 /* Blessed props evaluate with wizbit MPI perms. */
 #define PROP_BLESSED     0x1000
-
 
 /* Macros */
 #define AVL_LF(x) (x)->left
@@ -139,7 +122,6 @@ extern PropPtr locate_prop(PropPtr l, char *path);
 extern PropPtr new_prop(PropPtr * l, char *path);
 extern PropPtr delete_prop(PropPtr * list, char *name);
 
-
 extern void set_property(dbref player, const char *pname, PData * dat);
 extern void add_property(dbref player, const char *type, const char *strval, int value);
 
@@ -176,18 +158,6 @@ extern void set_property_nofetch(dbref player, const char *pname, PData * dat);
 extern void add_prop_nofetch(dbref player, const char *type, const char *strval, int value);
 extern void remove_property_nofetch(dbref player, const char *type);
 extern PropPtr first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name);
-
-#ifdef DISKBASE
-extern int fetchprops_priority(dbref obj, int mode, const char *pdir);
-extern int fetchprops_nostamp(dbref obj);
-extern void fetchprops(dbref obj, const char *pdir);
-extern void unloadprops_with_prejudice(dbref obj);
-extern int disposeprops_notime(dbref obj);
-extern int disposeprops(dbref obj);
-extern void dirtyprops(dbref obj);
-extern void undirtyprops(dbref obj);
-extern int propfetch(dbref obj, PropPtr p);
-#endif							/* DISKBASE */
 
 extern PropPtr propdir_new_elem(PropPtr * root, char *path);
 extern PropPtr propdir_delete_elem(PropPtr root, char *path);

@@ -73,9 +73,6 @@ extern void write_program(struct line *first, dbref i);
 extern char *show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, int markpc);
 extern dbref db_write_deltas(FILE * f);
 
-/* From oldcompress.c */
-const char *old_uncompress(const char *s);
-
 
 /* From create.c */
 extern void do_open(int descr, dbref player, const char *direction, const char *linkto);
@@ -276,21 +273,6 @@ extern void free_boolexp(struct boolexp *b);
 /* From unparse.c */
 extern const char *unparse_object(dbref player, dbref object);
 extern const char *unparse_boolexp(dbref player, struct boolexp *b, int fullname);
-
-/* From compress.c */
-#ifdef COMPRESS
-extern const char *compress(const char *);
-extern const char *uncompress(const char *);
-extern void save_compress_words_to_file(FILE * f);
-extern void init_compress_from_file(FILE * dicto);
-extern void init_compress(void);
-#else
-static inline const char *compress(const char *x) { return x; }
-static inline const char *uncompress(const char *x) { return x; }
-static inline void save_compress_words_to_file(FILE *f) { return; }
-static inline void init_compress_from_file(FILE *f) { return; }
-static inline void init_compress(void) { return; }
-#endif							/* COMPRESS */
 
 /* From edit.c */
 extern void interactive(int descr, dbref player, const char *command);

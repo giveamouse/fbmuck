@@ -121,13 +121,9 @@ find_registered_obj(dbref player, const char *name)
 	ptr = envprop(&player, buf, 0);
 	if (!ptr)
 		return NOTHING;
-#ifdef DISKBASE
-	propfetch(player, ptr);		/* DISKBASE PROPVALS */
-#endif
 	switch (PropType(ptr)) {
 	case PROP_STRTYP:
 		p = PropDataStr(ptr);
-		p = uncompress(p);
 		if (*p == NUMBER_TOKEN)
 			p++;
 		if (number(p)) {

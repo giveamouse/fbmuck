@@ -899,11 +899,6 @@ copy_one_prop(dbref player, dbref source, dbref destination, char *propname)
 	/* read property from old object */
 	currprop = get_property(source, propname);
 
-#ifdef DISKBASE
-	/* make sure the property value is there */
-	propfetch(source, currprop);
-#endif
-
 	if(currprop) {
 
 		/* flags can be copied. */		

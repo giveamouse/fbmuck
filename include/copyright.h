@@ -36,12 +36,6 @@ Some parts of this code Copyright (c) 1989-1990 by David Applegate,
 	promotional, or sales literature without prior written consent from
 	the authors, Carnegie-Mellon University and Bell Communications Research
 	in each case.
- 
- 
-Parts of this code, in particular the dictionary based compression code,
-  are copyright by Dr. Cat, 1995, and are NOT covered by the above copyright
-  statements.  Dr. Cat has given permission for the code to be used in the
-  FB distribution of the TinyMUCK server.
 
  */
 

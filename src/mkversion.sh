@@ -25,9 +25,6 @@ cat > version.c <<EOF
  * Copyright (c) 1991-2000 by Fuzzball Software
  * under the Gnu Public License
  *
- * Some parts of this code -- in particular the dictionary based compression
- * code is Copyright 1995 by Dragon's Eye Productions
- *
  * Some parts of this code Copyright (c) 1990 Chelsea Dyerman
  * University of California, Berkeley (XCF)
  */

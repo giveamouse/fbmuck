@@ -248,19 +248,18 @@ RETSIGTYPE sig_shutdown(int i)
 
 RETSIGTYPE sig_reap(int i)
 {
-	/* If DISKBASE is not defined, then there are two types of
-	 * children that can die.  First is the nameservice resolver.
-	 * Second is the database dumper.  If resolver exits, we should
-	 * note it in the log -- at least give the admin the option of
-	 * knowing about it, and dealing with it as necessary. */
+	/* There are two types of children that can die.  First is the
+	 * nameservice resolver.  Second is the database dumper.  If
+	 * resolver exits, we should note it in the log -- at least give
+	 * the admin the option of knowing about it, and dealing with it
+	 * as necessary. */
 
 	/* The fix for SSL connections getting closed when databases were
-	 * saved with DISKBASE disabled required closing all sockets 
-	 * when the server fork()ed.  This made it impossible for that
-	 * process to spit out the "save done" message.  However, because
-	 * that process dies as soon as it finishes dumping the database,
-	 * can detect that the child died, and broadcast the "save done"
-	 * message anyway. */
+	 * saved required closing all sockets when the server fork()ed.
+	 * This made it impossible for that process to spit out the "save
+	 * done" message.  However, because that process dies as soon as
+	 * it finishes dumping the database, can detect that the child died,
+	 * and broadcast the "save done" message anyway. */
 
 	int status = 0;
 	int reapedpid = 0;
@@ -283,7 +282,6 @@ RETSIGTYPE sig_reap(int i)
 				/* If the resolver exited due to a signal, respawn it. */
 				spawn_resolver();
 			}
-#ifndef DISKBASE
 		} else if(reapedpid == global_dumper_pid) {
 			int warnflag = 0;
 
@@ -307,7 +305,6 @@ RETSIGTYPE sig_reap(int i)
 			}
 			global_dumpdone = 1;
 			global_dumper_pid = 0;
-#endif
 		} else {
 			fprintf(stderr, "unknown child process (pid %d) exited with status %d\n", reapedpid, status);
 		}

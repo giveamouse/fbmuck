@@ -1206,7 +1206,7 @@ extract_prop(FILE * f, const char *dir, PropPtr p)
 	for (ptr2 = PropName(p); *ptr2;)
 		*ptr++ = *ptr2++;
 	*ptr++ = PROP_DELIMITER;
-	ptr2 = intostr(PropFlagsRaw(p) & ~(PROP_TOUCHED | PROP_ISUNLOADED));
+	ptr2 = intostr(PropFlagsRaw(p));
 	while (*ptr2)
 		*ptr++ = *ptr2++;
 	*ptr++ = PROP_DELIMITER;
@@ -1232,11 +1232,9 @@ extract_prop(FILE * f, const char *dir, PropPtr p)
 	case PROP_STRTYP:
 		if (!*PropDataStr(p))
 			return;
-		ptr2 = uncompress(PropDataStr(p));
+		ptr2 = PropDataStr(p);
 		break;
 	case PROP_LOKTYP:
-		if (PropFlags(p) & PROP_ISUNLOADED)
-			return;
 		if (PropDataLok(p) == TRUE_BOOLEXP)
 			return;
 		ptr2 = unparse_boolexp((dbref) 1, PropDataLok(p), 0);
@@ -1342,10 +1340,6 @@ extract_object(FILE * f, dbref d)
 	default:
 		break;
 	}
-
-#ifdef DISKBASE
-	fetchprops(d, NULL);
-#endif
 
 	if (DBFETCH(d)->properties) {
 		fprintf(f, "  Properties:\n");

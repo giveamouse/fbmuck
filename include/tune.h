@@ -129,7 +129,6 @@ extern int tp_compatible_priorities;
 extern int tp_do_mpi_parsing;
 extern int tp_look_propqueues;
 extern int tp_lock_envcheck;
-extern int tp_diskbase_propvals;
 extern int tp_idleboot;
 extern int tp_playermax;
 extern int tp_allow_home;

@@ -259,7 +259,6 @@ int tp_compatible_priorities = COMPATIBLE_PRIORITIES;
 int tp_do_mpi_parsing = DO_MPI_PARSING;
 int tp_look_propqueues = LOOK_PROPQUEUES;
 int tp_lock_envcheck = LOCK_ENVCHECK;
-int tp_diskbase_propvals = DISKBASE_PROPVALS;
 int tp_idleboot = IDLEBOOT;
 int tp_playermax = PLAYERMAX;
 int tp_allow_home = ALLOW_HOME;
@@ -293,7 +292,6 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Dark",       "who_hides_dark", &tp_who_hides_dark, 4, "Hide dark players from WHO list"},
 	{"Database",   "realms_control", &tp_realms_control, 0, "Enable Realms control"},
 	{"Database",   "compatible_priorities", &tp_compatible_priorities, 0, "Use legacy exit priority levels on things"},
-	{"DB Dumps",   "diskbase_propvals", &tp_diskbase_propvals, 0, "Enable property value diskbasing (req. restart)"},
 	{"DB Dumps",   "dbdump_warning", &tp_dbdump_warning, 0, "Enable warning messages for full DB dumps"},
 	{"DB Dumps",   "deltadump_warning", &tp_deltadump_warning, 0, "Enable warning messages for delta DB dumps"},
 	{"DB Dumps",   "dumpdone_warning", &tp_dumpdone_warning, 0, "Enable notification of DB dump completion"},

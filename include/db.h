@@ -168,7 +168,7 @@ typedef int dbref;				/* offset into db */
 #define LOADVALUE(x,y)	add_prop_nofetch(x, MESGPROP_VALUE, NULL, y)
 
 #define DB_PARMSINFO     0x0001
-#define DB_COMPRESSED    0x0002
+#define DB_DRCATS        0x0002
 
 #define TYPE_ROOM           0x0
 #define TYPE_THING          0x1
@@ -680,15 +680,6 @@ struct object {
 	dbref exits;
 	dbref next;					/* pointer to next in contents/exits chain */
 	struct plist *properties;
-
-#ifdef DISKBASE
-	long propsfpos;
-	time_t propstime;
-	dbref nextold;
-	dbref prevold;
-	short propsmode;
-	short spacer;
-#endif
 
 	object_flag_type flags;
 
