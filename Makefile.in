@@ -94,6 +94,7 @@ package:
 	chmod +x ${TMPPKGDIR}/mkdir_recursive
 	mkdir ${TMPPKGDIR}/scripts
 	cp -fp  scripts/fbmuck-sysvinit     ${TMPPKGDIR}/scripts
+	cp -fp  scripts/fbmuck-redhat-init  ${TMPPKGDIR}/scripts
 	chmod +x ${TMPPKGDIR}/scripts/*
 	mkdir ${TMPPKGDIR}/game
 	cp -fp game/restart game/restart.in game/optimdb ${TMPPKGDIR}/game

@@ -238,8 +238,8 @@ nuke:
 	-${RM} Makefile config.status ${INCLUDE}/autoconf.h
 	-${CLEAN} *
 
-# FIXME: Implement fbmuck-sysvinit and fb-addmuck
-# FIXME: check base and minimal dbs into CVS as unpacked file trees under dbs/
+# FIXME: Implement fb-addmuck
+# FIXME: Check base and minimal dbs into CVS as unpacked file trees under dbs/
 # FIXME: Create man pages for fbmuck, fbhelp, fb-addmuck, fb-announce, topwords
 
 install: all
@@ -256,7 +256,8 @@ install: all
 	${CP} ../game/restart ${INSTALL_HELPDIR}/restart-script
 	${CHMOD} 755 ${INSTALL_HELPDIR}/restart-script
 	-[ -f /etc/fbmucks ] || echo "#MUCKNAME   USERNAME    MUCK_ROOT_PATH           SCRIPTNAME  PORTS" > /etc/fbmucks
-	${CP} ../scripts/fbmuck-sysvinit /etc/rc.d/init.d/fbmuck
+	-[ -f /etc/redhat-release ] && ${CP} ../scripts/fbmuck-redhat-init /etc/rc.d/init.d/fbmuck
+	-[ ! -f /etc/redhat-release ] && ${CP} ../scripts/fbmuck-sysvinit /etc/rc.d/init.d/fbmuck
 	${CHMOD} 755 /etc/rc.d/init.d/fbmuck
 	-chkconfig --add fbmuck || ( \
 		for d in 0 1 2 3 4 5 6; do rm -f /etc/rc.d/rc$$d.d/S??fbmuck; done ; \
