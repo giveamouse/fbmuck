@@ -45,9 +45,6 @@ AC_EGREP_HEADER([[^_a-zA-Z]]_timezone\>, time.h, AC_DEFINE(HAVE__TIMEZONE))
 dnl
 dnl Libraries and functions.
 dnl
-dnl AC_HAVE_LIBRARY(m, [LIBS="$LIBS -lm"])
-dnl AC_HAVE_LIBRARY(socket, [LIBS="$LIBS -lsocket"])
-dnl AC_HAVE_LIBRARY(nsl, [LIBS="$LIBS -lnsl"])
 AC_CHECK_LIB(m, cos)
 AC_CHECK_LIB(socket, shutdown)
 AC_CHECK_LIB(nsl, gethostbyname)
