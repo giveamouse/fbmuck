@@ -11,8 +11,8 @@
 
 #
 # $Log: mkversion.sh,v $
-# Revision 1.1  1999/12/12 07:27:43  revar
-# Initial revision
+# Revision 1.1.1.1  1999/12/12 07:27:43  revar
+# Initial Sourceforge checkin, fb6.00a29
 #
 # Revision 1.1.1.1  1999/12/12 07:27:43  foxen
 # Initial FB6 CVS checkin.

@@ -1,7 +1,7 @@
 /* $Header$
  * $Log: match.h,v $
- * Revision 1.1  1999/12/12 07:28:13  revar
- * Initial revision
+ * Revision 1.1.1.1  1999/12/12 07:28:13  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:28:13  foxen
  * Initial FB6 CVS checkin.

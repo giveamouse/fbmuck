@@ -1,7 +1,7 @@
 /* $Header$
  * $Log: interface.h,v $
- * Revision 1.1  1999/12/12 07:28:12  revar
- * Initial revision
+ * Revision 1.1.1.1  1999/12/12 07:28:12  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:28:12  foxen
  * Initial FB6 CVS checkin.
