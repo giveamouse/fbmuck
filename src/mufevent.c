@@ -168,6 +168,8 @@ muf_event_dequeue_pid(int pid)
 		tmp = proc;
 		proc = proc->next;
 		if (tmp->fr->pid == pid) {
+			if (!tmp->fr->been_background)
+				PLAYER_SET_BLOCK(tmp->player, 0);
 			muf_event_purge(tmp->fr);
 			muf_event_process_free(tmp);
 			count++;
@@ -219,6 +221,8 @@ muf_event_dequeue(dbref prog)
 		proc = proc->next;
 		if (prog == NOTHING || tmp->player == prog || tmp->prog == prog
 				|| event_has_refs(prog, tmp->fr)) {
+			if (!tmp->fr->been_background)
+				PLAYER_SET_BLOCK(tmp->player, 0);
 			muf_event_purge(tmp->fr);
 			muf_event_process_free(tmp);
 			count++;
