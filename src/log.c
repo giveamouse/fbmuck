@@ -161,10 +161,8 @@ strip_evil_characters(char *badstring)
 	for (s = 0; s<stringlen,badstring[s]!='\0'; s++)
 	{
 		badstring[s] &= 0x7f;      /* high ascii */
-		if(badstring[s] == '\033') /* ESC */
-			badstring[s] = '[';
-		if(badstring[s] < ' ')     /* control characters */
-			badstring[s] = '_';
+		badstring[s] = (badstring[s] == '\033')? '[' : badstring[s];
+		badstring[s] = isprint(badstring[s])? badstring[s] : '_';
 	}
 	return;
 }
