@@ -10,7 +10,7 @@
 
 #ifdef WIN32
 # define __STDC__ 1
-# include "./regex.h"
+# include "./pcre.h"
 #else
 # include "pcre/pcre.h"
 #endif

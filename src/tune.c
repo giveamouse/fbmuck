@@ -278,7 +278,7 @@ int tp_muf_comments_strict = MUF_COMMENTS_STRICT;
 struct tune_bool_entry {
 	const char *group;
 	const char *name;
-	int *bool;
+	int *boolval;
 	int security;
 	const char *label;
 };
@@ -427,7 +427,7 @@ tune_display_parms(dbref player, char *name)
 	while (tbool->name) {
 		strcpy(buf, tbool->name);
 		if (!*name || equalstr(name, buf)) {
-			snprintf(buf, sizeof(buf), "(bool) %-20s = %s", tbool->name, ((*tbool->bool) ? "yes" : "no"));
+			snprintf(buf, sizeof(buf), "(bool) %-20s = %s", tbool->name, ((*tbool->boolval) ? "yes" : "no"));
 			notify(player, buf);
 		}
 		tbool++;
@@ -466,7 +466,7 @@ tune_save_parms_to_file(FILE * f)
 	}
 
 	while (tbool->name) {
-		fprintf(f, "%s=%s\n", tbool->name, (*tbool->bool) ? "yes" : "no");
+		fprintf(f, "%s=%s\n", tbool->name, (*tbool->boolval) ? "yes" : "no");
 		tbool++;
 	}
 }
@@ -495,7 +495,7 @@ tune_parms_array(const char* pattern, int mlev)
 				array_set_strkey_strval(&item, "type", "boolean");
 				array_set_strkey_strval(&item, "group", tbool->group);
 				array_set_strkey_strval(&item, "name",  tbool->name);
-				array_set_strkey_intval(&item, "value", *tbool->bool? 1 : 0);
+				array_set_strkey_intval(&item, "value", *tbool->boolval? 1 : 0);
 				array_set_strkey_intval(&item, "mlev",  tbool->security);
 				array_set_strkey_strval(&item, "label", tbool->label);
 
@@ -693,7 +693,7 @@ tune_get_parmstring(const char *name, int mlev)
 		if (!string_compare(name, tbool->name)) {
 			if (tbool->security > mlev)
 				return "";
-			snprintf(buf, sizeof(buf), "%s", ((*tbool->bool) ? "yes" : "no"));
+			snprintf(buf, sizeof(buf), "%s", ((*tbool->boolval) ? "yes" : "no"));
 			return (buf);
 		}
 		tbool++;
@@ -838,9 +838,9 @@ tune_setparm(const char *parmname, const char *val)
 	while (tbool->name) {
 		if (!string_compare(parmname, tbool->name)) {
 			if (*parmval == 'y' || *parmval == 'Y') {
-				*tbool->bool = 1;
+				*tbool->boolval = 1;
 			} else if (*parmval == 'n' || *parmval == 'N') {
-				*tbool->bool = 0;
+				*tbool->boolval = 0;
 			} else {
 				return 2;
 			}

@@ -638,14 +638,25 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 
 	/* Timestamps */
 	/* ex: time_tm = localtime((time_t *)(&(DBFETCH(thing)->ts.created))); */
-
+#ifndef WIN32
 	time_tm = localtime((&(DBFETCH(thing)->ts.created)));
+#else
+	time_tm = uw32localtime((&(DBFETCH(thing)->ts.created)));
+#endif
 	(void) format_time(buf, BUFFER_LEN, (char *) "Created:  %a %b %e %T %Z %Y", time_tm);
 	notify(player, buf);
+#ifndef WIN32
 	time_tm = localtime((&(DBFETCH(thing)->ts.modified)));
+#else
+	time_tm = uw32localtime((&(DBFETCH(thing)->ts.modified)));
+#endif
 	(void) format_time(buf, BUFFER_LEN, (char *) "Modified: %a %b %e %T %Z %Y", time_tm);
 	notify(player, buf);
+#ifndef WIN32
 	time_tm = localtime((&(DBFETCH(thing)->ts.lastused)));
+#else
+	time_tm = uw32localtime((&(DBFETCH(thing)->ts.lastused)));
+#endif
 	(void) format_time(buf, BUFFER_LEN, (char *) "Lastused: %a %b %e %T %Z %Y", time_tm);
 	notify(player, buf);
 	if (Typeof(thing) == TYPE_PROGRAM) {

@@ -321,6 +321,7 @@ RETSIGTYPE sig_reap(int i)
 
 #include <wincon.h>
 #include <windows.h>
+#include <signal.h>
 #define VK_C         0x43
 #define CONTROL_KEY (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) 
 
@@ -329,8 +330,8 @@ RETSIGTYPE sig_reap(int i)
 void sig_reap(int i) {}
 void sig_shutdown(int i) {}
 void sig_dumpstatus(int i) {}
-void set_signals(void) {}
 void set_sigs_intern(int bail) {}
+void set_signals() {}
 
 void bailout(int sig) {
 	char message[1024];
@@ -339,67 +340,33 @@ void bailout(int sig) {
 	exit(7);
 }
 
+
+BOOL WINAPI HandleConsole(DWORD mesg) {
+   switch(mesg) {
+      case CTRL_C_EVENT:
+      case CTRL_BREAK_EVENT:
+         break;
+
+      case CTRL_CLOSE_EVENT:
+      case CTRL_LOGOFF_EVENT:
+      case CTRL_SHUTDOWN_EVENT:
+         shutdown_flag = 1;
+         restart_flag = 0;
+         log_status("SHUTDOWN: via SIGNAL\n");
+         break;
+
+      default:
+         return false;
+   }
+
+   return true;
+}
+
 void set_console() {
 	HANDLE InputHandle;
 
-	InputHandle = GetStdHandle(STD_INPUT_HANDLE);
-	if (InputHandle == INVALID_HANDLE_VALUE) {
-		printf("GetStdHandle: failed\n");
-		exit(7);
-	}
-	if (!SetConsoleMode(InputHandle, !ENABLE_PROCESSED_INPUT)) {
-		printf("SetConsoleMode: failed\n");
-		exit(7);
-	}
+      SetConsoleCtrlHandler(HandleConsole, true);
 	SetConsoleTitle(VERSION);
-
-}
-
-void check_console() {
-
-	HANDLE InputHandle;
-	INPUT_RECORD ipRecord;
-	DWORD EventsWaiting;
-	DWORD EventsRead;
-	DWORD EventCount=0;
-	BOOL result;
-	CHAR c;
-
-	InputHandle = GetStdHandle(STD_INPUT_HANDLE);
-	if (InputHandle == INVALID_HANDLE_VALUE) {
-		printf("GetStdHandle: Failed\n");
-		bailout(2);
-	}
-
-
-	result = GetNumberOfConsoleInputEvents(InputHandle, &EventsWaiting);
-	if (result) {
-		if (EventsWaiting > 0 ) {
-			EventCount = 0;
-			while (EventCount < EventsWaiting) {
-				result = ReadConsoleInput(InputHandle, &ipRecord, 1, &EventsRead);
-				if (result) {
-					switch(ipRecord.EventType) {
-					case KEY_EVENT:
-						c = ipRecord.Event.KeyEvent.uChar.AsciiChar;
-						if (3 == c )
-							bailout(2);
-						break;
-					default:
-						break;
-					}
-				} else {
-					printf("ReadConsoleInput: failed\n");
-					bailout(2);
-				}
-				EventCount++;
-			}
-		}
-	} else {
-		printf("GetNumberOfConsoleInputEvents: failed\n");
-		bailout(2);
-	}
-
 }
 
 

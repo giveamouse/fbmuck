@@ -5,6 +5,8 @@
 #ifndef __DB_H
 #define __DB_H
 
+#include "config.h"
+
 #include <stdio.h>
 #include <math.h>
 #include <time.h>

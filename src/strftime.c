@@ -306,7 +306,11 @@ get_tz_offset(void)
 	time_t now;
 
 	time(&now);
+# ifndef WIN32
 	return (localtime(&now)->tm_gmtoff);
+# else 
+	return (uw32localtime(&now)->tm_gmtoff);
+# endif
 #elif defined(HAVE_DECL__TIMEZONE)
 	/* CygWin uses _timezone instead of timezone. */
 	return _timezone;

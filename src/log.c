@@ -59,7 +59,12 @@ log_sanity(char *format, ...)
 		fprintf(stderr, "%.16s: ", ctime(&lt));
 		vfprintf(stderr, format, args);
 	} else {
+#ifndef WIN32
 		format_time(buf, 32, "%c", localtime(&lt));
+#else
+		format_time(buf, 32, "%c", uw32localtime(&lt));
+#endif
+
 		fprintf(fp, "%.32s: ", buf);
 		vfprintf(fp, format, args);
 		fclose(fp);
@@ -84,7 +89,11 @@ log_status(char *format, ...)
 		fprintf(stderr, "%.16s: ", ctime(&lt));
 		vfprintf(stderr, format, args);
 	} else {
+#ifndef WIN32
 		format_time(buf, 32, "%c", localtime(&lt));
+#else
+		format_time(buf, 32, "%c", uw32localtime(&lt));
+#endif
 		fprintf(fp, "%.32s: ", buf);
 		vfprintf(fp, format, args);
 		fclose(fp);
@@ -108,7 +117,11 @@ log_muf(char *format, ...)
 		fprintf(stderr, "%.16s: ", ctime(&lt));
 		vfprintf(stderr, format, args);
 	} else {
+#ifndef WIN32
 		format_time(buf, 32, "%c", localtime(&lt));
+#else
+		format_time(buf, 32, "%c", uw32localtime(&lt));
+#endif
 		fprintf(muflog, "%.32s: ", buf);
 		vfprintf(muflog, format, args);
 		fclose(muflog);
@@ -133,7 +146,11 @@ log_gripe(char *format, ...)
 		fprintf(stderr, "%.16s: ", ctime(&lt));
 		vfprintf(stderr, format, args);
 	} else {
+#ifndef WIN32
 		format_time(buf, 32, "%c", localtime(&lt));
+#else
+		format_time(buf, 32, "%c", uw32localtime(&lt));
+#endif
 		fprintf(fp, "%.32s: ", buf);
 		vfprintf(fp, format, args);
 		fclose(fp);
@@ -157,7 +174,11 @@ log_command(char *format, ...)
 		fprintf(stderr, "Unable to open %s!\n", COMMAND_LOG);
 		vfprintf(stderr, format, args);
 	} else {
+#ifndef WIN32
 		format_time(buf, 32, "%c", localtime(&lt));
+#else
+		format_time(buf, 32, "%c", uw32localtime(&lt));
+#endif
 		fprintf(fp, "%.32s: ", buf);
 		vfprintf(fp, format, args);
 		fclose(fp);
@@ -197,7 +218,11 @@ log_user(dbref player, dbref program, char *logmessage)
 	*logformat='\0';
 
 	lt=time(NULL);	
+#ifndef WIN32
 	format_time(buf, 32, "%c", localtime(&lt));
+#else
+	format_time(buf, 32, "%c", uw32localtime(&lt));
+#endif
 
 	snprintf(logformat,BUFFER_LEN,"%s(#%d) [%s(#%d)] at %.32s: ", NAME(player), player, NAME(program), program, buf);
 	len = BUFFER_LEN - strlen(logformat)-1;

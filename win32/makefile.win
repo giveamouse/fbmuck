@@ -10,21 +10,20 @@ RSSRCDIR=.\win32
 OUTDIR=.\game
 INTDIR=.\compile
 INCDIR=.\winsrc
+OPENSSLDIR=e:\cyg\openssl
 
 CPP=cl.exe
-#CPP_OPS=/nologo /MLd /W3 /Gm /GX /ZI /Od /D "_DEBUG" /D "_WIN32_" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D FD_SETSIZE=4096 /D "HAVE_CONFIG_H" /YX /I"$(INCDIR)" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
-CPP_OPS=/nologo /ML /W3 /GX /O2 /D "_WIN32_" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "FD_SETSIZE=4096" /D "HAVE_CONFIG_H" /I"$(INCDIR)" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /c
+CPP_OPS=/nologo /MT /W3 /GX /O2 /c /D "_X86_" /D "_WIN32_" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "FD_SETSIZE=4096" /D "HAVE_CONFIG_H" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /c
 LINK32=link.exe
-LINK32_OPS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
-#LINK32_OPS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib winmm.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\fbmuck.pdb" /debug /machine:I386 /pdbtype:sept 
+LINK32_OPS=/NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32.lib ssleay32.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
 
 
 ALL : "$(OUTDIR)\restart.exe" "$(OUTDIR)\fbmuck.exe"
 
 CLEAN :
-        -@erase "$(INTDIR)\*.obj"
+	-@erase "$(INTDIR)\*.obj"
 	-@erase "$(INTDIR)\vc60.idb"
-        -@erase "$(INTDIR)\*.exe"
+	-@erase "$(INTDIR)\*.exe"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -74,9 +73,11 @@ NMUCK_OBJS= \
         "$(INTDIR)\msgparse.obj" \
         "$(INTDIR)\mufevent.obj" \
         "$(INTDIR)\p_array.obj" \
+        "$(INTDIR)\p_connects.obj" \
         "$(INTDIR)\p_db.obj" \
         "$(INTDIR)\p_error.obj" \
         "$(INTDIR)\p_float.obj" \
+        "$(INTDIR)\player.obj" \
         "$(INTDIR)\p_math.obj" \
         "$(INTDIR)\p_mcp.obj" \
         "$(INTDIR)\p_misc.obj" \
@@ -84,18 +85,17 @@ NMUCK_OBJS= \
         "$(INTDIR)\p_regex.obj" \
         "$(INTDIR)\p_stack.obj" \
         "$(INTDIR)\p_strings.obj" \
-        "$(INTDIR)\player.obj" \
         "$(INTDIR)\propdirs.obj" \
         "$(INTDIR)\property.obj" \
         "$(INTDIR)\props.obj" \
         "$(INTDIR)\random.obj" \
-        "$(INTDIR)\regex.obj" \
         "$(INTDIR)\rob.obj" \
         "$(INTDIR)\rwho.obj" \
         "$(INTDIR)\sanity.obj" \
         "$(INTDIR)\set.obj" \
         "$(INTDIR)\signal.obj" \
         "$(INTDIR)\smatch.obj" \
+        "$(INTDIR)\snprintf.obj" \
         "$(INTDIR)\speech.obj" \
         "$(INTDIR)\strftime.obj" \
         "$(INTDIR)\timequeue.obj" \
@@ -106,7 +106,6 @@ NMUCK_OBJS= \
         "$(INTDIR)\wiz.obj" \
         "$(INTDIR)\crt_malloc.obj" \
         "$(INTDIR)\oldcompress.obj" \
-        "$(INTDIR)\p_connects.obj" \
         "$(INTDIR)\predicates.obj" \
         "$(INTDIR)\stringutil.obj" \
         "$(INTDIR)\win32.obj" \

@@ -9,6 +9,9 @@
 
 #ifndef WIN32
 #include <sys/wait.h>
+#else
+#include <windows.h>
+#include <process.h>
 #endif
 
 #include "db.h"
@@ -271,6 +274,15 @@ dump_database(void)
 	log_status("DUMPING: %s.#%d# (done)\n", dumpfile, epoch);
 }
 
+#ifdef WIN32
+void fork_dump_thread(void *arg) {
+	forked_dump_process_flag = 1;
+	dump_database_internal();
+        global_dumper_pid = 0;
+	_endthread();
+}
+#endif
+
 
 /*
  * Named "fork_and_dump()" mostly for historical reasons...
@@ -296,12 +308,19 @@ fork_and_dump(void)
 #ifdef DISKBASE
 	dump_database_internal();
 #else
+# ifndef WIN32
 	if ((global_dumper_pid=fork())==0) {
 		forked_dump_process_flag = 1;
 		set_dumper_signals();
 		dump_database_internal();
 		_exit(0);
 	}
+# else /* !WIN32 */
+        global_dumper_pid = (long) _beginthread(fork_dump_thread, 0, 0);
+	if (global_dumper_pid == -1L) {
+		panic("Could not create thread for database dumping");
+	}
+# endif
 #endif
 }
 

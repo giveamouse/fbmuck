@@ -34,7 +34,11 @@ prim_time(PRIM_PROTOTYPE)
 		struct tm *tm;
 
 		lt = time(NULL);
+#ifndef WIN32
 		tm = localtime(&lt);
+#else
+		tm = uw32localtime(&lt);
+#endif
 		result = tm->tm_sec;
 		PushInt(result);
 		result = tm->tm_min;
@@ -53,9 +57,12 @@ prim_date(PRIM_PROTOTYPE)
 	{
 		time_t lt;
 		struct tm *tm;
-
 		lt = time(NULL);
+#ifndef WIN32
 		tm = localtime(&lt);
+#else
+		tm = uw32localtime(&lt);
+#endif
 		result = tm->tm_mday;
 		PushInt(result);
 		result = tm->tm_mon + 1;
@@ -108,7 +115,11 @@ prim_timesplit(PRIM_PROTOTYPE)
 	if (oper1->type != PROG_INTEGER)
 		abort_interp("Invalid argument");
 	lt = (time_t) oper1->data.number;
+#ifndef WIN32
 	time_tm = localtime(&lt);
+#else
+	time_tm = uw32localtime(&lt);
+#endif
 	CHECKOFLOW(8);
 	CLEAR(oper1);
 	result = time_tm->tm_sec;
@@ -145,7 +156,11 @@ prim_timefmt(PRIM_PROTOTYPE)
 	if (oper2->type != PROG_INTEGER)
 		abort_interp("Invalid argument (2)");
 	lt = (time_t) oper2->data.number;
+#ifndef WIN32
 	time_tm = localtime(&lt);
+#else
+	time_tm = uw32localtime(&lt);
+#endif
 	if (!format_time(buf, BUFFER_LEN, oper1->data.string->data, time_tm))
 		abort_interp("Operation would result in overflow.");
 	CHECKOFLOW(1);

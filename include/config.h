@@ -197,7 +197,6 @@
  */
 #ifdef WIN32
 #undef SPAWN_HOST_RESOLVER
-#undef DETACH
 #define NO_MEMORY_COMMAND
 #define NO_USAGE_COMMAND
 #define NOCOREDUMP

@@ -302,7 +302,11 @@ RCLEAR(struct inst *oper, char *file, int line)
 		char buf[40];
 
 		lt = time(NULL);
+#ifndef WIN32
 		format_time(buf, 32, "%c", localtime(&lt));
+#else
+		format_time(buf, 32, "%c", uw32localtime(&lt));
+#endif
 		fprintf(stderr, "%.32s: ", buf);
 		fprintf(stderr, "Attempt to re-CLEAR() instruction from %s:%hd "
 				"previously CLEAR()ed at %s:%d\n", file, line, (char *) oper->data.addr,
@@ -755,7 +759,11 @@ prog_clean(struct frame *fr)
 			char buf[40];
 
 			lt = time(NULL);
+#ifndef WIN32
 			format_time(buf, 32, "%c", localtime(&lt));
+#else
+			format_time(buf, 32, "%c", uw32localtime(&lt));
+#endif
 			fprintf(stderr, "%.32s: ", buf);
 			fprintf(stderr, "prog_clean(): Tried to free an already freed program frame!\n");
 			abort();
@@ -1760,7 +1768,11 @@ interp_err(dbref player, dbref program, struct inst *pc,
 	notify_nolisten(player, buf, 1);
 
 	lt = time(NULL);
+#ifndef WIN32
 	format_time(tbuf, 32, "%c", localtime(&lt));
+#else
+	format_time(tbuf, 32, "%c", uw32localtime(&lt));
+#endif
 
 	strip_ansi(buf2, buf);
 	errcount = get_property_value(origprog, ".debug/errcount");

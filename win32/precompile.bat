@@ -18,6 +18,3 @@ mkdir compile > nul:
 
 echo Remember to setup your VCVARS before typing 'nmake'
 rem C:/PROGRA~1/DEVSTU~1/VC/BIN/VCVARS32.BAT
-
-cd win32
-

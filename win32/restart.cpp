@@ -1,543 +1,631 @@
-// restart.cpp : Defines the entry point for the console application.
+// restart.cpp
 //
 
 #include <string.h>
 #include <time.h>
 #include <process.h>
-#include <fstream.h>
-#include <iostream.h>
+#include <fstream>
+#include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <malloc.h>
 
 
-#define RESTART_VERSION "Restart Version 2.2"
+#define RESTART_VERSION "Restart Version 2.3"
+#define fpeekc(x) ungetc(fgetc(x), x)
 
-/////////////////////////////////////////////////////////////////////////////
-// The one and only application object
+#ifndef MAX_PATH
+# ifdef _MAX_PATH
+#  define MAX_PATH _MAX_PATH
+# else
+#  define MAX_PATH 1024
+# endif
+#endif
+
+void create_ini(char *fn);
+void print_usage();
 
 
-int newrename(const char *oldfile, const char *newfile);
-void UpdateStatus(char *update_string);
-void create_ini();
+typedef struct s_mucklist {
+   char *muckname;
 
-FILE   *inifile, *dbinr, *dbout, *dbold, *deltas, *panic, *logfile, *dbinw, *mpanic;
-   char      buf[ 2048 ];
-   char      dbinf[ 2048 ];
-   char      dboutf[ 2048 ];
-   char      dboldf[ 2048 ];
-   char      deltasf[ 2048 ];
-   char      port[ 2048 ];
-   char      logf[ 2048 ];
-   char      garbage[ 2056 ];
-   char      mpanicf[ 2056 ];
-   char      holding[256];
-   char      dbcheck[ 20 ];
-   char      chrin;
-   char      portstore[10];
-   char		 *cmdline;
-   char      *args[40];
-   char      *portara[40];
-   int       i;
-   int       bufctr=0;
-   int       count;
-   int       nologging=0;
-   int       strtot=0;
-   int       cmdcount=0;
+   bool logging;
+   bool wizonly;
+   bool hideconsole;
+   char *logfile;
+   int  portcount;
+   int  *ports;
+   int  sslportcount;
+   int  *sslports;
+   char *macrosfile;
+   char *dbinfile;
+   char *dboutfile;
+   char *dboldfile;
+   char *deltasfile;
+   char *server;
 
+   struct s_mucklist *next;
+} mucklist;
+
+void print_usage() {
+   printf("restart [-c] [inifile] - Clean up database files and restart the muck\n");
+   printf("          -c - Creates an ini file with the provided name (or restart.ini)\n");
+   printf("   [inifile] - Defaults to restart.ini - Specifies the config file\n");
+   printf("               for starting up the server\n");
+}
+
+void create_ini(char *fn) {
+   FILE *f = fopen(fn, "w");
+   if (!f) return;
+
+   fprintf(f, "[fbmuck]\n");
+   fprintf(f, "logging    = true\n");
+   fprintf(f, "logfile    = logs\\restart\n");
+   fprintf(f, "ports      = 4201\n");
+   fprintf(f, "sslports   = 5201\n");
+   fprintf(f, "macrosfile = muf\\macros\n");
+   fprintf(f, "dbinfile   = data\\minimal.db\n");
+   fprintf(f, "dboutfile  = data\\minimal.out\n");
+   fprintf(f, "dboldfile  = data\\minimal.old\n");
+   fprintf(f, "deltasfile = data\\deltas-file\n");
+   fprintf(f, "server     = fbmuck\n");
+   fprintf(f, "wizonly    = false\n");
+   fprintf(f, "hideconsole= false\n");
+
+   fclose(f);
+}
+
+mucklist * newmucklist(const char *name, mucklist *m) {
+   mucklist *nm      = (mucklist *) malloc(sizeof(mucklist));
+   nm->muckname      = strdup(name);
+   nm->logging       = true;
+   nm->wizonly       = false;
+   nm->hideconsole   = false;
+   nm->logfile       = strdup("logs\\restart");
+   nm->ports         = (int *) malloc(sizeof(int) * 1);
+   nm->ports[0]      = 4201;
+   nm->portcount     = 1;
+   nm->sslports      = (int *) malloc(sizeof(int) * 1);
+   nm->sslports[0]   = 5201;
+   nm->sslportcount  = 1;
+   nm->macrosfile    = strdup("muf\\macros");
+   nm->dbinfile      = strdup("data\\minimal.db");
+   nm->dboutfile     = strdup("data\\minimal.out");
+   nm->dboldfile     = strdup("data\\minimal.old");
+   nm->deltasfile    = strdup("data\\deltas-file");
+   nm->server        = strdup("fbmuck");
+   nm->next          = m;
+   return nm;
+}
+
+char * str_replace(const char *s, char *p) {
+   if (p) free(p);
+    return strdup(s);
+}
+
+bool parse_bool(char *str) {
+   const char *p = str;
+   while (*p != '=') p++;
+   p++;
+   while (isspace(*p)) p++;
+   if (toupper(*p) == 'T' || *p == '1') return true;
+   return false;
+}
+
+char *parse_str(char *str) {
+   char *p = str;
+   while (*p != '=') p++;
+   p++;
+   while (isspace(*p)) p++;
+   char *q = p + strlen(p) - 1;
+   if (q <= p) return strdup("");
+   while (isspace(*q)) q--;
+   *(++q) = '\0';
+   return strdup(p);
+}
+
+int *parse_int_list(char *str, int &count) {
+   char *p = str;
+   while (*p != '=') p++;
+   str = ++p;
+   int acount = 0;
+   bool skipping = true;
+   while (*p) {
+      if (skipping && !isspace(*p)) {
+         acount++;
+         skipping = false;
+         p++;
+      } else if (!skipping && isspace(*p)) {
+         skipping = true;
+      }
+      p++;
+   }
+
+   p = str;
+   int *list = (int *) malloc(sizeof(int) * acount);
+   skipping = true;
+   char *iptr = 0; count = 0;
+   while (*p && count < acount) {
+      if (skipping && !isspace(*p)) {
+         iptr = p;
+         skipping = false;
+      } if (!skipping && isspace(*p)) {
+         *p = '\0';
+         list[count++] = atoi(iptr);
+         skipping = true;
+      }
+      p++;
+   }
+   if (!*p) list[count++] = atoi(iptr);
+   count--;
+
+   return list;
+}
+
+mucklist * parse_ini(const char *fn) {
+   FILE *f = fopen(fn, "r");
+   if (!f) {
+      printf("ERROR: Could not open %s for input.\n", fn);
+      return 0;
+   }
+
+   mucklist *m = 0;
+   char buf[MAX_PATH];
+   char *p = buf;
+   int line = 1;
+   bool running = true;
+   while (running) {
+      char c;
+      switch (c = fpeekc(f)) {
+         case EOF:
+             running = false;
+             break;
+         
+          case '[':
+             fgets(buf, MAX_PATH, f);
+             p = buf + strlen(buf) - 1;
+             while (!isalnum(*p)) p--;
+             *(p+1) = '\0';
+             m = newmucklist(buf + 1, m);
+             break;
+
+          case 'm':
+          case 'M':
+             fgets(buf, MAX_PATH, f);
+             if (!_strnicmp(buf, "macrosfile", 10)) {
+                if (!m) {
+                   printf("\nERROR: macros file without a muck section - line %d\n", line);
+                   return 0;
+                }
+                m->macrosfile = str_replace(parse_str(buf), m->macrosfile);
+             }
+             break;
+             
+
+          case 'l':
+          case 'L':
+             fgets(buf, MAX_PATH, f);
+             if (!_strnicmp(buf, "logging", 7)) {
+                if (!m) {
+                   printf("\nERROR: logging without a muck section - line %d\n", line);
+                   return 0;
+                }
+                m->logging = parse_bool(buf);
+             } else if (!_strnicmp(buf, "logfile", 7)) {
+                if (!m) {
+                   printf("\nERROR: logfile without a muck section - line %d\n", line);
+                   return 0;
+                }
+                m->logfile = str_replace(parse_str(buf),m->logfile);
+             }
+             break;
+
+          case 'p':
+          case 'P':
+             fgets(buf, MAX_PATH, f);
+             if (!_strnicmp(buf, "ports", 5)) {
+                if (!m) {
+                   printf("\nERROR: port numbers without a muck section - line %d\n", line);
+                   return 0;
+                }
+                m->ports = parse_int_list(buf, m->portcount);
+             }
+             break;
+
+          case 'h':
+          case 'H':
+             fgets(buf, MAX_PATH, f);
+             if (!_strnicmp(buf, "hideconsole", 11)) {
+                if (!m) {
+                   printf("\nERROR: hide console option without a muck section - line %d\n", line);
+                   return 0;
+                }
+                m->hideconsole = parse_bool(buf);
+             }
+             break;
+
+          
+          case 's':
+          case 'S':
+             fgets(buf, MAX_PATH, f);
+             if (!_strnicmp(buf, "sslports", 8)) {
+                if (!m) {
+                   printf("\nERROR: SSL port numbers without a muck section - line %d\n", line);
+                   return 0;
+                }
+                m->sslports = parse_int_list(buf, m->sslportcount);
+             } else if (!_strnicmp(buf, "server", 6)) {
+                if (!m) {
+                   printf("\nERROR: server name without a muck section - line %d\n", line);
+                   return 0;
+                }
+                m->server = str_replace(parse_str(buf), m->server);
+             }
+             break;
+
+          case 'd':
+          case 'D':
+             fgets(buf, MAX_PATH, f);
+             if (!_strnicmp(buf, "dbinfile", 8)) {
+                if (!m) {
+                   printf("\nERROR: database input file without a muck section - line %d\n", line);
+                   return 0;
+                }
+                m->dbinfile = str_replace(parse_str(buf), m->dbinfile);
+             } else if (!_strnicmp(buf, "dboutfile", 9)) {
+                if (!m) {
+                   printf("\nERROR: database output file without a muck section - line %d\n", line);
+                   return 0;
+                }
+                m->dboutfile = str_replace(parse_str(buf), m->dboutfile);
+             } else if (!_strnicmp(buf, "dboldfile", 9)) {
+                if (!m) {
+                   printf("\nERROR: database old file without a muck section - line %d\n", line);
+                   return 0;
+                }
+                m->dboldfile = str_replace(parse_str(buf), m->dboldfile);
+             } else if (!_strnicmp(buf, "deltasfile", 10)) {
+                if (!m) {
+                   printf("\nERROR: database deltas file without a muck section - line %d\n", line);
+                   return 0;
+                }
+                m->deltasfile = str_replace(parse_str(buf), m->deltasfile);
+             }
+             break;
+
+          case 'w':
+          case 'W':
+             fgets(buf, MAX_PATH, f);
+             if (!_strnicmp(buf, "wizonly", 7)) {
+                if (!m) {
+                   printf("\nERROR: wizonly option without a muck section - line %d\n", line);
+                   return 0;
+                }
+                m->wizonly = parse_bool(buf);
+             }
+             break;
+
+          case '\n':
+          case '\r':
+          case '\t':
+             fgets(buf, MAX_PATH, f);
+             break;             
+             
+          default:
+             printf("\nERROR: Unrecognized input on line %d\n", line);
+             return 0;
+            
+      }
+      line++;
+   }
+
+   return m;
+}
 
 int main (int argc, char **argv) {
-   time_t        st_t;
-   struct tm     *st_tm;
-   char*         DTarray[2];
+   const char *iniFileName = "restart.ini";
 
-   st_t  = time(0);
-   st_tm = localtime(&st_t);
-   bufctr=0;
-   DTarray[0] = (char*)malloc(sizeof(char)*20);
-   strftime(DTarray[0],15,"%m-%d-%Y",st_tm);
-   DTarray[1] = (char*)malloc(sizeof(char)*20);
-   strftime(DTarray[1],15,"%H:%M:%S",st_tm);
-
-// Start the restart
-
-   inifile = fopen("restart.ini", "r");
-   if (!inifile) {
-      printf("Error opening RESTART.INI. One will now be created for you with the default values.\n",stderr);
-      (void) create_ini();
-      inifile = fopen("restart.ini", "r");
-      if (!inifile) {
-         printf("There was an error creating the RESTART.INI file. Please obtain one from the author of this software.\nError Code: 1\n", stderr);
-         exit(0);
-      }
-   }
-
-// Get the log file from the INI file.
-
-   do {
-      chrin = fgetc(inifile);
-      if ((char)chrin == '\n') {
-         buf[ bufctr ] = '\0';
-         break;
-      } else {
-         buf[ bufctr ] = (char)chrin;
-      }
-	  if (!chrin || feof(inifile)) {
-         printf("There was an error reading RESTART.INI. It is most likely corrupted and will have to be replaced. Please delete the file in the muck directory and a new one will be created for you upon restart.\nError Code: 3\n",stderr);
-         exit(0);
-      }
-      bufctr++;
-      if (bufctr == 2048) break;
-   } while (bufctr != 2048);
-   bufctr=0;
-   strcpy(logf, buf);
- 
-// Open the log file for writing.
-
-   logfile = fopen(logf,"a+");
-   if (!logfile) {
-      printf("There was an error creating the log file for writing. Logging will not be enabled until you have changed the location of the log file.\nError Code:4\n",stderr);
-      nologging=1;
-   }
-
-// Get the port number.
-
-   do {
-      chrin = fgetc(inifile);
-      if ((char)chrin == '\n') {
-         buf[ bufctr ] = '\0';
-         break;
-      } else {
-         buf[ bufctr ] = (char)chrin;
-      }
-	  if (!chrin || feof(inifile)) {
-         printf("There was an error reading RESTART.INI. It is most likely corrupted and will\nhave to be replaced. Please delete the file in the muck directory and a new\none will be created for you upon restart.\nError Code: 5\n",stderr);
-         exit(0);
-      }
-      bufctr++;
-      if (bufctr == 2048) break;
-   } while (bufctr != 2048);
-   bufctr=0;
-   strcpy(port, buf);
-
-// Get the DBIN file name.
-
-   do {
-      chrin = fgetc(inifile);
-      if ((char)chrin == '\n') {
-         buf[ bufctr ] = '\0';
-         break;
-      } else {
-         buf[ bufctr ] = (char)chrin;
-      }
-	  if (!chrin || feof(inifile)) {
-         printf("There was an error reading RESTART.INI. It is most likely corrupted and will\nhave to be replaced. Please delete the file in the muck directory and a new\none will be created for you upon restart.\nError Code: 6\n",stderr);
-         exit(0);
-      }
-      bufctr++;
-      if (bufctr == 2048) break;
-   } while (bufctr != 2048);
-   bufctr=0;
-   strcpy(dbinf, buf);
-
-// Get the DBOUT file name.
-
-   do {
-      chrin = fgetc(inifile);
-      if ((char)chrin == '\n') {
-         buf[ bufctr ] = '\0';
-         break;
-      } else {
-         buf[ bufctr ] = (char)chrin;
-      }
-	  if (!chrin || feof(inifile)) {
-         printf("There was an error reading RESTART.INI. It is most likely corrupted and will\nhave to be replaced. Please delete the file in the muck directory and a new\none will be created for you upon restart.\nError Code: 7\n",stderr);
-         exit(0);
-      }
-      bufctr++;
-      if (bufctr == 2048) break;
-   } while (bufctr != 2048);
-   bufctr=0;
-   strcpy(dboutf, buf);
-
-// Get the DBOLD file name.
-
-   do {
-      chrin = fgetc(inifile);
-      if ((char)chrin == '\n') {
-         buf[ bufctr ] = '\0';
-         break;
-      } else {
-         buf[ bufctr ] = (char)chrin;
-      }
-	  if (!chrin || feof(inifile)) {
-         printf("There was an error reading RESTART.INI. It is most likely corrupted and will\nhave to be replaced. Please delete the file in the muck directory and a new\none will be created for you upon restart.\nError Code: 8\n",stderr);
-         exit(0);
-      }
-      bufctr++;
-      if (bufctr == 2048) break;
-   } while (bufctr != 2048);
-   bufctr=0;
-   strcpy(dboldf, buf);
-
-// Get the DELTAS file name.
-
-   do {
-      chrin = fgetc(inifile);
-      if ((char)chrin == '\n') {
-         buf[ bufctr ] = '\0';
-         break;
-      } else {
-         buf[ bufctr ] = (char)chrin;
-      }
-	  if (!chrin || feof(inifile)) {
-         printf("There was an error reading RESTART.INI. It is most likely corrupted and will\nhave to be replaced. Please delete the file in the muck directory and a new\none will be created for you upon restart.\nError Code: 9\n",stderr);
-         exit(0);
-      }
-      bufctr++;
-      if (bufctr == 2048) break;
-   } while (bufctr != 2048);
-   bufctr=0;
-   strcpy(deltasf, buf);
-
-   fclose(inifile);
-
-   if (strlen(dbinf) <= 2) {
-           printf("The value of the DB input file is invalid.\nError Code: 10\n",stderr);
-	   exit(1);
-   }
-   if (strlen(dboutf) <= 2) {
-           printf("The value of the DB output file is invalid.\nError Code: 11\n",stderr);
-	   exit(1);
-   }
-   if (strlen(dboldf) <= 2) {
-           printf("The value of the DB old file is invalid.\nError Code: 12\n",stderr);
-	   exit(1);
-   }
-   if (strlen(deltasf) <= 2) {
-           printf("The value of the deltas file is invalid.\nError Code: 13\n",stderr);
-	   exit(1);
-   }
-   if (strlen(logf) <= 2) {
-           printf("The value of the log file is invalid.\nError Code: 14\n",stderr);
-	   exit(1);
-   }
-   if (strlen(port) == 0) {
-           printf("The value of the port address is invalid.\nError Code: 15\n",stderr);
-	   exit(1);
-   }
-
-// Do some restart stuff
-
-   sprintf(holding,"------------------STARTING SERVER: %s at %s------------------\n",DTarray[0],DTarray[1]);
-   UpdateStatus(holding);
-   UpdateStatus("Starting ");
-   UpdateStatus(RESTART_VERSION);
-   UpdateStatus("\n");
-   if (!nologging) {
-      fputs("------------------STARTING SERVER: ",logfile);
-      fputs(DTarray[0],logfile);
-      fputs(" at ",logfile);
-      fputs(DTarray[1],logfile);
-      fputs("------------------\n",logfile);
-   }
-
-// Test for a DBOLD file to backup.
-   dbold = fopen(dboldf, "r");
-   if(dbold)
-   {
-      fclose(dbold);
-      strcpy(garbage,dboldf);
-      strcat(garbage,".");
-      strcat(garbage,DTarray[0]);
-      sprintf(holding,"%s --> %s...",dboldf,garbage);
-      UpdateStatus(holding);
-      if (!nologging) {
-         fputs(dboldf,logfile);
-         fputs(" --> ",logfile);
-         fputs(garbage, logfile);
-         fputs("\n",logfile);
-      }
-      unlink(garbage);
-      if (newrename(dboldf,garbage)) {
-         sprintf(holding,"Failed!\n***ERROR: Cannot rename file. Restart aborted.\n");
-         UpdateStatus(holding);
-         if (!nologging) {
-            fputs("ERROR: Cannot rename file. Restart aborted.\n",logfile);
-            fclose(logfile);
-         }
-         return 0;
-      }
-      UpdateStatus("Successful.\n");
-   }
-
-// Test for a DBIN to rename to DBOLD.
-   dbinr = fopen(dbinf, "r");
-   if (dbinr) {
-      dbout = fopen(dboutf, "r");
-      if (dbout) {
-         fclose(dbout);
-         fclose(dbinr);
-         sprintf(holding,"%s --> %s...",dbinf,dboldf);
-         UpdateStatus(holding);
-         if (!nologging) {
-            fputs(dbinf,logfile);
-            fputs(" --> ",logfile);
-            fputs(dboldf, logfile);
-            fputs("\n",logfile);
-         }
-         if (newrename(dbinf,dboldf)) {
-            sprintf(holding, "Failed!\n*** ERROR: Cannot rename file. Restart aborted.\n");
-            UpdateStatus(holding);
-            if (!nologging) {
-               fputs("ERROR: Cannot rename file. Restart aborted.\n",logfile);
-               fclose(logfile);
+   for (int i = 1; i < argc; i++) {
+      switch(argv[i][0]) {
+         case '-':
+            if (!strcmp(argv[i], "--help")) {
+               print_usage();
+               return 0;
+            } else if (!strcmp(argv[i], "-c")) {
+               create_ini((argc == 3 ? argv[2] : 0));
+               return 0;
             }
-            fclose(dbinr);
-            return 0;
-         }
-         UpdateStatus("Successful.\n");
-      } else {
-         fclose(dbinr);
+         default:
+            iniFileName = argv[i];
       }
    }
 
-   strcpy(garbage,dboutf);
-   strcat(garbage,".PANIC");
-   strcpy(mpanicf, ".\\muf\\macros.PANIC");
+   mucklist *ml = parse_ini(iniFileName);
+   if (!ml) return -1;
 
-   panic = fopen(garbage,"r");
-   mpanic = fopen(mpanicf, "r");
-   if (panic) {
-      fclose(panic);
-      sprintf(holding,"PANIC file exists. Using this to restart.\n");
-      UpdateStatus(holding);
-      if (!nologging) {
-         fputs("PANIC file exists. Using this to restart.\n",logfile);
-      }
-      sprintf(holding, "%s --> %s\n", garbage, dboutf);
-      UpdateStatus(holding);
-      if (!nologging) {
-         fputs(garbage,logfile);
-         fputs(" --> ",logfile);
-         fputs(dboutf, logfile);
-         fputs("\n",logfile);
-      }
+   mucklist *p = ml;
+   while (p) {
+      FILE    *logfile;
+      char    dmy[12];
+      char    hms[10];
+      time_t  now    = time(NULL);
+      struct  tm *lt = localtime(&now);
+      strftime(dmy, 12, "%m-%d-%Y", lt);
+      strftime(hms, 10, "%H:%M:%S", lt);
 
-      if(newrename(garbage,dboutf)) {
-         sprintf(holding, "***ERROR: Cannot rename file. Restart aborted.\n");
-         UpdateStatus(holding);
-         if (!nologging) {
-            fputs("ERROR: Cannot rename file. Restart aborted.\n",logfile);
-            fclose(logfile);
-         }
-         return 0;
-      }
-      (void) unlink(deltasf);
-      if (mpanic) {
-         fclose(mpanic);
-         strcpy(garbage, ".\\muf\\macros.");
-         strcpy(mpanicf, ".\\muf\\macros.PANIC");
-         (void) unlink(garbage);
-         sprintf(holding, "%s --> %s\n", mpanicf, garbage);
-         UpdateStatus(holding);
-         if (!nologging) {
-            fputs(".\\muf\\macros.PANIC --> .\\muf\\macros\n",logfile);
-         }
+      printf("[%s]\n", p->muckname);
 
-         if(newrename(mpanicf,garbage)) {
-            sprintf(holding, "***ERROR: Cannot rename file. Restart aborted.\n");
-            UpdateStatus(holding);
-            if (!nologging) {
-               fputs("ERROR: Cannot rename file. Restart aborted.\n",logfile);
-               fclose(logfile);
-            }
-            return 0;
-         }
-      }
-   }
-
-//  Check and rename for DBOUT file.
-
-   dbout = fopen(dboutf, "r");
-   if (dbout) {
-      fclose(dbout);
-      sprintf(holding,"%s --> %s...", dboutf, dbinf);
-      UpdateStatus(holding);
-      if (!nologging) {
-         fputs(dboutf,logfile);
-         fputs(" --> ",logfile);
-         fputs(dbinf, logfile);
-         fputs("\n",logfile);
-      }
-      if (newrename(dboutf,dbinf)) {
-         sprintf(holding, "Failed!\n***ERROR: Cannot rename file. Restart aborted.\n");
-         UpdateStatus(holding);
-         if (!nologging) {
-            fputs("ERROR: Cannot rename file. Restart aborted.\n",logfile);
-            fclose(logfile);
-         }
-         return 0;
-      }
-      UpdateStatus("Successful.\n");
-   }
-
-// Check for a DBIN file to load.
-
-   sprintf(holding,"Verifying %s...", dbinf);
-   UpdateStatus(holding);
-   dbinr = fopen(dbinf, "rb");
-   if (!dbinr) {
-      UpdateStatus("Failed!\nNo input file. Restart aborted.\n");
-      if (!nologging) {
-         fputs("No input file. Restart Aborted.\n",logfile);
-         fclose(logfile);
-      }
-      return 0;
-   }
-
-// Check to make sure it is a valid DB.
-
-   fseek(dbinr,-18L, SEEK_END);
-   do {
-      chrin = fgetc(dbinr);
-      buf[ bufctr ] = (char)chrin;
-      bufctr++;
-      if (bufctr == 17) break;
-   } while (bufctr != 17 );
-   strcpy(dbcheck, buf);
-   bufctr=0;
-   dbcheck[17] = '\0';
-
-   if(strcmp(dbcheck,"***END OF DUMP***")) {
-      UpdateStatus("Failed!\nInput file is corrupt.\n");
-      if (!nologging) {
-         fputs("Input file is corrupt. Restart aborted.\n",logfile);
-         fclose(logfile);
-      }
-      fclose(dbinr);
-      return 0;
-   }
-
-   fclose(dbinr);
-
-   UpdateStatus("Successful.\n");
-
-// Check for delta existance.
-
-   deltas = fopen(deltasf,"r");
-   if (deltas) {
-      UpdateStatus("Found a delta. Attempting to merge.\n");
-      fseek(deltas, -18L, SEEK_END);
-      do {
-         chrin = fgetc(deltas);
-         buf[ bufctr ] = (char)chrin;
-         bufctr++;
-         if (bufctr == 17) break;
-      } while (bufctr != 17 );
-      bufctr=0;
-      strcpy(dbcheck, buf);
-      dbcheck[17] = '\0';
-
-      if(strcmp(dbcheck,"***END OF DUMP***")) {
-         UpdateStatus("Deltadump is incomplete. Discarding it.\n");
-         if (!nologging) {
-            fputs("Deltadump is incomplete. Discarding it.\n",logfile);
-         }
-         fclose(deltas);
-         (void) unlink(deltasf);
-      } else {
-         dbinw = fopen(dbinf, "a+b");
-         if (dbinw) {
-            fseek(deltas, 0L, SEEK_SET);
-            do {
-               chrin = fgetc(deltas);
-               if (!chrin || feof(deltas)) {
-                  break;
-               }
-               fputc(chrin, dbinw);
-            } while (chrin);
-            fclose(deltas);
-            fclose(dbinw);
+      // Log file
+      if (p->logging) {
+         printf("   Opening log file...");
+         logfile = fopen(p->logfile, "a");
+         if (!logfile) {
+            printf("FAILED\n");
+            p->logging = false;
          } else {
-            UpdateStatus("Can't open database file to append to. Restart aborted.\n");
-            if (!nologging) {
-               fputs("Can't open database to append delta to. Aborting.\n",logfile);
-               fclose(logfile);
-            }
-            fclose(deltas);
-            return 0;
+            printf("done\n");
+            fprintf(logfile, "---------------[ Starting Server: %s @ %s]---------------\n", dmy, hms);
          }
       }
+
+      // DB Old -> DB Older
+      FILE *f = fopen(p->dboldfile, "r");
+      if (f) {
+         fclose(f);
+         printf("   Moving db old to db older...");
+         if (p->logging) fprintf(logfile, "Moving db old to db older...");
+         char *oldbuf = (char *) malloc(strlen(p->dboldfile) + strlen(dmy) + 2);
+         sprintf(oldbuf, "%s.%s", p->dboldfile, dmy);
+         unlink(oldbuf);
+         if (rename(p->dboldfile, oldbuf)) {
+            printf("FAILED\n");
+            if (p->logging) fprintf(logfile, "FAILED\n");
+            free(oldbuf);
+            if (p->logging) fclose(logfile);
+            p = p->next;
+            continue;
+         } else {
+            free(oldbuf);
+            printf("done\n");
+            if (p->logging) fprintf(logfile, "done\n");
+         }
+      }
+
+
+      // Check for PANIC
+      char *panicbuf = (char *) malloc(strlen(p->dboutfile) + 7);
+      sprintf(panicbuf, "%s.PANIC", p->dboutfile);
+      f = fopen(panicbuf, "r");
+      if (f) {
+         fclose(f);
+         printf("   Moving PANIC file(s)...");
+         if (p->logging) fprintf(logfile, "Moving PANIC file(s)...");
+         char *macros = (char *) malloc(strlen(p->macrosfile) + 7);
+         sprintf(macros, "%s.PANIC", p->macrosfile);
+         unlink(p->macrosfile);
+         if (rename(macros, p->macrosfile)) {
+            printf("FAILED\n");
+            if (p->logging) fprintf(logfile, "FAILED\n");
+            free(macros);
+            if (p->logging) fclose(logfile);
+            p = p->next;
+            continue;
+         }
+         free(macros);
+         unlink(p->dbinfile);
+         if (rename(panicbuf, p->dbinfile)) {
+            printf("FAILED\n");
+            if (p->logging) fprintf(logfile, "FAILED\n");
+            free(panicbuf);
+            if (p->logging) fclose(logfile);
+            p = p->next;
+            continue;
+         } else {
+            printf("done\n");
+            if (p->logging) fprintf(logfile, "done\n");
+            free(panicbuf);
+         }
+      }
+
+      // If dbout, dbin -> dbold
+      f = fopen(p->dboutfile, "r");
+      if (f) {
+         fclose(f);
+         f = fopen(p->dbinfile, "r");
+         if (f) {
+            fclose(f);
+            printf("   Moving db in to db old...");
+            if (p->logging) fprintf(logfile, "Moving db in to db old...");
+            unlink(p->dboldfile);
+            if (rename(p->dbinfile, p->dboldfile)) {
+               printf("FAILED\n");
+               if (p->logging) fprintf(logfile, "FAILED\n");
+               if (p->logging) fclose(logfile);
+               p = p->next;
+               continue;
+            } else {
+               printf("done\n");
+               if (p->logging) fprintf(logfile, "done\n");
+            }
+         }
+         unlink(p->dbinfile);
+         printf("   Moving db out to db in...");
+         if (p->logging) fprintf(logfile, "Moving db out to db in...");
+         if (rename(p->dboutfile, p->dbinfile)) {
+            printf("FAILED\n");
+            if (p->logging) fprintf(logfile, "FAILED\n");
+            if (p->logging) fclose(logfile);
+            p = p->next;
+            continue;
+         } else {
+            printf("done\n");
+            if (p->logging) fprintf(logfile, "done\n");
+         }
+      }
+
+      // Validate DB in file
+      printf("   Verifying input file...");
+      if (p->logging) fprintf(logfile, "Verifying input file...");
+      f = fopen(p->dbinfile, "r");
+      if (!f) {
+         printf("FAILED\n");
+         if (p->logging) fprintf(logfile, "FAILED\n");
+         if (p->logging) fclose(logfile);
+         p = p->next;
+         continue;
+      }
+
+      fseek(f, -18L, SEEK_END);
+      char checkbuf[18];
+      fread(checkbuf, sizeof(char), 17, f);
+      checkbuf[17] = '\0';
+      fclose(f);
+      if (strcmp(checkbuf, "***END OF DUMP***")) {
+         if (!strcmp(checkbuf, "**END OF DUMP***\n")) {
+            printf("delayed\n");
+            if (p->logging) fprintf(logfile, "delayed\n");
+            printf("   Converting input file from dos to unix format...");
+            if (p->logging) fprintf(logfile, "Converting input file from dos to unix format...");
+            FILE *out = fopen(p->dboutfile, "wb");
+            FILE *in  = fopen(p->dbinfile, "rb");
+            if (!in || !out) {
+               printf("FAILED\n");
+               if (p->logging) fprintf(logfile, "FAILED\n");
+               fclose(in);
+               fclose(out);
+               if (p->logging) fclose(logfile);
+               p = p->next;
+               continue;
+            }
+            char c;
+            while ((c = fgetc(in)) != EOF) {
+               if (c != '\r') fputc(c, out);
+            }
+            fclose(in);
+            fclose(out);
+            unlink(p->dbinfile);
+            if (rename(p->dboutfile, p->dbinfile)) {
+               printf("FAILED\n");
+               if (p->logging) fprintf(logfile, "FAILED\n");
+               if (p->logging) fclose(logfile);
+               p = p->next;
+               continue;
+            }
+
+            char *outmacro = (char *) malloc(strlen(p->macrosfile) + 5);
+            sprintf(outmacro, "%s.out", p->macrosfile);
+            out = fopen(outmacro, "wb");
+            in  = fopen(p->macrosfile, "rb");
+            if (out && in) {
+               while ((c = fgetc(in)) != EOF) {
+                  if (c != '\r') fputc(c, out);
+               }
+               fclose(in);
+               fclose(out);
+               unlink(p->macrosfile);
+               rename(outmacro, p->macrosfile);
+            }
+            free(outmacro);
+            printf("done\n");
+            if (p->logging) fprintf(logfile, "done\n");
+
+            if (p->logging) fprintf(logfile, "Verifying input file...");
+            printf("   Verifying input file...");
+            f = fopen(p->dbinfile, "r");
+            if (!f) {
+               if (p->logging) fprintf(logfile, "FAILED\n");
+               printf("FAILED\n");
+               if (p->logging) fclose(logfile);
+               p = p->next;
+               continue;
+            }
+            fseek(f, -18L, SEEK_END);
+            fread(checkbuf, sizeof(char), 17, f);
+            checkbuf[17] = '\0';
+            fclose(f);
+            if (strcmp(checkbuf, "***END OF DUMP***")) {
+               if (p->logging) fprintf(logfile, "FAILED\n");
+               printf("FAILED\n");
+               if (p->logging) fclose(logfile);
+               p = p->next;
+               continue;
+            }
+         } else {
+            printf("FAILED\n");
+            if (p->logging) fprintf(logfile, "FAILED\n");
+            if (p->logging) fclose(logfile);
+            p = p->next;
+            continue;
+         }
+      }
+      printf("done\n");
+      if (p->logging) fprintf(logfile, "done\n");
+
+      // Check for a deltas file
+      f = fopen(p->deltasfile, "rb");
+      if (f) {
+         printf("   Merging deltas file...");
+         if (p->logging) fprintf(logfile, "Merging deltas file...");
+         fseek(f, -18L, SEEK_END);
+         char checkbuf[18];
+         fread(checkbuf, sizeof(char), 17, f);
+         if (strcmp(checkbuf,"***END OF DUMP***")) {
+            printf("FAILED\n");
+            if (p->logging) fprintf(logfile, "FAILED\n");
+            fclose(f);
+         } else {
+            FILE *dbin = fopen(p->dbinfile, "a+b");
+            if (!dbin) {
+               printf("FAILED\n");
+               if (p->logging) fprintf(logfile, "FAILED\n");
+               fclose(f);
+               if (p->logging) fclose(logfile);
+               p = p->next;
+               continue;
+            }
+            fseek(f, 0L, SEEK_SET);
+            char c;
+            while((c = fgetc(f)) != EOF) {
+               if (c != '\r') fputc(c, dbin);
+            }
+            fclose(f);
+            fclose(dbin);
+            printf("done\n");
+            if (p->logging) fprintf(logfile, "done\n");
+         }
+         
+      }
+
+      // Startup the server
+      if (p->logging) fprintf(logfile, "Starting server...\n");
+      printf("   Starting server...\n");
+      int argcount = 0;
+      argcount  = 1 + 2 + p->portcount + (p->sslportcount * 2);
+      argcount += (p->wizonly ? 1 : 0) + (p->hideconsole) + 1;
+      char **args = (char **) malloc(sizeof(char *) * argcount);
+      int marg = 0;
+      args[marg++] = strdup(p->server);
+      args[marg++] = strdup(p->dbinfile);
+      args[marg++] = strdup(p->dboutfile);
+      if (p->wizonly) args[marg++] = strdup("-wizonly");
+      if (p->hideconsole) args[marg++] = strdup("-hideconsole");
+      for (int i = 0; i < p->portcount; i++) {
+         char buf[15];
+         _snprintf(buf, 14, "%d", p->ports[i]);
+         args[marg++] = strdup(buf);
+      }
+      for (int i = 0; i < p->sslportcount; i++) {
+         args[marg++] = strdup("-sport");
+         char buf[15];
+         _snprintf(buf, 14, "%d", p->sslports[i]);
+         args[marg++] = strdup(buf);
+      }
+      args[marg++] = '\0';
+      _spawnv(_P_NOWAIT, p->server, args);
+      for (int i = 0; i < argcount; i++) free(args[i]);
+      free(args);
+      printf("done\n");
+      p = p->next;
    }
-   fclose(logfile);
-
-// Setup the command line
-   args[0]=(char *) malloc(2048);
-   args[0]="fbmuck";
-   cmdcount = 0;
-   for (i = 1; i < argc; i++) {
-      cmdcount++;
-      args[cmdcount] = (char *) malloc(strlen(argv[i]));
-      args[cmdcount] = argv[i];
-   }
-   cmdcount++;
-   args[cmdcount]=(char *) malloc(strlen(dbinf));
-   args[cmdcount]=dbinf;
-   cmdcount++;
-   args[cmdcount]=(char *) malloc(strlen(dboutf));
-   args[cmdcount]=dboutf;
-   do {
-      cmdcount++;
-      args[cmdcount] = (char *) malloc(6);
-      i = 0;
-      do {
-         if (port[count] == 0) break;
-         if (port[count] == '\n') break;
-         if (port[count] == '\r') break;
-         if (port[count] == ' ') break;
-         args[cmdcount][i]=port[count];
-         i++;
-         count++;
-      } while (1);
-      args[cmdcount][i] = '\0';
-      if (port[count] == 0) break;
-      if (port[count] == '\n') break;
-      if (port[count] == '\r') break;
-      count++;
-   } while (1) ;
-   cmdcount++;
-   args[cmdcount]=0;
-   
-   execv("fbmuck", args);
-
-   printf("Error spawning server. Cannot restart.\n");
-
-   return 1;
-
-}
-
-void create_ini() {
-	inifile = fopen("restart.ini", "w");
-	if(inifile)
-		fputs(".\\logs\\restart.\n8888\ndata\\minimal.db\ndata\\minimal.out\ndata\\minimal.old\ndata\\deltas-file\n",inifile);
-	fclose(inifile);
-	return;
-}
-
-void UpdateStatus(char* update_string) {
-    printf(update_string, stderr);
-    return;
-}
-
-int newrename(const char *oldfile, const char *newfile){
-	int result;
-
-	result = rename(oldfile, newfile);
-	if (result != 0) {
-		(void) _unlink(newfile);
-		return rename(oldfile,newfile);
-	} else {
-		return result;
-	}
 }
 

@@ -212,15 +212,17 @@ void do_setgid(char *group);
 void kill_resolver(void);
 #endif
 
-#ifdef USE_SSL
+#ifdef USE_SSL /* SSL for NIX and WinFuzz */
 ssize_t socket_read(struct descriptor_data *d, void *buf, size_t count);
 ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count);
-#elif WIN32
-#define socket_write(d, buf, count) send(d->descriptor, buf, count,0)
-#define socket_read(d, buf, count) recv(d->descriptor, buf, count,0)
-#else
-#define socket_write(d, buf, count) write(d->descriptor, buf, count)
-#define socket_read(d, buf, count) read(d->descriptor, buf, count)
+#else /* NOT SSL */
+# ifndef WIN32 /* NOT WinFuzz */
+#  define socket_write(d, buf, count) write(d->descriptor, buf, count)
+#  define socket_read(d, buf, count) read(d->descriptor, buf, count)
+# else /* WinFuzz */
+#  define socket_write(d, buf, count) send(d->descriptor, buf, count,0)
+#  define socket_read(d, buf, count) recv(d->descriptor, buf, count,0)
+# endif
 #endif
  
 
@@ -281,6 +283,9 @@ show_program_usage(char *prog)
 	fprintf(stderr, "        -godpasswd PASS  reset God(#1)'s password to PASS.  Implies -convert\n");
 	fprintf(stderr, "        -version         display this server's version.\n");
 	fprintf(stderr, "        -help            display this message.\n");
+#ifdef WIN32
+      fprintf(stderr, "        -freeconsole     free the console window and run in the background\n");
+#endif WIN32
 	exit(1);
 }
 
@@ -300,6 +305,7 @@ main(int argc, char **argv)
 	int sanity_autofix;
 	int val;
 #ifdef WIN32
+      int freeconsole = 0;
 	WORD wVersionRequested;
 	WSADATA wsaData;
 	int err;
@@ -331,6 +337,10 @@ main(int argc, char **argv)
 				wizonly_mode = 1;
 			} else if (!strcmp(argv[i], "-sanfix")) {
 				sanity_autofix = 1;
+#ifdef WIN32
+                  } else if (!strcmp(argv[i], "-freeconsole")) {
+                        freeconsole = 1;
+#endif
 			} else if (!strcmp(argv[i], "-version")) {
 				printf("%s\n", VERSION);
 				exit(0);
@@ -433,6 +443,7 @@ main(int argc, char **argv)
                 log_status("INIT: TinyMUCK %s starting.\n", "version");
 
 #ifdef DETACH
+# ifndef WIN32
 		/* Go into the background unless requested not to */
 		if (!sanity_interactive && !db_conversion_flag) {
 			fclose(stdin);
@@ -441,6 +452,19 @@ main(int argc, char **argv)
 			if (fork() != 0)
 				_exit(0);
 		}
+# endif
+#endif
+
+#ifdef WIN32
+		if (!sanity_interactive && !db_conversion_flag && freeconsole) {
+			fclose(stdin);
+			fclose(stdout);
+			fclose(stderr);
+                  FreeConsole();
+		} else {
+               FreeConsole();
+               AllocConsole();
+            }
 #endif
 
 		/* save the PID for future use */
@@ -450,7 +474,9 @@ main(int argc, char **argv)
 		}
 		log_status("%s PID is: %d\n", argv[0], getpid());
 
+
 #ifdef DETACH
+# ifndef WIN32
 		if (!sanity_interactive && !db_conversion_flag) {
 			/* Detach from the TTY, log whatever output we have... */
 			freopen(LOG_ERR_FILE, "a", stderr);
@@ -459,16 +485,16 @@ main(int argc, char **argv)
 			setbuf(stdout, NULL);
 
 			/* Disassociate from Process Group */
-# ifdef _POSIX_SOURCE
+#  ifdef _POSIX_SOURCE
 			setsid();
-# else
-#  ifdef SYSV
-			setpgrp();			/* The SysV way */
 #  else
+#   ifdef SYSV
+			setpgrp();			/* The SysV way */
+#   else
 			setpgid(0, getpid());	/* The POSIX way. */
-#  endif						/* SYSV */
+#   endif						/* SYSV */
 
-#  ifdef  TIOCNOTTY				/* we can force this, POSIX / BSD */
+#   ifdef  TIOCNOTTY				/* we can force this, POSIX / BSD */
 			{
 				int fd;
 				if ((fd = open("/dev/tty", O_RDWR)) >= 0) {
@@ -476,10 +502,20 @@ main(int argc, char **argv)
 					close(fd);
 				}
 			}
-#  endif						/* TIOCNOTTY */
-# endif							/* !_POSIX_SOURCE */
+#   endif						/* TIOCNOTTY */
+#  endif							/* !_POSIX_SOURCE */
 		}
+# endif /* WIN32 */
 #endif							/* DETACH */
+
+#ifdef WIN32
+		if (!sanity_interactive && !db_conversion_flag && freeconsole) {
+			freopen(LOG_ERR_FILE, "a", stderr);
+			setbuf(stderr, NULL);
+			freopen(LOG_FILE, "a", stdout);
+			setbuf(stdout, NULL);
+            }
+#endif
 
 #ifdef SPAWN_HOST_RESOLVER
 		if (!db_conversion_flag) {
@@ -554,7 +590,7 @@ main(int argc, char **argv)
 		return 1; 
 	}
 
-	set_console(); /* Setup the console to handle CTRL+C */
+	set_console(); 
 #endif
 
 		/* go do it */
@@ -1092,7 +1128,7 @@ shovechars()
 		process_commands();
 		muf_event_process();
 #ifdef WIN32
-		check_console(); /* Handle possible CTRL+C */
+//		 check_console(); /* Handle possible CTRL+C */
 #endif
 
 		for (d = descriptor_list; d; d = dnext) {
@@ -2016,7 +2052,7 @@ process_input(struct descriptor_data *d)
 # endif
 #else
 # ifdef USE_SSL
-	if ( (got <= 0 || got == SOCKET_ERROR) && WSAGetLastError() != EWOULDBLOCK ) 
+	if ( (got <= 0 || got == SOCKET_ERROR) && WSAGetLastError() != WSAEWOULDBLOCK ) 
 # else
 	if (got <= 0 || got == SOCKET_ERROR)
 # endif
@@ -3717,7 +3753,11 @@ ssize_t socket_read(struct descriptor_data *d, void *buf, size_t count) {
 	int i;
  
 	if (! d->ssl_session) {
+#ifndef WIN32
 		return read(d->descriptor, buf, count);
+#else
+		return recv(d->descriptor, (char *) buf, count, 0);
+#endif
 	} else {
 		i = SSL_read(d->ssl_session, buf, count);
 		if ( i < 0 ) {
@@ -3746,7 +3786,11 @@ ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count) {
 	int i;
 
 	if (! d->ssl_session) {
+#ifndef WIN32
 		return write(d->descriptor, buf, count);
+#else
+		return send(d->descriptor, (char *) buf, count, 0);
+#endif
 	} else {
 		i = SSL_write(d->ssl_session, buf, count);
 		if ( i < 0 ) {
