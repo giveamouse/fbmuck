@@ -22,6 +22,10 @@ reached the right muck.
 is in the muck 'game' directory when the muck is started; otherwise it will
 complain.
 
+   If, for some reason, you are using a server.pem file that contains a
+password encrypted private key, you can @tune ssl_keyfile_passwd to the
+apropriate password.  This kludge will be addressed soon.
+
    To see the information in your certificate, do: 
 
 openssl x509 -text < server.pem
