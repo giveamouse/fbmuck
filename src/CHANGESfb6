@@ -16,6 +16,11 @@ Fixed issue where user could get charged for @action without action creation.
 Fixed issue with improper CONCOUNT in status log files.
 Fixed minor issue where startup INIT message might not display, if status
   log is unwritable and DETACH defined.
+Fixed compile-time bug with inconsistent MALLOC_PROFILING exclusion.
+Fixed crasher bug in compiling muf with unrecognized words and debug scopedvar
+  name support.
+Fixed restart code so that it'll work with newer pid-checking restart scripts.
+Fixed small non-growing memory leak with dbloaded garbage object names.
 
 
 2.2fb6.00rc3
