@@ -1,5 +1,7 @@
 2.2fb6.00a33
 Added MUD_GID support, to change group affiliation (like MUD_ID).
+Fixed a crasher bug with closing a the input db file before we are done with
+  it, when DISKBASE is #undefed and DELTADUMPS is #defined.
 Fixed a crasher bug where ARRAY_APPENTITEM checked the wrong argument's type.
 Fixed a string termination bug in ARRAY_PUT_REFLIST.
 Fixed a bug with ARRAY_GET_REFLIST not decompressing before parsing strings.

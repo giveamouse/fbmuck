@@ -375,11 +375,6 @@ init_game(const char *infile, const char *outfile)
 	log_status("LOADING: %s (done)\n", infile);
 	fprintf(stderr, "LOADING: %s (done)\n", infile);
 
-#ifndef DISKBASE
-	/* everything ok */
-	fclose(input_file);
-#endif
-
 	/* set up dumper */
 	if (dumpfile)
 		free((void *) dumpfile);
