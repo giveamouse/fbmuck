@@ -2,6 +2,9 @@
 
 /*
  * $Log: game.c,v $
+ * Revision 1.4  2000/07/18 18:12:40  winged
+ * Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
+ *
  * Revision 1.3  2000/07/07 18:41:04  revar
  * Fixed a db corruption bug with @toading players.
  *
@@ -367,7 +370,7 @@ fork_and_dump(void)
 }
 
 #ifdef DELTADUMPS
-extern deltas_count;
+extern int deltas_count;
 
 int
 time_for_monolithic(void)

@@ -1552,8 +1552,6 @@ mfn_money(MFUNARGS)
 }
 
 
-char *unparse_flags(dbref obj);
-
 const char *
 mfn_flags(MFUNARGS)
 {

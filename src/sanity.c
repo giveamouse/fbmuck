@@ -2,6 +2,9 @@
 
 /*
  * $Log: sanity.c,v $
+ * Revision 1.3  2000/07/18 18:12:40  winged
+ * Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -89,7 +92,7 @@ SanPrint(dbref player, const char *format, ...)
 {
 	va_list args;
 	char buf[16384];
-	static san_linesprinted = 0;
+	static int san_linesprinted = 0;
 
 	va_start(args, format);
 
@@ -1102,10 +1105,10 @@ sanfix(dbref player)
 	if (player > NOTHING) {
 		if (!sanity_violated) {
 			notify_nolisten(player, "Database repair complete, please re-run"
-							" @sanity.  For details of repairs, check logs/sanfixed.");
+							" @sanity.  For details of repairs, check logs/sanfixed.", 1);
 		} else {
 			notify_nolisten(player, "Database repair complete, however the "
-							"database is still corrupt.  Please re-run @sanity.");
+							"database is still corrupt.  Please re-run @sanity.", 1);
 		}
 	} else {
 		fprintf(stderr, "Database repair complete, ");

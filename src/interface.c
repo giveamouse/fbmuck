@@ -2,6 +2,9 @@
 
 /*
  * $Log: interface.c,v $
+ * Revision 1.7  2000/07/18 18:12:40  winged
+ * Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
+ *
  * Revision 1.6  2000/07/13 01:50:51  winged
  * More portability fixes, in variables used only for time.
  *
@@ -44,101 +47,6 @@
  *
  * Revision 1.1  1996/06/12 02:40:50  foxen
  * Initial revision
- *
- * Revision 5.25  1994/03/21  11:00:42  foxen
- * Autoconfiguration mods.
- *
- * Revision 5.24  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.23  1994/03/14  12:08:46  foxen
- * Initial portability mods and bugfixes.
- *
- * Revision 5.22  1994/02/13  13:54:42  foxen
- * Added the DESCR_SETUSER primitive.
- *
- * Revision 5.21  1994/02/13  09:46:49  foxen
- * added DESCR_SETUSER primitive.
- *
- * Revision 5.20  1994/02/11  05:52:41  foxen
- * Memory cleanup and monitoring code mods.
- *
- * Revision 5.19  1994/02/08  11:08:32  foxen
- * Changes to make general propqueues run immediately, instead of queueing up.
- *
- * Revision 5.18  1994/01/29  03:20:18  foxen
- * make WHO_doing not end pad with spaces.
- *
- * Revision 5.17  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.16  1994/01/15  02:04:18  foxen
- * Minor code cleanup for @doing mods.
- *
- * Revision 5.15  1994/01/15  00:31:07  foxen
- * @doing mods.
- *
- * Revision 5.14  1994/01/10  10:29:31  foxen
- * wall_and_flush() no longer will broadcast null strings.
- *
- * Revision 5.12  1994/01/06  03:15:30  foxen
- * version 5.12
- *
- * Revision 5.11  1993/12/20  06:22:51  foxen
- * Fixed QUIT bug from 5.10.
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.1  91/01/24  00:44:18  cks
- * Initial revision
- * 
- * Revision 1.1  91/01/24  00:44:18  cks
- * changes for QUELL.
- *
- * Revision 1.0  91/01/22  21:56:00  cks
- * Initial revision
- *
- * Revision 1.13  90/09/28  12:23:15  rearl
- * Fixed @boot bug!  Finally!
- *
- * Revision 1.12  90/09/16  04:42:16  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.11  90/09/15  22:23:23  rearl
- * Fixed non-HOSTNAMES problem.  Well, problems.
- *
- * Revision 1.10  90/09/13  06:25:47  rearl
- * Changed boot_off() a bit in hopes of finding the bug...
- *
- * Revision 1.9  90/09/10  02:19:00  rearl
- * Changed NL line termination to CR/LF pairs.
- *
- * Revision 1.8  90/09/04  18:43:55  rearl
- * Fixed bug with connecting players.
- *
- * Revision 1.7  90/08/27  03:27:03  rearl
- * Fixed dump_status logging.
- *
- * Revision 1.6  90/08/15  03:02:23  rearl
- * Took out #ifdef CONNECT_MESSAGES.
- *
- * Revision 1.5  90/08/02  18:46:38  rearl
- * Fixed calls to log functions.
- *
- * Revision 1.4  90/07/29  17:35:28  rearl
- * Some minor fix-ups, most notably, gives number of players connected
- * in the WHO list (dump_users()).
- *
- * Revision 1.3  90/07/23  14:52:33  casie
- * *** empty log message ***
- *
- * Revision 1.2  90/07/21  01:40:25  casie
- * corrected a bug with the log_status function call.
- *
- * Revision 1.1  90/07/19  23:03:42  casie
- * Initial revision
- *
  *
  */
 
@@ -277,7 +185,7 @@ dbref online_next(int *ptr);
 long max_open_files(void);
 
 #ifdef SPAWN_HOST_RESOLVER
-void kill_resolver();
+void kill_resolver(void);
 #endif
 
 void spawn_resolver();
@@ -1143,7 +1051,7 @@ new_connection(int sock)
 #ifdef SPAWN_HOST_RESOLVER
 
 void
-kill_resolver()
+kill_resolver(void)
 {
 	int i;
 	pid_t p;
@@ -2399,7 +2307,7 @@ online(dbref player)
 }
 
 int
-pcount()
+pcount(void)
 {
 	return (total_loggedin_connects);
 }
@@ -2665,7 +2573,7 @@ partial_pmatch(const char *name)
 
 
 void
-update_rwho()
+update_rwho(void)
 {
 	struct descriptor_data *d;
 	char buf[BUFFER_LEN];
@@ -2716,7 +2624,7 @@ welcome_user(struct descriptor_data *d)
 }
 
 void
-dump_status()
+dump_status(void)
 {
 	struct descriptor_data *d;
 	time_t now;

@@ -128,11 +128,12 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				sfmt[1] = '\0';
 				if (slrj == 1)
 					strcat(sfmt, "-");
-				if (spad1)
+				if (spad1) {
 					if (spad1 == 1)
 						strcat(sfmt, "+");
 					else
 						strcat(sfmt, " ");
+				}
 				if (spad2)
 					strcat(sfmt, "0");
 				if (slen1 != -1) {

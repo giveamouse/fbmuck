@@ -339,4 +339,5 @@ main(int argc, char **argv)
 	list_top_4k_words();
 	/* printf("%d unique words found.\n", total_words); */
 	/* printf("%d counted words.\n", counted_words); */
+	return(0);
 }

@@ -273,7 +273,7 @@ prim_timestamps(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-extern top_pid;
+extern int top_pid;
 
 void
 prim_fork(PRIM_PROTOTYPE)
@@ -723,7 +723,7 @@ prim_event_send(PRIM_PROTOTYPE)
 		temp1.data.array = arr;
 
 		sprintf(buf, "USER.%.32s", DoNullInd(oper2->data.string));
-		muf_event_add(destfr, buf, oper3);
+		muf_event_add(destfr, buf, oper3, 0);
 	}
 
 	CLEAR(oper1);

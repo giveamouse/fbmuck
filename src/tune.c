@@ -301,7 +301,7 @@ timestr_full(long dtime)
 
 
 int
-tune_count_parms()
+tune_count_parms(void)
 {
 	int total = 0;
 	struct tune_str_entry *tstr = tune_str_list;
@@ -419,7 +419,7 @@ tune_save_parms_to_file(FILE * f)
 }
 
 void
-tune_save_parmsfile()
+tune_save_parmsfile(void)
 {
 	FILE *f;
 

@@ -2,6 +2,9 @@
 
 /*
  * $Log: property.c,v $
+ * Revision 1.4  2000/07/18 18:12:40  winged
+ * Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
+ *
  * Revision 1.3  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -294,7 +297,7 @@ remove_property_list(dbref player, int all)
 	fetchprops(player, NULL);
 #endif
 
-	if (l = DBFETCH(player)->properties) {
+	if ((l = DBFETCH(player)->properties) != NULL) {
 		p = first_node(l);
 		while (p) {
 			n = next_node(l, PropName(p));

@@ -44,7 +44,7 @@ p_null(PRIM_PROTOTYPE)
 }
 
 /* void    (*prim_func[]) (PRIM_PROTOTYPE) = */
-void (*prim_func[]) () = {
+void (*prim_func[]) (PRIM_PROTOTYPE) = {
 	p_null, p_null, p_null, p_null, p_null, p_null, p_null, p_null,
 	/* JMP, READ,   TREAD,  SLEEP,  CALL,   EXECUTE, RETURN, EVENT_WAIT, */
 	PRIMS_CONNECTS_FUNCS,
@@ -449,7 +449,7 @@ pop_for(struct forvars *forstack)
 void
 prog_clean(struct frame *fr)
 {
-	int i, j;
+	int i;
 	struct frame *ptr;
 
 	for (ptr = free_frames_list; ptr; ptr = ptr->next) {
@@ -1276,7 +1276,7 @@ do_abort_interp(dbref player, const char *msg, struct inst *pc,
 
 
 void
-do_abort_silent()
+do_abort_silent(void)
 {
 	err++;
 }

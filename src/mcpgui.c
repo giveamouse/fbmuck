@@ -31,7 +31,7 @@ void gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context);
 
 
 void
-gui_initialize()
+gui_initialize(void)
 {
 	McpVer oneoh = { 1, 0 };
 

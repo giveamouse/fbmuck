@@ -3,6 +3,9 @@
 
 /*
  * $Log: look.c,v $
+ * Revision 1.3  2000/07/18 18:12:40  winged
+ * Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -318,7 +321,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 {
 	dbref thing;
 	struct match_data md;
-	int res;
+	/* int res; */
 	char buf[BUFFER_LEN];
 	char obj_num[20];
 
@@ -411,8 +414,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 			lastmatch = NULL;
 			propadr = first_prop(thing, "_details/", &pptr, propname);
 			while (propadr) {
-				res = exit_prefix(propname, buf);
-				if (res) {
+				if (exit_prefix(propname, buf)) {
 					if (lastmatch) {
 						lastmatch = NULL;
 						ambig_flag = 1;
@@ -512,12 +514,13 @@ flag_description(dbref thing)
 			strcat(buf, " JUMP_OK");
 		if (FLAGS(thing) & VEHICLE)
 			strcat(buf, " VEHICLE");
-		if (FLAGS(thing) & XFORCIBLE)
+		if (FLAGS(thing) & XFORCIBLE) {
 			if (Typeof(thing) == TYPE_EXIT) {
 				strcat(buf, " XPRESS");
 			} else {
 				strcat(buf, " XFORCIBLE");
 			}
+		}
 		if (FLAGS(thing) & ZOMBIE)
 			strcat(buf, " ZOMBIE");
 		if (FLAGS(thing) & HAVEN)

@@ -709,7 +709,7 @@ get_mvar(const char *varname)
 }
 
 int
-free_top_mvar()
+free_top_mvar(void)
 {
 	if (varc < 1)
 		return 1;

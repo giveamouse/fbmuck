@@ -359,7 +359,7 @@ muf_event_purge(struct frame *fr)
  * events processed at a time.
  */
 void
-muf_event_process()
+muf_event_process(void)
 {
 	int limit = 10;
 	struct mufevent_process *proc;

@@ -466,7 +466,7 @@ handle_read_event(int descr, dbref player, const char *command)
 
 
 void
-next_timequeue_event()
+next_timequeue_event(void)
 {
 	struct frame *tmpfr;
 	dbref tmpcp;
@@ -605,7 +605,7 @@ timequeue_pid_frame(int pid)
 
 
 long
-next_event_time()
+next_event_time(void)
 {
 	time_t rtime = time((time_t *) NULL);
 

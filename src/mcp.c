@@ -183,7 +183,7 @@ void mcppkg_simpleedit(McpFrame * mfr, McpMesg * mesg, McpVer ver, void *context
  *****************************************************************/
 
 void
-mcp_initialize()
+mcp_initialize(void)
 {
 	McpVer oneoh = { 1, 0 };
 	McpVer twooh = { 2, 0 };
@@ -1564,6 +1564,9 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.6  2000/07/18 18:12:40  winged
+* Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
+*
 * Revision 1.5  2000/07/07 09:23:11  revar
 * Fixed microscopic memory leak with re-registering MCP package handlers.
 *
