@@ -9,6 +9,8 @@
  *      Bits of code are adapted from the Berkeley telnetd sources
  */
 
+#include "autoconf.h"
+
 #define PORT    4201
 
 #include <sys/param.h>
