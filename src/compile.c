@@ -2257,7 +2257,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	        cstat->force_comment = 2;
 	} else if (!string_compare(temp, "comment_loose")) {
 	        /* Try to compile with recursive and non-recursive comments
-		   doing strict first, then recursive on a comment-based
+		   doing recursive first, then strict on a comment-based
 		   compile error.  Only throw an error if both fail.  This is
 		   the default mode. */
 	        cstat->force_comment = 0;
