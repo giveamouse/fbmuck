@@ -230,18 +230,33 @@ enters a room.  The name ("announce") is not important, and can be anything
 you want, but they are run in alphabetic order.
 ~
 ~
-CREDITS
-Credits:
+~
+~~section Macros and Compiler Directives|Macros|Directives|CompDefs
+~
+~
+__FUZZBALL__
+__FUZZBALL__
 
-The people responsible (at fault?) for this manual are:
-    Revar (revar@belfry.com), who wrote the original terrible docs, and
-    WhiteFire (kinomon@glia.biostr.washington.edu), who cleaned them up a lot.
-    Fre'ta (tiger@tyger.org), who fixed sme errors.
-    Revar (revar@belfry.com), who rewrote most of these docs.
+  A pre$defined macro that contains the value 1 on a FuzzBall Muck server.
+This is useful for server-type specific $ifdefs, when code needs to be
+different on, say, FuzzBall Mucks and ProtoMucks.  For example:
+~~code
+    $ifdef __fuzzball__
+        me @ "This is a FuzzBall Muck server.!" notify
+    $endif
+~~endcode
 ~
 ~
-~
-~~section Compiler Directives|Directives|CompDefs
+__MUCKNAME
+__MUCKNAME
+
+  A pre$defined macro that contains the name of the server's muckname @tune
+parameter value.  This is useful for muck specific $ifdefs.  For example:
+~~code
+    $ifdef __muckname=FurryMUCK
+        me @ "Helloooooo Furry!" notify
+    $endif
+~~endcode
 ~
 ~
 __VERSION
@@ -252,6 +267,15 @@ the same string that the VERSION primitive returns.  This is mainly useful
 in $ifdef/$ifndef comparisons.  The value of this will always start with
 'Muck2.2fb' for historical reasons, followed by the current fbmuck server
 version.  Ie: Muck2.2fb6.00 for the 6.00 fbmuck server.
+~~alsosee VERSION,$IFDEF,$DEFINE,$DEF
+~
+~
+MAX_VARIABLE_COUNT
+MAX_VARIABLE_COUNT
+
+  A pre$defined macro that expands to the maximum number of variables of
+each type allowed in a program.  For function-scoped variables, this is the
+max number of scoped vars that each function may have.
 ~
 ~
 $AUTHOR
@@ -1437,6 +1461,84 @@ CANCALL?  (d s -- i)
   Returns true if the given program has a public or wizcall function that the
 current program has permissions to call.  Returns false, otherwise.
 ~~alsosee PUBLIC,WIZCALL,CALL,$LIBDEF,$PUBDEF
+~
+~
+~
+~~section I/O Operators|IOOps
+~
+~
+NOTIFY
+NOTIFY ( d s -- )
+
+  d must be a player object. s must be a string. Tells player d message
+s.  If s is null it will print nothing.  This primitive will trigger
+the _listen'er property on the object the message is sent to, unless
+the program that would be run is the same as one one currently running.
+~
+~
+NOTIFY_EXCEPT
+NOTIFY_EXCEPT ( d1 d2 s -- )
+
+  d1 must be a room object, s must be a string.  Tells everyone at
+location d1 except object d2 message s.  If object d2 is not a player
+or NOTHING (#-1) all players are notified.  If s is null it prints
+nothing.  NOTE: notify_except is now only an inserver $define.  It is
+translated to '1 swap notify_exclude'.  Please see the man sections on
+NOTIFY_EXCLUDE and DIRECTIVES for more information.
+~
+~
+NOTIFY_EXCLUDE
+NOTIFY_EXCLUDE (d dn ... d1 n s -- )
+
+  Displays the message s to all the players (or _listening objects),
+excluding the n given players, in the given room.  For example:
+  #0 #1 #23 #7 3 "Hi!" notify_exclude
+would send "Hi!" to everyone in room #0 except for players (or objects)
+#1, #7, and #23.  _listener's will not be triggered by a notify_exclude
+if the program they would run is the same as the current program running.
+~
+~
+READ_WANTS_BLANKS
+READ_WANTS_BLANKS ( -- )
+
+  Tells the interpreter that this process wants to be able to receive blank
+lines from the READ primitive.  If this is not executed, the process will
+silently ignore blank ("") lines in READ.  This only needs to be done once
+per process, and isn't reversable.
+~~alsosee READ,TREAD
+~
+~
+READ
+READ ( -- s )
+
+  Reads a string s from the user. This command should not be used in a
+program that is locked (as opposed to linked) to an object, as the
+lock will always fail and print the fail messages at read time.  It
+cannot be used in a program associated with a room object.
+~~alsosee READ_WANTS_BLANKS,TREAD
+~
+~
+TREAD
+TREAD ( i -- s i )
+
+  Acts like a timed READ call.  If the user does not provide input within
+the given number of seconds, the READ call will time-out and return a
+false boolean, otherwise it returns a true boolean and the string value
+entered.  This is implemented as an in-server macro as follows:
+    "__tread" timer_start { "TIMER.__tread" "READ" }list event_waitfor
+    swap pop "READ" strcmp if "" 0 else read 1 "__tread" timer_stop then
+~~alsosee READ_WANTS_BLANKS,READ
+~
+~
+USERLOG
+USERLOG ( str:mesg -- )
+
+  Logs an arbitrary message to the user log file.  (#defined in config.h
+as USER_LOG, defaults to the "logs/user" file.)  The log entry will be
+formatted like:
+Winged(#4023) [newaction.muf(#666)] 06/11/02 03:09:31: <string>
+The program must be running at a mucker level at least equal to the @tune
+value 'userlog_mlev' (defaults to 3) to write this log entry.
 ~
 ~
 ~
@@ -2751,7 +2853,7 @@ arrays will be list arrays.  When used on dictionaries, both arrays will
 be dictionaries.
 ~
 ~
-ARRAY_SORT
+ARRAY_SORT|SORTTYPE_CASEINSENS|SORTTYPE_DESCENDING|SORTTYPE_SHUFFLE|SORTTYPE_CASE_ASCEND|SORTTYPE_NOCASE_ASCEND|SORTTYPE_CASE_DESCEND|SORTTYPE_NOCASE_DESCEND
 ARRAY_SORT (arrData intSortType -- arrSorted)
 
   This sorts all the items in the list array given, based on the given
@@ -5537,112 +5639,24 @@ before the JMP or EXIT for each nexted FOR loop.
 ~~section Miscellaneous|MiscOps
 ~
 ~
-NOTIFY_EXCLUDE
-NOTIFY_EXCLUDE (d dn ... d1 n s -- )
-
-  Displays the message s to all the players (or _listening objects),
-excluding the n given players, in the given room.  For example:
-  #0 #1 #23 #7 3 "Hi!" notify_exclude
-would send "Hi!" to everyone in room #0 except for players (or objects)
-#1, #7, and #23.  _listener's will not be triggered by a notify_exclude
-if the program they would run is the same as the current program running.
-~
-~
 VERSION
 VERSION ( -- s)
 
   Returns the version of this code in a string. "Muck2.2fb5.55", currently.
-~
-~
-BUNNY
-Easter Egg!
-
-    __
-  ,'  `.
- /______\
-|\/\/\/\/|
-|\/\/\/\/|
-\~~~~~~~~/
- `.____,'
+~~alsosee __VERSION
 ~
 ~
 FORCE
 FORCE (d s -- )
 
   Forces player d to do action s as if they were @forced.  (wizbit only)
-~
-~
-GRAFFITI
-Graffiti
-
-  Fre'ta waz here, September '95
-  Back again March '96 (Stupid spelling errors)
+~~alsosee FORCE_LEVEL
 ~
 ~
 FORCE_LEVEL
 FORCE_LEVEL ( -- i)
 
   Returns non-zero if the code we are running was triggered by an @force.
-~
-~
-USERLOG
-USERLOG ( str:mesg -- )
-
-  Logs an arbitrary message to the user log file.  (#defined in config.h
-as USER_LOG, defaults to the "logs/user" file.)  The log entry will be
-formatted like:
-Winged(#4023) [newaction.muf(#666)] 06/11/02 03:09:31: <string>
-The program must be running at a mucker level at least equal to the @tune
-value 'userlog_mlev' (defaults to 3) to write this log entry.
-~
-~
-NOTIFY
-NOTIFY ( d s -- )
-
-  d must be a player object. s must be a string. Tells player d message
-s.  If s is null it will print nothing.  This primitive will trigger
-the _listen'er property on the object the message is sent to, unless
-the program that would be run is the same as one one currently running.
-~
-~
-NOTIFY_EXCEPT
-NOTIFY_EXCEPT ( d1 d2 s -- )
-
-  d1 must be a room object, s must be a string.  Tells everyone at
-location d1 except object d2 message s.  If object d2 is not a player
-or NOTHING (#-1) all players are notified.  If s is null it prints
-nothing.  NOTE: notify_except is now only an inserver $define.  It is
-translated to '1 swap notify_exclude'.  Please see the man sections on
-NOTIFY_EXCLUDE and DIRECTIVES for more information.
-~
-~
-READ
-READ ( -- s )
-
-  Reads a string s from the user. This command should not be used in a
-program that is locked (as opposed to linked) to an object, as the
-lock will always fail and print the fail messages at read time.  It
-cannot be used in a program associated with a room object.
-~
-~
-READ_WANTS_BLANKS
-READ_WANTS_BLANKS ( -- )
-
-  Tells the interpreter that this process wants to be able to receive blank
-lines from the READ primitive.  If this is not executed, the process will
-silently ignore blank ("") lines in READ.  This only needs to be done once
-per process, and isn't reversable.
-~
-~
-TREAD
-TREAD ( i -- s i )
-
-  Acts like a timed READ call.  If the user does not provide input within
-the given number of seconds, the READ call will time-out and return a
-false boolean, otherwise it returns a true boolean and the string value
-entered.  This is implemented as an in-server macro as follows:
-    "__tread" timer_start { "TIMER.__tread" "READ" }list event_waitfor
-    swap pop "READ" strcmp if "" 0 else read 1 "__tread" timer_stop then
-~~alsosee READ
+~~alsosee FORCE
 ~
 ~
