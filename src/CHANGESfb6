@@ -1,3 +1,8 @@
+2.2fb6.00rc7
+Fixed bug with non-DISKBASE mucks where @dump would drop SSL users.
+
+
+
 2.2fb6.00rc6
 Added "objtype" field to results of SYSPARM_ARRAY, for when the sysparm is
   of the "dbref" type.  The "objtype" field specifies what type the dbref is

@@ -104,9 +104,6 @@ dump_database_internal(void)
 	char tmpfile[2048];
 	FILE *f;
 
-	if (tp_dbdump_warning)
-		wall_and_flush(tp_dumping_mesg);
-
 	sprintf(tmpfile, "%s.#%d#", dumpfile, epoch - 1);
 	(void) unlink(tmpfile);		/* nuke our predecessor */
 
@@ -164,8 +161,12 @@ dump_database_internal(void)
 	}
 	sync();
 
+#ifdef DISKBASE
+	/* Only show dumpdone mesg if not doing background saves. */
 	if (tp_dbdump_warning)
 		wall_and_flush(tp_dumpdone_mesg);
+#endif
+
 #ifdef DISKBASE
 	propcache_hits = 0L;
 	propcache_misses = 1L;
@@ -260,6 +261,9 @@ fork_and_dump(void)
 
 	last_monolithic_time = time(NULL);
 	log_status("CHECKPOINTING: %s.#%d#\n", dumpfile, epoch);
+
+	if (tp_dbdump_warning)
+		wall_and_flush(tp_dumping_mesg);
 
 #ifdef DISKBASE
 	dump_database_internal();
