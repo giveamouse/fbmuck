@@ -1,3 +1,9 @@
+2.2fb6.00b4
+Fixed a memory leak with using 'var!' in MUF.
+Fixed interp_loop() based MUF prims to honor TRY-CATCH stack locks.
+
+
+
 2.2fb6.00b3
 Fixed a crasher bug with uninitialized watchpid-related variables.
 Fixed ARRAY_FILTER_PROP muf primitive so it actually works.
