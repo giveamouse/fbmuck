@@ -40,7 +40,7 @@ Floating Point Math:
   sin         cos         tan        asin      acos       atan
   exp         log         log10      fabs      fmod       modf
   pi          inf         round      clear     is_set?    error?
-  clear_error error_name  set_error  error_bit  error_num
+  clear_error error_name  set_error  error_bit error_num
   error_string
 
 Stack Types and Object Types:
@@ -81,7 +81,7 @@ Data Conversion:
   
 Property Management:
   getprop  getpropval  getpropfval getpropstr  addprop   remove_prop
-  envprop  envpropstr  nextprop    propdir?  parseprop    setprop
+  envprop  envpropstr  nextprop    propdir?  parseprop   setprop
   
 I/O:
   read   notify   notify_except   notify_exclude   tread
@@ -93,10 +93,12 @@ Connection Management:
   descrflush   conboot
   
 String Handling:
-  toupper    tolower    unparseobj  instring    rinstring   instr  rinstr
-  strlen     strcat     strcut      striplead   striptail   strip  subst
-  explode    textattr   pronoun_sub midstr      fmtstring   split  rsplit
-  tokensplit ansi_strip ansi_strlen ansi_strcut ansi_midstr
+  instr        rinstr        instring     rinstring    unparseobj
+  strlen       strcat        strcut       explode      pronoun_sub
+  toupper      tolower       strip        striplead    striptail
+  split        rsplit        subst        midstr       fmtstring
+  tokensplit   textattr      ansi_strip   ansi_strlen  ansi_strcut
+  ansi_midstr  explode_array
                                                                 
 Lock Handling:
   locked?   getlockstr   setlockstr   parselock   unparselock
