@@ -855,6 +855,209 @@ mcpedit_program(int descr, dbref player, dbref prog, const char* name)
 	PROGRAM_SET_FIRST(prog, NULL);
 }
 
+/*
+ * copy a single property, identified by its name, from one object to
+ * another. helper routine for copy_props (below).
+ */
+void
+copy_one_prop(dbref player, dbref source, dbref destination, char *propname)
+{
+	PropPtr currprop;
+	PData newprop;
+
+	/* read property from old object */
+	currprop = get_property(source, propname);
+
+#ifdef DISKBASE
+	/* make sure the property value is there */
+	propfetch(source, currprop);
+#endif
+
+	if(currprop) {
+
+		/* flags can be copied. */		
+		newprop.flags = currprop->flags;
+
+		/* data, however, must be cloned in case it's a string or a
+		   lock. */
+		switch(PropType(currprop)) {
+			case PROP_STRTYP:
+				newprop.data.str = alloc_string((currprop->data).str);
+				break;
+			case PROP_INTTYP:
+			case PROP_FLTTYP:
+			case PROP_REFTYP:
+				newprop.data = currprop->data;
+				break;
+			case PROP_LOKTYP:
+				newprop.data.lok = copy_bool((currprop->data).lok);
+			case PROP_DIRTYP:
+				break;
+		}
+
+		/* now hook the new property into the destination object. */
+		set_property(destination, propname, &newprop);
+	}
+	
+	return;
+}
+
+/*
+ * copy a property (sub)tree from one object to another one. this is a
+ * helper routine used by do_clone, based loosely on listprops_wildcard from
+ * look.c.
+ */
+void
+copy_props(dbref player, dbref source, dbref destination, const char *dir)
+{
+	char propname[BUFFER_LEN];
+	char buf[BUFFER_LEN];
+	PropPtr propadr, pptr;
+
+#ifdef VERBOSE_CLONE
+	char buf2[BUFFER_LEN];
+#endif /* VERBOSE_CLONE */
+
+	/* loop through all properties in the current propdir */
+	propadr = first_prop(source, (char *) dir, &pptr, propname);
+	while (propadr) {
+	
+		/* generate name for current property */
+		snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+
+#ifdef VERBOSE_CLONE
+		/* notify player */
+		if(Wizard(OWNER(player))) {
+			snprintf(buf2, sizeof(buf2), "now copying property %s", buf);
+			notify(player, buf2);
+		}
+#endif /* VERBOSE_CLONE */
+
+		/* copy this property */
+		copy_one_prop(player, source, destination, buf);
+		
+		/* recursively copy this property directory */
+		copy_props(player, source, destination, buf);
+		
+		/* find next property in current dir */
+		propadr = next_prop(pptr, propadr, propname);
+
+	}
+	
+	/* chaos and disorder - our work here is done. */
+	return;
+}
+
+/*
+ * do_clone
+ *
+ * Use this to clone an object.
+ */
+void
+do_clone(int descr, dbref player, char *name)
+{
+	static char buf[BUFFER_LEN];
+	dbref  loc;
+	dbref  thing, clonedthing;
+	int    cost;
+	struct match_data md;
+        char   *newname;
+
+	/* Perform sanity checks */
+
+	if (!Builder(player)) {
+		notify(player, "That command is restricted to authorized builders.");
+		return;
+	}
+	
+	if (*name == '\0') {
+		notify(player, "Clone what?");
+		return;
+	} 
+
+	/* All OK so far, so try to find the thing that should be cloned. We
+	   do not allow rooms, exits, etc. to be cloned for now. */
+
+	init_match(descr, player, name, TYPE_THING, &md);
+	match_possession(&md);
+	match_neighbor(&md);
+	match_registered(&md);
+	match_absolute(&md);
+	
+	if ((thing = noisy_match_result(&md)) == NOTHING)
+		return;
+
+	if (thing == AMBIGUOUS) {
+		notify(player, "I don't know which one you mean!");
+		return;
+	}
+
+	/* Further sanity checks */
+
+	/* things only. */
+	if(Typeof(thing) != TYPE_THING) {
+		notify(player, "That is not a cloneable object.");
+		return;
+	}		
+	
+	/* check the name again, just in case reserved name patterns have
+	   changed since the original object was created. */
+	if (!ok_name(NAME(thing))) {
+		notify(player, "You cannot clone something with such a weird name!");
+		return;
+	}
+
+	/* no stealing stuff. */
+	if(!controls(player, thing)) {
+		notify(player, "Permission denied.");
+		return;
+	}
+
+	/* there ain't no such lunch as a free thing. */
+	cost = OBJECT_GETCOST(THING_VALUE(thing));
+	if (cost < tp_object_cost) {
+		cost = tp_object_cost;
+	}
+	
+	if (!payfor(player, cost)) {
+		notify_fmt(player, "Sorry, you don't have enough %s.", tp_pennies);
+		return;
+	} else {
+		/* create the object */
+		clonedthing = new_object();
+
+		/* initialize everything */
+		NAME(clonedthing) = alloc_string(NAME(thing));
+		ALLOC_THING_SP(clonedthing);
+		DBFETCH(clonedthing)->location = player;
+		OWNER(clonedthing) = OWNER(player);
+		THING_SET_VALUE(clonedthing, THING_VALUE(thing));
+/* FIXME: should we clone attached actions? */
+		DBFETCH(clonedthing)->exits = NOTHING;
+		FLAGS(clonedthing) = FLAGS(thing);
+
+		/* copy all properties */
+		copy_props(player, thing, clonedthing, "");
+
+		/* endow the object */
+		if (THING_VALUE(thing) > tp_max_object_endowment) {
+			THING_SET_VALUE(thing, tp_max_object_endowment);
+		}
+		
+		/* Home, sweet home */
+		THING_SET_HOME(clonedthing, THING_HOME(thing));
+
+		/* link it in */
+		PUSH(clonedthing, DBFETCH(player)->contents);
+		DBDIRTY(player);
+
+		/* and we're done */
+		snprintf(buf, sizeof(buf), "%s created with number %d.", NAME(thing), clonedthing);
+		notify(player, buf);
+		DBDIRTY(clonedthing);
+	}
+	
+}
 
 /*
  * do_create

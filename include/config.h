@@ -95,6 +95,13 @@
  */
 #undef SCARY_MUF_PRIMS
 
+/* 
+ * Make the `@clone' command display property names as they are copied (for
+ * Wizards, anyway). This can get spammy, and currently, there is no way to
+ * turn this off once the server is compiled. When in doubt, do not define.
+ */
+#undef VERBOSE_CLONE
+
 
 /************************************************************************
    Game Options

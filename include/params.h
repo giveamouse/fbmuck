@@ -1,5 +1,8 @@
 /* $Header$
  * $Log: params.h,v $
+ * Revision 1.10  2002/09/11 04:18:26  arcticwolf
+ * Introduce @clone command to allow cloning of objects (TinyMUSH-inspired).
+ *
  * Revision 1.9  2002/09/10 21:51:12  sombre
  * Removed ignore_prop @tune.
  * Added ignore_support @tune.
@@ -1785,6 +1788,7 @@
 /* penny related stuff */
 /* amount of object endowment, based on cost */
 #define OBJECT_ENDOWMENT(cost) (((cost)-5)/5)
+#define OBJECT_GETCOST(endow) ((endow)*5+5)
 #define OBJECT_DEPOSIT(endow) ((endow)*5+4)
 
 

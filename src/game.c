@@ -676,6 +676,11 @@ process_command(int descr, dbref player, char *command)
 						goto bad;
 					}
 					break;
+				case 'l':
+				case 'L':
+					Matched("@clone");
+					do_clone(descr, player, arg1);
+					break;
 				case 'o':
 				case 'O':
 					switch (command[4]) {
