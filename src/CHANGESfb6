@@ -14,6 +14,7 @@ Added default gender pronoun overrides via _pronouns/_default/%X props on #0.
 Added ARRAY_SORT_INDEXED muf primitive.  Like ARRAY_SORT, but lets you sort
   a list of arrays, based on an indexed element in each.
 Changed @ps display code to be cleaner.
+Changed dbdumps to fork() into the background when not using DISKBASEing.
 
 
 
