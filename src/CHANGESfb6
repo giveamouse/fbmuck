@@ -1,3 +1,7 @@
+2.2fb6.00a32
+
+
+
 2.2fb6.00a31
 Fixed an error message in MCP_REGISTER.  (required ML3, not wizbit.)
 Fixed a bug with JMPs to function headers over-declaring scoped var sets.
@@ -45,11 +49,11 @@ Added new MUF procedure declaration syntax, to allow the declaration and
   a procedure name ends with a '[' char, then that tells the compiler that
   you are specifying a list of variables that should be declared and init-
   ialized from the stack.  A ']' as a word terminates the list.  If a '--'
-  is found before the ']', then anything from the '--' to the ']' gets ignored,
-  and is treated sort of like a comment.  This lets coders specify what this
-  procedure is expected to return.  Each variable can also be preceeded by
-  an arbitrary type name and a colon (':'), as sort of a comment to show what
-  stack item types it is expected to be.  The line:
+  is found before the ']', then anything from the '--' to the ']' gets
+  ignored, and is treated sort of like a comment.  This lets coders specify
+  what this procedure is expected to return.  Each variable can also be
+  preceeded by an arbitrary type name and a colon (':'), as sort of a comment
+  to show what stack item types it is expected to be.  The line:
       : myproc[ str:foo int:bar dbref:baz -- lock:qux ]
   gets effectively translated to:
       : myproc var! baz var! bar var! foo
