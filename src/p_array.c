@@ -791,8 +791,6 @@ void
 prim_array_get_propdirs(PRIM_PROTOTYPE)
 {
 	stk_array *new;
-	char *tmpname;
-	char *pname;
 	char propname[BUFFER_LEN];
 	char dir[BUFFER_LEN];
 	PropPtr propadr, pptr;
@@ -856,8 +854,6 @@ void
 prim_array_get_propvals(PRIM_PROTOTYPE)
 {
 	stk_array *new;
-	char *tmpname;
-	char *pname;
 	char propname[BUFFER_LEN];
 	char dir[BUFFER_LEN];
 	PropPtr propadr, pptr;
@@ -948,12 +944,9 @@ void
 prim_array_get_proplist(PRIM_PROTOTYPE)
 {
 	stk_array *new;
-	char *tmpname;
-	char *pname;
 	const char *strval;
-	char propname[BUFFER_LEN];
 	char dir[BUFFER_LEN];
-	PropPtr propadr, pptr;
+	char propname[BUFFER_LEN];
 	PropPtr prptr;
 	int count = 1;
 	int maxcount;
@@ -1301,7 +1294,6 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 	const char *rawstr;
 	char dir[BUFFER_LEN];
 	int count = 0;
-	int val = 0;
 
 	/* dbref strPropDir -- array */
 	CHECKOP(2);
@@ -1427,7 +1419,6 @@ void
 prim_array_findval(PRIM_PROTOTYPE)
 {
 	struct inst *in;
-	struct inst temp;
 	stk_array *arr;
 	stk_array *new;
 	int found = 0;
@@ -1459,7 +1450,6 @@ void
 prim_array_excludeval(PRIM_PROTOTYPE)
 {
 	struct inst *in;
-	struct inst temp;
 	stk_array *arr;
 	stk_array *new;
 	int found = 0;

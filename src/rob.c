@@ -2,6 +2,10 @@
 
 /*
  * $Log: rob.c,v $
+ * Revision 1.4  2000/07/19 01:33:18  revar
+ * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
+ * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
+ *
  * Revision 1.3  2000/07/07 15:37:30  revar
  * Made rob give pennies to owner of robber puppet.
  * This is more consistent with the way give works for puppets.
@@ -122,7 +126,6 @@ do_kill(int descr, dbref player, const char *what, int cost)
 {
 	dbref victim;
 	char buf[BUFFER_LEN];
-	char buf2[BUFFER_LEN];
 	struct match_data md;
 
 	init_match(descr, player, what, TYPE_PLAYER, &md);

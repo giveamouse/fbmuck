@@ -471,7 +471,7 @@ next_timequeue_event(void)
 	struct frame *tmpfr;
 	dbref tmpcp;
 	int tmpbl, tmpfg;
-	timequeue ptr, lastevent, event;
+	timequeue lastevent, event;
 	int maxruns = 0;
 	time_t rtime;
 
@@ -719,7 +719,6 @@ dequeue_prog(dbref program, int sleeponly)
 {
 	int count = 0;
 	timequeue tmp, ptr;
-	int me_count = 0;
 
 	while (tqhead && ((tqhead->called_prog == program) ||
 					  has_refs(program, tqhead) || (tqhead->uid == program))
@@ -737,9 +736,9 @@ dequeue_prog(dbref program, int sleeponly)
 		ptr = tqhead->next;
 		while (ptr) {
 			if ((ptr->called_prog == program) ||
-				(has_refs(program, ptr)) || (ptr->uid == program)
+				(has_refs(program, ptr)) || ((ptr->uid == program)
 				&& ((ptr->fr) ? (!((ptr->fr->multitask == BACKGROUND) &&
-								   (sleeponly == 2))) : (!sleeponly))) {
+								   (sleeponly == 2))) : (!sleeponly)))) {
 				tmp->next = ptr->next;
 				free_timenode(ptr);
 				process_count--;
@@ -911,12 +910,12 @@ do_dequeue(int descr, dbref player, const char *arg1)
 				}
 				notify_nolisten(player, buf, 1);
 			} else {
-				if (count = atoi(arg1)) {
-					if (!control_process(player, count)) {
+				if ((count = atoi(arg1))) {
+					if (!(control_process(player, count))) {
 						notify_nolisten(player, "Permission denied.", 1);
 						return;
 					}
-					if (!dequeue_process(count)) {
+					if (!(dequeue_process(count))) {
 						notify_nolisten(player, "No such process!", 1);
 						return;
 					}
@@ -1059,7 +1058,7 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 	strcpy(buf, propname);
 	if (is_propdir(what, buf)) {
 		strcat(buf, "/");
-		while (pname = next_prop_name(what, exbuf, buf)) {
+		while ((pname = next_prop_name(what, exbuf, buf))) {
 			strcpy(buf, pname);
 			propqueue(descr, player, where, trigger, what, xclude, buf, toparg, mlev, mt);
 		}
@@ -1171,7 +1170,7 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
 	strcpy(buf, propname);
 	if (is_propdir(what, buf)) {
 		strcat(buf, "/");
-		while (pname = next_prop_name(what, exbuf, buf)) {
+		while ((pname = next_prop_name(what, exbuf, buf))) {
 			strcpy(buf, pname);
 			listenqueue(descr, player, where, trigger, what, xclude, buf,
 						toparg, mlev, mt, mpi_p);

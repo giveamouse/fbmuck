@@ -1,6 +1,10 @@
 /* $Header$
  * 
  * $Log: externs.h,v $
+ * Revision 1.8  2000/07/19 01:33:18  revar
+ * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
+ * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
+ *
  * Revision 1.7  2000/07/18 18:18:19  winged
  * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
  *
@@ -350,5 +354,9 @@ extern void mesg_init(void);
 
 /* from tune.c */
 extern void tune_load_parmsfile(dbref player);
+
+void dump_status(void);
+void log_status(char *format, ...);
+void kill_resolver(void);
 
 #endif /* _EXTERNS_H */

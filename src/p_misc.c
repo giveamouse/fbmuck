@@ -278,7 +278,7 @@ extern int top_pid;
 void
 prim_fork(PRIM_PROTOTYPE)
 {
-	int i, j;
+	int i;
 	struct frame *tmpfr;
 
 	CHECKOP(0);

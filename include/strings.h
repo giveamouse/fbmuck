@@ -43,7 +43,7 @@ char	*rindex();
 #include "db.h"
 
 const char *name_mangle(dbref obj);
-const char *unmangle(dbref player, char *s);
+const char *unmangle(dbref player, const char *s);
 const char *strencrypt(const char *, const char *);
 const char *strdecrypt(const char *, const char *);
 

@@ -61,9 +61,9 @@ void array_mash(stk_array * arr_in, stk_array ** mash, int value);
 
 int array_is_homogenous(stk_array * arr, int typ);
 
-int array_set_strkey(stk_array ** arr, char *key, struct inst *val);
-int array_set_strkey_intval(stk_array ** arr, char *key, int val);
-int array_set_strkey_strval(stk_array ** harr, char *key, char *val);
-int array_set_strkey_refval(stk_array ** harr, char *key, dbref val);
+int array_set_strkey(stk_array ** arr, const char *key, struct inst *val);
+int array_set_strkey_intval(stk_array ** arr, const char *key, int val);
+int array_set_strkey_strval(stk_array ** harr, const char *key, const char *val);
+int array_set_strkey_refval(stk_array ** harr, const char *key, dbref val);
 
 #endif							/* MUFARRAY_H */

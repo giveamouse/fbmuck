@@ -2,6 +2,10 @@
 
 /*
  * $Log: stringutil.c,v $
+ * Revision 1.3  2000/07/19 01:33:18  revar
+ * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
+ * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -478,7 +482,7 @@ name_mangle(dbref obj)
 }
 
 const char *
-unmangle(dbref player, char *s)
+unmangle(dbref player, const char *s)
 {
 #if defined(ANONYMITY)
 	char in[16384];

@@ -2,6 +2,10 @@
 
 /*
  * $Log: wiz.c,v $
+ * Revision 1.5  2000/07/19 01:33:18  revar
+ * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
+ * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
+ *
  * Revision 1.4  2000/07/14 21:53:04  revar
  * Fixed a bug with @toad sending the inv of the toader home, not the toadee.
  *
@@ -147,6 +151,7 @@
 #include "interface.h"
 #include "match.h"
 #include "externs.h"
+#include "strings.h"
 
 void
 do_teleport(int descr, dbref player, const char *arg1, const char *arg2)

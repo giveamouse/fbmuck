@@ -1852,13 +1852,13 @@ prim_ansi_midstr(PRIM_PROTOTYPE)
 				if (*ptr == '\0') {
 					break;
 				} else if (*ptr != '[') {
-					*ptr++;
+					ptr++;
 				} else {
-					*ptr++;
+					ptr++;
 					while (isdigit(*ptr) || *ptr == ';')
-						*ptr++;
+						ptr++;
 					if (*ptr == 'm')
-						*ptr++;
+						ptr++;
 				}
 			} else {
 				loc++;

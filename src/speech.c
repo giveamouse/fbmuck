@@ -2,6 +2,10 @@
 
 /*
  * $Log: speech.c,v $
+ * Revision 1.3  2000/07/19 01:33:18  revar
+ * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
+ * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -234,8 +238,6 @@ do_page(dbref player, const char *arg1, const char *arg2)
 void
 notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg, int isprivate)
 {
-	char *progstr;
-	int prog;
 	char buf[BUFFER_LEN];
 	dbref ref;
 

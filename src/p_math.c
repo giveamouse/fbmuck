@@ -20,10 +20,9 @@ static struct inst *oper1, *oper2, *oper3, *oper4;
 static int tmp, result;
 static double tl;
 static float fresult, tf1, tf2;
-static char buf[BUFFER_LEN];
 
-#define MAXINT ~(1<<(sizeof(int)*8)-1)
-#define MININT (1<<(sizeof(int)*8)-1)
+#define MAXINT ~(1<<((sizeof(int)*8)-1))
+#define MININT (1<<((sizeof(int)*8)-1))
 
 int
 arith_good(double test)

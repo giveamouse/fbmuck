@@ -2,6 +2,10 @@
 
 /*
  * $Log: olddecomp.c,v $
+ * Revision 1.4  2000/07/19 01:33:18  revar
+ * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
+ * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
+ *
  * Revision 1.3  2000/07/07 01:27:33  revar
  * 64 bit cleanups.
  * Introduced microscopic memory leaks in p_mcp.c and documented them in
@@ -83,7 +87,6 @@ int
 main(int argc, char **argv)
 {
 	char buf[16384];
-	int i;
 
 	if (argc > 2) {
 		fprintf(stderr, "Usage: %s [infile]\n", argv[0]);

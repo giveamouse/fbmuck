@@ -1486,7 +1486,7 @@ array_is_homogenous(stk_array * arr, int typ)
 
 
 int
-array_set_strkey(stk_array ** harr, char *key, struct inst *val)
+array_set_strkey(stk_array ** harr, const char *key, struct inst *val)
 {
 	struct inst name;
 	int result;
@@ -1504,7 +1504,7 @@ array_set_strkey(stk_array ** harr, char *key, struct inst *val)
 
 
 int
-array_set_strkey_intval(stk_array ** arr, char *key, int val)
+array_set_strkey_intval(stk_array ** arr, const char *key, int val)
 {
 	struct inst value;
 	int result;
@@ -1522,7 +1522,7 @@ array_set_strkey_intval(stk_array ** arr, char *key, int val)
 
 
 int
-array_set_strkey_strval(stk_array ** harr, char *key, char *val)
+array_set_strkey_strval(stk_array ** harr, const char *key, const char *val)
 {
 	struct inst value;
 	int result;
@@ -1539,7 +1539,7 @@ array_set_strkey_strval(stk_array ** harr, char *key, char *val)
 
 
 int
-array_set_strkey_refval(stk_array ** harr, char *key, dbref val)
+array_set_strkey_refval(stk_array ** harr, const char *key, dbref val)
 {
 	struct inst value;
 	int result;

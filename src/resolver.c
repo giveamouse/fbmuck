@@ -41,8 +41,6 @@
 #define IDENTD_TIMEOUT 60
 
 
-extern int errno;
-
 #ifdef USE_IPV6
 const char *addrout(struct in6_addr *, unsigned short, unsigned short);
 #else
@@ -150,7 +148,7 @@ hostfetch(long ip)
 }
 
 void
-hostprune()
+hostprune(void)
 {
 	struct hostcache *ptr;
 	struct hostcache *tmp;
@@ -219,7 +217,7 @@ hostadd_timestamp(long ip, const char *name)
 void set_signals(void);
 
 #ifdef _POSIX_VERSION
-void our_signal(int signo, void (*sighandler) ());
+void our_signal(int signo, void (*sighandler) (int));
 #else
 # define our_signal(s,f) signal((s),(f))
 #endif
@@ -234,7 +232,7 @@ void our_signal(int signo, void (*sighandler) ());
  */
 #ifdef _POSIX_VERSION
 void
-our_signal(int signo, void (*sighandler) ())
+our_signal(int signo, void (*sighandler) (int))
 {
 	struct sigaction act, oact;
 
@@ -266,7 +264,7 @@ our_signal(int signo, void (*sighandler) ())
  */
 
 void
-set_signals()
+set_signals(void)
 {
 	/* we don't care about SIGPIPE, we notice it in select() and write() */
 	our_signal(SIGPIPE, SIG_IGN);
@@ -493,7 +491,7 @@ addrout(long a, unsigned short prt, unsigned short myprt)
 
 
 int
-do_resolve()
+do_resolve(void)
 {
 	int ip1, ip2, ip3, ip4;
 	int prt, myprt;
@@ -565,9 +563,6 @@ do_resolve()
 int
 main(int argc, char **argv)
 {
-	int whatport;
-	FILE *ffd;
-
 	if (argc > 1) {
 		fprintf(stderr, "Usage: %s\n", *argv);
 		exit(1);

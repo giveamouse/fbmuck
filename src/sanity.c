@@ -2,6 +2,10 @@
 
 /*
  * $Log: sanity.c,v $
+ * Revision 1.4  2000/07/19 01:33:18  revar
+ * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
+ * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
+ *
  * Revision 1.3  2000/07/18 18:12:40  winged
  * Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
  *
@@ -498,8 +502,6 @@ check_exits_list(dbref player, dbref obj)
 void
 check_object(dbref player, dbref obj)
 {
-	int i;
-
 	/*
 	 * Do we have a name?
 	 */
@@ -636,7 +638,7 @@ cut_all_chains(dbref obj)
 }
 
 void
-cut_bad_recyclable()
+cut_bad_recyclable(void)
 {
 	dbref loop, prev;
 
@@ -734,7 +736,7 @@ cut_bad_exits(dbref obj)
 }
 
 void
-hacksaw_bad_chains()
+hacksaw_bad_chains(void)
 {
 	dbref loop;
 
@@ -751,7 +753,7 @@ hacksaw_bad_chains()
 }
 
 char *
-rand_password()
+rand_password(void)
 {
 	int loop;
 	char pwdchars[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -891,7 +893,7 @@ fix_garbage(dbref obj)
 }
 
 void
-find_misplaced_objects()
+find_misplaced_objects(void)
 {
 	dbref loop, player = NOTHING, room;
 
@@ -1015,7 +1017,7 @@ find_misplaced_objects()
 }
 
 void
-adopt_orphans()
+adopt_orphans(void)
 {
 	dbref loop;
 
@@ -1050,7 +1052,7 @@ adopt_orphans()
 }
 
 void
-clean_global_environment()
+clean_global_environment(void)
 {
 	if (DBFETCH(GLOBAL_ENVIRONMENT)->next != NOTHING) {
 		SanFixed(GLOBAL_ENVIRONMENT, "Removed the global environment %s from a chain");
@@ -1309,11 +1311,6 @@ void
 extract_props_rec(FILE * f, dbref obj, const char *dir, PropPtr p)
 {
 	char buf[BUFFER_LEN];
-	char *ptr;
-	const char *ptr2;
-	long tpos;
-	int flg;
-	short wastouched = 0;
 
 	if (!p)
 		return;
@@ -1492,9 +1489,7 @@ extract_single(void)
 void
 hack_it_up(void)
 {
-	char buf[BUFFER_LEN];
 	char *ptr;
-	int i;
 
 	do {
 		printf("\nCommand: (? for help)\n");
@@ -1571,8 +1566,6 @@ hack_it_up(void)
 void
 san_main(void)
 {
-	int i;
-
 	printf("\nEntering the Interactive Sanity DB editor.\n");
 	printf("Good luck!\n\n");
 

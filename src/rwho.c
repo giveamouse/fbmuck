@@ -21,7 +21,7 @@ this is a standalone library.
 #define	DGRAMPORT		6888
 
 #ifndef	NO_HUGE_RESOLVER_CODE
-extern struct hostent *gethostbyname();
+extern struct hostent *gethostbyname(const char *);
 #endif
 
 static int dgramfd = -1;
@@ -109,7 +109,7 @@ rwhocli_setup(const char *server, const char *serverpw, const char *myname,
 
 /* disable RWHO */
 int
-rwhocli_shutdown()
+rwhocli_shutdown(void)
 {
 	char pbuf[512];
 
@@ -130,7 +130,7 @@ rwhocli_shutdown()
 
 /* send an update ping that we're alive */
 int
-rwhocli_pingalive()
+rwhocli_pingalive(void)
 {
 	char pbuf[512];
 

@@ -136,7 +136,7 @@ propdir_get_elem(PropPtr root, char *path)
 		return (NULL);
 	} else {
 		/* aha, we are finally to the property subname itself. */
-		if (p = locate_prop(root, path)) {
+		if ((p = locate_prop(root, path))) {
 			/* found the property! */
 			return (p);
 		}
@@ -152,7 +152,6 @@ PropPtr
 propdir_first_elem(PropPtr root, char *path)
 {
 	PropPtr p;
-	char *n;
 
 	while (*path && *path == PROPDIR_DELIMITER)
 		path++;
@@ -207,7 +206,7 @@ propdir_check(PropPtr root, char *path)
 {
 	PropPtr p;
 
-	if (p = propdir_get_elem(root, path))
+	if ((p = propdir_get_elem(root, path)))
 		return (PropDir(p) != NULL);
 	return (0);
 }

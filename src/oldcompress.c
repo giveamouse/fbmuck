@@ -2,6 +2,10 @@
 
 /*
  * $Log: oldcompress.c,v $
+ * Revision 1.3  2000/07/19 01:33:18  revar
+ * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
+ * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -96,7 +100,7 @@ old_init_compress(void)
 	}
 
 	for (i = 0; i < NUM_TOKENS; i++) {
-		old_token_table[old_tokens[i][0]][old_tokens[i][1]] = i | TOKEN_BIT;
+		old_token_table[(int)old_tokens[i][0]][(int)old_tokens[i][1]] = i | TOKEN_BIT;
 	}
 
 	old_table_initialized = 1;
@@ -129,7 +133,7 @@ old_compress(const char *s)
 
 	/* tokenize the first characters */
 	for (to = buf; s[0] && s[1]; to++) {
-		if ((token = old_token_table[s[0]][s[1]])) {
+		if ((token = old_token_table[(int)s[0]][(int)s[1]])) {
 			*to = token;
 			s += 2;
 		} else {

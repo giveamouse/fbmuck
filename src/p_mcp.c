@@ -21,8 +21,7 @@
 #include "mufevent.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
-static int tmp, result;
-static dbref ref;
+static int result;
 
 
 struct mcp_muf_context {
@@ -481,7 +480,6 @@ void
 prim_mcp_send(PRIM_PROTOTYPE)
 {
 	char *pkgname, *msgname;
-	char buf[BUFFER_LEN];
 	int descr;
 	McpFrame *mfr;
 	stk_array *arr;
@@ -602,7 +600,7 @@ prim_gui_available(PRIM_PROTOTYPE)
 void
 prim_gui_dlog_create(PRIM_PROTOTYPE)
 {
-	char *dlogid = NULL;
+	const char *dlogid = NULL;
 	char *title = NULL;
 	char *wintype = NULL;
 	stk_array *arr = NULL;
@@ -799,7 +797,7 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
 		vallist = (char**)malloc(sizeof(char*) * vallines);
 		for (i = 0; i < vallines; i++)
 			vallist[i] = mcp_mesg_arg_getline(&msg, "value", i);
-		gui_value_set_local(dlogid, ctrlid, vallines, vallist);
+		gui_value_set_local(dlogid, ctrlid, vallines, (const char**)vallist);
 		free(vallist);
 	}
 
@@ -902,7 +900,7 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 		}
 	}
 
-	GuiSetVal(dlogid, name, count, valarray);
+	GuiSetVal(dlogid, name, count, (const char**)valarray);
 
 	while (count-- > 0) {
 		free(valarray[count]);
@@ -918,8 +916,7 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 void
 prim_gui_values_get(PRIM_PROTOTYPE)
 {
-	char *name;
-	char *value;
+	const char *name;
 	char *dlogid;
 	stk_array *new;
 	struct inst temp1;

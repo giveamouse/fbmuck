@@ -2,6 +2,10 @@
 
 /*
  * $Log: property.c,v $
+ * Revision 1.5  2000/07/19 01:33:18  revar
+ * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
+ * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
+ *
  * Revision 1.4  2000/07/18 18:12:40  winged
  * Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
  *
@@ -107,7 +111,7 @@ extern const char *old_uncompress(const char *);
 void
 set_property_nofetch(dbref player, const char *pname, PData * dat)
 {
-	PropPtr p, l;
+	PropPtr p;
 	char buf[BUFFER_LEN];
 	char *n, *w;
 
@@ -321,7 +325,7 @@ remove_property_nofetch(dbref player, const char *pname)
 {
 	PropPtr l;
 	char buf[BUFFER_LEN];
-	char *n, *w;
+	char *w;
 
 	w = strcpy(buf, pname);
 
@@ -350,9 +354,9 @@ remove_property(dbref player, const char *pname)
 PropPtr
 get_property(dbref player, const char *pname)
 {
-	PropPtr p, l;
+	PropPtr p;
 	char buf[BUFFER_LEN];
-	char *n, *w;
+	char *w;
 
 #ifdef DISKBASE
 	fetchprops(player, propdir_name(pname));
@@ -733,8 +737,7 @@ size_properties(dbref player, int load)
 int
 is_propdir_nofetch(dbref player, const char *pname)
 {
-	PropPtr p, l;
-	char *n;
+	PropPtr p;
 	char w[BUFFER_LEN];
 
 	strcpy(w, pname);
@@ -1075,8 +1078,6 @@ int
 db_dump_props_rec(dbref obj, FILE * f, const char *dir, PropPtr p)
 {
 	char buf[BUFFER_LEN];
-	char *ptr;
-	const char *ptr2;
 	long tpos;
 	int flg;
 	short wastouched = 0;

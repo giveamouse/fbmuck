@@ -2,6 +2,10 @@
 
 /*
  * $Log: interface.c,v $
+ * Revision 1.8  2000/07/19 01:33:18  revar
+ * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
+ * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
+ *
  * Revision 1.7  2000/07/18 18:12:40  winged
  * Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
  *
@@ -81,8 +85,8 @@
 #include "props.h"
 #include "mcp.h"
 #include "mufevent.h"
+#include "externs.h"
 
-extern int errno;
 int shutdown_flag = 0;
 int restart_flag = 0;
 int total_loggedin_connects = 0;
@@ -137,13 +141,13 @@ struct descriptor_data {
 
 static int sock;
 static int ndescriptors = 0;
-extern void fork_and_dump();
+extern void fork_and_dump(void);
 
 extern int rwhocli_setup(const char *server, const char *serverpw, const char *myname,
 
 						 const char *comment);
-extern int rwhocli_shutdown();
-extern int rwhocli_pingalive();
+extern int rwhocli_shutdown(void);
+extern int rwhocli_pingalive(void);
 extern int rwhocli_userlogin(const char *uid, const char *name, time_t tim);
 extern int rwhocli_userlogout(const char *uid);
 
@@ -180,7 +184,7 @@ void announce_disconnect(struct descriptor_data *);
 char *time_format_1(long);
 char *time_format_2(long);
 int online(dbref player);
-int online_init();
+int online_init(void);
 dbref online_next(int *ptr);
 long max_open_files(void);
 
@@ -188,8 +192,8 @@ long max_open_files(void);
 void kill_resolver(void);
 #endif
 
-void spawn_resolver();
-void resolve_hostnames();
+void spawn_resolver(void);
+void resolve_hostnames(void);
 
 #define MALLOC(result, type, number) do {   \
                                        if (!((result) = (type *) malloc ((number) * sizeof (type)))) \
@@ -247,10 +251,6 @@ main(int argc, char **argv)
 	int sanity_skip;
 	int sanity_interactive;
 	int sanity_autofix;
-
-#ifdef DETACH
-	int fd;
-#endif
 
 	resolver_myport = whatport = TINYPORT;
 
@@ -376,9 +376,12 @@ main(int argc, char **argv)
 #  endif						/* SYSV */
 
 #  ifdef  TIOCNOTTY				/* we can force this, POSIX / BSD */
-		if ((fd = open("/dev/tty", O_RDWR)) >= 0) {
-			ioctl(fd, TIOCNOTTY, (char *) 0);	/* lose controll TTY */
-			close(fd);
+		{
+			int fd;
+			if ((fd = open("/dev/tty", O_RDWR)) >= 0) {
+				ioctl(fd, TIOCNOTTY, (char *) 0);	/* lose controll TTY */
+				close(fd);
+			}
 		}
 #  endif						/* TIOCNOTTY */
 # endif							/* !SYS_POSIX */
@@ -1497,7 +1500,7 @@ process_output(struct descriptor_data *d)
 		return 1;
 	}
 
-	for (qp = &d->output.head; cur = *qp;) {
+	for (qp = &d->output.head; (cur = *qp);) {
 		cnt = write(d->descriptor, cur->start, cur->nchars);
 		if (cnt < 0) {
 			if (errno == EWOULDBLOCK)
@@ -2153,9 +2156,6 @@ announce_connect(int descr, dbref player)
 	char buf[BUFFER_LEN];
 	struct match_data md;
 	dbref exit;
-	dbref tmploc;
-	char *tmpchar;
-	int the_prog;
 	time_t tt;
 
 	if ((loc = getloc(player)) == NOTHING)
@@ -2221,10 +2221,7 @@ announce_disconnect(struct descriptor_data *d)
 {
 	dbref player = d->player;
 	dbref loc;
-	dbref tmploc;
 	char buf[BUFFER_LEN];
-	char *tmpchar;
-	int the_prog;
 	struct descriptor_data *temp;
 
 	if ((loc = getloc(player)) == NOTHING)
