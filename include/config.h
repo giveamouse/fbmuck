@@ -35,7 +35,7 @@
 
 /* Makes God (#1) immune to @force, @newpassword, and being set !Wizard.  
  */
-#undef GOD_PRIV
+#define GOD_PRIV
 
 /* Use to compress string data (recomended)
  */
