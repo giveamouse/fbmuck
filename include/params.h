@@ -104,9 +104,11 @@
 
 #define ANSI_BOLD	"\033[1m"
 #define ANSI_DIM      	"\033[2m"
+#define ANSI_ITALIC   	"\033[3m"
 #define ANSI_UNDERLINE	"\033[4m"
 #define ANSI_FLASH	"\033[5m"
 #define ANSI_REVERSE	"\033[7m"
+#define ANSI_OSTRIKE	"\033[9m"
 
 #define ANSI_FG_BLACK	"\033[30m"
 #define ANSI_FG_RED	"\033[31m"

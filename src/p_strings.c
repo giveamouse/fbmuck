@@ -2033,10 +2033,14 @@ prim_textattr(PRIM_PROTOTYPE)
 					*ptr2++ = '\0';
 					if (!string_compare(attr, "reset")) {
 						strcatn(buf, sizeof(buf), ANSI_RESET);
+					} else if (!string_compare(attr, "normal")) {
+						strcatn(buf, sizeof(buf), ANSI_RESET);
 					} else if (!string_compare(attr, "bold")) {
 						strcatn(buf, sizeof(buf), ANSI_BOLD);
 					} else if (!string_compare(attr, "dim")) {
 						strcatn(buf, sizeof(buf), ANSI_DIM);
+					} else if (!string_compare(attr, "italic")) {
+						strcatn(buf, sizeof(buf), ANSI_ITALIC);
 					} else if (!string_compare(attr, "uline") ||
 							   !string_compare(attr, "underline")) {
 						strcatn(buf, sizeof(buf), ANSI_UNDERLINE);
@@ -2044,6 +2048,10 @@ prim_textattr(PRIM_PROTOTYPE)
 						strcatn(buf, sizeof(buf), ANSI_FLASH);
 					} else if (!string_compare(attr, "reverse")) {
 						strcatn(buf, sizeof(buf), ANSI_REVERSE);
+					} else if (!string_compare(attr, "ostrike")) {
+						strcatn(buf, sizeof(buf), ANSI_OSTRIKE);
+					} else if (!string_compare(attr, "overstrike")) {
+						strcatn(buf, sizeof(buf), ANSI_OSTRIKE);
 
 					} else if (!string_compare(attr, "black")) {
 						strcatn(buf, sizeof(buf), ANSI_FG_BLACK);

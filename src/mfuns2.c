@@ -1795,18 +1795,22 @@ mfn_attr(MFUNARGS)
 
 	buf[0] = '\0';
 	for (i = 0; i < argc - 1; i++) {
-		if (!string_compare(argv[i], "reset")) {
+		if (!string_compare(argv[i], "reset") || !string_compare(argv[i], "normal")) {
 			strcatn(buf, BUFFER_LEN, ANSI_RESET);
 		} else if (!string_compare(argv[i], "bold")) {
 			strcatn(buf, BUFFER_LEN, ANSI_BOLD);
 		} else if (!string_compare(argv[i], "dim")) {
 			strcatn(buf, BUFFER_LEN, ANSI_DIM);
+		} else if (!string_compare(argv[i], "italic")) {
+			strcatn(buf, BUFFER_LEN, ANSI_ITALIC);
 		} else if (!string_compare(argv[i], "uline") || !string_compare(argv[i], "underline")) {
 			strcatn(buf, BUFFER_LEN, ANSI_UNDERLINE);
 		} else if (!string_compare(argv[i], "flash")) {
 			strcatn(buf, BUFFER_LEN, ANSI_FLASH);
 		} else if (!string_compare(argv[i], "reverse")) {
 			strcatn(buf, BUFFER_LEN, ANSI_REVERSE);
+		} else if (!string_compare(argv[i], "ostrike") || !string_compare(argv[i], "overstrike")) {
+			strcatn(buf, BUFFER_LEN, ANSI_OSTRIKE);
 
 		} else if (!string_compare(argv[i], "black")) {
 			strcatn(buf, BUFFER_LEN, ANSI_FG_BLACK);
@@ -1843,7 +1847,7 @@ mfn_attr(MFUNARGS)
 			strcatn(buf, BUFFER_LEN, ANSI_BG_WHITE);
 		} else if (!string_compare(argv[i], "")) {
 		} else {
-			ABORT_MPI("ATTR", "Unrecognized ansi tag.  Try one of reset, bold, dim, underline, reverse, black, red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, bg_green, bg_cyan, bg_blue, bg_magenta, or bg_white.");
+			ABORT_MPI("ATTR", "Unrecognized ansi tag.  Try one of reset, bold, dim, italic, underline, reverse, overstrike, black, red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, bg_green, bg_cyan, bg_blue, bg_magenta, or bg_white.");
 		}
 	}
 	exlen = strlen(buf) + strlen(ANSI_RESET) + 1;

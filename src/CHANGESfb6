@@ -70,6 +70,7 @@ Added pragmas $pragma comment_recurse, $pragma comment_strict and
 Added MUF_COMMENTS_STRICT @tune option, to specify if MUF comments are parsed
   in strict oldstyle mode, or in loose mode by default.
 Added warning if recursive comment seems to end in a string.
+Added support for italic and overstroke ANSI codes in {attr} and TEXTATTR.
 
 
 
