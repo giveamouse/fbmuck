@@ -239,11 +239,11 @@ RETSIGTYPE sig_reap(int i)
 			log_status("resolver exited with status %d\n", status);
 #ifndef DISKBASE
 		} else if(reapedpid == global_dumper_pid) {
-			log_status("forked DB dump task exited with status %d", status);
+			log_status("forked DB dump task exited with status %d\n", status);
 			global_dumpdone = 1;
 #endif
 		} else {
-			fprintf(stderr, "unknown child process (pid %d) exited with status %d", reapedpid, status);
+			fprintf(stderr, "unknown child process (pid %d) exited with status %d\n", reapedpid, status);
 		}
 	}
 	return RETSIGVAL;
