@@ -2,6 +2,9 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.15  2001/10/29 19:21:49  revar
+ * More fixes for the parent_loop_check on HOME.
+ *
  * Revision 1.14  2001/10/29 19:18:21  revar
  * Fixed crasher with doing a parent_loop_check on HOME.
  *
@@ -342,6 +345,12 @@ parent_loop_check(dbref source, dbref dest)
 			  break;
 		  case TYPE_THING:
 			  dest = THING_HOME(source);
+			  break;
+		  case TYPE_ROOM:
+			  dest = GLOBAL_ENVIRONMENT;
+			  break;
+		  case TYPE_PROGRAM:
+			  dest = OWNER(source);
 			  break;
 		  default:
 			  return 1;
