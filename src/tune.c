@@ -134,7 +134,6 @@ int tp_command_time_msec = COMMAND_TIME_MSEC;
 int tp_max_output = MAX_OUTPUT;
 
 int tp_max_delta_objs = MAX_DELTA_OBJS;
-int tp_max_loaded_objs = MAX_LOADED_OBJS;
 int tp_max_process_limit = MAX_PROCESS_LIMIT;
 int tp_max_plyr_processes = MAX_PLYR_PROCESSES;
 int tp_max_instr_count = MAX_INSTR_COUNT;
@@ -198,7 +197,6 @@ struct tune_val_entry tune_val_list[] = {
 	{"Tuning",      "pause_min", &tp_pause_min, 0, "Min ms to pause between MUF timeslices"},
 	{"Tuning",      "free_frames_pool", &tp_free_frames_pool, 0, "Size of MUF process frame pool"},
 	{"Tuning",      "max_delta_objs", &tp_max_delta_objs, 0, "Percentage changed objects to force full dump"},
-	{"Tuning",      "max_loaded_objs", &tp_max_loaded_objs, 0, "Max proploaded object percentage"},
 
 	{NULL, NULL, NULL, 0}
 };
