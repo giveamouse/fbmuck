@@ -76,6 +76,10 @@ Makefile: Makefile.in
 TMPPKGDIR=/tmp/tmp_fbmuck_pkg
 TMPREV=/tmp/tmp_fbmuck_rev
 
+help:
+	cd src && make prochelp
+	cd game/data && ../../src/prochelp mpihelp.raw mpihelp.txt ../../docs/mpihelp.html
+
 package:
 	rm -rf ${TMPPKGDIR}
 	mkdir ${TMPPKGDIR}
