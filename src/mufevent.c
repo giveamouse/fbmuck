@@ -278,6 +278,7 @@ muf_event_list(dbref player, const char *pat)
 	char inststr[BUFFER_LEN];
 	char cpustr[BUFFER_LEN];
 	char progstr[BUFFER_LEN];
+	char prognamestr[BUFFER_LEN];
 	int count = 0;
 	time_t rtime = time((time_t *) NULL);
 	time_t etime;
@@ -301,10 +302,16 @@ muf_event_list(dbref player, const char *pat)
 		snprintf(pidstr, sizeof(pidstr), "%d", proc->fr->pid);
 		snprintf(inststr, sizeof(inststr), "%d", (proc->fr->instcnt / 1000));
 		snprintf(cpustr, sizeof(cpustr), "%4.1f", pcnt);
-		snprintf(progstr, sizeof(progstr), "#%d", proc->prog);
+		if (proc->fr) {
+			snprintf(progstr, sizeof(progstr), "#%d", proc->fr->caller.st[1]);
+			snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(proc->fr->caller.st[1]));
+		} else {
+			snprintf(progstr, sizeof(progstr), "#%d", proc->prog);
+			snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(proc->prog));
+		}
 		snprintf(buf, sizeof(buf), pat, pidstr, "--",
 				time_format_2((long) (rtime - proc->fr->started)),
-				inststr, cpustr, progstr, NAME(proc->prog), NAME(proc->player),
+				inststr, cpustr, progstr, prognamestr, NAME(proc->player),
 				"EVENT_WAITFOR");
 		if (Wizard(OWNER(player)) || (OWNER(proc->prog) == OWNER(player))
 			|| (proc->player == player))

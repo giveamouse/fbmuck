@@ -750,8 +750,13 @@ list_events(dbref player)
 			pcnt = 0.0;
 		}
 		snprintf(cpustr, sizeof(cpustr), "%4.1f", pcnt);
-		snprintf(progstr, sizeof(progstr), "#%d", ptr->called_prog);
-		snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(ptr->called_prog));
+		if (ptr->fr) {
+			snprintf(progstr, sizeof(progstr), "#%d", ptr->fr->caller.st[1]);
+			snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(ptr->fr->caller.st[1]));
+		} else {
+			snprintf(progstr, sizeof(progstr), "#%d", ptr->called_prog);
+			snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(ptr->called_prog));
+		}
 
 		if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ) {
 			strcpy(duestr, "--");
