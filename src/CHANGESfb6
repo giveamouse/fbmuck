@@ -58,6 +58,10 @@ Fixed bug #593023: @register bugfix/feature-in-one.
 Fixed @lock without keystring to unlock objects (similar to @flock etc.)
 Fixed give messages for wizards removing pennies from players.
 Fixed @recycle to give a proper message for attempts to recycle garbage.
+Fixed bug #604213: @kill and event_waitfor error.
+Fixed bug #606415: new programs are "in use".
+Fixed bug where listen and queued programs wouldn't get the pids they initially
+  claimed they were going to get.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.
@@ -105,6 +109,8 @@ Added REGEXP ( str:Text str:Pattern int:Flags -- list:Match list:Indices )
   Performs a regex match using the pattern given on the text. 
 Added REGSUB ( str:Text str:Pattern str:Replace int:Flags -- str:Result )
   Performs a regex substitution on text using pattern and replace.
+Added PARSEPROPEX ( ref:Obj str:Prop dict:Vars int:Pri -- dict:Vars str:Out )
+  Similar to parseprop, although allows precreation of MPI variables.
 Removed dead concentrater log code.
 Removed dead LOCKOUT code from include/config.h.
 
