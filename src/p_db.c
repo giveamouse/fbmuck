@@ -2313,7 +2313,7 @@ array_getlinks(dbref obj)
 
 			case TYPE_EXIT:
 				for (count = 0; count < (DBFETCH(obj)->sp.exit.ndest); count++)
-					array_set_intkey_refval(&nw, count++, (DBFETCH(obj)->sp.exit.dest)[count]);
+					array_set_intkey_refval(&nw, count, (DBFETCH(obj)->sp.exit.dest)[count]);
 			break;
 		}
 	}

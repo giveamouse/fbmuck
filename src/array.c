@@ -149,11 +149,10 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 		 * instead of unparsing them into strings for strcmp()s.
 		 */
 		char* la;
-		char* lb;
+		const char* lb;
 		int retval = 0;
 
-		la = unparse_boolexp((dbref)1, a->data.lock, 0);
-		la = string_dup(la);
+		la = string_dup(unparse_boolexp((dbref)1, a->data.lock, 0));
 		lb = unparse_boolexp((dbref)1, b->data.lock, 0);
 		retval = strcmp(la, lb);
 		free(la);

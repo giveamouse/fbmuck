@@ -1076,8 +1076,9 @@ recycle(int descr, dbref player, dbref thing)
 
 	looplimit = db_top;
 	while ((looplimit-- > 0) && ((first = DBFETCH(thing)->contents) != NOTHING)) {
-		if (Typeof(first) == TYPE_PLAYER || Typeof(first) == TYPE_THING &&
-			(FLAGS(first) & (ZOMBIE | VEHICLE) || tp_thing_movement)
+		if (Typeof(first) == TYPE_PLAYER ||
+			(Typeof(first) == TYPE_THING &&
+			 (FLAGS(first) & (ZOMBIE | VEHICLE) || tp_thing_movement))
 		) {
 			enter_room(descr, first, HOME, DBFETCH(thing)->location);
 			/* If the room is set to drag players back, there'll be no
