@@ -5,6 +5,7 @@ installed OpenSSL.
    This has been tested against:
 OpenSSL 0.9.5a 1 Apr 2000 (Under Solaris 2.7)
 OpenSSL 0.9.6a 5 Apr 2001 (Under Solaris 2.7)
+OpenSSL 0.9.6a (Under Redhat Linux 7.2)
 
    Any other versions will probibly not work, but you're free to try.
 
