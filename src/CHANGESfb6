@@ -1,4 +1,12 @@
 2.2fb6.00a31
+Changed the way MUF lvars work.  Called progs no longer get a copy of the
+  caller prog's lvars.  However, if prog A calls into prog B which calls
+  back into prog A, then both the inner and outer prog A have the same
+  lvars, and changes made to one are seen by the other.  Prog B has its
+  own lvars.  Basically, every different program dbref called will have
+  its own lvars in that process.  The nice feature of this is that you
+  can now make the equivalent of C-style static vars, which hold data
+  persistently between calls into a lib.
 Changed MCP_SEND to error out if the connection doesn't support the package.
 Changed EVENT_SEND MUF prim to the following:
   EVENT_SEND ( i s ? -- ) Sends a "USER." event to the process referred

@@ -279,10 +279,9 @@ list_program_functions(dbref player, dbref program, char *arg)
 	notify_nolisten(player, "*done*", 1);
 }
 
-#define CurrVar (*(fr->varset.st[fr->varset.top]))
 
 static void
-debug_printvar(dbref player, struct frame *fr, const char *arg)
+debug_printvar(dbref player, dbref program, struct frame *fr, const char *arg)
 {
 	int i;
 	int lflag = 0;
@@ -318,10 +317,10 @@ debug_printvar(dbref player, struct frame *fr, const char *arg)
 		}
 		notify_nolisten(player, insttotext(tmp, buf, sizeof(buf), 4000, -1), 1);
 	} else if (lflag) {
-		notify_nolisten(player, insttotext(&(CurrVar[i]), buf, sizeof(buf), 4000, -1), 1);
+		struct localvars* lvars = localvars_get(fr, program);
+		notify_nolisten(player, insttotext(&(lvars->lvars[i]), buf, sizeof(buf), 4000, -1), 1);
 	} else {
-		notify_nolisten(player, insttotext(&(fr->variables[i]), buf, sizeof(buf), 4000, -1),
-						1);
+		notify_nolisten(player, insttotext(&(fr->variables[i]), buf, sizeof(buf), 4000, -1), 1);
 	}
 }
 
@@ -823,7 +822,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 		add_muf_read_event(descr, player, program, fr);
 		return 0;
 	} else if (!string_compare(cmd, "print")) {
-		debug_printvar(player, fr, arg);
+		debug_printvar(player, program, fr, arg);
 		add_muf_read_event(descr, player, program, fr);
 		return 0;
 	} else if (!string_compare(cmd, "push")) {

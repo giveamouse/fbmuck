@@ -1491,7 +1491,7 @@ array_set_strkey(stk_array ** harr, char *key, struct inst *val)
 	name.type = PROG_STRING;
 	name.data.string = alloc_prog_string(key);
 
-	result = array_setitem(harr, &name, &val);
+	result = array_setitem(harr, &name, val);
 
 	CLEAR(&name);
 
@@ -1542,7 +1542,7 @@ array_set_strkey_refval(stk_array ** harr, char *key, dbref val)
 	int result;
 
 	value.type = PROG_OBJECT;
-	value.data.object = val;
+	value.data.objref = val;
 
 	result = array_set_strkey(harr, key, &value);
 

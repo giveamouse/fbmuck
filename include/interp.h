@@ -34,6 +34,8 @@ extern void RCLEAR(struct inst *oper, char *file, int line);
 extern void push(struct inst *stack, int *top, int type, voidptr res);
 extern int valid_object(struct inst *oper);
 
+extern struct localvars *localvars_get(struct frame *fr, dbref prog);
+extern void localvar_dupall(struct frame *fr, struct frame *oldfr);
 extern struct inst *scopedvar_get(struct frame *fr, int varnum);
 extern void scopedvar_dupall(struct frame *fr, struct frame *oldfr);
 extern int false(struct inst *p);
@@ -85,8 +87,6 @@ extern void do_abort_interp(dbref player, const char *msg, struct inst *pc,
 
 							int line);
 
-
-#define CurrVar (*(fr->varset.st[fr->varset.top]))
 
 #define Min(x,y) ((x < y) ? x : y)
 #define ProgMLevel(x) (find_mlev(x, fr, fr->caller.top))

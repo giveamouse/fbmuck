@@ -63,6 +63,83 @@ void (*prim_func[]) () = {
 	(void *) NULL
 };
 
+struct localvars*
+localvars_get(struct frame *fr, dbref prog)
+{
+	struct localvars *tmp = fr->lvars;
+
+	while (tmp && tmp->prog != prog) tmp = tmp->next;
+	if (tmp) {
+		/* Pull this out of the middle of the stack. */
+		*tmp->prev = tmp->next;
+		if (tmp->next)
+			tmp->next->prev = tmp->prev;
+
+	} else {
+		/* Create a new var frame. */
+		int count = MAX_VAR;
+		tmp = (struct localvars *) malloc(sizeof(struct localvars));
+		tmp->prog = prog;
+		while (count-- > 0) {
+			tmp->lvars[count].type = PROG_INTEGER;
+			tmp->lvars[count].data.number = 0;
+		}
+	}
+
+	/* Add this to the head of the stack. */
+	tmp->next = fr->lvars;
+	tmp->prev = &fr->lvars;
+	fr->lvars = tmp;
+	if (tmp->next)
+		tmp->next->prev = &tmp->next;
+
+	return tmp;
+}
+
+void
+localvar_dupall(struct frame *fr, struct frame *oldfr)
+{
+	struct localvars *orig;
+	struct localvars **targ;
+
+	orig = oldfr->lvars;
+	targ = &fr->lvars;
+
+	while (orig) {
+		int count = MAX_VAR;
+		*targ = (struct localvars*)malloc(sizeof(struct localvars));
+		while (count-- > 0)
+			copyinst(&orig->lvars[count], &(*targ)->lvars[count]);
+		(*targ)->prog = orig->prog;
+		(*targ)->next = NULL;
+		(*targ)->prev = targ;
+		targ = &((*targ)->next);
+		orig = orig->next;
+	}
+}
+
+void
+localvar_freeall(struct frame *fr)
+{
+	struct localvars *ptr;
+	struct localvars *nxt;
+
+	ptr = fr->lvars;
+
+	while (ptr) {
+		int count = MAX_VAR;
+		nxt = ptr->next;
+		while (count-- > 0)
+			CLEAR(&ptr->lvars[count]);
+		ptr->next = NULL;
+		ptr->prev = NULL;
+		ptr->prog = NOTHING;
+		free((void*)ptr);
+		ptr = nxt;
+	}
+	fr->lvars = NULL;
+}
+
 void
 scopedvar_addlevel(struct frame *fr, int count)
 {
@@ -289,11 +366,8 @@ interp(int descr, dbref player, dbref location, dbref program,
 	/* set basic local variables */
 
 	fr->svars = NULL;
-	fr->varset.top = 0;
-	fr->varset.st[0] = (vars *) malloc(sizeof(vars));
+	fr->lvars = NULL;
 	for (i = 0; i < MAX_VAR; i++) {
-		(*fr->varset.st[0])[i].type = PROG_INTEGER;
-		(*fr->varset.st[0])[i].data.number = 0;
 		fr->variables[i].type = PROG_INTEGER;
 		fr->variables[i].data.number = 0;
 	}
@@ -392,16 +466,10 @@ prog_clean(struct frame *fr)
 	for (i = 1; i <= fr->caller.top; i++)
 		PROGRAM_DEC_INSTANCES(fr->caller.st[i]);
 
-	for (i = fr->varset.top; i > -1; i--) {
-		for (j = 0; j < MAX_VAR; j++)
-			CLEAR(&((*fr->varset.st[i])[j]));
-		free(fr->varset.st[i]);
-		fr->varset.top--;
-	}
-
 	for (i = 0; i < MAX_VAR; i++)
 		CLEAR(&fr->variables[i]);
 
+	localvar_freeall(fr);
 	scopedvar_freeall(fr);
 
 	if (fr->fors.st) {
@@ -799,9 +867,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					fr->caller.st[++fr->caller.top] = program;
 					mlev = ProgMLevel(program);
 					PROGRAM_INC_INSTANCES(program);
-					fr->varset.top++;
-					fr->varset.st[fr->varset.top] = (vars *) malloc(sizeof(vars));
-					copyvars(fr->varset.st[fr->varset.top - 1], fr->varset.st[fr->varset.top]);
 				}
 				pc = temp1->data.addr->data;
 				CLEAR(temp1);
@@ -873,9 +938,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					fr->caller.st[++fr->caller.top] = program;
 					PROGRAM_INC_INSTANCES(program);
 					mlev = ProgMLevel(program);
-					fr->varset.top++;
-					fr->varset.st[fr->varset.top] = (vars *) malloc(sizeof(vars));
-					copyvars(fr->varset.st[fr->varset.top - 1], fr->varset.st[fr->varset.top]);
 				}
 				ts_useobject(program);
 				CLEAR(temp1);
@@ -892,15 +954,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					PROGRAM_DEC_INSTANCES(program);
 					program = sys[stop - 1].progref;
 					mlev = ProgMLevel(program);
-					{
-						int i;
-
-						for (i = 0; i < MAX_VAR; i++) {
-							CLEAR(&CurrVar[i]);
-						}
-					}
 					fr->caller.top--;
-					free(fr->varset.st[fr->varset.top--]);
 				}
 				scopedvar_poplevel(fr);
 				pc = sys[--stop].offset;

@@ -1,6 +1,9 @@
 /* $Header$
  *
  * $Log: db.h,v $
+ * Revision 1.6  2000/05/15 09:52:57  revar
+ * Rewrote how lvars work, to be per program, rather than per call-level.
+ *
  * Revision 1.5  2000/05/12 03:22:12  revar
  * Optimized CLEAR() and RCLEAR()
  * Optimized copyinst()
@@ -422,9 +425,11 @@ struct callstack {
 	dbref st[STACK_SIZE];
 };
 
-struct varstack {
-	int top;
-	vars *st[STACK_SIZE];
+struct localvars {
+	struct localvars *next;
+	struct localvars **prev;
+	dbref prog;
+	vars lvars;
 };
 
 struct forstack {
@@ -479,7 +484,7 @@ struct frame {
 	struct stack argument;		/* argument stack */
 	struct callstack caller;	/* caller prog stack */
 	struct forstack fors;		/* for loop stack */
-	struct varstack varset;		/* local variables */
+	struct localvars* lvars;	/* local variables */
 	vars variables;				/* global variables */
 	struct inst *pc;			/* next executing instruction */
 	int writeonly;				/* This program should not do reads */

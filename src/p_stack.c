@@ -119,7 +119,8 @@ prim_at(PRIM_PROTOTYPE)
 		abort_interp("Variable number out of range.");
 	if (temp1.type == PROG_LVAR) {
 		/* LOCALVAR */
-		copyinst(&(CurrVar[temp1.data.number]), &arg[(*top)++]);
+		struct localvars *tmp = localvars_get(fr, program);
+		copyinst(&(tmp->lvars[temp1.data.number]), &arg[(*top)++]);
 	} else if (temp1.type == PROG_VAR) {
 		/* GLOBALVAR */
 		copyinst(&(fr->variables[temp1.data.number]), &arg[(*top)++]);
@@ -147,8 +148,9 @@ prim_bang(PRIM_PROTOTYPE)
 		abort_interp("Variable number out of range. (2)");
 	if (oper1->type == PROG_LVAR) {
 		/* LOCALVAR */
-		CLEAR(&(CurrVar[oper1->data.number]));
-		copyinst(oper2, &(CurrVar[oper1->data.number]));
+		struct localvars *tmp = localvars_get(fr, program);
+		CLEAR(&(tmp->lvars[oper1->data.number]));
+		copyinst(oper2, &(tmp->lvars[oper1->data.number]));
 	} else if (oper1->type == PROG_VAR) {
 		/* GLOBALVAR */
 		CLEAR(&(fr->variables[oper1->data.number]));

@@ -309,13 +309,7 @@ prim_fork(PRIM_PROTOTYPE)
 	for (i = 0; i < MAX_VAR; i++)
 		copyinst(&fr->variables[i], &tmpfr->variables[i]);
 
-	tmpfr->varset.top = fr->varset.top;
-	for (i = fr->varset.top; i >= 0; i--) {
-		tmpfr->varset.st[i] = (vars *) calloc(1, sizeof(vars));
-		for (j = 0; j < MAX_VAR; j++)
-			copyinst(&((*fr->varset.st[i])[j]), &((*tmpfr->varset.st[i])[j]));
-	}
-
+	localvar_dupall(tmpfr, fr);
 	scopedvar_dupall(tmpfr, fr);
 
 	tmpfr->error.is_flags = fr->error.is_flags;
