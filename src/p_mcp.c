@@ -950,7 +950,7 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 	struct inst temp1;
 	array_data *temp2;
 
-	CHECKOP(2);
+	CHECKOP(3);
 	oper3 = POP();				/* str value  */
 	oper2 = POP();				/* str ctrlid */
 	oper1 = POP();				/* str dlogid */
