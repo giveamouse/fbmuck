@@ -539,7 +539,7 @@ main(int argc, char **argv)
 			}
 #ifdef USE_SSL
 			for (i = 0; i < ssl_numsocks; i++) {
-				sprintf(numbuf, "%d", ssl_listener_port[i]);
+				sprintf(numbuf, "-sport %d", ssl_listener_port[i]);
 				if (*portlist) {
 					strcat(portlist, " ");
 				}
