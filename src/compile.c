@@ -152,7 +152,7 @@ struct INTERMEDIATE *var_word(COMPSTATE *, const char *);
 struct INTERMEDIATE *lvar_word(COMPSTATE *, const char *);
 struct INTERMEDIATE *svar_word(COMPSTATE *, const char *);
 const char *do_string(COMPSTATE *);
-void do_comment(COMPSTATE *);
+void do_comment(COMPSTATE *, int);
 void do_directive(COMPSTATE *, char *direct);
 struct prog_addr *alloc_addr(COMPSTATE *, int, struct inst *);
 struct INTERMEDIATE *prealloc_inst(COMPSTATE * cstat);
@@ -1538,7 +1538,7 @@ next_token_raw(COMPSTATE * cstat)
 	}
 	/* take care of comments */
 	if (*cstat->next_char == BEGINCOMMENT) {
-		do_comment(cstat);
+		do_comment(cstat, 0);
 		return next_token_raw(cstat);
 	}
 	if (*cstat->next_char == BEGINSTRING)
@@ -1601,21 +1601,32 @@ next_token(COMPSTATE * cstat)
 
 /* skip comments */
 void
-do_comment(COMPSTATE * cstat)
+do_comment(COMPSTATE * cstat, int depth)
 {
-	while (*cstat->next_char && *cstat->next_char != ENDCOMMENT)
-		cstat->next_char++;
-	if (!(*cstat->next_char)) {
+	if(!*cstat->next_char || *cstat->next_char != BEGINCOMMENT)
+		v_abort_compile(cstat, "Expected comment.");
+	if(depth >= 7 /*arbitrary*/)
+		v_abort_compile(cstat, "Comments nested too deep (more than 7 levels).");
+	cstat->next_char++;  /* Advance past BEGINCOMMENT */
+
+	while (*cstat->next_char != ENDCOMMENT) {
+		if(!(*cstat->next_char)) {
+			do {
+				advance_line(cstat);
+				if(!cstat->curr_line)
+					v_abort_compile(cstat, "Unterminated comment.");
+			} while(!(*cstat->next_char));
+		} else if(*cstat->next_char == BEGINCOMMENT)
+			do_comment(cstat, depth+1);
+		else
+			cstat->next_char++;
+	};
+
+	cstat->next_char++;  /* Advance past ENDCOMMENT */
+	if(!(*cstat->next_char))
 		advance_line(cstat);
-		if (!cstat->curr_line) {
-			v_abort_compile(cstat, "Unterminated comment.");
-		}
-		do_comment(cstat);
-	} else {
-		cstat->next_char++;
-		if (!(*cstat->next_char))
-			advance_line(cstat);
-	}
+	if(depth && !cstat->curr_line) /* EOF? Don't care if done (depth==0) */
+		v_abort_compile(cstat, "Unterminated comment.");
 }
 
 int
