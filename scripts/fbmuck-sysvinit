@@ -63,17 +63,21 @@ case "$cmd" in
             fi
         fi
         if [ "x$who" = "xroot" -o "x$who" = "x$user" ]; then
-            echo -n "$name "
             ports=`echo $ports | sed 's/,/ /g' | sed 's/\([0-9]*\)s/-sport \1/g'`
             rm -f $path/$pidfile
-            if [ "x$who" = "x$user" ]; then
-                $path/$script $ports >> /dev/null 2>&1
-            else
-                su - $user -c "$path/$script $ports >> /dev/null 2>&1"
-            fi
-            while [ ! -f $path/$pidfile ]; do
-                sleep 1
-            done
+			if [ -x "$path/$script" ]; then
+				echo -n "$name "
+				if [ "x$who" = "x$user" ]; then
+					$path/$script $ports >> /dev/null 2>&1
+				else
+					su - $user -c "$path/$script $ports >> /dev/null 2>&1"
+				fi
+				while [ ! -f $path/$pidfile ]; do
+					sleep 1
+				done
+			else
+				echo "Cannot execute restart script $path/$script"
+			fi
         fi
     done
     echo ""

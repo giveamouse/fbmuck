@@ -12,6 +12,7 @@ Fixed bug where FOREGROUND muf progs didn't process MCP messages.
 Fixed a number of missing MUF primitive documentation sections.
 Fixed resolver to properly shutdown() indentd sockets.
 Fixed missing files problem in 'make package'.
+Fixed sysvinit scripts to not hang if restart script is missing.
 Changed DESCRSECURE? to be ML3, not wizbit.
 Changed input quotas to not count MCP messages.
 Changed command logging to not list null commands.
