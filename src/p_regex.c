@@ -108,7 +108,7 @@ prim_regexp(PRIM_PROTOTYPE)
 	if (oper2->type != PROG_STRING)
 		abort_interp("Non-string argument (2)");
 	if (oper3->type != PROG_INTEGER)
-		abort_interp("Non-string argument (3)");
+		abort_interp("Non-integer argument (3)");
 	if (!oper2->data.string)
 		abort_interp("Empty string argument (2)");
 
@@ -261,7 +261,7 @@ prim_regsub(PRIM_PROTOTYPE)
 	if (oper3->type != PROG_STRING)
 		abort_interp("Non-string argument (3)");
 	if (oper4->type != PROG_INTEGER)
-		abort_interp("Non-string argument (4)");
+		abort_interp("Non-integer argument (4)");
 	if (!oper2->data.string)
 		abort_interp("Empty string argument (2)");
 
