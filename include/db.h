@@ -512,6 +512,9 @@ struct frame {
 	int instcnt;				/* How many instructions have run. */
 	int pid;					/* what is the process id? */
 	char* errorstr;             /* the error string thrown */
+	char* errorinst;            /* the instruction name that threw an error */
+	dbref errorprog;            /* the program that threw an error */
+	int errorline;              /* the program line that threw an error */
 	int descr;					/* what is the descriptor that started this? */
 	void *rndbuf;				/* buffer for seedable random */
 	struct scopedvar_t *svars;	/* Variables with function scoping. */

@@ -9805,7 +9805,7 @@ The control options specific to this type of control are:
 
 <hr><h4><a name="try">TRY ( i -- )
 <br>
-CATCH ( s -- )
+CATCH ( -- s ) or CATCH_DETAILED ( -- a )
 <br>
 ENDCATCH ( -- )
 <br>
@@ -9829,6 +9829,19 @@ If you have nested TRY-CATCH blocks, then the most recent TRY-CATCH
 block will catch the error thrown.  If the error is thrown in another
 called function or program, then those calls are unwound back to the
 most recent TRY-CATCH block.
+
+<p>
+  The CATCH_DETAILED statement can be used in place of the CATCH statement.
+It behaves identically to CATCH, except it pushes a dictionary onto the
+stack, instead of a string.  This dictionary holds much more detailed
+information about the thrown exception.  The following dictionary entries
+are currently supported:
+
+<p>
+    &quot;error&quot;    The error message string, like what CATCH returns.
+	&quot;instr&quot;    The name string of the instruction which threw the error.
+	&quot;line&quot;     The integer program line number where the error was thrown.
+	&quot;program&quot;  The dbref of the program in which the error was thrown.
 
 <p>
   The ABORT primitive may be used to throw an arbitrary error anywhere.

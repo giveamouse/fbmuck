@@ -5796,9 +5796,9 @@ abort      checkargs  try
 ~
 ~
 ~
-TRY|CATCH|ENDCATCH|EXCEPTION|EXCEPTIONS|EXCEPTION HANDLING
+TRY|CATCH|CATCH_DETAILED|ENDCATCH|EXCEPTION|EXCEPTIONS|EXCEPTION HANDLING
 TRY ( i -- )
-CATCH ( s -- )
+CATCH ( -- s ) or CATCH_DETAILED ( -- a )
 ENDCATCH ( -- )
 
   The TRY statement marks the start of the TRY-CATCH block, and locks all
@@ -5817,6 +5817,17 @@ If you have nested TRY-CATCH blocks, then the most recent TRY-CATCH
 block will catch the error thrown.  If the error is thrown in another
 called function or program, then those calls are unwound back to the
 most recent TRY-CATCH block.
+
+  The CATCH_DETAILED statement can be used in place of the CATCH statement.
+It behaves identically to CATCH, except it pushes a dictionary onto the
+stack, instead of a string.  This dictionary holds much more detailed
+information about the thrown exception.  The following dictionary entries
+are currently supported:
+
+    "error"    The error message string, like what CATCH returns.
+	"instr"    The name string of the instruction which threw the error.
+	"line"     The integer program line number where the error was thrown.
+	"program"  The dbref of the program in which the error was thrown.
 
   The ABORT primitive may be used to throw an arbitrary error anywhere.
 If you need to re-propagate an error, you can use ABORT.

@@ -53,8 +53,9 @@ p_null(PRIM_PROTOTYPE)
 void (*prim_func[]) (PRIM_PROTOTYPE) = {
 	p_null, p_null, p_null, p_null, p_null,  p_null,
 	/* JMP, READ,   SLEEP,  CALL,   EXECUTE, RETURN, */
-	p_null,           p_null,
-	/* EVENT_WAITFOR, CATCH,  */
+	p_null,           p_null, p_null,
+	/* EVENT_WAITFOR, CATCH,  CATCH_DETAILED */
+
 	PRIMS_CONNECTS_FUNCS,
 	PRIMS_DB_FUNCS,
 	PRIMS_MATH_FUNCS,
@@ -469,7 +470,11 @@ interp(int descr, dbref player, dbref location, dbref program,
 	fr->fors.st = NULL;
 	fr->trys.top = 0;
 	fr->trys.st = NULL;
+
 	fr->errorstr = NULL;
+	fr->errorinst = NULL;
+	fr->errorprog = NOTHING;
+	fr->errorline = 0;
 
 	fr->rndbuf = NULL;
 	fr->dlogids = NULL;
@@ -942,6 +947,9 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 
 	if (fr->trys.top) {
 		fr->errorstr = string_dup(msg);
+		fr->errorinst = string_dup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
+		fr->errorline = pc->line;
+		fr->errorprog = program;
 		err++;
 	} else {
 		if (pc) {
@@ -1331,10 +1339,12 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			if (fr->trys.top && atop - fr->trys.st->depth < 1)
 				abort_loop("Stack protection fault.", NULL, NULL);
 			temp1 = arg + --atop;
-			if (temp1->type != PROG_INTEGER)
-				abort_loop("Argument is not an integer.", temp1, NULL);
+			if (temp1->type != PROG_INTEGER || temp1->data.number < 0)
+				abort_loop("Argument is not a positive integer.", temp1, NULL);
+			if (fr->trys.top && atop - fr->trys.st->depth < temp1->data.number)
+				abort_loop("Stack protection fault.", NULL, NULL);
 			if (temp1->data.number > atop)
-				abort_loop("Attempted to lock more stack items than exist.", temp1, NULL);
+				abort_loop("Stack Underflow.", temp1, NULL);
 
 			fr->trys.top++;
 			fr->trys.st = push_try(fr->trys.st);
@@ -1499,6 +1509,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				break;
 
 			case IN_CATCH:
+			case IN_CATCH_DETAILED:
 				{
 					int depth;
 
@@ -1521,14 +1532,38 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					fr->trys.top--;
 					fr->trys.st = pop_try(fr->trys.st);
 
-					if (fr->errorstr) {
-						arg[atop].type = PROG_STRING;
-						arg[atop++].data.string = alloc_prog_string(fr->errorstr);
-						free(fr->errorstr);
-						fr->errorstr = NULL;
+					if (pc->data.number == IN_CATCH) {
+						/* IN_CATCH */
+						if (fr->errorstr) {
+							arg[atop].type = PROG_STRING;
+							arg[atop++].data.string = alloc_prog_string(fr->errorstr);
+							free(fr->errorstr);
+							fr->errorstr = NULL;
+						} else {
+							arg[atop].type = PROG_STRING;
+							arg[atop++].data.string = NULL;
+						}
+						if (fr->errorinst) {
+							free(fr->errorinst);
+							fr->errorinst = NULL;
+						}
 					} else {
-						arg[atop].type = PROG_STRING;
-						arg[atop++].data.string = NULL;
+						/* IN_CATCH_DETAILED */
+						stk_array *nu = new_array_dictionary();
+						if (fr->errorstr) {
+							array_set_strkey_strval(&nu, "error", fr->errorstr);
+							free(fr->errorstr);
+							fr->errorstr = NULL;
+						}
+						if (fr->errorinst) {
+							array_set_strkey_strval(&nu, "instr", fr->errorinst);
+							free(fr->errorinst);
+							fr->errorinst = NULL;
+						}
+						array_set_strkey_intval(&nu, "line", fr->errorline);
+						array_set_strkey_refval(&nu, "program", fr->errorprog);
+						arg[atop].type = PROG_ARRAY;
+						arg[atop++].data.array = nu;
 					}
 					reload(fr, atop, stop);
 				}
@@ -1853,6 +1888,9 @@ do_abort_interp(dbref player, const char *msg, struct inst *pc,
 
 	if (fr->trys.top) {
 		fr->errorstr = string_dup(msg);
+		fr->errorinst = string_dup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
+		fr->errorline = pc->line;
+		fr->errorprog = program;
 		err++;
 	} else {
 		fr->pc = pc;

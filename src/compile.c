@@ -2599,7 +2599,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		cstat->nested_trys++;
 
 		return nu;
-	} else if (!string_compare(token, "CATCH")) {
+	} else if (!string_compare(token, "CATCH") || !string_compare(token, "CATCH_DETAILED")) {
 		/* can't use 'if' because it's a reserved word */
 		struct INTERMEDIATE *eef;
 		struct INTERMEDIATE *curr;
@@ -2640,6 +2640,9 @@ process_special(COMPSTATE * cstat, const char *token)
 		curr->in.type = PROG_PRIMITIVE;
 		curr->in.line = cstat->lineno;
 		curr->in.data.number = IN_CATCH;
+		if (!string_compare(token, "CATCH_DETAILED")) {
+			curr->in.data.number = IN_CATCH_DETAILED;
+		}
 
 		eef = pop_control_structure(cstat, CTYPE_TRY, 0);
 		cstat->nested_trys--;
@@ -3260,6 +3263,7 @@ special(const char *token)
 					   && string_compare(token, "REPEAT")
 					   && string_compare(token, "TRY")
 					   && string_compare(token, "CATCH")
+					   && string_compare(token, "CATCH_DETAILED")
 					   && string_compare(token, "ENDCATCH")
 					   && string_compare(token, "CALL")
 					   && string_compare(token, "PUBLIC")

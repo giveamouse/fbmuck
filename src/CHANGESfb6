@@ -16,6 +16,7 @@ Fixed a large number of minor memory leaks.
 Fixed a crasher bug with earlier memory cleanups.
 Fixed bug #659195: ldup causes (muf) stack protection fault.
 Fixed bug #666898: _default pronouns for any miss, not only empty.
+Fixed bug with TRY not honoring stack locking itself.
 Changed help.txt into a muckhelp.raw file that is processed by prochelp.
 Changed property loading routines to not abort(), but to instead log corrupt
   properties when they are found.
@@ -30,6 +31,8 @@ Added ARRAY_NESTED_DEL ( arr idxarr -- arr' ) muf prim.  Used to delete values
 Added SYSTIME_PRECISE ( -- float ) muf prim.  Returns the number of seconds
   since the systime epoch, like systime does, but as a floating point number
   with microsecond accuracy.
+Added CATCH_DETAILED ( -- dict ) muf prim as a more detailed alternative to
+  the CATCH statement.
 Removed annoying 'Cannot access propdir directly' errors from MUF prop prims.
 
 
