@@ -1,4 +1,3 @@
-# Generated automatically from Makefile.in by configure.
 #!/bin/make -f
 # $Header$
 
@@ -27,11 +26,10 @@ cleaner:
 	done
 
 nuke:
-	${RM} Makefile config.status config.cache config.log
-	cp Makefile.cfg Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} nuke; \
 	done
+	${RM} Makefile config.status config.cache config.log
 
 Makefile: Makefile.in
 	./configure
