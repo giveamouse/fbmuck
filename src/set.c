@@ -3,6 +3,10 @@
 
 /*
  * $Log: set.c,v $
+ * Revision 1.5  2002/04/03 01:47:22  mcclure
+ *
+ * Added float type information to @propset error message.
+ *
  * Revision 1.4  2001/04/06 00:10:00  wog
  * Made @set and the FLAG? and SET primitives know that VIEWABLE is a valid
  * alias for the VEHICLE flag.
@@ -1119,7 +1123,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 		return;
 	} else {
 		notify(player, "I don't know what type of property you want to set!");
-		notify(player, "Valid types are string, int, dbref, lock, and erase.");
+		notify(player, "Valid types are string, integer, float, dbref, lock, and erase.");
 		return;
 	}
 	notify(player, "Property set.");
