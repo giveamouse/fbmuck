@@ -33,7 +33,7 @@ Variable Handling:
   
 Control Structures:
   if     else   then     call   execute   exit   jmp     public   wizcall
-  begin  for    while    break  continue  until  repeat  foreach  interp
+  begin  for    foreach  while  continue  break  until   repeat
   try    catch  endcatch
   
 Stack Types and Object Types:
@@ -48,14 +48,14 @@ Bitwise Operators:
   bitor   bitand   bitxor   bitshift
   
 Floating Point Math:
- sin     asin    cos     acos    tan     atan    atan2
- pi      inf     sqrt    pow     exp     log     log10
- floor   ceil    round   fabs    modf    fmod    frand
- float
+  sin     asin    cos     acos    tan     atan    atan2
+  pi      inf     sqrt    pow     exp     log     log10
+  floor   ceil    round   fabs    modf    fmod    frand
+  float
 
 Floating Point Errors:
- error?     is_set?     set_error  clear         clear_error
- error_bit  error_name  error_num  error_string
+  error?     is_set?     set_error  clear         clear_error
+  error_bit  error_name  error_num  error_string
 
 String Handling:
   instr        rinstr        instring     rinstring    unparseobj
@@ -80,17 +80,17 @@ Property Management:
   blessprop unblessprop reflist_add reflist_del reflist_find blessed?
   
 I/O:
-  read   notify   notify_except   notify_exclude   tread
+  read   tread   notify   notify_except   notify_exclude   array_notify
   
 Time:
-  date   gmtoffset   systime   time   timesplit   timefmt
+  date   gmtoffset   systime   time   timesplit   timefmt   sleep
   
 Lock Handling:
   locked?   getlockstr   setlockstr   parselock   unparselock
   testlock  prettylock
   
 Array Manipulation:
-  array_make         array_make_dict    array_notify       array_appenditem
+  array_make         array_make_dict    array_sort         array_appenditem
   array_getitem      array_delitem      array_setitem      array_insertitem
   array_getrange     array_delrange     array_setrange     array_insertrange
   array_first        array_last         array_prev         array_next
@@ -100,7 +100,7 @@ Array Manipulation:
   array_get_reflist  array_put_reflist  array_get_proplist array_put_proplist
   array_get_propvals array_put_propvals array_get_propdirs array_filter_prop
   array_matchkey     array_matchval     array_extract      array_join
-  array_sort
+  array_excludeval
   
 Connection Management:
   awake?        online         online_array    concount
@@ -112,9 +112,10 @@ Connection Management:
   descrflush    descr_setuser  descrleastidle  descrmostidle
   descrsecure?
   
-Multi-Tasking:
-  preempt  background  foreground  ispid?   fork  sleep  kill  pid  queue
-  pr_mode  bg_mode     fg_mode     setmode  mode  abort
+Process Management:
+  preempt  background  foreground  pr_mode  bg_mode  fg_mode  setmode  mode
+  getpids  getpidinfo  ispid?      pid      kill     interp   fork     queue
+  abort
   
 MUF Event Support:
   event_wait   event_waitfor   event_count    timer_start    timer_stop
@@ -136,7 +137,7 @@ MCP GUI Package Defines:
   c_frame         c_notebook
   
 MUF Program and Process Meta-Primitives.
-  instances   compiled?   compile   uncompile   getpids	 program_getlines
+  instances   compiled?   compile   uncompile   program_getlines
   
 Misc:
   addpennies  caller          cancall?     checkargs     checkpassword
@@ -267,7 +268,7 @@ array_first ( a -- @ i )
 Returns the first index in array, and a boolean which is false
 if there are no items are in the array.
 ~
-ARRAY_GETITEM|
+ARRAY_GETITEM|[]|
 array_getitem ( a @ -- ? )
 Returns item with index @ from an array.
 ~
@@ -430,7 +431,7 @@ array_prev ( a @ -- @ i )
 Returns the previous index in the array, and a boolean which
 is false if there are no items left.
 ~
-ARRAY_SETITEM|
+ARRAY_SETITEM|->[]|
 array_setitem ( ? a @ -- a')
 Overwrites a given array item at index @ with new value ?.
 ~
@@ -3227,7 +3228,7 @@ ARRAY_FINDVAL (a1 ? -- a2)
 Returns a list array containing the keys of every element in the array
 a1 whose values match the given value.  For example:
   
-    { #5 #10 #15 #10 #20 }list #10 array_excludeval
+    { #5 #10 #15 #10 #20 }list #10 array_findval
   
 will return a list containing 1 and 3, being the keys (indexes) of the
 matching items.
@@ -3237,19 +3238,24 @@ ARRAY_EXCLUDEVAL (a1 ? -- a2)
 Returns a list array containing the keys of every element in the array
 a1 whose values did NOT match the given value.  For example:
   
-    { #5 #10 #15 }list #10 array_excludeval
+    { #5 #10 #15 #10 #20 }list #10 array_excludeval
   
-will return a list containing 0 and 2, being the keys (indexes) of the non-
-excluded items.  If you want the values, use ARRAY_DIFF or ARRAY_EXTRACT.
+will return a list containing 0, 2 and 4, being the keys (indexes) of the
+items that didn't match.  If you want the values, use ARRAY_DIFF or
+ARRAY_EXTRACT.
 Ie:
   
-    { #5 #10 #15 }list { #10 }list array_diff
+    { #5 #10 #15 #10 #20 }list { #10 }list array_diff
   
 or
   
-    { #5 #10 #15 }list dup #10 array_excludeval array_extract
+    { #5 #10 #15 #10 #20 }list dup #10 array_excludeval array_extract
 
-which will both return a list containing #5 and #15.
+which will both return a list containing #5, #15, and #20.  The main
+difference between these two methods is that ARRAY_DIFF will remove any
+duplicate values in the remaining items, and the ordering of the resulting
+items will have been sorted.  Using ARRAY_EXTRACT, ordering and duplicate
+values are preserved.
 ~
 ARRAY_REVERSE|
 ARRAY_REVERSE (a -- a')
@@ -3323,6 +3329,8 @@ events is a dictionary contains the following keys:
   id         Holds the ID of the control that generated the event.
   dismissed  Holds 1 if the dialog was dismissed, 0 otherwise.
   event      Holds the type of gui event.  ie: buttonpress, menuselect.
+  values     Holds the dictionary of control values, keyed by control name.
+  data       Holds array of extra gui-event specific data.
   
 User events have eventID strings that are created by prepending "USER." to
 the eventID given to the EVENT_SEND muf primitive.  The context for User
@@ -3816,4 +3824,34 @@ DIFF3|
 DIFF3 ( fx1 fy1 fz1 fx2 fy2 fz2 -- fx' fy' fz' )
 Returns three floats, being the differences of fx1 - fx2, fy1 - fy2, and
 fz1 - fz2, respectively.
+~
+GETPIDS|
+GETPIDS ( ref:obj -- list:pids )
+If obj is a program dbref, this will return a list of the process IDs
+of every active process that has the given program in their call stack.
+If obj is a player dbref, this will return a list of all the PIDs assigned to
+that player.  If obj is a trigger dbref, it will return all the active PIDs
+associated with that trigger.   And finally, if obj is #-1, then all active
+PIDs will be included in the array that gets returned.
+
+Also see: GETPIDINFO
+~
+GETPIDINFO|
+GETPIDINFO ( int:pid -- dict:info )
+Given a valid active PID, returns a dictionary with information about
+that process. The information returned is:
+    CALLED_DATA - The string the program was queued with, if any
+    CALLED_PROG - The program dbref# of the process' current call level.
+    CPU         - The amount of CPU time used up by the process.
+    DESCR       - The descriptor that called the program.
+    INSTCNT     - The number of instructions run so far.
+    NEXTRUN     - When the process is due to run again.
+    PID         - That process ID.
+    PLAYER      - The player dbref that PID belongs to.
+    STARTED     - Systime in seconds when the process started.
+    SUBTYPE     - Additional information about the process.
+    TRIG        - The trigger that called that process.
+    TYPE        - What type of process it is. MUF/MPI.
+
+Also see: GETPIDS
 
