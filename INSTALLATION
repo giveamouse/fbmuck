@@ -1,0 +1,13 @@
+Installation is fairly simple:
+
+modify include/config.h to fit your preferences and your system.
+modify include/params.h also.
+modify game/restart
+
+cd src
+configure
+make
+make install              # This puts the binaries in ../game/
+cd ../game
+restart                   # This starts the server.
+
