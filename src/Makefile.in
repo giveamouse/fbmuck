@@ -186,12 +186,17 @@ fbhelp: fbhelp.o ${MALLOBJ} Makefile
 pcre:
 	gzip -d -c pcre-4.3.tar.gz | tar -xf -
 	mv pcre-4.3 pcre
-	cd pcre && ./configure --enable-static --enable-newline-is-cr
 
-libpcre.a: pcre
+pcre-config: pcre
+	cd pcre && ./configure --cache-file=../../config.cache \
+		--enable-static --enable-newline-is-cr
+
+pcre/Makefile: pcre-config
+
+libpcre.a: pcre pcre/Makefile
 	cd pcre && make
 	-${RM} -f libpcre.a
-	ln -s pcre/.libs/libpcre.a
+	ln pcre/.libs/libpcre.a
 
 #############################################################
 # Funky stuff for debugging and coding work.
