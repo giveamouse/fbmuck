@@ -1617,7 +1617,12 @@ db_read(FILE * f)
 			case 7:
 			case 8:
 			case 9:
+			case 10:
 				db_read_object_foxen(f, o, thisref, db_load_format, doing_deltas);
+				break;
+			default:
+				log2file("debug.log","got to end of case for db_load_format");
+				abort();
 				break;
 			}
 			if (Typeof(thisref) == TYPE_PLAYER) {
