@@ -45,6 +45,9 @@ Fixed remove_prop bug so it will remove props ending in /. (bug #537744)
 Fixed potential buffer overrun with the CHECKRETURN and ABORT_MPI macros.
 Fixed @omessage bug where player names would not be prefixed on additional
   newlines. (bug #562370)
+Fixed a few typos in README and README.ssl.
+Fixed fbmuck.spec to use current version number (6.00rc7) and changed
+  Source url to reflect sourceforge changes.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.

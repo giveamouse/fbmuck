@@ -7,10 +7,10 @@ OpenSSL 0.9.5a 1 Apr 2000 (Under Solaris 2.7)
 OpenSSL 0.9.6a 5 Apr 2001 (Under Solaris 2.7)
 OpenSSL 0.9.6a (Under Redhat Linux 7.2)
 
-   Any other versions will may not work, but you're free to try.
+   Any other versions may not work, but you're free to try.
 
    Once you're done running configure, the muck will compile the same,
-except a self-signed certificate will be created for you, and possibily
+except a self-signed certificate will be created for you, and possibly
 the random number generator will be seeded from /etc/passwd and /etc/hosts.
 
    You'll be prompted for your Muck name, your email address, and the DNS 
@@ -19,7 +19,7 @@ to the name you specify here! Clients will use this to confirm they've
 reached the right muck.
 
    You'll need to make sure your newly created certificate 'game/server.pem'
-is in the muck 'game' directory when the muck is started; otherwise it will
+is in the muck 'game' directory when the muck is started; otherwise, it will
 complain.
 
    If, for some reason, you are using a server.pem file that contains a
@@ -32,7 +32,7 @@ openssl x509 -text < server.pem
 
    To create a secure socket, use the -sport option, rather than -port. You
 can create multiple secure and nonsecure ports using these two command
-line arguments. You will probibly need to modify restart to do this.
+line arguments. You will probably need to modify restart to do this.
 
    The default type of port to create is nonsecure (clear-text).
 
