@@ -1051,10 +1051,10 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 			eidx = end->data.number;
 			if (sidx < 0) {
 				sidx = 0;
-			} else if (sidx > arr->items) {
+			} else if (sidx >= arr->items) {
 				return NULL;
 			}
-			if (eidx > arr->items) {
+			if (eidx >= arr->items) {
 				eidx = arr->items - 1;
 			} else if (eidx < 0) {
 				return NULL;
