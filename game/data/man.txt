@@ -136,7 +136,7 @@ MCP GUI Package Defines:
   c_frame         c_notebook
   
 MUF Program and Process Meta-Primitives.
-  instances   compiled?   compile   uncompile   getpids
+  instances   compiled?   compile   uncompile   getpids	 program_getlines
   
 Misc:
   addpennies  caller          cancall?     checkargs     checkpassword
@@ -3677,4 +3677,13 @@ TOADPLAYER|
 TOADPLAYER ( d1 d2 -- )
 @toads player d2, and chowns all their posessions to player d1.
 You can't toad wizard players.
+~
+PROGRAM_GETLINES|
+PROGRAM_GETLINES ( d -- a ) or ( d i1 -- a ) or ( d i1 i2 -- a )
+Returns an array of a range of lines in program d. Without non-zero 
+arguments, returns the entire program. With one non-zero argument 
+returns an array of the specified line only. With two non-zero arguments 
+returns all lines i1 through i2 inclusive. Zero-valued arguments will 
+effectively be ignored. Program must be controlled by the program's UID,
+be set VIEWABLE, or the program must be running with wizard permissions.
 

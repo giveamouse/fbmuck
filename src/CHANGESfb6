@@ -16,7 +16,14 @@ Added docs of supported MCP GUI ctrl-commands to the GUI_CTRL_COMMAND muf
   manual entry.
 Changed @list to view only muf programs set VIEWABLE, as opposed to LINK_OK.
 Made 'PID KILL' kill the current program, never triggering a CATCH.
-
+Added PROGRAM_GETLINES ( d -- a ) or ( d i1 -- a ) or ( d i1 i2 -- a ) 
+  muf primitive. Returns an array of a range of lines in program d. 
+  Without non-zero arguments, returns the entire program. With one
+  non-zero argument returns an array of the specified line only. 
+  With two non-zero arguments returns all lines i1 through i2 inclusive.
+  Zero-valued arguments will effectively be ignored. Program must be
+  controlled by the program's UID, be set VEIWABLE, or the program must
+  be running with wizard permissions.
 
 2.2fb6.00b3
 Fixed a crasher bug with uninitialized watchpid-related variables.

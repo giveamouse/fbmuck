@@ -2283,4 +2283,118 @@ prim_getlinks_array(PRIM_PROTOTYPE)
 	PushArrayRaw(array_getlinks(ref));
 }
 
+void
+prim_program_getlines(PRIM_PROTOTYPE)
+{
+	stk_array* ary;
+	int start, end;
+	CHECKOP(1);
+	oper1 = POP();
+
+	start = end = 0;
+	
+	if (oper1->type == PROG_INTEGER) {
+		end = oper1->data.number;
+		CLEAR(oper1);
+		CHECKOP(1);
+		oper1 = POP();
+		if (oper1->type == PROG_INTEGER) {
+			start = oper1->data.number;
+			CLEAR(oper1);
+			CHECKOP(1);
+			oper1 = POP();
+		}
+	}
+	if (!valid_object(oper1))
+		abort_interp("Invalid object dbref.");
+
+	ref = oper1->data.objref;
+
+	if (Typeof(ref) != TYPE_PROGRAM)
+		abort_interp("Non-program object.");
+
+	if (mlev < 4 && !controls(ProgUID, ref) && !(FLAGS(ref) & VEHICLE))
+		abort_interp("Permission denied.");
+
+	if (start < 0 || end < 0)
+	    abort_interp("Line indexes must be non-negative.");
+
+	if (start == 0 && end != 0)
+		start = end;
+	else if (start == 0)
+		start = 1;
+
+	if (end == 0 && start != 0)
+		end = start;
+
+	if (end && start > end)
+		abort_interp("Illogical line range.");
+
+	{
+		/* we make two passes over our linked list's data,
+		 * first we fiquire out how many lines are
+		 * actually there. This is so we only allocate
+		 * our array once, rather re-allocating 4000 times
+		 * for a 4000-line program listing, while avoiding
+		 * letting calls like '#xxx 1 999999 program_getlines'
+		 * taking up tones of memory.
+		 */
+		int i, count;
+		/* current line we're iterating over */
+		struct line* curr;
+		/* first line in the program */
+		struct line* first;
+		/* starting line in our segment of the program */
+		struct line* segment;
+
+		curr = first = read_program(ref);
+
+		/* find our line */
+		for (i = 1; curr && i < start; i++)
+			curr = curr->next;
+
+		if (!curr) {
+			/* alright, we have no data! */
+			free_prog_text(first);
+			CLEAR(oper1);
+			PushNullArray;
+			return;
+		}
+
+		segment = curr; /* we need to keep this line */
+
+		/* continue our looping */
+		for (; curr && (!end || i < end); i++)
+			curr = curr->next;
+
+		count = i - start + 1;
+		
+		if (!curr) /* if we have don't have curr, we counted one beyond
+			      the end of the program, so we account for that. */
+		    count--;
+		
+		ary = new_array_packed(count);
+
+		{
+			struct inst index;
+			struct inst string;
+
+			index.type = PROG_INTEGER;
+			string.type = PROG_STRING;
+			/* so we count down from the number of lines we have, 
+			 * and set our array appropriatly. */
+			for(curr = segment, i = 0; count--; i++, curr = curr->next) {
+				index.data.number = i;
+				string.data.string = alloc_prog_string(curr->this_line);
+				array_setitem(&ary, &index, &string);
+
+				/* we aren't going to use this struct shared_string anymore */
+				string.data.string->links--;
+			}
+		}
+		free_prog_text(first);
+	}
+	CLEAR(oper1);
+	PushArrayRaw(ary);
+}
 
