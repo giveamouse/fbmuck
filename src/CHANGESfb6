@@ -33,6 +33,7 @@ Fixed various minor memory leaks.  Cleaned up freeing of non-leak allocations
   on shutdown, to make real memory leaks more apparent.
 Fixed bad macro definition of gui_dlog_simple.
 Fixed error with FORK muf prim not duplicating forstack and trystacks.
+Fixed erroneous handling of proplists in simpleedit MCP package.
 Added the ability to allow wizards to use the OVERIDE_TOKEN on WHO.
 Added new @tune -- lazy_mpi_istype_perm.  This changes the permissions for
   {istype} to be the lazy, pre-5.56 method, allowing {istype} to reference
