@@ -2,6 +2,9 @@
 
 /*
  * $Log: wiz.c,v $
+ * Revision 1.4  2000/07/14 21:53:04  revar
+ * Fixed a bug with @toad sending the inv of the toader home, not the toadee.
+ *
  * Revision 1.3  2000/07/07 18:41:04  revar
  * Fixed a db corruption bug with @toading players.
  *
@@ -628,7 +631,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 	} else {
 		/* we're ok */
 		/* do it */
-		send_contents(descr, player, HOME);
+		send_contents(descr, victim, HOME);
 		for (stuff = 0; stuff < db_top; stuff++) {
 			if (OWNER(stuff) == victim) {
 				switch (Typeof(stuff)) {
