@@ -19,6 +19,7 @@
 #include "externs.h"
 
 #include <signal.h>
+#include <sys/wait.h>
 
 /*
  * SunOS can't include signal.h and sys/signal.h, stupid broken OS.
@@ -200,9 +201,8 @@ RETSIGTYPE sig_shutdown(int i)
  */
 RETSIGTYPE sig_reap_resolver(int i)
 {
-#ifdef SPAWN_HOST_RESOLVER
-	kill_resolver();
-#endif
+	int status = 0;
+	int pid = waitpid(-1, &status, WNOHANG);
 
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
 	return 0;
