@@ -1,6 +1,6 @@
-This is TinyMUCK 2.2fb6.00 a programmable, player expandable, multi-user
-adventure game.  Please see the CHANGES file for a list of changes from
-the previous version.
+This is TinyMUCK 2.2fb6.00 (FuzzBall 6.00), a programmable, player
+expandable, multi-user adventure game.  Please see the CHANGES file
+for a list of changes from the previous version.
 
 TinyMUCK was derived from TinyMUD v1.5.2, with extensive modifications.
 There were two new commands: @action and @attach, and two new flags:
@@ -18,6 +18,14 @@ I recommend that non-MUF programmers read MUD.doc and MUCK.doc, and
 MUF programers read MUF-tutorial, MUF.Manual and forth.ref.
 technical.doc should be read by system administrators and people who
 wish to hack TinyMUCK.
+
+Note: FuzzBall TinyMUCK is now maintained as a project on SourceForge.
+You can submit bugs directly to the developers (as well as put in new
+feature requests, and get CVS updates of the source tree) by going to
+http://www.sourceforge.net/.  The name of the project 'FuzzBall MUCK 6',
+and you can search for it by using the keyword 'fbmuck'.  The
+documentation is also maintained on SourceForge under a separate
+project, keyword 'fbdoc'.
 
 =====================================================================
 As far as copyright, I don't particularly care what you do with this
