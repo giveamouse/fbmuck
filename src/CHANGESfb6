@@ -12,10 +12,13 @@ Fixed a couple memory leaks with MCP GUI dialogs.
 Fixed 'make clean' to remove the fbhelp.o file.
 Fixed the 'fbhelp' program to look for its files in /usr/local/fbhelp/
 Fixed some tiny buffer overrun errors with muf debugging.
+Fixed 'PID KILL' to kill the current program, without triggering a CATCH.
+Fixed erroneous error messages in GUI_CTRL_COMMAND.
+Fixed MCP GUI event handlers to return multi-line 'data' args.
 Added docs of supported MCP GUI ctrl-commands to the GUI_CTRL_COMMAND muf
   manual entry.
-Changed @list to view only muf programs set VIEWABLE, as opposed to LINK_OK.
-Made 'PID KILL' kill the current program, never triggering a CATCH.
+Added "data" argument for MCP GUI events context.  This is the data for the
+  event, if any, sent by the client.
 Added PROGRAM_GETLINES ( d -- a ) or ( d i1 -- a ) or ( d i1 i2 -- a ) 
   muf primitive. Returns an array of a range of lines in program d. 
   Without non-zero arguments, returns the entire program. With one
@@ -24,7 +27,15 @@ Added PROGRAM_GETLINES ( d -- a ) or ( d i1 -- a ) or ( d i1 i2 -- a )
   Zero-valued arguments will effectively be ignored. Program must be
   controlled by the program's UID, be set VIEWABLE, or the program must
   be running with wizard permissions.
-Prohibited ( and ) in player names.
+Added MCP_MUF_MLEV @tune option to specify the mucker level required to
+  use MCP and MCP-GUI muf calls.
+Changed muf PMATCH primitive to accept "me", returning the player.
+Changed @list to view only muf programs set VIEWABLE, as opposed to LINK_OK.
+Changed commands_per_time input quotas to not count MCP messages.
+Changes player name checks to prohibit ( and ) in player names.
+Changed MCP GUI event callback arguments to include the McpMesg.
+
+
 
 2.2fb6.00b3
 Fixed a crasher bug with uninitialized watchpid-related variables.
