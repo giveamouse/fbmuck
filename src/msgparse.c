@@ -524,7 +524,7 @@ isneighbor(dbref d1, dbref d2)
 int
 mesg_local_perms(dbref player, dbref perms, dbref obj)
 {
-    if (OWNER(perms) == OWNER(getloc(obj))) return 1;
+    if (getloc(obj) != NOTHING && OWNER(perms) == OWNER(getloc(obj))) return 1;
     if (isneighbor(perms, obj)) return 1;
     if (isneighbor(player, obj)) return 1;
     if (mesg_read_perms(player, perms, obj)) return 1;
