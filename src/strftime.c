@@ -16,7 +16,6 @@ int2str(char *buf, int val, int len, char pref)
 		(void) strcpy(buf, buf + lp);
 }
 
-
 int
 format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 {
@@ -169,14 +168,16 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 					}
 					break;
 				case 'c':
-					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%x %X", tmval)))
+					if (!
+						(ret = format_time(buf + pos, max_len - pos, (char *) "%x %X", tmval)))
 						return (0);
 					pos += ret;
 					break;
 				case 'C':
-					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%A %B %e, %Y", tmval)))
+					if (!
+						(ret =
+						 format_time(buf + pos, max_len - pos, (char *) "%A %B %e, %Y",
+									 tmval)))
 						return (0);
 					pos += ret;
 					break;
@@ -184,8 +185,9 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 					int2str(tmp, tmval->tm_mday, 2, '0');
 					break;
 				case 'D':
-					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%m/%d/%y", tmval)))
+					if (!
+						(ret =
+						 format_time(buf + pos, max_len - pos, (char *) "%m/%d/%y", tmval)))
 						return (0);
 					pos += ret;
 					break;
@@ -219,14 +221,15 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 					tmp[2] = '\0';
 					break;
 				case 'r':
-					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%I:%M:%S %p", tmval)))
+					if (!
+						(ret =
+						 format_time(buf + pos, max_len - pos, (char *) "%I:%M:%S %p", tmval)))
 						return (0);
 					pos += ret;
 					break;
 				case 'R':
-					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%H:%M", tmval)))
+					if (!
+						(ret = format_time(buf + pos, max_len - pos, (char *) "%H:%M", tmval)))
 						return (0);
 					pos += ret;
 					break;
@@ -234,8 +237,9 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 					int2str(tmp, tmval->tm_sec, 2, '0');
 					break;
 				case 'T':
-					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%H:%M:%S", tmval)))
+					if (!
+						(ret =
+						 format_time(buf + pos, max_len - pos, (char *) "%H:%M:%S", tmval)))
 						return (0);
 					pos += ret;
 					break;
@@ -254,14 +258,16 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 							 ((13 + tmval->tm_wday - (tmval->tm_yday % 7)) % 7)) / 7, 2, '0');
 					break;
 				case 'x':
-					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%m/%d/%y", tmval)))
+					if (!
+						(ret =
+						 format_time(buf + pos, max_len - pos, (char *) "%m/%d/%y", tmval)))
 						return (0);
 					pos += ret;
 					break;
 				case 'X':
-					if (!(ret = format_time(buf + pos, max_len - pos,
-											(char *) "%H:%M:%S", tmval)))
+					if (!
+						(ret =
+						 format_time(buf + pos, max_len - pos, (char *) "%H:%M:%S", tmval)))
 						return (0);
 					pos += ret;
 					break;
@@ -272,13 +278,13 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 					int2str(tmp, tmval->tm_year + 1900, 4, '0');
 					break;
 				case 'Z':
-#ifdef HAVE_TM_ZONE
+#  ifdef HAVE_TM_ZONE
 					strcpy(tmp, tmval->tm_zone);
-#else							/* !HAVE_TM_ZONE */
-# ifdef HAVE_TZNAME
+#  else							/* !HAVE_TM_ZONE */
+#    ifdef HAVE_TZNAME
 					strcpy(tmp, tzname[tmval->tm_isdst]);
-# endif
-#endif							/* !HAVE_TM_ZONE */
+#    endif
+#  endif						/* !HAVE_TM_ZONE */
 					break;
 				case '%':
 					tmp[0] = '%';
@@ -299,8 +305,6 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 	return (pos);
 #endif							/* USE_STRFTIME */
 }
-
-
 
 long
 get_tz_offset(void)

@@ -1,6 +1,5 @@
 /* $header: /belch_a/users/rearl/tm/src/RCS/edit.c,v 1.3 90/07/29 17:33:10 rearl Exp $ */
 
-
 #include "copyright.h"
 #include "config.h"
 
@@ -114,8 +113,8 @@ grow_macro_tree(struct macrotable *node, struct macrotable *newmacro)
 	}
 }
 int
-insert_macro(const char *macroname, const char *macrodef,
-			 dbref player, struct macrotable **node)
+insert_macro(const char *macroname, const char *macrodef, dbref player,
+			 struct macrotable **node)
 {
 	struct macrotable *newmacro;
 
@@ -128,8 +127,8 @@ insert_macro(const char *macroname, const char *macrodef,
 }
 
 void
-do_list_tree(struct macrotable *node, const char *first, const char *last,
-			 int length, dbref player)
+do_list_tree(struct macrotable *node, const char *first, const char *last, int length,
+			 dbref player)
 {
 	static char buf[BUFFER_LEN];
 
@@ -192,8 +191,8 @@ purge_macro_tree(struct macrotable *node)
 }
 
 int
-erase_node(struct macrotable *oldnode, struct macrotable *node,
-		   const char *killname, struct macrotable *mtop)
+erase_node(struct macrotable *oldnode, struct macrotable *node, const char *killname,
+		   struct macrotable *mtop)
 {
 	if (!node)
 		return 0;
@@ -226,7 +225,6 @@ erase_node(struct macrotable *oldnode, struct macrotable *node,
 	}
 }
 
-
 int
 kill_macro(const char *macroname, dbref player, struct macrotable **mtop)
 {
@@ -251,13 +249,11 @@ kill_macro(const char *macroname, dbref player, struct macrotable **mtop)
 		return (0);
 }
 
-
 void
 free_old_macros(void)
 {
 	purge_macro_tree(macrotop);
 }
-
 
 /* The editor itself --- this gets called each time every time to
  * parse a command.
@@ -388,7 +384,6 @@ editor(int descr, dbref player, const char *command)
 	}
 }
 
-
 /* puts program into insert mode */
 void
 do_insert(dbref player, dbref program, int arg[], int argc)
@@ -452,15 +447,12 @@ do_delete(dbref player, dbref program, int arg[], int argc)
 	}
 }
 
-
-
-
 /* quit from edit mode.  Put player back into the regular game mode */
 void
 do_quit(dbref player, dbref program)
 {
-	log_status("PROGRAM SAVED: %s by %s(%d)\n", unparse_object(player, program),
-			   NAME(player), player);
+	log_status("PROGRAM SAVED: %s by %s(%d)\n", unparse_object(player, program), NAME(player),
+			   player);
 	write_program(PROGRAM_FIRST(program), program);
 
 	if (tp_log_programs)
@@ -540,7 +532,6 @@ match_and_list(int descr, dbref player, const char *name, char *linespec)
 	PROGRAM_SET_FIRST(thing, tmpline);
 	return;
 }
-
 
 /* list --- if no argument, redisplay the current line
    if 1 argument, display that line
@@ -704,8 +695,6 @@ toggle_numbers(dbref player, int arg[], int argc)
 		notify(player, "Line numbers on.");
 	}
 }
-
-
 
 /* insert this line into program */
 void

@@ -12,20 +12,20 @@ this is a standalone library.
 #include 	"config.h"
 
 #ifndef WIN32
-# include	<fcntl.h>
-# include	<sys/file.h>
-# include	<sys/types.h>
-# include	<sys/socket.h>
-# include	<netinet/in.h>
-# include	<netdb.h>
+#  include	<fcntl.h>
+#  include	<sys/file.h>
+#  include	<sys/types.h>
+#  include	<sys/socket.h>
+#  include	<netinet/in.h>
+#  include	<netdb.h>
 #endif
 
 #define	DGRAMPORT		6888
 
 #ifndef	NO_HUGE_RESOLVER_CODE
-# ifndef WIN32
+#  ifndef WIN32
 extern struct hostent *gethostbyname(const char *);
-# endif
+#  endif
 #endif
 
 static int dgramfd = -1;
@@ -101,15 +101,11 @@ rwhocli_setup(const char *server, const char *serverpw, const char *myname,
 
 	time(&senttime);
 
-	snprintf(pbuf, sizeof(pbuf), "U\t%.20s\t%.20s\t%.20s\t%.10ld\t0\t%.25s",
-			 localnam, password, localnam, senttime, comment);
+	snprintf(pbuf, sizeof(pbuf), "U\t%.20s\t%.20s\t%.20s\t%.10ld\t0\t%.25s", localnam,
+			 password, localnam, senttime, comment);
 	sendto(dgramfd, pbuf, strlen(pbuf), 0, (SOCKADDRPTR) & addr, sizeof(addr));
 	return (0);
 }
-
-
-
-
 
 /* disable RWHO */
 int
@@ -128,10 +124,6 @@ rwhocli_shutdown(void)
 	return (0);
 }
 
-
-
-
-
 /* send an update ping that we're alive */
 int
 rwhocli_pingalive(void)
@@ -139,16 +131,12 @@ rwhocli_pingalive(void)
 	char pbuf[512];
 
 	if (dgramfd != -1) {
-		snprintf(pbuf, sizeof(pbuf), "M\t%.20s\t%.20s\t%.20s\t%.10ld\t0\t%.25s",
-				 localnam, password, localnam, senttime, lcomment);
+		snprintf(pbuf, sizeof(pbuf), "M\t%.20s\t%.20s\t%.20s\t%.10ld\t0\t%.25s", localnam,
+				 password, localnam, senttime, lcomment);
 		sendto(dgramfd, pbuf, strlen(pbuf), 0, (SOCKADDRPTR) & addr, sizeof(addr));
 	}
 	return (0);
 }
-
-
-
-
 
 /* send a "so-and-so-logged in" message */
 int
@@ -163,10 +151,6 @@ rwhocli_userlogin(const char *uid, const char *name, time_t tim)
 	}
 	return (0);
 }
-
-
-
-
 
 /* send a "so-and-so-logged out" message */
 int

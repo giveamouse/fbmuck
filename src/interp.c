@@ -55,16 +55,10 @@ void (*prim_func[]) (PRIM_PROTOTYPE) = {
 			/* JMP, READ,   SLEEP,  CALL,   EXECUTE, RETURN, */
 			p_null, p_null, p_null,
 			/* EVENT_WAITFOR, CATCH,  CATCH_DETAILED */
-PRIMS_CONNECTS_FUNCS,
-			PRIMS_DB_FUNCS,
-			PRIMS_MATH_FUNCS,
-			PRIMS_MISC_FUNCS,
-			PRIMS_PROPS_FUNCS,
-			PRIMS_STACK_FUNCS,
-			PRIMS_STRINGS_FUNCS,
-			PRIMS_ARRAY_FUNCS,
-			PRIMS_FLOAT_FUNCS,
-			PRIMS_ERROR_FUNCS, PRIMS_MCP_FUNCS, PRIMS_REGEX_FUNCS, PRIMS_INTERNAL_FUNCS, NULL};
+PRIMS_CONNECTS_FUNCS, PRIMS_DB_FUNCS, PRIMS_MATH_FUNCS, PRIMS_MISC_FUNCS,
+			PRIMS_PROPS_FUNCS, PRIMS_STACK_FUNCS, PRIMS_STRINGS_FUNCS,
+			PRIMS_ARRAY_FUNCS, PRIMS_FLOAT_FUNCS, PRIMS_ERROR_FUNCS,
+			PRIMS_MCP_FUNCS, PRIMS_REGEX_FUNCS, PRIMS_INTERNAL_FUNCS, NULL};
 
 struct localvars *
 localvars_get(struct frame *fr, dbref prog)
@@ -300,7 +294,8 @@ RCLEAR(struct inst *oper, char *file, int line)
 			lt = time(NULL);
 			format_time(buf, 32, "%c", localtime(&lt));
 			fprintf(stderr, "%.32s: ", buf);
-			fprintf(stderr, "Attempt to re-CLEAR() instruction from %s:%hd "
+			fprintf(stderr,
+					"Attempt to re-CLEAR() instruction from %s:%hd "
 					"previously CLEAR()ed at %s:%d\n", file, line, (char *) oper->data.addr,
 					oper->line);
 			return;
@@ -397,7 +392,6 @@ purge_for_pool(void)
 	}
 }
 
-
 void
 purge_try_pool(void)
 {
@@ -416,11 +410,9 @@ purge_try_pool(void)
 	}
 }
 
-
-
 struct frame *
-interp(int descr, dbref player, dbref location, dbref program,
-	   dbref source, int nosleeps, int whichperms, int forced_pid)
+interp(int descr, dbref player, dbref location,
+	   dbref program, dbref source, int nosleeps, int whichperms, int forced_pid)
 {
 	struct frame *fr;
 	int i;
@@ -534,8 +526,8 @@ interp(int descr, dbref player, dbref location, dbref program,
 		PROGRAM_INC_PROF_USES(program);
 	}
 	PROGRAM_INC_INSTANCES(program);
-	push(fr->argument.st, &(fr->argument.top), PROG_STRING, match_args ?
-		 MIPSCAST alloc_prog_string(match_args) : 0);
+	push(fr->argument.st, &(fr->argument.top), PROG_STRING,
+		 match_args ? MIPSCAST alloc_prog_string(match_args) : 0);
 	return fr;
 }
 
@@ -612,7 +604,6 @@ pop_for(struct forvars *forstack)
 	return newstack;
 }
 
-
 struct tryvars *
 copy_trys(struct tryvars *trystack)
 {
@@ -683,7 +674,6 @@ pop_try(struct tryvars *trystack)
 	return newstack;
 }
 
-
 /* clean up lists from watchpid and sends event */
 void
 watchpid_process(struct frame *fr)
@@ -737,7 +727,6 @@ watchpid_process(struct frame *fr)
 		}
 	}
 }
-
 
 /* clean up the stack. */
 void
@@ -828,14 +817,12 @@ prog_clean(struct frame *fr)
 	err = 0;
 }
 
-
 void
 reload(struct frame *fr, int atop, int stop)
 {
 	fr->argument.top = atop;
 	fr->system.top = stop;
 }
-
 
 int
 false_inst(struct inst *p)
@@ -848,7 +835,6 @@ false_inst(struct inst *p)
 			|| (p->type == PROG_FLOAT && p->data.fnumber == 0.0)
 			|| (p->type == PROG_OBJECT && p->data.objref == NOTHING));
 }
-
 
 void
 copyinst(struct inst *from, struct inst *to)
@@ -891,7 +877,6 @@ copyinst(struct inst *from, struct inst *to)
 	}
 }
 
-
 void
 copyvars(vars * from, vars * to)
 {
@@ -901,7 +886,6 @@ copyvars(vars * from, vars * to)
 		copyinst(&(*from)[i], &(*to)[i]);
 	}
 }
-
 
 void
 calc_profile_timing(dbref prog, struct frame *fr)
@@ -932,14 +916,11 @@ calc_profile_timing(dbref prog, struct frame *fr)
 	}
 }
 
-
-
 static int interp_depth = 0;
 
 void
-do_abort_loop(dbref player, dbref program, const char *msg,
-			  struct frame *fr, struct inst *pc, int atop, int stop,
-			  struct inst *clinst1, struct inst *clinst2)
+do_abort_loop(dbref player, dbref program, const char *msg, struct frame *fr,
+			  struct inst *pc, int atop, int stop, struct inst *clinst1, struct inst *clinst2)
 {
 	char buffer[128];
 
@@ -977,7 +958,6 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 	}
 }
 
-
 struct inst *
 interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 {
@@ -993,7 +973,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 	static struct inst retval;
 	char dbuf[BUFFER_LEN];
 	int instno_debug_line = get_primitive("debug_line");
-
 
 	fr->level = ++interp_depth;	/* increment interp level */
 
@@ -1060,8 +1039,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				return NULL;
 			}
 		}
-		if (((FLAGS(program) & ZOMBIE) || fr->brkpt.force_debugging) &&
-			!fr->been_background && controls(player, program)
+		if (((FLAGS(program) & ZOMBIE) || fr->brkpt.force_debugging) && !fr->been_background &&
+			controls(player, program)
 				) {
 			fr->brkpt.debugging = 1;
 		} else {
@@ -1080,8 +1059,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		if (fr->brkpt.debugging) {
 			short breakflag = 0;
 
-			if (stop == 1 &&
-				!fr->brkpt.bypass && pc->type == PROG_PRIMITIVE && pc->data.number == IN_RET) {
+			if (stop == 1 && !fr->brkpt.bypass && pc->type == PROG_PRIMITIVE &&
+				pc->data.number == IN_RET) {
 				/* Program is about to EXIT */
 				notify_nolisten(player, "Program is about to EXIT.", 1);
 				breakflag = 1;
@@ -1367,8 +1346,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				temp1 = arg + --atop;
 				if (temp1->type != PROG_ADD)
 					abort_loop("Argument is not an address.", temp1, NULL);
-				if (temp1->data.addr->progref >= db_top ||
-					temp1->data.addr->progref < 0 ||
+				if (temp1->data.addr->progref >= db_top || temp1->data.addr->progref < 0 ||
 					(Typeof(temp1->data.addr->progref) != TYPE_PROGRAM))
 					abort_loop_hard("Internal error.  Invalid address.", temp1, NULL);
 				if (program != temp1->data.addr->progref) {
@@ -1389,8 +1367,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				temp1 = arg + --atop;
 				if (temp1->type != PROG_ADD)
 					abort_loop("Argument is not an address.", temp1, NULL);
-				if (temp1->data.addr->progref >= db_top ||
-					temp1->data.addr->progref < 0 ||
+				if (temp1->data.addr->progref >= db_top || temp1->data.addr->progref < 0 ||
 					(Typeof(temp1->data.addr->progref) != TYPE_PROGRAM))
 					abort_loop_hard("Internal error.  Invalid address.", temp1, NULL);
 				if (stop >= STACK_SIZE)
@@ -1445,8 +1422,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				}
 				if (ProgMLevel(temp1->data.objref) == 0)
 					abort_loop("Permission denied", temp1, temp2);
-				if (mlev < 4 && OWNER(temp1->data.objref) != ProgUID
-					&& !Linkable(temp1->data.objref))
+				if (mlev < 4 && OWNER(temp1->data.objref) != ProgUID &&
+					!Linkable(temp1->data.objref))
 					abort_loop("Permission denied", temp1, temp2);
 				if (stop >= STACK_SIZE)
 					abort_loop("System Stack Overflow", temp1, temp2);
@@ -1490,8 +1467,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 			case IN_RET:
 				if (stop > 1 && program != sys[stop - 1].progref) {
-					if (sys[stop - 1].progref >= db_top ||
-						sys[stop - 1].progref < 0 ||
+					if (sys[stop - 1].progref >= db_top || sys[stop - 1].progref < 0 ||
 						(Typeof(sys[stop - 1].progref) != TYPE_PROGRAM))
 						abort_loop_hard("Internal error.  Invalid address.", NULL, NULL);
 					calc_profile_timing(program, fr);
@@ -1650,8 +1626,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				reload(fr, atop, stop);
 				if (temp1->data.number < 0)
 					abort_loop("Timetravel beyond scope of muf.", temp1, NULL);
-				add_muf_delay_event(temp1->data.number, fr->descr, player,
-									NOTHING, NOTHING, program, fr, "SLEEPING");
+				add_muf_delay_event(temp1->data.number, fr->descr, player, NOTHING, NOTHING,
+									program, fr, "SLEEPING");
 				PLAYER_SET_BLOCK(player, (!fr->been_background));
 				interp_depth--;
 				calc_profile_timing(program, fr);
@@ -1683,8 +1659,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			if (err != ERROR_DIE_NOW && fr->trys.top) {
 				while (fr->trys.st->call_level < stop) {
 					if (stop > 1 && program != sys[stop - 1].progref) {
-						if (sys[stop - 1].progref >= db_top ||
-							sys[stop - 1].progref < 0 ||
+						if (sys[stop - 1].progref >= db_top || sys[stop - 1].progref < 0 ||
 							(Typeof(sys[stop - 1].progref) != TYPE_PROGRAM))
 							abort_loop_hard("Internal error.  Invalid address.", NULL, NULL);
 						calc_profile_timing(program, fr);
@@ -1738,10 +1713,9 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 	return NULL;
 }
 
-
 void
-interp_err(dbref player, dbref program, struct inst *pc,
-		   struct inst *arg, int atop, dbref origprog, const char *msg1, const char *msg2)
+interp_err(dbref player, dbref program, struct inst *pc, struct inst *arg, int atop,
+		   dbref origprog, const char *msg1, const char *msg2)
 {
 	char buf[BUFFER_LEN];
 	char buf2[BUFFER_LEN];
@@ -1786,8 +1760,6 @@ interp_err(dbref player, dbref program, struct inst *pc,
 	}
 }
 
-
-
 void
 push(struct inst *stack, int *top, int type, voidptr res)
 {
@@ -1801,30 +1773,27 @@ push(struct inst *stack, int *top, int type, voidptr res)
 	(*top)++;
 }
 
-
 int
 valid_player(struct inst *oper)
 {
-	return (!(oper->type != PROG_OBJECT || oper->data.objref >= db_top
-			  || oper->data.objref < 0 || (Typeof(oper->data.objref) != TYPE_PLAYER)));
+	return (!
+			(oper->type != PROG_OBJECT || oper->data.objref >= db_top || oper->data.objref < 0
+			 || (Typeof(oper->data.objref) != TYPE_PLAYER)));
 }
-
-
 
 int
 valid_object(struct inst *oper)
 {
-	return (!(oper->type != PROG_OBJECT || oper->data.objref >= db_top
-			  || (oper->data.objref < 0) || Typeof(oper->data.objref) == TYPE_GARBAGE));
+	return (!
+			(oper->type != PROG_OBJECT || oper->data.objref >= db_top ||
+			 (oper->data.objref < 0) || Typeof(oper->data.objref) == TYPE_GARBAGE));
 }
-
 
 int
 is_home(struct inst *oper)
 {
 	return (oper->type == PROG_OBJECT && oper->data.objref == HOME);
 }
-
 
 int
 permissions(dbref player, dbref thing)
@@ -1861,7 +1830,6 @@ find_mlev(dbref prog, struct frame * fr, int st)
 	}
 }
 
-
 dbref
 find_uid(dbref player, struct frame * fr, int st, dbref program)
 {
@@ -1883,13 +1851,11 @@ find_uid(dbref player, struct frame * fr, int st, dbref program)
 	return (OWNER(player));
 }
 
-
 void
-do_abort_interp(dbref player, const char *msg, struct inst *pc,
-				struct inst *arg, int atop, struct frame *fr,
-				struct inst *oper1, struct inst *oper2,
-				struct inst *oper3, struct inst *oper4, int nargs,
-				dbref program, char *file, int line)
+do_abort_interp(dbref player, const char *msg, struct inst *pc, struct inst *arg,
+				int atop, struct frame *fr, struct inst *oper1, struct inst *oper2,
+				struct inst *oper3, struct inst *oper4, int nargs, dbref program,
+				char *file, int line)
 {
 	char buffer[128];
 

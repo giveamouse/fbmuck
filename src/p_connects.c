@@ -54,7 +54,6 @@ prim_online(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_online_array(PRIM_PROTOTYPE)
 {
@@ -79,7 +78,6 @@ prim_online_array(PRIM_PROTOTYPE)
 	}
 	PushArrayRaw(nu);
 }
-
 
 void
 prim_concount(PRIM_PROTOTYPE)
@@ -120,7 +118,6 @@ prim_condbref(PRIM_PROTOTYPE)
 	PushObject(result);
 }
 
-
 void
 prim_descr_dbref(PRIM_PROTOTYPE)
 {
@@ -138,7 +135,6 @@ prim_descr_dbref(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushObject(result);
 }
-
 
 void
 prim_conidle(PRIM_PROTOTYPE)
@@ -159,7 +155,6 @@ prim_conidle(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_descr_idle(PRIM_PROTOTYPE)
 {
@@ -177,7 +172,6 @@ prim_descr_idle(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
 
 void
 prim_descr_least_idle(PRIM_PROTOTYPE)
@@ -199,7 +193,6 @@ prim_descr_least_idle(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_descr_most_idle(PRIM_PROTOTYPE)
 {
@@ -220,7 +213,6 @@ prim_descr_most_idle(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_contime(PRIM_PROTOTYPE)
 {
@@ -240,7 +232,6 @@ prim_contime(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_descr_time(PRIM_PROTOTYPE)
 {
@@ -258,7 +249,6 @@ prim_descr_time(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
 
 void
 prim_conhost(PRIM_PROTOTYPE)
@@ -361,7 +351,6 @@ prim_conboot(PRIM_PROTOTYPE)
 	pboot(result);
 }
 
-
 void
 prim_descr_boot(PRIM_PROTOTYPE)
 {
@@ -377,7 +366,6 @@ prim_descr_boot(PRIM_PROTOTYPE)
 		abort_interp("Invalid descriptor number. (1)");
 	CLEAR(oper1);
 }
-
 
 void
 prim_connotify(PRIM_PROTOTYPE)
@@ -401,7 +389,6 @@ prim_connotify(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 }
 
-
 void
 prim_descr_notify(PRIM_PROTOTYPE)
 {
@@ -423,7 +410,6 @@ prim_descr_notify(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 }
 
-
 void
 prim_condescr(PRIM_PROTOTYPE)
 {
@@ -441,7 +427,6 @@ prim_condescr(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
 
 void
 prim_descrcon(PRIM_PROTOTYPE)
@@ -474,7 +459,6 @@ prim_nextdescr(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
 
 void
 prim_descriptors(PRIM_PROTOTYPE)
@@ -563,7 +547,6 @@ prim_descr_array(PRIM_PROTOTYPE)
 	PushArrayRaw(newarr);
 }
 
-
 void
 prim_descr_setuser(PRIM_PROTOTYPE)
 {
@@ -597,8 +580,8 @@ prim_descr_setuser(PRIM_PROTOTYPE)
 		if (ref != NOTHING) {
 			destname = NAME(ref);
 		}
-		log_status("DESCR_SETUSER: %s(%d) to %s(%d) on descriptor %d\n",
-				   NAME(player), player, destname, ref, oper1->data.number);
+		log_status("DESCR_SETUSER: %s(%d) to %s(%d) on descriptor %d\n", NAME(player), player,
+				   destname, ref, oper1->data.number);
 	}
 	tmp = oper1->data.number;
 
@@ -610,7 +593,6 @@ prim_descr_setuser(PRIM_PROTOTYPE)
 
 	PushInt(result);
 }
-
 
 void
 prim_descrflush(PRIM_PROTOTYPE)
@@ -626,8 +608,6 @@ prim_descrflush(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	result = pdescrflush(tmp);
 }
-
-
 
 void
 prim_firstdescr(PRIM_PROTOTYPE)

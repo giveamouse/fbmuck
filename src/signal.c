@@ -20,20 +20,20 @@
 #include "version.h"
 
 #ifndef WIN32
-#include <signal.h>
-#include <sys/wait.h>
+#  include <signal.h>
+#  include <sys/wait.h>
 
 /*
  * SunOS can't include signal.h and sys/signal.h, stupid broken OS.
  */
-#if defined(HAVE_SYS_SIGNAL_H) && !defined(SUN_OS)
-# include <sys/signal.h>
-#endif
+#  if defined(HAVE_SYS_SIGNAL_H) && !defined(SUN_OS)
+#    include <sys/signal.h>
+#  endif
 
-#if defined(ULTRIX) || defined(_POSIX_VERSION)
-#undef RETSIGTYPE
-#define RETSIGTYPE void
-#endif
+#  if defined(ULTRIX) || defined(_POSIX_VERSION)
+#    undef RETSIGTYPE
+#    define RETSIGTYPE void
+#  endif
 
 /*
  * Function prototypes
@@ -44,11 +44,11 @@ RETSIGTYPE sig_dump_status(int i);
 RETSIGTYPE sig_shutdown(int i);
 RETSIGTYPE sig_reap(int i);
 
-#ifdef _POSIX_VERSION
+#  ifdef _POSIX_VERSION
 void our_signal(int signo, void (*sighandler) (int));
-#else
-# define our_signal(s,f) signal((s),(f))
-#endif
+#  else
+#    define our_signal(s,f) signal((s),(f))
+#  endif
 
 /*
  * our_signal(signo, sighandler)
@@ -58,7 +58,7 @@ void our_signal(int signo, void (*sighandler) (int));
  *
  * Calls sigaction() to set a signal, if we are posix.
  */
-#ifdef _POSIX_VERSION
+#  ifdef _POSIX_VERSION
 void
 our_signal(int signo, void (*sighandler) (int))
 {
@@ -69,15 +69,15 @@ our_signal(int signo, void (*sighandler) (int))
 	act.sa_flags = 0;
 
 	/* Restart long system calls if a signal is caught. */
-#ifdef SA_RESTART
+#    ifdef SA_RESTART
 	act.sa_flags |= SA_RESTART;
-#endif
+#    endif
 
 	/* Make it so */
 	sigaction(signo, &act, &oact);
 }
 
-#endif							/* _POSIX_VERSION */
+#  endif						/* _POSIX_VERSION */
 
 void
 set_dumper_signals()
@@ -91,32 +91,31 @@ set_dumper_signals()
 	our_signal(SIGINT, SIG_DFL);	/* Take Interrupt signal and die! */
 	our_signal(SIGTERM, SIG_DFL);	/* Take Terminate signal and die! */
 	our_signal(SIGSEGV, SIG_DFL);	/* Take Segfault and die! */
-#ifdef SIGTRAP
+#  ifdef SIGTRAP
 	our_signal(SIGTRAP, SIG_DFL);
-#endif
-#ifdef SIGIOT
+#  endif
+#  ifdef SIGIOT
 	our_signal(SIGIOT, SIG_DFL);
-#endif
-#ifdef SIGEMT
+#  endif
+#  ifdef SIGEMT
 	our_signal(SIGEMT, SIG_DFL);
-#endif
-#ifdef SIGBUS
+#  endif
+#  ifdef SIGBUS
 	our_signal(SIGBUS, SIG_DFL);
-#endif
-#ifdef SIGSYS
+#  endif
+#  ifdef SIGSYS
 	our_signal(SIGSYS, SIG_DFL);
-#endif
-#ifdef SIGXCPU
+#  endif
+#  ifdef SIGXCPU
 	our_signal(SIGXCPU, SIG_IGN);	/* CPU usage limit exceeded */
-#endif
-#ifdef SIGXFSZ
+#  endif
+#  ifdef SIGXFSZ
 	our_signal(SIGXFSZ, SIG_IGN);	/* Exceeded file size limit */
-#endif
-#ifdef SIGVTALRM
+#  endif
+#  ifdef SIGVTALRM
 	our_signal(SIGVTALRM, SIG_DFL);
-#endif
+#  endif
 }
-
 
 /*
  * set_signals()
@@ -129,8 +128,8 @@ set_dumper_signals()
  *
  * Called from main() and bailout()
  */
-#define SET_BAIL (bail ? SIG_DFL : bailout)
-#define SET_IGN  (bail ? SIG_DFL : SIG_IGN)
+#  define SET_BAIL (bail ? SIG_DFL : bailout)
+#  define SET_IGN  (bail ? SIG_DFL : SIG_IGN)
 
 static void
 set_sigs_intern(int bail)
@@ -150,33 +149,33 @@ set_sigs_intern(int bail)
 
 	/* catch these because we might as well */
 /*  our_signal(SIGQUIT, SET_BAIL);  */
-#ifdef SIGTRAP
+#  ifdef SIGTRAP
 	our_signal(SIGTRAP, SET_IGN);
-#endif
-#ifdef SIGIOT
+#  endif
+#  ifdef SIGIOT
 	our_signal(SIGIOT, SET_BAIL);
-#endif
-#ifdef SIGEMT
+#  endif
+#  ifdef SIGEMT
 	our_signal(SIGEMT, SET_BAIL);
-#endif
-#ifdef SIGBUS
+#  endif
+#  ifdef SIGBUS
 	our_signal(SIGBUS, SET_BAIL);
-#endif
-#ifdef SIGSYS
+#  endif
+#  ifdef SIGSYS
 	our_signal(SIGSYS, SET_BAIL);
-#endif
+#  endif
 	our_signal(SIGFPE, SET_BAIL);
 	our_signal(SIGSEGV, SET_BAIL);
 	our_signal(SIGTERM, bail ? SET_BAIL : sig_shutdown);
-#ifdef SIGXCPU
+#  ifdef SIGXCPU
 	our_signal(SIGXCPU, SET_BAIL);
-#endif
-#ifdef SIGXFSZ
+#  endif
+#  ifdef SIGXFSZ
 	our_signal(SIGXFSZ, SET_BAIL);
-#endif
-#ifdef SIGVTALRM
+#  endif
+#  ifdef SIGVTALRM
 	our_signal(SIGVTALRM, SET_BAIL);
-#endif
+#  endif
 	our_signal(SIGUSR2, SET_BAIL);
 
 	/* status dumper (predates "WHO" command) */
@@ -209,9 +208,9 @@ bailout(int sig)
 	panic(message);
 	exit(7);
 
-#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
+#  if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
 	return 0;
-#endif
+#  endif
 }
 
 /*
@@ -221,9 +220,9 @@ RETSIGTYPE
 sig_dump_status(int i)
 {
 	dump_status();
-#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
+#  if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
 	return 0;
-#endif
+#  endif
 }
 
 /*
@@ -235,19 +234,19 @@ sig_shutdown(int i)
 	log_status("SHUTDOWN: via SIGNAL\n");
 	shutdown_flag = 1;
 	restart_flag = 0;
-#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
+#  if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
 	return 0;
-#endif
+#  endif
 }
 
 /*
  * Clean out Zombie Resolver Process.
  */
-#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
-#define RETSIGVAL 0
-#else
-#define RETSIGVAL
-#endif
+#  if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
+#    define RETSIGVAL 0
+#  else
+#    define RETSIGVAL
+#  endif
 
 RETSIGTYPE
 sig_reap(int i)
@@ -270,11 +269,11 @@ sig_reap(int i)
 
 	reapedpid = waitpid(-1, &status, WNOHANG);
 	if (!reapedpid) {
-#ifdef DETACH
+#  ifdef DETACH
 		log2file(LOG_ERR_FILE, "SIG_CHILD signal handler called with no pid!");
-#else
+#  else
 		fprintf(stderr, "SIG_CHILD signal handler called with no pid!\n");
-#endif
+#  endif
 	} else {
 		if (reapedpid == global_resolver_pid) {
 			log_status("resolver exited with status %d\n", status);
@@ -322,16 +321,12 @@ sig_reap(int i)
 	return RETSIGVAL;
 }
 
-
-
 #else							/* WIN32 */
 
-#include <wincon.h>
-#include <windows.h>
-#define VK_C         0x43
-#define CONTROL_KEY (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED)
-
-
+#  include <wincon.h>
+#  include <windows.h>
+#  define VK_C         0x43
+#  define CONTROL_KEY (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED)
 
 void
 sig_reap(int i)
@@ -401,7 +396,6 @@ check_console()
 		bailout(2);
 	}
 
-
 	result = GetNumberOfConsoleInputEvents(InputHandle, &EventsWaiting);
 	if (result) {
 		if (EventsWaiting > 0) {
@@ -431,6 +425,5 @@ check_console()
 	}
 
 }
-
 
 #endif							/* WIN32 */

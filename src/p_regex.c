@@ -9,10 +9,10 @@
 #include <ctype.h>
 
 #ifdef WIN32
-# define __STDC__ 1
-# include "./regex.h"
+#  define __STDC__ 1
+#  include "./regex.h"
 #else
-# include "pcre/pcre.h"
+#  include "pcre/pcre.h"
 #endif
 
 #include "db.h"

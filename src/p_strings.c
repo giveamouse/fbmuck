@@ -363,7 +363,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					ref = oper2->data.objref;
 					CHECKREMOTE(ref);
 					/* if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
-					   ts_lastuseobject(ref); */
+					 * ts_lastuseobject(ref); */
 					if (NAME(ref)) {
 						strcpy(hold, NAME(ref));
 					} else {
@@ -487,7 +487,6 @@ prim_fmtstring(PRIM_PROTOTYPE)
 	else
 		PushNullStr;
 }
-
 
 void
 prim_array_fmtstrings(PRIM_PROTOTYPE)
@@ -971,8 +970,6 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
-
-
 void
 prim_split(PRIM_PROTOTYPE)
 {
@@ -1116,9 +1113,9 @@ prim_itoc(PRIM_PROTOTYPE)
 	oper1 = POP();
 	if ((oper1->type != PROG_INTEGER) || (oper1->data.number < 0))
 		abort_interp("Argument must be a positive integer. (1)");
-	if (oper1->data.number > 127 || (!isprint((char) oper1->data.number) &&
-									 ((char) oper1->data.number != '\r') &&
-									 ((char) oper1->data.number != ESCAPE_CHAR))) {
+	if (oper1->data.number > 127 ||
+		(!isprint((char) oper1->data.number) && ((char) oper1->data.number != '\r') &&
+		 ((char) oper1->data.number != ESCAPE_CHAR))) {
 		result = 0;
 	} else {
 		result = 1;
@@ -1281,8 +1278,8 @@ prim_strncmp(PRIM_PROTOTYPE)
 	if (oper2->data.string == oper3->data.string)
 		result = 0;
 	else
-		result = strncmp(DoNullInd(oper3->data.string),
-						 DoNullInd(oper2->data.string), oper1->data.number);
+		result = strncmp(DoNullInd(oper3->data.string), DoNullInd(oper2->data.string),
+						 oper1->data.number);
 	CLEAR(oper1);
 	CLEAR(oper2);
 	CLEAR(oper3);
@@ -1408,13 +1405,12 @@ prim_notify(PRIM_PROTOTYPE)
 			strcpy(buf, oper1->data.string->data);
 		}
 
-		notify_listeners(player, program, oper2->data.objref,
-						 getloc(oper2->data.objref), buf, 1);
+		notify_listeners(player, program, oper2->data.objref, getloc(oper2->data.objref), buf,
+						 1);
 	}
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
-
 
 void
 prim_notify_exclude(PRIM_PROTOTYPE)
@@ -1510,7 +1506,7 @@ prim_intostr(PRIM_PROTOTYPE)
 	if (oper1->type == PROG_STRING)
 		abort_interp("Invalid argument.");
 	if (oper1->type == PROG_FLOAT) {
-		snprintf(buf, sizeof(buf), "%.15lg", oper1->data.fnumber);
+		snprintf(buf, sizeof(buf), "%.15g", oper1->data.fnumber);
 		if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
 			strcatn(buf, sizeof(buf), ".0");
 		}
@@ -1586,7 +1582,6 @@ prim_explode(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_explode_array(PRIM_PROTOTYPE)
 {
@@ -1645,7 +1640,6 @@ prim_explode_array(PRIM_PROTOTYPE)
 
 	PushArrayRaw(nu);
 }
-
 
 void
 prim_subst(PRIM_PROTOTYPE)
@@ -1777,8 +1771,8 @@ prim_pronoun_sub(PRIM_PROTOTYPE)
 	if (oper1->type != PROG_STRING)
 		abort_interp("Invalid argument (2)");
 	if (oper1->data.string) {
-		strcpy(buf, pronoun_substitute(fr->descr, oper2->data.objref,
-									   oper1->data.string->data));
+		strcpy(buf,
+			   pronoun_substitute(fr->descr, oper2->data.objref, oper1->data.string->data));
 	} else {
 		buf[0] = '\0';
 	}
@@ -1915,7 +1909,6 @@ prim_stringpfx(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_strencrypt(PRIM_PROTOTYPE)
 {
@@ -1936,7 +1929,6 @@ prim_strencrypt(PRIM_PROTOTYPE)
 	PushString(ptr);
 }
 
-
 void
 prim_strdecrypt(PRIM_PROTOTYPE)
 {
@@ -1956,7 +1948,6 @@ prim_strdecrypt(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	PushString(ptr);
 }
-
 
 void
 prim_textattr(PRIM_PROTOTYPE)

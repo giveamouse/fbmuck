@@ -19,7 +19,6 @@
 #include "mufevent.h"
 #include "array.h"
 
-
 struct mufevent_process {
 	struct mufevent_process *prev, *next;
 	dbref player;
@@ -29,7 +28,6 @@ struct mufevent_process {
 	char **filters;
 	struct frame *fr;
 } *mufevent_processes;
-
 
 /* static void muf_event_process_free(struct mufevent* ptr)
  * Frees up a mufevent_process once you are done with it.
@@ -71,7 +69,6 @@ muf_event_process_free(struct mufevent_process *ptr)
 	ptr->deleted = 1;
 	free(ptr);
 }
-
 
 /* void muf_event_register_specific(dbref player, dbref prog, struct frame* fr, int eventcount, char** eventids)
  * Called when a MUF program enters EVENT_WAITFOR, to register that
@@ -117,7 +114,6 @@ muf_event_register_specific(dbref player, dbref prog, struct frame *fr, int even
 	}
 }
 
-
 /* void muf_event_register(dbref player, dbref prog, struct frame* fr)
  * Called when a MUF program enters EVENT_WAIT, to register that
  * the program is ready to process any type of MUF events.
@@ -127,7 +123,6 @@ muf_event_register(dbref player, dbref prog, struct frame *fr)
 {
 	muf_event_register_specific(player, prog, fr, 0, NULL);
 }
-
 
 /* int muf_event_read_notify(int descr, dbref player)
  * Sends a "READ" event to the first foreground or preempt muf process
@@ -160,7 +155,6 @@ muf_event_read_notify(int descr, dbref player, const char *cmd)
 	return 0;
 }
 
-
 /* int muf_event_dequeue_pid(int pid)
  * removes the MUF program with the given PID from the EVENT_WAIT queue.
  */
@@ -186,7 +180,6 @@ muf_event_dequeue_pid(int pid)
 
 	return count;
 }
-
 
 /* static int event_has_refs(dbref program, struct mufevent_process *proc)
  * Checks the MUF event queue for address references on the stack or
@@ -217,7 +210,6 @@ event_has_refs(dbref program, struct mufevent_process *proc)
 
 	return 0;
 }
-
 
 /* int muf_event_dequeue(dbref prog, int killmode)
  * Deregisters a program from any instances of it in the EVENT_WAIT queue.
@@ -258,7 +250,6 @@ muf_event_dequeue(dbref prog, int killmode)
 	return count;
 }
 
-
 struct frame *
 muf_event_pid_frame(int pid)
 {
@@ -271,7 +262,6 @@ muf_event_pid_frame(int pid)
 	}
 	return NULL;
 }
-
 
 /* int muf_event_controls(dbref player, int pid)
  * Returns true if the given player controls the given PID.
@@ -294,7 +284,6 @@ muf_event_controls(dbref player, int pid)
 
 	return 1;
 }
-
 
 /* int muf_event_list(dbref player, char* pat)
  * List all processes in the EVENT_WAIT queue that the given player controls.
@@ -341,9 +330,8 @@ muf_event_list(dbref player, const char *pat)
 				snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(proc->prog));
 			}
 			snprintf(buf, sizeof(buf), pat, pidstr, "--",
-					 time_format_2((long) (rtime - proc->fr->started)),
-					 inststr, cpustr, progstr, prognamestr, NAME(proc->player),
-					 "EVENT_WAITFOR");
+					 time_format_2((long) (rtime - proc->fr->started)), inststr, cpustr,
+					 progstr, prognamestr, NAME(proc->player), "EVENT_WAITFOR");
 			if (Wizard(OWNER(player)) || (OWNER(proc->prog) == OWNER(player))
 				|| (proc->player == player))
 				notify_nolisten(player, buf, 1);
@@ -353,7 +341,6 @@ muf_event_list(dbref player, const char *pat)
 	}
 	return count;
 }
-
 
 /* stk_array *get_mufevent_pids(stk_array *nw, dbref ref)
  * Given a muf list array, appends pids to it where ref
@@ -384,7 +371,6 @@ get_mufevent_pids(stk_array * nw, dbref ref)
 	}
 	return nw;
 }
-
 
 stk_array *
 get_mufevent_pidinfo(stk_array * nw, int pid)
@@ -514,7 +500,6 @@ get_mufevent_pidinfo(stk_array * nw, int pid)
 	return nw;
 }
 
-
 /* int muf_event_count(struct frame* fr)
  * Returns how many events are waiting to be processed.
  */
@@ -529,7 +514,6 @@ muf_event_count(struct frame *fr)
 
 	return count;
 }
-
 
 /* int muf_event_exists(struct frame* fr, const char* eventid)
  * Returns how many events of the given event type are waiting to be processed.
@@ -551,7 +535,6 @@ muf_event_exists(struct frame *fr, const char *eventid)
 	return count;
 }
 
-
 /* static void muf_event_free(struct mufevent* ptr)
  * Frees up a MUF event once you are done with it.  This shouldn't be used
  * outside this module.
@@ -565,7 +548,6 @@ muf_event_free(struct mufevent *ptr)
 	ptr->next = NULL;
 	free(ptr);
 }
-
 
 /* void muf_event_add(struct frame* fr, char* event, struct inst* val, int exclusive)
  * Adds a MUF event to the event queue for the given program instance.
@@ -601,8 +583,6 @@ muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive)
 		ptr->next = newevent;
 	}
 }
-
-
 
 /* struct mufevent* muf_event_pop_specific(struct frame* fr, int eventcount, const char** events)
  * Removes the first event of one of the specified types from the event queue
@@ -641,8 +621,6 @@ muf_event_pop_specific(struct frame *fr, int eventcount, char **events)
 
 	return NULL;
 }
-
-
 
 /* void muf_event_remove(struct frame* fr, char* event, int doall)
  * Removes a given MUF event type from the event queue of the given
@@ -690,8 +668,6 @@ muf_event_remove(struct frame *fr, char *event, int which)
 	}
 }
 
-
-
 /* static struct mufevent* muf_event_peek(struct frame* fr)
  * This returns a pointer to the top muf event of the given
  * program instance's event queue.  The event is not removed
@@ -706,7 +682,6 @@ muf_event_peek(struct frame *fr)
 	return fr->events;
 }
  */
-
 
 /* static struct mufevent* muf_event_pop(struct frame* fr)
  * This pops the top muf event off of the given program instance's
@@ -725,8 +700,6 @@ muf_event_pop(struct frame *fr)
 	return ptr;
 }
 
-
-
 /* void muf_event_purge(struct frame* fr)
  * purges all muf events from the given program instance's event queue.
  */
@@ -737,8 +710,6 @@ muf_event_purge(struct frame *fr)
 		muf_event_free(muf_event_pop(fr));
 	}
 }
-
-
 
 /* void muf_event_process()
  * For all program instances who are in the EVENT_WAIT queue,
@@ -793,8 +764,8 @@ muf_event_process(void)
 
 					copyinst(&ev->data, &(proc->fr->argument.st[proc->fr->argument.top]));
 					proc->fr->argument.top++;
-					push(proc->fr->argument.st, &(proc->fr->argument.top),
-						 PROG_STRING, MIPSCAST alloc_prog_string(ev->event));
+					push(proc->fr->argument.st, &(proc->fr->argument.top), PROG_STRING,
+						 MIPSCAST alloc_prog_string(ev->event));
 
 					interp_loop(proc->player, proc->prog, proc->fr, 0);
 

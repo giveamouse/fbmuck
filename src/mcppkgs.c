@@ -15,7 +15,6 @@
 #include "interface.h"
 #include "msgparse.h"
 
-
 struct line *get_new_line(void);
 
 void
@@ -34,8 +33,6 @@ show_mcp_error(McpFrame * mfr, char *topic, char *text)
 		notify(mcpframe_to_user(mfr), text);
 	}
 }
-
-
 
 /*
  * reference is in the format objnum.category.misc where objnum is the
@@ -248,8 +245,8 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 				curr = new_line;
 			}
 
-			log_status("PROGRAM SAVED: %s by %s(%d)\n",
-					   unparse_object(player, obj), NAME(player), player);
+			log_status("PROGRAM SAVED: %s by %s(%d)\n", unparse_object(player, obj),
+					   NAME(player), player);
 
 			write_program(PROGRAM_FIRST(obj), obj);
 

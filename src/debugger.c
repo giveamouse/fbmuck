@@ -17,7 +17,6 @@
 #include <ctype.h>
 #include <time.h>
 
-
 void
 list_proglines(dbref player, dbref program, struct frame *fr, int start, int end)
 {
@@ -60,7 +59,6 @@ list_proglines(dbref player, dbref program, struct frame *fr, int start, int end
 	return;
 }
 
-
 char *
 show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, int markpc)
 {
@@ -74,14 +72,15 @@ show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, 
 	end = code + PROGRAM_SIZ(program);
 	buf[0] = '\0';
 
-	for (linestart = pc, maxback = maxprims; linestart > code &&
-		 linestart->line == thisline && linestart->type != PROG_FUNCTION &&
+	for (linestart = pc, maxback = maxprims;
+		 linestart > code && linestart->line == thisline && linestart->type != PROG_FUNCTION &&
 		 --maxback; --linestart) ;
 	if (linestart->line < thisline)
 		++linestart;
 
-	for (lineend = pc + 1, maxback = maxprims; lineend < end &&
-		 lineend->line == thisline && lineend->type != PROG_FUNCTION && --maxback; ++lineend) ;
+	for (lineend = pc + 1, maxback = maxprims;
+		 lineend < end && lineend->line == thisline && lineend->type != PROG_FUNCTION &&
+		 --maxback; ++lineend) ;
 	if (lineend >= end || lineend->line > thisline || lineend->type == PROG_FUNCTION)
 		--lineend;
 
@@ -118,7 +117,6 @@ show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, 
 	return buf;
 }
 
-
 struct inst *
 funcname_to_pc(dbref program, const char *name)
 {
@@ -136,7 +134,6 @@ funcname_to_pc(dbref program, const char *name)
 	return (NULL);
 }
 
-
 struct inst *
 linenum_to_pc(dbref program, int whatline)
 {
@@ -152,7 +149,6 @@ linenum_to_pc(dbref program, int whatline)
 	}
 	return (NULL);
 }
-
 
 char *
 unparse_sysreturn(dbref * program, struct inst *pc)
@@ -175,7 +171,6 @@ unparse_sysreturn(dbref * program, struct inst *pc)
 	snprintf(buf, sizeof(buf), "line \033[1m%d\033[0m, in \033[1m%s\033[0m", pc->line, fname);
 	return buf;
 }
-
 
 char *
 unparse_breakpoint(struct frame *fr, int brk)
@@ -323,7 +318,6 @@ list_program_functions(dbref player, dbref program, char *arg)
 	}
 	notify_nolisten(player, "*done*", 1);
 }
-
 
 static void
 debug_printvar(dbref player, dbref program, struct frame *fr, const char *arg)
@@ -485,7 +479,6 @@ push_arg(dbref player, struct frame *fr, const char *arg)
 		}
 	}
 }
-
 
 extern int primitive(const char *token);
 
@@ -875,9 +868,14 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 			for (i = startline; i <= endline; i++) {
 				pinst = linenum_to_pc(program, i);
 				if (pinst) {
-					snprintf(buf, sizeof(buf), "line %d: %s", i, (i == fr->pc->line) ?
-							 show_line_prims(fr, program, fr->pc, STACK_SIZE, 1) :
-							 show_line_prims(fr, program, pinst, STACK_SIZE, 0));
+					snprintf(buf, sizeof(buf), "line %d: %s", i,
+							 (i == fr->pc->line) ? show_line_prims(fr, program, fr->pc,
+																   STACK_SIZE,
+																   1) : show_line_prims(fr,
+																						program,
+																						pinst,
+																						STACK_SIZE,
+																						0));
 					notify_nolisten(player, buf, 1);
 				}
 			}

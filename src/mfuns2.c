@@ -13,8 +13,6 @@
 #include "interface.h"
 #include "msgparse.h"
 
-
-
 /***** Insert MFUNs here *****/
 
 const char *
@@ -31,7 +29,6 @@ mfn_owner(MFUNARGS)
 		obj = PLAYER_HOME(player);
 	return ref2str(OWNER(obj), buf, BUFFER_LEN);
 }
-
 
 const char *
 mfn_controls(MFUNARGS)
@@ -66,7 +63,6 @@ mfn_controls(MFUNARGS)
 		return "0";
 	}
 }
-
 
 const char *
 mfn_links(MFUNARGS)
@@ -118,7 +114,6 @@ mfn_links(MFUNARGS)
 	return ref2str(obj, buf, BUFFER_LEN);
 }
 
-
 const char *
 mfn_locked(MFUNARGS)
 {
@@ -136,7 +131,6 @@ mfn_locked(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "%d", !could_doit(descr, who, obj));
 	return buf;
 }
-
 
 const char *
 mfn_testlock(MFUNARGS)
@@ -172,7 +166,6 @@ mfn_testlock(MFUNARGS)
 		return "0";
 	}
 }
-
 
 const char *
 mfn_contents(MFUNARGS)
@@ -232,8 +225,6 @@ mfn_contents(MFUNARGS)
 	return buf;
 }
 
-
-
 const char *
 mfn_exits(MFUNARGS)
 {
@@ -276,7 +267,6 @@ mfn_exits(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_v(MFUNARGS)
 {
@@ -286,7 +276,6 @@ mfn_v(MFUNARGS)
 		ABORT_MPI("V", "No such variable defined.");
 	return ptr;
 }
-
 
 const char *
 mfn_set(MFUNARGS)
@@ -298,7 +287,6 @@ mfn_set(MFUNARGS)
 	strcpy(ptr, argv[1]);
 	return ptr;
 }
-
 
 const char *
 mfn_ref(MFUNARGS)
@@ -319,7 +307,6 @@ mfn_ref(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "#%d", obj);
 	return buf;
 }
-
 
 const char *
 mfn_name(MFUNARGS)
@@ -352,7 +339,6 @@ mfn_name(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_fullname(MFUNARGS)
 {
@@ -378,7 +364,6 @@ mfn_fullname(MFUNARGS)
 	return buf;
 }
 
-
 int
 countlitems(char *list, char *sep)
 {
@@ -400,8 +385,6 @@ countlitems(char *list, char *sep)
 	}
 	return count;
 }
-
-
 
 /* buf is outbut buffer.  list is list to take item from.
  * line is list line to take. */
@@ -430,7 +413,6 @@ getlitem(char *buf, char *list, char *sep, int line)
 	*ptr2 = tmpchr;
 	return buf;
 }
-
 
 const char *
 mfn_sublist(MFUNARGS)
@@ -503,7 +485,6 @@ mfn_sublist(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_lrand(MFUNARGS)
 {
@@ -529,7 +510,6 @@ mfn_lrand(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_count(MFUNARGS)
 {
@@ -542,7 +522,6 @@ mfn_count(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "%d", countlitems(argv[0], buf));
 	return buf;
 }
-
 
 const char *
 mfn_with(MFUNARGS)
@@ -566,8 +545,8 @@ mfn_with(MFUNARGS)
 	for (cnt = 2; cnt < argc; cnt++) {
 		ptr = MesgParse(argv[cnt], cmdbuf);
 		if (!ptr) {
-			snprintf(buf, BUFFER_LEN, "%s %cWITH%c (arg %d)", get_mvar("how"),
-					 MFUN_LEADCHAR, MFUN_ARGEND, cnt);
+			snprintf(buf, BUFFER_LEN, "%s %cWITH%c (arg %d)", get_mvar("how"), MFUN_LEADCHAR,
+					 MFUN_ARGEND, cnt);
 			notify(player, buf);
 			return NULL;
 		}
@@ -575,7 +554,6 @@ mfn_with(MFUNARGS)
 	free_top_mvar();
 	return ptr;
 }
-
 
 const char *
 mfn_fold(MFUNARGS)
@@ -645,7 +623,6 @@ mfn_fold(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_for(MFUNARGS)
 {
@@ -686,7 +663,6 @@ mfn_for(MFUNARGS)
 	free_top_mvar();
 	return buf;
 }
-
 
 const char *
 mfn_foreach(MFUNARGS)
@@ -739,7 +715,6 @@ mfn_foreach(MFUNARGS)
 	free_top_mvar();
 	return buf;
 }
-
 
 const char *
 mfn_filter(MFUNARGS)
@@ -810,7 +785,6 @@ mfn_filter(MFUNARGS)
 	return buf;
 }
 
-
 int
 list_contains(char *word, int len, char *list)
 {
@@ -837,16 +811,16 @@ mfn_lremove(MFUNARGS)
 	int len;
 	int firstResult = 1;
 
-	ptr = argv[0];				// the list we're removing from
+	ptr = argv[0];				/* the list we're removing from */
 	endbuf = buf;
-	*buf = '\0';				// empty buf; this is what we're returning, I bet
-	while (*ptr) {				// while more of the first list
-		// Find the next word.
+	*buf = '\0';				/* empty buf; this is what we're returning, I bet */
+	while (*ptr) {				/* while more of the first list */
+		/* Find the next word. */
 		for (ptr2 = ptr; *ptr2 && *ptr2 != '\r'; ptr2++) {
 		};
 		len = ptr2 - ptr;
 
-		// If the second list contains the string, continue.
+		/* If the second list contains the string, continue. */
 		if (!list_contains(ptr, len, argv[1]) &&
 			/*
 			 * If it's the first result, it already won't be in buf.
@@ -864,7 +838,7 @@ mfn_lremove(MFUNARGS)
 			endbuf += len;
 			*endbuf = '\0';
 		}
-		// Next word.
+		/* Next word. */
 		if (*ptr2)
 			ptr2++;
 		ptr = ptr2;
@@ -874,7 +848,6 @@ mfn_lremove(MFUNARGS)
 
 	return buf;
 }
-
 
 const char *
 mfn_lcommon(MFUNARGS)
@@ -920,7 +893,6 @@ mfn_lcommon(MFUNARGS)
 	}
 	return buf;
 }
-
 
 const char *
 mfn_lunion(MFUNARGS)
@@ -995,7 +967,6 @@ mfn_lunion(MFUNARGS)
 	}
 	return buf;
 }
-
 
 const char *
 mfn_lsort(MFUNARGS)
@@ -1075,7 +1046,6 @@ mfn_lsort(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_lunique(MFUNARGS)
 {
@@ -1117,7 +1087,6 @@ mfn_lunique(MFUNARGS)
 	}
 	return buf;
 }
-
 
 const char *
 mfn_parse(MFUNARGS)
@@ -1197,7 +1166,6 @@ mfn_parse(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_smatch(MFUNARGS)
 {
@@ -1208,7 +1176,6 @@ mfn_smatch(MFUNARGS)
 	}
 }
 
-
 const char *
 mfn_strlen(MFUNARGS)
 {
@@ -1216,13 +1183,11 @@ mfn_strlen(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_subst(MFUNARGS)
 {
 	return string_substitute(argv[0], argv[1], argv[2], buf, BUFFER_LEN);
 }
-
 
 const char *
 mfn_awake(MFUNARGS)
@@ -1242,7 +1207,6 @@ mfn_awake(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "%d", online(obj));
 	return (buf);
 }
-
 
 const char *
 mfn_type(MFUNARGS)
@@ -1278,7 +1242,6 @@ mfn_type(MFUNARGS)
 	}
 	return "Bad";
 }
-
 
 const char *
 mfn_istype(MFUNARGS)
@@ -1323,7 +1286,6 @@ mfn_istype(MFUNARGS)
 	return (string_compare(argv[1], "Bad") ? "0" : "1");
 }
 
-
 const char *
 mfn_fox(MFUNARGS)
 {
@@ -1337,15 +1299,14 @@ mfn_debugif(MFUNARGS)
 
 	CHECKRETURN(ptr, "DEBUGIF", "arg 1");
 	if (truestr(argv[0])) {
-		ptr = mesg_parse(descr, player, what, perms, argv[1],
-						 buf, BUFFER_LEN, (mesgtyp | MPI_ISDEBUG));
+		ptr = mesg_parse(descr, player, what, perms, argv[1], buf, BUFFER_LEN,
+						 (mesgtyp | MPI_ISDEBUG));
 	} else {
 		ptr = MesgParse(argv[1], buf);
 	}
 	CHECKRETURN(ptr, "DEBUGIF", "arg 2");
 	return buf;
 }
-
 
 const char *
 mfn_debug(MFUNARGS)
@@ -1357,7 +1318,6 @@ mfn_debug(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_revoke(MFUNARGS)
 {
@@ -1367,7 +1327,6 @@ mfn_revoke(MFUNARGS)
 	CHECKRETURN(ptr, "REVOKE", "arg 1");
 	return buf;
 }
-
 
 const char *
 mfn_timing(MFUNARGS)
@@ -1398,7 +1357,6 @@ mfn_timing(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_delay(MFUNARGS)
 {
@@ -1419,8 +1377,6 @@ mfn_delay(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "%d", i);
 	return buf;
 }
-
-
 
 const char *
 mfn_kill(MFUNARGS)
@@ -1444,8 +1400,6 @@ mfn_kill(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "%d", i);
 	return buf;
 }
-
-
 
 static int mpi_muf_call_levels = 0;
 
@@ -1499,7 +1453,7 @@ mfn_muf(MFUNARGS)
 		return buf;
 		break;
 	case PROG_FLOAT:
-		snprintf(buf, BUFFER_LEN, "%.15lg", rv->data.fnumber);
+		snprintf(buf, BUFFER_LEN, "%.15g", rv->data.fnumber);
 		CLEAR(rv);
 		return buf;
 		break;
@@ -1514,7 +1468,6 @@ mfn_muf(MFUNARGS)
 		break;
 	}
 }
-
 
 const char *
 mfn_force(MFUNARGS)
@@ -1582,7 +1535,6 @@ mfn_force(MFUNARGS)
 	return "";
 }
 
-
 const char *
 mfn_midstr(MFUNARGS)
 {
@@ -1623,7 +1575,6 @@ mfn_midstr(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_instr(MFUNARGS)
 {
@@ -1637,7 +1588,6 @@ mfn_instr(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "%d", (ptr - argv[0] + 1));
 	return buf;
 }
-
 
 const char *
 mfn_lmember(MFUNARGS)
@@ -1656,8 +1606,9 @@ mfn_lmember(MFUNARGS)
 	if (!*delim)
 		ABORT_MPI("LMEMBER", "List delimiter cannot be a null string.");
 	len = strlen(delim);
-	while (*ptr && !(string_prefix(ptr, argv[1]) &&
-					 (!ptr[len2] || string_prefix(ptr + len2, delim)))) {
+	while (*ptr &&
+		   !(string_prefix(ptr, argv[1]) &&
+			 (!ptr[len2] || string_prefix(ptr + len2, delim)))) {
 		while (*ptr && !string_prefix(ptr, delim))
 			ptr++;
 		if (*ptr)
@@ -1669,7 +1620,6 @@ mfn_lmember(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "%d", i);
 	return buf;
 }
-
 
 const char *
 mfn_tolower(MFUNARGS)
@@ -1688,7 +1638,6 @@ mfn_tolower(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_toupper(MFUNARGS)
 {
@@ -1705,7 +1654,6 @@ mfn_toupper(MFUNARGS)
 	*ptr2++ = '\0';
 	return buf;
 }
-
 
 const char *
 mfn_commas(MFUNARGS)
@@ -1793,7 +1741,6 @@ mfn_commas(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_attr(MFUNARGS)
 {
@@ -1864,7 +1811,6 @@ mfn_attr(MFUNARGS)
 	strcatn(buf, BUFFER_LEN, ANSI_RESET);
 	return buf;
 }
-
 
 const char *
 mfn_escape(MFUNARGS)

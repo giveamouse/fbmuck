@@ -1,6 +1,5 @@
 /* $Header$ */
 
-
 #include "copyright.h"
 #include "config.h"
 

@@ -8,7 +8,7 @@
 #include <signal.h>
 
 #ifndef WIN32
-#include <sys/wait.h>
+#  include <sys/wait.h>
 #endif
 
 #include "db.h"
@@ -99,7 +99,6 @@ do_restart(dbref player)
 	}
 }
 
-
 static void
 dump_database_internal(void)
 {
@@ -183,9 +182,9 @@ panic(const char *message)
 #ifdef NOCOREDUMP
 		exit(135);
 #else							/* !NOCOREDUMP */
-# ifdef SIGIOT
+#  ifdef SIGIOT
 		signal(SIGIOT, SIG_DFL);
-# endif
+#  endif
 		abort();
 #endif							/* NOCOREDUMP */
 	} else {
@@ -209,9 +208,9 @@ panic(const char *message)
 #ifdef NOCOREDUMP
 		exit(135);
 #else							/* !NOCOREDUMP */
-#ifdef SIGIOT
+#  ifdef SIGIOT
 		signal(SIGIOT, SIG_DFL);
-#endif
+#  endif
 		abort();
 #endif							/* NOCOREDUMP */
 	}
@@ -221,9 +220,9 @@ panic(const char *message)
 #ifdef NOCOREDUMP
 	exit(136);
 #else							/* !NOCOREDUMP */
-#ifdef SIGIOT
+#  ifdef SIGIOT
 	signal(SIGIOT, SIG_DFL);
-#endif
+#  endif
 	abort();
 #endif							/* NOCOREDUMP */
 }
@@ -237,7 +236,6 @@ dump_database(void)
 	dump_database_internal();
 	log_status("DUMPING: %s.#%d# (done)\n", dumpfile, epoch);
 }
-
 
 /*
  * Named "fork_and_dump()" mostly for historical reasons...
@@ -394,7 +392,6 @@ init_game(const char *infile, const char *outfile)
 	return 0;
 }
 
-
 void
 cleanup_game()
 {
@@ -402,7 +399,6 @@ cleanup_game()
 		free((void *) dumpfile);
 	free((void *) in_filename);
 }
-
 
 extern short wizonly_mode;
 void
@@ -424,7 +420,6 @@ do_restrict(dbref player, const char *arg)
 				   wizonly_mode ? "on" : "off");
 	}
 }
-
 
 /* use this only in process_command */
 #define Matched(string) { if(!string_prefix((string), command)) goto bad; }
@@ -461,12 +456,10 @@ process_command(int descr, dbref player, char *command)
 			if (!*command) {
 				return;
 			}
-			log_command("%s%s%s%s(%d) in %s(%d):%s %s\n",
-						Wizard(OWNER(player)) ? "WIZ: " : "",
+			log_command("%s%s%s%s(%d) in %s(%d):%s %s\n", Wizard(OWNER(player)) ? "WIZ: " : "",
 						(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
 						(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
-						NAME(OWNER(player)), (int) player,
-						NAME(DBFETCH(player)->location),
+						NAME(OWNER(player)), (int) player, NAME(DBFETCH(player)->location),
 						(int) DBFETCH(player)->location, " ", command);
 		} else {
 			if (tp_log_interactive) {
@@ -474,8 +467,7 @@ process_command(int descr, dbref player, char *command)
 							Wizard(OWNER(player)) ? "WIZ: " : "",
 							(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
 							(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
-							NAME(OWNER(player)), (int) player,
-							NAME(DBFETCH(player)->location),
+							NAME(OWNER(player)), (int) player, NAME(DBFETCH(player)->location),
 							(int) DBFETCH(player)->location,
 							(FLAGS(player) & (READMODE)) ? " [READ] " : " [INTERP] ", command);
 			}
@@ -630,7 +622,7 @@ process_command(int descr, dbref player, char *command)
 			case 'c':
 			case 'C':
 				/* @chlock, @chown, @chown_lock, @clone,
-				   @conlock, @contents, @create, @credits */
+				 * @conlock, @contents, @create, @credits */
 				switch (command[2]) {
 				case 'h':
 				case 'H':
@@ -692,7 +684,7 @@ process_command(int descr, dbref player, char *command)
 			case 'd':
 			case 'D':
 				/* @dbginfo, @delta, @describe, @dig, @dlt,
-				   @doing, @drop, @dump */
+				 * @doing, @drop, @dump */
 				switch (command[2]) {
 				case 'b':
 				case 'B':
@@ -841,7 +833,7 @@ process_command(int descr, dbref player, char *command)
 			case 'm':
 			case 'M':
 				/* @mcpedit, @mcpprogram, @memory, @mpitops,
-				   @muftops */
+				 * @muftops */
 				switch (command[2]) {
 				case 'c':
 				case 'C':
@@ -895,7 +887,7 @@ process_command(int descr, dbref player, char *command)
 			case 'o':
 			case 'O':
 				/* @odrop, @oecho, @ofail, @open, @osuccess,
-				   @owned */
+				 * @owned */
 				switch (command[2]) {
 				case 'd':
 				case 'D':
@@ -934,7 +926,7 @@ process_command(int descr, dbref player, char *command)
 			case 'p':
 			case 'P':
 				/* @password, @pcreate, @pecho, @program, 
-				   @propset, @ps */
+				 * @propset, @ps */
 				switch (command[2]) {
 				case 'a':
 				case 'A':
@@ -1002,7 +994,7 @@ process_command(int descr, dbref player, char *command)
 			case 's':
 			case 'S':
 				/* @sanity, @sanchange, @sanfix, @set, 
-				   @shutdown, @stats, @success, @sweep */
+				 * @shutdown, @stats, @success, @sweep */
 				switch (command[2]) {
 				case 'a':
 				case 'A':
@@ -1082,7 +1074,7 @@ process_command(int descr, dbref player, char *command)
 			case 'u':
 			case 'U':
 				/* @unbless, @unlink, @unlock, @uncompile,
-				   @usage */
+				 * @usage */
 				switch (command[2]) {
 				case 'N':
 				case 'n':
@@ -1330,9 +1322,8 @@ process_command(int descr, dbref player, char *command)
 		  bad:
 			notify(player, tp_huh_mesg);
 			if (tp_log_failed_commands && !controls(player, DBFETCH(player)->location)) {
-				log_status("HUH from %s(%d) in %s(%d)[%s]: %s %s\n",
-						   NAME(player), player, NAME(DBFETCH(player)->location),
-						   DBFETCH(player)->location,
+				log_status("HUH from %s(%d) in %s(%d)[%s]: %s %s\n", NAME(player), player,
+						   NAME(DBFETCH(player)->location), DBFETCH(player)->location,
 						   NAME(OWNER(DBFETCH(player)->location)), command, full_command);
 			}
 			break;
@@ -1350,13 +1341,11 @@ process_command(int descr, dbref player, char *command)
 
 	totaltime = endtime.tv_sec + (endtime.tv_usec * 1.0e-6);
 	if (totaltime > (tp_cmd_log_threshold_msec / 1000.0)) {
-		log2file(LOG_CMD_TIMES, "%6.3fs, %.16s: %s%s%s%s(%d) in %s(%d):%s %s",
-				 totaltime, ctime((time_t *) & starttime.tv_sec),
-				 Wizard(OWNER(player)) ? "WIZ: " : "",
+		log2file(LOG_CMD_TIMES, "%6.3fs, %.16s: %s%s%s%s(%d) in %s(%d):%s %s", totaltime,
+				 ctime((time_t *) & starttime.tv_sec), Wizard(OWNER(player)) ? "WIZ: " : "",
 				 (Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
-				 (Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
-				 NAME(OWNER(player)), (int) player,
-				 NAME(DBFETCH(player)->location),
+				 (Typeof(player) != TYPE_PLAYER) ? " owned by " : "", NAME(OWNER(player)),
+				 (int) player, NAME(DBFETCH(player)->location),
 				 (int) DBFETCH(player)->location, " ", command);
 	}
 }

@@ -3,7 +3,6 @@
 /* #include <strings.h> */
 #include <ctype.h>
 
-
 #define HRULE_TEXT "----------------------------------------------------------------------------"
 
 #define HTML_PAGE_HEAD     	"<html><head><title>%s</title></head>\n<body><div align=\"center\"><h1>%s</h1>\n<h3>by %s</h3></div>\n<ul><li><a href=\"#AlphaList\">Alphabetical List of Topics</a></li>\n<li><a href=\"#SectList\">List of Topics by Category</a></li></ul>\n"
@@ -39,7 +38,6 @@
 #define HTML_ALSOSEE_ENTRY      "    <a href=\"#%s\">%s</a>"
 #define HTML_ALSOSEE_END        "\n</h5>\n"
 
-
 const char *title = "";
 const char *author = "";
 const char *doccmd = "";
@@ -55,7 +53,6 @@ string_dup(const char *s)
 	return p;
 }
 
-
 char sect[256] = "";
 
 struct topiclist {
@@ -67,7 +64,6 @@ struct topiclist {
 
 struct topiclist *topichead;
 struct topiclist *secthead;
-
 
 void
 add_section(const char *str)
@@ -497,7 +493,6 @@ find_topics(FILE * infile)
 	return (longest);
 }
 
-
 void
 process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 {
@@ -658,7 +653,6 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 	fprintf(htmlfile, HTML_PAGE_FOOT);
 	fclose(docsfile);
 }
-
 
 int
 main(int argc, char **argv)

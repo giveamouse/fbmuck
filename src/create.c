@@ -1,6 +1,5 @@
 /* $Header$ */
 
-
 #include "copyright.h"
 #include "config.h"
 
@@ -234,8 +233,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 			break;
 		case TYPE_EXIT:
 			if (exit_loop_check(exit, dest)) {
-				snprintf(buf, sizeof(buf),
-						 "Destination %s would create a loop, ignored.",
+				snprintf(buf, sizeof(buf), "Destination %s would create a loop, ignored.",
 						 unparse_object(player, dest));
 				notify(player, buf);
 
@@ -360,8 +358,8 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 		/* handle costs */
 		if (OWNER(thing) == OWNER(player)) {
 			if (!payfor(player, tp_link_cost)) {
-				notify_fmt(player, "It costs %d %s to link this exit.",
-						   tp_link_cost, (tp_link_cost == 1) ? tp_penny : tp_pennies);
+				notify_fmt(player, "It costs %d %s to link this exit.", tp_link_cost,
+						   (tp_link_cost == 1) ? tp_penny : tp_pennies);
 				return;
 			}
 		} else {
@@ -748,7 +746,6 @@ do_mcpedit(int descr, dbref player, const char *name)
 	mcpedit_program(descr, player, prog, name);
 }
 
-
 void
 do_mcpprogram(int descr, dbref player, const char *name)
 {
@@ -822,7 +819,6 @@ do_mcpprogram(int descr, dbref player, const char *name)
 
 	mcpedit_program(descr, player, prog, name);
 }
-
 
 void
 mcpedit_program(int descr, dbref player, dbref prog, const char *name)
@@ -907,7 +903,7 @@ copy_one_prop(dbref player, dbref source, dbref destination, char *propname)
 		newprop.flags = currprop->flags;
 
 		/* data, however, must be cloned in case it's a string or a
-		   lock. */
+		 * lock. */
 		switch (PropType(currprop)) {
 		case PROP_STRTYP:
 			newprop.data.str = alloc_string((currprop->data).str);
@@ -997,7 +993,7 @@ do_clone(int descr, dbref player, char *name)
 	}
 
 	/* All OK so far, so try to find the thing that should be cloned. We
-	   do not allow rooms, exits, etc. to be cloned for now. */
+	 * do not allow rooms, exits, etc. to be cloned for now. */
 
 	init_match(descr, player, name, TYPE_THING, &md);
 	match_possession(&md);
@@ -1022,7 +1018,7 @@ do_clone(int descr, dbref player, char *name)
 	}
 
 	/* check the name again, just in case reserved name patterns have
-	   changed since the original object was created. */
+	 * changed since the original object was created. */
 	if (!ok_name(NAME(thing))) {
 		notify(player, "You cannot clone something with such a weird name!");
 		return;
@@ -1240,8 +1236,8 @@ set_source(dbref player, dbref action, dbref source)
 		break;
 	default:
 		notify(player, "Internal error: weird object type.");
-		log_status("PANIC: tried to source %d to %d: type: %d\n",
-				   action, source, Typeof(source));
+		log_status("PANIC: tried to source %d to %d: type: %d\n", action, source,
+				   Typeof(source));
 		return;
 		break;
 	}

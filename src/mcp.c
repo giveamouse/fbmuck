@@ -10,9 +10,8 @@
 #include "mcp.h"
 #include "mcppkg.h"
 #ifdef HAVE_MALLOC_H
-#include <malloc.h>
+#  include <malloc.h>
 #endif							/* HAVE_MALLOC_H */
-
 
 #define MCP_MESG_PREFIX		"#$#"
 #define MCP_QUOTE_PREFIX	"#$\""
@@ -22,18 +21,11 @@
 #define MCP_INIT_MESG		"mcp "
 #define MCP_NEGOTIATE_PKG	"mcp-negotiate"
 
-
-
-
-
 /* Defined elsewhere.  Used to send text to a connection */
 void SendText(McpFrame * mfr, const char *mesg);
 void FlushText(McpFrame * mfr);
 
-
 McpPkg *mcp_PackageList = NULL;
-
-
 
 int
 strcmp_nocase(const char *s1, const char *s2)
@@ -42,8 +34,6 @@ strcmp_nocase(const char *s1, const char *s2)
 		s1++, s2++;
 	return (tolower(*s1) - tolower(*s2));
 }
-
-
 
 int
 strncmp_nocase(const char *s1, const char *s2, int cnt)
@@ -56,7 +46,6 @@ strncmp_nocase(const char *s1, const char *s2, int cnt)
 		return (tolower(*s1) - tolower(*s2));
 	}
 }
-
 
 /* Used internally to escape and quote argument values. */
 int
@@ -85,18 +74,13 @@ msgarg_escape(char *buf, int bufsize, const char *in)
 	return len;
 }
 
-
 int mcp_internal_parse(McpFrame * mfr, const char *in);
-
-
 
 /*****************************************************************/
 /***                          ************************************/
 /*** MCP PACKAGE REGISTRATION ************************************/
 /***                          ************************************/
 /*****************************************************************/
-
-
 
 /*****************************************************************
  *
@@ -113,8 +97,8 @@ int mcp_internal_parse(McpFrame * mfr, const char *in);
  *****************************************************************/
 
 void
-mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_CB callback,
-					 void *context, ContextCleanup_CB cleanup)
+mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver,
+					 McpPkg_CB callback, void *context, ContextCleanup_CB cleanup)
 {
 	McpPkg *nu = (McpPkg *) malloc(sizeof(McpPkg));
 
@@ -131,11 +115,6 @@ mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_C
 	mcp_PackageList = nu;
 	mcp_frame_package_renegotiate(pkgname);
 }
-
-
-
-
-
 
 /*****************************************************************
  *
@@ -183,24 +162,15 @@ mcp_package_deregister(const char *pkgname)
 	mcp_frame_package_renegotiate(pkgname);
 }
 
-
-
-
-
-
-
-
 /*****************************************************************/
 /***                    ******************************************/
 /*** MCP INITIALIZATION ******************************************/
 /***                    ******************************************/
 /*****************************************************************/
 
-
 void mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy);
 void mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *dummy);
 void mcppkg_simpleedit(McpFrame * mfr, McpMesg * mesg, McpVer ver, void *context);
-
 
 /*****************************************************************
  *
@@ -227,9 +197,6 @@ mcp_initialize(void)
 						 NULL);
 }
 
-
-
-
 /*****************************************************************
  *
  * void mcp_negotiation_start(McpFrame* mfr);
@@ -252,12 +219,6 @@ mcp_negotiation_start(McpFrame * mfr)
 	mfr->enabled = 0;
 }
 
-
-
-
-
-
-
 /*****************************************************************/
 /***                       ***************************************/
 /*** MCP CONNECTION FRAMES ***************************************/
@@ -270,7 +231,6 @@ struct McpFrameList_t {
 };
 typedef struct McpFrameList_t McpFrameList;
 McpFrameList *mcp_frame_list;
-
 
 /*****************************************************************
  *
@@ -300,10 +260,6 @@ mcp_frame_init(McpFrame * mfr, connection_t con)
 	mfrl->next = mcp_frame_list;
 	mcp_frame_list = mfrl;
 }
-
-
-
-
 
 /*****************************************************************
  *
@@ -361,10 +317,6 @@ mcp_frame_clear(McpFrame * mfr)
 		}
 	}
 }
-
-
-
-
 
 /*****************************************************************
  *
@@ -424,16 +376,11 @@ mcp_frame_package_renegotiate(const char *package)
 	mcp_mesg_clear(&cando);
 
 	/*
-	   mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
-	   mcp_frame_output_mesg(mfr, &cando);
-	   mcp_mesg_clear(&cando);
+	 * mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
+	 * mcp_frame_output_mesg(mfr, &cando);
+	 * mcp_mesg_clear(&cando);
 	 */
 }
-
-
-
-
-
 
 /*****************************************************************
  *
@@ -495,10 +442,6 @@ mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer
 	return EMCP_SUCCESS;
 }
 
-
-
-
-
 /*****************************************************************
  *
  * void mcp_frame_package_remove(
@@ -539,10 +482,6 @@ mcp_frame_package_remove(McpFrame * mfr, const char *package)
 	}
 }
 
-
-
-
-
 /*****************************************************************
  *
  * McpVer mcp_frame_package_supported(
@@ -576,10 +515,6 @@ mcp_frame_package_supported(McpFrame * mfr, const char *package)
 
 	return (ptr->minver);
 }
-
-
-
-
 
 /*****************************************************************
  *
@@ -627,10 +562,6 @@ mcp_frame_package_docallback(McpFrame * mfr, McpMesg * msg)
 	return EMCP_SUCCESS;
 }
 
-
-
-
-
 /*****************************************************************
  *
  * int mcp_frame_process_input(
@@ -675,10 +606,6 @@ mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf, int bu
 	return 1;
 }
 
-
-
-
-
 /*****************************************************************
  *
  * void mcp_frame_output_inband(
@@ -704,11 +631,6 @@ mcp_frame_output_inband(McpFrame * mfr, const char *lineout)
 	}
 	/* SendText(mfr, "\r\n"); */
 }
-
-
-
-
-
 
 /*****************************************************************
  *
@@ -869,21 +791,11 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 	return EMCP_SUCCESS;
 }
 
-
-
-
-
-
-
-
-
 /*****************************************************************/
 /***                   *******************************************/
 /***  MESSAGE METHODS  *******************************************/
 /***                   *******************************************/
 /*****************************************************************/
-
-
 
 /*****************************************************************
  *
@@ -912,9 +824,6 @@ mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname)
 	msg->bytes = 0;
 	msg->next = NULL;
 }
-
-
-
 
 /*****************************************************************
  *
@@ -957,21 +866,11 @@ mcp_mesg_clear(McpMesg * msg)
 	msg->bytes = 0;
 }
 
-
-
-
-
-
-
-
-
 /*****************************************************************/
 /***                  ********************************************/
 /*** ARGUMENT METHODS ********************************************/
 /***                  ********************************************/
 /*****************************************************************/
-
-
 
 /*****************************************************************
  *
@@ -1004,9 +903,6 @@ mcp_mesg_arg_linecount(McpMesg * msg, const char *name)
 	}
 	return cnt;
 }
-
-
-
 
 /*****************************************************************
  *
@@ -1042,9 +938,6 @@ mcp_mesg_arg_getline(McpMesg * msg, const char *argname, int linenum)
 	}
 	return NULL;
 }
-
-
-
 
 /*****************************************************************
  *
@@ -1128,9 +1021,6 @@ mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 	return EMCP_SUCCESS;
 }
 
-
-
-
 /*****************************************************************
  *
  * void mcp_mesg_arg_remove(
@@ -1202,17 +1092,11 @@ mcp_mesg_arg_remove(McpMesg * msg, const char *argname)
 	}
 }
 
-
-
-
 /*****************************************************************/
 /***                 *********************************************/
 /*** VERSION METHODS *********************************************/
 /***                 *********************************************/
 /*****************************************************************/
-
-
-
 
 /*****************************************************************
  *
@@ -1234,9 +1118,6 @@ mcp_version_compare(McpVer v1, McpVer v2)
 	}
 	return (v1.verminor - v2.verminor);
 }
-
-
-
 
 /*****************************************************************
  *
@@ -1277,10 +1158,6 @@ mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2)
 		return max1;
 	}
 }
-
-
-
-
 
 /*****************************************************************/
 /***                       ***************************************/
@@ -1370,10 +1247,6 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 	}
 }
 
-
-
-
-
 /*****************************************************************/
 /***                                 *****************************/
 /***  MCP-NEGOTIATE PACKAGE HANDLER  *****************************/
@@ -1420,10 +1293,6 @@ mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *dumm
 	}
 }
 
-
-
-
-
 /*****************************************************************/
 /****************                *********************************/
 /**************** INTERNAL STUFF *********************************/
@@ -1448,7 +1317,6 @@ mcp_intern_is_ident(const char **in, char *buf, int buflen)
 	return 1;
 }
 
-
 int
 mcp_intern_is_simplechar(char in)
 {
@@ -1458,7 +1326,6 @@ mcp_intern_is_simplechar(char in)
 		return 0;
 	return 1;
 }
-
 
 int
 mcp_intern_is_unquoted(const char **in, char *buf, int buflen)
@@ -1477,7 +1344,6 @@ mcp_intern_is_unquoted(const char **in, char *buf, int buflen)
 		*buf = '\0';
 	return 1;
 }
-
 
 int
 mcp_intern_is_quoted(const char **in, char *buf, int buflen)
@@ -1513,7 +1379,6 @@ mcp_intern_is_quoted(const char **in, char *buf, int buflen)
 	}
 	return 1;
 }
-
 
 int
 mcp_intern_is_keyval(McpMesg * msg, const char **in)
@@ -1561,8 +1426,6 @@ mcp_intern_is_keyval(McpMesg * msg, const char **in)
 	}
 	return 1;
 }
-
-
 
 int
 mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
@@ -1645,7 +1508,6 @@ mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
 	return 1;
 }
 
-
 int
 mcp_intern_is_mesg_cont(McpFrame * mfr, const char *in)
 {
@@ -1688,7 +1550,6 @@ mcp_intern_is_mesg_cont(McpFrame * mfr, const char *in)
 	return 1;
 }
 
-
 int
 mcp_intern_is_mesg_end(McpFrame * mfr, const char *in)
 {
@@ -1724,7 +1585,6 @@ mcp_intern_is_mesg_end(McpFrame * mfr, const char *in)
 
 	return 1;
 }
-
 
 int
 mcp_internal_parse(McpFrame * mfr, const char *in)

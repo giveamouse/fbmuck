@@ -106,8 +106,7 @@ send_contents(int descr, dbref loc, dbref dest)
 		} else {
 			where = FLAGS(first) & STICKY ? HOME : dest;
 			if (tp_thing_movement && (Typeof(first) == TYPE_THING)) {
-				enter_room(descr, first,
-						   parent_loop_check(first, where) ? loc : where,
+				enter_room(descr, first, parent_loop_check(first, where) ? loc : where,
 						   DBFETCH(first)->location);
 			} else {
 				moveto(first, parent_loop_check(first, where) ? loc : where);
@@ -224,8 +223,8 @@ parent_loop_check(dbref source, dbref dest)
 
 	while (level < MAX_PARENT_DEPTH) {
 		/* if (Typeof(dest) == TYPE_THING) {
-		   dest = THING_HOME(dest);
-		   } */
+		 * dest = THING_HOME(dest);
+		 * } */
 		dest = getparent(dest);
 		if (dest == NOTHING) {
 			return 0;
@@ -313,8 +312,8 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 		}
 
 		/* if old location has STICKY dropto, send stuff through it */
-		if (old != NOTHING && Typeof(old) == TYPE_ROOM
-			&& (dropto = DBFETCH(old)->sp.room.dropto) != NOTHING && (FLAGS(old) & STICKY)) {
+		if (old != NOTHING && Typeof(old) == TYPE_ROOM &&
+			(dropto = DBFETCH(old)->sp.room.dropto) != NOTHING && (FLAGS(old) & STICKY)) {
 			maybe_dropto(descr, old, dropto);
 		}
 
@@ -427,8 +426,8 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 	int i;
 	dbref dest;
 	int sobjact;				/* sticky object action flag, sends home
-
-								 * source obj */
+								 * 
+								 * * source obj */
 	int succ;
 	struct frame *tmpfr;
 
@@ -446,8 +445,8 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 					notify(player, "That would cause a paradox.");
 					break;
 				}
-				if (!Wizard(OWNER(player)) && Typeof(player) == TYPE_THING
-					&& (FLAGS(dest) & ZOMBIE)) {
+				if (!Wizard(OWNER(player)) && Typeof(player) == TYPE_THING &&
+					(FLAGS(dest) & ZOMBIE)) {
 					notify(player, "You can't go that way.");
 					break;
 				}
@@ -458,8 +457,8 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 				if (GETDROP(exit))
 					exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
 				if (GETODROP(exit) && !Dark(player)) {
-					parse_oprop(descr, player, dest, exit, MESGPROP_ODROP,
-								NAME(player), "(@Odrop)");
+					parse_oprop(descr, player, dest, exit, MESGPROP_ODROP, NAME(player),
+								"(@Odrop)");
 				}
 				enter_room(descr, player, dest, exit);
 				succ = 1;
@@ -475,8 +474,8 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 					if (GETDROP(exit))
 						exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
 					if (GETODROP(exit) && !Dark(player)) {
-						parse_oprop(descr, player, dest, exit, MESGPROP_ODROP,
-									NAME(player), "(@Odrop)");
+						parse_oprop(descr, player, dest, exit, MESGPROP_ODROP, NAME(player),
+									"(@Odrop)");
 					}
 					enter_room(descr, player, dest, exit);
 					succ = 1;
@@ -530,8 +529,8 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 						exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
 					}
 					if (GETODROP(exit) && !Dark(player)) {
-						parse_oprop(descr, player, getloc(dest), exit,
-									MESGPROP_ODROP, NAME(player), "(@Odrop)");
+						parse_oprop(descr, player, getloc(dest), exit, MESGPROP_ODROP,
+									NAME(player), "(@Odrop)");
 					}
 					enter_room(descr, player, DBFETCH(dest)->location, exit);
 				} else {
@@ -540,8 +539,8 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 			}
 			break;
 		case TYPE_PROGRAM:
-			tmpfr = interp(descr, player, DBFETCH(player)->location, dest, exit,
-						   FOREGROUND, STD_REGUID, 0);
+			tmpfr = interp(descr, player, DBFETCH(player)->location, dest, exit, FOREGROUND,
+						   STD_REGUID, 0);
 			if (tmpfr) {
 				interp_loop(player, dest, tmpfr, 0);
 			}
@@ -601,7 +600,6 @@ do_move(int descr, dbref player, const char *direction, int lev)
 	}
 }
 
-
 void
 do_leave(int descr, dbref player)
 {
@@ -640,7 +638,6 @@ do_leave(int descr, dbref player)
 	notify(player, "You exit the vehicle.");
 	enter_room(descr, player, dest, loc);
 }
-
 
 void
 do_get(int descr, dbref player, const char *what, const char *obj)
@@ -775,9 +772,9 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 			Typeof(thing) == TYPE_THING) {
 			send_home(descr, thing, 0);
 		} else {
-			int immediate_dropto = (Typeof(cont) == TYPE_ROOM &&
-									DBFETCH(cont)->sp.room.dropto != NOTHING
-									&& !(FLAGS(cont) & STICKY));
+			int immediate_dropto =
+					(Typeof(cont) == TYPE_ROOM && DBFETCH(cont)->sp.room.dropto != NOTHING &&
+					 !(FLAGS(cont) & STICKY));
 
 			if (tp_thing_movement && (Typeof(thing) == TYPE_THING)) {
 				enter_room(descr, thing,
@@ -943,8 +940,8 @@ recycle(int descr, dbref player, dbref thing)
 			if (DBFETCH(first)->location == NOTHING || DBFETCH(first)->location == thing)
 				recycle(descr, player, first);
 		}
-		notify_except(DBFETCH(thing)->contents, NOTHING,
-					  "You feel a wrenching sensation...", player);
+		notify_except(DBFETCH(thing)->contents, NOTHING, "You feel a wrenching sensation...",
+					  player);
 		break;
 	case TYPE_THING:
 		if (!Wizard(OWNER(thing)))
@@ -1093,7 +1090,6 @@ recycle(int descr, dbref player, dbref thing)
 			moveto(first, HOME);
 		}
 	}
-
 
 	moveto(thing, NOTHING);
 

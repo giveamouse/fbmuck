@@ -17,7 +17,6 @@ string_dup(const char *s)
 	return p;
 }
 
-
 int *nexted;
 
 void
@@ -113,7 +112,6 @@ check_contents(dbref obj)
 		}
 	}
 }
-
 
 void
 check_common(dbref obj)
@@ -341,7 +339,7 @@ equalstr(const char *s1, const char *s2)
 }
 
 char *
-do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf, const char *abuf,
-			  char *outbuf, int mesgtyp)
+do_parse_mesg(int descr, dbref player, dbref what,
+			  const char *inbuf, const char *abuf, char *outbuf, int mesgtyp)
 {
 }

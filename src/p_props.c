@@ -63,7 +63,6 @@ prop_write_perms(dbref player, dbref obj, const char *name, int mlev)
 	return 1;
 }
 
-
 void
 prim_getpropval(PRIM_PROTOTYPE)
 {
@@ -92,12 +91,12 @@ prim_getpropval(PRIM_PROTOTYPE)
 		result = get_property_value(oper2->data.objref, type);
 
 #ifdef LOG_PROPS
-		log2file("props.log", "#%d (%d) GETPROPVAL: o=%d n=\"%s\" v=%d",
-				 program, pc->line, oper2->data.objref, type, result);
+		log2file("props.log", "#%d (%d) GETPROPVAL: o=%d n=\"%s\" v=%d", program, pc->line,
+				 oper2->data.objref, type, result);
 #endif
 
 		/* if (Typeof(oper2->data.objref) != TYPE_PLAYER)
-		   ts_lastuseobject(oper2->data.objref); */
+		 * ts_lastuseobject(oper2->data.objref); */
 	}
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -134,18 +133,17 @@ prim_getpropfval(PRIM_PROTOTYPE)
 		fresult = get_property_fvalue(oper2->data.objref, type);
 
 #ifdef LOG_PROPS
-		log2file("props.log", "#%d (%d) GETPROPFVAL: o=%d n=\"%s\" v=%d",
-				 program, pc->line, oper2->data.objref, type, result);
+		log2file("props.log", "#%d (%d) GETPROPFVAL: o=%d n=\"%s\" v=%d", program, pc->line,
+				 oper2->data.objref, type, result);
 #endif
 
 		/* if (Typeof(oper2->data.objref) != TYPE_PLAYER)
-		   ts_lastuseobject(oper2->data.objref); */
+		 * ts_lastuseobject(oper2->data.objref); */
 	}
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushFloat(fresult);
 }
-
 
 void
 prim_getprop(PRIM_PROTOTYPE)
@@ -180,8 +178,8 @@ prim_getprop(PRIM_PROTOTYPE)
 		prptr = get_property(obj2, type);
 
 #ifdef LOG_PROPS
-		log2file("props.log", "#%d (%d) GETPROP: o=%d n=\"%s\"",
-				 program, pc->line, oper2->data.objref, type);
+		log2file("props.log", "#%d (%d) GETPROP: o=%d n=\"%s\"", program, pc->line,
+				 oper2->data.objref, type);
 #endif
 
 		CLEAR(oper1);
@@ -215,10 +213,9 @@ prim_getprop(PRIM_PROTOTYPE)
 		}
 
 		/* if (Typeof(oper2->data.objref) != TYPE_PLAYER)
-		   ts_lastuseobject(oper2->data.objref); */
+		 * ts_lastuseobject(oper2->data.objref); */
 	}
 }
-
 
 void
 prim_getpropstr(PRIM_PROTOTYPE)
@@ -276,8 +273,8 @@ prim_getpropstr(PRIM_PROTOTYPE)
 		}
 
 #ifdef LOG_PROPS
-		log2file("props.log", "#%d (%d) GETPROPSTR: o=%d n=\"%s\" s=\"%s\"",
-				 program, pc->line, oper2->data.objref, type, temp);
+		log2file("props.log", "#%d (%d) GETPROPSTR: o=%d n=\"%s\" s=\"%s\"", program, pc->line,
+				 oper2->data.objref, type, temp);
 #endif
 
 		/* if (Typeof(oper2->data.objref) != TYPE_PLAYER)
@@ -287,7 +284,6 @@ prim_getpropstr(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	PushString(temp);
 }
-
 
 void
 prim_remove_prop(PRIM_PROTOTYPE)
@@ -322,8 +318,8 @@ prim_remove_prop(PRIM_PROTOTYPE)
 	remove_property(oper2->data.objref, buf);
 
 #ifdef LOG_PROPS
-	log2file("props.log", "#%d (%d) REMOVEPROP: o=%d n=\"%s\"",
-			 program, pc->line, oper2->data.objref, buf);
+	log2file("props.log", "#%d (%d) REMOVEPROP: o=%d n=\"%s\"", program, pc->line,
+			 oper2->data.objref, buf);
 #endif
 
 	ts_modifyobject(oper2->data.objref);
@@ -331,7 +327,6 @@ prim_remove_prop(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
-
 
 void
 prim_envprop(PRIM_PROTOTYPE)
@@ -400,7 +395,6 @@ prim_envprop(PRIM_PROTOTYPE)
 	}
 }
 
-
 void
 prim_envpropstr(PRIM_PROTOTYPE)
 {
@@ -455,8 +449,8 @@ prim_envpropstr(PRIM_PROTOTYPE)
 		}
 
 #ifdef LOG_PROPS
-		log2file("props.log", "#%d (%d) ENVPROPSTR: o=%d so=%d n=\"%s\" s=\"%s\"",
-				 program, pc->line, what, oper2->data.objref, tname, temp);
+		log2file("props.log", "#%d (%d) ENVPROPSTR: o=%d so=%d n=\"%s\" s=\"%s\"", program,
+				 pc->line, what, oper2->data.objref, tname, temp);
 #endif
 
 		if (what != NOTHING) {
@@ -471,8 +465,6 @@ prim_envpropstr(PRIM_PROTOTYPE)
 		PushString(temp);
 	}
 }
-
-
 
 void
 prim_blessprop(PRIM_PROTOTYPE)
@@ -510,8 +502,8 @@ prim_blessprop(PRIM_PROTOTYPE)
 		set_property_flags(oper1->data.objref, tname, PROP_BLESSED);
 
 #ifdef LOG_PROPS
-		log2file("props.log", "#%d (%d) BLESSPROP: o=%d n=\"%s\"",
-				 program, pc->line, oper1->data.objref, tname);
+		log2file("props.log", "#%d (%d) BLESSPROP: o=%d n=\"%s\"", program, pc->line,
+				 oper1->data.objref, tname);
 #endif
 
 		ts_modifyobject(oper1->data.objref);
@@ -519,7 +511,6 @@ prim_blessprop(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
-
 
 void
 prim_unblessprop(PRIM_PROTOTYPE)
@@ -557,8 +548,8 @@ prim_unblessprop(PRIM_PROTOTYPE)
 		clear_property_flags(oper1->data.objref, tname, PROP_BLESSED);
 
 #ifdef LOG_PROPS
-		log2file("props.log", "#%d (%d) BLESSPROP: o=%d n=\"%s\"",
-				 program, pc->line, oper1->data.objref, tname);
+		log2file("props.log", "#%d (%d) BLESSPROP: o=%d n=\"%s\"", program, pc->line,
+				 oper1->data.objref, tname);
 #endif
 
 		ts_modifyobject(oper1->data.objref);
@@ -567,7 +558,6 @@ prim_unblessprop(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 }
 
-
 void
 prim_setprop(PRIM_PROTOTYPE)
 {
@@ -575,10 +565,9 @@ prim_setprop(PRIM_PROTOTYPE)
 	oper1 = POP();
 	oper2 = POP();
 	oper3 = POP();
-	if ((oper1->type != PROG_STRING) &&
-		(oper1->type != PROG_INTEGER) &&
-		(oper1->type != PROG_LOCK) &&
-		(oper1->type != PROG_OBJECT) && (oper1->type != PROG_FLOAT))
+	if ((oper1->type != PROG_STRING) && (oper1->type != PROG_INTEGER) &&
+		(oper1->type != PROG_LOCK) && (oper1->type != PROG_OBJECT) &&
+		(oper1->type != PROG_FLOAT))
 		abort_interp("Invalid argument type (3)");
 	if (oper2->type != PROG_STRING)
 		abort_interp("Non-string argument (2)");
@@ -636,8 +625,8 @@ prim_setprop(PRIM_PROTOTYPE)
 		set_property(oper3->data.objref, tname, &propdat);
 
 #ifdef LOG_PROPS
-		log2file("props.log", "#%d (%d) SETPROP: o=%d n=\"%s\"",
-				 program, pc->line, oper3->data.objref, tname);
+		log2file("props.log", "#%d (%d) SETPROP: o=%d n=\"%s\"", program, pc->line,
+				 oper3->data.objref, tname);
 #endif
 
 		ts_modifyobject(oper3->data.objref);
@@ -646,7 +635,6 @@ prim_setprop(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper3);
 }
-
 
 void
 prim_addprop(PRIM_PROTOTYPE)
@@ -697,8 +685,8 @@ prim_addprop(PRIM_PROTOTYPE)
 			add_property(oper4->data.objref, tname, temp, oper1->data.number);
 
 #ifdef LOG_PROPS
-			log2file("props.log", "#%d (%d) ADDPROP: o=%d n=\"%s\" s=\"%s\" v=%d",
-					 program, pc->line, oper4->data.objref, tname, temp, oper1->data.number);
+			log2file("props.log", "#%d (%d) ADDPROP: o=%d n=\"%s\" s=\"%s\" v=%d", program,
+					 pc->line, oper4->data.objref, tname, temp, oper1->data.number);
 #endif
 
 			ts_modifyobject(oper4->data.objref);
@@ -709,8 +697,6 @@ prim_addprop(PRIM_PROTOTYPE)
 	CLEAR(oper3);
 	CLEAR(oper4);
 }
-
-
 
 void
 prim_nextprop(PRIM_PROTOTYPE)
@@ -732,8 +718,9 @@ prim_nextprop(PRIM_PROTOTYPE)
 		abort_interp("Invalid dbref. (1)");
 
 	ref = oper1->data.objref;
-	(void) strcpy(buf, ((oper2->data.string) && (oper2->data.string->data)) ?
-				  oper2->data.string->data : "");
+	(void) strcpy(buf,
+				  ((oper2->data.string) &&
+				   (oper2->data.string->data)) ? oper2->data.string->data : "");
 	CLEAR(oper1);
 	CLEAR(oper2);
 
@@ -743,16 +730,16 @@ prim_nextprop(PRIM_PROTOTYPE)
 		pname = next_prop_name(ref, exbuf, sizeof(exbuf), buf);
 
 #ifdef LOG_PROPS
-		log2file("props.log", "#%d (%d) NEXTPROP: o=%d n=\"%s\" on=\"%s\"",
-				 program, pc->line, ref, pname, buf);
+		log2file("props.log", "#%d (%d) NEXTPROP: o=%d n=\"%s\" on=\"%s\"", program, pc->line,
+				 ref, pname, buf);
 #endif
 
 		while (pname && !prop_read_perms(ProgUID, ref, pname, mlev)) {
 			tmpname = next_prop_name(ref, exbuf, sizeof(exbuf), pname);
 
 #ifdef LOG_PROPS
-			log2file("props.log", "#%d (%d) NEXTPROP: o=%d n=\"%s\" on=\"%s\"",
-					 program, pc->line, ref, tmpname, pname);
+			log2file("props.log", "#%d (%d) NEXTPROP: o=%d n=\"%s\" on=\"%s\"", program,
+					 pc->line, ref, tmpname, pname);
 #endif
 
 			pname = tmpname;
@@ -764,7 +751,6 @@ prim_nextprop(PRIM_PROTOTYPE)
 		PushNullStr;
 	}
 }
-
 
 void
 prim_propdirp(PRIM_PROTOTYPE)
@@ -791,14 +777,12 @@ prim_propdirp(PRIM_PROTOTYPE)
 	result = is_propdir(ref, buf);
 
 #ifdef LOG_PROPS
-	log2file("props.log", "#%d (%d) PROPDIR?: o=%d n=\"%s\" v=%d",
-			 program, pc->line, ref, buf, result);
+	log2file("props.log", "#%d (%d) PROPDIR?: o=%d n=\"%s\" v=%d", program, pc->line, ref, buf,
+			 result);
 #endif
 
 	PushInt(result);
 }
-
-
 
 void
 prim_parseprop(PRIM_PROTOTYPE)
@@ -852,8 +836,8 @@ prim_parseprop(PRIM_PROTOTYPE)
 
 		temp = get_property_class(oper3->data.objref, type);
 #ifdef LOG_PROPS
-		log2file("props.log", "#%d (%d) GETPROPSTR: o=%d n=\"%s\" s=\"%s\"",
-				 program, pc->line, oper3->data.objref, type, temp);
+		log2file("props.log", "#%d (%d) GETPROPSTR: o=%d n=\"%s\" s=\"%s\"", program, pc->line,
+				 oper3->data.objref, type, temp);
 #endif
 
 	}
@@ -878,8 +862,6 @@ prim_parseprop(PRIM_PROTOTYPE)
 		PushNullStr;
 	}
 }
-
-
 
 void
 prim_array_filter_prop(PRIM_PROTOTYPE)
@@ -945,7 +927,6 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
-
 void
 prim_reflist_find(PRIM_PROTOTYPE)
 {
@@ -973,7 +954,6 @@ prim_reflist_find(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_reflist_add(PRIM_PROTOTYPE)
 {
@@ -999,7 +979,6 @@ prim_reflist_add(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper3);
 }
-
 
 void
 prim_reflist_del(PRIM_PROTOTYPE)
@@ -1027,7 +1006,6 @@ prim_reflist_del(PRIM_PROTOTYPE)
 	CLEAR(oper3);
 }
 
-
 void
 prim_blessedp(PRIM_PROTOTYPE)
 {
@@ -1053,8 +1031,8 @@ prim_blessedp(PRIM_PROTOTYPE)
 	result = Prop_Blessed(ref, buf) ? 1 : 0;
 
 #ifdef LOG_PROPS
-	log2file("props.log", "#%d (%d) BLESSED?: o=%d n=\"%s\" v=%d",
-			 program, pc->line, ref, buf, result);
+	log2file("props.log", "#%d (%d) BLESSED?: o=%d n=\"%s\" v=%d", program, pc->line, ref, buf,
+			 result);
 #endif
 
 	PushInt(result);

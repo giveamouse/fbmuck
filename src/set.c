@@ -1,7 +1,6 @@
 
 /* $Header$ */
 
-
 #include "copyright.h"
 #include "config.h"
 
@@ -17,7 +16,6 @@
 #include "match.h"
 #include "interface.h"
 #include "externs.h"
-
 
 static dbref
 match_controlled(int descr, dbref player, const char *name)
@@ -671,7 +669,7 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 		return;
 
 	/* first of all, check if the new target would be valid, so we can
-	   avoid breaking the old link if it isn't. */
+	 * avoid breaking the old link if it isn't. */
 
 	switch (Typeof(thing)) {
 	case TYPE_EXIT:
@@ -694,8 +692,8 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 		}
 
 		/* be anal: each and every new links destination has
-		   to be ok. Detailed error messages are given by
-		   link_exit_dry(). */
+		 * to be ok. Detailed error messages are given by
+		 * link_exit_dry(). */
 
 		ndest = link_exit_dry(descr, player, thing, (char *) dest_name, good_dest);
 		if (ndest == 0) {
@@ -789,8 +787,8 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 	if (!Wizard(OWNER(player))) {
 		if (Typeof(thing) != TYPE_EXIT ||
 			(DBFETCH(thing)->sp.exit.ndest && !controls_link(player, thing))) {
-			if (!(FLAGS(thing) & CHOWN_OK) ||
-				Typeof(thing) == TYPE_PROGRAM || !test_lock(descr, player, thing, "_/chlk")) {
+			if (!(FLAGS(thing) & CHOWN_OK) || Typeof(thing) == TYPE_PROGRAM ||
+				!test_lock(descr, player, thing, "_/chlk")) {
 				notify(player, "You can't take possession of that.");
 				return;
 			}
@@ -842,7 +840,6 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 	}
 	DBDIRTY(thing);
 }
-
 
 /* Note: Gender code taken out.  All gender references are now to be handled
    by property lists...
@@ -1055,8 +1052,8 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 		f = JUMP_OK;
 	} else if (string_prefix("HAVEN", p) || string_prefix("HARDUID", p)) {
 		f = HAVEN;
-	} else if ((string_prefix("ABODE", p)) ||
-			   (string_prefix("AUTOSTART", p)) || (string_prefix("ABATE", p))) {
+	} else if ((string_prefix("ABODE", p)) || (string_prefix("AUTOSTART", p)) ||
+			   (string_prefix("ABATE", p))) {
 		f = ABODE;
 	} else {
 		notify(player, "I don't recognize that flag.");
@@ -1099,7 +1096,6 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 	struct match_data md;
 	struct boolexp *lok;
 	PData mydat;
-
 
 	/* find thing */
 	if ((thing = match_controlled(descr, player, name)) == NOTHING)

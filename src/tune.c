@@ -6,7 +6,6 @@
 #include "array.h"
 #include "interp.h"
 
-
 const char *tp_dumpwarn_mesg = DUMPWARN_MESG;
 const char *tp_deltawarn_mesg = DELTAWARN_MESG;
 const char *tp_dumpdeltas_mesg = DUMPDELTAS_MESG;
@@ -84,8 +83,6 @@ struct tune_str_entry tune_str_list[] = {
 	{NULL, NULL, NULL, 0, 0}
 };
 
-
-
 /* times */
 int tp_rwho_interval = RWHO_INTERVAL;
 int tp_dump_interval = DUMP_INTERVAL;
@@ -94,7 +91,6 @@ int tp_monolithic_interval = MONOLITHIC_INTERVAL;
 int tp_clean_interval = CLEAN_INTERVAL;
 int tp_aging_time = AGING_TIME;
 int tp_maxidle = MAXIDLE;
-
 
 struct tune_time_entry {
 	const char *group;
@@ -117,8 +113,6 @@ struct tune_time_entry tune_time_list[] = {
 
 	{NULL, NULL, NULL, 0}
 };
-
-
 
 /* integers */
 int tp_max_object_endowment = MAX_OBJECT_ENDOWMENT;
@@ -222,13 +216,9 @@ struct tune_val_entry tune_val_list[] = {
 	{NULL, NULL, NULL, 0}
 };
 
-
-
-
 /* dbrefs */
 dbref tp_player_start = PLAYER_START;
 dbref tp_default_room_parent = GLOBAL_ENVIRONMENT;
-
 
 struct tune_ref_entry {
 	const char *group;
@@ -247,7 +237,6 @@ struct tune_ref_entry tune_ref_list[] = {
 
 	{NULL, NULL, 0, NULL, 0}
 };
-
 
 /* booleans */
 int tp_hostnames = HOSTNAMES;
@@ -376,7 +365,6 @@ struct tune_bool_entry tune_bool_list[] = {
 	{NULL, NULL, NULL, 0}
 };
 
-
 static const char *
 timestr_full(long dtime)
 {
@@ -394,7 +382,6 @@ timestr_full(long dtime)
 
 	return buf;
 }
-
 
 int
 tune_count_parms(void)
@@ -419,7 +406,6 @@ tune_count_parms(void)
 
 	return total;
 }
-
 
 void
 tune_display_parms(dbref player, char *name)
@@ -481,7 +467,6 @@ tune_display_parms(dbref player, char *name)
 	notify(player, "*done*");
 }
 
-
 void
 tune_save_parms_to_file(FILE * f)
 {
@@ -516,7 +501,6 @@ tune_save_parms_to_file(FILE * f)
 		tbool++;
 	}
 }
-
 
 stk_array *
 tune_parms_array(const char *pattern, int mlev)
@@ -672,7 +656,6 @@ tune_parms_array(const char *pattern, int mlev)
 	return nu;
 }
 
-
 void
 tune_save_parmsfile(void)
 {
@@ -688,8 +671,6 @@ tune_save_parmsfile(void)
 
 	fclose(f);
 }
-
-
 
 const char *
 tune_get_parmstring(const char *name, int mlev)
@@ -754,8 +735,6 @@ tune_get_parmstring(const char *name, int mlev)
 	strcpy(buf, "");
 	return (buf);
 }
-
-
 
 /* return values:
  *  0 for success.
@@ -964,7 +943,6 @@ tune_load_parmsfile(dbref player)
 	fclose(f);
 }
 
-
 void
 do_tune(dbref player, char *parmname, char *parmval)
 {
@@ -979,8 +957,8 @@ do_tune(dbref player, char *parmname, char *parmval)
 		result = tune_setparm(parmname, parmval);
 		switch (result) {
 		case TUNESET_SUCCESS:
-			log_status("TUNED: %s(%d) tuned %s to %s\n",
-					   NAME(player), player, parmname, parmval);
+			log_status("TUNED: %s(%d) tuned %s to %s\n", NAME(player), player, parmname,
+					   parmval);
 			notify(player, "Parameter set.");
 			tune_display_parms(player, parmname);
 			break;

@@ -14,7 +14,6 @@
 #include "interface.h"
 #include "msgparse.h"
 
-
 /***** Insert MFUNs here *****/
 
 const char *
@@ -46,20 +45,17 @@ mfn_func(MFUNARGS)
 	return "";
 }
 
-
 const char *
 mfn_muckname(MFUNARGS)
 {
 	return tp_muckname;
 }
 
-
 const char *
 mfn_version(MFUNARGS)
 {
 	return VERSION;
 }
-
 
 const char *
 mfn_prop(MFUNARGS)
@@ -82,7 +78,6 @@ mfn_prop(MFUNARGS)
 	return ptr;
 }
 
-
 const char *
 mfn_propbang(MFUNARGS)
 {
@@ -104,7 +99,6 @@ mfn_propbang(MFUNARGS)
 	return ptr;
 }
 
-
 const char *
 mfn_store(MFUNARGS)
 {
@@ -125,7 +119,6 @@ mfn_store(MFUNARGS)
 	return ptr;
 }
 
-
 const char *
 mfn_bless(MFUNARGS)
 {
@@ -144,7 +137,6 @@ mfn_bless(MFUNARGS)
 		ABORT_MPI("BLESS", "Permission denied.");
 	return "";
 }
-
 
 const char *
 mfn_unbless(MFUNARGS)
@@ -165,7 +157,6 @@ mfn_unbless(MFUNARGS)
 	return "";
 }
 
-
 const char *
 mfn_delprop(MFUNARGS)
 {
@@ -184,7 +175,6 @@ mfn_delprop(MFUNARGS)
 		ABORT_MPI("DELPROP", "Permission denied.");
 	return "";
 }
-
 
 const char *
 mfn_exec(MFUNARGS)
@@ -220,7 +210,6 @@ mfn_exec(MFUNARGS)
 	return ptr;
 }
 
-
 const char *
 mfn_execbang(MFUNARGS)
 {
@@ -254,7 +243,6 @@ mfn_execbang(MFUNARGS)
 	CHECKRETURN(ptr, "EXEC!", "propval");
 	return ptr;
 }
-
 
 const char *
 mfn_index(MFUNARGS)
@@ -295,8 +283,6 @@ mfn_index(MFUNARGS)
 	return ptr;
 }
 
-
-
 const char *
 mfn_indexbang(MFUNARGS)
 {
@@ -336,8 +322,6 @@ mfn_indexbang(MFUNARGS)
 	return ptr;
 }
 
-
-
 const char *
 mfn_propdir(MFUNARGS)
 {
@@ -359,7 +343,6 @@ mfn_propdir(MFUNARGS)
 		return "0";
 	}
 }
-
 
 const char *
 mfn_listprops(MFUNARGS)
@@ -447,7 +430,6 @@ mfn_listprops(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_concat(MFUNARGS)
 {
@@ -470,8 +452,6 @@ mfn_concat(MFUNARGS)
 		ABORT_MPI("CONCAT", "Failed list read.");
 	return ptr;
 }
-
-
 
 const char *
 mfn_select(MFUNARGS)
@@ -586,7 +566,6 @@ mfn_select(MFUNARGS)
 	return ptr;
 }
 
-
 const char *
 mfn_list(MFUNARGS)
 {
@@ -609,7 +588,6 @@ mfn_list(MFUNARGS)
 		ptr = "";
 	return ptr;
 }
-
 
 const char *
 mfn_lexec(MFUNARGS)
@@ -647,8 +625,6 @@ mfn_lexec(MFUNARGS)
 	return ptr;
 }
 
-
-
 const char *
 mfn_rand(MFUNARGS)
 {
@@ -684,7 +660,6 @@ mfn_rand(MFUNARGS)
 	CHECKRETURN(ptr, "RAND", "listval");
 	return ptr;
 }
-
 
 const char *
 mfn_timesub(MFUNARGS)
@@ -729,13 +704,11 @@ mfn_timesub(MFUNARGS)
 	return ptr;
 }
 
-
 const char *
 mfn_nl(MFUNARGS)
 {
 	return "\r";
 }
-
 
 const char *
 mfn_lit(MFUNARGS)
@@ -759,7 +732,6 @@ mfn_lit(MFUNARGS)
 	}
 	return buf;
 }
-
 
 const char *
 mfn_eval(MFUNARGS)
@@ -790,7 +762,6 @@ mfn_eval(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_evalbang(MFUNARGS)
 {
@@ -818,7 +789,6 @@ mfn_evalbang(MFUNARGS)
 	CHECKRETURN(ptr, "EVAL!", "arg 1");
 	return buf;
 }
-
 
 const char *
 mfn_strip(MFUNARGS)
@@ -848,7 +818,6 @@ mfn_strip(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_mklist(MFUNARGS)
 {
@@ -871,7 +840,6 @@ mfn_mklist(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_pronouns(MFUNARGS)
 {
@@ -886,7 +854,6 @@ mfn_pronouns(MFUNARGS)
 	}
 	return pronoun_substitute(descr, obj, argv[0]);
 }
-
 
 const char *
 mfn_ontime(MFUNARGS)
@@ -907,7 +874,6 @@ mfn_ontime(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_idle(MFUNARGS)
 {
@@ -926,7 +892,6 @@ mfn_idle(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "%d", pidle(conn));
 	return buf;
 }
-
 
 const char *
 mfn_online(MFUNARGS)
@@ -950,7 +915,6 @@ mfn_online(MFUNARGS)
 	return buf;
 }
 
-
 int
 msg_compare(const char *s1, const char *s2)
 {
@@ -960,7 +924,6 @@ msg_compare(const char *s1, const char *s2)
 		return string_compare(s1, s2);
 	}
 }
-
 
 const char *
 mfn_contains(MFUNARGS)
@@ -990,7 +953,6 @@ mfn_contains(MFUNARGS)
 	}
 }
 
-
 const char *
 mfn_holds(MFUNARGS)
 {
@@ -1017,7 +979,6 @@ mfn_holds(MFUNARGS)
 	}
 }
 
-
 const char *
 mfn_dbeq(MFUNARGS)
 {
@@ -1036,7 +997,6 @@ mfn_dbeq(MFUNARGS)
 	}
 }
 
-
 const char *
 mfn_ne(MFUNARGS)
 {
@@ -1046,7 +1006,6 @@ mfn_ne(MFUNARGS)
 		return "1";
 	}
 }
-
 
 const char *
 mfn_eq(MFUNARGS)
@@ -1058,7 +1017,6 @@ mfn_eq(MFUNARGS)
 	}
 }
 
-
 const char *
 mfn_gt(MFUNARGS)
 {
@@ -1068,7 +1026,6 @@ mfn_gt(MFUNARGS)
 		return "0";
 	}
 }
-
 
 const char *
 mfn_lt(MFUNARGS)
@@ -1080,7 +1037,6 @@ mfn_lt(MFUNARGS)
 	}
 }
 
-
 const char *
 mfn_ge(MFUNARGS)
 {
@@ -1090,7 +1046,6 @@ mfn_ge(MFUNARGS)
 		return "0";
 	}
 }
-
 
 const char *
 mfn_le(MFUNARGS)
@@ -1102,7 +1057,6 @@ mfn_le(MFUNARGS)
 	}
 }
 
-
 const char *
 mfn_min(MFUNARGS)
 {
@@ -1112,7 +1066,6 @@ mfn_min(MFUNARGS)
 		return argv[1];
 	}
 }
-
 
 const char *
 mfn_max(MFUNARGS)
@@ -1124,7 +1077,6 @@ mfn_max(MFUNARGS)
 	}
 }
 
-
 const char *
 mfn_isnum(MFUNARGS)
 {
@@ -1134,7 +1086,6 @@ mfn_isnum(MFUNARGS)
 		return "0";
 	}
 }
-
 
 const char *
 mfn_isdbref(MFUNARGS)
@@ -1156,8 +1107,6 @@ mfn_isdbref(MFUNARGS)
 	return "1";
 }
 
-
-
 const char *
 mfn_inc(MFUNARGS)
 {
@@ -1172,7 +1121,6 @@ mfn_inc(MFUNARGS)
 	strcpy(ptr, buf);
 	return (buf);
 }
-
 
 const char *
 mfn_dec(MFUNARGS)
@@ -1189,7 +1137,6 @@ mfn_dec(MFUNARGS)
 	return (buf);
 }
 
-
 const char *
 mfn_add(MFUNARGS)
 {
@@ -1200,7 +1147,6 @@ mfn_add(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "%d", i);
 	return (buf);
 }
-
 
 const char *
 mfn_subt(MFUNARGS)
@@ -1213,7 +1159,6 @@ mfn_subt(MFUNARGS)
 	return (buf);
 }
 
-
 const char *
 mfn_mult(MFUNARGS)
 {
@@ -1224,7 +1169,6 @@ mfn_mult(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "%d", i);
 	return (buf);
 }
-
 
 const char *
 mfn_div(MFUNARGS)
@@ -1243,7 +1187,6 @@ mfn_div(MFUNARGS)
 	return (buf);
 }
 
-
 const char *
 mfn_mod(MFUNARGS)
 {
@@ -1261,8 +1204,6 @@ mfn_mod(MFUNARGS)
 	return (buf);
 }
 
-
-
 const char *
 mfn_abs(MFUNARGS)
 {
@@ -1278,7 +1219,6 @@ mfn_abs(MFUNARGS)
 	return (buf);
 }
 
-
 const char *
 mfn_sign(MFUNARGS)
 {
@@ -1293,8 +1233,6 @@ mfn_sign(MFUNARGS)
 		return "1";
 	}
 }
-
-
 
 const char *
 mfn_dist(MFUNARGS)
@@ -1328,7 +1266,6 @@ mfn_dist(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_not(MFUNARGS)
 {
@@ -1338,7 +1275,6 @@ mfn_not(MFUNARGS)
 		return "1";
 	}
 }
-
 
 const char *
 mfn_or(MFUNARGS)
@@ -1358,7 +1294,6 @@ mfn_or(MFUNARGS)
 	return "0";
 }
 
-
 const char *
 mfn_xor(MFUNARGS)
 {
@@ -1370,7 +1305,6 @@ mfn_xor(MFUNARGS)
 	}
 	return "0";
 }
-
 
 const char *
 mfn_and(MFUNARGS)
@@ -1389,7 +1323,6 @@ mfn_and(MFUNARGS)
 	}
 	return "1";
 }
-
 
 const char *
 mfn_dice(MFUNARGS)
@@ -1414,7 +1347,6 @@ mfn_dice(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_default(MFUNARGS)
 {
@@ -1432,7 +1364,6 @@ mfn_default(MFUNARGS)
 	}
 	return ptr;
 }
-
 
 const char *
 mfn_if(MFUNARGS)
@@ -1459,7 +1390,6 @@ mfn_if(MFUNARGS)
 	return ptr;
 }
 
-
 const char *
 mfn_while(MFUNARGS)
 {
@@ -1481,13 +1411,11 @@ mfn_while(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_null(MFUNARGS)
 {
 	return "";
 }
-
 
 const char *
 mfn_tzoffset(MFUNARGS)
@@ -1495,7 +1423,6 @@ mfn_tzoffset(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "%ld", get_tz_offset());
 	return buf;
 }
-
 
 const char *
 mfn_time(MFUNARGS)
@@ -1513,7 +1440,6 @@ mfn_time(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_date(MFUNARGS)
 {
@@ -1529,7 +1455,6 @@ mfn_date(MFUNARGS)
 	format_time(buf, BUFFER_LEN - 1, "%D", tm);
 	return buf;
 }
-
 
 const char *
 mfn_ftime(MFUNARGS)
@@ -1556,7 +1481,6 @@ mfn_ftime(MFUNARGS)
 	format_time(buf, BUFFER_LEN - 1, argv[0], tm);
 	return buf;
 }
-
 
 const char *
 mfn_convtime(MFUNARGS)
@@ -1594,7 +1518,6 @@ mfn_convtime(MFUNARGS)
 #endif
 	return buf;
 }
-
 
 const char *
 mfn_ltimestr(MFUNARGS)
@@ -1656,7 +1579,6 @@ mfn_ltimestr(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_timestr(MFUNARGS)
 {
@@ -1685,7 +1607,6 @@ mfn_timestr(MFUNARGS)
 	}
 	return buf;
 }
-
 
 const char *
 mfn_stimestr(MFUNARGS)
@@ -1724,7 +1645,6 @@ mfn_stimestr(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_secs(MFUNARGS)
 {
@@ -1734,7 +1654,6 @@ mfn_secs(MFUNARGS)
 	snprintf(buf, BUFFER_LEN, "%ld", lt);
 	return buf;
 }
-
 
 const char *
 mfn_convsecs(MFUNARGS)
@@ -1746,7 +1665,6 @@ mfn_convsecs(MFUNARGS)
 	buf[strlen(buf) - 1] = '\0';
 	return buf;
 }
-
 
 const char *
 mfn_loc(MFUNARGS)
@@ -1760,7 +1678,6 @@ mfn_loc(MFUNARGS)
 		ABORT_MPI("LOC", "Permission denied.");
 	return ref2str(getloc(obj), buf, BUFFER_LEN);
 }
-
 
 const char *
 mfn_nearby(MFUNARGS)
@@ -1798,7 +1715,6 @@ mfn_nearby(MFUNARGS)
 	}
 }
 
-
 const char *
 mfn_money(MFUNARGS)
 {
@@ -1823,7 +1739,6 @@ mfn_money(MFUNARGS)
 	}
 	return buf;
 }
-
 
 const char *
 mfn_flags(MFUNARGS)
@@ -1868,8 +1783,10 @@ mfn_tell(MFUNARGS)
 					 ((obj == OWNER(perms) || obj == player) ? "" : "> "), ptr);
 		} else {
 			snprintf(buf, BUFFER_LEN, "%s%.16s%s%.4078s",
-					 ((obj == OWNER(perms) || obj == player) ? "" : "> "),
-					 NAME(player), ((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
+					 ((obj == OWNER(perms) ||
+					   obj == player) ? "" : "> "), NAME(player), ((*argv[0] == '\'' ||
+																	isspace(*argv[0])) ? "" :
+																   " "), ptr);
 		}
 		notify_from_echo(player, obj, buf, 1);
 	}
@@ -1923,7 +1840,6 @@ mfn_otell(MFUNARGS)
 	return argv[0];
 }
 
-
 const char *
 mfn_right(MFUNARGS)
 {
@@ -1949,7 +1865,6 @@ mfn_right(MFUNARGS)
 	strcpy(ptr, argv[0]);
 	return buf;
 }
-
 
 const char *
 mfn_left(MFUNARGS)
@@ -1977,7 +1892,6 @@ mfn_left(MFUNARGS)
 	*ptr = '\0';
 	return buf;
 }
-
 
 const char *
 mfn_center(MFUNARGS)
@@ -2014,7 +1928,6 @@ mfn_center(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_created(MFUNARGS)
 {
@@ -2030,7 +1943,6 @@ mfn_created(MFUNARGS)
 
 	return buf;
 }
-
 
 const char *
 mfn_lastused(MFUNARGS)
@@ -2048,7 +1960,6 @@ mfn_lastused(MFUNARGS)
 	return buf;
 }
 
-
 const char *
 mfn_modified(MFUNARGS)
 {
@@ -2064,7 +1975,6 @@ mfn_modified(MFUNARGS)
 
 	return buf;
 }
-
 
 const char *
 mfn_usecount(MFUNARGS)

@@ -25,8 +25,6 @@ static int result;
 static dbref ref;
 static char buf[BUFFER_LEN];
 
-
-
 void
 prim_array_make(PRIM_PROTOTYPE)
 {
@@ -58,8 +56,6 @@ prim_array_make(PRIM_PROTOTYPE)
 
 	PushArrayRaw(nu);
 }
-
-
 
 void
 prim_array_make_dict(PRIM_PROTOTYPE)
@@ -97,8 +93,6 @@ prim_array_make_dict(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
-
-
 void
 prim_array_explode(PRIM_PROTOTYPE)
 {
@@ -129,8 +123,6 @@ prim_array_explode(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
-
 void
 prim_array_vals(PRIM_PROTOTYPE)
 {
@@ -158,8 +150,6 @@ prim_array_vals(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
-
 void
 prim_array_keys(PRIM_PROTOTYPE)
 {
@@ -185,8 +175,6 @@ prim_array_keys(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
-
 void
 prim_array_count(PRIM_PROTOTYPE)
 {
@@ -199,8 +187,6 @@ prim_array_count(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
-
 
 void
 prim_array_first(PRIM_PROTOTYPE)
@@ -224,8 +210,6 @@ prim_array_first(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
-
 void
 prim_array_last(PRIM_PROTOTYPE)
 {
@@ -247,8 +231,6 @@ prim_array_last(PRIM_PROTOTYPE)
 	}
 	PushInt(result);
 }
-
-
 
 void
 prim_array_prev(PRIM_PROTOTYPE)
@@ -277,8 +259,6 @@ prim_array_prev(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
-
 void
 prim_array_next(PRIM_PROTOTYPE)
 {
@@ -306,8 +286,6 @@ prim_array_next(PRIM_PROTOTYPE)
 	}
 	PushInt(result);
 }
-
-
 
 void
 prim_array_getitem(PRIM_PROTOTYPE)
@@ -339,8 +317,6 @@ prim_array_getitem(PRIM_PROTOTYPE)
 	copyinst(&temp, &arg[(*top)++]);
 	CLEAR(&temp);
 }
-
-
 
 void
 prim_array_setitem(PRIM_PROTOTYPE)
@@ -426,8 +402,6 @@ prim_array_insertitem(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
-
-
 void
 prim_array_getrange(PRIM_PROTOTYPE)
 {
@@ -454,8 +428,6 @@ prim_array_getrange(PRIM_PROTOTYPE)
 
 	PushArrayRaw(nu);
 }
-
-
 
 void
 prim_array_setrange(PRIM_PROTOTYPE)
@@ -487,7 +459,6 @@ prim_array_setrange(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
-
 void
 prim_array_insertrange(PRIM_PROTOTYPE)
 {
@@ -518,8 +489,6 @@ prim_array_insertrange(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
-
-
 void
 prim_array_delitem(PRIM_PROTOTYPE)
 {
@@ -545,8 +514,6 @@ prim_array_delitem(PRIM_PROTOTYPE)
 
 	PushArrayRaw(nu);
 }
-
-
 
 void
 prim_array_delrange(PRIM_PROTOTYPE)
@@ -577,7 +544,6 @@ prim_array_delrange(PRIM_PROTOTYPE)
 
 	PushArrayRaw(nu);
 }
-
 
 void
 prim_array_cut(PRIM_PROTOTYPE)
@@ -629,12 +595,9 @@ prim_array_cut(PRIM_PROTOTYPE)
 	PushArrayRaw(nu2);
 }
 
-
-
 /*\
 |*| Eeep!
 \*/
-
 
 void
 prim_array_n_union(PRIM_PROTOTYPE)
@@ -774,8 +737,6 @@ prim_array_n_difference(PRIM_PROTOTYPE)
 	PushArrayRaw(new_union);
 }
 
-
-
 void
 prim_array_notify(PRIM_PROTOTYPE)
 {
@@ -827,8 +788,6 @@ prim_array_notify(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 }
 
-
-
 void
 prim_array_reverse(PRIM_PROTOTYPE)
 {
@@ -858,7 +817,6 @@ prim_array_reverse(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushArrayRaw(nu);
 }
-
 
 static int sortflag_caseinsens = 0;
 static int sortflag_descending = 0;
@@ -897,7 +855,6 @@ sortcomp_shuffle(const void *x, const void *y)
 {
 	return (((RANDOM() >> 8) % 5) - 2);
 }
-
 
 /* Sort types:
  * 1: case, ascending
@@ -963,7 +920,6 @@ prim_array_sort(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	PushArrayRaw(nu);
 }
-
 
 /* Sort types:
  * 1: case, ascending
@@ -1037,7 +993,6 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
-
 void
 prim_array_get_propdirs(PRIM_PROTOTYPE)
 {
@@ -1095,7 +1050,6 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 
 	PushArrayRaw(nu);
 }
-
 
 void
 prim_array_get_propvals(PRIM_PROTOTYPE)
@@ -1181,7 +1135,6 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 
 	PushArrayRaw(nu);
 }
-
 
 void
 prim_array_get_proplist(PRIM_PROTOTYPE)
@@ -1298,7 +1251,6 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
-
 void
 prim_array_put_propvals(PRIM_PROTOTYPE)
 {
@@ -1338,7 +1290,7 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
 						 temp1.data.number);
 				break;
 			case PROG_FLOAT:
-				snprintf(propname, sizeof(propname), "%s%c%.15lg", dir, PROPDIR_DELIMITER,
+				snprintf(propname, sizeof(propname), "%s%c%.15g", dir, PROPDIR_DELIMITER,
 						 temp1.data.fnumber);
 				if (!strchr(propname, '.') && !strchr(propname, 'n') && !strchr(propname, 'e')) {
 					strcatn(propname, sizeof(propname), ".0");
@@ -1385,7 +1337,6 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper3);
 }
-
 
 void
 prim_array_put_proplist(PRIM_PROTOTYPE)
@@ -1539,7 +1490,6 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 	CLEAR(oper3);
 }
 
-
 void
 prim_array_get_reflist(PRIM_PROTOTYPE)
 {
@@ -1600,7 +1550,6 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 
 	PushArrayRaw(nu);
 }
-
 
 void
 prim_array_put_reflist(PRIM_PROTOTYPE)
@@ -1669,8 +1618,6 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper3);
 }
-
-
 
 void
 prim_array_findval(PRIM_PROTOTYPE)
@@ -1897,7 +1844,6 @@ prim_array_excludeval(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
-
 void
 prim_array_join(PRIM_PROTOTYPE)
 {
@@ -1940,7 +1886,7 @@ prim_array_join(PRIM_PROTOTYPE)
 			text = buf;
 			break;
 		case PROG_FLOAT:
-			snprintf(buf, sizeof(buf), "%.15lg", in->data.fnumber);
+			snprintf(buf, sizeof(buf), "%.15g", in->data.fnumber);
 			if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
 				strcatn(buf, sizeof(buf), ".0");
 			}
@@ -2062,8 +2008,6 @@ prim_array_interpret(PRIM_PROTOTYPE)
 	PushString(outbuf);
 }
 
-
-
 void
 prim_array_pin(PRIM_PROTOTYPE)
 {
@@ -2090,7 +2034,6 @@ prim_array_pin(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
-
 void
 prim_array_unpin(PRIM_PROTOTYPE)
 {
@@ -2110,7 +2053,6 @@ prim_array_unpin(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushArrayRaw(arr);
 }
-
 
 void
 prim_array_get_ignorelist(PRIM_PROTOTYPE)
@@ -2170,7 +2112,6 @@ prim_array_get_ignorelist(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
-
 void
 prim_array_nested_get(PRIM_PROTOTYPE)
 {
@@ -2219,7 +2160,6 @@ prim_array_nested_get(PRIM_PROTOTYPE)
 	copyinst(&temp, &arg[(*top)++]);
 	CLEAR(&temp);
 }
-
 
 void
 prim_array_nested_set(PRIM_PROTOTYPE)
@@ -2297,8 +2237,6 @@ prim_array_nested_set(PRIM_PROTOTYPE)
 	CLEAR(&nest[0]);
 }
 
-
-
 void
 prim_array_nested_del(PRIM_PROTOTYPE)
 {
@@ -2367,7 +2305,6 @@ prim_array_nested_del(PRIM_PROTOTYPE)
 	copyinst(&nest[0], &arg[(*top)++]);
 	CLEAR(&nest[0]);
 }
-
 
 void
 prim_array_filter_flags(PRIM_PROTOTYPE)

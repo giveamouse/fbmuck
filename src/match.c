@@ -1,6 +1,5 @@
 /* $Header$ */
 
-
 #include "copyright.h"
 #include "config.h"
 
@@ -14,7 +13,6 @@
 #include "match.h"
 #include "interface.h"
 #include "externs.h"
-
 
 #define DOWNCASE(x) (tolower(x))
 
@@ -149,7 +147,6 @@ find_registered_obj(dbref player, const char *name)
 	return (NOTHING);
 }
 
-
 void
 match_registered(struct match_data *md)
 {
@@ -159,7 +156,6 @@ match_registered(struct match_data *md)
 	if (match != NOTHING)
 		md->exact_match = match;
 }
-
 
 /* returns nnn if name = #nnn, else NOTHING */
 static dbref
@@ -212,7 +208,6 @@ match_home(struct match_data *md)
 	if (!string_compare(md->match_name, "home"))
 		md->exact_match = HOME;
 }
-
 
 static void
 match_list(dbref first, struct match_data *md)
@@ -286,8 +281,8 @@ match_exits(dbref first, struct match_data *md)
 				if (Typeof((DBFETCH(exit)->sp.exit.dest)[i]) == TYPE_PROGRAM)
 					exitprog = 1;
 		}
-		if (tp_enable_prefix && exitprog && md->partial_exits &&
-			(FLAGS(exit) & XFORCIBLE) && FLAGS(OWNER(exit)) & WIZARD) {
+		if (tp_enable_prefix && exitprog && md->partial_exits && (FLAGS(exit) & XFORCIBLE) &&
+			FLAGS(OWNER(exit)) & WIZARD) {
 			partial = 1;
 		} else {
 			partial = 0;
@@ -297,9 +292,8 @@ match_exits(dbref first, struct match_data *md)
 			int notnull = 0;
 
 			for (p = md->match_name;	/* check out 1 alias */
-				 *p &&
-				 DOWNCASE(*p) == DOWNCASE(*exitname) &&
-				 *exitname != EXIT_DELIMITER; p++, exitname++) {
+				 *p && DOWNCASE(*p) == DOWNCASE(*exitname) && *exitname != EXIT_DELIMITER;
+				 p++, exitname++) {
 				if (!isspace(*p)) {
 					notnull = 1;
 				}
@@ -340,9 +334,8 @@ match_exits(dbref first, struct match_data *md)
 								*match_args = '\0';
 								strcpy(match_cmdname, (char *) md->match_name);
 							}
-						} else if ((strlen(md->match_name) - strlen(p) ==
-									md->longest_match) && !((lev == md->match_level) &&
-															(md->block_equals))) {
+						} else if ((strlen(md->match_name) - strlen(p) == md->longest_match) &&
+								   !((lev == md->match_level) && (md->block_equals))) {
 							if (lev > md->match_level) {
 								md->exact_match = exit;
 								md->match_level = lev;

@@ -23,11 +23,9 @@
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;
 
-
 struct mcp_muf_context {
 	dbref prog;
 };
-
 
 void
 muf_mcp_context_cleanup(void *context)
@@ -36,7 +34,6 @@ muf_mcp_context_cleanup(void *context)
 
 	free(mmc);
 }
-
 
 void
 muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
@@ -111,11 +108,9 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 	}
 }
 
-
 struct mcpevent_context {
 	int pid;
 };
-
 
 void
 mcpevent_context_cleanup(void *context)
@@ -124,7 +119,6 @@ mcpevent_context_cleanup(void *context)
 
 	free(mec);
 }
-
 
 void
 muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
@@ -196,7 +190,6 @@ muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *con
 	}
 }
 
-
 int
 stuff_dict_in_mesg(stk_array * arr, McpMesg * msg)
 {
@@ -237,7 +230,7 @@ stuff_dict_in_mesg(stk_array * arr, McpMesg * msg)
 						mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 						break;
 					case PROG_FLOAT:
-						snprintf(buf, sizeof(buf), "%.15lg", subval->data.fnumber);
+						snprintf(buf, sizeof(buf), "%.15g", subval->data.fnumber);
 						mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 						break;
 					default:
@@ -264,7 +257,7 @@ stuff_dict_in_mesg(stk_array * arr, McpMesg * msg)
 			mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 			break;
 		case PROG_FLOAT:
-			snprintf(buf, sizeof(buf), "%.15lg", argval->data.fnumber);
+			snprintf(buf, sizeof(buf), "%.15g", argval->data.fnumber);
 			mcp_mesg_arg_remove(msg, argname.data.string->data);
 			mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 			break;
@@ -276,7 +269,6 @@ stuff_dict_in_mesg(stk_array * arr, McpMesg * msg)
 	}
 	return 0;
 }
-
 
 void
 prim_mcp_register(PRIM_PROTOTYPE)
@@ -321,15 +313,12 @@ prim_mcp_register(PRIM_PROTOTYPE)
 	CLEAR(oper3);
 }
 
-
-
 void
 prim_mcp_register_event(PRIM_PROTOTYPE)
 {
 	char *pkgname;
 	McpVer vermin, vermax;
 	struct mcpevent_context *mec;
-
 
 	CHECKOP(3);
 	oper3 = POP();
@@ -366,8 +355,6 @@ prim_mcp_register_event(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper3);
 }
-
-
 
 void
 prim_mcp_supports(PRIM_PROTOTYPE)
@@ -408,8 +395,6 @@ prim_mcp_supports(PRIM_PROTOTYPE)
 	PushFloat(fver);
 }
 
-
-
 void
 prim_mcp_bind(PRIM_PROTOTYPE)
 {
@@ -434,8 +419,8 @@ prim_mcp_bind(PRIM_PROTOTYPE)
 		abort_interp("Function address expected. (3)");
 	if (!oper1->data.string || !*oper1->data.string->data)
 		abort_interp("Package name cannot be a null string. (1)");
-	if (oper3->data.addr->progref >= db_top ||
-		oper3->data.addr->progref < 0 || (Typeof(oper3->data.addr->progref) != TYPE_PROGRAM)) {
+	if (oper3->data.addr->progref >= db_top || oper3->data.addr->progref < 0 ||
+		(Typeof(oper3->data.addr->progref) != TYPE_PROGRAM)) {
 		abort_interp("Invalid address. (3)");
 	}
 	if (program != oper3->data.addr->progref) {
@@ -471,7 +456,6 @@ prim_mcp_bind(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper3);
 }
-
 
 void
 prim_mcp_send(PRIM_PROTOTYPE)
@@ -544,8 +528,6 @@ prim_mcp_send(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
-
-
 
 void
 fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
@@ -629,17 +611,15 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 	}
 
 	/*
-	   if (did_dismiss) {
-	   muf_dlog_remove(fr, dlogid);
-	   }
+	 * if (did_dismiss) {
+	 * muf_dlog_remove(fr, dlogid);
+	 * }
 	 */
 
 	snprintf(buf, sizeof(buf), "GUI.%s", dlogid);
 	muf_event_add(fr, buf, &temp, 0);
 	CLEAR(&temp);
 }
-
-
 
 void
 fbgui_muf_error_cb(GUI_ERROR_CB_ARGS)
@@ -664,8 +644,6 @@ fbgui_muf_error_cb(GUI_ERROR_CB_ARGS)
 	CLEAR(&temp);
 }
 
-
-
 void
 prim_gui_available(PRIM_PROTOTYPE)
 {
@@ -685,8 +663,6 @@ prim_gui_available(PRIM_PROTOTYPE)
 
 	PushFloat(fver);
 }
-
-
 
 void
 prim_gui_dlog_create(PRIM_PROTOTYPE)
@@ -765,8 +741,6 @@ prim_gui_dlog_create(PRIM_PROTOTYPE)
 	PushString(dlogid);
 }
 
-
-
 void
 prim_gui_dlog_show(PRIM_PROTOTYPE)
 {
@@ -788,7 +762,6 @@ prim_gui_dlog_show(PRIM_PROTOTYPE)
 
 	CLEAR(oper1);
 }
-
 
 void
 prim_gui_dlog_close(PRIM_PROTOTYPE)
@@ -813,8 +786,6 @@ prim_gui_dlog_close(PRIM_PROTOTYPE)
 
 	CLEAR(oper1);
 }
-
-
 
 void
 prim_gui_ctrl_create(PRIM_PROTOTYPE)
@@ -921,7 +892,6 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
 	CLEAR(oper4);
 }
 
-
 void
 prim_gui_ctrl_command(PRIM_PROTOTYPE)
 {
@@ -1013,7 +983,6 @@ prim_gui_ctrl_command(PRIM_PROTOTYPE)
 	CLEAR(oper4);
 }
 
-
 void
 prim_gui_value_set(PRIM_PROTOTYPE)
 {
@@ -1083,7 +1052,7 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 				value = buf;
 				break;
 			case PROG_FLOAT:
-				snprintf(buf, sizeof(buf), "%.15lg", temp2->data.fnumber);
+				snprintf(buf, sizeof(buf), "%.15g", temp2->data.fnumber);
 				value = buf;
 				break;
 			default:
@@ -1110,7 +1079,6 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper3);
 }
-
 
 void
 prim_gui_values_get(PRIM_PROTOTYPE)
@@ -1168,7 +1136,6 @@ prim_gui_values_get(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushArrayRaw(nu);
 }
-
 
 void
 prim_gui_value_get(PRIM_PROTOTYPE)

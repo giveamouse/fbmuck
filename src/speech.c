@@ -1,6 +1,5 @@
 /* $Header$ */
 
-
 #include "copyright.h"
 #include "config.h"
 
@@ -116,8 +115,8 @@ do_gripe(dbref player, const char *message)
 	}
 
 	loc = DBFETCH(player)->location;
-	log_gripe("GRIPE from %s(%d) in %s(%d): %s\n",
-			  NAME(player), player, NAME(loc), loc, message);
+	log_gripe("GRIPE from %s(%d) in %s(%d): %s\n", NAME(player), player, NAME(loc), loc,
+			  message);
 
 	notify(player, "Your complaint has been duly noted.");
 
@@ -145,8 +144,8 @@ do_page(dbref player, const char *arg1, const char *arg2)
 		return;
 	}
 	if (blank(arg2))
-		snprintf(buf, sizeof(buf), "You sense that %s is looking for you in %s.",
-				 NAME(player), NAME(DBFETCH(player)->location));
+		snprintf(buf, sizeof(buf), "You sense that %s is looking for you in %s.", NAME(player),
+				 NAME(DBFETCH(player)->location));
 	else
 		snprintf(buf, sizeof(buf), "%s pages from %s: \"%s\"", NAME(player),
 				 NAME(DBFETCH(player)->location), arg2);
@@ -181,8 +180,8 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
 
 				memset(buf, 0, BUFFER_LEN);	/* Make sure the buffer is zeroed */
 
-				prefix = do_parse_prop(-1, who, obj, MESGPROP_OECHO,
-									   "(@Oecho)", pbuf, MPI_ISPRIVATE);
+				prefix = do_parse_prop(-1, who, obj, MESGPROP_OECHO, "(@Oecho)", pbuf,
+									   MPI_ISPRIVATE);
 				if (!prefix || !*prefix)
 					prefix = "Outside>";
 				snprintf(buf, sizeof(buf), "%s %.*s", prefix,
@@ -230,7 +229,6 @@ notify_except(dbref first, dbref exception, const char *msg, dbref who)
 	}
 }
 
-
 void
 parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname,
 			const char *prefix, const char *whatcalled)
@@ -259,16 +257,15 @@ parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
 		return;
 
 	/*
-	   TODO: Find out if this should be prefixing with NAME(player), or if
-	   it should use the prefix argument...  The original code just ignored
-	   the prefix argument...
+	 * TODO: Find out if this should be prefixing with NAME(player), or if
+	 * it should use the prefix argument...  The original code just ignored
+	 * the prefix argument...
 	 */
 
 	prefix_message(buf, ptr, prefix, BUFFER_LEN, 1);
 
 	notify_except(DBFETCH(dest)->contents, player, buf, player);
 }
-
 
 int
 blank(const char *s)

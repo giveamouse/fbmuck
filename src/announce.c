@@ -26,23 +26,22 @@
 #include <unistd.h>
 
 #ifdef USE_IPV6
-#include <netinet6/in6.h>
+#  include <netinet6/in6.h>
 #endif
 
 extern char **environ;
 
 #ifdef HAVE_ERRNO_H
-#include <errno.h>
+#  include <errno.h>
 #else
-#ifdef HAVE_SYS_ERRNO_H
-#include <sys/errno.h>
-#else
+#  ifdef HAVE_SYS_ERRNO_H
+#    include <sys/errno.h>
+#  else
 extern int errno;
-#endif
+#  endif
 #endif
 char *Name;						/* name of this program for error messages */
 char msg[32768];
-
 
 char *
 strcpyn(char *buf, size_t bufsize, const char *src)

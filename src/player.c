@@ -1,6 +1,5 @@
 /* $Header$ */
 
-
 #include "copyright.h"
 #include "config.h"
 
@@ -23,7 +22,6 @@ lookup_player(const char *name)
 		return (hd->dbval);
 	}
 }
-
 
 int
 check_password(dbref player, const char *password)
@@ -51,14 +49,12 @@ check_password(dbref player, const char *password)
 	return 0;
 }
 
-
 void
 set_password_raw(dbref player, const char *password)
 {
 	PLAYER_SET_PASSWORD(player, password);
 	DBDIRTY(player);
 }
-
 
 void
 set_password(dbref player, const char *password)
@@ -76,7 +72,6 @@ set_password(dbref player, const char *password)
 
 	set_password_raw(player, alloc_string(processed));
 }
-
 
 dbref
 connect_player(const char *name, const char *password)
@@ -172,7 +167,6 @@ add_player(dbref who)
 	}
 }
 
-
 void
 delete_player(dbref who)
 {
@@ -181,7 +175,6 @@ delete_player(dbref who)
 	char namebuf[BUFFER_LEN];
 	int i, j;
 	dbref found, ren;
-
 
 	result = free_hash(NAME(who), player_list, PLAYER_HASH_SIZE);
 
@@ -200,8 +193,8 @@ delete_player(dbref who)
 					} while (lookup_player(namebuf) != NOTHING);
 
 					snprintf(buf, sizeof(buf),
-							 "## Renaming %s(#%d) to %s to prevent name collision.",
-							 NAME(ren), ren, namebuf);
+							 "## Renaming %s(#%d) to %s to prevent name collision.", NAME(ren),
+							 ren, namebuf);
 					wall_wizards(buf);
 
 					log_status("SANITY NAME CHANGE: %s(#%d) to %s\n", NAME(ren), ren, namebuf);

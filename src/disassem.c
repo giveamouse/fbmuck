@@ -27,8 +27,8 @@ disassemble(dbref player, dbref program)
 		switch (curr->type) {
 		case PROG_PRIMITIVE:
 			if (curr->data.number >= BASE_MIN && curr->data.number <= BASE_MAX)
-				snprintf(buf, sizeof(buf), "%d: (line %d) PRIMITIVE: %s", i,
-						 curr->line, base_inst[curr->data.number - BASE_MIN]);
+				snprintf(buf, sizeof(buf), "%d: (line %d) PRIMITIVE: %s", i, curr->line,
+						 base_inst[curr->data.number - BASE_MIN]);
 			else
 				snprintf(buf, sizeof(buf), "%d: (line %d) PRIMITIVE: %d", i, curr->line,
 						 curr->data.number);
@@ -52,20 +52,23 @@ disassemble(dbref player, dbref program)
 			break;
 		case PROG_LOCK:
 			snprintf(buf, sizeof(buf), "%d: (line %d) LOCK: [%s]", i, curr->line,
-					 curr->data.lock == TRUE_BOOLEXP ? "TRUE_BOOLEXP" :
-					 unparse_boolexp(0, curr->data.lock, 0));
+					 curr->data.lock == TRUE_BOOLEXP ? "TRUE_BOOLEXP" : unparse_boolexp(0,
+																						curr->
+																						data.
+																						lock,
+																						0));
 			break;
 		case PROG_INTEGER:
 			snprintf(buf, sizeof(buf), "%d: (line %d) INTEGER: %d", i, curr->line,
 					 curr->data.number);
 			break;
 		case PROG_FLOAT:
-			snprintf(buf, sizeof(buf), "%d: (line %d) FLOAT: %.17lg", i, curr->line,
+			snprintf(buf, sizeof(buf), "%d: (line %d) FLOAT: %.17g", i, curr->line,
 					 curr->data.fnumber);
 			break;
 		case PROG_ADD:
-			snprintf(buf, sizeof(buf), "%d: (line %d) ADDRESS: %d", i,
-					 curr->line, (curr->data.addr->data - codestart));
+			snprintf(buf, sizeof(buf), "%d: (line %d) ADDRESS: %d", i, curr->line,
+					 (curr->data.addr->data - codestart));
 			break;
 		case PROG_TRY:
 			snprintf(buf, sizeof(buf), "%d: (line %d) TRY: %d", i, curr->line,

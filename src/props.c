@@ -14,7 +14,6 @@
 #include "props.h"
 #include "externs.h"
 
-
 #define Comparator(x,y) string_compare(x,y)
 
 static PropPtr
@@ -54,7 +53,7 @@ height_diff(PropPtr node)
 }
 
 #ifndef WIN32
-# define max(a, b)       (a > b ? a : b)
+#  define max(a, b)       (a > b ? a : b)
 #endif
 
 static void
@@ -194,7 +193,6 @@ clear_propnode(PropPtr p)
 	SetPType(p, PROP_DIRTYP);
 }
 
-
 static PropPtr
 insert(char *key, PropPtr * avl)
 {
@@ -268,7 +266,6 @@ remove_propnode(char *key, PropPtr * root)
 	return save;
 }
 
-
 static PropPtr
 delnode(char *key, PropPtr avl)
 {
@@ -279,7 +276,6 @@ delnode(char *key, PropPtr avl)
 		free_propnode(save);
 	return avl;
 }
-
 
 void
 delete_proplist(PropPtr p)
@@ -323,7 +319,6 @@ first_node(PropPtr list)
 	return (list);
 }
 
-
 PropPtr
 next_node(PropPtr ptr, char *name)
 {
@@ -351,7 +346,6 @@ next_node(PropPtr ptr, char *name)
 		return NULL;
 	}
 }
-
 
 /* copies properties */
 void
@@ -383,13 +377,11 @@ copy_proplist(dbref obj, PropPtr * nu, PropPtr old)
 		copy_proplist(obj, &AVL_LF(p), AVL_LF(old));
 		copy_proplist(obj, &AVL_RT(p), AVL_RT(old));
 		/*
-		   copy_proplist(obj, nu, AVL_LF(old));
-		   copy_proplist(obj, nu, AVL_RT(old));
+		 * copy_proplist(obj, nu, AVL_LF(old));
+		 * copy_proplist(obj, nu, AVL_RT(old));
 		 */
 	}
 }
-
-
 
 long
 size_proplist(PropPtr avl)
@@ -416,8 +408,6 @@ size_proplist(PropPtr avl)
 	bytes += size_proplist(PropDir(avl));
 	return bytes;
 }
-
-
 
 int
 Prop_Check(const char *name, const char what)

@@ -46,8 +46,6 @@ copyobj(dbref player, dbref old, dbref nu)
 	DBDIRTY(nu);
 }
 
-
-
 void
 prim_addpennies(PRIM_PROTOTYPE)
 {
@@ -146,19 +144,19 @@ prim_moveto(PRIM_PROTOTYPE)
 		case TYPE_THING:
 			if (parent_loop_check(victim, dest))
 				abort_interp("A thing cannot contain itself.");
-			if (mlev < 3 && (FLAGS(victim) & VEHICLE) &&
-				(FLAGS(dest) & VEHICLE) && Typeof(dest) != TYPE_THING)
+			if (mlev < 3 && (FLAGS(victim) & VEHICLE) && (FLAGS(dest) & VEHICLE) &&
+				Typeof(dest) != TYPE_THING)
 				abort_interp("Destination doesn't accept vehicles.");
-			if (mlev < 3 && (FLAGS(victim) & ZOMBIE) &&
-				(FLAGS(dest) & ZOMBIE) && Typeof(dest) != TYPE_THING)
+			if (mlev < 3 && (FLAGS(victim) & ZOMBIE) && (FLAGS(dest) & ZOMBIE) &&
+				Typeof(dest) != TYPE_THING)
 				abort_interp("Destination doesn't accept zombies.");
 			ts_lastuseobject(victim);
 		case TYPE_PROGRAM:
 			{
 				dbref matchroom = NOTHING;
 
-				if (Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_PLAYER
-					&& Typeof(dest) != TYPE_THING)
+				if (Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_PLAYER &&
+					Typeof(dest) != TYPE_THING)
 					abort_interp("Bad destination.");
 				if ((mlev < 3)) {
 					if (permissions(ProgUID, dest))
@@ -196,8 +194,8 @@ prim_moveto(PRIM_PROTOTYPE)
 				abort_interp("Permission denied.");
 			if (dest == HOME) {
 				/* Allow the owner of the room or the owner of
-				   the room's location to reparent the room to
-				   #0 */
+				 * the room's location to reparent the room to
+				 * #0 */
 				if ((mlev < 3) && (!permissions(ProgUID, victim)
 								   && !permissions(ProgUID, getloc(victim))))
 					abort_interp("Permission denied.");
@@ -245,7 +243,6 @@ prim_pennies(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_dbcomp(PRIM_PROTOTYPE)
 {
@@ -284,7 +281,7 @@ prim_contents(PRIM_PROTOTYPE)
 	while (mlev < 2 && ref != NOTHING && (FLAGS(ref) & DARK) && !controls(ProgUID, ref))
 		ref = DBFETCH(ref)->next;
 	/* if (Typeof(oper1->data.objref) != TYPE_PLAYER &&
-	   Typeof(oper1->data.objref) != TYPE_PROGRAM) ts_lastuseobject(oper1->data.objref); */
+	 * Typeof(oper1->data.objref) != TYPE_PROGRAM) ts_lastuseobject(oper1->data.objref); */
 	CLEAR(oper1);
 	PushObject(ref);
 }
@@ -314,7 +311,6 @@ prim_exits(PRIM_PROTOTYPE)
 	PushObject(ref);
 }
 
-
 void
 prim_next(PRIM_PROTOTYPE)
 {
@@ -330,7 +326,6 @@ prim_next(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushObject(ref);
 }
-
 
 void
 prim_nextowned(PRIM_PROTOTYPE)
@@ -362,7 +357,6 @@ prim_nextowned(PRIM_PROTOTYPE)
 	PushObject(ref);
 }
 
-
 void
 prim_name(PRIM_PROTOTYPE)
 {
@@ -380,7 +374,7 @@ prim_name(PRIM_PROTOTYPE)
 	} else {
 		CHECKREMOTE(ref);
 		/* if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
-		   ts_lastuseobject(ref); */
+		 * ts_lastuseobject(ref); */
 		if (NAME(ref)) {
 			strcpy(buf, NAME(ref));
 		} else {
@@ -486,7 +480,6 @@ prim_pmatch(PRIM_PROTOTYPE)
 	PushObject(ref);
 }
 
-
 void
 prim_match(PRIM_PROTOTYPE)
 {
@@ -530,7 +523,6 @@ prim_match(PRIM_PROTOTYPE)
 	PushObject(ref);
 }
 
-
 void
 prim_rmatch(PRIM_PROTOTYPE)
 {
@@ -542,11 +534,8 @@ prim_rmatch(PRIM_PROTOTYPE)
 	oper2 = POP();
 	if (oper1->type != PROG_STRING)
 		abort_interp("Invalid argument (2)");
-	if (oper2->type != PROG_OBJECT
-		|| oper2->data.objref < 0
-		|| oper2->data.objref >= db_top
-		|| Typeof(oper2->data.objref) == TYPE_PROGRAM
-		|| Typeof(oper2->data.objref) == TYPE_EXIT)
+	if (oper2->type != PROG_OBJECT || oper2->data.objref < 0 || oper2->data.objref >= db_top ||
+		Typeof(oper2->data.objref) == TYPE_PROGRAM || Typeof(oper2->data.objref) == TYPE_EXIT)
 		abort_interp("Invalid argument (1)");
 	CHECKREMOTE(oper2->data.objref);
 	{
@@ -565,7 +554,6 @@ prim_rmatch(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	PushObject(ref);
 }
-
 
 void
 prim_copyobj(PRIM_PROTOTYPE)
@@ -595,7 +583,6 @@ prim_copyobj(PRIM_PROTOTYPE)
 		PushObject(newobj);
 	}
 }
-
 
 void
 prim_set(PRIM_PROTOTYPE)
@@ -816,7 +803,6 @@ prim_flagp(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_playerp(PRIM_PROTOTYPE)
 {
@@ -834,7 +820,6 @@ prim_playerp(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
 
 void
 prim_thingp(PRIM_PROTOTYPE)
@@ -854,7 +839,6 @@ prim_thingp(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_roomp(PRIM_PROTOTYPE)
 {
@@ -872,7 +856,6 @@ prim_roomp(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
 
 void
 prim_programp(PRIM_PROTOTYPE)
@@ -892,7 +875,6 @@ prim_programp(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_exitp(PRIM_PROTOTYPE)
 {
@@ -910,7 +892,6 @@ prim_exitp(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
 
 void
 prim_okp(PRIM_PROTOTYPE)
@@ -977,8 +958,8 @@ prim_getlink(PRIM_PROTOTYPE)
 		abort_interp("Illegal object referenced.");
 	switch (Typeof(oper1->data.objref)) {
 	case TYPE_EXIT:
-		ref = (DBFETCH(oper1->data.objref)->sp.exit.ndest) ?
-				(DBFETCH(oper1->data.objref)->sp.exit.dest)[0] : NOTHING;
+		ref = (DBFETCH(oper1->data.objref)->sp.exit.ndest) ? (DBFETCH(oper1->data.objref)->sp.
+															  exit.dest)[0] : NOTHING;
 		break;
 	case TYPE_PLAYER:
 		ref = PLAYER_HOME(oper1->data.objref);
@@ -1087,7 +1068,6 @@ prog_can_link_to(int mlev, dbref who, object_flag_type what_type, dbref where)
 	return 0;
 }
 
-
 void
 prim_setlink(PRIM_PROTOTYPE)
 {
@@ -1181,8 +1161,8 @@ prim_setown(PRIM_PROTOTYPE)
 	ref = oper2->data.objref;
 	if ((mlev < 4) && oper1->data.objref != player)
 		abort_interp("Permission denied. (2)");
-	if ((mlev < 4) && (!(FLAGS(ref) & CHOWN_OK) ||
-					   !test_lock(fr->descr, player, ref, "_/chlk")))
+	if ((mlev < 4) &&
+		(!(FLAGS(ref) & CHOWN_OK) || !test_lock(fr->descr, player, ref, "_/chlk")))
 		abort_interp("Permission denied. (1)");
 	switch (Typeof(ref)) {
 	case TYPE_ROOM:
@@ -1345,7 +1325,6 @@ prim_newexit(PRIM_PROTOTYPE)
 	}
 }
 
-
 void
 prim_lockedp(PRIM_PROTOTYPE)
 {
@@ -1371,7 +1350,6 @@ prim_lockedp(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	PushInt(result);
 }
-
 
 void
 prim_recycle(PRIM_PROTOTYPE)
@@ -1406,7 +1384,6 @@ prim_recycle(PRIM_PROTOTYPE)
 	recycle(fr->descr, player, result);
 }
 
-
 void
 prim_setlockstr(PRIM_PROTOTYPE)
 {
@@ -1426,7 +1403,6 @@ prim_setlockstr(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	PushInt(result);
 }
-
 
 void
 prim_getlockstr(PRIM_PROTOTYPE)
@@ -1448,7 +1424,6 @@ prim_getlockstr(PRIM_PROTOTYPE)
 	}
 }
 
-
 void
 prim_part_pmatch(PRIM_PROTOTYPE)
 {
@@ -1466,7 +1441,6 @@ prim_part_pmatch(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushObject(ref);
 }
-
 
 void
 prim_checkpassword(PRIM_PROTOTYPE)
@@ -1546,7 +1520,6 @@ prim_movepennies(PRIM_PROTOTYPE)
 	CLEAR(oper3);
 }
 
-
 void
 prim_findnext(PRIM_PROTOTYPE)
 {
@@ -1604,9 +1577,8 @@ prim_findnext(PRIM_PROTOTYPE)
 	ref = NOTHING;
 	init_checkflags(player, DoNullInd(oper4->data.string), &check);
 	for (i = item; i < db_top; i++) {
-		if ((who == NOTHING || OWNER(i) == who) &&
-			checkflags(i, check) && NAME(i) && Typeof(i) != TYPE_GARBAGE &&
-			(!*name || equalstr(buf, (char *) NAME(i)))) {
+		if ((who == NOTHING || OWNER(i) == who) && checkflags(i, check) && NAME(i) &&
+			Typeof(i) != TYPE_GARBAGE && (!*name || equalstr(buf, (char *) NAME(i)))) {
 			ref = i;
 			break;
 		}
@@ -1619,7 +1591,6 @@ prim_findnext(PRIM_PROTOTYPE)
 
 	PushObject(ref);
 }
-
 
 /* ============================ */
 /* = More ProtoMuck prims     = */
@@ -1712,8 +1683,8 @@ prim_newplayer(PRIM_PROTOTYPE)
 	/* else he doesn't already exist, create him */
 	newplayer = create_player(name, password);
 
-	log_status("PCREATED[MUF]: %s(%d) by %s(%d)\n",
-			   NAME(newplayer), (int) newplayer, NAME(player), (int) player);
+	log_status("PCREATED[MUF]: %s(%d) by %s(%d)\n", NAME(newplayer), (int) newplayer,
+			   NAME(player), (int) player);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -1772,8 +1743,8 @@ prim_copyplayer(PRIM_PROTOTYPE)
 	moveto(newplayer, PLAYER_HOME(ref));
 
 	/* link him to player_start */
-	log_status("PCREATE[MUF]: %s(%d) by %s(%d)\n",
-			   NAME(newplayer), (int) newplayer, NAME(player), (int) player);
+	log_status("PCREATE[MUF]: %s(%d) by %s(%d)\n", NAME(newplayer), (int) newplayer,
+			   NAME(player), (int) player);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -1897,8 +1868,6 @@ prim_objmem(PRIM_PROTOTYPE)
 	PushInt(i);
 }
 
-
-
 void
 prim_instances(PRIM_PROTOTYPE)
 {
@@ -1940,7 +1909,6 @@ prim_compiledp(PRIM_PROTOTYPE)
 	i = PROGRAM_SIZ(ref);
 	PushInt(i);
 }
-
 
 void
 prim_newpassword(PRIM_PROTOTYPE)
@@ -2052,7 +2020,6 @@ prim_compile(PRIM_PROTOTYPE)
 	PushInt(PROGRAM_SIZ(ref));
 }
 
-
 void
 prim_uncompile(PRIM_PROTOTYPE)
 {
@@ -2071,7 +2038,6 @@ prim_uncompile(PRIM_PROTOTYPE)
 		abort_interp("That program is currently in use.");
 	uncompile_program(ref);
 }
-
 
 void
 prim_getpids(PRIM_PROTOTYPE)
@@ -2149,7 +2115,6 @@ prim_getpidinfo(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushArrayRaw(nu);
 }
-
 
 void
 prim_contents_array(PRIM_PROTOTYPE)
@@ -2341,7 +2306,7 @@ prim_program_getlines(PRIM_PROTOTYPE)
 		count = i - start + 1;
 
 		if (!curr)				/* if we have don't have curr, we counted one beyond
-								   the end of the program, so we account for that. */
+								 * the end of the program, so we account for that. */
 			count--;
 
 		ary = new_array_packed(count);

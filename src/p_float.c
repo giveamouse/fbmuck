@@ -305,7 +305,6 @@ prim_dist3d(PRIM_PROTOTYPE)
 	PushFloat(dist);
 }
 
-
 void
 prim_diff3(PRIM_PROTOTYPE)
 {
@@ -360,7 +359,6 @@ prim_diff3(PRIM_PROTOTYPE)
 	PushFloat(zout);
 }
 
-
 void
 prim_xyz_to_polar(PRIM_PROTOTYPE)
 {
@@ -405,7 +403,6 @@ prim_xyz_to_polar(PRIM_PROTOTYPE)
 	PushFloat(theta);
 	PushFloat(phi);
 }
-
 
 void
 prim_polar_to_xyz(PRIM_PROTOTYPE)
@@ -523,7 +520,6 @@ prim_fabs(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushFloat(fresult);
 }
-
 
 void
 prim_float(PRIM_PROTOTYPE)
@@ -662,7 +658,7 @@ prim_ftostr(PRIM_PROTOTYPE)
 	}
 	if (oper1->type != PROG_FLOAT)
 		abort_interp("Non-float argument. (1)");
-	snprintf(buf, sizeof(buf), "%#.15lg", oper1->data.fnumber);
+	snprintf(buf, sizeof(buf), "%#.15g", oper1->data.fnumber);
 	CLEAR(oper1);
 	PushString(buf);
 }
@@ -678,7 +674,7 @@ prim_ftostrc(PRIM_PROTOTYPE)
 	}
 	if (oper1->type != PROG_FLOAT)
 		abort_interp("Non-float argument. (1)");
-	sprintf(buf, "%.15lg", oper1->data.fnumber);
+	snprintf(buf, sizeof(buf), "%.15g", oper1->data.fnumber);
 	if (!strchr(buf, '.') && !strchr(buf, 'e') && !strchr(buf, 'n')) {
 		strcatn(buf, sizeof(buf), ".0");
 	}

@@ -39,7 +39,6 @@ void xMD5Update(struct xMD5Context *context, byte const *buf, int len);
 void xMD5Final(byte digest[16], struct xMD5Context *context);
 void xMD5Transform(word32 buf[4], word32 const in[16]);
 
-
 /*
  * Shuffle the bytes into little-endian order within words, as per the
  * MD5 spec.  Note: this code works regardless of the byte order.
@@ -147,7 +146,6 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
 	bzero((byte *) ctx, sizeof(ctx));
 }
 
-
 /* The four core functions - F1 is optimized somewhat */
 
 /* #define F1(x, y, z) (x & y | ~x & z) */
@@ -249,7 +247,6 @@ xMD5Transform(word32 buf[4], word32 const in[16])
 	buf[3] += d;
 }
 
-
 /* dest buffer MUST be at least 16 bytes long. */
 void
 MD5hash(void *dest, const void *orig, int len)
@@ -260,7 +257,6 @@ MD5hash(void *dest, const void *orig, int len)
 	xMD5Update(&context, (const byte *) orig, len);
 	xMD5Final((byte *) dest, &context);
 }
-
 
 /*
  * outbuf MUST be at least (((strlen(inbuf)+3)/4)*3)+1 chars long to read
@@ -309,7 +305,6 @@ Base64Decode(void *outbuf, size_t outbuflen, const char *inbuf)
 	}
 	return bytcnt;
 }
-
 
 /* outbuf MUST be at least (((inlen+2)/3)*4)+1 chars long. */
 void
@@ -372,7 +367,6 @@ Base64Encode(char *outbuf, const void *inbuf, size_t inlen)
 			abort();
 	}
 }
-
 
 /* dest buffer MUST be at least 24 chars long. */
 void

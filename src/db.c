@@ -19,7 +19,7 @@ dbref recyclable = NOTHING;
 int db_load_format = 0;
 
 #ifndef DB_INITIAL_SIZE
-#define DB_INITIAL_SIZE 10000
+#  define DB_INITIAL_SIZE 10000
 #endif							/* DB_INITIAL_SIZE */
 
 #ifdef DB_DOUBLING
@@ -40,7 +40,6 @@ int number(const char *s);
 int ifloat(const char *s);
 void putproperties(FILE * f, int obj);
 void getproperties(FILE * f, int obj, const char *pdir);
-
 
 dbref
 getparent_logic(dbref obj)
@@ -70,15 +69,14 @@ getparent(dbref obj)
 		do {
 			obj = getparent_logic(obj);
 		} while (obj != (oldptr = ptr = getparent_logic(ptr)) &&
-				 obj != (ptr = getparent_logic(ptr)) &&
-				 obj != NOTHING && Typeof(obj) == TYPE_THING);
+				 obj != (ptr = getparent_logic(ptr)) && obj != NOTHING &&
+				 Typeof(obj) == TYPE_THING);
 		if (obj != NOTHING && (obj == oldptr || obj == ptr)) {
 			obj = GLOBAL_ENVIRONMENT;
 		}
 	}
 	return obj;
 }
-
 
 void
 free_line(struct line *l)
@@ -123,8 +121,9 @@ db_grow(dbref newtop)
 			/* make sure it's big enough */
 			while (db_top > db_size)
 				db_size += 1000;
-			if ((newdb = (struct object *) realloc((void *) db,
-												   db_size * sizeof(struct object))) == 0) {
+			if ((newdb =
+				 (struct object *) realloc((void *) db,
+										   db_size * sizeof(struct object))) == 0) {
 				abort();
 			}
 			db = newdb;
@@ -257,11 +256,9 @@ putproperties(FILE * f, dbref obj)
 	putstring(f, "*End*");
 }
 
-
 extern FILE *input_file;
 extern FILE *delta_infile;
 extern FILE *delta_outfile;
-
 
 void
 macrodump(struct macrotable *node, FILE * f)
@@ -369,8 +366,8 @@ log_program_text(struct line *first, dbref player, dbref i)
 
 	fputs("#######################################", f);
 	fputs("#######################################\n", f);
-	fprintf(f, "PROGRAM %s, SAVED AT %s BY %s(%d)\n",
-			unparse_object(player, i), ctime(&lt), NAME(player), player);
+	fprintf(f, "PROGRAM %s, SAVED AT %s BY %s(%d)\n", unparse_object(player, i), ctime(&lt),
+			NAME(player), player);
 	fputs("#######################################", f);
 	fputs("#######################################\n\n", f);
 
@@ -428,9 +425,7 @@ db_write_object(FILE * f, dbref i)
 	putref(f, o->ts.usecount);
 	putref(f, o->ts.modified);
 
-
 	putproperties(f, i);
-
 
 	switch (Typeof(i)) {
 	case TYPE_THING:
@@ -470,9 +465,8 @@ db_write_object(FILE * f, dbref i)
 int deltas_count = 0;
 
 #ifndef CLUMP_LOAD_SIZE
-#define CLUMP_LOAD_SIZE 20
+#  define CLUMP_LOAD_SIZE 20
 #endif
-
 
 /* mode == 1 for dumping all objects.  mode == 0 for deltas only.  */
 
@@ -490,7 +484,6 @@ db_write_list(FILE * f, int mode)
 		}
 	}
 }
-
 
 dbref
 db_write(FILE * f)
@@ -512,8 +505,6 @@ db_write(FILE * f)
 	return (db_top);
 }
 
-
-
 dbref
 db_write_deltas(FILE * f)
 {
@@ -526,8 +517,6 @@ db_write_deltas(FILE * f)
 	fflush(f);
 	return (db_top);
 }
-
-
 
 dbref
 parse_dbref(const char *s)
@@ -577,7 +566,6 @@ getref(FILE * f)
 	fgets(buf, sizeof(buf), f);
 	return (atol(buf));
 }
-
 
 static char xyzzybuf[BUFFER_LEN];
 static const char *
@@ -639,12 +627,12 @@ ifloat(const char *s)
 	if (*s == '+' || *s == '-')
 		s++;
 	/* WORK: for when float parsing is improved.
-	   if (!string_compare(s, "inf")) {
-	   return 1;
-	   }
-	   if (!string_compare(s, "nan")) {
-	   return 1;
-	   }
+	 * if (!string_compare(s, "inf")) {
+	 * return 1;
+	 * }
+	 * if (!string_compare(s, "nan")) {
+	 * return 1;
+	 * }
 	 */
 	hold = s;
 	while ((*s) && (*s >= '0' && *s <= '9'))
@@ -720,7 +708,6 @@ getproperties(FILE * f, dbref obj, const char *pdir)
 	}
 }
 
-
 void
 db_free_object(dbref i)
 {
@@ -775,7 +762,6 @@ db_free(void)
 	clear_primitives();
 	recyclable = NOTHING;
 }
-
 
 struct line *
 get_new_line(void)
@@ -980,7 +966,6 @@ autostart_progs(void)
 		}
 	}
 }
-
 
 dbref
 db_read(FILE * f)

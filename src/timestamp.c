@@ -3,7 +3,6 @@
 #include "db.h"
 #include "tune.h"
 
-
 void
 ts_newobject(struct object *thing)
 {

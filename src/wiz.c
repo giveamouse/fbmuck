@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 #ifndef WIN32
-# include <sys/resource.h>
+#  include <sys/resource.h>
 #endif
 
 #ifndef MALLOC_PROFILING
@@ -105,11 +105,10 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 	default:
 		switch (Typeof(victim)) {
 		case TYPE_PLAYER:
-			if (!controls(player, victim) ||
-				!controls(player, destination) ||
-				!controls(player, getloc(victim)) ||
-				(Typeof(destination) == TYPE_THING &&
-				 !controls(player, getloc(destination)))) {
+			if (!controls(player, victim) || !controls(player, destination) ||
+				!controls(player, getloc(victim)) || (Typeof(destination) == TYPE_THING &&
+													  !controls(player,
+																getloc(destination)))) {
 				notify(player, "Permission denied.");
 				break;
 			}
@@ -136,21 +135,21 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 				break;
 			}
 		case TYPE_PROGRAM:
-			if (Typeof(destination) != TYPE_ROOM
-				&& Typeof(destination) != TYPE_PLAYER && Typeof(destination) != TYPE_THING) {
+			if (Typeof(destination) != TYPE_ROOM && Typeof(destination) != TYPE_PLAYER &&
+				Typeof(destination) != TYPE_THING) {
 				notify(player, "Bad destination.");
 				break;
 			}
-			if (!((controls(player, destination) ||
-				   can_link_to(player, NOTYPE, destination)) &&
-				  (controls(player, victim) || controls(player, DBFETCH(victim)->location)))) {
+			if (!
+				((controls(player, destination) || can_link_to(player, NOTYPE, destination)) &&
+				 (controls(player, victim) || controls(player, DBFETCH(victim)->location)))) {
 				notify(player, "Permission denied.");
 				break;
 			}
 			/* check for non-sticky dropto */
-			if (Typeof(destination) == TYPE_ROOM
-				&& DBFETCH(destination)->sp.room.dropto != NOTHING
-				&& !(FLAGS(destination) & STICKY))
+			if (Typeof(destination) == TYPE_ROOM &&
+				DBFETCH(destination)->sp.room.dropto != NOTHING &&
+				!(FLAGS(destination) & STICKY))
 				destination = DBFETCH(destination)->sp.room.dropto;
 			if (tp_thing_movement && (Typeof(victim) == TYPE_THING)) {
 				enter_room(descr, victim, destination, DBFETCH(victim)->location);
@@ -241,7 +240,6 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild
 	return cnt;
 }
 
-
 void
 do_unbless(int descr, dbref player, const char *what, const char *propname)
 {
@@ -276,7 +274,6 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
 	snprintf(buf, sizeof(buf), "%d propert%s unblessed.", cnt, (cnt == 1) ? "y" : "ies");
 	notify(player, buf);
 }
-
 
 void
 do_bless(int descr, dbref player, const char *what, const char *propname)
@@ -402,8 +399,8 @@ do_force(int descr, dbref player, const char *what, char *command)
 		}
 	}
 
-	log_status("FORCED: %s(%d) by %s(%d): %s\n", NAME(victim),
-			   victim, NAME(player), player, command);
+	log_status("FORCED: %s(%d) by %s(%d): %s\n", NAME(victim), victim, NAME(player), player,
+			   command);
 	/* force victim to do command */
 	force_prog = NOTHING;
 	force_level++;
@@ -521,17 +518,15 @@ do_stats(dbref player, const char *name)
 			}
 		}
 
-		notify_fmt(player, "%7d room%s        %7d exit%s        %7d thing%s",
-				   rooms, (rooms == 1) ? " " : "s",
-				   exits, (exits == 1) ? " " : "s", things, (things == 1) ? " " : "s");
+		notify_fmt(player, "%7d room%s        %7d exit%s        %7d thing%s", rooms,
+				   (rooms == 1) ? " " : "s", exits, (exits == 1) ? " " : "s", things,
+				   (things == 1) ? " " : "s");
 
-		notify_fmt(player, "%7d program%s     %7d player%s      %7d garbage",
-				   programs, (programs == 1) ? " " : "s",
-				   players, (players == 1) ? " " : "s", garbage);
+		notify_fmt(player, "%7d program%s     %7d player%s      %7d garbage", programs,
+				   (programs == 1) ? " " : "s", players, (players == 1) ? " " : "s", garbage);
 
-		notify_fmt(player,
-				   "%7d total object%s                     %7d old & unused",
-				   total, (total == 1) ? " " : "s", oldobjs);
+		notify_fmt(player, "%7d total object%s                     %7d old & unused", total,
+				   (total == 1) ? " " : "s", oldobjs);
 
 #ifdef DELTADUMPS
 		{
@@ -541,14 +536,13 @@ do_stats(dbref player, const char *name)
 
 			time_tm = localtime(&lasttime);
 			(void) format_time(buf, 40, "%a %b %e %T %Z", time_tm);
-			notify_fmt(player, "%7d unsaved object%s     Last dump: %s",
-					   altered, (altered == 1) ? "" : "s", buf);
+			notify_fmt(player, "%7d unsaved object%s     Last dump: %s", altered,
+					   (altered == 1) ? "" : "s", buf);
 		}
 #endif
 
 	}
 }
-
 
 void
 do_boot(dbref player, const char *name)
@@ -576,8 +570,8 @@ do_boot(dbref player, const char *name)
 	else {
 		notify(victim, "You have been booted off the game.");
 		if (boot_off(victim)) {
-			log_status("BOOTED: %s(%d) by %s(%d)\n", NAME(victim),
-					   victim, NAME(player), player);
+			log_status("BOOTED: %s(%d) by %s(%d)\n", NAME(victim), victim, NAME(player),
+					   player);
 			if (player != victim) {
 				snprintf(buf, sizeof(buf), "You booted %s off!", NAME(victim));
 				notify(player, buf);
@@ -717,8 +711,8 @@ do_newpassword(dbref player, const char *name, const char *password)
 		notify(player, "Password changed.");
 		snprintf(buf, sizeof(buf), "Your password has been changed by %s.", NAME(player));
 		notify(victim, buf);
-		log_status("NEWPASS'ED: %s(%d) by %s(%d)\n", NAME(victim), victim,
-				   NAME(player), player);
+		log_status("NEWPASS'ED: %s(%d) by %s(%d)\n", NAME(victim), victim, NAME(player),
+				   player);
 	}
 }
 
@@ -742,7 +736,6 @@ do_pcreate(dbref player, const char *user, const char *password)
 	}
 }
 
-
 void
 do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2)
 {
@@ -761,7 +754,6 @@ do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2)
 	notify(player, "Done.");
 }
 
-
 long max_open_files(void);		/* from interface.c */
 
 void
@@ -779,15 +771,15 @@ do_usage(dbref player)
 	}
 #ifndef NO_USAGE_COMMAND
 	pid = getpid();
-#ifdef HAVE_GETRUSAGE
+#  ifdef HAVE_GETRUSAGE
 	psize = getpagesize();
 	getrusage(RUSAGE_SELF, &usage);
-#endif
+#  endif
 
 	notify_fmt(player, "Compiled on: %s", UNAME_VALUE);
 	notify_fmt(player, "Process ID: %d", pid);
 	notify_fmt(player, "Max descriptors/process: %ld", max_open_files());
-#ifdef HAVE_GETRUSAGE
+#  ifdef HAVE_GETRUSAGE
 	notify_fmt(player, "Performed %d input servicings.", usage.ru_inblock);
 	notify_fmt(player, "Performed %d output servicings.", usage.ru_oublock);
 	notify_fmt(player, "Sent %d messages over a socket.", usage.ru_msgsnd);
@@ -805,7 +797,7 @@ do_usage(dbref player)
 			   (long) (usage.ru_maxrss * (psize / 1024)));
 	notify_fmt(player, "Integral resident memory: %ldk",
 			   (long) (usage.ru_idrss * (psize / 1024)));
-#endif							/* HAVE_GETRUSAGE */
+#  endif						/* HAVE_GETRUSAGE */
 
 #else							/* NO_USAGE_COMMAND */
 
@@ -813,8 +805,6 @@ do_usage(dbref player)
 
 #endif							/* NO_USAGE_COMMAND */
 }
-
-
 
 void
 do_muf_topprofs(dbref player, char *arg1)
@@ -926,7 +916,6 @@ do_muf_topprofs(dbref player, char *arg1)
 	notify(player, buf);
 	notify(player, "*Done*");
 }
-
 
 void
 do_mpi_topprofs(dbref player, char *arg1)
@@ -1041,7 +1030,6 @@ do_mpi_topprofs(dbref player, char *arg1)
 	notify(player, buf);
 	notify(player, "*Done*");
 }
-
 
 void
 do_all_topprofs(dbref player, char *arg1)
@@ -1217,7 +1205,6 @@ do_all_topprofs(dbref player, char *arg1)
 	notify(player, "*Done*");
 }
 
-
 void
 do_memory(dbref who)
 {
@@ -1226,7 +1213,7 @@ do_memory(dbref who)
 		return;
 	}
 #ifndef NO_MEMORY_COMMAND
-# ifdef HAVE_MALLINFO
+#  ifdef HAVE_MALLINFO
 	{
 		struct mallinfo mi;
 
@@ -1236,28 +1223,28 @@ do_memory(dbref who)
 		notify_fmt(who, "Small block count:             %6d", mi.smblks);
 		notify_fmt(who, "Small block mem alloced:       %6dk", (mi.usmblks / 1024));
 		notify_fmt(who, "Small block memory free:       %6dk", (mi.fsmblks / 1024));
-#ifdef HAVE_MALLINFO_HBLKS
+#    ifdef HAVE_MALLINFO_HBLKS
 		notify_fmt(who, "Number of mmapped regions:     %6d", mi.hblks);
-#endif
+#    endif
 		notify_fmt(who, "Total memory mmapped:          %6dk", (mi.hblkhd / 1024));
 		notify_fmt(who, "Total memory malloced:         %6dk", (mi.uordblks / 1024));
 		notify_fmt(who, "Mem allocated overhead:        %6dk",
 				   ((mi.arena - mi.uordblks) / 1024));
 		notify_fmt(who, "Memory free:                   %6dk", (mi.fordblks / 1024));
-#ifdef HAVE_MALLINFO_KEEPCOST
+#    ifdef HAVE_MALLINFO_KEEPCOST
 		notify_fmt(who, "Top-most releasable chunk size:%6dk", (mi.keepcost / 1024));
-#endif
-#ifdef HAVE_MALLINFO_TREEOVERHEAD
+#    endif
+#    ifdef HAVE_MALLINFO_TREEOVERHEAD
 		notify_fmt(who, "Memory free overhead:    %6dk", (mi.treeoverhead / 1024));
-#endif
-#ifdef HAVE_MALLINFO_GRAIN
+#    endif
+#    ifdef HAVE_MALLINFO_GRAIN
 		notify_fmt(who, "Small block grain: %6d", mi.grain);
-#endif
-#ifdef HAVE_MALLINFO_ALLOCATED
+#    endif
+#    ifdef HAVE_MALLINFO_ALLOCATED
 		notify_fmt(who, "Mem chunks alloced:%6d", mi.allocated);
-#endif
+#    endif
 	}
-# endif							/* HAVE_MALLINFO */
+#  endif						/* HAVE_MALLINFO */
 #endif							/* NO_MEMORY_COMMAND */
 
 #ifdef MALLOC_PROFILING

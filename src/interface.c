@@ -12,55 +12,55 @@
 #include <sys/types.h>
 
 #ifndef WIN32
-#include <sys/file.h>
-#include <sys/ioctl.h>
-#include <sys/wait.h>
+#  include <sys/file.h>
+#  include <sys/ioctl.h>
+#  include <sys/wait.h>
 #endif
 
 #include <fcntl.h>
 #if defined (HAVE_ERRNO_H)
-# include <errno.h>
+#  include <errno.h>
 #else
-#if defined (HAVE_SYS_ERRNO_H)
-# include <sys/errno.h>
-#else
+#  if defined (HAVE_SYS_ERRNO_H)
+#    include <sys/errno.h>
+#  else
 extern int errno;
-#endif
+#  endif
 #endif
 #include <ctype.h>
 
 #ifndef WIN32
-# define NEED_SOCKLEN_T
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netdb.h>
-# include <arpa/inet.h>
+#  define NEED_SOCKLEN_T
+#  include <sys/socket.h>
+#  include <netinet/in.h>
+#  include <netdb.h>
+#  include <arpa/inet.h>
 #else
 typedef int socklen_t;
 #endif
 
 #ifdef AIX
-# include <sys/select.h>
+#  include <sys/select.h>
 #endif
 
 #ifdef USE_IPV6
-# ifdef HAVE_NETINET6_IN6_H
-#  include <netinet6/in6.h>
-# elif defined(HAVE_LINUX_IN6_H)
-#  include <linux/in6.h>
-# elif defined(HAVE_IN6_H)
-#  include <in6.h>
-# endif
+#  ifdef HAVE_NETINET6_IN6_H
+#    include <netinet6/in6.h>
+#  elif defined(HAVE_LINUX_IN6_H)
+#    include <linux/in6.h>
+#  elif defined(HAVE_IN6_H)
+#    include <in6.h>
+#  endif
 #endif
 
 #ifdef USE_SSL
-# if defined (HAVE_OPENSSL_SSL_H)
-#  include <openssl/ssl.h>
-# elif defined (HAVE_SSL_SSL_H)
-#  include <ssl/ssl.h>
-# elif defined (HAVE_SSL_H)
-#  include <ssl.h>
-# endif
+#  if defined (HAVE_OPENSSL_SSL_H)
+#    include <openssl/ssl.h>
+#  elif defined (HAVE_SSL_SSL_H)
+#    include <ssl/ssl.h>
+#  elif defined (HAVE_SSL_H)
+#    include <ssl.h>
+#  endif
 #endif
 
 #include "db.h"
@@ -145,8 +145,8 @@ SSL_CTX *ssl_ctx;
 static int ndescriptors = 0;
 extern void fork_and_dump(void);
 
-extern int rwhocli_setup(const char *server, const char *serverpw, const char *myname,
-						 const char *comment);
+extern int rwhocli_setup(const char *server, const char *serverpw,
+						 const char *myname, const char *comment);
 extern int rwhocli_shutdown(void);
 extern int rwhocli_pingalive(void);
 extern int rwhocli_userlogin(const char *uid, const char *name, time_t tim);
@@ -215,13 +215,12 @@ void kill_resolver(void);
 ssize_t socket_read(struct descriptor_data *d, void *buf, size_t count);
 ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count);
 #elif WIN32
-#define socket_write(d, buf, count) send(d->descriptor, buf, count,0)
-#define socket_read(d, buf, count) recv(d->descriptor, buf, count,0)
+#  define socket_write(d, buf, count) send(d->descriptor, buf, count,0)
+#  define socket_read(d, buf, count) recv(d->descriptor, buf, count,0)
 #else
-#define socket_write(d, buf, count) write(d->descriptor, buf, count)
-#define socket_read(d, buf, count) read(d->descriptor, buf, count)
+#  define socket_write(d, buf, count) write(d->descriptor, buf, count)
+#  define socket_read(d, buf, count) read(d->descriptor, buf, count)
 #endif
-
 
 void spawn_resolver(void);
 void resolve_hostnames(void);
@@ -244,12 +243,10 @@ pid_t global_resolver_pid = 0;
 pid_t global_dumper_pid = 0;
 short global_dumpdone = 0;
 
-
 time_t sel_prof_start_time;
 long sel_prof_idle_sec;
 long sel_prof_idle_usec;
 unsigned long sel_prof_idle_use;
-
 
 void
 show_program_usage(char *prog)
@@ -291,7 +288,6 @@ show_program_usage(char *prog)
 	fprintf(stderr, "        -help            display this message.\n");
 	exit(1);
 }
-
 
 extern int sanity_violated;
 
@@ -462,16 +458,16 @@ main(int argc, char **argv)
 			setbuf(stdout, NULL);
 
 			/* Disassociate from Process Group */
-# ifdef _POSIX_SOURCE
+#  ifdef _POSIX_SOURCE
 			setsid();
-# else
-#  ifdef SYSV
-			setpgrp();			/* The SysV way */
 #  else
+#    ifdef SYSV
+			setpgrp();			/* The SysV way */
+#    else
 			setpgid(0, getpid());	/* The POSIX way. */
-#  endif						/* SYSV */
+#    endif						/* SYSV */
 
-#  ifdef  TIOCNOTTY				/* we can force this, POSIX / BSD */
+#    ifdef  TIOCNOTTY			/* we can force this, POSIX / BSD */
 			{
 				int fd;
 
@@ -480,8 +476,8 @@ main(int argc, char **argv)
 					close(fd);
 				}
 			}
-#  endif						/* TIOCNOTTY */
-# endif							/* !_POSIX_SOURCE */
+#    endif						/* TIOCNOTTY */
+#  endif						/* !_POSIX_SOURCE */
 		}
 #endif							/* DETACH */
 
@@ -619,9 +615,9 @@ main(int argc, char **argv)
 			int argcnt = numsocks + 2;
 			int argnum = 1;
 
-#ifdef USE_SSL
+#  ifdef USE_SSL
 			argcnt += ssl_numsocks;
-#endif
+#  endif
 
 			argslist = (char **) calloc(argcnt, sizeof(char *));
 
@@ -631,13 +627,13 @@ main(int argc, char **argv)
 				strcpy(argslist[argnum++], numbuf);
 			}
 
-#ifdef USE_SSL
+#  ifdef USE_SSL
 			for (i = 0; i < ssl_numsocks; i++) {
 				snprintf(numbuf, sizeof(numbuf), "-sport %d", ssl_listener_port[i]);
 				argslist[argnum] = (char *) malloc(strlen(numbuf) + 1);
 				strcpy(argslist[argnum++], numbuf);
 			}
-#endif
+#  endif
 
 			if (!fork()) {
 				argslist[0] = "./restart";
@@ -680,7 +676,6 @@ queue_ansi(struct descriptor_data *d, const char *msg)
 	/* return queue_string(d, buf); */
 }
 
-
 int notify_nolisten_level = 0;
 
 int
@@ -717,11 +712,11 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 
 		if (tp_zombies) {
 			if ((Typeof(player) == TYPE_THING) && (FLAGS(player) & ZOMBIE) &&
-				!(FLAGS(OWNER(player)) & ZOMBIE) &&
-				(!(FLAGS(player) & DARK) || Wizard(OWNER(player)))) {
+				!(FLAGS(OWNER(player)) & ZOMBIE) && (!(FLAGS(player) & DARK) ||
+													 Wizard(OWNER(player)))) {
 				ref = getloc(player);
-				if (Wizard(OWNER(player)) || ref == NOTHING ||
-					Typeof(ref) != TYPE_ROOM || !(FLAGS(ref) & ZOMBIE)) {
+				if (Wizard(OWNER(player)) || ref == NOTHING || Typeof(ref) != TYPE_ROOM ||
+					!(FLAGS(ref) & ZOMBIE)) {
 					if (isprivate || getloc(player) != getloc(OWNER(player))) {
 						char pbuf[BUFFER_LEN];
 						const char *prefix;
@@ -783,12 +778,12 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 
 	if (tp_listeners) {
 		if (tp_listeners_obj || Typeof(player) == TYPE_ROOM) {
-			listenqueue(-1, from, getloc(from), player, player, NOTHING,
-						"_listen", ptr, tp_listen_mlev, 1, 0);
-			listenqueue(-1, from, getloc(from), player, player, NOTHING,
-						"~listen", ptr, tp_listen_mlev, 1, 1);
-			listenqueue(-1, from, getloc(from), player, player, NOTHING,
-						"~olisten", ptr, tp_listen_mlev, 0, 1);
+			listenqueue(-1, from, getloc(from), player, player, NOTHING, "_listen", ptr,
+						tp_listen_mlev, 1, 0);
+			listenqueue(-1, from, getloc(from), player, player, NOTHING, "~listen", ptr,
+						tp_listen_mlev, 1, 1);
+			listenqueue(-1, from, getloc(from), player, player, NOTHING, "~olisten", ptr,
+						tp_listen_mlev, 0, 1);
 		}
 	}
 
@@ -798,8 +793,8 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 		dbref ref;
 
 		ref = getloc(player);
-		if (Wizard(OWNER(player)) || ref == NOTHING ||
-			Typeof(ref) != TYPE_ROOM || !(FLAGS(ref) & VEHICLE)
+		if (Wizard(OWNER(player)) || ref == NOTHING || Typeof(ref) != TYPE_ROOM ||
+			!(FLAGS(ref) & VEHICLE)
 				) {
 			if (!isprivate && getloc(from) == getloc(player)) {
 				char buf[BUFFER_LEN];
@@ -808,8 +803,8 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 				char ch = *match_args;
 
 				*match_args = '\0';
-				prefix = do_parse_prop(-1, from, player, MESGPROP_OECHO,
-									   "(@Oecho)", pbuf, MPI_ISPRIVATE);
+				prefix = do_parse_prop(-1, from, player, MESGPROP_OECHO, "(@Oecho)", pbuf,
+									   MPI_ISPRIVATE);
 				*match_args = ch;
 
 				if (!prefix || !*prefix)
@@ -839,7 +834,6 @@ notify(dbref player, const char *msg)
 {
 	return notify_from_echo(player, player, msg, 1);
 }
-
 
 struct timeval
 timeval_sub(struct timeval now, struct timeval then)
@@ -911,11 +905,11 @@ update_quotas(struct timeval last, struct timeval current)
  * to get what is avalible to you.
  */
 #ifdef HAVE_RESOURCE_H
-# include <sys/resource.h>
+#  include <sys/resource.h>
 #endif
 
 #if defined(RLIMIT_NOFILE) || defined(RLIMIT_OFILE)
-# define USE_RLIMIT
+#  define USE_RLIMIT
 #endif
 
 long
@@ -927,10 +921,10 @@ max_open_files(void)
  */
 	return sysconf(_SC_OPEN_MAX);
 #else							/* !POSIX */
-# if defined(USE_RLIMIT) && (defined(RLIMIT_NOFILE) || defined(RLIMIT_OFILE))
-#  ifndef RLIMIT_NOFILE
-#   define RLIMIT_NOFILE RLIMIT_OFILE	/* We Be BSD! */
-#  endif						/* !RLIMIT_NOFILE */
+#  if defined(USE_RLIMIT) && (defined(RLIMIT_NOFILE) || defined(RLIMIT_OFILE))
+#    ifndef RLIMIT_NOFILE
+#      define RLIMIT_NOFILE RLIMIT_OFILE	/* We Be BSD! */
+#    endif						/* !RLIMIT_NOFILE */
 /*
  * get/setrlimit() code.
  */
@@ -947,15 +941,15 @@ max_open_files(void)
 
 	return (long) file_limit.rlim_cur;
 
-# elif WIN32					/* !RLIMIT && WIN32 */
+#  elif WIN32					/* !RLIMIT && WIN32 */
 	return FD_SETSIZE;
-# else							/* !RLIMIT && !WIN32 */
+#  else							/* !RLIMIT && !WIN32 */
 /*
  * Don't know what else to do, try getdtablesize().
  * email other bright ideas to me. :) (whitefire)
  */
 	return (long) getdtablesize();
-# endif							/* !RLIMIT */
+#  endif						/* !RLIMIT */
 #endif							/* !POSIX */
 }
 
@@ -1227,17 +1221,17 @@ shovechars()
 			for (i = 0; i < ssl_numsocks; i++) {
 				if (FD_ISSET(ssl_sock[i], &input_set)) {
 					if (!(newd = new_connection(ssl_listener_port[i], ssl_sock[i]))) {
-#ifndef WIN32
+#  ifndef WIN32
 						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
 							perror("new_connection");
 							/* return; */
 						}
-#else
+#  else
 						if (WSAGetLastError() != WSAEINTR && WSAGetLastError() != EMFILE) {
 							perror("new_connection");
 							/* return; */
 						}
-#endif
+#  endif
 					} else {
 						if (newd->descriptor >= maxd)
 							maxd = newd->descriptor + 1;
@@ -1290,7 +1284,6 @@ shovechars()
 	add_property((dbref) 0, "_sys/shutdowntime", NULL, (int) now);
 }
 
-
 void
 wall_and_flush(const char *msg)
 {
@@ -1312,7 +1305,6 @@ wall_and_flush(const char *msg)
 	}
 }
 
-
 void
 flush_user_output(dbref player)
 {
@@ -1329,7 +1321,6 @@ flush_user_output(dbref player)
 		}
 	}
 }
-
 
 void
 wall_wizards(const char *msg)
@@ -1350,7 +1341,6 @@ wall_wizards(const char *msg)
 		}
 	}
 }
-
 
 struct descriptor_data *
 new_connection(int port, int sock)
@@ -1375,18 +1365,17 @@ new_connection(int port, int sock)
 #endif
 #ifdef USE_IPV6
 		strcpy(hostname, addrout(port, &(addr.sin6_addr), addr.sin6_port));
-		log_status("ACCEPT: %s(%d) on descriptor %d\n", hostname,
-				   ntohs(addr.sin6_port), newsock);
+		log_status("ACCEPT: %s(%d) on descriptor %d\n", hostname, ntohs(addr.sin6_port),
+				   newsock);
 #else
 		strcpy(hostname, addrout(port, addr.sin_addr.s_addr, addr.sin_port));
-		log_status("ACCEPT: %s(%d) on descriptor %d\n", hostname,
-				   ntohs(addr.sin_port), newsock);
+		log_status("ACCEPT: %s(%d) on descriptor %d\n", hostname, ntohs(addr.sin_port),
+				   newsock);
 #endif
 		log_status("CONCOUNT: There are now %d open connections.\n", ++ndescriptors);
 		return initializesock(newsock, hostname);
 	}
 }
-
 
 #ifdef SPAWN_HOST_RESOLVER
 
@@ -1399,8 +1388,6 @@ kill_resolver(void)
 	write(resolver_sock[1], "QUIT\n", 5);
 	p = wait(&i);
 }
-
-
 
 static time_t resolver_spawn_time = 0;
 
@@ -1419,7 +1406,7 @@ spawn_resolver()
 		close(1);
 		dup(resolver_sock[0]);
 		dup(resolver_sock[0]);
-#ifdef BINDIR
+#  ifdef BINDIR
 		{
 			char resolverpath[BUFFER_LEN];
 
@@ -1428,14 +1415,14 @@ spawn_resolver()
 			snprintf(resolverpath, sizeof(resolverpath), "%s/resolver", BINDIR);
 			execl(resolverpath, "resolver", NULL);
 		}
-#endif
+#  endif
 		execl("/usr/local/bin/fb-resolver", "resolver", NULL);
 		execl("/usr/local/bin/resolver", "resolver", NULL);
 		execl("/usr/bin/fb-resolver", "resolver", NULL);
 		execl("/usr/bin/resolver", "resolver", NULL);
 		execl("./fb-resolver", "resolver", NULL);
 		execl("./resolver", "resolver", NULL);
-#if 0
+#  if 0
 		execl("@bindir@/resolver", "resolver", NULL);
 		execl("./bin/resolver", "resolver", NULL);
 		execl("/usr/lib/fbmuck/resolver", "resolver", NULL);
@@ -1444,12 +1431,11 @@ spawn_resolver()
 		execl("../src/resolver", "resolver", NULL);
 		execl("./resolver", "resolver", NULL);
 		execl("resolver", "resolver", NULL);
-#endif
+#  endif
 		log_status("%s", "Unable to spawn host resolver!");
 		_exit(1);
 	}
 }
-
 
 void
 resolve_hostnames()
@@ -1476,11 +1462,11 @@ resolve_hostnames()
 			dc++;
 		}
 		if (*ptr2) {
-#ifdef USE_IPV6
+#  ifdef USE_IPV6
 			ptr3 = index(ptr2, '|');
-#else
+#  else
 			ptr3 = index(ptr2, ':');
-#endif
+#  endif
 			if (!ptr3)
 				return;
 			hostip = ptr2;
@@ -1517,7 +1503,6 @@ resolve_hostnames()
 }
 
 #endif
-
 
 /*  addrout -- Translate address 'a' from int to text.		*/
 
@@ -1560,24 +1545,24 @@ addrout(int lport, long a, unsigned short prt)
 		} else {
 			time_t gethost_start = time(NULL);
 
-#ifdef USE_IPV6
+#  ifdef USE_IPV6
 			struct hostent *he = gethostbyaddr(((char *) &addr),
 											   sizeof(addr), AF_INET6);
-#else
+#  else
 			struct hostent *he = gethostbyaddr(((char *) &addr),
 											   sizeof(addr), AF_INET);
-#endif
+#  endif
 			time_t gethost_stop = time(NULL);
 			time_t lag = gethost_stop - gethost_start;
 
 			if (lag > 10) {
 				secs_lost = lag;
 
-#if MIN_SECS_TO_LOG
+#  if MIN_SECS_TO_LOG
 				if (lag >= CFG_MIN_SECS_TO_LOG) {
 					log_status("GETHOSTBYNAME-RAN: secs %3d\n", lag);
 				}
-#endif
+#  endif
 
 			}
 			if (he) {
@@ -1590,31 +1575,30 @@ addrout(int lport, long a, unsigned short prt)
 
 #ifdef USE_IPV6
 	inet_ntop(AF_INET6, a, ip6addr, 128);
-#ifdef SPAWN_HOST_RESOLVER
+#  ifdef SPAWN_HOST_RESOLVER
 	snprintf(buf, sizeof(buf), "%s(%u)%u\n", ip6addr, prt, lport);
 	if (tp_hostnames) {
 		write(resolver_sock[1], buf, strlen(buf));
 	}
-#endif
+#  endif
 	snprintf(buf, sizeof(buf), "%s(%u)\n", ip6addr, prt);
 
 #else
 	a = ntohl(a);
 
-#ifdef SPAWN_HOST_RESOLVER
-	snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)%u\n",
-			 (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt, lport);
+#  ifdef SPAWN_HOST_RESOLVER
+	snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)%u\n", (a >> 24) & 0xff, (a >> 16) & 0xff,
+			 (a >> 8) & 0xff, a & 0xff, prt, lport);
 	if (tp_hostnames) {
 		write(resolver_sock[1], buf, strlen(buf));
 	}
-#endif
+#  endif
 
-	snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)",
-			 (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt);
+	snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)", (a >> 24) & 0xff, (a >> 16) & 0xff,
+			 (a >> 8) & 0xff, a & 0xff, prt);
 #endif
 	return buf;
 }
-
 
 void
 clearstrings(struct descriptor_data *d)
@@ -1633,12 +1617,12 @@ void
 shutdownsock(struct descriptor_data *d)
 {
 	if (d->connected) {
-		log_status("DISCONNECT: descriptor %d player %s(%d) from %s(%s)\n",
-				   d->descriptor, NAME(d->player), d->player, d->hostname, d->username);
+		log_status("DISCONNECT: descriptor %d player %s(%d) from %s(%s)\n", d->descriptor,
+				   NAME(d->player), d->player, d->hostname, d->username);
 		announce_disconnect(d);
 	} else {
-		log_status("DISCONNECT: descriptor %d from %s(%s) never connected.\n",
-				   d->descriptor, d->hostname, d->username);
+		log_status("DISCONNECT: descriptor %d from %s(%s) never connected.\n", d->descriptor,
+				   d->hostname, d->username);
 	}
 	clearstrings(d);
 	shutdown(d->descriptor, 2);
@@ -1917,15 +1901,15 @@ void
 make_nonblocking(int s)
 {
 #ifndef WIN32
-# if !defined(O_NONBLOCK) || defined(ULTRIX)	/* POSIX ME HARDER */
-#  ifdef FNDELAY				/* SUN OS */
-#   define O_NONBLOCK FNDELAY
-#  else
-#   ifdef O_NDELAY				/* SyseVil */
-#    define O_NONBLOCK O_NDELAY
-#   endif						/* O_NDELAY */
-#  endif						/* FNDELAY */
-# endif
+#  if !defined(O_NONBLOCK) || defined(ULTRIX)	/* POSIX ME HARDER */
+#    ifdef FNDELAY				/* SUN OS */
+#      define O_NONBLOCK FNDELAY
+#    else
+#      ifdef O_NDELAY			/* SyseVil */
+#        define O_NONBLOCK O_NDELAY
+#      endif					/* O_NDELAY */
+#    endif						/* FNDELAY */
+#  endif
 
 	if (fcntl(s, F_SETFL, O_NONBLOCK) == -1) {
 		perror("make_nonblocking: fcntl");
@@ -1999,17 +1983,17 @@ process_input(struct descriptor_data *d)
 
 	got = socket_read(d, buf, sizeof buf);
 #ifndef WIN32
-# ifdef USE_SSL
+#  ifdef USE_SSL
 	if ((got <= 0) && errno != EWOULDBLOCK)
-# else
+#  else
 	if (got <= 0)
-# endif
+#  endif
 #else
-# ifdef USE_SSL
+#  ifdef USE_SSL
 	if ((got <= 0 || got == SOCKET_ERROR) && WSAGetLastError() != EWOULDBLOCK)
-# else
+#  else
 	if (got <= 0 || got == SOCKET_ERROR)
-# endif
+#  endif
 #endif
 	{
 		/* perror("socket_read"); */
@@ -2280,12 +2264,12 @@ do_command(struct descriptor_data *d, char *command)
 				dump_users(d, command + sizeof(WHO_COMMAND) - 1);
 			}
 		} else {
-			if ((!(TrueWizard(OWNER(d->player)) &&
-				   (*command == OVERIDE_TOKEN))) &&
+			if ((!(TrueWizard(OWNER(d->player)) && (*command == OVERIDE_TOKEN))) &&
 				can_move(d->descriptor, d->player, buf, 2)) {
 				do_move(d->descriptor, d->player, buf, 2);
 			} else {
-				dump_users(d, command + sizeof(WHO_COMMAND) -
+				dump_users(d,
+						   command + sizeof(WHO_COMMAND) -
 						   ((*command == OVERIDE_TOKEN) ? 0 : 1));
 			}
 		}
@@ -2347,8 +2331,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 			queue_ansi(d, connect_fail);
 			log_status("FAILED CONNECT %s on descriptor %d\n", user, d->descriptor);
 		} else {
-			if ((wizonly_mode ||
-				 (tp_playermax && con_players_curr >= tp_playermax_limit)) &&
+			if ((wizonly_mode || (tp_playermax && con_players_curr >= tp_playermax_limit)) &&
 				!TrueWizard(player)) {
 				if (wizonly_mode) {
 					queue_ansi(d,
@@ -2359,8 +2342,8 @@ check_connect(struct descriptor_data *d, const char *msg)
 				queue_string(d, "\r\n");
 				d->booted = 1;
 			} else {
-				log_status("CONNECTED: %s(%d) on descriptor %d\n",
-						   NAME(player), player, d->descriptor);
+				log_status("CONNECTED: %s(%d) on descriptor %d\n", NAME(player), player,
+						   d->descriptor);
 				d->connected = 1;
 				d->connected_at = time(NULL);
 				d->player = player;
@@ -2399,8 +2382,8 @@ check_connect(struct descriptor_data *d, const char *msg)
 					queue_ansi(d, create_fail);
 					log_status("FAILED CREATE %s on descriptor %d\n", user, d->descriptor);
 				} else {
-					log_status("CREATED %s(%d) on descriptor %d\n",
-							   NAME(player), player, d->descriptor);
+					log_status("CREATED %s(%d) on descriptor %d\n", NAME(player), player,
+							   d->descriptor);
 					d->connected = 1;
 					d->connected_at = time(NULL);
 					d->player = player;
@@ -2450,7 +2433,6 @@ parse_connect(const char *msg, char *command, char *user, char *pass)
 	*p = '\0';
 }
 
-
 int
 boot_off(dbref player)
 {
@@ -2488,7 +2470,6 @@ boot_player_off(dbref player)
 		}
 	}
 }
-
 
 void
 close_sockets(const char *msg)
@@ -2530,7 +2511,6 @@ close_sockets(const char *msg)
 #endif
 }
 
-
 void
 do_armageddon(dbref player, const char *msg)
 {
@@ -2555,7 +2535,6 @@ do_armageddon(dbref player, const char *msg)
 	exit(1);
 }
 
-
 void
 emergency_shutdown(void)
 {
@@ -2567,7 +2546,6 @@ emergency_shutdown(void)
 
 }
 
-
 void
 dump_users(struct descriptor_data *e, char *user)
 {
@@ -2576,7 +2554,6 @@ dump_users(struct descriptor_data *e, char *user)
 	time_t now;
 	char buf[2048];
 	char pbuf[64];
-
 
 /* #ifdef GOD_PRIV */
 /* -- Wizard should always override tp_who_doing JES
@@ -2598,9 +2575,9 @@ dump_users(struct descriptor_data *e, char *user)
 
 	if (wizard)
 		/* S/he is connected and not quelled. Okay; log it. */
-		log_command("WIZ: %s(%d) in %s(%d):  %s\n", NAME(e->player),
-					(int) e->player, NAME(DBFETCH(e->player)->location),
-					(int) DBFETCH(e->player)->location, "WHO");
+		log_command("WIZ: %s(%d) in %s(%d):  %s\n", NAME(e->player), (int) e->player,
+					NAME(DBFETCH(e->player)->location), (int) DBFETCH(e->player)->location,
+					"WHO");
 
 	if (!*user)
 		user = NULL;
@@ -2619,9 +2596,7 @@ dump_users(struct descriptor_data *e, char *user)
 	d = descriptor_list;
 	players = 0;
 	while (d) {
-		if (d->connected &&
-			(!tp_who_hides_dark ||
-			 (wizard || !(FLAGS(d->player) & DARK))) &&
+		if (d->connected && (!tp_who_hides_dark || (wizard || !(FLAGS(d->player) & DARK))) &&
 			++players && (!user || string_prefix(NAME(d->player), user))
 				) {
 			if (wizard) {
@@ -2630,19 +2605,18 @@ dump_users(struct descriptor_data *e, char *user)
 						 NAME(d->player), (int) d->player);
 #ifdef GOD_PRIV
 				if (!God(e->player))
-#ifdef USE_SSL
+#  ifdef USE_SSL
 					snprintf(buf, sizeof(buf), "%-*s [%6d] %10s %4s%c%c %s\r\n",
-#else
+#  else
 					snprintf(buf, sizeof(buf), "%-*s [%6d] %10s%4s%c  %s\r\n",
-#endif
-							 PLAYER_NAME_LIMIT + 10, pbuf,
-							 (int) DBFETCH(d->player)->location,
+#  endif
+							 PLAYER_NAME_LIMIT + 10, pbuf, (int) DBFETCH(d->player)->location,
 							 time_format_1(now - d->connected_at),
 							 time_format_2(now - d->last_time),
 							 ((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
-#ifdef USE_SSL
+#  ifdef USE_SSL
 							 (d->ssl_session ? '@' : ' '),
-#endif
+#  endif
 							 d->hostname);
 				else
 #endif
@@ -2651,8 +2625,7 @@ dump_users(struct descriptor_data *e, char *user)
 #else
 					snprintf(buf, sizeof(buf), "%-*s [%6d] %10s %4s%c  %s(%s)\r\n",
 #endif
-							 PLAYER_NAME_LIMIT + 10, pbuf,
-							 (int) DBFETCH(d->player)->location,
+							 PLAYER_NAME_LIMIT + 10, pbuf, (int) DBFETCH(d->player)->location,
 							 time_format_1(now - d->connected_at),
 							 time_format_2(now - d->last_time),
 							 ((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
@@ -2668,8 +2641,7 @@ dump_users(struct descriptor_data *e, char *user)
 #else
 					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c  %.*s\r\n",
 #endif
-							 PLAYER_NAME_LIMIT + 1,
-							 NAME(d->player),
+							 PLAYER_NAME_LIMIT + 1, NAME(d->player),
 							 time_format_1(now - d->connected_at),
 							 time_format_2(now - d->last_time),
 							 ((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
@@ -2691,8 +2663,7 @@ dump_users(struct descriptor_data *e, char *user)
 #else
 					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c\r\n",
 #endif
-							 (int) (PLAYER_NAME_LIMIT + 1),
-							 NAME(d->player),
+							 (int) (PLAYER_NAME_LIMIT + 1), NAME(d->player),
 							 time_format_1(now - d->connected_at),
 							 time_format_2(now - d->last_time),
 							 ((FLAGS(d->player) & INTERACTIVE) ? '*' : ' ')
@@ -2745,7 +2716,6 @@ time_format_2(long dt)
 		snprintf(buf, sizeof(buf), "%ds", delta->tm_sec);
 	return buf;
 }
-
 
 void
 announce_puppets(dbref player, const char *msg, const char *prop)
@@ -2811,7 +2781,6 @@ announce_connect(int descr, dbref player)
 		}
 	}
 
-
 	/*
 	 * See if there's a connect action.  If so, and the player is the first to
 	 * connect, send the player through it.  If the connect action is set
@@ -2826,10 +2795,10 @@ announce_connect(int descr, dbref player)
 	}
 
 	/* queue up all _connect programs referred to by properties */
-	envpropqueue(descr, player, getloc(player), NOTHING, player, NOTHING,
-				 "_connect", "Connect", 1, 1);
-	envpropqueue(descr, player, getloc(player), NOTHING, player, NOTHING,
-				 "_oconnect", "Oconnect", 1, 0);
+	envpropqueue(descr, player, getloc(player), NOTHING, player, NOTHING, "_connect",
+				 "Connect", 1, 1);
+	envpropqueue(descr, player, getloc(player), NOTHING, player, NOTHING, "_oconnect",
+				 "Oconnect", 1, 0);
 
 	ts_useobject(player);
 	return;
@@ -2886,7 +2855,7 @@ announce_disconnect(struct descriptor_data *d)
 }
 
 #ifdef MUD_ID
-#include <pwd.h>
+#  include <pwd.h>
 void
 do_setuid(char *name)
 {
@@ -2904,9 +2873,8 @@ do_setuid(char *name)
 }
 #endif							/* MUD_ID */
 
-
 #ifdef MUD_GID
-#include <grp.h>
+#  include <grp.h>
 void
 do_setgid(char *name)
 {
@@ -2923,7 +2891,6 @@ do_setgid(char *name)
 	}
 }
 #endif							/* MUD_GID */
-
 
 /***** O(1) Connection Optimizations *****/
 struct descriptor_data *descr_count_table[FD_SETSIZE];
@@ -3023,7 +2990,6 @@ init_descriptor_lookup()
 	}
 }
 
-
 int
 index_descr(int index)
 {
@@ -3033,7 +2999,6 @@ index_descr(int index)
 		return -1;
 	return descr_lookup_table[index]->descriptor;
 }
-
 
 int *
 get_player_descrs(dbref player, int *count)
@@ -3160,7 +3125,6 @@ descrdata_by_descr(int i)
 {
 	return lookup_descriptor(i);
 }
-
 
 /*** JME ***/
 int
@@ -3346,7 +3310,6 @@ least_idle_player_descr(dbref who)
 	return 0;
 }
 
-
 int
 most_idle_player_descr(dbref who)
 {
@@ -3369,7 +3332,6 @@ most_idle_player_descr(dbref who)
 	}
 	return 0;
 }
-
 
 void
 pboot(int c)
@@ -3401,7 +3363,6 @@ pdescrboot(int c)
 	return 0;
 }
 
-
 void
 pnotify(int c, char *outstr)
 {
@@ -3414,7 +3375,6 @@ pnotify(int c, char *outstr)
 		queue_write(d, "\r\n", 2);
 	}
 }
-
 
 int
 pdescrnotify(int c, char *outstr)
@@ -3431,7 +3391,6 @@ pdescrnotify(int c, char *outstr)
 	return 0;
 }
 
-
 int
 pdescr(int c)
 {
@@ -3446,13 +3405,11 @@ pdescr(int c)
 	return -1;
 }
 
-
 int
 pdescrcount(void)
 {
 	return current_descr_count;
 }
-
 
 int
 pfirstdescr(void)
@@ -3467,7 +3424,6 @@ pfirstdescr(void)
 	return 0;
 }
 
-
 int
 plastdescr(void)
 {
@@ -3479,7 +3435,6 @@ plastdescr(void)
 	}
 	return 0;
 }
-
 
 int
 pnextdescr(int c)
@@ -3498,7 +3453,6 @@ pnextdescr(int c)
 	return (0);
 }
 
-
 int
 pdescrcon(int c)
 {
@@ -3511,7 +3465,6 @@ pdescrcon(int c)
 		return 0;
 	}
 }
-
 
 int
 pset_user(int c, dbref who)
@@ -3542,7 +3495,6 @@ pset_user(int c, dbref who)
 	return 0;
 }
 
-
 int
 dbref_first_descr(dbref c)
 {
@@ -3557,7 +3509,6 @@ dbref_first_descr(dbref c)
 	}
 }
 
-
 McpFrame *
 descr_mcpframe(int c)
 {
@@ -3569,7 +3520,6 @@ descr_mcpframe(int c)
 	}
 	return NULL;
 }
-
 
 int
 pdescrflush(int c)
@@ -3647,7 +3597,6 @@ partial_pmatch(const char *name)
 	return (last);
 }
 
-
 void
 update_rwho(void)
 {
@@ -3664,7 +3613,6 @@ update_rwho(void)
 		d = d->next;
 	}
 }
-
 
 void
 welcome_user(struct descriptor_data *d)
@@ -3737,17 +3685,17 @@ socket_read(struct descriptor_data *d, void *buf, size_t count)
 			i = SSL_get_error(d->ssl_session, i);
 			if ((i == SSL_ERROR_WANT_READ) || (i == SSL_ERROR_WANT_WRITE)) {
 				/* log_status("SSL read: Return wouldblock.\n", "version"); */
-#ifndef WIN32
+#  ifndef WIN32
 				errno = EWOULDBLOCK;
-#else
+#  else
 				WSASetLastError(WSAEWOULDBLOCK);
-#endif
+#  endif
 				return -1;
 			} else {
 				/* log_status("SSL read: Return EBADF.\n", "version"); */
-#ifndef WIN32
+#  ifndef WIN32
 				errno = EBADF;
-#endif
+#  endif
 				return -1;
 			}
 		}
@@ -3768,17 +3716,17 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
 			i = SSL_get_error(d->ssl_session, i);
 			if ((i == SSL_ERROR_WANT_READ) || (i == SSL_ERROR_WANT_WRITE)) {
 				/* log_status("SSL write: Return wouldblock.\n", "version"); */
-#ifndef WIN32
+#  ifndef WIN32
 				errno = EWOULDBLOCK;
-#else
+#  else
 				WSASetLastError(WSAEWOULDBLOCK);
-#endif
+#  endif
 				return -1;
 			} else {
 				/* log_status("SSL write: Return EBADF.\n", "version"); */
-#ifndef WIN32
+#  ifndef WIN32
 				errno = EBADF;
-#endif
+#  endif
 				return -1;
 			}
 		}

@@ -2,6 +2,11 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.3  2004/01/29 10:54:41  wolfwings
+ * Removing remaining '-Wall -Wall-pedantic -pedantic' errors from incorrect usage of %lg.
+ * Specifically, %lg IS valid for sscanf, but has zero functional difference from %g for all printf variants.
+ * Adjusting .indent.pro to also prevent spurious commits from 'dumb' applications of the tool.
+ *
  * Revision 1.2  2004/01/29 09:50:06  wolfwings
  * Applying .indent.pro across all .c files CVS-wide.
  * Steps will be taken to 'immunize' the CVS tree using the .indent.pro file if possible.
@@ -163,7 +168,6 @@ OkObj(dbref obj)
 	return 1;
 }
 
-
 int
 can_link_to(dbref who, object_flag_type what_type, dbref where)
 {
@@ -256,7 +260,6 @@ could_doit(int descr, dbref player, dbref thing)
 	return (eval_boolexp(descr, player, GETLOCK(thing), thing));
 }
 
-
 int
 test_lock(int descr, dbref player, dbref thing, const char *lockprop)
 {
@@ -265,7 +268,6 @@ test_lock(int descr, dbref player, dbref thing, const char *lockprop)
 	lokptr = get_property_lock(thing, lockprop);
 	return (eval_boolexp(descr, player, lokptr, thing));
 }
-
 
 int
 test_lock_false_default(int descr, dbref player, dbref thing, const char *lockprop)
@@ -276,7 +278,6 @@ test_lock_false_default(int descr, dbref player, dbref thing, const char *lockpr
 		return 0;
 	return (eval_boolexp(descr, player, lok, thing));
 }
-
 
 int
 can_doit(int descr, dbref player, dbref thing, const char *default_fail_msg)
@@ -483,11 +484,8 @@ word_start(const char *str, const char let)
 int
 ok_name(const char *name)
 {
-	return (name
-			&& *name
-			&& *name != LOOKUP_TOKEN
-			&& *name != REGISTERED_TOKEN
-			&& *name != NUMBER_TOKEN && !index(name, ARG_DELIMITER)
+	return (name && *name && *name != LOOKUP_TOKEN && *name != REGISTERED_TOKEN &&
+			*name != NUMBER_TOKEN && !index(name, ARG_DELIMITER)
 			&& !index(name, AND_TOKEN)
 			&& !index(name, OR_TOKEN)
 			&& !index(name, '\r')
@@ -507,7 +505,6 @@ ok_player_name(const char *name)
 
 	if (!ok_name(name) || strlen(name) > PLAYER_NAME_LIMIT)
 		return 0;
-
 
 	for (scan = name; *scan; scan++) {
 		if (!(isprint(*scan) && !isspace(*scan)) && *scan != '(' && *scan != ')') {

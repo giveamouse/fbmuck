@@ -8,7 +8,6 @@
 
 /* Can be used to generate malloc statistic listing looking like:
 
-
          File Line CurBlks CurBytes MaxBlks MaxBytes MxByTime TotBlks TotBytes
 ------------- ---- ------- -------- ------- -------- -------- ------- --------
          db.c  377:      0        0       2      197 06232835     366     7174
@@ -126,31 +125,32 @@
 /* each time we are called, on the theory   */
 /* that they are the most likely to have    */
 /* been trashed by buggy code:              */
-#ifndef CRT_NEW_TO_CHECK
-#define CRT_NEW_TO_CHECK (128)	/* Make it a nonzero power of two.  */
-#endif
+#  ifndef CRT_NEW_TO_CHECK
+#    define CRT_NEW_TO_CHECK (128)
+				/* Make it a nonzero power of two.  */
+#  endif
 
 /* When debugging is selected we also check */
 /* CRT_OLD_TO_CHECK blocks on the used-ram  */
 /* cycling through all allocated blocks in  */
 /* time:                                    */
-#ifndef CRT_OLD_TO_CHECK
-#define CRT_OLD_TO_CHECK (128)
-#endif
+#  ifndef CRT_OLD_TO_CHECK
+#    define CRT_OLD_TO_CHECK (128)
+#  endif
 
 /* When CRT_DEBUG_ALSO is true, we add the  */
 /* following value to the end of block, so  */
 /* we can later check to see if it got      */
 /* overwritten by something:                */
-#ifndef CRT_MAGIC
-#define CRT_MAGIC ((char)231)
-#endif
+#  ifndef CRT_MAGIC
+#    define CRT_MAGIC ((char)231)
+#  endif
 /* Something we write into the magic byte  */
 /* of a block just before free()ing it, so */
 /* as to maybe diagnose repeated free()s:  */
-#ifndef CRT_FREE_MAGIC
-#define CRT_FREE_MAGIC ((char)~CRT_MAGIC)
-#endif
+#  ifndef CRT_FREE_MAGIC
+#    define CRT_FREE_MAGIC ((char)~CRT_MAGIC)
+#  endif
 
 /* }}} */
 /* {{{ block_list, a list of all malloc/free/etc calls in host program.	*/
@@ -183,11 +183,11 @@ static Block block_list = NULL;
 struct CrT_header_rec {
 	Block b;
 	size_t size;
-#ifdef CRT_DEBUG_ALSO
+#  ifdef CRT_DEBUG_ALSO
 	struct CrT_header_rec *next;
 	struct CrT_header_rec *prev;
 	char *end;
-#endif
+#  endif
 };
 typedef struct CrT_header_rec A_Header;
 typedef struct CrT_header_rec *Header;
@@ -195,7 +195,7 @@ typedef struct CrT_header_rec *Header;
 /* }}} */
 /* {{{ Globals supporting debug functionality.				*/
 
-#ifdef CRT_DEBUG_ALSO
+#  ifdef CRT_DEBUG_ALSO
 static A_Block Root_Owner = {
 
 	__FILE__,					/* file */
@@ -227,8 +227,8 @@ static A_Header root = {
 static Header rover = &root;
 
 /* Macro to insert block m into 'root' linklist: */
-#undef  INSERT
-#define INSERT(m) {			\
+#    undef  INSERT
+#    define INSERT(m) {			\
     root. next->prev =  (m);		\
    (m)        ->next =  root.next;	\
    (m)        ->prev = &root;		\
@@ -236,8 +236,8 @@ static Header rover = &root;
     }
 
 /* Macro to remove block m from 'root' linklist: */
-#undef  REMOVE
-#define REMOVE(m) {			\
+#    undef  REMOVE
+#    define REMOVE(m) {			\
    (m)->next->prev = (m)->prev;		\
    (m)->prev->next = (m)->next;		\
     }
@@ -286,7 +286,7 @@ static Header just_touched[CRT_NEW_TO_CHECK] = {
 };
 static int next_touched = 0;	/* Always indexes above. */
 
-#endif
+#  endif
 
 /* }}} */
 /* {{{ Random internal macro stuff					*/
@@ -294,17 +294,17 @@ static int next_touched = 0;	/* Always indexes above. */
 /* Undefine the macros which make the rest */
 /* of the system call our wrappers instead */
 /* of calling malloc &Co directly:	   */
-#undef malloc
-#undef calloc
-#undef realloc
-#undef free
+#  undef malloc
+#  undef calloc
+#  undef realloc
+#  undef free
 
 /* Number of bytes of overhead we add to a block: */
-#ifdef CRT_DEBUG_ALSO
-#define CRT_OVERHEAD_BYTES (sizeof(A_Header) +1)
-#else
-#define CRT_OVERHEAD_BYTES (sizeof(A_Header)   )
-#endif
+#  ifdef CRT_DEBUG_ALSO
+#    define CRT_OVERHEAD_BYTES (sizeof(A_Header) +1)
+#  else
+#    define CRT_OVERHEAD_BYTES (sizeof(A_Header)   )
+#  endif
 
 /* }}} */
 
@@ -467,8 +467,8 @@ CrT_timestr(time_t when)
 	struct tm *da_time;
 
 	da_time = localtime(&when);
-	snprintf(buf, sizeof(buf), "%02d%02d%02d%02d",
-			 da_time->tm_mday, da_time->tm_hour, da_time->tm_min, da_time->tm_sec);
+	snprintf(buf, sizeof(buf), "%02d%02d%02d%02d", da_time->tm_mday, da_time->tm_hour,
+			 da_time->tm_min, da_time->tm_sec);
 	return buf;
 }
 
@@ -491,8 +491,8 @@ summarize(void (*fn) (char *)
 
 	block_list = blocks_sort(block_list);
 
-#undef  X
-#define X(t) (*fn)(t);
+#  undef  X
+#  define X(t) (*fn)(t);
 	X("         File Line CurBlks CurBytes MaxBlks MaxBytes MxByTime TotBlks TotBytes");
 	X("------------- ---- ------- -------- ------- -------- -------- ------- --------")
 
@@ -504,14 +504,8 @@ summarize(void (*fn) (char *)
 		sum_totblks += b->tot_allocs_done;
 		sum_totbyts += b->tot_bytes_alloc;
 
-		snprintf(buf, sizeof(buf),
-				 "%13s%5d:%7d %8d %7d %8d %8s %7d %8d",
-				 b->file,
-				 b->line,
-				 b->live_blocks,
-				 b->live_bytes,
-				 b->max_blocks,
-				 b->max_bytes,
+		snprintf(buf, sizeof(buf), "%13s%5d:%7d %8d %7d %8d %8s %7d %8d", b->file, b->line,
+				 b->live_blocks, b->live_bytes, b->max_blocks, b->max_bytes,
 				 CrT_timestr(b->max_bytes_time), b->tot_allocs_done, b->tot_bytes_alloc);
 		X(buf);
 	}
@@ -565,7 +559,7 @@ CrT_summarize_to_file(const char *file, const char *comment)
 
 /* }}} */
 
-#ifdef CRT_DEBUG_ALSO
+#  ifdef CRT_DEBUG_ALSO
 
 /* Debug support functions: */
 /* {{{ CrT_check -- abort if we can find any trashed malloc blocks.	*/
@@ -651,7 +645,7 @@ CrT_check_everything(const char *file, int line)
 }
 
 /* }}} */
-#endif							/* CRT_DEUG_ALSO */
+#  endif						/* CRT_DEUG_ALSO */
 
 /* The actual wrappers for malloc/calloc/realloc/free: */
 /* {{{ CrT_malloc							*/
@@ -671,9 +665,7 @@ CrT_malloc(size_t size, const char *file, int line)
 	m->b = b;
 	m->size = size;
 
-
-
-#ifdef CRT_DEBUG_ALSO
+#  ifdef CRT_DEBUG_ALSO
 	/* Look around for trashed ram blocks: */
 	CrT_check(file, line);
 
@@ -689,8 +681,7 @@ CrT_malloc(size_t size, const char *file, int line)
 	/* Remember we've touched 'm' recently: */
 	just_touched[++next_touched & (CRT_NEW_TO_CHECK - 1)] = m;
 
-#endif
-
+#  endif
 
 	b->tot_bytes_alloc += size;
 	b->tot_allocs_done++;
@@ -725,9 +716,7 @@ CrT_calloc(size_t num, size_t siz, const char *file, int line)
 	m->b = b;
 	m->size = size;
 
-
-
-#ifdef CRT_DEBUG_ALSO
+#  ifdef CRT_DEBUG_ALSO
 
 	/* Look around for trashed ram blocks: */
 	CrT_check(file, line);
@@ -744,9 +733,7 @@ CrT_calloc(size_t num, size_t siz, const char *file, int line)
 	/* Remember we've touched 'm' recently: */
 	just_touched[++next_touched & (CRT_NEW_TO_CHECK - 1)] = m;
 
-#endif
-
-
+#  endif
 
 	b->tot_bytes_alloc += size;
 	b->tot_allocs_done++;
@@ -772,7 +759,7 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
 	Header m = ((Header) p) - 1;
 	Block b = m->b;
 
-#ifdef CRT_DEBUG_ALSO
+#  ifdef CRT_DEBUG_ALSO
 	/* Look around for trashed ram blocks: */
 	check_block(m, __FILE__, __LINE__);
 	CrT_check(file, line);
@@ -792,7 +779,7 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
 			}
 		}
 	}
-#endif
+#  endif
 
 	m = (Header) realloc(m, size + CRT_OVERHEAD_BYTES);
 
@@ -806,7 +793,7 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
 
 	m->size = size;
 
-#ifdef CRT_DEBUG_ALSO
+#  ifdef CRT_DEBUG_ALSO
 
 	/* Remember where end of block is: */
 	m->end = &((char *) m)[size + (CRT_OVERHEAD_BYTES - 1)];
@@ -820,9 +807,7 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
 	/* Remember we've touched 'm' recently: */
 	just_touched[++next_touched & (CRT_NEW_TO_CHECK - 1)] = m;
 
-#endif
-
-
+#  endif
 
 	if (b->live_bytes > b->max_bytes) {
 		b->max_bytes = b->live_bytes;
@@ -841,7 +826,7 @@ CrT_free(void *p, const char *file, int line)
 	Header m = ((Header) p) - 1;
 	Block b = m->b;
 
-#ifdef CRT_DEBUG_ALSO
+#  ifdef CRT_DEBUG_ALSO
 	/* Look around for trashed ram blocks: */
 	if (*m->end == CRT_FREE_MAGIC)
 		crash("Duplicate free()", m, file, line);
@@ -868,7 +853,7 @@ CrT_free(void *p, const char *file, int line)
 	/* diagnosing repeat free()s of same   */
 	/* block:                              */
 	*m->end = CRT_FREE_MAGIC;
-#endif
+#  endif
 
 	b->live_bytes -= m->size;
 	b->live_blocks--;

@@ -36,14 +36,12 @@
 #define CTYPE_TRY   6			/* reserved for exception handling */
 #define CTYPE_CATCH 7			/* reserved for exception handling */
 
-
 /* These would be constants, but their value isn't known until runtime. */
 static int IN_FORITER;
 static int IN_FOREACH;
 static int IN_FORPOP;
 static int IN_FOR;
 static int IN_TRYPOP;
-
 
 static hash_tab primitive_list[COMP_HASH_SIZE];
 
@@ -86,7 +84,6 @@ struct INTERMEDIATE {
 	short flags;
 	struct INTERMEDIATE *next;	/* next instruction */
 };
-
 
 /* The state structure for a compile. */
 typedef struct COMPILE_STATE_T {
@@ -134,10 +131,9 @@ typedef struct COMPILE_STATE_T {
 	hash_tab defhash[DEFHASHSIZE];
 } COMPSTATE;
 
-
 int primitive(const char *s);	/* returns primitive_number if
-
-								 * primitive */
+								 * 
+								 * * primitive */
 void free_prog(dbref);
 const char *next_token(COMPSTATE *);
 const char *next_token_raw(COMPSTATE *);
@@ -219,9 +215,8 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
 		cstat->force_err_display) {
 		notify_nolisten(cstat->player, _buf, 1);
 	} else {
-		log_muf("%s(#%d) [%s(#%d)] %s(#%d) %s\n",
-				NAME(OWNER(cstat->program)), OWNER(cstat->program),
-				NAME(cstat->program), cstat->program,
+		log_muf("%s(#%d) [%s(#%d)] %s(#%d) %s\n", NAME(OWNER(cstat->program)),
+				OWNER(cstat->program), NAME(cstat->program), cstat->program,
 				NAME(cstat->player), cstat->player, _buf);
 	}
 	cstat->compile_err++;
@@ -270,7 +265,6 @@ compiler_warning(COMPSTATE * cstat, char *text, ...)
 
 /*****************************************************************/
 
-
 #define ADDRLIST_ALLOC_CHUNK_SIZE 256
 
 int
@@ -304,7 +298,6 @@ get_address(COMPSTATE * cstat, struct INTERMEDIATE *dest, int offset)
 	return cstat->addrcount++;
 }
 
-
 void
 fix_addresses(COMPSTATE * cstat)
 {
@@ -328,7 +321,8 @@ fix_addresses(COMPSTATE * cstat)
 		case PROG_TRY:
 		case PROG_JMP:
 		case PROG_EXEC:
-			ptr->in.data.number = cstat->addrlist[ptr->in.data.number]->no +
+			ptr->in.data.number =
+					cstat->addrlist[ptr->in.data.number]->no +
 					cstat->addroffsets[ptr->in.data.number];
 			break;
 		default:
@@ -336,7 +330,6 @@ fix_addresses(COMPSTATE * cstat)
 		}
 	}
 }
-
 
 void
 free_addresses(COMPSTATE * cstat)
@@ -350,9 +343,7 @@ free_addresses(COMPSTATE * cstat)
 	cstat->addrlist = NULL;
 }
 
-
 /*****************************************************************/
-
 
 void
 fixpubs(struct publics *mypubs, struct inst *offset)
@@ -362,7 +353,6 @@ fixpubs(struct publics *mypubs, struct inst *offset)
 		mypubs = mypubs->next;
 	}
 }
-
 
 int
 size_pubs(struct publics *mypubs)
@@ -375,8 +365,6 @@ size_pubs(struct publics *mypubs)
 	}
 	return bytes;
 }
-
-
 
 char *
 expand_def(COMPSTATE * cstat, const char *defname)
@@ -393,7 +381,6 @@ expand_def(COMPSTATE * cstat, const char *defname)
 	return (string_dup((char *) exp->pval));
 }
 
-
 void
 kill_def(COMPSTATE * cstat, const char *defname)
 {
@@ -405,7 +392,6 @@ kill_def(COMPSTATE * cstat, const char *defname)
 	}
 }
 
-
 void
 insert_def(COMPSTATE * cstat, const char *defname, const char *deff)
 {
@@ -416,7 +402,6 @@ insert_def(COMPSTATE * cstat, const char *defname, const char *deff)
 	(void) add_hash(defname, hd, cstat->defhash, DEFHASHSIZE);
 }
 
-
 void
 insert_intdef(COMPSTATE * cstat, const char *defname, int deff)
 {
@@ -426,13 +411,11 @@ insert_intdef(COMPSTATE * cstat, const char *defname, int deff)
 	insert_def(cstat, defname, buf);
 }
 
-
 void
 purge_defs(COMPSTATE * cstat)
 {
 	kill_hash(cstat->defhash, DEFHASHSIZE, 1);
 }
-
 
 void
 include_defs(COMPSTATE * cstat, dbref i)
@@ -453,7 +436,6 @@ include_defs(COMPSTATE * cstat, dbref i)
 		j = next_prop(pptr, j, temp);
 	}
 }
-
 
 void
 include_internal_defs(COMPSTATE * cstat)
@@ -562,7 +544,6 @@ include_internal_defs(COMPSTATE * cstat)
 	insert_intdef(cstat, "reg_extended", MUF_RE_EXTENDED);
 }
 
-
 void
 init_defs(COMPSTATE * cstat)
 {
@@ -583,7 +564,6 @@ init_defs(COMPSTATE * cstat)
 	include_defs(cstat, OWNER(cstat->program));
 }
 
-
 void
 uncompile_program(dbref i)
 {
@@ -599,7 +579,6 @@ uncompile_program(dbref i)
 	PROGRAM_SET_SIZ(i, 0);
 	PROGRAM_SET_START(i, NULL);
 }
-
 
 void
 do_uncompile(dbref player)
@@ -637,7 +616,6 @@ free_unused_programs()
 
 #define IMMFLAG_REFERENCED	1	/* Referenced by a jump */
 
-
 /* Checks code for valid fetch-and-clear optim changes, and does them. */
 void
 MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int BangNo)
@@ -661,11 +639,11 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int
 		switch (curr->in.type) {
 		case PROG_PRIMITIVE:
 			/* Don't trust any physical @ or !'s in the code, someone
-			   may be indirectly referencing the scoped variable */
+			 * may be indirectly referencing the scoped variable */
 			/* Don't trust any explicit jmp's in the code. */
 
-			if ((curr->in.data.number == AtNo) ||
-				(curr->in.data.number == BangNo) || (curr->in.data.number == IN_JMP)) {
+			if ((curr->in.data.number == AtNo) || (curr->in.data.number == BangNo) ||
+				(curr->in.data.number == IN_JMP)) {
 				return;
 			}
 
@@ -674,8 +652,8 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int
 				/*   EXITs escape the code path without leaving lvar scope. */
 				/*   EXECUTEs escape the code path without leaving lvar scope. */
 				/*   CALLs cause re-entrancy problems. */
-				if (curr->in.data.number == IN_RET ||
-					curr->in.data.number == IN_EXECUTE || curr->in.data.number == IN_CALL) {
+				if (curr->in.data.number == IN_RET || curr->in.data.number == IN_EXECUTE ||
+					curr->in.data.number == IN_CALL) {
 					return;
 				}
 			}
@@ -760,7 +738,6 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int
 	}
 }
 
-
 void
 RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
 {
@@ -781,7 +758,6 @@ RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
 	free_intermediate_node(tmp);
 	cstat->nowords--;
 }
-
 
 void
 RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
@@ -821,7 +797,6 @@ RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
 	RemoveNextIntermediate(cstat, curr);
 }
 
-
 int
 ContiguousIntermediates(int *Flags, struct INTERMEDIATE *ptr, int count)
 {
@@ -837,7 +812,6 @@ ContiguousIntermediates(int *Flags, struct INTERMEDIATE *ptr, int count)
 	return 1;
 }
 
-
 int
 IntermediateIsPrimitive(struct INTERMEDIATE *ptr, int primnum)
 {
@@ -849,7 +823,6 @@ IntermediateIsPrimitive(struct INTERMEDIATE *ptr, int primnum)
 	return 0;
 }
 
-
 int
 IntermediateIsInteger(struct INTERMEDIATE *ptr, int val)
 {
@@ -860,7 +833,6 @@ IntermediateIsInteger(struct INTERMEDIATE *ptr, int val)
 	}
 	return 0;
 }
-
 
 int
 IntermediateIsString(struct INTERMEDIATE *ptr, const char *val)
@@ -1242,7 +1214,6 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
  *
  */
 
-
 /* overall control code.  Does piece-meal tokenization parsing and
    backward checking.                                            */
 void
@@ -1392,8 +1363,8 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 
 	/* restart AUTOSTART program. */
 	if ((FLAGS(cstat.program) & ABODE) && TrueWizard(OWNER(cstat.program)))
-		add_muf_queue_event(-1, OWNER(cstat.program), NOTHING, NOTHING,
-							cstat.program, "Startup", "Queued Event.", 0);
+		add_muf_queue_event(-1, OWNER(cstat.program), NOTHING, NOTHING, cstat.program,
+							"Startup", "Queued Event.", 0);
 
 	if (force_err_display)
 		notify_nolisten(cstat.player, "Program compiled successfully.", 1);
@@ -1436,8 +1407,6 @@ next_word(COMPSTATE * cstat, const char *token)
 	}
 	return new_word;
 }
-
-
 
 /* Little routine to do the line_copy handling right */
 void
@@ -1499,7 +1468,6 @@ next_token_raw(COMPSTATE * cstat)
 	return alloc_string(buf);
 }
 
-
 const char *
 next_token(COMPSTATE * cstat)
 {
@@ -1544,7 +1512,6 @@ next_token(COMPSTATE * cstat)
 		return (temp);
 	}
 }
-
 
 /* Old-style comment parser */
 int
@@ -1713,7 +1680,6 @@ is_preprocessor_conditional(const char *tmpptr)
 	return 0;
 }
 
-
 /* handle compiler directives */
 void
 do_directive(COMPSTATE * cstat, char *direct)
@@ -1800,9 +1766,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 			v_abort_compile(cstat, "Unexpected end of file looking for $pubdef name.");
 
 		if (string_compare(tmpname, ":") &&
-			(index(tmpname, '/') ||
-			 index(tmpname, ':') ||
-			 Prop_SeeOnly(tmpname) || Prop_Hidden(tmpname) || Prop_System(tmpname))) {
+			(index(tmpname, '/') || index(tmpname, ':') || Prop_SeeOnly(tmpname) ||
+			 Prop_Hidden(tmpname) || Prop_System(tmpname))) {
 			free(tmpname);
 			v_abort_compile(cstat, "Invalid $pubdef name.  No /, :, @ nor ~ are allowed.");
 		} else {
@@ -1854,9 +1819,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 		if (!tmpname)
 			v_abort_compile(cstat, "Unexpected end of file looking for $libdef name.");
 
-		if (index(tmpname, '/') ||
-			index(tmpname, ':') ||
-			Prop_SeeOnly(tmpname) || Prop_Hidden(tmpname) || Prop_System(tmpname)) {
+		if (index(tmpname, '/') || index(tmpname, ':') || Prop_SeeOnly(tmpname) ||
+			Prop_Hidden(tmpname) || Prop_System(tmpname)) {
 			free(tmpname);
 			v_abort_compile(cstat, "Invalid $libdef name.  No /, :, @, nor ~ are allowed.");
 		} else {
@@ -2276,9 +2240,9 @@ do_directive(COMPSTATE * cstat, char *direct)
 			cstat->force_comment = 2;
 		} else if (!string_compare(tmpptr, "comment_loose")) {
 			/* Try to compile with recursive and non-recursive comments
-			   doing recursive first, then strict on a comment-based
-			   compile error.  Only throw an error if both fail.  This is
-			   the default mode. */
+			 * doing recursive first, then strict on a comment-based
+			 * compile error.  Only throw an error if both fail.  This is
+			 * the default mode. */
 			cstat->force_comment = 0;
 		} else {
 			/* If the pragma is not recognized, it is ignored, with a warning. */
@@ -2299,7 +2263,6 @@ do_directive(COMPSTATE * cstat, char *direct)
 		v_abort_compile(cstat, "Unrecognized compiler directive.");
 	}
 }
-
 
 /* return string */
 const char *
@@ -2337,8 +2300,6 @@ do_string(COMPSTATE * cstat)
 	buf[i] = '\0';
 	return alloc_string(buf);
 }
-
-
 
 /* process special.  Performs special processing.
    It sets up FOR and IF structures.  Remember --- for those,
@@ -3153,8 +3114,6 @@ object_word(COMPSTATE * cstat, const char *token)
 	return nu;
 }
 
-
-
 /* support routines for internal data structures. */
 
 /* add procedure to procedures list */
@@ -3370,7 +3329,6 @@ add_variable(COMPSTATE * cstat, const char *varname, int valtype)
 	return i;
 }
 
-
 /* adds local variable.  Return 0 if no space left */
 int
 add_scopedvar(COMPSTATE * cstat, const char *varname, int valtype)
@@ -3389,7 +3347,6 @@ add_scopedvar(COMPSTATE * cstat, const char *varname, int valtype)
 	return i;
 }
 
-
 /* adds local variable.  Return 0 if no space left */
 int
 add_localvar(COMPSTATE * cstat, const char *varname, int valtype)
@@ -3407,7 +3364,6 @@ add_localvar(COMPSTATE * cstat, const char *varname, int valtype)
 	cstat->localvartypes[i] = valtype;
 	return i;
 }
-
 
 /* predicates for procedure calls */
 int
@@ -3534,8 +3490,6 @@ get_primitive(const char *token)
 	}
 }
 
-
-
 /* clean up as nicely as we can. */
 
 void
@@ -3565,7 +3519,6 @@ clean_mcpbinds(struct mcp_binding *mypub)
 	}
 }
 
-
 void
 append_intermediate_chain(struct INTERMEDIATE *chain, struct INTERMEDIATE *add)
 {
@@ -3573,7 +3526,6 @@ append_intermediate_chain(struct INTERMEDIATE *chain, struct INTERMEDIATE *add)
 		chain = chain->next;
 	chain->next = add;
 }
-
 
 void
 free_intermediate_node(struct INTERMEDIATE *wd)
@@ -3653,8 +3605,6 @@ cleanup(COMPSTATE * cstat)
 	}
 }
 
-
-
 /* copy program to an array */
 void
 copy_program(COMPSTATE * cstat)
@@ -3693,8 +3643,8 @@ copy_program(COMPSTATE * cstat)
 			code[i].data.fnumber = curr->in.data.fnumber;
 			break;
 		case PROG_STRING:
-			code[i].data.string = curr->in.data.string ?
-					alloc_prog_string(curr->in.data.string->data) : 0;
+			code[i].data.string =
+					curr->in.data.string ? alloc_prog_string(curr->in.data.string->data) : 0;
 			break;
 		case PROG_FUNCTION:
 			code[i].data.mufproc =
@@ -3746,7 +3696,6 @@ set_start(COMPSTATE * cstat)
 	/* address instr no is resolved before this gets called. */
 	PROGRAM_SET_START(cstat->program, (PROGRAM_CODE(cstat->program) + cstat->procs->code->no));
 }
-
 
 /* allocate and initialize data linked structure. */
 struct INTERMEDIATE *

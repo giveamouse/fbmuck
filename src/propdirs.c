@@ -9,7 +9,6 @@
 #include "externs.h"
 #include "interface.h"
 
-
 /* propdirs.c -- handles propdirs property creation, deletion, and finding.  */
 /* WARNING: These routines all hack up the path string passed to them. */
 
@@ -31,7 +30,6 @@
        if root is NULL, return NULL
 
  */
-
 
 /*
  * returns pointer to the new property node.  Returns a pointer to an
@@ -64,7 +62,6 @@ propdir_new_elem(PropPtr * root, char *path)
 		return (p);
 	}
 }
-
 
 /* returns pointer to the updated propdir structure's root node */
 /* root is the pointer to the root propdir node */
@@ -107,7 +104,6 @@ propdir_delete_elem(PropPtr root, char *path)
 	}
 }
 
-
 /* returns pointer to given property */
 /* root is the pointer to the root propdir node */
 /* path is the name of the property to find */
@@ -144,7 +140,6 @@ propdir_get_elem(PropPtr root, char *path)
 	}
 }
 
-
 /* returns pointer to first property in the given propdir */
 /* root is the pointer to the root propdir node */
 /* path is the name of the propdir to find the first node of */
@@ -163,7 +158,6 @@ propdir_first_elem(PropPtr root, char *path)
 	}
 	return (NULL);				/* nope, doesn't exist */
 }
-
 
 /* returns pointer to next property after the given one in the propdir */
 /* root is the pointer to the root propdir node */
@@ -199,7 +193,6 @@ propdir_next_elem(PropPtr root, char *path)
 	}
 }
 
-
 /* return true if a property contains a propdir */
 int
 propdir_check(PropPtr root, char *path)
@@ -210,7 +203,6 @@ propdir_check(PropPtr root, char *path)
 		return (PropDir(p) != NULL);
 	return (0);
 }
-
 
 const char *
 propdir_name(const char *name)

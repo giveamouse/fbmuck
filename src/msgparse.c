@@ -17,7 +17,6 @@
  * Returns a pointer to output string.  Usually in outbuf.
  */
 
-
 #include "config.h"
 #include <math.h>
 #include <ctype.h>
@@ -65,7 +64,6 @@ safeblessprop(dbref obj, dbref perms, char *buf, int mesgtyp, int set_p)
 	return 1;
 }
 
-
 int
 safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp)
 {
@@ -102,10 +100,9 @@ safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp)
 	return 1;
 }
 
-
 const char *
-safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp,
-				   int *blessed)
+safegetprop_strict(dbref player, dbref what,
+				   dbref perms, const char *inbuf, int mesgtyp, int *blessed)
 {
 	const char *ptr;
 	char bbuf[BUFFER_LEN];
@@ -172,10 +169,9 @@ safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int
 	return ptr;
 }
 
-
 const char *
-safegetprop_limited(dbref player, dbref what, dbref whom, dbref perms, const char *inbuf,
-					int mesgtyp, int *blessed)
+safegetprop_limited(dbref player, dbref what,
+					dbref whom, dbref perms, const char *inbuf, int mesgtyp, int *blessed)
 {
 	const char *ptr;
 
@@ -193,10 +189,9 @@ safegetprop_limited(dbref player, dbref what, dbref whom, dbref perms, const cha
 	return "";
 }
 
-
 const char *
-safegetprop(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp,
-			int *blessed)
+safegetprop(dbref player, dbref what, dbref perms,
+			const char *inbuf, int mesgtyp, int *blessed)
 {
 	const char *ptr;
 
@@ -208,7 +203,6 @@ safegetprop(dbref player, dbref what, dbref perms, const char *inbuf, int mesgty
 	}
 	return "";
 }
-
 
 char *
 stripspaces(char *buf, char *in)
@@ -223,10 +217,9 @@ stripspaces(char *buf, char *in)
 	return buf;
 }
 
-
 char *
-string_substitute(const char *str, const char *oldstr, const char *newstr, char *buf,
-				  int maxlen)
+string_substitute(const char *str, const char *oldstr,
+				  const char *newstr, char *buf, int maxlen)
 {
 	const char *ptr = str;
 	char *ptr2 = buf;
@@ -253,10 +246,9 @@ string_substitute(const char *str, const char *oldstr, const char *newstr, char 
 	return buf;
 }
 
-
 const char *
-get_list_item(dbref player, dbref what, dbref perms, const char *listname, int itemnum,
-			  int mesgtyp, int *blessed)
+get_list_item(dbref player, dbref what, dbref perms,
+			  const char *listname, int itemnum, int mesgtyp, int *blessed)
 {
 	char buf[BUFFER_LEN];
 	const char *ptr;
@@ -274,7 +266,6 @@ get_list_item(dbref player, dbref what, dbref perms, const char *listname, int i
 	snprintf(buf, sizeof(buf), "%.512s%d", listname, itemnum);
 	return (safegetprop(player, what, perms, buf, mesgtyp, blessed));
 }
-
 
 int
 get_list_count(dbref player, dbref obj, dbref perms, const char *listname, int mesgtyp,
@@ -306,10 +297,9 @@ get_list_count(dbref player, dbref obj, dbref perms, const char *listname, int m
 	return MAX_MFUN_LIST_LEN;
 }
 
-
-
 char *
-get_concat_list(dbref player, dbref what, dbref perms, dbref obj, const char *listname,
+get_concat_list(dbref player, dbref what, dbref perms,
+				dbref obj, const char *listname,
 				char *buf, int maxchars, int mode, int mesgtyp, int *blessed)
 {
 	int line_limit = MAX_MFUN_LIST_LEN;
@@ -369,7 +359,6 @@ get_concat_list(dbref player, dbref what, dbref perms, dbref obj, const char *li
 	return (buf);
 }
 
-
 int
 mesg_read_perms(dbref player, dbref perms, dbref obj, int mesgtyp)
 {
@@ -381,7 +370,6 @@ mesg_read_perms(dbref player, dbref perms, dbref obj, int mesgtyp)
 		return 1;
 	return 0;
 }
-
 
 int
 isneighbor(dbref d1, dbref d2)
@@ -400,7 +388,6 @@ isneighbor(dbref d1, dbref d2)
 	return 0;
 }
 
-
 int
 mesg_local_perms(dbref player, dbref perms, dbref obj, int mesgtyp)
 {
@@ -414,7 +401,6 @@ mesg_local_perms(dbref player, dbref perms, dbref obj, int mesgtyp)
 		return 1;
 	return 0;
 }
-
 
 dbref
 mesg_dbref_raw(int descr, dbref player, dbref what, dbref perms, const char *buf)
@@ -456,7 +442,6 @@ mesg_dbref_raw(int descr, dbref player, dbref what, dbref perms, const char *buf
 	return obj;
 }
 
-
 dbref
 mesg_dbref(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp)
 {
@@ -469,7 +454,6 @@ mesg_dbref(int descr, dbref player, dbref what, dbref perms, char *buf, int mesg
 	}
 	return obj;
 }
-
 
 dbref
 mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp)
@@ -484,7 +468,6 @@ mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *buf, i
 	return obj;
 }
 
-
 dbref
 mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp)
 {
@@ -497,7 +480,6 @@ mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf, in
 	}
 	return obj;
 }
-
 
 char *
 ref2str(dbref obj, char *buf, size_t buflen)
@@ -515,7 +497,6 @@ ref2str(dbref obj, char *buf, size_t buflen)
 	return buf;
 }
 
-
 int
 truestr(char *buf)
 {
@@ -525,7 +506,6 @@ truestr(char *buf)
 		return 0;
 	return 1;
 }
-
 
 /******** MPI Variable handling ********/
 
@@ -575,9 +555,7 @@ free_top_mvar(void)
 	return 0;
 }
 
-
 /***** MPI function handling *****/
-
 
 struct mpifunc {
 	char name[MAX_MFUN_NAME_LEN + 1];
@@ -622,8 +600,6 @@ free_mfuncs(int downto)
 	return 0;
 }
 
-
-
 /*** End of MFUNs. ***/
 
 int
@@ -650,10 +626,9 @@ msg_is_macro(dbref player, dbref what, dbref perms, const char *name, int mesgty
 	return 1;
 }
 
-
 void
-msg_unparse_macro(dbref player, dbref what, dbref perms, char *name, int argc, argv_typ argv,
-				  char *rest, int maxchars, int mesgtyp)
+msg_unparse_macro(dbref player, dbref what, dbref perms, char *name, int argc,
+				  argv_typ argv, char *rest, int maxchars, int mesgtyp)
 {
 	const char *ptr;
 	char *ptr2;
@@ -716,9 +691,8 @@ msg_unparse_macro(dbref player, dbref what, dbref perms, char *name, int argc, a
 	rest[p] = '\0';
 }
 
-
 #ifndef MSGHASHSIZE
-#define MSGHASHSIZE 256
+#  define MSGHASHSIZE 256
 #endif
 
 static hash_tab msghash[MSGHASHSIZE];
@@ -733,7 +707,6 @@ find_mfn(const char *name)
 	return (0);
 }
 
-
 void
 insert_mfn(const char *name, int i)
 {
@@ -744,17 +717,14 @@ insert_mfn(const char *name, int i)
 	(void) add_hash(name, hd, msghash, MSGHASHSIZE);
 }
 
-
 void
 purge_mfns(void)
 {
 	kill_hash(msghash, MSGHASHSIZE, 0);
 }
 
-
 #define DEFINE_MFUN_LIST
 #include "mfunlist.h"
-
 
 /******** HOOK ********/
 void
@@ -766,8 +736,6 @@ mesg_init(void)
 		insert_mfn(mfun_list[i].name, i + 1);
 	mpi_prof_start_time = time(NULL);
 }
-
-
 
 /******** HOOK ********/
 int
@@ -824,7 +792,6 @@ mesg_args(char *wbuf, argv_typ argv, char ulv, char sep, char dlv, char quot, in
 	return argc;
 }
 
-
 char *
 cr2slash(char *buf, const char *in)
 {
@@ -852,15 +819,13 @@ cr2slash(char *buf, const char *in)
 	return buf;
 }
 
-
 static int mesg_rec_cnt = 0;
 static int mesg_instr_cnt = 0;
 
-
 /******** HOOK ********/
 char *
-mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, char *outbuf,
-		   int maxchars, int mesgtyp)
+mesg_parse(int descr, dbref player, dbref what,
+		   dbref perms, const char *inbuf, char *outbuf, int maxchars, int mesgtyp)
 {
 	char wbuf[BUFFER_LEN];
 	char buf[BUFFER_LEN];
@@ -920,9 +885,9 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 			} else {
 				ptr = wbuf + (++p);
 				s = 0;
-				while (wbuf[p] && wbuf[p] != MFUN_LEADCHAR &&
-					   !isspace(wbuf[p]) && wbuf[p] != MFUN_ARGSTART &&
-					   wbuf[p] != MFUN_ARGEND && s < MAX_MFUN_NAME_LEN) {
+				while (wbuf[p] && wbuf[p] != MFUN_LEADCHAR && !isspace(wbuf[p]) &&
+					   wbuf[p] != MFUN_ARGSTART && wbuf[p] != MFUN_ARGEND &&
+					   s < MAX_MFUN_NAME_LEN) {
 					p++;
 					s++;
 				}
@@ -965,16 +930,13 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 						} else {
 							argc = mfun_list[s].maxargs;
 							if (argc < 0) {
-								argc = mesg_args((wbuf + p + 1),
-												 &argv[(varflag ? 1 : 0)],
-												 MFUN_LEADCHAR, MFUN_ARGSEP,
-												 MFUN_ARGEND, MFUN_LITCHAR,
-												 (-argc) + (varflag ? 1 : 0));
+								argc = mesg_args((wbuf + p + 1), &argv[(varflag ? 1 : 0)],
+												 MFUN_LEADCHAR, MFUN_ARGSEP, MFUN_ARGEND,
+												 MFUN_LITCHAR, (-argc) + (varflag ? 1 : 0));
 							} else {
-								argc = mesg_args((wbuf + p + 1),
-												 &argv[(varflag ? 1 : 0)],
-												 MFUN_LEADCHAR, MFUN_ARGSEP,
-												 MFUN_ARGEND, MFUN_LITCHAR, (varflag ? 8 : 9));
+								argc = mesg_args((wbuf + p + 1), &argv[(varflag ? 1 : 0)],
+												 MFUN_LEADCHAR, MFUN_ARGSEP, MFUN_ARGEND,
+												 MFUN_LITCHAR, (varflag ? 8 : 9));
 							}
 							if (argc == -1) {
 								char *zptr = get_mvar("how");
@@ -1090,9 +1052,9 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 						if (argc < mfun_list[s].minargs) {
 							char *zptr = get_mvar("how");
 
-							snprintf(ebuf, sizeof(ebuf), "%s %c%s%c: Too few arguments",
-									 zptr, MFUN_LEADCHAR,
-									 (varflag ? cmdbuf : mfun_list[s].name), MFUN_ARGEND);
+							snprintf(ebuf, sizeof(ebuf), "%s %c%s%c: Too few arguments", zptr,
+									 MFUN_LEADCHAR, (varflag ? cmdbuf : mfun_list[s].name),
+									 MFUN_ARGEND);
 							notify_nolisten(player, ebuf, 1);
 							for (i = 0; i < argc; i++) {
 								free(argv[i]);
@@ -1103,9 +1065,9 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 						} else if (mfun_list[s].maxargs > 0 && argc > mfun_list[s].maxargs) {
 							char *zptr = get_mvar("how");
 
-							snprintf(ebuf, sizeof(ebuf), "%s %c%s%c: Too many arguments",
-									 zptr, MFUN_LEADCHAR,
-									 (varflag ? cmdbuf : mfun_list[s].name), MFUN_ARGEND);
+							snprintf(ebuf, sizeof(ebuf), "%s %c%s%c: Too many arguments", zptr,
+									 MFUN_LEADCHAR, (varflag ? cmdbuf : mfun_list[s].name),
+									 MFUN_ARGEND);
 							notify_nolisten(player, ebuf, 1);
 							for (i = 0; i < argc; i++) {
 								free(argv[i]);
@@ -1114,8 +1076,8 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 							outbuf[0] = '\0';
 							return NULL;
 						} else {
-							ptr = mfun_list[s].mfn(descr, player, what, perms, argc,
-												   argv, buf, mesgtyp);
+							ptr = mfun_list[s].mfn(descr, player, what, perms, argc, argv, buf,
+												   mesgtyp);
 							if (!ptr) {
 								outbuf[q] = '\0';
 								for (i = 0; i < argc; i++) {
@@ -1160,8 +1122,8 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 							p++;
 						} else {
 							p++;
-							argc = mesg_args(wbuf + p, argv, MFUN_LEADCHAR,
-											 MFUN_ARGSEP, MFUN_ARGEND, MFUN_LITCHAR, 9);
+							argc = mesg_args(wbuf + p, argv, MFUN_LEADCHAR, MFUN_ARGSEP,
+											 MFUN_ARGEND, MFUN_LITCHAR, 9);
 							if (argc == -1) {
 								char *zptr = get_mvar("how");
 
@@ -1176,16 +1138,16 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 								return NULL;
 							}
 						}
-						msg_unparse_macro(player, what, perms, cmdbuf, argc,
-										  argv, (wbuf + p), (BUFFER_LEN - p), mesgtyp);
+						msg_unparse_macro(player, what, perms, cmdbuf, argc, argv, (wbuf + p),
+										  (BUFFER_LEN - p), mesgtyp);
 						p--;
 						ptr = NULL;
 					} else {
 						/* unknown function */
 						char *zptr = get_mvar("how");
 
-						snprintf(ebuf, sizeof(ebuf), "%s %c%s%c: Unrecognized function.",
-								 zptr, MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
+						snprintf(ebuf, sizeof(ebuf), "%s %c%s%c: Unrecognized function.", zptr,
+								 MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
 						notify_nolisten(player, ebuf, 1);
 						for (i = 0; i < argc; i++) {
 							free(argv[i]);
@@ -1231,8 +1193,8 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 }
 
 char *
-do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms, const char *inbuf,
-				const char *abuf, char *outbuf, int mesgtyp)
+do_parse_mesg_2(int descr, dbref player, dbref what,
+				dbref perms, const char *inbuf, const char *abuf, char *outbuf, int mesgtyp)
 {
 
 	char howvar[BUFFER_LEN];
@@ -1289,14 +1251,12 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms, const char *in
 	strcpy(match_cmdname, tmpcmd);
 	strcpy(match_args, tmparg);
 
-
 	return outbuf;
 }
 
-
 char *
-do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf, const char *abuf,
-			  char *outbuf, int mesgtyp)
+do_parse_mesg(int descr, dbref player, dbref what,
+			  const char *inbuf, const char *abuf, char *outbuf, int mesgtyp)
 {
 	if (tp_do_mpi_parsing) {
 		char *tmp = NULL;
@@ -1329,8 +1289,8 @@ do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf, const char
 }
 
 char *
-do_parse_prop(int descr, dbref player, dbref what, const char *propname, const char *abuf,
-			  char *outbuf, int mesgtyp)
+do_parse_prop(int descr, dbref player, dbref what,
+			  const char *propname, const char *abuf, char *outbuf, int mesgtyp)
 {
 	const char *propval = get_property_class(what, propname);
 

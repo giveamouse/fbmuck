@@ -18,23 +18,21 @@
 #include <string.h>
 
 #ifdef USE_IPV6
-# ifdef HAVE_NETINET6_IN6_H
-#  include <netinet6/in6.h>
-# elif defined(HAVE_LINUX_IN6_H)
-#  include <linux/in6.h>
-# elif defined(HAVE_IN6_H)
-#  include <in6.h>
-# endif
+#  ifdef HAVE_NETINET6_IN6_H
+#    include <netinet6/in6.h>
+#  elif defined(HAVE_LINUX_IN6_H)
+#    include <linux/in6.h>
+#  elif defined(HAVE_IN6_H)
+#    include <in6.h>
+#  endif
 #endif
 
 /*
  * SunOS can't include signal.h and sys/signal.h, stupid broken OS.
  */
 #if defined(HAVE_SYS_SIGNAL_H) && !defined(SUN_OS)
-# include <sys/signal.h>
+#  include <sys/signal.h>
 #endif
-
-
 
 /* number of hostnames cached in an LRU queue */
 #define HOST_CACHE_SIZE 8192
@@ -45,7 +43,6 @@
 
 /* Time before the resolver gives up on a identd lookup.  Prevents hangs. */
 #define IDENTD_TIMEOUT 60
-
 
 int
 notify(int player, const char *msg)
@@ -66,7 +63,6 @@ const char *addrout(long, unsigned short, unsigned short);
 
 #define FREE(x) (free((void *) x))
 
-
 struct hostcache {
 #ifdef USE_IPV6
 	struct in6_addr ipnum;
@@ -78,7 +74,6 @@ struct hostcache {
 	struct hostcache *next;
 	struct hostcache **prev;
 } *hostcache_list = 0;
-
 
 #ifdef USE_IPV6
 int
@@ -207,7 +202,6 @@ hostadd(long ip, const char *name)
 	hostprune();
 }
 
-
 void
 #ifdef USE_IPV6
 hostadd_timestamp(struct in6_addr *ip, const char *name)
@@ -219,19 +213,12 @@ hostadd_timestamp(long ip, const char *name)
 	hostcache_list->time = time(NULL);
 }
 
-
-
-
-
-
-
-
 void set_signals(void);
 
 #ifdef _POSIX_VERSION
 void our_signal(int signo, void (*sighandler) (int));
 #else
-# define our_signal(s,f) signal((s),(f))
+#  define our_signal(s,f) signal((s),(f))
 #endif
 
 /*
@@ -253,9 +240,9 @@ our_signal(int signo, void (*sighandler) (int))
 	act.sa_flags = 0;
 
 	/* Restart long system calls if a signal is caught. */
-#ifdef SA_RESTART
+#  ifdef SA_RESTART
 	act.sa_flags |= SA_RESTART;
-#endif
+#  endif
 
 	/* Make it so */
 	sigaction(signo, &act, &oact);
@@ -285,22 +272,17 @@ set_signals(void)
 	our_signal(SIGHUP, SIG_IGN);
 }
 
-
-
-
-
-
 void
 make_nonblocking(int s)
 {
 #if !defined(O_NONBLOCK) || defined(ULTRIX)	/* POSIX ME HARDER */
-# ifdef FNDELAY					/* SUN OS */
-#  define O_NONBLOCK FNDELAY
-# else
-#  ifdef O_NDELAY				/* SyseVil */
-#   define O_NONBLOCK O_NDELAY
-#  endif						/* O_NDELAY */
-# endif							/* FNDELAY */
+#  ifdef FNDELAY				/* SUN OS */
+#    define O_NONBLOCK FNDELAY
+#  else
+#    ifdef O_NDELAY				/* SyseVil */
+#      define O_NONBLOCK O_NDELAY
+#    endif						/* O_NDELAY */
+#  endif						/* FNDELAY */
 #endif
 
 	if (fcntl(s, F_SETFL, O_NONBLOCK) == -1) {
@@ -308,7 +290,6 @@ make_nonblocking(int s)
 		abort();
 	}
 }
-
 
 const char *
 #ifdef USE_IPV6
@@ -423,7 +404,6 @@ get_username(long a, int prt, int myprt)
 	return (0);
 }
 
-
 /*  addrout -- Translate address 'a' from int to text.          */
 const char *
 #ifdef USE_IPV6
@@ -486,8 +466,8 @@ addrout(long a, unsigned short prt, unsigned short myprt)
 #else
 
 	a = ntohl(a);
-	snprintf(tmpbuf, sizeof(tmpbuf), "%ld.%ld.%ld.%ld",
-			 (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff);
+	snprintf(tmpbuf, sizeof(tmpbuf), "%ld.%ld.%ld.%ld", (a >> 24) & 0xff, (a >> 16) & 0xff,
+			 (a >> 8) & 0xff, a & 0xff);
 	hostadd_timestamp(a, tmpbuf);
 	ptr = get_username(htonl(a), prt, myprt);
 #endif
@@ -500,11 +480,9 @@ addrout(long a, unsigned short prt, unsigned short myprt)
 	return buf;
 }
 
-
 #define erreturn { \
                      return 0; \
 		 }
-
 
 int
 do_resolve(void)
@@ -572,9 +550,6 @@ do_resolve(void)
 	fflush(stdout);
 	return 1;
 }
-
-
-
 
 int
 main(int argc, char **argv)

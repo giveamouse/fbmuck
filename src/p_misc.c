@@ -44,7 +44,6 @@ prim_time(PRIM_PROTOTYPE)
 	}
 }
 
-
 void
 prim_date(PRIM_PROTOTYPE)
 {
@@ -83,7 +82,6 @@ prim_systime(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_systime_precise(PRIM_PROTOTYPE)
 {
@@ -96,7 +94,6 @@ prim_systime_precise(PRIM_PROTOTYPE)
 	dbltime = fulltime.tv_sec + (((double) fulltime.tv_usec) / 1.0e6);
 	PushFloat(dbltime);
 }
-
 
 void
 prim_timesplit(PRIM_PROTOTYPE)
@@ -128,7 +125,6 @@ prim_timesplit(PRIM_PROTOTYPE)
 	result = time_tm->tm_yday + 1;
 	PushInt(result);
 }
-
 
 void
 prim_timefmt(PRIM_PROTOTYPE)
@@ -201,8 +197,8 @@ prim_queue(PRIM_PROTOTYPE)
 	else
 		temproom = oper4->data.objref;
 
-	result = add_muf_delayq_event(oper3->data.number, fr->descr, player, temproom,
-								  NOTHING, oper2->data.objref, DoNullInd(oper1->data.string),
+	result = add_muf_delayq_event(oper3->data.number, fr->descr, player, temproom, NOTHING,
+								  oper2->data.objref, DoNullInd(oper1->data.string),
 								  "Queued Event.", 0);
 
 	CLEAR(oper1);
@@ -210,7 +206,6 @@ prim_queue(PRIM_PROTOTYPE)
 	CLEAR(oper3);
 	PushInt(result);
 }
-
 
 void
 prim_kill(PRIM_PROTOTYPE)
@@ -233,7 +228,6 @@ prim_kill(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
 
 void
 prim_force(PRIM_PROTOTYPE)
@@ -284,7 +278,6 @@ prim_force(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
-
 
 void
 prim_timestamps(PRIM_PROTOTYPE)
@@ -400,7 +393,6 @@ prim_fork(PRIM_PROTOTYPE)
 	tmpfr->totaltime.tv_sec = 0;
 	tmpfr->totaltime.tv_usec = 0;
 
-
 	tmpfr->pid = top_pid++;
 	tmpfr->multitask = BACKGROUND;
 	tmpfr->been_background = 1;
@@ -421,15 +413,14 @@ prim_fork(PRIM_PROTOTYPE)
 	result = 0;
 	push(tmpfr->argument.st, &(tmpfr->argument.top), PROG_INTEGER, MIPSCAST & result);
 
-	result = add_muf_delay_event(0, fr->descr, player, NOTHING, NOTHING, program,
-								 tmpfr, "BACKGROUND");
+	result = add_muf_delay_event(0, fr->descr, player, NOTHING, NOTHING, program, tmpfr,
+								 "BACKGROUND");
 
 	/* parent process gets the child's pid returned on the stack */
 	if (!result)
 		result = -1;
 	PushInt(result);
 }
-
 
 void
 prim_pid(PRIM_PROTOTYPE)
@@ -439,7 +430,6 @@ prim_pid(PRIM_PROTOTYPE)
 	result = fr->pid;
 	PushInt(result);
 }
-
 
 void
 prim_stats(PRIM_PROTOTYPE)
@@ -506,7 +496,6 @@ prim_abort(PRIM_PROTOTYPE)
 	abort_interp(buf);
 }
 
-
 void
 prim_ispidp(PRIM_PROTOTYPE)
 {
@@ -523,7 +512,6 @@ prim_ispidp(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
 
 void
 prim_parselock(PRIM_PROTOTYPE)
@@ -544,7 +532,6 @@ prim_parselock(PRIM_PROTOTYPE)
 	PushLock(lok);
 	free_boolexp(lok);
 }
-
 
 void
 prim_unparselock(PRIM_PROTOTYPE)
@@ -569,7 +556,6 @@ prim_unparselock(PRIM_PROTOTYPE)
 	}
 }
 
-
 void
 prim_prettylock(PRIM_PROTOTYPE)
 {
@@ -585,13 +571,11 @@ prim_prettylock(PRIM_PROTOTYPE)
 	PushString(ptr);
 }
 
-
 void
 prim_testlock(PRIM_PROTOTYPE)
 {
 	struct inst *oper1 = NULL;	/* prevents re-entrancy issues! */
 	struct inst *oper2 = NULL;	/* prevents re-entrancy issues! */
-
 
 	/* d d - i */
 	CHECKOP(2);
@@ -613,7 +597,6 @@ prim_testlock(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_sysparm(PRIM_PROTOTYPE)
 {
@@ -633,7 +616,6 @@ prim_sysparm(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushString(ptr);
 }
-
 
 void
 prim_cancallp(PRIM_PROTOTYPE)
@@ -706,8 +688,8 @@ prim_setsysparm(PRIM_PROTOTYPE)
 
 	switch (result) {
 	case 0:					/* TUNESET_SUCCESS */
-		log_status("TUNED (MUF): %s(%d) tuned %s to %s\n",
-				   NAME(player), player, oper2->data.string->data, oper1->data.string->data);
+		log_status("TUNED (MUF): %s(%d) tuned %s to %s\n", NAME(player), player,
+				   oper2->data.string->data, oper1->data.string->data);
 		break;
 	case 1:					/* TUNESET_UNKNOWN */
 		abort_interp("Unknown parameter. (1)");
@@ -722,8 +704,6 @@ prim_setsysparm(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
-
-
 
 void
 prim_sysparm_array(PRIM_PROTOTYPE)
@@ -740,8 +720,6 @@ prim_sysparm_array(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushArrayRaw(nu);
 }
-
-
 
 void
 prim_timer_start(PRIM_PROTOTYPE)
@@ -765,7 +743,6 @@ prim_timer_start(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 }
 
-
 void
 prim_timer_stop(PRIM_PROTOTYPE)
 {
@@ -779,7 +756,6 @@ prim_timer_stop(PRIM_PROTOTYPE)
 
 	CLEAR(oper1);
 }
-
 
 void
 prim_event_exists(PRIM_PROTOTYPE)
@@ -796,7 +772,6 @@ prim_event_exists(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_event_count(PRIM_PROTOTYPE)
 {
@@ -805,7 +780,6 @@ prim_event_count(PRIM_PROTOTYPE)
 	result = muf_event_count(fr);
 	PushInt(result);
 }
-
 
 void
 prim_event_send(PRIM_PROTOTYPE)
@@ -855,7 +829,6 @@ prim_event_send(PRIM_PROTOTYPE)
 	CLEAR(oper3);
 }
 
-
 void
 prim_pname_okp(PRIM_PROTOTYPE)
 {
@@ -870,7 +843,6 @@ prim_pname_okp(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
-
 void
 prim_name_okp(PRIM_PROTOTYPE)
 {
@@ -884,7 +856,6 @@ prim_name_okp(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
 
 void
 prim_force_level(PRIM_PROTOTYPE)
@@ -952,13 +923,11 @@ prim_watchpid(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 }
 
-
 void
 prim_read_wants_blanks(PRIM_PROTOTYPE)
 {
 	fr->wantsblanks = 1;
 }
-
 
 void
 prim_debugger_break(PRIM_PROTOTYPE)
@@ -969,12 +938,8 @@ prim_debugger_break(PRIM_PROTOTYPE)
 		abort_interp("Too many breakpoints set.");
 
 	fr->brkpt.force_debugging = 1;
-	if (fr->brkpt.count != 1 ||
-		fr->brkpt.temp[0] != 1 ||
-		fr->brkpt.level[0] != -1 ||
-		fr->brkpt.line[0] != -1 ||
-		fr->brkpt.linecount[0] != -2 ||
-		fr->brkpt.pc[0] != NULL ||
+	if (fr->brkpt.count != 1 || fr->brkpt.temp[0] != 1 || fr->brkpt.level[0] != -1 ||
+		fr->brkpt.line[0] != -1 || fr->brkpt.linecount[0] != -2 || fr->brkpt.pc[0] != NULL ||
 		fr->brkpt.pccount[0] != -2 || fr->brkpt.prog[0] != program) {
 		/* No initial breakpoint.  Lets make one. */
 		i = fr->brkpt.count++;

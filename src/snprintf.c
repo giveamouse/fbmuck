@@ -62,9 +62,9 @@
 #include "autoconf.h"
 
 #if !defined(HAVE_SNPRINTF) || !defined(HAVE_VSNPRINTF)
-#include <string.h>
-#include <ctype.h>
-#include <sys/types.h>
+#  include <string.h>
+#  include <ctype.h>
+#  include <sys/types.h>
 
 /* Define this as a fall through, HAVE_STDARG_H is probably already set */
 
@@ -72,32 +72,33 @@
 
 /* varargs declarations: */
 
-#if defined(HAVE_STDARG_H)
-# include <stdarg.h>
-# define HAVE_STDARGS			/* let's hope that works everywhere (mj) */
-# define VA_LOCAL_DECL   va_list ap
-# define VA_START(f)     va_start(ap, f)
-# define VA_SHIFT(v,t)  ;		/* no-op for ANSI */
-# define VA_END          va_end(ap)
-#else
-# if defined(HAVE_VARARGS_H)
-#  include <varargs.h>
-#  undef HAVE_STDARGS
-#  define VA_LOCAL_DECL   va_list ap
-#  define VA_START(f)     va_start(ap)	/* f is ignored! */
-#  define VA_SHIFT(v,t) v = va_arg(ap,t)
-#  define VA_END        va_end(ap)
-# else
+#  if defined(HAVE_STDARG_H)
+#    include <stdarg.h>
+#    define HAVE_STDARGS		/* let's hope that works everywhere (mj) */
+#    define VA_LOCAL_DECL   va_list ap
+#    define VA_START(f)     va_start(ap, f)
+#    define VA_SHIFT(v,t)  ;	/* no-op for ANSI */
+#    define VA_END          va_end(ap)
+#  else
+#    if defined(HAVE_VARARGS_H)
+#      include <varargs.h>
+#      undef HAVE_STDARGS
+#      define VA_LOCAL_DECL   va_list ap
+#      define VA_START(f)     va_start(ap)
+					/* f is ignored! */
+#      define VA_SHIFT(v,t) v = va_arg(ap,t)
+#      define VA_END        va_end(ap)
+#    else
 /*XX ** NO VARARGS ** XX*/
-#  error snprintf.c requires varargs
-# endif
-#endif
+#      error snprintf.c requires varargs
+#    endif
+#  endif
 
-#ifdef HAVE_LONG_DOUBLE
-#define LDOUBLE long double
-#else
-#define LDOUBLE double
-#endif
+#  ifdef HAVE_LONG_DOUBLE
+#    define LDOUBLE long double
+#  else
+#    define LDOUBLE double
+#  endif
 
 int snprintf(char *str, size_t count, const char *fmt, ...);
 int vsnprintf(char *str, size_t count, const char *fmt, va_list arg);
@@ -116,32 +117,32 @@ static int dopr_outch(char *buffer, size_t * currlen, size_t maxlen, char c);
  */
 
 /* format read states */
-#define DP_S_DEFAULT 0
-#define DP_S_FLAGS   1
-#define DP_S_MIN     2
-#define DP_S_DOT     3
-#define DP_S_MAX     4
-#define DP_S_MOD     5
-#define DP_S_CONV    6
-#define DP_S_DONE    7
+#  define DP_S_DEFAULT 0
+#  define DP_S_FLAGS   1
+#  define DP_S_MIN     2
+#  define DP_S_DOT     3
+#  define DP_S_MAX     4
+#  define DP_S_MOD     5
+#  define DP_S_CONV    6
+#  define DP_S_DONE    7
 
 /* format flags - Bits */
-#define DP_F_MINUS 	(1 << 0)
-#define DP_F_PLUS  	(1 << 1)
-#define DP_F_SPACE 	(1 << 2)
-#define DP_F_NUM   	(1 << 3)
-#define DP_F_ZERO  	(1 << 4)
-#define DP_F_UP    	(1 << 5)
-#define DP_F_UNSIGNED 	(1 << 6)
+#  define DP_F_MINUS 	(1 << 0)
+#  define DP_F_PLUS  	(1 << 1)
+#  define DP_F_SPACE 	(1 << 2)
+#  define DP_F_NUM   	(1 << 3)
+#  define DP_F_ZERO  	(1 << 4)
+#  define DP_F_UP    	(1 << 5)
+#  define DP_F_UNSIGNED 	(1 << 6)
 
 /* Conversion Flags */
-#define DP_C_SHORT   1
-#define DP_C_LONG    2
-#define DP_C_LDOUBLE 3
+#  define DP_C_SHORT   1
+#  define DP_C_LONG    2
+#  define DP_C_LDOUBLE 3
 
-#define char_to_int(p) (p - '0')
-#define MAX(p,q) ((p >= q) ? p : q)
-#define MIN(p,q) ((p <= q) ? p : q)
+#  define char_to_int(p) (p - '0')
+#  define MAX(p,q) ((p >= q) ? p : q)
+#  define MIN(p,q) ((p <= q) ? p : q)
 
 static int
 dopr(char *buffer, size_t maxlen, const char *format, va_list args)
@@ -261,11 +262,11 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 			case 'd':
 			case 'i':
 				if (cflags == DP_C_SHORT)
-#ifdef IGNORE_ARGUMENT_PROMOTION
+#  ifdef IGNORE_ARGUMENT_PROMOTION
 					value = va_arg(args, short int);
-#else
+#  else
 					value = va_arg(args, int);
-#endif
+#  endif
 				else if (cflags == DP_C_LONG)
 					value = va_arg(args, long int);
 
@@ -277,11 +278,11 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 			case 'o':
 				flags |= DP_F_UNSIGNED;
 				if (cflags == DP_C_SHORT)
-#ifdef IGNORE_ARGUMENT_PROMOTION
+#  ifdef IGNORE_ARGUMENT_PROMOTION
 					value = va_arg(args, unsigned short int);
-#else
+#  else
 					value = va_arg(args, unsigned int);
-#endif
+#  endif
 				else if (cflags == DP_C_LONG)
 					value = va_arg(args, unsigned long int);
 
@@ -293,11 +294,11 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 			case 'u':
 				flags |= DP_F_UNSIGNED;
 				if (cflags == DP_C_SHORT)
-#ifdef IGNORE_ARGUMENT_PROMOTION
+#  ifdef IGNORE_ARGUMENT_PROMOTION
 					value = va_arg(args, unsigned short int);
-#else
+#  else
 					value = va_arg(args, unsigned int);
-#endif
+#  endif
 				else if (cflags == DP_C_LONG)
 					value = va_arg(args, unsigned long int);
 
@@ -311,11 +312,11 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 			case 'x':
 				flags |= DP_F_UNSIGNED;
 				if (cflags == DP_C_SHORT)
-#ifdef IGNORE_ARGUMENT_PROMOTION
+#  ifdef IGNORE_ARGUMENT_PROMOTION
 					value = va_arg(args, unsigned short int);
-#else
+#  else
 					value = va_arg(args, unsigned int);
-#endif
+#  endif
 				else if (cflags == DP_C_LONG)
 					value = va_arg(args, unsigned long int);
 
@@ -363,8 +364,8 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 			case 'p':
 				strvalue = va_arg(args, void *);
 
-				total += fmtint(buffer, &currlen, maxlen, (long) strvalue, 16, min,
-								max, flags);
+				total += fmtint(buffer, &currlen, maxlen, (long) strvalue, 16, min, max,
+								flags);
 				break;
 			case 'n':
 				if (cflags == DP_C_SHORT) {
@@ -454,8 +455,8 @@ fmtstr(char *buffer, size_t * currlen, size_t maxlen, char *value, int flags, in
 /* Have to handle DP_F_NUM (ie 0x and 0 alternates) */
 
 static int
-fmtint(char *buffer, size_t * currlen, size_t maxlen,
-	   long value, int base, int min, int max, int flags)
+fmtint(char *buffer, size_t * currlen, size_t maxlen, long value, int base, int min,
+	   int max, int flags)
 {
 	int signvalue = 0;
 	unsigned long uvalue;
@@ -506,10 +507,11 @@ fmtint(char *buffer, size_t * currlen, size_t maxlen,
 	if (flags & DP_F_MINUS)
 		spadlen = -spadlen;		/* Left Justifty */
 
-#ifdef DEBUG_SNPRINTF
-	dprint(1, (debugfile, "zpad: %d, spad: %d, min: %d, max: %d, place: %d\n",
-			   zpadlen, spadlen, min, max, place));
-#endif
+#  ifdef DEBUG_SNPRINTF
+	dprint(1,
+		   (debugfile, "zpad: %d, spad: %d, min: %d, max: %d, place: %d\n", zpadlen, spadlen,
+			min, max, place));
+#  endif
 
 	/* Spaces */
 	while (spadlen > 0) {
@@ -580,8 +582,8 @@ round(LDOUBLE value)
 }
 
 static int
-fmtfp(char *buffer, size_t * currlen, size_t maxlen,
-	  LDOUBLE fvalue, int min, int max, int flags)
+fmtfp(char *buffer, size_t * currlen, size_t maxlen, LDOUBLE fvalue, int min,
+	  int max, int flags)
 {
 	int signvalue = 0;
 	LDOUBLE ufvalue;
@@ -612,10 +614,10 @@ fmtfp(char *buffer, size_t * currlen, size_t maxlen,
 	else if (flags & DP_F_SPACE)
 		signvalue = ' ';
 
-#if 0
+#  if 0
 	if (flags & DP_F_UP)
 		caps = 1;				/* Should characters be upper case? */
-#endif
+#  endif
 
 	intpart = ufvalue;
 
@@ -635,9 +637,9 @@ fmtfp(char *buffer, size_t * currlen, size_t maxlen,
 		intpart++;
 		fracpart -= pow10(max);
 	}
-#ifdef DEBUG_SNPRINTF
+#  ifdef DEBUG_SNPRINTF
 	dprint(1, (debugfile, "fmtfp: %f =? %d.%d\n", fvalue, intpart, fracpart));
-#endif
+#  endif
 
 	/* Convert integer part */
 	do {
@@ -720,7 +722,7 @@ dopr_outch(char *buffer, size_t * currlen, size_t maxlen, char c)
 	return 1;
 }
 
-#ifndef HAVE_VSNPRINTF
+#  ifndef HAVE_VSNPRINTF
 int
 vsnprintf(char *str, size_t count, const char *fmt, va_list args)
 {
@@ -728,24 +730,24 @@ vsnprintf(char *str, size_t count, const char *fmt, va_list args)
 		str[0] = 0;
 	return dopr(str, count, fmt, args);
 }
-#endif							/* !HAVE_VSNPRINTF */
+#  endif						/* !HAVE_VSNPRINTF */
 
-#ifndef HAVE_SNPRINTF
+#  ifndef HAVE_SNPRINTF
 /* VARARGS3 */
-#ifdef HAVE_STDARGS
+#    ifdef HAVE_STDARGS
 int
 snprintf(char *str, size_t count, const char *fmt, ...)
-#else
+#    else
 int
 snprintf(va_alist)
 va_dcl
-#endif
+#    endif
 {
-#ifndef HAVE_STDARGS
+#    ifndef HAVE_STDARGS
 	char *str;
 	size_t count;
 	char *fmt;
-#endif
+#    endif
 	VA_LOCAL_DECL;
 	int total;
 
@@ -759,12 +761,12 @@ va_dcl
 	VA_END;
 	return total;
 }
-#endif							/* !HAVE_SNPRINTF */
+#  endif						/* !HAVE_SNPRINTF */
 
-#ifdef TEST_SNPRINTF
-#ifndef LONG_STRING
-#define LONG_STRING 1024
-#endif
+#  ifdef TEST_SNPRINTF
+#    ifndef LONG_STRING
+#      define LONG_STRING 1024
+#    endif
 int
 main(void)
 {
@@ -833,7 +835,7 @@ main(void)
 		}
 	printf("%d tests failed out of %d.\n", fail, num);
 }
-#endif							/* SNPRINTF_TEST */
+#  endif						/* SNPRINTF_TEST */
 
 #endif							/* !HAVE_SNPRINTF */
 

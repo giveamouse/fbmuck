@@ -1,6 +1,5 @@
 /* $Header$ */
 
-
 #include "config.h"
 
 /* commands for giving help */
@@ -20,35 +19,34 @@
  * Ok, directory stuff IS a bit ugly.
  */
 #if defined(HAVE_DIRENT_H) || defined(_POSIX_VERSION)
-# include <dirent.h>
-# define NLENGTH(dirent) (strlen((dirent)->d_name))
+#  include <dirent.h>
+#  define NLENGTH(dirent) (strlen((dirent)->d_name))
 #else							/* not (HAVE_DIRENT_H or _POSIX_VERSION) */
-# define dirent direct
-# define NLENGTH(dirent) ((dirent)->d_namlen)
-# ifdef HAVE_SYS_NDIR_H
-#  include <sys/ndir.h>
-# endif							/* HAVE_SYS_NDIR_H */
-# ifdef HAVE_SYS_DIR_H
-#  include <sys/dir.h>
-# endif							/* HAVE_SYS_DIR_H */
-# ifdef HAVE_NDIR_H
-#  include <ndir.h>
-# endif							/* HAVE_NDIR_H */
+#  define dirent direct
+#  define NLENGTH(dirent) ((dirent)->d_namlen)
+#  ifdef HAVE_SYS_NDIR_H
+#    include <sys/ndir.h>
+#  endif						/* HAVE_SYS_NDIR_H */
+#  ifdef HAVE_SYS_DIR_H
+#    include <sys/dir.h>
+#  endif						/* HAVE_SYS_DIR_H */
+#  ifdef HAVE_NDIR_H
+#    include <ndir.h>
+#  endif						/* HAVE_NDIR_H */
 #endif							/* not (HAVE_DIRENT_H or _POSIX_VERSION) */
 
 #if defined(HAVE_DIRENT_H) || defined(_POSIX_VERSION) || defined(HAVE_SYS_NDIR_H) || defined(HAVE_SYS_DIR_H) || defined(HAVE_NDIR_H)
-# define DIR_AVALIBLE
+#  define DIR_AVALIBLE
 #endif
 
 #if defined(STANDALONE_HELP)
-# define dbref int
+#  define dbref int
 
 int
 notify(dbref player, const char *msg)
 {
 	return printf("%s\n", msg);
 }
-
 
 int
 string_prefix(register const char *string, register const char *prefix)
@@ -57,7 +55,6 @@ string_prefix(register const char *string, register const char *prefix)
 		string++, prefix++;
 	return *prefix == '\0';
 }
-
 
 int
 string_compare(register const char *s1, register const char *s2)
@@ -155,7 +152,6 @@ spit_file(dbref player, const char *filename)
 	spit_file_segment(player, filename, "");
 }
 
-
 void
 index_file(dbref player, const char *onwhat, const char *file)
 {
@@ -231,7 +227,6 @@ index_file(dbref player, const char *onwhat, const char *file)
 		fclose(f);
 	}
 }
-
 
 #if !defined(STANDALONE_HELP)
 void
@@ -360,7 +355,6 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 }
 #endif
 
-
 int
 show_subfile(dbref player, const char *dir, const char *topic, const char *seg, int partial)
 {
@@ -388,7 +382,6 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 	}
 	if (strlen(topic) > 63)
 		return 0;
-
 
 #ifdef DIR_AVALIBLE
 	/* TO DO: (1) exact match, or (2) partial match, but unique */
@@ -445,7 +438,6 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 	}
 }
 
-
 #if !defined(STANDALONE_HELP)
 void
 do_man(dbref player, char *topic, char *seg)
@@ -455,7 +447,6 @@ do_man(dbref player, char *topic, char *seg)
 	index_file(player, topic, MAN_FILE);
 }
 
-
 void
 do_mpihelp(dbref player, char *topic, char *seg)
 {
@@ -463,7 +454,6 @@ do_mpihelp(dbref player, char *topic, char *seg)
 		return;
 	index_file(player, topic, MPI_FILE);
 }
-
 
 void
 do_help(dbref player, char *topic, char *seg)
@@ -473,7 +463,6 @@ do_help(dbref player, char *topic, char *seg)
 	index_file(player, topic, HELP_FILE);
 }
 
-
 void
 do_news(dbref player, char *topic, char *seg)
 {
@@ -481,7 +470,6 @@ do_news(dbref player, char *topic, char *seg)
 		return;
 	index_file(player, topic, NEWS_FILE);
 }
-
 
 void
 add_motd_text_fmt(const char *text)
@@ -503,7 +491,6 @@ add_motd_text_fmt(const char *text)
 		count = 0;
 	}
 }
-
 
 void
 do_motd(dbref player, char *text)
@@ -529,7 +516,6 @@ do_motd(dbref player, char *text)
 	notify(player, "MOTD updated.");
 }
 
-
 void
 do_info(dbref player, const char *topic, const char *seg)
 {
@@ -538,24 +524,24 @@ do_info(dbref player, const char *topic, const char *seg)
 	int cols;
 	int buflen = 80;
 
-#ifdef DIR_AVALIBLE
+#  ifdef DIR_AVALIBLE
 	DIR *df;
 	struct dirent *dp;
-#endif
-#ifdef WIN32
+#  endif
+#  ifdef WIN32
 	HANDLE hFind;
 	BOOL bMore;
 	WIN32_FIND_DATA finddata;
 	char *dirname;
 	int dirnamelen = 0;
-#endif
+#  endif
 
 	if (*topic) {
 		if (!show_subfile(player, INFO_DIR, topic, seg, TRUE)) {
 			notify(player, NO_INFO_MSG);
 		}
 	} else {
-#ifdef DIR_AVALIBLE
+#  ifdef DIR_AVALIBLE
 		buf = (char *) calloc(1, buflen);
 		(void) strcpy(buf, "    ");
 		f = 0;
@@ -586,7 +572,7 @@ do_info(dbref player, const char *topic, const char *seg)
 		else
 			notify(player, "No information files are available.");
 		free(buf);
-#elif WIN32
+#  elif WIN32
 		buf = (char *) calloc(1, buflen);
 		(void) strcpy(buf, "    ");
 		f = 0;
@@ -626,9 +612,9 @@ do_info(dbref player, const char *topic, const char *seg)
 			notify(player, "There are no information files available.");
 
 		free(buf);
-#else							/* !DIR_AVALIBLE && !WIN32 */
+#  else							/* !DIR_AVALIBLE && !WIN32 */
 		notify(player, "Index not available on this system.");
-#endif							/* !DIR_AVALIBLE && !WIN32 */
+#  endif						/* !DIR_AVALIBLE && !WIN32 */
 	}
 }
 #else							/* STANDALONE_HELP */
@@ -664,11 +650,11 @@ main(int argc, char **argv)
 
 		helpfile = rindex(helpfile, '/');
 		helpfile++;
-#ifdef HELPFILE_DIR
+#  ifdef HELPFILE_DIR
 		snprintf(buf, sizeof(buf), "%s/%s", HELPFILE_DIR, helpfile);
-#else
+#  else
 		snprintf(buf, sizeof(buf), "%s/%s", "/usr/local/fbmuck/help", helpfile);
-#endif
+#  endif
 
 		index_file(1, topic, buf);
 		exit(0);

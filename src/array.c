@@ -19,7 +19,6 @@
 #include "fbstrings.h"
 #include "interp.h"
 
-
 /*
   AVL binary tree code by Lynx (or his instructor)
 
@@ -28,10 +27,10 @@
 */
 
 #ifndef AVL_RT
-#define AVL_RT(x)  (x->right)
+#  define AVL_RT(x)  (x->right)
 #endif
 #ifndef AVL_LF
-#define AVL_LF(x)  (x->left)
+#  define AVL_LF(x)  (x->left)
 #endif
 #define AVL_KEY(x) (&(x->key))
 #define AVL_COMPARE(x,y) array_tree_compare(x,y,0)
@@ -88,7 +87,6 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
 	}
 	return 0;
 }
-
 
 /*
 ** Compares two array_iter's (struct insts)
@@ -212,16 +210,17 @@ array_tree_height_diff(array_tree * node)
 |*| Kim
 \*/
 #ifndef WIN32
-#define max(a, b)       (a > b ? a : b)
+#  define max(a, b)       (a > b ? a : b)
 #endif
 
 static void
 array_tree_fixup_height(array_tree * node)
 {
 	if (node)
-		node->height = (short) (1 +
-								max(array_tree_height_of(AVL_LF(node)),
-									array_tree_height_of(AVL_RT(node))));
+		node->height =
+				(short) (1 +
+						 max(array_tree_height_of(AVL_LF(node)),
+							 array_tree_height_of(AVL_RT(node))));
 }
 
 static array_tree *
@@ -423,7 +422,6 @@ array_tree_remove_node(array_iter * key, array_tree ** root)
 	return save;
 }
 
-
 static array_tree *
 array_tree_delete(array_iter * key, array_tree * avl)
 {
@@ -434,7 +432,6 @@ array_tree_delete(array_iter * key, array_tree * avl)
 		array_tree_free_node(save);
 	return avl;
 }
-
 
 void
 array_tree_delete_all(array_tree * p)
@@ -448,7 +445,6 @@ array_tree_delete_all(array_tree * p)
 	array_tree_free_node(p);
 }
 
-
 array_tree *
 array_tree_first_node(array_tree * list)
 {
@@ -461,7 +457,6 @@ array_tree_first_node(array_tree * list)
 	return (list);
 }
 
-
 array_tree *
 array_tree_last_node(array_tree * list)
 {
@@ -473,7 +468,6 @@ array_tree_last_node(array_tree * list)
 
 	return (list);
 }
-
 
 array_tree *
 array_tree_prev_node(array_tree * ptr, array_iter * key)
@@ -503,8 +497,6 @@ array_tree_prev_node(array_tree * ptr, array_iter * key)
 	}
 }
 
-
-
 array_tree *
 array_tree_next_node(array_tree * ptr, array_iter * key)
 {
@@ -533,8 +525,6 @@ array_tree_next_node(array_tree * ptr, array_iter * key)
 	}
 }
 
-
-
 /*****************************************************************
  *  Stack Array Handling Routines
  *****************************************************************/
@@ -553,7 +543,6 @@ new_array(void)
 
 	return nu;
 }
-
 
 stk_array *
 new_array_packed(int size)
@@ -579,7 +568,6 @@ new_array_packed(int size)
 	return nu;
 }
 
-
 stk_array *
 new_array_dictionary(void)
 {
@@ -590,7 +578,6 @@ new_array_dictionary(void)
 	return nu;
 }
 
-
 void
 array_set_pinned(stk_array * arr, int pinned)
 {
@@ -598,7 +585,6 @@ array_set_pinned(stk_array * arr, int pinned)
 		arr->pinned = pinned;
 	}
 }
-
 
 stk_array *
 array_decouple(stk_array * arr)
@@ -645,7 +631,6 @@ array_decouple(stk_array * arr)
 	return NULL;
 }
 
-
 stk_array *
 array_promote(stk_array * arr)
 {
@@ -671,7 +656,6 @@ array_promote(stk_array * arr)
 
 	return nu;
 }
-
 
 void
 array_free(stk_array * arr)
@@ -706,7 +690,6 @@ array_free(stk_array * arr)
 	free(arr);
 }
 
-
 int
 array_count(stk_array * arr)
 {
@@ -716,20 +699,17 @@ array_count(stk_array * arr)
 	return arr->items;
 }
 
-
 int
 array_idxcmp(array_iter * a, array_iter * b)
 {
 	return array_tree_compare(a, b, 0);
 }
 
-
 int
 array_idxcmp_case(array_iter * a, array_iter * b, int case_sens)
 {
 	return array_tree_compare(a, b, case_sens);
 }
-
 
 int
 array_contains_key(stk_array * arr, array_iter * item)
@@ -760,7 +740,6 @@ array_contains_key(stk_array * arr, array_iter * item)
 	}
 	return 0;
 }
-
 
 int
 array_contains_value(stk_array * arr, array_data * item)
@@ -801,7 +780,6 @@ array_contains_value(stk_array * arr, array_data * item)
 	return 0;
 }
 
-
 int
 array_first(stk_array * arr, array_iter * item)
 {
@@ -831,7 +809,6 @@ array_first(stk_array * arr, array_iter * item)
 	return 0;
 }
 
-
 int
 array_last(stk_array * arr, array_iter * item)
 {
@@ -860,7 +837,6 @@ array_last(stk_array * arr, array_iter * item)
 	}
 	return 0;
 }
-
 
 int
 array_prev(stk_array * arr, array_iter * item)
@@ -912,7 +888,6 @@ array_prev(stk_array * arr, array_iter * item)
 	return 0;
 }
 
-
 int
 array_next(stk_array * arr, array_iter * item)
 {
@@ -963,7 +938,6 @@ array_next(stk_array * arr, array_iter * item)
 	return 0;
 }
 
-
 array_data *
 array_getitem(stk_array * arr, array_iter * idx)
 {
@@ -996,7 +970,6 @@ array_getitem(stk_array * arr, array_iter * idx)
 	}
 	return NULL;
 }
-
 
 int
 array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
@@ -1060,8 +1033,6 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 	return -1;
 }
 
-
-
 int
 array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 {
@@ -1120,8 +1091,6 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 	return -1;
 }
 
-
-
 int
 array_appenditem(stk_array ** harr, array_data * item)
 {
@@ -1136,8 +1105,6 @@ array_appenditem(stk_array ** harr, array_data * item)
 
 	return array_setitem(harr, &key, item);
 }
-
-
 
 stk_array *
 array_getrange(stk_array * arr, array_iter * start, array_iter * end)
@@ -1231,7 +1198,6 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 	return NULL;
 }
 
-
 int
 array_setrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 {
@@ -1289,7 +1255,6 @@ array_setrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 	}
 	return -1;
 }
-
 
 int
 array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
@@ -1366,7 +1331,6 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 	}
 	return -1;
 }
-
 
 int
 array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
@@ -1473,7 +1437,6 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 	return -1;
 }
 
-
 int
 array_delitem(stk_array ** harr, array_iter * item)
 {
@@ -1486,7 +1449,6 @@ array_delitem(stk_array ** harr, array_iter * item)
 	return result;
 }
 
-
 /*\
 |*| Must not code b-trees, must not code b-trees...
 \*/
@@ -1494,7 +1456,6 @@ array_delitem(stk_array ** harr, array_iter * item)
 /*\
 |*| I use 4-space tabs, darn it.
 \*/
-
 
 /*\
 |*| array_demote_only
@@ -1576,8 +1537,6 @@ array_mash(stk_array * arr_in, stk_array ** mash, int value)
 	}
 }
 
-
-
 int
 array_is_homogenous(stk_array * arr, int typ)
 {
@@ -1595,8 +1554,6 @@ array_is_homogenous(stk_array * arr, int typ)
 	}
 	return (!failedflag);
 }
-
-
 
 /**** STRKEY ****/
 
@@ -1696,8 +1653,6 @@ array_set_strkey_arrval(stk_array ** harr, const char *key, stk_array * val)
 	return result;
 }
 
-
-
 /**** INTKEY ****/
 
 int
@@ -1796,7 +1751,6 @@ array_set_intkey_arrval(stk_array ** harr, int key, stk_array * val)
 	return result;
 }
 
-
 char *
 array_get_intkey_strval(stk_array * arr, int key)
 {
@@ -1818,9 +1772,6 @@ array_get_intkey_strval(stk_array * arr, int key)
 		return value->data.string->data;
 	}
 }
-
-
-
 
 /**** KEY-VAL ****/
 

@@ -1,6 +1,5 @@
 /* $Header$ */
 
-
 #include "copyright.h"
 #include "config.h"
 #include "db.h"
@@ -387,7 +386,6 @@ alloc_prog_string(const char *s)
 	return (ss);
 }
 
-
 char *
 string_dup(const char *s)
 {
@@ -399,8 +397,6 @@ string_dup(const char *s)
 	return (p);
 }
 #endif
-
-
 
 char *
 intostr(int i)
@@ -453,7 +449,6 @@ init_crypt(void)
 	enarr[31] = ESCAPE_CHAR;
 	initialized_crypt = 1;
 }
-
 
 const char *
 strencrypt(const char *data, const char *key)
@@ -512,8 +507,6 @@ strencrypt(const char *data, const char *key)
 	*ptr++ = '\0';
 	return linebuf;
 }
-
-
 
 const char *
 strdecrypt(const char *data, const char *key)
@@ -576,7 +569,6 @@ strdecrypt(const char *data, const char *key)
 	return buf;
 }
 
-
 char *
 strip_ansi(char *buf, const char *input)
 {
@@ -608,7 +600,6 @@ strip_ansi(char *buf, const char *input)
 
 	return buf;
 }
-
 
 char *
 strip_bad_ansi(char *buf, const char *input)
@@ -783,7 +774,6 @@ has_suffix_char(const char *text, char suffix)
 	return text[tlen - 1] == suffix;
 }
 
-
 /*
  * Like strncpy, except it guarentees null termination of the result string.
  * It also has a more sensible argument ordering.
@@ -800,7 +790,6 @@ strcpyn(char *buf, size_t bufsize, const char *src)
 	*dest = '\0';
 	return buf;
 }
-
 
 /*
  * Like strncat, except it takes the buffer size instead of the number

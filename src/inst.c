@@ -40,15 +40,16 @@ const char *base_inst[] = {
    would have occured.
  */
 char *
-insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int buflen,
-		   int strmax, dbref program, int expandarrs)
+insttotext(struct frame *fr, int lev,
+		   struct inst *theinst, char *buffer,
+		   int buflen, int strmax, dbref program, int expandarrs)
 {
 	const char *ptr;
 	char buf2[BUFFER_LEN];
 	struct inst temp1;
 	struct inst *oper2;
 	int length = -2;			/* unset mark. We don't use -1 since some snprintf() version will
-								   return that if we would've overflowed. */
+								 * return that if we would've overflowed. */
 	int firstflag = 1;
 	int arrcount = 0;
 
@@ -186,7 +187,7 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 		length = snprintf(buffer, buflen, "%d", theinst->data.number);
 		break;
 	case PROG_FLOAT:
-		length = snprintf(buffer, buflen, "%.16lg", theinst->data.fnumber);
+		length = snprintf(buffer, buflen, "%.16g", theinst->data.fnumber);
 		if (!strchr(buffer, '.') && !strchr(buffer, 'n') && !strchr(buffer, 'e')) {
 			strcatn(buffer, buflen, ".0");
 		}
@@ -273,8 +274,7 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 		break;
 	case PROG_FUNCTION:
 		length = snprintf(buffer, buflen, "INIT FUNC: %s (%d arg%s)",
-						  theinst->data.mufproc->procname,
-						  theinst->data.mufproc->args,
+						  theinst->data.mufproc->procname, theinst->data.mufproc->args,
 						  theinst->data.mufproc->args == 1 ? "" : "s");
 		break;
 	case PROG_LOCK:
@@ -287,8 +287,8 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 				*buffer = '\0';
 			break;
 		}
-		length = snprintf(buffer, buflen, "[%1.*s]",
-						  (strmax - 1), unparse_boolexp(0, theinst->data.lock, 0));
+		length = snprintf(buffer, buflen, "[%1.*s]", (strmax - 1),
+						  unparse_boolexp(0, theinst->data.lock, 0));
 		break;
 	case PROG_CLEARED:
 		length = snprintf(buffer, buflen, "?<%s:%d>", (char *) theinst->data.addr,
@@ -313,8 +313,8 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 #define DEBUG_DEPTH 8			/* how far to give a stack list, at most */
 
 char *
-debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *stack,
-		   char *buffer, int buflen, int sp, dbref program)
+debug_inst(struct frame *fr, int lev, struct inst *pc,
+		   int pid, struct inst *stack, char *buffer, int buflen, int sp, dbref program)
 {
 	char *bend;
 	char *bstart;
@@ -351,7 +351,6 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *sta
 			   (buflen - 1 > 18) ? 18 : buflen - 1);
 		return buffer;
 	}
-
 
 	/* We use this if-else structure to handle errors and such nicely. */
 	/* We use length - 7 so we KNOW we'll have room for " ... ) " */

@@ -1,6 +1,5 @@
 /* $Header$ */
 
-
 #include "copyright.h"
 #include "config.h"
 
@@ -43,8 +42,7 @@ do_rob(int descr, dbref player, const char *what)
 		} else if (GETVALUE(thing) < 1) {
 			snprintf(buf, sizeof(buf), "%s has no %s.", NAME(thing), tp_pennies);
 			notify(player, buf);
-			snprintf(buf, sizeof(buf),
-					 "%s tried to rob you, but you have no %s to take.",
+			snprintf(buf, sizeof(buf), "%s tried to rob you, but you have no %s to take.",
 					 NAME(player), tp_pennies);
 			notify(thing, buf);
 		} else if (can_doit(descr, player, thing, "Your conscience tells you not to.")) {
@@ -125,8 +123,8 @@ do_kill(int descr, dbref player, const char *what, int cost)
 				/* now notify everybody else */
 				if (GETODROP(victim)) {
 					snprintf(buf, sizeof(buf), "%s killed %s! ", NAME(player), NAME(victim));
-					parse_oprop(descr, player, getloc(player), victim,
-								MESGPROP_ODROP, buf, "(@Odrop)");
+					parse_oprop(descr, player, getloc(player), victim, MESGPROP_ODROP, buf,
+								"(@Odrop)");
 				} else {
 					snprintf(buf, sizeof(buf), "%s killed %s!", NAME(player), NAME(victim));
 				}
@@ -209,25 +207,25 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 		case TYPE_PLAYER:
 			SETVALUE(who, GETVALUE(who) + amount);
 			if (amount >= 0) {
-				snprintf(buf, sizeof(buf), "You give %d %s to %s.",
-						 amount, amount == 1 ? tp_penny : tp_pennies, NAME(who));
+				snprintf(buf, sizeof(buf), "You give %d %s to %s.", amount,
+						 amount == 1 ? tp_penny : tp_pennies, NAME(who));
 				notify(player, buf);
-				snprintf(buf, sizeof(buf), "%s gives you %d %s.",
-						 NAME(player), amount, amount == 1 ? tp_penny : tp_pennies);
+				snprintf(buf, sizeof(buf), "%s gives you %d %s.", NAME(player), amount,
+						 amount == 1 ? tp_penny : tp_pennies);
 				notify(who, buf);
 			} else {
-				snprintf(buf, sizeof(buf), "You take %d %s from %s.",
-						 -amount, amount == -1 ? tp_penny : tp_pennies, NAME(who));
+				snprintf(buf, sizeof(buf), "You take %d %s from %s.", -amount,
+						 amount == -1 ? tp_penny : tp_pennies, NAME(who));
 				notify(player, buf);
-				snprintf(buf, sizeof(buf), "%s takes %d %s from you!",
-						 NAME(player), -amount, -amount == 1 ? tp_penny : tp_pennies);
+				snprintf(buf, sizeof(buf), "%s takes %d %s from you!", NAME(player), -amount,
+						 -amount == 1 ? tp_penny : tp_pennies);
 				notify(who, buf);
 			}
 			break;
 		case TYPE_THING:
 			SETVALUE(who, (GETVALUE(who) + amount));
-			snprintf(buf, sizeof(buf), "You change the value of %s to %d %s.",
-					 NAME(who), GETVALUE(who), GETVALUE(who) == 1 ? tp_penny : tp_pennies);
+			snprintf(buf, sizeof(buf), "You change the value of %s to %d %s.", NAME(who),
+					 GETVALUE(who), GETVALUE(who) == 1 ? tp_penny : tp_pennies);
 			notify(player, buf);
 			break;
 		default:

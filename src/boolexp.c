@@ -32,20 +32,17 @@
  *   routine.
  */
 
-
 struct boolexp *
 alloc_boolnode(void)
 {
 	return ((struct boolexp *) malloc(sizeof(struct boolexp)));
 }
 
-
 void
 free_boolnode(struct boolexp *ptr)
 {
 	free(ptr);
 }
-
 
 struct boolexp *
 copy_bool(struct boolexp *old)
@@ -97,7 +94,6 @@ copy_bool(struct boolexp *old)
 	return o;
 }
 
-
 int
 eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 {
@@ -126,8 +122,8 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 				else
 					real_player = OWNER(player);
 
-				tmpfr = interp(descr, real_player, DBFETCH(player)->location,
-							   b->thing, thing, PREEMPT, STD_HARDUID, 0);
+				tmpfr = interp(descr, real_player, DBFETCH(player)->location, b->thing, thing,
+							   PREEMPT, STD_HARDUID, 0);
 
 				if (!tmpfr)
 					return (0);
@@ -141,12 +137,13 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 					|| b->thing == DBFETCH(player)->location);
 		case BOOLEXP_PROP:
 			if (PropType(b->prop_check) == PROP_STRTYP) {
-				if (has_property_strict(descr, player, thing,
-										PropName(b->prop_check),
-										PropDataStr(b->prop_check), 0))
+				if (has_property_strict
+					(descr, player, thing, PropName(b->prop_check), PropDataStr(b->prop_check),
+					 0))
 					return 1;
-				if (has_property(descr, player, player,
-								 PropName(b->prop_check), PropDataStr(b->prop_check), 0))
+				if (has_property
+					(descr, player, player, PropName(b->prop_check),
+					 PropDataStr(b->prop_check), 0))
 					return 1;
 			}
 			return 0;
@@ -156,7 +153,6 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 	}
 	return 0;
 }
-
 
 int
 eval_boolexp(int descr, dbref player, struct boolexp *b, dbref thing)
@@ -168,7 +164,6 @@ eval_boolexp(int descr, dbref player, struct boolexp *b, dbref thing)
 	free_boolexp(b);
 	return (result);
 }
-
 
 /* If the parser returns TRUE_BOOLEXP, you lose */
 /* TRUE_BOOLEXP cannot be typed in by the user; use @unlock instead */
@@ -222,8 +217,8 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
 		/* must have hit an object ref */
 		/* load the name into our buffer */
 		p = buf;
-		while (**parsebuf
-			   && **parsebuf != AND_TOKEN && **parsebuf != OR_TOKEN && **parsebuf != ')') {
+		while (**parsebuf && **parsebuf != AND_TOKEN && **parsebuf != OR_TOKEN &&
+			   **parsebuf != ')') {
 			*p++ = *(*parsebuf)++;
 		}
 		/* strip trailing whitespace */
@@ -393,7 +388,6 @@ parse_boolprop(char *buf)
 	return b;
 }
 
-
 long
 size_boolexp(struct boolexp *b)
 {
@@ -424,7 +418,6 @@ size_boolexp(struct boolexp *b)
 	}
 }
 
-
 struct boolexp *
 negate_boolexp(struct boolexp *b)
 {
@@ -440,7 +433,6 @@ negate_boolexp(struct boolexp *b)
 
 	return n;
 }
-
 
 static struct boolexp *
 getboolexp1(FILE * f)

@@ -6,7 +6,6 @@
 #include "externs.h"
 #include "fb.h"
 
-
 /****************************************************************
  * Dump the database every so often.
  ****************************************************************/
@@ -36,7 +35,6 @@ next_dump_time(void)
 
 	return (last_dump_time + tp_dump_interval - currtime);
 }
-
 
 void
 check_dump_time(void)
@@ -73,7 +71,6 @@ check_dump_time(void)
 	}
 }
 
-
 void
 dump_db_now(void)
 {
@@ -99,8 +96,6 @@ delta_dump_now(void)
 
 #endif
 
-
-
 /*********************
  * Periodic cleanups *
  *********************/
@@ -121,7 +116,6 @@ next_clean_time(void)
 	return (last_clean_time + tp_clean_interval - currtime);
 }
 
-
 void
 check_clean_time(void)
 {
@@ -137,7 +131,6 @@ check_clean_time(void)
 			free_unused_programs();
 	}
 }
-
 
 /****************
  * RWHO updates *
@@ -176,8 +169,6 @@ next_rwho_time(void)
 	return (last_rwho_time + tp_rwho_interval - currtime);
 }
 
-
-
 void
 check_rwho_time(void)
 {
@@ -197,7 +188,6 @@ check_rwho_time(void)
 	}
 }
 
-
 /**********************************************************************
  *  general handling for timed events like dbdumps, timequeues, etc.
  **********************************************************************/
@@ -207,7 +197,6 @@ mintime(long a, long b)
 {
 	return ((a > b) ? b : a);
 }
-
 
 long
 next_muckevent_time(void)
