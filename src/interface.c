@@ -366,12 +366,14 @@ main(int argc, char **argv)
 	if (!sanity_interactive) {
 
 #ifdef DETACH
-		/* Go into the background */
-		fclose(stdin);
-		fclose(stdout);
-		fclose(stderr);
-		if (fork() != 0)
-			exit(0);
+		/* Go into the background unless requested not to */
+		if (!sanity_interactive && !db_conversion_flag) {
+			fclose(stdin);
+			fclose(stdout);
+			fclose(stderr);
+			if (fork() != 0)
+				exit(0);
+		}
 #endif
 
 		/* save the PID for future use */
@@ -383,32 +385,34 @@ main(int argc, char **argv)
 		log_status("INIT: TinyMUCK %s starting.\n", "version");
 
 #ifdef DETACH
-		/* Detach from the TTY, log whatever output we have... */
-		freopen(LOG_ERR_FILE, "a", stderr);
-		setbuf(stderr, NULL);
-		freopen(LOG_FILE, "a", stdout);
-		setbuf(stdout, NULL);
+		if (!sanity_interactive && !db_conversion_flag) {
+			/* Detach from the TTY, log whatever output we have... */
+			freopen(LOG_ERR_FILE, "a", stderr);
+			setbuf(stderr, NULL);
+			freopen(LOG_FILE, "a", stdout);
+			setbuf(stdout, NULL);
 
-		/* Disassociate from Process Group */
+			/* Disassociate from Process Group */
 # ifdef _POSIX_SOURCE
-		setsid();
+			setsid();
 # else
 #  ifdef SYSV
-		setpgrp();				/* The SysV way */
+			setpgrp();			/* The SysV way */
 #  else
-		setpgid(0, getpid());	/* The POSIX way. */
+			setpgid(0, getpid());	/* The POSIX way. */
 #  endif						/* SYSV */
 
 #  ifdef  TIOCNOTTY				/* we can force this, POSIX / BSD */
-		{
-			int fd;
-			if ((fd = open("/dev/tty", O_RDWR)) >= 0) {
-				ioctl(fd, TIOCNOTTY, (char *) 0);	/* lose controll TTY */
-				close(fd);
+			{
+				int fd;
+				if ((fd = open("/dev/tty", O_RDWR)) >= 0) {
+					ioctl(fd, TIOCNOTTY, (char *) 0);	/* lose controll TTY */
+					close(fd);
+				}
 			}
-		}
 #  endif						/* TIOCNOTTY */
 # endif							/* !_POSIX_SOURCE */
+		}
 #endif							/* DETACH */
 
 #ifdef SPAWN_HOST_RESOLVER
