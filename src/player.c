@@ -118,7 +118,7 @@ create_player(const char *name, const char *password)
 	PLAYER_SET_HOME(player, tp_player_start);
 	DBFETCH(player)->exits = NOTHING;
 
-	PLAYER_SET_PENNIES(player, tp_start_pennies);
+	SETVALUE(player, tp_start_pennies);
 	set_password_raw(player, NULL);
 	set_password(player, password);
 	PLAYER_SET_CURR_PROG(player, NOTHING);

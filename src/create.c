@@ -377,7 +377,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 				/* pay the owner for his loss */
 				dbref owner = OWNER(thing);
 
-				PLAYER_ADD_PENNIES(owner, tp_exit_cost);
+				SETVALUE(owner, GETVALUE(owner) + tp_exit_cost);
 				DBDIRTY(owner);
 			}
 		}
@@ -387,7 +387,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 		ndest = link_exit(descr, player, thing, (char *) dest_name, good_dest);
 		if (ndest == 0) {
 			notify(player, "No destinations linked.");
-			PLAYER_ADD_PENNIES(player, tp_link_cost);	/* Refund! */
+			SETVALUE(player, GETVALUE(player) + tp_link_cost);
 			DBDIRTY(player);
 			break;
 		}
@@ -1038,7 +1038,7 @@ do_clone(int descr, dbref player, char *name)
 	}
 
 	/* there ain't no such lunch as a free thing. */
-	cost = OBJECT_GETCOST(THING_VALUE(thing));
+	cost = OBJECT_GETCOST(GETVALUE(thing));
 	if (cost < tp_object_cost) {
 		cost = tp_object_cost;
 	}
@@ -1060,7 +1060,7 @@ do_clone(int descr, dbref player, char *name)
 		ALLOC_THING_SP(clonedthing);
 		DBFETCH(clonedthing)->location = player;
 		OWNER(clonedthing) = OWNER(player);
-		THING_SET_VALUE(clonedthing, THING_VALUE(thing));
+		SETVALUE(clonedthing, GETVALUE(thing));
 /* FIXME: should we clone attached actions? */
 		DBFETCH(clonedthing)->exits = NOTHING;
 		FLAGS(clonedthing) = FLAGS(thing);
@@ -1069,8 +1069,8 @@ do_clone(int descr, dbref player, char *name)
 		copy_props(player, thing, clonedthing, "");
 
 		/* endow the object */
-		if (THING_VALUE(thing) > tp_max_object_endowment) {
-			THING_SET_VALUE(thing, tp_max_object_endowment);
+		if (GETVALUE(thing) > tp_max_object_endowment) {
+			SETVALUE(thing, tp_max_object_endowment);
 		}
 		
 		/* Home, sweet home */
@@ -1143,13 +1143,13 @@ do_create(dbref player, char *name, char *acost)
 		ALLOC_THING_SP(thing);
 		DBFETCH(thing)->location = player;
 		OWNER(thing) = OWNER(player);
-		THING_SET_VALUE(thing, OBJECT_ENDOWMENT(cost));
+		SETVALUE(thing, OBJECT_ENDOWMENT(cost));
 		DBFETCH(thing)->exits = NOTHING;
 		FLAGS(thing) = TYPE_THING;
 
 		/* endow the object */
-		if (THING_VALUE(thing) > tp_max_object_endowment) {
-			THING_SET_VALUE(thing, tp_max_object_endowment);
+		if (GETVALUE(thing) > tp_max_object_endowment) {
+			SETVALUE(thing, tp_max_object_endowment);
 		}
 		if ((loc = DBFETCH(player)->location) != NOTHING && controls(player, loc)) {
 			THING_SET_HOME(thing, loc);	/* home */

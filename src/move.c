@@ -348,9 +348,9 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 	if (tp_penny_rate != 0) {
 		/* check for pennies */
 		if (!controls(player, loc)
-			&& PLAYER_PENNIES(player) <= tp_max_pennies && RANDOM() % tp_penny_rate == 0) {
+			&& GETVALUE(player) <= tp_max_pennies && RANDOM() % tp_penny_rate == 0) {
 			notify_fmt(player, "You found a %s!", tp_penny);
-			PLAYER_ADD_PENNIES(OWNER(player), 1);
+			SETVALUE(OWNER(player), GETVALUE(OWNER(player)) + 1);
 			DBDIRTY(OWNER(player));
 		}
 	}
@@ -935,7 +935,7 @@ recycle(int descr, dbref player, dbref thing)
 	switch (Typeof(thing)) {
 	case TYPE_ROOM:
 		if (!Wizard(OWNER(thing)))
-			PLAYER_ADD_PENNIES(OWNER(thing), tp_room_cost);
+			SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + tp_room_cost);
 		DBDIRTY(OWNER(thing));
 		for (first = DBFETCH(thing)->exits; first != NOTHING; first = rest) {
 			rest = DBFETCH(first)->next;
@@ -947,7 +947,7 @@ recycle(int descr, dbref player, dbref thing)
 		break;
 	case TYPE_THING:
 		if (!Wizard(OWNER(thing)))
-			PLAYER_ADD_PENNIES(OWNER(thing), THING_VALUE(thing));
+			SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + GETVALUE(thing));
 		DBDIRTY(OWNER(thing));
 		for (first = DBFETCH(thing)->exits; first != NOTHING; first = rest) {
 			rest = DBFETCH(first)->next;
@@ -957,10 +957,10 @@ recycle(int descr, dbref player, dbref thing)
 		break;
 	case TYPE_EXIT:
 		if (!Wizard(OWNER(thing)))
-			PLAYER_ADD_PENNIES(OWNER(thing), tp_exit_cost);
+			SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + tp_exit_cost);
 		if (!Wizard(OWNER(thing)))
 			if (DBFETCH(thing)->sp.exit.ndest != 0)
-				PLAYER_ADD_PENNIES(OWNER(thing), tp_link_cost);
+				SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + tp_link_cost);
 		DBDIRTY(OWNER(thing));
 		break;
 	case TYPE_PROGRAM:
@@ -1019,7 +1019,7 @@ recycle(int descr, dbref player, dbref thing)
 						(DBFETCH(rest)->sp.exit.dest)[j++] = (DBFETCH(rest)->sp.exit.dest)[i];
 				}
 				if (j < DBFETCH(rest)->sp.exit.ndest) {
-					PLAYER_ADD_PENNIES(OWNER(rest), tp_link_cost);
+					SETVALUE(OWNER(rest), GETVALUE(OWNER(rest)) + tp_link_cost);
 					DBDIRTY(OWNER(rest));
 					DBFETCH(rest)->sp.exit.ndest = j;
 					DBDIRTY(rest);

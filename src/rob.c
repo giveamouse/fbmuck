@@ -40,7 +40,7 @@ do_rob(int descr, dbref player, const char *what)
 	default:
 		if (Typeof(thing) != TYPE_PLAYER) {
 			notify(player, "Sorry, you can only rob other players.");
-		} else if (PLAYER_PENNIES(thing) < 1) {
+		} else if (GETVALUE(thing) < 1) {
 			snprintf(buf, sizeof(buf), "%s has no %s.", NAME(thing), tp_pennies);
 			notify(player, buf);
 			snprintf(buf, sizeof(buf),
@@ -49,9 +49,9 @@ do_rob(int descr, dbref player, const char *what)
 			notify(thing, buf);
 		} else if (can_doit(descr, player, thing, "Your conscience tells you not to.")) {
 			/* steal a penny */
-			PLAYER_ADD_PENNIES(OWNER(player), 1);
+			SETVALUE(OWNER(player), GETVALUE(OWNER(player)) + 1);
 			DBDIRTY(player);
-			PLAYER_ADD_PENNIES(thing, -1);
+			SETVALUE(thing, GETVALUE(thing) - 1);
 			DBDIRTY(thing);
 			notify_fmt(player, "You stole a %s.", tp_penny);
 			snprintf(buf, sizeof(buf), "%s stole one of your %s!", NAME(player), tp_pennies);
@@ -134,11 +134,11 @@ do_kill(int descr, dbref player, const char *what, int cost)
 							  player);
 
 				/* maybe pay off the bonus */
-				if (PLAYER_PENNIES(victim) < tp_max_pennies) {
+				if (GETVALUE(victim) < tp_max_pennies) {
 					snprintf(buf, sizeof(buf), "Your insurance policy pays %d %s.",
 							tp_kill_bonus, tp_pennies);
 					notify(victim, buf);
-					PLAYER_ADD_PENNIES(victim, tp_kill_bonus);
+					SETVALUE(victim, GETVALUE(victim) + tp_kill_bonus);
 					DBDIRTY(victim);
 				} else {
 					notify(victim, "Your insurance policy has been revoked.");
@@ -192,7 +192,7 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 			if (Typeof(who) != TYPE_PLAYER) {
 				notify(player, "You can only give to other players.");
 				return;
-			} else if (PLAYER_PENNIES(who) + amount > tp_max_pennies) {
+			} else if (GETVALUE(who) + amount > tp_max_pennies) {
 				notify_fmt(player, "That player doesn't need that many %s!", tp_pennies);
 				return;
 			}
@@ -207,7 +207,7 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 		/* he can do it */
 		switch (Typeof(who)) {
 		case TYPE_PLAYER:
-			PLAYER_ADD_PENNIES(who, amount);
+			SETVALUE(who, GETVALUE(who) + amount);
 			if(amount >= 0) {
 				snprintf(buf, sizeof(buf), "You give %d %s to %s.",
 						amount, amount == 1 ? tp_penny : tp_pennies, NAME(who));
@@ -225,10 +225,10 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 			}
 			break;
 		case TYPE_THING:
-			THING_SET_VALUE(who, (THING_VALUE(who) + amount));
+			SETVALUE(who, (GETVALUE(who) + amount));
 			snprintf(buf, sizeof(buf), "You change the value of %s to %d %s.",
 					NAME(who),
-					THING_VALUE(who), THING_VALUE(who) == 1 ? tp_penny : tp_pennies);
+					GETVALUE(who), GETVALUE(who) == 1 ? tp_penny : tp_pennies);
 			notify(player, buf);
 			break;
 		default:

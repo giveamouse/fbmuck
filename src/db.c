@@ -18,6 +18,8 @@ dbref db_top = 0;
 dbref recyclable = NOTHING;
 int db_load_format = 0;
 
+#define OBSOLETE_ANTILOCK            0x8	/* negates key (*OBSOLETE*) */
+
 #ifndef DB_INITIAL_SIZE
 #define DB_INITIAL_SIZE 10000
 #endif							/* DB_INITIAL_SIZE */
@@ -1064,15 +1066,15 @@ db_read_object_old(FILE * f, struct object *o, dbref objno)
 	}
 	/* For downward compatibility with databases using the */
 	/* obsolete ANTILOCK flag. */
-	if (FLAGS(objno) & ANTILOCK) {
+	if (FLAGS(objno) & OBSOLETE_ANTILOCK) {
 		LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
-				FLAGS(objno) &= ~ANTILOCK;
+				FLAGS(objno) &= ~OBSOLETE_ANTILOCK;
 	}
 	switch (FLAGS(objno) & TYPE_MASK) {
 	case TYPE_THING:
 		ALLOC_THING_SP(objno);
 		THING_SET_HOME(objno, exits);
-		THING_SET_VALUE(objno, pennies);
+		LOADVALUE(objno, pennies);
 		o->exits = NOTHING;
 		break;
 	case TYPE_ROOM:
@@ -1095,7 +1097,7 @@ db_read_object_old(FILE * f, struct object *o, dbref objno)
 		ALLOC_PLAYER_SP(objno);
 		PLAYER_SET_HOME(objno, exits);
 		o->exits = NOTHING;
-		PLAYER_SET_PENNIES(objno, pennies);
+		LOADVALUE(objno, pennies);
 		set_password_raw(objno, NULL);
 		set_password(objno, password);
 		if (password)
@@ -1185,9 +1187,9 @@ db_read_object_new(FILE * f, struct object *o, dbref objno)
 	/* o->password = getstring(f); */
 	/* For downward compatibility with databases using the */
 	/* obsolete ANTILOCK flag. */
-	if (FLAGS(objno) & ANTILOCK) {
+	if (FLAGS(objno) & OBSOLETE_ANTILOCK) {
 		LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
-				FLAGS(objno) &= ~ANTILOCK;
+				FLAGS(objno) &= ~OBSOLETE_ANTILOCK;
 	}
 	switch (FLAGS(objno) & TYPE_MASK) {
 	case TYPE_THING:
@@ -1195,7 +1197,7 @@ db_read_object_new(FILE * f, struct object *o, dbref objno)
 		THING_SET_HOME(objno, getref(f));
 		o->exits = getref(f);
 		OWNER(objno) = getref(f);
-		THING_SET_VALUE(objno, getref(f));
+		LOADVALUE(objno, getref(f));
 		break;
 	case TYPE_ROOM:
 		o->sp.room.dropto = getref(f);
@@ -1215,7 +1217,7 @@ db_read_object_new(FILE * f, struct object *o, dbref objno)
 		ALLOC_PLAYER_SP(objno);
 		PLAYER_SET_HOME(objno, getref(f));
 		o->exits = getref(f);
-		PLAYER_SET_PENNIES(objno, getref(f));
+		LOADVALUE(objno, getref(f));
 		password = getstring(f);
 		set_password_raw(objno, NULL);
 		set_password(objno, password);
@@ -1322,30 +1324,34 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		if (sign)
 			j = -j;
 
-		/* set gender stuff */
-		/* convert GENDER flag to property */
-		switch ((FLAGS(objno) & GENDER_MASK) >> GENDER_SHIFT) {
-		case GENDER_NEUTER:
-			add_property(objno, "sex", "neuter", 0);
-			break;
-		case GENDER_FEMALE:
-			add_property(objno, "sex", "female", 0);
-			break;
-		case GENDER_MALE:
-			add_property(objno, "sex", "male", 0);
-			break;
-		default:
-			break;
+		if (dtype < 10) {
+			/* set gender stuff */
+			/* convert GENDER flag to property */
+			switch ((FLAGS(objno) & GENDER_MASK) >> GENDER_SHIFT) {
+			case GENDER_NEUTER:
+				add_property(objno, "sex", "neuter", 0);
+				break;
+			case GENDER_FEMALE:
+				add_property(objno, "sex", "female", 0);
+				break;
+			case GENDER_MALE:
+				add_property(objno, "sex", "male", 0);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
-	/* o->password = getstring(f); */
-	/* For downward compatibility with databases using the */
-	/* obsolete ANTILOCK flag. */
-	if (FLAGS(objno) & ANTILOCK) {
-		LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
-				FLAGS(objno) &= ~ANTILOCK;
+        if (dtype < 10) {
+		/* For downward compatibility with databases using the */
+		/* obsolete ANTILOCK flag. */
+		if (FLAGS(objno) & OBSOLETE_ANTILOCK) {
+			LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
+					FLAGS(objno) &= ~OBSOLETE_ANTILOCK;
+		}
 	}
+
 	switch (FLAGS(objno) & TYPE_MASK) {
 	case TYPE_THING:{
 			dbref home;
@@ -1356,7 +1362,7 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 			o->exits = getref(f);
 			OWNER(objno) = getref(f);
 			if (dtype < 10)
-				THING_SET_VALUE(objno, getref(f));
+				LOADVALUE(objno, getref(f));
 			break;
 		}
 	case TYPE_ROOM:
@@ -1378,7 +1384,7 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		PLAYER_SET_HOME(objno, (prop_flag ? getref(f) : j));
 		o->exits = getref(f);
 		if (dtype < 10)
-			PLAYER_SET_PENNIES(objno, getref(f));
+			LOADVALUE(objno, getref(f));
 		password = getstring(f);
 		if (dtype <= 8 && password) {
 			set_password_raw(objno, NULL);

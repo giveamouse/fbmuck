@@ -163,9 +163,9 @@ typedef int dbref;				/* offset into db */
 #define LOADCHLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_CHLOCK, &mydat); DBDIRTY(x);}
 #define CLEARCHLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_CHLOCK, &mydat); DBDIRTY(x);}
 
-#define GETVALUE(x)	(get_property_value(x, MESGPROP_VALUE))
+#define GETVALUE(x)	get_property_value(x, MESGPROP_VALUE)
 #define SETVALUE(x,y)	add_property(x, MESGPROP_VALUE, NULL, y)
-#define LOADVALUE(x,y)	(add_prop_nofetch(x, MESGPROP_VALUE, NULL, y), DBDIRTY(x))
+#define LOADVALUE(x,y)	add_prop_nofetch(x, MESGPROP_VALUE, NULL, y)
 
 #define DB_PARMSINFO     0x0001
 #define DB_COMPRESSED    0x0002
@@ -179,7 +179,6 @@ typedef int dbref;				/* offset into db */
 #define NOTYPE              0x7	/* no particular type */
 #define TYPE_MASK           0x7	/* room for expansion */
 
-#define ANTILOCK            0x8	/* negates key (*OBSOLETE*) */
 #define WIZARD             0x10	/* gets automatic control */
 #define LINK_OK            0x20	/* anybody can link to this room */
 #define DARK               0x40	/* contents of room are not printed */
@@ -620,18 +619,14 @@ struct player_specific {
 #define FREE_THING_SP(x)        { dbref foo = x; free(PLAYER_SP(foo)); PLAYER_SP(foo) = NULL; }
 
 #define THING_HOME(x)		(PLAYER_SP(x)->home)
-#define THING_VALUE(x)		(GETVALUE(x))
 
 #define THING_SET_HOME(x,y)	(PLAYER_SP(x)->home = y)
-#define THING_SET_VALUE(x,y)	(SETVALUE(x,y))
-
 
 #define PLAYER_SP(x)		(DBFETCH(x)->sp.player.sp)
 #define ALLOC_PLAYER_SP(x)      { PLAYER_SP(x) = (struct player_specific *)malloc(sizeof(struct player_specific)); bzero(PLAYER_SP(x),sizeof(struct player_specific));}
 #define FREE_PLAYER_SP(x)       { dbref foo = x; free(PLAYER_SP(foo)); PLAYER_SP(foo) = NULL; }
 
 #define PLAYER_HOME(x)		(PLAYER_SP(x)->home)
-#define PLAYER_PENNIES(x)	(GETVALUE(x))
 #define PLAYER_CURR_PROG(x)	(PLAYER_SP(x)->curr_prog)
 #define PLAYER_INSERT_MODE(x)	(PLAYER_SP(x)->insert_mode)
 #define PLAYER_BLOCK(x)		(PLAYER_SP(x)->block)
@@ -643,8 +638,6 @@ struct player_specific {
 #define PLAYER_IGNORE_LAST(x)   (PLAYER_SP(x)->ignore_last)
 
 #define PLAYER_SET_HOME(x,y)		(PLAYER_SP(x)->home = y)
-#define PLAYER_SET_PENNIES(x,y)		(SETVALUE(x,y))
-#define PLAYER_ADD_PENNIES(x,y)		(SETVALUE(x,(GETVALUE(x)+y)))
 #define PLAYER_SET_CURR_PROG(x,y)	(PLAYER_SP(x)->curr_prog = y)
 #define PLAYER_SET_INSERT_MODE(x,y)	(PLAYER_SP(x)->insert_mode = y)
 #define PLAYER_SET_BLOCK(x,y)		(PLAYER_SP(x)->block = y)

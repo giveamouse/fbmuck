@@ -34,7 +34,7 @@ copyobj(dbref player, dbref old, dbref nu)
 	if (Typeof(old) == TYPE_THING) {
 		ALLOC_THING_SP(nu);
 		THING_SET_HOME(nu, player);
-		THING_SET_VALUE(nu, 1);
+		SETVALUE(nu, 1);
 	}
 	newp->properties = copy_prop(old);
 	newp->exits = NOTHING;
@@ -71,7 +71,7 @@ prim_addpennies(PRIM_PROTOTYPE)
 		abort_interp("Non-integer argument (2)");
 	ref = oper2->data.objref;
 	if (Typeof(ref) == TYPE_PLAYER) {
-		result = PLAYER_PENNIES(ref);
+		result = GETVALUE(ref);
 		if (mlev < 4) {
 			if (oper1->data.number > 0) {
 				if (result > (result + oper1->data.number))
@@ -86,15 +86,15 @@ prim_addpennies(PRIM_PROTOTYPE)
 			}
 		}
 		result += oper1->data.number;
-		PLAYER_ADD_PENNIES(ref, oper1->data.number);
+		SETVALUE(ref, GETVALUE(ref) + oper1->data.number);
 		DBDIRTY(ref);
 	} else if (Typeof(ref) == TYPE_THING) {
 		if (mlev < 4)
 			abort_interp("Permission denied.");
-		result = THING_VALUE(ref) + oper1->data.number;
+		result = GETVALUE(ref) + oper1->data.number;
 		if (result < 1)
 			abort_interp("Result must be positive.");
-		THING_SET_VALUE(ref, (THING_VALUE(ref) + oper1->data.number));
+		SETVALUE(ref, (GETVALUE(ref) + oper1->data.number));
 		DBDIRTY(ref);
 	} else {
 		abort_interp("Invalid object type.");
@@ -241,10 +241,10 @@ prim_pennies(PRIM_PROTOTYPE)
 	CHECKREMOTE(oper1->data.objref);
 	switch (Typeof(oper1->data.objref)) {
 	case TYPE_PLAYER:
-		result = PLAYER_PENNIES(oper1->data.objref);
+		result = GETVALUE(oper1->data.objref);
 		break;
 	case TYPE_THING:
-		result = THING_VALUE(oper1->data.objref);
+		result = GETVALUE(oper1->data.objref);
 		break;
 	default:
 		abort_interp("Invalid argument.");
@@ -1244,7 +1244,7 @@ prim_newobject(PRIM_PROTOTYPE)
 		ALLOC_THING_SP(ref);
 		DBFETCH(ref)->location = oper2->data.objref;
 		OWNER(ref) = OWNER(ProgUID);
-		THING_SET_VALUE(ref, 1);
+		SETVALUE(ref, 1);
 		DBFETCH(ref)->exits = NOTHING;
 		FLAGS(ref) = TYPE_THING;
 
@@ -1507,7 +1507,6 @@ prim_checkpassword(PRIM_PROTOTYPE)
 void
 prim_movepennies(PRIM_PROTOTYPE)
 {
-	int result2;
 	dbref ref2;
 
 	CHECKOP(3);
@@ -1526,67 +1525,28 @@ prim_movepennies(PRIM_PROTOTYPE)
 		abort_interp("Invalid argument. (3)");
 	ref = oper3->data.objref;
 	ref2 = oper2->data.objref;
-	if (Typeof(ref) == TYPE_PLAYER) {
-		result = PLAYER_PENNIES(ref);
-		if (Typeof(ref2) == TYPE_PLAYER) {
-			result2 = PLAYER_PENNIES(ref2);
-			if (mlev < 4) {
-				if (result < (result - oper1->data.number))
-					abort_interp("Would roll over player's score. (1)");
-				if ((result - oper1->data.number) < 0)
-					abort_interp("Result would be negative. (1)");
-				if (result2 > (result2 + oper1->data.number))
-					abort_interp("Would roll over player's score. (2)");
-				if ((result2 + oper1->data.number) > tp_max_pennies)
-					abort_interp("Would exceed MAX_PENNIES. (2)");
-			}
-			result2 += oper1->data.number;
-			PLAYER_ADD_PENNIES(ref, -(oper1->data.number));
-			PLAYER_ADD_PENNIES(ref2, oper1->data.number);
-			DBDIRTY(ref);
-			DBDIRTY(ref2);
-		} else if (Typeof(ref2) == TYPE_THING) {
-			if (mlev < 4)
-				abort_interp("Permission denied. (2)");
-			result2 = THING_VALUE(ref2) + oper1->data.number;
-			if (result < (result - oper1->data.number))
+	if (mlev < 4) {
+		if (Typeof(ref) == TYPE_PLAYER) {
+			if (GETVALUE(ref) < (GETVALUE(ref) - oper1->data.number))
 				abort_interp("Would roll over player's score. (1)");
-			if ((result - oper1->data.number) < 0)
+			if ((GETVALUE(ref) - oper1->data.number) < 0)
 				abort_interp("Result would be negative. (1)");
-			PLAYER_ADD_PENNIES(ref, -(oper1->data.number));
-			THING_SET_VALUE(ref2, (THING_VALUE(ref2) + oper1->data.number));
-			DBDIRTY(ref);
-			DBDIRTY(ref2);
 		} else {
-			abort_interp("Invalid object type. (2)");
+			abort_interp("Permission denied. (2)");
 		}
-	} else if (Typeof(ref) == TYPE_THING) {
-		if (mlev < 4)
-			abort_interp("Permission denied. (1)");
-		result = THING_VALUE(ref) - oper1->data.number;
-		if (result < 1)
-			abort_interp("Result must be positive. (1)");
 		if (Typeof(ref2) == TYPE_PLAYER) {
-			result2 = PLAYER_PENNIES(ref2);
-			if (result2 > (result2 + oper1->data.number))
+			if (GETVALUE(ref2) > (GETVALUE(ref2) + oper1->data.number))
 				abort_interp("Would roll over player's score. (2)");
-			if ((result2 + oper1->data.number) > tp_max_pennies)
+			if ((GETVALUE(ref2) + oper1->data.number) > tp_max_pennies)
 				abort_interp("Would exceed MAX_PENNIES. (2)");
-			THING_SET_VALUE(ref, (THING_VALUE(ref) - oper1->data.number));
-			PLAYER_ADD_PENNIES(ref2, oper1->data.number);
-			DBDIRTY(ref);
-			DBDIRTY(ref2);
-		} else if (Typeof(ref2) == TYPE_THING) {
-			THING_SET_VALUE(ref, (THING_VALUE(ref) - oper1->data.number));
-			THING_SET_VALUE(ref2, (THING_VALUE(ref2) + oper1->data.number));
-			DBDIRTY(ref);
-			DBDIRTY(ref2);
 		} else {
-			abort_interp("Invalid object type. (2)");
+			abort_interp("Permission denied. (2)");
 		}
-	} else {
-		abort_interp("Invalid object type. (1)");
 	}
+	SETVALUE(ref, GETVALUE(ref) - oper1->data.number);
+	DBDIRTY(ref);
+	SETVALUE(ref2, GETVALUE(ref2) + oper1->data.number);
+	DBDIRTY(ref2);
 	CLEAR(oper1);
 	CLEAR(oper2);
 	CLEAR(oper3);
@@ -1822,18 +1782,18 @@ prim_copyplayer(PRIM_PROTOTYPE)
 	dirtyprops(newplayer);
 #endif
 
-    PLAYER_SET_HOME(newplayer, PLAYER_HOME(ref));
-	PLAYER_ADD_PENNIES(newplayer, PLAYER_PENNIES(ref));
+	PLAYER_SET_HOME(newplayer, PLAYER_HOME(ref));
+	SETVALUE(newplayer, GETVALUE(newplayer) + GETVALUE(ref));
 	moveto(newplayer, PLAYER_HOME(ref));
 
-    /* link him to player_start */
-    log_status("PCREATE[MUF]: %s(%d) by %s(%d)\n",
+	/* link him to player_start */
+	log_status("PCREATE[MUF]: %s(%d) by %s(%d)\n",
         NAME(newplayer), (int) newplayer, NAME(player), (int) player);
     
-    CLEAR(oper1);
-    CLEAR(oper2);
-    CLEAR(oper3);
-    PushObject(newplayer);
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
+	PushObject(newplayer);
 }
 
 void
@@ -1932,7 +1892,7 @@ prim_toadplayer(PRIM_PROTOTYPE)
 	/* reset name */
 	FLAGS(victim) = (FLAGS(victim) & ~TYPE_MASK) | TYPE_THING;
 	OWNER(victim) = recipient;
-	THING_SET_VALUE(victim, 1);
+	SETVALUE(victim, 1);
 
 	CLEAR(oper1);
 	CLEAR(oper2);

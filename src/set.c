@@ -580,7 +580,7 @@ _do_unlink(int descr, dbref player, const char *name, int quiet)
 			switch (Typeof(exit)) {
 			case TYPE_EXIT:
 				if (DBFETCH(exit)->sp.exit.ndest != 0) {
-					PLAYER_ADD_PENNIES(OWNER(exit), tp_link_cost);
+					SETVALUE(OWNER(exit), GETVALUE(OWNER(exit)) + tp_link_cost);
 					DBDIRTY(OWNER(exit));
 				}
 				ts_modifyobject(exit);
@@ -682,7 +682,7 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 					return;
 				}
 			} else {
-				if(!Wizard(OWNER(player)) && (PLAYER_PENNIES(player) < (tp_link_cost + tp_exit_cost))) {
+				if(!Wizard(OWNER(player)) && (GETVALUE(player) < (tp_link_cost + tp_exit_cost))) {
 					notify_fmt(player, "It costs %d %s to link this exit.",
 							   (tp_link_cost + tp_exit_cost),
 							   (tp_link_cost + tp_exit_cost == 1) ? tp_penny : tp_pennies);

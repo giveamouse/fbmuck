@@ -1799,10 +1799,10 @@ mfn_money(MFUNARGS)
 		ABORT_MPI("MONEY", "Permission denied.");
 	switch (Typeof(obj)) {
 	case TYPE_THING:
-		snprintf(buf, BUFFER_LEN, "%d", THING_VALUE(obj));
+		snprintf(buf, BUFFER_LEN, "%d", GETVALUE(obj));
 		break;
 	case TYPE_PLAYER:
-		snprintf(buf, BUFFER_LEN, "%d", PLAYER_PENNIES(obj));
+		snprintf(buf, BUFFER_LEN, "%d", GETVALUE(obj));
 		break;
 	default:
 		strcpy(buf, "0");

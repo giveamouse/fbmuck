@@ -102,7 +102,7 @@ sane_dump_object(dbref player, const char *arg)
 	switch (TYPEOF(d)) {
 	case TYPE_THING:
 		SanPrint(player, "  Home:           %s", unparse(THING_HOME(d)));
-		SanPrint(player, "  Value:          %d", THING_VALUE(d));
+		SanPrint(player, "  Value:          %d", GETVALUE(d));
 		break;
 
 	case TYPE_ROOM:
@@ -111,7 +111,7 @@ sane_dump_object(dbref player, const char *arg)
 
 	case TYPE_PLAYER:
 		SanPrint(player, "  Home:           %s", unparse(PLAYER_HOME(d)));
-		SanPrint(player, "  Pennies:        %d", PLAYER_PENNIES(d));
+		SanPrint(player, "  Pennies:        %d", GETVALUE(d));
 		if (player < 0) {
 			SanPrint(player, "  Password MD5:   %s", PLAYER_PASSWORD(d));
 		}
@@ -740,7 +740,7 @@ create_lostandfound(dbref * player, dbref * room)
 		ALLOC_PLAYER_SP(*player);
 		PLAYER_SET_HOME(*player, *room);
 		EXITS(*player) = NOTHING;
-		PLAYER_SET_PENNIES(*player, tp_start_pennies);
+		SETVALUE(*player, tp_start_pennies);
 		rpass = rand_password();
 		PLAYER_SET_PASSWORD(*player, NULL);
 		set_password(*player, rpass);
@@ -1314,7 +1314,7 @@ extract_object(FILE * f, dbref d)
 	switch (TYPEOF(d)) {
 	case TYPE_THING:
 		fprintf(f, "  Home:           %s\n", unparse(THING_HOME(d)));
-		fprintf(f, "  Value:          %d\n", THING_VALUE(d));
+		fprintf(f, "  Value:          %d\n", GETVALUE(d));
 		break;
 
 	case TYPE_ROOM:
@@ -1323,7 +1323,7 @@ extract_object(FILE * f, dbref d)
 
 	case TYPE_PLAYER:
 		fprintf(f, "  Home:           %s\n", unparse(PLAYER_HOME(d)));
-		fprintf(f, "  Pennies:        %d\n", PLAYER_PENNIES(d));
+		fprintf(f, "  Pennies:        %d\n", GETVALUE(d));
 		break;
 
 	case TYPE_EXIT:

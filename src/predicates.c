@@ -2,6 +2,14 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.11  2004/01/14 16:57:11  wolfwings
+ * Further cleanup of #defines across codebase.
+ * Replaced numerous #defines relating to Pennies with SETVALUE/GETVALUE.
+ * Removed replaced #defines from db.h.
+ * Simplified processing of prim_movepennies to support newly-extended penny-prop system.
+ * Replaced SETVALUE with LOADVALUE in db.c database-loading functions.
+ * Moved ANTILOCK to OBSOLETE_ANTILOCK, limited processing to pre-Foxen8 databases.
+ *
  * Revision 1.10  2004/01/12 09:42:49  wolfwings
  * Removed remaining Anonymity code.
  *
@@ -444,8 +452,8 @@ payfor(dbref who, int cost)
 	who = OWNER(who);
 	if (Wizard(who)) {
 		return 1;
-	} else if (PLAYER_PENNIES(who) >= cost) {
-		PLAYER_ADD_PENNIES(who, -cost);
+	} else if (GETVALUE(who) >= cost) {
+		SETVALUE(who, GETVALUE(who) - cost);
 		DBDIRTY(who);
 		return 1;
 	} else {

@@ -552,13 +552,13 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		snprintf(buf, sizeof(buf), "%.*s  Owner: %s  Value: %d",
 				(BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
 				unparse_object(player, thing),
-				NAME(OWNER(thing)), THING_VALUE(thing));
+				NAME(OWNER(thing)), GETVALUE(thing));
 		break;
 	case TYPE_PLAYER:
 		snprintf(buf, sizeof(buf), "%.*s  %s: %d  ", 
 				(BUFFER_LEN - strlen(tp_cpennies) - 35),
 				unparse_object(player, thing),
-				tp_cpennies, PLAYER_PENNIES(thing));
+				tp_cpennies, GETVALUE(thing));
 		break;
 	case TYPE_EXIT:
 	case TYPE_PROGRAM:
@@ -789,8 +789,8 @@ do_score(dbref player)
 {
 	char buf[BUFFER_LEN];
 
-	snprintf(buf, sizeof(buf), "You have %d %s.", PLAYER_PENNIES(player),
-			PLAYER_PENNIES(player) == 1 ? tp_penny : tp_pennies);
+	snprintf(buf, sizeof(buf), "You have %d %s.", GETVALUE(player),
+			GETVALUE(player) == 1 ? tp_penny : tp_pennies);
 	notify(player, buf);
 }
 
