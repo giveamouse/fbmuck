@@ -242,7 +242,7 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
 	char buf[BUFFER_LEN];
 	int cnt;
 
-	if (!tp_zombies && (!Wizard(player) || Typeof(player) != TYPE_PLAYER)) {
+	if (tp_zombies && (!Wizard(player) || Typeof(player) != TYPE_PLAYER)) {
 		notify(player, "Only Wizard players may use this command.");
 		return;
 	}
@@ -283,7 +283,7 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 		return;
 	}
 
-	if (!tp_zombies && (!Wizard(player) || Typeof(player) != TYPE_PLAYER)) {
+	if (tp_zombies && (!Wizard(player) || Typeof(player) != TYPE_PLAYER)) {
 		notify(player, "Only Wizard players may use this command.");
 		return;
 	}
