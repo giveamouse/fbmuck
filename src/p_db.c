@@ -1625,6 +1625,9 @@ prim_findnext(PRIM_PROTOTYPE)
 	who = oper2->data.objref;
 	name = DoNullInd(oper3->data.string);
 
+	if (mlev < 2)
+		abort_interp("Permission denied.  Requires at least Mucker Level 2.");
+
 	if (mlev < 3) {
 		if (who == NOTHING) {
 			abort_interp("Permission denied.  Owner inspecific searches require Mucker Level 3.");
