@@ -1,6 +1,6 @@
-   To enable SSL connections, run configure with the  --use-ssl=SSLTOP 
-arguement. SSLTOP should be /usr/local/ssl, or /usr/ssl, or whereever you've
-installed OpenSSL.
+   To enable SSL connections, run configure with the  --with-ssl=SSLTOP 
+argument. SSLTOP should be /usr, /usr/local, or whatever path contains the
+sub-paths 'lib/libssl.so' and 'include/ssl.h' or 'include/openssl/ssl.h'.
 
    This has been tested against:
 OpenSSL 0.9.5a 1 Apr 2000 (Under Solaris 2.7)
