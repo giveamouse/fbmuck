@@ -619,6 +619,7 @@ MaybeOptimizeSvarAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 				break;
 
 			case PROG_SVAR_AT:
+			case PROG_SVAR_AT_CLEAR:
 				if (curr->in.data.number == first->in.data.number) {
 					/* Can't optimize if references to the variable found before a var! */
 					return;
