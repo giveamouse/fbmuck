@@ -1,119 +1,5 @@
 /* $Header$ */
 
-/*
- * $Log: db.c,v $
- * Revision 1.6  2000/08/12 06:14:17  revar
- * Changed {ontime} and {idle} to refer to the least idle of a users connections.
- * Changed maximum MUF stacksize to 1024 elements.
- * Optimized almost all MUF connection primitives to be O(1) instead of O(n),
- *   by using lookup tables instead of searching a linked list.
- *
- * Revision 1.5  2000/07/18 18:15:02  winged
- * Various fixes to support warning-free compiling under -Wall -Wstrict-prototypes -Wno-format -- not all warnings fixed or found yet
- *
- * Revision 1.4  2000/07/08 09:36:12  tiger
- * Fixed legacy DB load so loading the minimal.db and creating a program does
- *   not automatically put you into insert mode.
- *
- * Revision 1.3  2000/05/23 22:34:54  wog
- * Changed number() to not think "-" or "+" is a number.
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  2000/01/14 22:56:06  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.2  2000/01/14 22:53:00  foxen
- * Added Points' SECURE_THING_MOVING @tune support.
- *
- * Revision 1.1.1.1  1999/12/12 07:27:43  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.2  1996/07/03 22:35:46  foxen
- * 5.55 checkpoint.
- *
- * Revision 1.1  1996/06/12 02:18:28  foxen
- * Initial revision
- *
- * Revision 5.21  1994/04/07  06:12:47  foxen
- * Remove player name from hash before overwriting obj with delta
- *
- * Revision 5.20  1994/03/21  11:00:42  foxen
- * Autoconfiguration mods.
- *
- * Revision 5.19  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.18  1994/03/14  12:08:46  foxen
- * Initial portability mods and bugfixes.
- *
- * Revision 5.17  1994/02/27  21:18:34  foxen
- * made fix to the garbage chain for when using deltas.
- *
- * Revision 5.16  1994/02/11  05:52:41  foxen
- * Memory cleanup and monitoring code mods.
- *
- * Revision 5.15  1994/02/09  11:42:09  foxen
- * more bugfixes for compiling without DISKBASE on.
- *
- * Revision 5.14  1994/02/09  11:11:28  foxen
- * Made fixes to allow compiling with diskbasing turned off.
- *
- * Revision 5.13  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.12  1994/01/06  11:13:33  foxen
- * Removed excess fclose() from macroload()
- *
- * Revision 5.11  1993/12/20  06:22:51  foxen
- * *** empty log message ***
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.11  90/09/28  12:19:46  rearl
- * Took out alloc_string(), moved it to stringutil.c
- *
- * Revision 1.10  90/09/18  07:55:13  rearl
- * Added hash tables, changed program `locked' field to INTERNAL flag.
- *
- * Revision 1.9  90/09/16  04:41:54  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.8  90/09/10  02:19:46  rearl
- * Introduced string compression of properties, for the
- * COMPRESS compiler option.
- *
- * Revision 1.7  90/09/01  05:57:03  rearl
- * Took out TEST_MALLOC references.
- *
- * Revision 1.6  90/08/27  03:22:33  rearl
- * Disk-based MUF source code, added neccesary locking.
- *
- * Revision 1.5  90/08/15  03:00:59  rearl
- * Cleaned up some stuff, took out #ifdef GENDER.
- *
- * Revision 1.4  90/08/02  18:47:46  rearl
- * Fixed calls to logging functions.
- *
- * Revision 1.3  90/07/29  17:31:20  rearl
- * One picky pointer cast fixed.
- *
- * Revision 1.2  90/07/23  03:12:27  casie
- * Cleaned up various gcc warnings.
- *
- * Revision 1.1  90/07/19  23:03:24  casie
- * Initial revision
- *
- *
- */
-
 #include "copyright.h"
 #include "config.h"
 
@@ -1468,6 +1354,9 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		PROGRAM_SET_START(objno, 0);
 		PROGRAM_SET_PUBS(objno, 0);
 		PROGRAM_SET_MCPBINDS(objno, 0);
+		PROGRAM_SET_PROFTIME(objno, 0, 0);
+		PROGRAM_SET_PROFSTART(objno, 0);
+		PROGRAM_SET_PROF_USES(objno, 0);
 
 		if (dtype < 5 && MLevel(objno) == 0)
 			SetMLevel(objno, 2);

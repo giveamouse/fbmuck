@@ -1,119 +1,5 @@
 /* $Header$ */
 
-/*
- * $Log: game.c,v $
- * Revision 1.4  2000/07/18 18:12:40  winged
- * Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
- *
- * Revision 1.3  2000/07/07 18:41:04  revar
- * Fixed a db corruption bug with @toading players.
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:43  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.2  1996/07/03 22:35:46  foxen
- * 5.55 checkpoint.
- *
- * Revision 1.1  1996/06/12 02:21:57  foxen
- * Initial revision
- *
- * Revision 5.20  1994/03/21  11:00:42  foxen
- * Autoconfiguration mods.
- *
- * Revision 5.19  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.18  1994/03/14  12:08:46  foxen
- * Initial portability mods and bugfixes.
- *
- * Revision 5.17  1994/02/09  01:44:26  foxen
- * Added in the code for MALLOC_PROFILING a la Cynbe's code.
- *
- * Revision 5.16  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.15  1994/01/15  01:23:00  foxen
- * Added @conlock and @chlock comands for container and @chown locks.
- *
- * Revision 5.14  1994/01/15  00:31:07  foxen
- * @doing mods.
- *
- * Revision 5.13  1994/01/08  05:38:19  foxen
- * removes setvbuf() calls.
- *
- * Revision 5.12  1994/01/06  03:12:12  foxen
- * version 5.12
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.1  91/01/24  00:44:12  cks
- * changes for QUELL.
- *
- * Revision 1.0  91/01/22  21:48:47  cks
- * Initial revision
- *
- * Revision 1.15  90/09/28  12:21:03  rearl
- * Added logging of interactive player commands.
- *
- * Revision 1.14  90/09/16  04:42:11  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.13  90/09/15  22:20:04  rearl
- * Fixed non-GOD_PRIV problem.
- *
- * Revision 1.12  90/09/13  06:22:31  rearl
- * Added optional argument to @dump for changing the dumpfile in emergencies.
- *
- * Revision 1.11  90/09/10  02:19:54  rearl
- * Fixed a possible bug in database checkpointing, minimized
- * command-line space-smashing.
- *
- * Revision 1.10  90/09/01  05:57:55  rearl
- * Fixed bugs in macro dumpfile.
- *
- * Revision 1.9  90/08/27  03:24:52  rearl
- * Disk-based MUF source code, added environment support code.
- *
- * Revision 1.8  90/08/11  04:00:20  rearl
- * *** empty log message ***
- *
- * Revision 1.7  90/08/05  14:43:34  rearl
- * One more silly bug fixed in the command handler.
- *
- * Revision 1.6  90/08/02  18:55:04  rearl
- * Fixed some calls to logging functions.
- *
- * Revision 1.5  90/07/30  00:11:07  rearl
- * Added @owned command.
- *
- * Revision 1.4  90/07/29  17:34:05  rearl
- * Fixed bug in = once and for all, also some bugs hiding in the command
- * processing switch.
- *
- * Revision 1.3  90/07/21  16:32:23  casie
- * more log calls added
- *
- * Revision 1.2  90/07/21  01:43:51  casie
- * added support for logging.
- *
- * Revision 1.1  90/07/19  23:03:33  casie
- * Initial revision
- *
- *
- */
-
 #include "copyright.h"
 #include "config.h"
 
@@ -905,6 +791,16 @@ process_command(int descr, dbref player, char *command)
 					Matched("@memory");
 					do_memory(player);
 					break;
+				case 'p':
+			    case 'P':
+			        Matched("@mpitops");
+			        do_mpi_topprofs(player, arg1);
+			        break;
+			    case 'u':
+			    case 'U':
+			        Matched("@muftops");
+			        do_muf_topprofs(player, arg1);
+			        break;
 				default:
 					goto bad;
 				}
@@ -1081,9 +977,13 @@ process_command(int descr, dbref player, char *command)
 					break;
 				case 'o':
 				case 'O':
-					if (strcmp(command, "@toad"))
+					if (!strcmp(command, "@toad")) {
+						do_toad(descr, player, arg1, arg2);
+					} else if (!strcmp(command, "@tops")) {
+						do_all_topprofs(player, arg1);
+					} else {
 						goto bad;
-					do_toad(descr, player, arg1, arg2);
+					}
 					break;
 				case 'r':
 				case 'R':

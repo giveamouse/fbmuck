@@ -2,6 +2,11 @@
 
 /*
  * $Log: create.c,v $
+ * Revision 1.4  2000/08/23 10:00:02  revar
+ * Added @tops, @muftops, and @mpitops profiling commands.
+ * Changed examine to show a program's cumulative runtimes.
+ * Changes @ps to show process' %CPU usage.
+ *
  * Revision 1.3  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -640,6 +645,9 @@ do_prog(int descr, dbref player, const char *name)
 		PROGRAM_SET_START(newprog, NULL);
 		PROGRAM_SET_PUBS(newprog, NULL);
 		PROGRAM_SET_MCPBINDS(newprog, NULL);
+		PROGRAM_SET_PROFTIME(newprog, 0, 0);
+		PROGRAM_SET_PROFSTART(newprog, 0);
+		PROGRAM_SET_PROF_USES(newprog, 0);
 
 		PLAYER_SET_CURR_PROG(player, newprog);
 

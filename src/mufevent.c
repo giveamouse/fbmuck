@@ -188,13 +188,28 @@ muf_event_list(dbref player, char *pat)
 	char buf[BUFFER_LEN];
 	int count = 0;
 	time_t rtime = time((time_t *) NULL);
+	time_t etime;
+	double pcnt;
 	struct mufevent_process *proc = mufevent_processes;
 
 	while (proc) {
+		if (proc->fr) {
+			etime = rtime - proc->fr->started;
+			if (etime > 0) {
+				pcnt = proc->fr->totaltime.tv_sec;
+				pcnt += proc->fr->totaltime.tv_usec / 1000000;
+				pcnt = pcnt * 100 / etime;
+				if (pcnt > 100.0) {
+					pcnt = 100.0;
+				}
+			} else {
+				pcnt = 0.0;
+			}
+		}
 		sprintf(buf, pat,
 				proc->fr->pid, "--",
 				time_format_2((long) (rtime - proc->fr->started)),
-				(proc->fr->instcnt / 1000), proc->prog, NAME(proc->player), "EVENT_WAIT");
+				(proc->fr->instcnt / 1000), pcnt, proc->prog, NAME(proc->player), "EVENT_WAIT");
 		if (Wizard(OWNER(player)) || (OWNER(proc->prog) == OWNER(player))
 			|| (proc->player == player))
 			notify_nolisten(player, buf, 1);

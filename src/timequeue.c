@@ -657,41 +657,56 @@ list_events(dbref player)
 	int count = 0;
 	timequeue ptr = tqhead;
 	time_t rtime = time((time_t *) NULL);
+	time_t etime;
+	double pcnt;
 
-	notify_nolisten(player, "     PID Next  Run KInst Prog#   Player", 1);
+	notify_nolisten(player, "     PID Next  Run KInst %CPU Prog#   Player", 1);
 
 	while (ptr) {
 		strcpy(buf2, ((ptr->when - rtime) > 0) ?
 			   time_format_2((long) (ptr->when - rtime)) : "Due");
+		if (ptr->fr) {
+			etime = rtime - ptr->fr->started;
+			if (etime > 0) {
+				pcnt = ptr->fr->totaltime.tv_sec;
+				pcnt += ptr->fr->totaltime.tv_usec / 1000000;
+				pcnt = pcnt * 100 / etime;
+				if (pcnt > 100.0) {
+					pcnt = 100.0;
+				}
+			} else {
+				pcnt = 0.0;
+			}
+		}
 		if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_DELAY) {
-			(void) sprintf(buf, "%8d %4s %4s %5d #%-6d %-16s %.512s",
+			(void) sprintf(buf, "%8d %4s %4s %5d %4.1f #%-6d %-16s %.512s",
 						   ptr->eventnum, buf2,
 						   time_format_2((long) (rtime - ptr->fr->started)),
-						   (ptr->fr->instcnt / 1000),
+						   (ptr->fr->instcnt / 1000), pcnt, 
 						   ptr->called_prog, NAME(ptr->uid), ptr->called_data);
 		} else if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ) {
-			(void) sprintf(buf, "%8d %4s %4s %5d #%-6d %-16s %.512s",
+			(void) sprintf(buf, "%8d %4s %4s %5d %4.1f #%-6d %-16s %.512s",
 						   ptr->eventnum, "--",
 						   time_format_2((long) (rtime - ptr->fr->started)),
-						   (ptr->fr->instcnt / 1000),
+						   (ptr->fr->instcnt / 1000), pcnt, 
 						   ptr->called_prog, NAME(ptr->uid), ptr->called_data);
 		} else if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_TIMER) {
-			(void) sprintf(buf, "(%6d) %4s %4s %5d #%-6d %-16s %.512s",
+			(void) sprintf(buf, "(%6d) %4s %4s %5d %4.1f #%-6d %-16s %.512s",
 						   ptr->eventnum, buf2,
 						   time_format_2((long) (rtime - ptr->fr->started)),
-						   (ptr->fr->instcnt / 1000),
+						   (ptr->fr->instcnt / 1000), pcnt, 
 						   ptr->called_prog, NAME(ptr->uid), ptr->called_data);
 		} else if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_TREAD) {
-			(void) sprintf(buf, "%8d %4s %4s %5d #%-6d %-16s %.512s",
+			(void) sprintf(buf, "%8d %4s %4s %5d %4.1f #%-6d %-16s %.512s",
 						   ptr->eventnum, buf2,
 						   time_format_2((long) (rtime - ptr->fr->started)),
-						   (ptr->fr->instcnt / 1000),
+						   (ptr->fr->instcnt / 1000), pcnt, 
 						   ptr->called_prog, NAME(ptr->uid), ptr->called_data);
 		} else if (ptr->typ == TQ_MPI_TYP) {
-			(void) sprintf(buf, "%8d %4s   --   MPI #%-6d %-16s \"%.512s\"",
+			(void) sprintf(buf, "%8d %4s   --   MPI   -- #%-6d %-16s \"%.512s\"",
 						   ptr->eventnum, buf2, ptr->trig, NAME(ptr->uid), ptr->called_data);
 		} else {
-			(void) sprintf(buf, "%8d %4s   0s     0 #%-6d %-16s \"%.512s\"",
+			(void) sprintf(buf, "%8d %4s   0s     0   -- #%-6d %-16s \"%.512s\"",
 						   ptr->eventnum, buf2, ptr->called_prog,
 						   NAME(ptr->uid), ptr->called_data);
 		}
@@ -703,7 +718,7 @@ list_events(dbref player)
 		ptr = ptr->next;
 		count++;
 	}
-	count += muf_event_list(player, "%8d %4s %4s %5d #%-6d %-16s %.512s");
+	count += muf_event_list(player, "%8d %4s %4s %5d %4.1f #%-6d %-16s %.512s");
 	sprintf(buf, "%d events.", count);
 	notify_nolisten(player, buf, 1);
 }

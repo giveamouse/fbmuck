@@ -1,130 +1,6 @@
 
 /* $Header$ */
 
-/*
- * $Log: look.c,v $
- * Revision 1.3  2000/07/18 18:12:40  winged
- * Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  2000/01/11 01:58:16  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.2  2000/01/11 01:58:16  foxen
- * Bugfixes for GUI primitives.
- * Worked on debugging arrays reference counting.  (Still buggy.)
- *
- * Revision 1.1.1.1  1999/12/12 07:27:43  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.2  1996/07/03 22:35:46  foxen
- * 5.55 checkpoint.
- *
- * Revision 1.1  1996/06/12 02:41:59  foxen
- * Initial revision
- *
- * Revision 5.22  1994/04/03  19:55:31  foxen
- * Renamed _look/ propqueue to _lookq/
- *
- * Revision 5.21  1994/03/21  11:00:42  foxen
- * Autoconfiguration mods.
- *
- * Revision 5.20  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.19  1994/02/11  05:53:58  foxen
- * Minor cleanup and bugfixes.
- *
- * Revision 5.18  1994/02/09  11:11:28  foxen
- * Made fixes to allow compiling with diskbasing turned off.
- *
- * Revision 5.17  1994/02/07  23:03:42  foxen
- * @sweep now lists dark players.
- *
- * Revision 5.16  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.15  1994/01/15  01:31:44  foxen
- * Changed examine to list chown locks, container locks, and @doing messages.
- *
- * Revision 5.14  1994/01/12  03:14:25  foxen
- * @desc, @succ, @fail, @drop now parse MPI in args to an @program they call.
- *
- * Revision 5.11  1993/12/20  06:22:51  foxen
- * Fixed QUIT bug from 5.10.
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.1  91/01/24  00:44:25  cks
- * changes for QUELL.
- *
- * Revision 1.0  91/01/22  21:08:51  cks
- * Initial revision
- *
- * Revision 1.17  90/10/06  19:04:30  rearl
- * Fixed a typo in @# handling.
- *
- * Revision 1.16  90/10/06  16:32:49  rearl
- * Fixes for 2.2 distribution.
- *
- * Revision 1.15  90/09/28  12:24:13  rearl
- * Fixed small bug with disappearing descriptions...
- *
- * Revision 1.14  90/09/18  08:00:02  rearl
- * Took out FILTER.  Fixed @find.
- *
- * Revision 1.13  90/09/16  04:42:25  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.12  90/09/15  22:25:59  rearl
- * Added argument passing to MUF from @#.  COMPRESS fix for this as well.
- *
- * Revision 1.11  90/09/13  06:27:38  rearl
- * Argument passing with @# added.
- *
- * Revision 1.10  90/08/27  03:29:34  rearl
- * Added environment support.
- *
- * Revision 1.9  90/08/11  04:05:21  rearl
- * *** empty log message ***
- *
- * Revision 1.8  90/08/06  02:35:27  rearl
- * Oopsie, changed controls() back to can_link().
- *
- * Revision 1.7  90/08/05  03:19:33  rearl
- * Redid matching routines.
- *
- * Revision 1.6  90/08/02  18:53:09  rearl
- * Changed can_link() to controls().  Everyone controls an unlinked exit.
- *
- * Revision 1.5  90/07/30  00:09:55  rearl
- * Added @owned command, lists everything you own, or for wizards,
- * everything owned by the specified player (including exits)
- *
- * Revision 1.4  90/07/29  21:19:17  rearl
- * Fixed examine-description brain damage.
- *
- * Revision 1.3  90/07/29  17:39:30  rearl
- * Fixed various things such as ROOM programs, examine bug, examine
- * of programs now shows location, etc.
- *
- * Revision 1.2  90/07/23  03:12:10  casie
- * Cleaned up various gcc warnings.
- *
- * Revision 1.1  90/07/19  23:03:52  casie
- * Initial revision
- *
- *
- */
-
 #include "copyright.h"
 #include "config.h"
 #include "params.h"
@@ -132,6 +8,7 @@
 /* commands which look at things */
 
 #include <ctype.h>
+#include <sys/time.h>
 #include "db.h"
 #include "tune.h"
 #include "mpi.h"
@@ -859,11 +736,16 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		}
 		break;
 	case TYPE_PROGRAM:
-		if (PROGRAM_SIZ(thing))
+		if (PROGRAM_SIZ(thing)) {
+			struct timeval tv = PROGRAM_PROFTIME(thing);
 			sprintf(buf, "Program compiled size: %d instructions", PROGRAM_SIZ(thing));
-		else
+			notify(player, buf);
+			sprintf(buf, "Cumulative runtime: %d.%06d seconds ", tv.tv_sec, tv.tv_usec);
+			notify(player, buf);
+		} else {
 			sprintf(buf, "Program not compiled.");
-		notify(player, buf);
+			notify(player, buf);
+		}
 
 		/* print location if player can link to it */
 		if (DBFETCH(thing)->location != NOTHING && (controls(player, DBFETCH(thing)->location)

@@ -177,6 +177,12 @@ short db_conversion_flag = 0;
 short db_decompression_flag = 0;
 short wizonly_mode = 0;
 
+time_t sel_prof_start_time;
+long sel_prof_idle_sec;
+long sel_prof_idle_usec;
+unsigned long sel_prof_idle_use;
+
+
 void
 show_program_usage(char *prog)
 {
@@ -370,6 +376,11 @@ main(int argc, char **argv)
 	/* Initialize MCP and some packages. */
 	mcp_initialize();
 	gui_initialize();
+
+    sel_prof_start_time = time(NULL); /* Set useful starting time */
+    sel_prof_idle_sec = 0;
+    sel_prof_idle_usec = 0;
+    sel_prof_idle_use = 0;
 
 	if (init_game(infile_name, outfile_name) < 0) {
 		fprintf(stderr, "Couldn't load %s!\n", infile_name);
@@ -784,6 +795,7 @@ shovechars(int port)
 	int maxd, cnt;
 	struct descriptor_data *d, *dnext;
 	struct descriptor_data *newd;
+	struct timeval sel_in, sel_out;
 	int avail_descriptors;
 
 	sock = make_socket(port);
@@ -843,12 +855,27 @@ shovechars(int port)
 			timeout.tv_sec = tmptq + (tp_pause_min / 1000);
 			timeout.tv_usec = (tp_pause_min % 1000) * 1000L;
 		}
+		gettimeofday(&sel_in,NULL);
 		if (select(maxd, &input_set, &output_set, (fd_set *) 0, &timeout) < 0) {
 			if (errno != EINTR) {
 				perror("select");
 				return;
 			}
 		} else {
+			gettimeofday(&sel_out,NULL);
+			if (sel_out.tv_usec < sel_in.tv_usec) {
+				sel_out.tv_usec += 1000000;
+				sel_out.tv_sec -= 1;
+			}
+			sel_out.tv_usec -= sel_in.tv_usec;
+			sel_out.tv_sec -= sel_in.tv_sec;
+			sel_prof_idle_sec += sel_out.tv_sec;
+			sel_prof_idle_usec += sel_out.tv_usec;
+			if (sel_prof_idle_usec >= 1000000) {
+				sel_prof_idle_usec -= 1000000;
+				sel_prof_idle_sec += 1;
+			}
+			sel_prof_idle_use++;
 			(void) time(&now);
 			if (FD_ISSET(sock, &input_set)) {
 				if (!(newd = new_connection(sock))) {

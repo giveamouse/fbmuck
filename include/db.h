@@ -1,117 +1,5 @@
-/* $Header$
- *
- * $Log: db.h,v $
- * Revision 1.9  2000/08/12 06:14:17  revar
- * Changed {ontime} and {idle} to refer to the least idle of a users connections.
- * Changed maximum MUF stacksize to 1024 elements.
- * Optimized almost all MUF connection primitives to be O(1) instead of O(n),
- *   by using lookup tables instead of searching a linked list.
- *
- * Revision 1.8  2000/07/18 18:18:18  winged
- * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
- *
- * Revision 1.7  2000/07/02 23:19:00  revar
- * Added support for the planned C-like language to muf-bytecode compiler.
- * Changed compiler to use a linking lookup table for address resolution.
- * Added PROG_SVAR_BANG and PROG_SVAR_AT support, for one-instr var get/set.
- *
- * Revision 1.6  2000/05/15 09:52:57  revar
- * Rewrote how lvars work, to be per program, rather than per call-level.
- *
- * Revision 1.5  2000/05/12 03:22:12  revar
- * Optimized CLEAR() and RCLEAR()
- * Optimized copyinst()
- * Optimized muf function header trilogy into one inst.
- *
- * Revision 1.4  2000/05/08 08:21:17  revar
- * Added VAR! directive to the muf compiler.
- * Added procedural argument variable declaration.  ie: : myfunc[ foo bar baz ]
- * Added MCP_REGISTER_EVENT for muf event based MCP handling.
- * Changed MCP_SEND to error out on non-support of MCP on the given connection.
- * Fixed Mucker Level error messages in MCP_REGISTER.
- *
- * Revision 1.3  2000/04/29 04:16:04  revar
- * Added PROCESS_TIMER_LIMIT @tune.
- * Added TIMER_START muf prim.
- * Added TIMER_STOP muf prim.
- * Added EVENT_COUNT muf prim.
- *
- * Revision 1.2  2000/03/29 12:21:01  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/17 12:29:28  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.2  1999/12/17 12:29:28  foxen
- * More bugfixes.  Nearly have the GUI prims done.
- * They appear to work at least nominally well.
- * Dialogs now go away when their MUF programs get killed.
- *
- * Revision 1.1.1.1  1999/12/12 07:28:12  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/17 17:29:45  foxen
- * Initial revision
- *
- * Revision 5.16  1994/02/27  21:24:26  foxen
- * Removed idiotic redefinition of malloc()
- *
- * Revision 5.15  1994/02/11  05:55:59  foxen
- * memory monitoring code and memory cleanup mods.
- *
- * Revision 5.14  1994/01/15  00:29:46  foxen
- * Added SETDOING() macro.
- *
- * Revision 5.13  1994/01/15  00:08:39  foxen
- * @doing mods.
- *
- * Revision 5.12  1994/01/06  03:16:30  foxen
- * Version 5.12
- *
- * Revision 5.1  1993/12/17  00:35:54  foxen
- * initial revision.
- *
- * Revision 1.1  91/01/24  00:43:41  cks
- * changes for QUELL.
- *
- * Revision 1.0  91/01/22  20:32:17  cks
- * Initial revision
- *
- * Revision 1.10  90/09/28  12:15:15  rearl
- * Added shared string structures to interp.c.
- *
- * Revision 1.9  90/09/18  08:05:45  rearl
- * Took out FILTER, added INTERNAL.  Moved stuff to params.h
- *
- * Revision 1.8  90/09/16  13:59:03  rearl
- * Disk based preparation code added.
- *
- * Revision 1.7  90/09/13  06:33:20  rearl
- * MAX_VAR increased to 53 == 50 user variables.
- *
- * Revision 1.6  90/09/01  06:03:46  rearl
- * Took out TEST_MALLOC references.
- *
- * Revision 1.5  90/08/27  14:06:31  rearl
- * Disk-based MUF source code and added necessary locks.
- *
- * Revision 1.4  90/08/15  03:50:57  rearl
- * Added some new macros and made others more useful...
- *
- * Revision 1.3  90/07/29  17:16:43  rearl
- * Moved some things to config.h, minor change in programs to allow
- * locks to rooms, @# in rooms, etc.
- *
- * Revision 1.2  90/07/19  23:06:07  casie
- * Removed comment log at top.
- *
- *
- */
+/* $Header$ */
+
 #include "copyright.h"
 
 #ifndef __DB_H
@@ -532,6 +420,8 @@ struct frame {
 	void *rndbuf;				/* buffer for seedable random */
 	struct scopedvar_t *svars;	/* Variables with function scoping. */
 	struct debuggerdata brkpt;	/* info the debugger needs */
+	struct timeval proftime;    /* profiling timing code */
+    struct timeval totaltime;   /* profiling timing code */
 	struct mufevent *events;	/* MUF event list. */
 	struct dlogidlist *dlogids;	/* List of dlogids this frame uses. */
 	union {
@@ -575,6 +465,9 @@ struct program_specific {
 	struct line *first;			/* first line */
 	struct publics *pubs;		/* public subroutine addresses */
 	struct mcp_binding *mcpbinds;	/* MCP message bindings. */
+	struct timeval proftime;	/* profiling time spent in this program. */
+	time_t profstart;			/* time when profiling started for this prog */
+	unsigned int profuses;		/* #calls to this program while profiling */
 };
 
 #define PROGRAM_SP(x)			(DBFETCH(x)->sp.program.sp)
@@ -589,9 +482,13 @@ struct program_specific {
 #define PROGRAM_FIRST(x)		(PROGRAM_SP(x)->first)
 #define PROGRAM_PUBS(x)			(PROGRAM_SP(x)->pubs)
 #define PROGRAM_MCPBINDS(x)		(PROGRAM_SP(x)->mcpbinds)
+#define PROGRAM_PROFTIME(x)		(PROGRAM_SP(x)->proftime)
+#define PROGRAM_PROFSTART(x)	(PROGRAM_SP(x)->profstart)
+#define PROGRAM_PROF_USES(x)	(PROGRAM_SP(x)->profuses)
 
 #define PROGRAM_INC_INSTANCES(x)	(PROGRAM_SP(x)->instances++)
 #define PROGRAM_DEC_INSTANCES(x)	(PROGRAM_SP(x)->instances--)
+#define PROGRAM_INC_PROF_USES(x)	(PROGRAM_SP(x)->profuses++)
 
 #define PROGRAM_SET_INSTANCES(x,y)	(PROGRAM_SP(x)->instances = y)
 #define PROGRAM_SET_CURR_LINE(x,y)	(PROGRAM_SP(x)->curr_line = y)
@@ -601,6 +498,9 @@ struct program_specific {
 #define PROGRAM_SET_FIRST(x,y)		(PROGRAM_SP(x)->first = y)
 #define PROGRAM_SET_PUBS(x,y)		(PROGRAM_SP(x)->pubs = y)
 #define PROGRAM_SET_MCPBINDS(x,y)	(PROGRAM_SP(x)->mcpbinds = y)
+#define PROGRAM_SET_PROFTIME(x,y,z)	(PROGRAM_SP(x)->proftime.tv_usec = z, PROGRAM_SP(x)->proftime.tv_sec = y)
+#define PROGRAM_SET_PROFSTART(x,y)	(PROGRAM_SP(x)->profstart = y)
+#define PROGRAM_SET_PROF_USES(x,y)	(PROGRAM_SP(x)->profuses = y)
 
 
 struct player_specific {
@@ -701,6 +601,10 @@ struct object {
 #endif
 
 	object_flag_type flags;
+
+	unsigned int mpi_prof_use;
+	struct timeval mpi_proftime;
+
 	struct timestamps ts;
 	union specific sp;
 };

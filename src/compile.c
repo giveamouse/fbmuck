@@ -228,6 +228,7 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
 	PROGRAM_SET_PUBS(cstat->program, NULL);
 	clean_mcpbinds(PROGRAM_MCPBINDS(cstat->program));
 	PROGRAM_SET_MCPBINDS(cstat->program, NULL);
+	PROGRAM_SET_PROFTIME(cstat->program, 0, 0);
 }
 
 /* abort compile macro */
@@ -530,6 +531,7 @@ uncompile_program(dbref i)
 	PROGRAM_SET_PUBS(i, NULL);
 	clean_mcpbinds(PROGRAM_MCPBINDS(i));
 	PROGRAM_SET_MCPBINDS(i, NULL);
+	PROGRAM_SET_PROFTIME(i, 0, 0);
 	PROGRAM_SET_CODE(i, NULL);
 	PROGRAM_SET_SIZ(i, 0);
 	PROGRAM_SET_START(i, NULL);
@@ -628,6 +630,9 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	PROGRAM_SET_PUBS(cstat.program, NULL);
 	clean_mcpbinds(PROGRAM_MCPBINDS(cstat.program));
 	PROGRAM_SET_MCPBINDS(cstat.program, NULL);
+	PROGRAM_SET_PROFTIME(cstat.program, 0, 0);
+	PROGRAM_SET_PROFSTART(cstat.program, time(NULL));
+	PROGRAM_SET_PROF_USES(cstat.program, 0);
 
 	if (!cstat.curr_line)
 		v_abort_compile(&cstat, "Missing program text.");

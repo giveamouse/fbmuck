@@ -1,141 +1,5 @@
 /* $Header$ */
 
-/*
- * $Log: wiz.c,v $
- * Revision 1.7  2000/08/12 06:14:17  revar
- * Changed {ontime} and {idle} to refer to the least idle of a users connections.
- * Changed maximum MUF stacksize to 1024 elements.
- * Optimized almost all MUF connection primitives to be O(1) instead of O(n),
- *   by using lookup tables instead of searching a linked list.
- *
- * Revision 1.6  2000/07/20 20:21:40  winged
- * Fixes to not have uninitialized pointers floating around anymore
- *
- * Revision 1.5  2000/07/19 01:33:18  revar
- * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
- * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
- *
- * Revision 1.4  2000/07/14 21:53:04  revar
- * Fixed a bug with @toad sending the inv of the toader home, not the toadee.
- *
- * Revision 1.3  2000/07/07 18:41:04  revar
- * Fixed a db corruption bug with @toading players.
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  2000/01/14 22:56:07  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.2  2000/01/14 22:53:01  foxen
- * Added Points' SECURE_THING_MOVING @tune support.
- *
- * Revision 1.1.1.1  1999/12/12 07:27:44  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 03:07:36  foxen
- * Initial revision
- *
- * Revision 5.21  1994/03/21  11:00:42  foxen
- * Autoconfiguration mods.
- *
- * Revision 5.20  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.19  1994/03/14  12:08:46  foxen
- * Initial portability mods and bugfixes.
- *
- * Revision 5.18  1994/02/15  00:28:32  foxen
- * Foxen do_memory to compile with NO_MEMORY_COMMAND defined.
- *
- * Revision 5.17  1994/02/14  03:01:50  foxen
- * Don't include malloc.h if doing MALLOC_PROFILING.
- *
- * Revision 5.16  1994/02/11  05:52:41  foxen
- * Memory cleanup and monitoring code mods.
- *
- * Revision 5.15  1994/02/09  11:11:28  foxen
- * Made fixes to allow compiling with diskbasing turned off.
- *
- * Revision 5.14  1994/02/09  01:44:26  foxen
- * Added in the code for MALLOC_PROFILING a la Cynbe's code.
- *
- * Revision 5.13  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.12  1994/01/06  03:15:30  foxen
- * version 5.12
- *
- * Revision 5.11  1993/12/20  06:22:51  foxen
- * *** empty log message ***
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.1  91/01/24  00:44:35  cks
- * @pcreate is now always permitted for all wizards, regardless of GOD_PRIV
- * versus no GOD_PRIV.
- *
- * Revision 1.0  91/01/22  22:11:02  cks
- * Initial revision
- *
- * Revision 1.16  90/09/28  12:25:37  rearl
- * Fixed missing newline bug in @newpassword logging.
- *
- * Revision 1.15  90/09/18  08:02:56  rearl
- * Fixed @tel for rooms -- a bug in permissions checking.
- *
- * Revision 1.14  90/09/16  04:43:20  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.13  90/09/15  22:28:34  rearl
- * Send inventory of the toad home, not the wizard's!
- *
- * Revision 1.12  90/09/13  06:30:20  rearl
- * @toad modified to chown the victim's items to a recipient player.
- *
- * Revision 1.11  90/09/10  02:19:06  rearl
- * Changed NL line termination to CR/LF pairs.
- *
- * Revision 1.10  90/09/05  02:32:31  rearl
- * Added match_here() for room parent setting.
- *
- * Revision 1.9  90/09/01  06:00:02  rearl
- * Fixed code in @teleport.
- *
- * Revision 1.8  90/08/27  03:35:41  rearl
- * Changed teleport checks...
- *
- * Revision 1.7  90/08/11  04:12:47  rearl
- * *** empty log message ***
- *
- * Revision 1.6  90/08/06  03:49:14  rearl
- * Added logging of @force, @boot, and @toad.
- *
- * Revision 1.5  90/08/05  03:20:16  rearl
- * Redid matching routines.
- *
- * Revision 1.4  90/08/02  22:07:04  rearl
- * Changed one call to a log function, that's it.
- *
- * Revision 1.3  90/07/29  17:46:28  rearl
- * Made @stat command a little cleaner, toaded victims are now
- * toaded first, then all their connections are booted from the game.
- *
- * Revision 1.2  90/07/23  14:48:37  casie
- * *** empty log message ***
- *
- * Revision 1.1  90/07/19  23:04:20  casie
- * Initial revision
- *
- *
- */
-
 #include "copyright.h"
 #include "config.h"
 
@@ -835,6 +699,398 @@ do_usage(dbref player)
 
 #endif							/* NO_USAGE_COMMAND */
 
+
+void
+do_muf_topprofs(dbref player, char *arg1)
+{
+	struct profnode {
+		struct profnode *next;
+		dbref  prog;
+		double proftime;
+		double pcnt;
+		long   comptime;
+		long   usecount;
+	} *tops = NULL;
+
+	struct profnode *curr = NULL;
+	int nodecount = 0;
+	char buf[BUFFER_LEN];
+	dbref i = NOTHING;
+	int count = atoi(arg1);
+	time_t current_systime = time(NULL);
+
+	if (!Wizard(OWNER(player))) {
+		notify(player, "Permission denied.");
+		return;
+	}
+	if (!string_compare(arg1, "reset")) {
+		for (i = db_top; i-->0; ) {
+			if (Typeof(i) == TYPE_PROGRAM) {
+				PROGRAM_SET_PROFTIME(i, 0, 0);
+				PROGRAM_SET_PROFSTART(i, current_systime);
+				PROGRAM_SET_PROF_USES(i, 0);
+			}
+		}
+		notify(player, "MUF profiling statistics cleared.");
+		return;
+	}
+	if (count < 0) {
+		notify(player, "Count has to be a positive number.");
+		return;
+	} else if (count == 0) {
+		count = 10;
+	}
+
+	for (i = db_top; i-->0; ) {
+		if (Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
+			struct profnode *newnode = (struct profnode *)malloc(sizeof(struct profnode));
+			struct timeval tmpt = PROGRAM_PROFTIME(i);
+
+			newnode->next = NULL;
+			newnode->prog = i;
+			newnode->proftime = tmpt.tv_sec;
+			newnode->proftime += (tmpt.tv_usec / 1000000.0);
+			newnode->comptime = current_systime - PROGRAM_PROFSTART(i);
+			newnode->usecount = PROGRAM_PROF_USES(i);
+			if (newnode->comptime > 0) {
+				newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
+			} else {
+				newnode->pcnt =  0.0;
+			}
+			if (!tops) {
+				tops = newnode;
+				nodecount++;
+			} else if (newnode->pcnt < tops->pcnt) {
+				if (nodecount < count) {
+					newnode->next = tops;
+					tops = newnode;
+					nodecount++;
+				} else {
+					free(newnode);
+				}
+			} else {
+				if (nodecount >= count) {
+					curr = tops;
+					tops = tops->next;
+					free(curr);
+				} else {
+					nodecount++;
+				}
+				if (!tops) {
+					tops = newnode;
+				} else if (newnode->pcnt < tops->pcnt) {
+					newnode->next = tops;
+					tops = newnode;
+				} else {
+					for (curr = tops; curr->next; curr = curr->next) {
+						if (newnode->pcnt < curr->next->pcnt) {
+							break;
+						}
+					}
+					newnode->next = curr->next;
+					curr->next = newnode;
+				}
+			}
+		}
+	}
+	notify(player, "     %CPU   TotalTime  UseCount  Program");
+	while (tops) {
+		curr = tops;
+		sprintf(buf, "%10.3f %10.3f %9d %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
+		notify(player, buf);
+		tops = tops->next;
+		free(curr);
+	}
+	sprintf(buf, "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
+			(current_systime-sel_prof_start_time),
+			((double)(sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
+			(double)((current_systime-sel_prof_start_time)+0.01),
+			sel_prof_idle_use);
+	notify(player,buf);
+	notify(player, "*Done*");
+}
+
+
+void
+do_mpi_topprofs(dbref player, char *arg1)
+{
+	struct profnode {
+		struct profnode *next;
+		dbref  prog;
+		double proftime;
+		double pcnt;
+		long   comptime;
+		long   usecount;
+	} *tops = NULL;
+
+	struct profnode *curr = NULL;
+	int nodecount = 0;
+	char buf[BUFFER_LEN];
+	dbref i = NOTHING;
+	int count = atoi(arg1);
+	time_t current_systime = time(NULL);
+
+	if (!Wizard(OWNER(player))) {
+		notify(player, "Permission denied.");
+		return;
+	}
+	if (!string_compare(arg1, "reset")) {
+		for (i = db_top; i-->0; ) {
+			if (DBFETCH(i)->mpi_prof_use) {
+				DBFETCH(i)->mpi_prof_use = 0;
+				DBFETCH(i)->mpi_proftime.tv_usec = 0;
+				DBFETCH(i)->mpi_proftime.tv_sec = 0;
+			}
+		}
+		mpi_prof_start_time = current_systime;
+		notify(player, "MPI profiling statistics cleared.");
+		return;
+	}
+	if (count < 0) {
+		notify(player, "Count has to be a positive number.");
+		return;
+	} else if (count == 0) {
+		count = 10;
+	}
+
+	for (i = db_top; i-->0; ) {
+		if (DBFETCH(i)->mpi_prof_use) {
+			struct profnode *newnode = (struct profnode *)malloc(sizeof(struct profnode));
+			newnode->next = NULL;
+			newnode->prog = i;
+			newnode->proftime = DBFETCH(i)->mpi_proftime.tv_sec;
+			newnode->proftime += (DBFETCH(i)->mpi_proftime.tv_usec / 1000000.0);
+			newnode->comptime = current_systime - mpi_prof_start_time;
+			newnode->usecount = DBFETCH(i)->mpi_prof_use;
+			if (newnode->comptime > 0) {
+				newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
+			} else {
+				newnode->pcnt =  0.0;
+			}
+			if (!tops) {
+				tops = newnode;
+				nodecount++;
+			} else if (newnode->pcnt < tops->pcnt) {
+				if (nodecount < count) {
+					newnode->next = tops;
+					tops = newnode;
+					nodecount++;
+				} else {
+					free(newnode);
+				}
+			} else {
+				if (nodecount >= count) {
+					curr = tops;
+					tops = tops->next;
+					free(curr);
+				} else {
+					nodecount++;
+				}
+				if (!tops) {
+					tops = newnode;
+				} else if (newnode->pcnt < tops->pcnt) {
+					newnode->next = tops;
+					tops = newnode;
+				} else {
+					for (curr = tops; curr->next; curr = curr->next) {
+						if (newnode->pcnt < curr->next->pcnt) {
+							break;
+						}
+					}
+					newnode->next = curr->next;
+					curr->next = newnode;
+				}
+			}
+		}
+	}
+	notify(player, "     %CPU   TotalTime  UseCount  Object");
+	while (tops) {
+		curr = tops;
+		sprintf(buf, "%10.3f %10.3f %9d %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
+		notify(player, buf);
+		tops = tops->next;
+		free(curr);
+	}
+	sprintf(buf, "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
+			(current_systime-sel_prof_start_time),
+			(((double)sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
+			(double)((current_systime-sel_prof_start_time)+0.01),
+			sel_prof_idle_use);
+	notify(player,buf);
+	notify(player, "*Done*");
+}
+
+
+void
+do_all_topprofs(dbref player, char *arg1)
+{
+	struct profnode {
+		struct profnode *next;
+		dbref  prog;
+		double proftime;
+		double pcnt;
+		long   comptime;
+		long   usecount;
+		short  type;
+	} *tops = NULL;
+
+	struct profnode *curr = NULL;
+	int nodecount = 0;
+	char buf[BUFFER_LEN];
+	dbref i = NOTHING;
+	int count = atoi(arg1);
+	time_t current_systime = time(NULL);
+
+	if (!Wizard(OWNER(player))) {
+		notify(player, "Permission denied.");
+		return;
+	}
+	if (!string_compare(arg1, "reset")) {
+		for (i = db_top; i-->0; ) {
+			if (DBFETCH(i)->mpi_prof_use) {
+				DBFETCH(i)->mpi_prof_use = 0;
+				DBFETCH(i)->mpi_proftime.tv_usec = 0;
+				DBFETCH(i)->mpi_proftime.tv_sec = 0;
+			}
+			if (Typeof(i) == TYPE_PROGRAM) {
+				PROGRAM_SET_PROFTIME(i, 0, 0);
+				PROGRAM_SET_PROFSTART(i, current_systime);
+				PROGRAM_SET_PROF_USES(i, 0);
+			}
+		}
+		sel_prof_idle_sec = 0;
+		sel_prof_idle_usec = 0;
+		sel_prof_start_time = current_systime;
+		sel_prof_idle_use = 0;
+		mpi_prof_start_time = current_systime;
+		notify(player, "All profiling statistics cleared.");
+		return;
+	}
+	if (count < 0) {
+		notify(player, "Count has to be a positive number.");
+		return;
+	} else if (count == 0) {
+		count = 10;
+	}
+
+	for (i = db_top; i-->0; ) {
+		if (DBFETCH(i)->mpi_prof_use) {
+			struct profnode *newnode = (struct profnode *)malloc(sizeof(struct profnode));
+			newnode->next = NULL;
+			newnode->prog = i;
+			newnode->proftime = DBFETCH(i)->mpi_proftime.tv_sec;
+			newnode->proftime += (DBFETCH(i)->mpi_proftime.tv_usec / 1000000.0);
+			newnode->comptime = current_systime - mpi_prof_start_time;
+			newnode->usecount = DBFETCH(i)->mpi_prof_use;
+			newnode->type = 0;
+			if (newnode->comptime > 0) {
+				newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
+			} else {
+				newnode->pcnt =  0.0;
+			}
+			if (!tops) {
+				tops = newnode;
+				nodecount++;
+			} else if (newnode->pcnt < tops->pcnt) {
+				if (nodecount < count) {
+					newnode->next = tops;
+					tops = newnode;
+					nodecount++;
+				} else {
+					free(newnode);
+				}
+			} else {
+				if (nodecount >= count) {
+					curr = tops;
+					tops = tops->next;
+					free(curr);
+				} else {
+					nodecount++;
+				}
+				if (!tops) {
+					tops = newnode;
+				} else if (newnode->pcnt < tops->pcnt) {
+					newnode->next = tops;
+					tops = newnode;
+				} else {
+					for (curr = tops; curr->next; curr = curr->next) {
+						if (newnode->pcnt < curr->next->pcnt) {
+							break;
+						}
+					}
+					newnode->next = curr->next;
+					curr->next = newnode;
+				}
+			}
+		}
+		if (Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
+			struct profnode *newnode = (struct profnode *)malloc(sizeof(struct profnode));
+			struct timeval tmpt = PROGRAM_PROFTIME(i);
+
+			newnode->next = NULL;
+			newnode->prog = i;
+			newnode->proftime = tmpt.tv_sec;
+			newnode->proftime += (tmpt.tv_usec / 1000000.0);
+			newnode->comptime = current_systime - PROGRAM_PROFSTART(i);
+			newnode->usecount = PROGRAM_PROF_USES(i);
+			newnode->type = 1;
+			if (newnode->comptime > 0) {
+				newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
+			} else {
+				newnode->pcnt =  0.0;
+			}
+			if (!tops) {
+				tops = newnode;
+				nodecount++;
+			} else if (newnode->pcnt < tops->pcnt) {
+				if (nodecount < count) {
+					newnode->next = tops;
+					tops = newnode;
+					nodecount++;
+				} else {
+					free(newnode);
+				}
+			} else {
+				if (nodecount >= count) {
+					curr = tops;
+					tops = tops->next;
+					free(curr);
+				} else {
+					nodecount++;
+				}
+				if (!tops) {
+					tops = newnode;
+				} else if (newnode->pcnt < tops->pcnt) {
+					newnode->next = tops;
+					tops = newnode;
+				} else {
+					for (curr = tops; curr->next; curr = curr->next) {
+						if (newnode->pcnt < curr->next->pcnt) {
+							break;
+						}
+					}
+					newnode->next = curr->next;
+					curr->next = newnode;
+				}
+			}
+		}
+	}
+	notify(player, "     %CPU   TotalTime  UseCount  Type  Object");
+	while (tops) {
+		curr = tops;
+		sprintf(buf, "%10.3f %10.3f %9d%5s   %s", curr->pcnt, curr->proftime, curr->usecount, curr->type?"MUF":"MPI",unparse_object(player, curr->prog));
+		notify(player, buf);
+		tops = tops->next;
+		free(curr);
+	}
+	sprintf(buf, "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
+			(current_systime-sel_prof_start_time),
+			((double)(sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
+			(double)((current_systime-sel_prof_start_time)+0.01),
+			sel_prof_idle_use);
+	notify(player,buf);
+	notify(player, "*Done*");
+}
 
 
 void

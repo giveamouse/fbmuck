@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
+#include <sys/time.h>
 #include "interface.h"
 #include "mcp.h"
 #include "mcpgui.h"

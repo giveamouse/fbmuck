@@ -240,6 +240,8 @@
 #include "msgparse.h"
 #include "mfun.h"
 
+time_t mpi_prof_start_time;
+
 int
 Wizperms(dbref what)
 {
@@ -904,6 +906,7 @@ mesg_init(void)
 
 	for (i = 0; mfun_list[i].name; i++)
 		insert_mfn(mfun_list[i].name, i + 1);
+	mpi_prof_start_time = time(NULL);
 }
 
 
@@ -1339,7 +1342,29 @@ do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf, const char
 			  char *outbuf, int mesgtyp)
 {
 	if (tp_do_mpi_parsing) {
-		return do_parse_mesg_2(descr, player, what, what, inbuf, abuf, outbuf, mesgtyp);
+		char *tmp = NULL;
+		struct timeval st, et;
+
+		/* Quickie additions to do rought per-object MPI profiling */
+		gettimeofday(&st,NULL);
+		tmp = do_parse_mesg_2(descr, player, what, what, inbuf, abuf, outbuf, mesgtyp);
+		gettimeofday(&et,NULL);
+		if (strcmp(tmp,inbuf)) {
+			if (st.tv_usec > et.tv_usec) {
+				et.tv_usec += 1000000;
+				et.tv_sec -= 1;
+			}
+			et.tv_usec -= st.tv_usec;
+			et.tv_sec -= st.tv_sec;
+			DBFETCH(what)->mpi_proftime.tv_sec += et.tv_sec;
+			DBFETCH(what)->mpi_proftime.tv_usec += et.tv_usec;
+			if (DBFETCH(what)->mpi_proftime.tv_usec >= 1000000) {
+				DBFETCH(what)->mpi_proftime.tv_usec -= 1000000;
+				DBFETCH(what)->mpi_proftime.tv_sec += 1;
+			}
+			DBFETCH(what)->mpi_prof_use++;
+		}
+		return(tmp);
 	} else {
 		strcpy(outbuf, inbuf);
 	}

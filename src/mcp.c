@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <malloc.h>
 #include <string.h>
+#include <sys/time.h>
 #include "db.h"
 #include "externs.h"
 #include "mcp.h"
@@ -1564,6 +1565,11 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.7  2000/08/23 10:00:02  revar
+* Added @tops, @muftops, and @mpitops profiling commands.
+* Changed examine to show a program's cumulative runtimes.
+* Changes @ps to show process' %CPU usage.
+*
 * Revision 1.6  2000/07/18 18:12:40  winged
 * Various fixes to fix warnings under -Wall -Wstrict-prototypes -Wno-format -- not all problems are found or fixed yet
 *

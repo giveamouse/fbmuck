@@ -1,10 +1,12 @@
+#include <time.h>
+#include <sys/time.h>
+
 #include "db.h"
 #include "props.h"
 #include "config.h"
 #include "params.h"
 #include "tune.h"
 #include "externs.h"
-#include <time.h>
 
 
 /****************************************************************

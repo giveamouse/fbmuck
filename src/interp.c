@@ -394,6 +394,11 @@ interp(int descr, dbref player, dbref location, dbref program,
 	fr->brkpt.pccount[0] = -2;
 	fr->brkpt.prog[0] = program;
 
+	fr->proftime.tv_sec = 0;
+    fr->proftime.tv_usec = 0;
+    fr->totaltime.tv_sec = 0;
+    fr->totaltime.tv_usec = 0;
+
 	fr->variables[0].type = PROG_OBJECT;
 	fr->variables[0].data.objref = player;
 	fr->variables[1].type = PROG_OBJECT;
@@ -403,6 +408,9 @@ interp(int descr, dbref player, dbref location, dbref program,
 	fr->variables[3].type = PROG_STRING;
 	fr->variables[3].data.string = (!*match_cmdname) ? 0 : alloc_prog_string(match_cmdname);
 
+	if (PROGRAM_CODE(program)) {
+		PROGRAM_INC_PROF_USES(program);
+	}
 	PROGRAM_INC_INSTANCES(program);
 	push(fr->argument.st, &(fr->argument.top), PROG_STRING, match_args ?
 		 MIPSCAST alloc_prog_string(match_args) : 0);
@@ -579,6 +587,37 @@ copyvars(vars * from, vars * to)
 }
 
 
+void
+calc_profile_timing(dbref prog, struct frame *fr)
+{
+	struct timeval tv;
+	struct timeval tv2;
+
+	gettimeofday(&tv, NULL);
+	if (tv.tv_usec < fr->proftime.tv_usec) {
+		tv.tv_usec += 1000000;
+		tv.tv_sec -= 1;
+	}
+	tv.tv_usec -= fr->proftime.tv_usec;
+	tv.tv_sec -= fr->proftime.tv_sec;
+	tv2 = PROGRAM_PROFTIME(prog);
+	tv2.tv_sec += tv.tv_sec;
+	tv2.tv_usec += tv.tv_usec;
+	if (tv2.tv_usec >= 1000000) {
+		tv2.tv_usec -= 1000000;
+		tv2.tv_sec += 1;
+	}
+	PROGRAM_SET_PROFTIME(prog, tv2.tv_sec, tv2.tv_usec);
+	fr->totaltime.tv_sec += tv.tv_sec;
+	fr->totaltime.tv_usec += tv.tv_usec;
+	if (fr->totaltime.tv_usec > 1000000) {
+		fr->totaltime.tv_usec -= 1000000;
+		fr->totaltime.tv_sec += 1;
+	}
+}
+
+
+
 static int interp_depth = 0;
 
 void
@@ -588,6 +627,9 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 {
 	char buffer[128];
 
+	if (pc) {
+		calc_profile_timing(program, fr);
+	}
 	if (clinst1)
 		CLEAR(clinst1);
 	if (clinst2)
@@ -648,12 +690,14 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		if (!pc) {
 			abort_loop("Program not compilable. Cannot run.", NULL, NULL);
 		}
+		PROGRAM_INC_PROF_USES(program);
 	}
 	ts_useobject(program);
 	err = 0;
 
 	instr_count = 0;
 	mlev = ProgMLevel(program);
+	gettimeofday(&fr->proftime, NULL);
 
 	/* This is the 'natural' way to exit a function */
 	while (stop) {
@@ -677,6 +721,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 									(fr->multitask ==
 									 FOREGROUND) ? "FOREGROUND" : "BACKGROUND");
 				interp_depth--;
+				calc_profile_timing(program,fr);
 				return NULL;
 			}
 		}
@@ -740,6 +785,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 								sprintf(buf, "     %s", m);
 								notify_nolisten(player, buf, 1);
 							}
+							calc_profile_timing(program,fr);
 							return NULL;
 						}
 					}
@@ -966,11 +1012,14 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					pc = pbs->addr.ptr;
 				}
 				if (temp1->data.objref != program) {
+					calc_profile_timing(program,fr);
+					gettimeofday(&fr->proftime, NULL);
 					program = temp1->data.objref;
 					fr->caller.st[++fr->caller.top] = program;
 					PROGRAM_INC_INSTANCES(program);
 					mlev = ProgMLevel(program);
 				}
+				PROGRAM_INC_PROF_USES(program);
 				ts_useobject(program);
 				CLEAR(temp1);
 				if (temp2)
@@ -983,6 +1032,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 						sys[stop - 1].progref < 0 ||
 						(Typeof(sys[stop - 1].progref) != TYPE_PROGRAM))
 								abort_loop("Internal error.  Invalid address.", NULL, NULL);
+					calc_profile_timing(program,fr);
+					gettimeofday(&fr->proftime, NULL);
 					PROGRAM_DEC_INSTANCES(program);
 					program = sys[stop - 1].progref;
 					mlev = ProgMLevel(program);
@@ -998,6 +1049,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				muf_event_register(player, program, fr);
 				PLAYER_SET_BLOCK(player, (!fr->been_background));
 				interp_depth--;
+				calc_profile_timing(program,fr);
 				return NULL;
 				/* NOTREACHED */
 				break;
@@ -1014,6 +1066,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				PLAYER_SET_BLOCK(player, 0);
 				add_muf_read_event(fr->descr, player, program, fr);
 				interp_depth--;
+				calc_profile_timing(program,fr);
 				return NULL;
 				/* NOTREACHED */
 				break;
@@ -1039,6 +1092,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				PLAYER_SET_BLOCK(player, 0);
 				add_muf_tread_event(fr->descr, player, program, fr, temp1->data.number);
 				interp_depth--;
+				calc_profile_timing(program,fr);
 				return NULL;
 				/* NOTREACHED */
 				break;
@@ -1057,6 +1111,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 									NOTHING, NOTHING, program, fr, "SLEEPING");
 				PLAYER_SET_BLOCK(player, (!fr->been_background));
 				interp_depth--;
+				calc_profile_timing(program,fr);
 				return NULL;
 				/* NOTREACHED */
 				break;
@@ -1086,6 +1141,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			prog_clean(fr);
 			PLAYER_SET_BLOCK(player, 0);
 			interp_depth--;
+			calc_profile_timing(program,fr);
 			return NULL;
 		}
 	}							/* while */
@@ -1107,11 +1163,13 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		reload(fr, atop, stop);
 		prog_clean(fr);
 		interp_depth--;
+		calc_profile_timing(program,fr);
 		return rv;
 	}
 	reload(fr, atop, stop);
 	prog_clean(fr);
 	interp_depth--;
+	calc_profile_timing(program,fr);
 	return NULL;
 }
 
@@ -1257,6 +1315,7 @@ do_abort_interp(dbref player, const char *msg, struct inst *pc,
 	char buffer[128];
 
 	fr->pc = pc;
+	calc_profile_timing(program,fr);
 	interp_err(player, program, pc, arg, atop, fr->caller.st[1],
 			   insttotext(pc, buffer, sizeof(buffer), 30, program), msg);
 	if (controls(player, program))

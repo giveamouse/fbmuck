@@ -1,42 +1,4 @@
-/* $Header$
- * 
- * $Log: externs.h,v $
- * Revision 1.8  2000/07/19 01:33:18  revar
- * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
- * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
- *
- * Revision 1.7  2000/07/18 18:18:19  winged
- * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
- *
- * Revision 1.6  2000/07/07 18:41:04  revar
- * Fixed a db corruption bug with @toading players.
- *
- * Revision 1.5  2000/07/07 01:30:06  revar
- * 64 bit compile cleanups.
- *
- * Revision 1.4  2000/04/29 10:01:01  revar
- * Fixed bug with ISPID? and {ispid} failing to correctly deal with muf progs
- *   that are in EVENT_WAIT.
- * Added EVENT_SEND (intPid strEventId ? -- ) MUF prim for IPC.
- *
- * Revision 1.3  2000/04/29 04:16:04  revar
- * Added PROCESS_TIMER_LIMIT @tune.
- * Added TIMER_START muf prim.
- * Added TIMER_STOP muf prim.
- * Added EVENT_COUNT muf prim.
- *
- * Revision 1.2  2000/03/29 12:21:01  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/12 07:28:12  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- */
+/* $Header$ */
 
 #ifndef _EXTERNS_H
 #define _EXTERNS_H
@@ -256,6 +218,16 @@ extern void do_boot(dbref player, const char *name);
 extern void do_pcreate(dbref player, const char *arg1, const char *arg2);
 extern void do_usage(dbref player);
 extern void do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2);
+extern void do_muf_topprofs(dbref player, char *arg1);
+extern void do_mpi_topprofs(dbref player, char *arg1);
+extern void do_all_topprofs(dbref player, char *arg1);
+
+extern time_t mpi_prof_start_time;
+extern time_t sel_prof_start_time;
+extern long sel_prof_idle_sec;
+extern long sel_prof_idle_usec;
+extern unsigned long sel_prof_idle_use;
+
 
 
 /* From boolexp.c */
