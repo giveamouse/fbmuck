@@ -1,4 +1,5 @@
 2.2fb6.02
+Fixed bug with array_nintersection allowing multiple occurances in a single array to influence final output.
 Fixed a number of off-by-one crasher bugs, due to bad comparisons with db_top.
 Fixed compilation issue with socklen_t on OS X 10.3 Panther.
 Fixed possible crasher with dequeueing of tasks from a mufevent run process.
