@@ -523,7 +523,6 @@ array_decouple(stk_array * arr)
 			nu->data.packed = (array_data *) malloc(sizeof(array_data) * arr->items);
 			for (i = arr->items; i-- > 0;) {
 				copyinst(&arr->data.packed[i], &nu->data.packed[i]);
-				CLEAR(&arr->data.packed[i]);
 			}
 			return nu;
 			break;
@@ -589,12 +588,10 @@ array_free(stk_array * arr)
 	}
 	switch (arr->type) {
 	case ARRAY_PACKED:{
-			array_iter idx;
+			int i;
 
-			if (array_first(arr, &idx)) {
-				do {
-					CLEAR(array_getitem(arr, &idx));
-				} while (array_next(arr, &idx));
+			for (i = arr->items; i-- > 0;) {
+				CLEAR(&arr->data.packed[i]);
 			}
 			free(arr->data.packed);
 			break;
@@ -1633,6 +1630,9 @@ array_get_intkey_strval(stk_array * arr, int key)
 
 /*
  * $Log: array.c,v $
+ * Revision 1.17  2001/07/15 07:38:38  revar
+ * Various fixes for double-CLEAR()ing of array loop indexes.
+ *
  * Revision 1.16  2001/07/07 07:20:58  revar
  * Memory leak fixes, and cleanup code to make memory leaks more obvious when
  *   using MALLOC_PROFILING.
