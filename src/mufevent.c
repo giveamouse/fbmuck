@@ -27,6 +27,10 @@ struct mufevent_process {
 } *mufevent_processes;
 
 
+/* void muf_event_register(dbref player, dbref prog, struct frame* fr)
+ * Called when a MUF program enters EVENT_WAIT, to register that
+ * the program is ready to process MUF events.
+ */
 void
 muf_event_register(dbref player, dbref prog, struct frame* fr)
 {
@@ -51,6 +55,9 @@ muf_event_register(dbref player, dbref prog, struct frame* fr)
 }
 
 
+/* int muf_event_dequeue_pid(int pid)
+ * removes the MUF program with teh given PID from the EVENT_WAIT queue.
+ */
 int
 muf_event_dequeue_pid(int pid)
 {
@@ -75,8 +82,10 @@ muf_event_dequeue_pid(int pid)
 }
 
 
-/* Checks the MUF event queue for address references on the stack or */
-/* dbref references on the callstack */
+/* static int event_has_refs(dbref program, struct frame* fr)
+ * Checks the MUF event queue for address references on the stack or
+ * dbref references on the callstack
+ */
 static int
 event_has_refs(dbref program, struct frame* fr)
 {
@@ -99,6 +108,9 @@ event_has_refs(dbref program, struct frame* fr)
 }
 
 
+/* int muf_event_dequeue(dbref prog)
+ * Deregisters a program from any instances of it in the EVENT_WAIT queue.
+ */
 int
 muf_event_dequeue(dbref prog)
 {
@@ -124,6 +136,9 @@ muf_event_dequeue(dbref prog)
 
 
 
+/* int muf_event_controls(dbref player, int pid)
+ * Returns true if the given player controls the given PID.
+ */
 int
 muf_event_controls(dbref player, int pid)
 {
@@ -147,6 +162,10 @@ muf_event_controls(dbref player, int pid)
 }
 
 
+/* int muf_event_list(dbref player, char* pat)
+ * List all processes in the EVENT_WAIT queue that the given player controls.
+ * This is used by the @ps command.
+ */
 int
 muf_event_list(dbref player, char* pat)
 {
@@ -172,6 +191,9 @@ muf_event_list(dbref player, char* pat)
 }
 
 
+/* void muf_event_add(struct frame* fr, char* event, struct inst* val)
+ * Adds a MUF event to the event queue for the given program instance.
+ */
 void
 muf_event_add(struct frame* fr, char* event, struct inst* val)
 {
@@ -196,7 +218,11 @@ muf_event_add(struct frame* fr, char* event, struct inst* val)
 
 
 
-void
+/* static void muf_event_free(struct mufevent* ptr)
+ * Frees up a MUF event once you are done with it.  This shouldn't be used
+ * outside this module.
+ */
+static void
 muf_event_free(struct mufevent* ptr)
 {
     CLEAR(&ptr->data);
@@ -207,7 +233,11 @@ muf_event_free(struct mufevent* ptr)
 }
 
 
-struct mufevent*
+/* static struct mufevent* muf_event_pop(struct frame* fr)
+ * This pops the top muf event off of the given program instance's
+ * event queue, and returns it to the caller.
+ */
+static struct mufevent*
 muf_event_pop(struct frame* fr)
 {
     struct mufevent* ptr = NULL;
@@ -220,6 +250,9 @@ muf_event_pop(struct frame* fr)
 
 
 
+/* void muf_event_purge(struct frame* fr)
+ * purges all muf events from the given program instance's event queue.
+ */
 void
 muf_event_purge(struct frame* fr)
 {
@@ -230,6 +263,12 @@ muf_event_purge(struct frame* fr)
 
 
 
+/* void muf_event_process()
+ * For all program instances who are in the EVENT_WAIT queue,
+ * check to see if they have any items in their event queue.
+ * If so, then process one each.  Up to ten programs can have
+ * events processed at a time.
+ */
 void
 muf_event_process()
 {
