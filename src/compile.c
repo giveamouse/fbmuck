@@ -2249,18 +2249,29 @@ do_directive(COMPSTATE * cstat, char *direct)
 
 	} else if (!string_compare(temp, "endif")) {
 
-	} else if (!string_compare(temp, "comment_strict")) {
-	        /* Do non-recursive comments (old style) */
-	        cstat->force_comment = 1;
-	} else if (!string_compare(temp, "comment_recurse")) {
-	        /* Do recursive comments ((new) style) */
-	        cstat->force_comment = 2;
-	} else if (!string_compare(temp, "comment_loose")) {
-	        /* Try to compile with recursive and non-recursive comments
-		   doing recursive first, then strict on a comment-based
-		   compile error.  Only throw an error if both fail.  This is
-		   the default mode. */
-	        cstat->force_comment = 0;
+	} else if (!string_compare(temp, "pragma")) {
+	  /* TODO - move pragmas to its own section for easy expansion. */
+	  while (*cstat->next_char && isspace(*cstat->next_char))
+	    cstat->next_char++;
+	  if (!*cstat->next_char || !(tmpptr = (char *)next_token_raw(cstat)))
+	    v_abort_compile(cstat, "Pragma requires at least one argument.");
+	  if (!string_compare(tmpptr, "comment_strict")) {
+	    /* Do non-recursive comments (old style) */
+	    cstat->force_comment = 1;
+	  } else if (!string_compare(tmpptr, "comment_recurse")) {
+	    /* Do recursive comments ((new) style) */
+	    cstat->force_comment = 2;
+	  } else if (!string_compare(tmpptr, "comment_loose")) {
+	    /* Try to compile with recursive and non-recursive comments
+	       doing recursive first, then strict on a comment-based
+	       compile error.  Only throw an error if both fail.  This is
+	       the default mode. */
+	    cstat->force_comment = 0;
+	  }
+	  /* If the pragma is not recognized, it is silently ignored. */
+	  free(tmpptr);
+	  if (*cstat->next_char)
+	    advance_line(cstat);
 	} else {
 		v_abort_compile(cstat, "Unrecognized compiler directive.");
 	}

@@ -54,9 +54,15 @@ Added RFE #578523: muf-errors log: owner and nicer format
 Added notification of start of comment line in MUF compile failure when
   the error is unterminated comments, overly nested comments or other
   comment-related error.
-Added pragmas $comment_recurse, $comment_strict and $comment_loose.  This
-  forces recursive-comment only compiles, old-style comment compiles, or
-  keeps the status-quo respectively.  (See the compiler changes above.)
+Added $pragma compiler directive.  Format is '$pragma argument'.  The rest
+  of the line following a pragma is skipped.  If a pragma argument is not
+  recognized, it is silently skipped.  Pragmas should be used for future
+  compiler expansions and features that are non-mandatory.  This allows for
+  easier portability between versions.
+Added pragmas $pragma comment_recurse, $pragma comment_strict and
+  $pragma comment_loose.  This forces recursive-comment only compiles,
+  old-style comment compiles, or keeps the status-quo respectively.
+  (See the compiler changes above.)
 
 
 
