@@ -67,7 +67,7 @@ CC=@CC@
 CPP=@CPP@
 DEFS=@DEFS@ -DBINDIR=\"${INSTALL_BINDIR}\" -DINSTALL_HELPDIR=\"${INSTALL_HELPDIR}\"
 LIBR=@LIBS@
-INCL=@INC@ -I${INCLUDE}
+INCL=-I${INCLUDE} @INC@
 
 # #######################################################################
 #  	   Usualy don't need to change anything past here.
