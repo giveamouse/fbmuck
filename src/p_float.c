@@ -487,16 +487,15 @@ prim_pow(PRIM_PROTOTYPE)
 	if (oper1->type != PROG_FLOAT)
 		abort_interp("Non-float argument. (2)");
 	if (!no_good(oper1->data.fnumber) && !no_good(oper2->data.fnumber)) {
-		if (oper2->data.fnumber < SMALL_NUM &&
+		if (oper2->data.fnumber < SMALL_NUM && oper2->data.fnumber > NSMALL_NUM)
+		{
+			fresult = 0.0;
+		}
+		else if (oper2->data.fnumber < 0.0 &&
 			oper1->data.fnumber != floor(oper1->data.fnumber))
 		{
 			fresult = 0.0;
 			fr->error.error_flags.imaginary = 1;
-		}
-		else if (oper2->data.fnumber < SMALL_NUM &&
-		         oper2->data.fnumber > NSMALL_NUM)
-		{
-			fresult = 0.0;
 		}
 		else
 		{
