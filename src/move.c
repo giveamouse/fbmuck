@@ -2,6 +2,9 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.3  2000/07/29 08:02:16  revar
+ * Changed 'get' to disable zombie thievery.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -616,6 +619,14 @@ do_get(int descr, dbref player, const char *what, const char *obj)
 			if (!test_lock_false_default(descr, player, cont, "_/clk")) {
 				notify(player, "You can't open that container.");
 				return;
+			}
+		}
+		if (Typeof(player) != TYPE_PLAYER) {
+			if (Typeof(DBFETCH(thing)->location) != TYPE_ROOM) {
+				if (OWNER(player) != OWNER(thing)) {
+					notify(player, "Zombies aren't allowed to be thieves!");
+					return;
+				}
 			}
 		}
 		if (DBFETCH(thing)->location == player) {
