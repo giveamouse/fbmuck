@@ -196,6 +196,7 @@ mcp_initialize(void)
 	/* McpVer twoone = {2,1}; */
 
 	mcp_package_register(MCP_NEGOTIATE_PKG, oneoh, twooh, mcp_negotiate_handler, NULL, NULL);
+	mcp_package_register("org-fuzzball-help", oneoh, oneoh, mcppkg_help_request, NULL, NULL);
 	mcp_package_register("org-fuzzball-notify", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
 	mcp_package_register("org-fuzzball-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
 	mcp_package_register("dns-org-mud-moo-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
