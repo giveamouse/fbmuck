@@ -14,7 +14,7 @@
 #include "match.h"
 #include "interface.h"
 #include "params.h"
-#include "strings.h"
+#include "fbstrings.h"
 #include "interp.h"
 #include "props.h"
 

@@ -13,7 +13,7 @@
 #include "interface.h"
 #include "externs.h"
 #include "match.h"
-#include "strings.h"
+#include "fbstrings.h"
 #include <ctype.h>
 
 struct line *read_program(dbref i);

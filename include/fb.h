@@ -39,7 +39,7 @@
 #include "patchlevel.h"
 #include "props.h"
 #include "smatch.h"
-#include "strings.h"
+#include "fbstrings.h"
 #include "speech.h"
 #include "tune.h"
 #include "version.h"

@@ -26,7 +26,7 @@
 #include "interface.h"
 #include "match.h"
 #include "externs.h"
-#include "strings.h"
+#include "fbstrings.h"
 
 void
 do_teleport(int descr, dbref player, const char *arg1, const char *arg2)

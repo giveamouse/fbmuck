@@ -8,7 +8,7 @@
 /* commands which set parameters */
 #include <stdio.h>
 #include <ctype.h>
-#include "strings.h"
+#include "fbstrings.h"
 
 #include "db.h"
 #include "params.h"

@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include <stdio.h>
 
-#include "strings.h"
+#include "fbstrings.h"
 #include "db.h"
 #include "props.h"
 #include "match.h"

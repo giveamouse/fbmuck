@@ -14,7 +14,7 @@
 #include "externs.h"
 #include "match.h"
 #include "interface.h"
-#include "strings.h"
+#include "fbstrings.h"
 #include "dbsearch.h"
 #include "interp.h"
 

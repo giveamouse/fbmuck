@@ -13,7 +13,7 @@
 #include "interface.h"
 #include "params.h"
 #include "tune.h"
-#include "strings.h"
+#include "fbstrings.h"
 #include "interp.h"
 #include "mufevent.h"
 

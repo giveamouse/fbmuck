@@ -14,7 +14,7 @@
 #include "interface.h"
 #include "params.h"
 #include "tune.h"
-#include "strings.h"
+#include "fbstrings.h"
 #include "interp.h"
 #include "mcpgui.h"
 #include "array.h"

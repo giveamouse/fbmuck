@@ -14,7 +14,7 @@
 #include "interface.h"
 #include "params.h"
 #include "tune.h"
-#include "strings.h"
+#include "fbstrings.h"
 #include "interp.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;

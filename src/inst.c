@@ -8,7 +8,7 @@
 #include "inst.h"
 #include "externs.h"
 #include "interface.h"
-#include "strings.h"
+#include "fbstrings.h"
 #include "interp.h"
 
 #include <assert.h>

@@ -11,7 +11,7 @@
 #include "params.h"
 #include "tune.h"
 #include "match.h"
-#include "strings.h"
+#include "fbstrings.h"
 #include <ctype.h>
 
 #define DOWNCASE(x) (tolower(x))

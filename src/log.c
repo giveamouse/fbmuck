@@ -16,7 +16,7 @@
 #include <stdarg.h>
 #include <time.h>
 
-#include "strings.h"
+#include "fbstrings.h"
 #include "externs.h"
 #include "interface.h"
 
