@@ -1,4 +1,4 @@
-TinyMUCK 2.2fb6.x should now be easier to compile on varius systems.
+TinyMUCK 2.2fb6.x should now be easier to compile on various systems.
 The steps for compiling your muck are now to:
 
 (1) edit the file config.h in the "include" directory, this lets
@@ -37,7 +37,7 @@ server, please contact foxen@belfry.com describing the problem, what
 system you are using (uname -a output perferably), and a log of the
 compile errors. I will likely also ask for your "autoconf.h" results.
 
-Even if you can fix it yourself, its helpful to find out what it took
+Even if you can fix it yourself, it is helpful to find out what it took
 to get it working on your system so that I can make sure later releases
 will support your system, and any other system with the same problems.
 
