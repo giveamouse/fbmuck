@@ -1070,9 +1070,11 @@ shovechars()
 				shutdownsock(d);
 			}
 		}
-		if(global_dumpdone!=0) {
-			wall_and_flush(tp_dumpdone_mesg);
-			global_dumpdone=0;
+		if (global_dumpdone != 0) {
+			if (tp_dumpdone_warning) {
+				wall_and_flush(tp_dumpdone_mesg);
+			}
+			global_dumpdone = 0;
 		}
 		purge_free_frames();
 		untouchprops_incremental(1);

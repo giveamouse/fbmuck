@@ -222,6 +222,7 @@ int tp_log_failed_commands = LOG_FAILED_COMMANDS;
 int tp_log_programs = LOG_PROGRAMS;
 int tp_dbdump_warning = DBDUMP_WARNING;
 int tp_deltadump_warning = DELTADUMP_WARNING;
+int tp_dumpdone_warning = DUMPDONE_WARNING;
 int tp_periodic_program_purge = PERIODIC_PROGRAM_PURGE;
 int tp_rwho = RWHO;
 int tp_secure_who = SECURE_WHO;
@@ -277,6 +278,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"DB Dumps",   "diskbase_propvals", &tp_diskbase_propvals, 0, "Enable property value diskbasing (req. restart)"},
 	{"DB Dumps",   "dbdump_warning", &tp_dbdump_warning, 0, "Enable warning messages for full DB dumps"},
 	{"DB Dumps",   "deltadump_warning", &tp_deltadump_warning, 0, "Enable warning messages for delta DB dumps"},
+	{"DB Dumps",   "dumpdone_warning", &tp_dumpdone_warning, 0, "Enable notification of DB dump completion"},
 	{"Idle Boot",  "idleboot", &tp_idleboot, 0, "Enable booting of idle players"},
 	{"Killing",    "restrict_kill", &tp_restrict_kill, 0, "Restrict kill command to players set Kill_OK"},
 	{"Listeners",  "allow_listeners", &tp_listeners, 0, "Enable programs to listen to player output"},

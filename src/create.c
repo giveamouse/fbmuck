@@ -697,7 +697,7 @@ do_mcpedit(int descr, dbref player, const char *name)
 	match_registered(&md);
 	match_absolute(&md);
 
-	prog = noisy_match_result(&md);
+	prog = match_result(&md);
 	if (prog == NOTHING) {
 		/* FIXME: must arrange this to query user. */
 		notify(player, "I don't see that here!");

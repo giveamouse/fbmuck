@@ -98,6 +98,7 @@ extern int tp_log_failed_commands;
 extern int tp_log_programs;
 extern int tp_log_interactive;
 extern int tp_dbdump_warning;
+extern int tp_dumpdone_warning;
 extern int tp_deltadump_warning;
 extern int tp_periodic_program_purge;
 extern int tp_rwho;

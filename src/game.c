@@ -173,7 +173,7 @@ dump_database_internal(void)
 
 #ifdef DISKBASE
 	/* Only show dumpdone mesg if not doing background saves. */
-	if (tp_dbdump_warning)
+	if (tp_dbdump_warning && tp_dumpdone_warning)
 		wall_and_flush(tp_dumpdone_mesg);
 #endif
 
@@ -356,8 +356,9 @@ dump_deltas(void)
 
 	db_write_deltas(delta_outfile);
 
-	if (tp_deltadump_warning)
+	if (tp_deltadump_warning && tp_dumpdone_warning)
 		wall_and_flush(tp_dumpdone_mesg);
+
 #ifdef DISKBASE
 	propcache_hits = 0L;
 	propcache_misses = 1L;

@@ -186,6 +186,9 @@
 /* only warns if DBDUMP_WARNING is also 1 */
 #define DELTADUMP_WARNING 1
 
+/* When a database dump completes, announce it. */
+#define DUMPDONE_WARNING 1
+
 /* clear out unused programs every so often */
 #define PERIODIC_PROGRAM_PURGE 1
 

@@ -46,6 +46,7 @@ Added pcreate_flags @tune to specify what flags players are created with.
 Added and merged Windows specific winfuzz4 changes.
 Added @mcpprogram PROGNAME command, like @mcpedit, except it creates the
   program if it doesn't already exist.
+Added dbdump_warning @tune, to turn on/off the dumpdone messages independantly.
 
 
 
