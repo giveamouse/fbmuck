@@ -3926,6 +3926,4 @@ void Ignore_RemoveFromAllPlayers(dbref Player)
 	for(i = 0; i < db_top; i++)
 		if (Typeof(i) == TYPE_PLAYER)
 			reflist_del(i, tp_ignore_prop, Player);
-
-	Ignore_FlushAllCache();
 }
