@@ -862,7 +862,7 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 	if (!fr->trys.top) {
 		if (pc) {
 			interp_err(player, program, pc, fr->argument.st, fr->argument.top,
-					fr->caller.st[1], insttotext(pc, buffer, sizeof(buffer), 30, program), msg);
+					fr->caller.st[1], insttotext(pc, buffer, sizeof(buffer), 30, program, 1), msg);
 			if (controls(player, program))
 				muf_backtrace(player, program, STACK_SIZE, fr);
 		} else {
@@ -1655,7 +1655,7 @@ do_abort_interp(dbref player, const char *msg, struct inst *pc,
 		fr->pc = pc;
 		calc_profile_timing(program,fr);
 		interp_err(player, program, pc, arg, atop, fr->caller.st[1],
-				insttotext(pc, buffer, sizeof(buffer), 30, program), msg);
+				insttotext(pc, buffer, sizeof(buffer), 30, program, 1), msg);
 		if (controls(player, program))
 			muf_backtrace(player, program, STACK_SIZE, fr);
 	}

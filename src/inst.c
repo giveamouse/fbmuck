@@ -38,7 +38,7 @@ const char *base_inst[] = {
    would have occured.
  */
 char *
-insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref program)
+insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref program, int expandarrs)
 {
 	const char* ptr;
 	char buf2[BUFFER_LEN];
@@ -47,6 +47,7 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 	int length = -2; /* unset mark. We don't use -1 since some snprintf() version will
 					    return that if we would've overflowed. */
 	int firstflag = 1;
+	int arrcount = 0;
 	
 	assert(buflen > 0);
 	
@@ -98,7 +99,7 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 				*buffer = '\0';
 			break;
 		}
-		if (tp_expanded_debug) {
+		if (tp_expanded_debug && expandarrs) {
 #ifdef DEBUGARRAYS
 			length = snprintf(buffer, buflen, "R%dC%d{", theinst->data.array->links, theinst->data.array->items);
 #else
@@ -113,9 +114,15 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 			/* - 1 for the "\0" at the end. */
 			length = buflen - length - 1;
 			firstflag = 1;
+			arrcount = 0;
 			if (array_first(theinst->data.array, &temp1)) {
 				do {
 					char *inststr;
+
+					if (arrcount++ >= 8) {
+					    strcat(buffer, "_");
+					    break;
+					}
 
 					if (!firstflag) {
 						strcat(buffer, " ");
@@ -124,13 +131,13 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 					firstflag = 0;
 					oper2 = array_getitem(theinst->data.array, &temp1);
 
-					if (length <= 1) { /* no space left, let's not pass a buflen of 0 */
+					if (length <= 2) { /* no space left, let's not pass a buflen of 0 */
 					    strcat(buffer, "_");
 					    break;
 					}
 
 					/* length - 2 so we have room for the ":_" */
-					inststr = insttotext(&temp1, buf2, length - 2, strmax, program);
+					inststr = insttotext(&temp1, buf2, length - 2, strmax, program, 0);
 					if (!*inststr) {
 					    /* overflow problem. */
 					    strcat(buffer,"_");
@@ -145,7 +152,7 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 					    break;
 					}
 
-					inststr = insttotext(oper2, buf2, length, strmax, program);
+					inststr = insttotext(oper2, buf2, length, strmax, program, 0);
 					if (!*inststr) {
 					    /* we'd overflow if we did that */
 					    /* as before add a "_" and let it be. */
@@ -167,7 +174,7 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 			}
 			strcat(buffer, "}");
 		} else {
-			length = snprintf(buffer, buflen, "{%d item array}", theinst->data.array->items);
+			length = snprintf(buffer, buflen, "%d{...}", theinst->data.array->items);
 		}
 		break;
 	case PROG_INTEGER:
@@ -320,7 +327,7 @@ debug_inst(struct inst *pc, int pid, struct inst *stack,
 	/* We use this if-else structure to handle errors and such nicely. */
 	/* We use length - 7 so we KNOW we'll have room for " ... ) " */
 	/*													 1234567890 */
-	ptr = insttotext(pc, buf2, length - 7, 30, program);
+	ptr = insttotext(pc, buf2, length - 7, 30, program, 1);
 	if (*ptr) {
 	    length -= prepend_string(&bend, bstart, ptr);
 	} else {
@@ -340,7 +347,7 @@ debug_inst(struct inst *pc, int pid, struct inst *stack,
 			}
 			/* we use length - 5 to leave room for "..., "
 			* ... except if we're outputing the last item (count == 0) */
-			ptr = insttotext(stack + count, buf2, (count) ? length - 5 : length, 30, program);
+			ptr = insttotext(stack + count, buf2, (count) ? length - 5 : length, 30, program, 1);
 			if (*ptr) {
 				length -= prepend_string(&bend, bstart, ptr);
 			} else {

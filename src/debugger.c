@@ -100,10 +100,10 @@ show_line_prims(dbref program, struct inst *pc, int maxprims, int markpc)
 				strcat(buf, " ");
 			if (pc == linestart && markpc) {
 				strcat(buf, " {{");
-				strcat(buf, insttotext(linestart, buf2, sizeof(buf2), 30, program));
+				strcat(buf, insttotext(linestart, buf2, sizeof(buf2), 30, program, 1));
 				strcat(buf, "}} ");
 			} else {
-				strcat(buf, insttotext(linestart, buf2, sizeof(buf2), 30, program));
+				strcat(buf, insttotext(linestart, buf2, sizeof(buf2), 30, program, 1));
 			}
 		} else {
 			break;
@@ -315,12 +315,12 @@ debug_printvar(dbref player, dbref program, struct frame *fr, const char *arg)
 			notify_nolisten(player, "Scoped variable number out of range.", 1);
 			return;
 		}
-		notify_nolisten(player, insttotext(tmp, buf, sizeof(buf), 4000, -1), 1);
+		notify_nolisten(player, insttotext(tmp, buf, sizeof(buf), 4000, -1, 1), 1);
 	} else if (lflag) {
 		struct localvars* lvars = localvars_get(fr, program);
-		notify_nolisten(player, insttotext(&(lvars->lvars[i]), buf, sizeof(buf), 4000, -1), 1);
+		notify_nolisten(player, insttotext(&(lvars->lvars[i]), buf, sizeof(buf), 4000, -1, 1), 1);
 	} else {
-		notify_nolisten(player, insttotext(&(fr->variables[i]), buf, sizeof(buf), 4000, -1), 1);
+		notify_nolisten(player, insttotext(&(fr->variables[i]), buf, sizeof(buf), 4000, -1, 1), 1);
 	}
 }
 
@@ -711,7 +711,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 			cnt = 0;
 			do {
 				strcpy(buf, ptr);
-				ptr = insttotext(&fr->argument.st[--j], buf2, sizeof(buf2), 4000, program);
+				ptr = insttotext(&fr->argument.st[--j], buf2, sizeof(buf2), 4000, program, 1);
 				cnt++;
 			} while (!string_compare(ptr, buf) && j > 0);
 			if (cnt > 1)

@@ -5,6 +5,8 @@ Added ARRAY_FMTSTRINGS ( arr:dicts str:fmt -- list:strs ) MUF prim.  Creates
 Fixed a crasher bug with loading lock props with ARRAY_GET_PROPVALS.
 Fixed a crasher bug with loading lock props with ARRAY_GET_PROPLIST.
 Fixed a crasher bug with debug traces of programs with large nested arrays.
+Changed debug traces to not list out contents of nested arrays.
+Changed debug traces to not show more than the first 7 items in an array.
 
 
 
