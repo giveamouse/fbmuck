@@ -1,11 +1,11 @@
 Summary: 	The FuzzBall TinyMUCK online chat/MUD server
 Name: 		fbmuck
-Version: 	6.00b5
+Version: 	6.00rc7
 Release: 	1
 Group: 		Amusements/Games
 Copyright: 	GPL
 Url: 		http://sourceforge.net/projects/fbmuck/
-Source:		http://prdownloads.sourceforge.net/fbmuck/%{name}-%{version}.tar.gz
+Source:		http://belnet.dl.sourceforge.net/sourceforge/fbmuck/%{name}-%{version}.tar.gz
 Packager: 	Revar Desmera <revar@belfry.com>
 Vendor:		FuzzBall Software
 BuildRoot: 	/var/tmp/%{name}_root
@@ -71,3 +71,6 @@ make prefix=$RPM_BUILD_ROOT/usr install-inits
 * Thu Jun 06 2002 Revar Desmera <revar@belfry.com>
 - added make install-inits
 
+* Sat Sep 07 2002 Schneelocke <schnee@gl00on.net>
+- bumped version number to 6.00rc7
+- changed Source url to reflect sourceforge changes
