@@ -1917,6 +1917,7 @@ prim_array_join(PRIM_PROTOTYPE)
 	char* delim;
 	int tmplen;
 	int done;
+	int first_item;
 
 	CHECKOP(2);
 	oper2 = POP();				/* str  joinstr */
@@ -1930,6 +1931,7 @@ prim_array_join(PRIM_PROTOTYPE)
 	delim = DoNullInd(oper2->data.string);
 	ptr = outbuf;
 	*outbuf = '\0';
+	first_item = 1;
 	done = !array_first(arr, &temp1);
 	while (!done) {
 		in = array_getitem(arr, &temp1);
@@ -1956,7 +1958,9 @@ prim_array_join(PRIM_PROTOTYPE)
 				text = "<UNSUPPORTED>";
 				break;
 		}
-		if ( ptr != outbuf) {
+		if ( first_item ) {
+			first_item = 0;
+		} else {
 			tmplen = strlen(delim);
 			if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1) {
 				strncpy(ptr, delim, BUFFER_LEN - (ptr - outbuf) - 1);

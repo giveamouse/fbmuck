@@ -9,6 +9,7 @@ Fixed bug #749298: FRAND does not return a random number.
 Fixed several bugs with MPI functions misreporting their names on errors.
 Fixed some minor memory leakage with errors in ARRAY_N_DIFF/INTERSECT/UNION.
 Fixed a crasher in ARRAY_N_DIFF.
+Fixed bug where ARRAY_JOIN skipped initial empty strings.
 Changed DESCRDBREF to return #-1 for an invalid or not-logged-in descriptor.
 Added docs for ARRAY_FMTSTRINGS to muf manual.
 Added ARRAY_FILTER_FLAGS ( list:dbrefs str:flags -- list:dbrefsout ) MUF prim.
