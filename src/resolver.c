@@ -371,7 +371,7 @@ get_username(long a, int prt, int myprt)
 		}
 	} while (result < 0 && lasterr == EAGAIN);
 	if (result < 0)
-		goto bad;
+		goto bad2;
 
 	do {
 		result = read(fd, buf, sizeof(buf));
@@ -383,32 +383,36 @@ get_username(long a, int prt, int myprt)
 		}
 	} while (result < 0 && lasterr == EAGAIN);
 	if (result < 0)
-		goto bad;
+		goto bad2;
 
 	ptr = index(buf, ':');
 	if (!ptr)
-		goto bad;
+		goto bad2;
 	ptr++;
 	if (*ptr)
 		ptr++;
 	if (strncmp(ptr, "USERID", 6))
-		goto bad;
+		goto bad2;
 
 	ptr = index(ptr, ':');
 	if (!ptr)
-		goto bad;
+		goto bad2;
 	ptr = index(ptr + 1, ':');
 	if (!ptr)
-		goto bad;
+		goto bad2;
 	ptr++;
 	/* if (*ptr) ptr++; */
 
+	shutdown(fd, 2);
 	close(fd);
 	if ((ptr2 = index(ptr, '\r')))
 		*ptr2 = '\0';
 	if (!*ptr)
 		return (0);
 	return ptr;
+
+  bad2:
+	shutdown(fd, 2);
 
   bad:
 	close(fd);

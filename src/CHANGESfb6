@@ -10,6 +10,7 @@ Fixed bug #478325: Arrays with 0s for values don't serialize properly.
 Fixed bug #479093: smatches, array_filter_prop disagree.
 Fixed bug where FOREGROUND muf progs didn't process MCP messages.
 Fixed a number of missing MUF primitive documentation sections.
+Fixed resolver to properly shutdown() indentd sockets.
 Changed DESCRSECURE? to be ML3, not wizbit.
 Changed input quotas to not count MCP messages.
 Changed command logging to not list null commands.
