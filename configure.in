@@ -30,19 +30,61 @@ AC_MINIX
 
 AC_ARG_WITH(ssl,
 [  --with-ssl[=ssltop_path]   use ssl encryption and authorization],
-[AC_DEFINE(USE_SSL)
+[
 if test "$withval" = yes; then
-  SSLTOP=/usr/local/ssl
+	SSLTOP=
 else
-  SSLTOP=$withval
+	SSLTOP=$withval
 fi
-LIBS="-L$SSLTOP/lib -lssl -lcrypto $LIBS"
-INC="-I$SSLTOP/include -I$SSLTOP/include/openssl $INC"
+
+found_sslh="0"
+if test "$SSLTOP" = ""; then
+	AC_CHECK_HEADERS(ssl.h ssl/ssl.h openssl/ssl.h,found_sslh="1")
+else
+	AC_CHECK_HEADERS($SSLTOP/ssl.h,
+		AC_DEFINE(HAVE_SSL_H)
+		INC="-I$SSLTOP $INC"
+		found_sslh="1"
+	)
+	AC_CHECK_HEADERS($SSLTOP/include/ssl.h,
+		AC_DEFINE(HAVE_SSL_H)
+		INC="-I$SSLTOP/include $INC"
+		found_sslh="1"
+	)
+	AC_CHECK_HEADERS($SSLTOP/include/ssl/ssl.h,
+		AC_DEFINE(HAVE_SSL_SSL_H)
+		INC="-I$SSLTOP/include $INC"
+		found_sslh="1"
+	)
+	AC_CHECK_HEADERS($SSLTOP/include/openssl/ssl.h,
+		AC_DEFINE(HAVE_OPENSSL_SSL_H)
+		INC="-I$SSLTOP/include $INC"
+		found_sslh="1"
+	)
+fi
+if test "$found_sslh" = "0"; then
+	AC_MSG_ERROR([cannot locate ssl.h header file.])
+fi
+
+found_ssl_lib="0"
+if test "$SSLTOP" = ""; then
+	AC_TRY_LINK_FUNC(SSL_accept, found_ssl_lib="1")
+	AC_CHECK_LIB(ssl, SSL_accept,
+		LIBS="-lssl -lcrypto $LIBS"
+		found_ssl_lib="1"
+	)
+else
+	LIBS="-L$SSLTOP/lib -lssl -lcrypto $LIBS"
+	AC_CHECK_LIB(ssl, SSL_accept, found_ssl_lib="1")
+fi
+if test "$found_ssl_lib" = "0"; then
+	AC_MSG_ERROR([cannot locate libssl library.])
+fi
+
 AC_DEFINE(USE_SSL)
 AC_SUBST(DEFS)
 AC_SUBST(INC)
 AC_SUBST(SSLTOP)
-AC_CHECK_HEADERS(ssl.h ssl/ssl.h openssl/ssl.h)
 ])
 
 AC_ARG_WITH(lint,
