@@ -41,8 +41,14 @@
 #endif
 
 #if defined(STANDALONE_HELP)
-# define notify(xx,yy) printf("%s\n", yy)
 # define dbref int
+
+int
+notify(dbref player, const char *msg)
+{
+	return printf("%s\n", msg);
+}
+
 
 int
 string_prefix(register const char *string, register const char *prefix)

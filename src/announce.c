@@ -42,6 +42,12 @@ char *Name;						/* name of this program for error messages */
 char msg[32768];
 
 int
+notify(int player, const char *msg)
+{
+	return printf("%s\n", msg);
+}
+
+int
 main(int argc, char *argv[])
 {
 	int s, ns, foo;

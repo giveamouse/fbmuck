@@ -23,7 +23,7 @@ static int epoch = 0;
 FILE *input_file;
 FILE *delta_infile;
 FILE *delta_outfile;
-char *in_filename;
+char *in_filename = NULL;
 
 void fork_and_dump(void);
 void dump_database(void);
@@ -395,6 +395,15 @@ init_game(const char *infile, const char *outfile)
 	}
 
 	return 0;
+}
+
+
+void
+cleanup_game()
+{
+	if (dumpfile)
+		free((void *) dumpfile);
+	free((void *) in_filename);
 }
 
 

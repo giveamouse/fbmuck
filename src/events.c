@@ -63,6 +63,7 @@ check_dump_time(void)
 		if (tp_periodic_program_purge)
 			free_unused_programs();
 		purge_for_pool();
+		purge_try_pool();
 
 #ifdef DELTADUMPS
 		dump_deltas();

@@ -502,7 +502,12 @@ main(int argc, char **argv)
 		db_free();
 		free_old_macros();
 		purge_all_free_frames();
+		purge_for_pool();
+		purge_try_pool();
 		purge_mfns();
+		cleanup_game();
+		tune_freeparms();
+		free_compress_dictionary();
 #endif
 
 #ifdef DISKBASE

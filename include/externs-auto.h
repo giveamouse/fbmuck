@@ -104,6 +104,7 @@ void ts_lastuseobject(dbref thing);
 void ts_useobject(dbref thing);
 void tune_save_parmsfile(void);
 int tune_setparm(const char *parmname, const char *val);
+void tune_freeparms(void);
 const char * unmangle(dbref player, const char *s);
 const char * unparse_flags(dbref thing);
 void untouchprops_incremental(int limit);

@@ -43,6 +43,12 @@
 #define IDENTD_TIMEOUT 60
 
 
+int
+notify(int player, const char* msg)
+{
+	return printf("%s\n", msg);
+}
+
 #ifdef USE_IPV6
 const char *addrout(struct in6_addr *, unsigned short, unsigned short);
 #else

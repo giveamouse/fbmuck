@@ -505,7 +505,7 @@ new_array_dictionary(void)
 
 
 stk_array *
-array_clone(stk_array * arr)
+array_decouple(stk_array * arr)
 {
 	stk_array *nu;
 
@@ -523,6 +523,7 @@ array_clone(stk_array * arr)
 			nu->data.packed = (array_data *) malloc(sizeof(array_data) * arr->items);
 			for (i = arr->items; i-- > 0;) {
 				copyinst(&arr->data.packed[i], &nu->data.packed[i]);
+				CLEAR(&arr->data.packed[i]);
 			}
 			return nu;
 			break;
@@ -530,10 +531,12 @@ array_clone(stk_array * arr)
 
 	case ARRAY_DICTIONARY:{
 			array_iter idx;
+			array_data *val;
 
 			if (array_first(arr, &idx)) {
 				do {
-					array_setitem(&nu, &idx, array_getitem(arr, &idx));
+					val = array_getitem(arr, &idx);
+					array_setitem(&nu, &idx, val);
 				} while (array_next(arr, &idx));
 			}
 			return nu;
@@ -776,6 +779,7 @@ array_prev(stk_array * arr, array_iter * item)
 			int idx;
 
 			if (item->type == PROG_STRING) {
+				CLEAR(item);
 				return 0;
 			} else if (item->type == PROG_FLOAT) {
 				if (item->data.fnumber >= arr->items) {
@@ -786,12 +790,12 @@ array_prev(stk_array * arr, array_iter * item)
 			} else {
 				idx = item->data.number - 1;
 			}
+			CLEAR(item);
 			if (idx >= arr->items) {
 				idx = arr->items - 1;
 			} else if (idx < 0) {
 				return 0;
 			}
-			CLEAR(item);
 			item->type = PROG_INTEGER;
 			item->data.number = idx;
 			return 1;
@@ -801,9 +805,9 @@ array_prev(stk_array * arr, array_iter * item)
 			array_tree *p;
 
 			p = array_tree_prev_node(arr->data.dict, item);
+			CLEAR(item);
 			if (!p)
 				return 0;
-			CLEAR(item);
 			copyinst(&p->key, item);
 			return 1;
 		}
@@ -826,6 +830,7 @@ array_next(stk_array * arr, array_iter * item)
 			int idx;
 
 			if (item->type == PROG_STRING) {
+				CLEAR(item);
 				return 0;
 			} else if (item->type == PROG_FLOAT) {
 				if (item->data.fnumber < 0.0) {
@@ -836,12 +841,12 @@ array_next(stk_array * arr, array_iter * item)
 			} else {
 				idx = item->data.number + 1;
 			}
+			CLEAR(item);
 			if (idx >= arr->items) {
 				return 0;
 			} else if (idx < 0) {
 				idx = 0;
 			}
-			CLEAR(item);
 			item->type = PROG_INTEGER;
 			item->data.number = idx;
 			return 1;
@@ -851,9 +856,9 @@ array_next(stk_array * arr, array_iter * item)
 			array_tree *p;
 
 			p = array_tree_next_node(arr->data.dict, item);
+			CLEAR(item);
 			if (!p)
 				return 0;
-			CLEAR(item);
 			copyinst(&p->key, item);
 			return 1;
 		}
@@ -916,7 +921,7 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 			if (idx->data.number >= 0 && idx->data.number < arr->items) {
 				if (arr->links > 1) {
 					arr->links--;
-					arr = *harr = array_clone(arr);
+					arr = *harr = array_decouple(arr);
 				}
 				CLEAR(&arr->data.packed[idx->data.number]);
 				copyinst(item, &arr->data.packed[idx->data.number]);
@@ -924,7 +929,7 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 			} else if (idx->data.number == arr->items) {
 				if (arr->links > 1) {
 					arr->links--;
-					arr = *harr = array_clone(arr);
+					arr = *harr = array_decouple(arr);
 				}
 				arr->data.packed =
 						realloc(arr->data.packed, sizeof(array_data) * (arr->items + 1));
@@ -941,7 +946,7 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 
 			if (arr->links > 1) {
 				arr->links--;
-				arr = *harr = array_clone(arr);
+				arr = *harr = array_decouple(arr);
 			}
 			p = array_tree_find(arr->data.dict, idx);
 			if (p) {
@@ -983,7 +988,7 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 			}
 			if (arr->links > 1) {
 				arr->links--;
-				arr = *harr = array_clone(arr);
+				arr = *harr = array_decouple(arr);
 			}
 			arr->data.packed =
 					realloc(arr->data.packed, sizeof(array_data) * (arr->items + 1));
@@ -1001,7 +1006,7 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 
 			if (arr->links > 1) {
 				arr->links--;
-				arr = *harr = array_clone(arr);
+				arr = *harr = array_decouple(arr);
 			}
 			p = array_tree_find(arr->data.dict, idx);
 			if (p) {
@@ -1159,7 +1164,7 @@ array_setrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 			}
 			if (arr->links > 1) {
 				arr->links--;
-				arr = *harr = array_clone(arr);
+				arr = *harr = array_decouple(arr);
 			}
 			if (array_first(inarr, &idx)) {
 				do {
@@ -1174,7 +1179,7 @@ array_setrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 	case ARRAY_DICTIONARY:{
 			if (arr->links > 1) {
 				arr->links--;
-				arr = *harr = array_clone(arr);
+				arr = *harr = array_decouple(arr);
 			}
 			if (array_first(inarr, &idx)) {
 				do {
@@ -1220,7 +1225,7 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 			}
 			if (arr->links > 1) {
 				arr->links--;
-				arr = *harr = array_clone(arr);
+				arr = *harr = array_decouple(arr);
 			}
 			arr->data.packed =
 					realloc(arr->data.packed,
@@ -1251,7 +1256,7 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 	case ARRAY_DICTIONARY:{
 			if (arr->links > 1) {
 				arr->links--;
-				arr = *harr = array_clone(arr);
+				arr = *harr = array_decouple(arr);
 			}
 			if (array_first(inarr, &idx)) {
 				do {
@@ -1310,7 +1315,7 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 			}
 			if (arr->links > 1) {
 				arr->links--;
-				arr = *harr = array_clone(arr);
+				arr = *harr = array_decouple(arr);
 			}
 			start->data.number = sidx;
 			end->data.number = eidx;
@@ -1353,7 +1358,7 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 			}
 			if (arr->links > 1) {
 				arr->links--;
-				arr = *harr = array_clone(arr);
+				arr = *harr = array_decouple(arr);
 			}
 			copyinst(&s->key, &idx);
 			while (s && array_tree_compare(&s->key, &e->key, 0) <= 0) {
@@ -1628,6 +1633,10 @@ array_get_intkey_strval(stk_array * arr, int key)
 
 /*
  * $Log: array.c,v $
+ * Revision 1.16  2001/07/07 07:20:58  revar
+ * Memory leak fixes, and cleanup code to make memory leaks more obvious when
+ *   using MALLOC_PROFILING.
+ *
  * Revision 1.15  2001/04/05 18:09:43  winged
  * Final Log fixes... sheesh
  *

@@ -20,6 +20,10 @@
 
 /*
  * $Log: compress.c,v $
+ * Revision 1.4  2001/07/07 07:20:58  revar
+ * Memory leak fixes, and cleanup code to make memory leaks more obvious when
+ *   using MALLOC_PROFILING.
+ *
  * Revision 1.3  2000/07/20 20:38:52  winged
  * Let's clean up some REALLY pedantic warnings, shall we?
  *
@@ -119,6 +123,16 @@ save_compress_words_to_file(FILE * f)
 
 	for (i = 0; i < 4096; i++) {
 		fprintf(f, "%s\n", dict2[i]);
+	}
+}
+
+void
+free_compress_dictionary()
+{
+	int i;
+	for (i = 0; i < 4096; i++) {
+		free(dict[i]);
+		free(dict2[i]);
 	}
 }
 

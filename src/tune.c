@@ -525,6 +525,18 @@ tune_get_parmstring(const char *name, int mlev)
 #define TUNESET_SYNTAX 2
 #define TUNESET_BADVAL 3
 
+void
+tune_freeparms()
+{
+	struct tune_str_entry *tstr = tune_str_list;
+	while (tstr->name) {
+		if (!tstr->isdefault) {
+			free((char *) *tstr->str);
+		}
+		tstr++;
+	}
+}
+
 int
 tune_setparm(const char *parmname, const char *val)
 {

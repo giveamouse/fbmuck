@@ -2,6 +2,10 @@
 
 /*
  * $Log: stringutil.c,v $
+ * Revision 1.5  2001/07/07 07:20:59  revar
+ * Memory leak fixes, and cleanup code to make memory leaks more obvious when
+ *   using MALLOC_PROFILING.
+ *
  * Revision 1.4  2001/04/13 19:55:55  wog
  * Fixed bug #407427: Big arrays crash with expanded_debug
  * I hope.
@@ -416,8 +420,6 @@ alloc_string(const char *string)
 	return s;
 }
 
-#endif
-
 struct shared_string *
 alloc_prog_string(const char *s)
 {
@@ -439,7 +441,6 @@ alloc_prog_string(const char *s)
 }
 
 
-#if !defined(MALLOC_PROFILING)
 char *
 string_dup(const char *s)
 {
