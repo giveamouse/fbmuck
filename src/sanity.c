@@ -2,6 +2,10 @@
 
 /*
  * $Log: sanity.c,v $
+ * Revision 1.5  2000/11/23 10:30:22  revar
+ * Changes for BSD compatability.
+ * Changes to correct various sprintf format strings.
+ *
  * Revision 1.4  2000/07/19 01:33:18  revar
  * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
  * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
@@ -1276,7 +1280,7 @@ extract_prop(FILE * f, const char *dir, PropPtr p)
 	case PROP_FLTTYP:
 		if ((PropDataFVal(p) < SMALL_NUM) && (PropDataFVal(p) > NSMALL_NUM))
 			return;
-		sprintf(tbuf, "%hg", PropDataFVal(p));
+		sprintf(tbuf, "%g", PropDataFVal(p));
 		ptr2 = tbuf;
 		break;
 	case PROP_REFTYP:

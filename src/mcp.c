@@ -689,7 +689,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 		strcat(out, MCP_ARG_DELIMITER);
 		strcat(out, MCP_SEPARATOR);
 		out += strlen(out);
-		sprintf(datatag, "%0.8X%0.8X", random(), random());
+		sprintf(datatag, "%.8lX%.8lX", random(), random());
 		strcat(out, datatag);
 	}
 
@@ -1137,7 +1137,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 			mcp_mesg_init(&reply, MCP_INIT_PKG, "");
 			mcp_mesg_arg_append(&reply, "version", "2.1");
 			mcp_mesg_arg_append(&reply, "to", "2.1");
-			sprintf(authval, "%0.8X%0.8X", random(), random());
+			sprintf(authval, "%.8lX%.8lX", random(), random());
 			mcp_mesg_arg_append(&reply, "authentication-key", authval);
 			mfr->authkey = (char *) malloc(strlen(authval) + 1);
 			strcpy(mfr->authkey, authval);
@@ -1565,6 +1565,10 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.8  2000/11/23 10:30:22  revar
+* Changes for BSD compatability.
+* Changes to correct various sprintf format strings.
+*
 * Revision 1.7  2000/08/23 10:00:02  revar
 * Added @tops, @muftops, and @mpitops profiling commands.
 * Changed examine to show a program's cumulative runtimes.

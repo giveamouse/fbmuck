@@ -870,7 +870,7 @@ do_muf_topprofs(dbref player, char *arg1)
 	notify(player, "     %CPU   TotalTime  UseCount  Program");
 	while (tops) {
 		curr = tops;
-		sprintf(buf, "%10.3f %10.3f %9d %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
+		sprintf(buf, "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
 		notify(player, buf);
 		tops = tops->next;
 		free(curr);
@@ -980,7 +980,7 @@ do_mpi_topprofs(dbref player, char *arg1)
 	notify(player, "     %CPU   TotalTime  UseCount  Object");
 	while (tops) {
 		curr = tops;
-		sprintf(buf, "%10.3f %10.3f %9d %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
+		sprintf(buf, "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
 		notify(player, buf);
 		tops = tops->next;
 		free(curr);
@@ -1152,7 +1152,7 @@ do_all_topprofs(dbref player, char *arg1)
 	notify(player, "     %CPU   TotalTime  UseCount  Type  Object");
 	while (tops) {
 		curr = tops;
-		sprintf(buf, "%10.3f %10.3f %9d%5s   %s", curr->pcnt, curr->proftime, curr->usecount, curr->type?"MUF":"MPI",unparse_object(player, curr->prog));
+		sprintf(buf, "%10.3f %10.3f %9ld%5s   %s", curr->pcnt, curr->proftime, curr->usecount, curr->type?"MUF":"MPI",unparse_object(player, curr->prog));
 		notify(player, buf);
 		tops = tops->next;
 		free(curr);

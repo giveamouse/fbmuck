@@ -18,7 +18,9 @@
 #include <string.h>
 
 #ifdef USE_IPV6
+#ifndef __FreeBSD__
 #include <netinet6/in6.h>
+#endif
 #endif
 
 /*
@@ -470,7 +472,7 @@ addrout(long a, unsigned short prt, unsigned short myprt)
 #else
 
 	a = ntohl(a);
-	sprintf(tmpbuf, "%d.%d.%d.%d",
+	sprintf(tmpbuf, "%ld.%ld.%ld.%ld",
 			(a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff);
 	hostadd_timestamp(a, tmpbuf);
 	ptr = get_username(htonl(a), prt, myprt);

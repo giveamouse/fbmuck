@@ -756,7 +756,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 			struct timeval tv = PROGRAM_PROFTIME(thing);
 			sprintf(buf, "Program compiled size: %d instructions", PROGRAM_SIZ(thing));
 			notify(player, buf);
-			sprintf(buf, "Cumulative runtime: %d.%06d seconds ", tv.tv_sec, tv.tv_usec);
+			sprintf(buf, "Cumulative runtime: %ld.%06ld seconds ", tv.tv_sec, tv.tv_usec);
 			notify(player, buf);
 		} else {
 			sprintf(buf, "Program not compiled.");

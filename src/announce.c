@@ -19,8 +19,10 @@
 #include <netdb.h>
 #include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <unistd.h>
 
 #ifdef USE_IPV6
 #include <netinet6/in6.h>

@@ -23,13 +23,16 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <arpa/inet.h>
 
 #ifdef AIX
 # include <sys/select.h>
 #endif
 
 #ifdef USE_IPV6
+#ifndef __FreeBSD__
 #include <netinet6/in6.h>
+#endif
 #endif
 
 #include "db.h"
@@ -1242,7 +1245,7 @@ addrout(long a, unsigned short prt)
 	a = ntohl(a);
 
 #ifdef SPAWN_HOST_RESOLVER
-	sprintf(buf, "%d.%d.%d.%d(%u)%u\n",
+	sprintf(buf, "%ld.%ld.%ld.%ld(%u)%u\n",
 			(a >> 24) & 0xff,
 			(a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt, resolver_myport);
 	if (tp_hostnames) {
@@ -1250,7 +1253,7 @@ addrout(long a, unsigned short prt)
 	}
 #endif
 
-	sprintf(buf, "%d.%d.%d.%d(%u)",
+	sprintf(buf, "%ld.%ld.%ld.%ld(%u)",
 			(a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt);
 #endif
 	return buf;

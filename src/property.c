@@ -779,7 +779,7 @@ displayprop(dbref player, dbref obj, const char *name, char *buf)
 		sprintf(buf, "%c int %s:%d", blesschar, mybuf, PropDataVal(p));
 		break;
 	case PROP_FLTTYP:
-		sprintf(buf, "%c flt %s:%hg", blesschar, mybuf, PropDataFVal(p));
+		sprintf(buf, "%c flt %s:%g", blesschar, mybuf, PropDataFVal(p));
 		break;
 	case PROP_LOKTYP:
 		if (PropFlags(p) & PROP_ISUNLOADED) {
@@ -939,7 +939,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 				abort();
 			}
 		} else {
-			sscanf(value, "%hg", &mydat.data.fval);
+			sscanf(value, "%g", &mydat.data.fval);
 		}
 		set_property_nofetch(obj, name, &mydat);
 		break;
@@ -994,7 +994,7 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
 	case PROP_FLTTYP:
 		if (!PropDataFVal(p))
 			return;
-		sprintf(tbuf, "%hg", PropDataFVal(p));
+		sprintf(tbuf, "%g", PropDataFVal(p));
 		ptr2 = tbuf;
 		break;
 	case PROP_REFTYP:
