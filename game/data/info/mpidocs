@@ -53,7 +53,7 @@ both considered false.  Any other value is considered true.
 {time:timezone}
     Returns a time string in the 24hr form hh:mm:ss.  If the timezone
 argument is given, then it offsets the time returned by that number
-of seconds.
+of hours.
 
 
 {date}
