@@ -49,8 +49,9 @@ Stack Types and Object Types:
   float?
   
 Control Structures:
-  if     else  then   call   execute   exit   jmp     public  wizcall
-  begin  for   while  break  continue  until  repeat  foreach interp
+  if     else  then     call   execute   exit   jmp     public  wizcall
+  begin  for   while    break  continue  until  repeat  foreach interp
+  try    catch endcatch
   
 Stack Manipulation:
   dup   pop   swap  over  rot  rotate  pick   put    reverse
@@ -65,7 +66,9 @@ Array Manipulation:
   array_nunion       array_nintersect   array_ndiff        array_reverse
   array_union        array_intersect    array_diff         array_findval
   array_get_reflist  array_put_reflist  array_get_proplist array_put_proplist
-  array_get_propvals array_put_propvals array_get_propdirs
+  array_get_propvals array_put_propvals array_get_propdirs array_filter_prop
+  array_matchkey     array_matchval     array_extract      array_join
+  array_sort
   
 Message Management:
   desc     succ      fail      name      truename
@@ -80,8 +83,9 @@ Data Conversion:
   atoi   intostr   dbref   int    ctoi    itoc    stod   strtof ftostr 
   
 Property Management:
-  getprop  getpropval  getpropfval getpropstr  addprop   remove_prop
-  envprop  envpropstr  nextprop    propdir?  parseprop   setprop
+  getprop   getpropval  getpropfval getpropstr  addprop      remove_prop
+  envprop   envpropstr  nextprop    propdir?    parseprop    setprop
+  blessprop unblessprop reflist_add reflist_del reflist_find
   
 I/O:
   read   notify   notify_except   notify_exclude   tread
@@ -108,7 +112,8 @@ Bitwise Operators:
   bitor   bitand   bitxor   bitshift
   
 MUF Event Support:
-  event_wait      event_count      timer_start      timer_stop
+  event_wait   event_waitfor   event_count    timer_start    timer_stop
+  event_exists
   
 MCP Mud Client Protocol commands:
   mcp_register  mcp_bind  mcp_supports  mcp_send
@@ -116,7 +121,7 @@ MCP Mud Client Protocol commands:
 MCP GUI Package Support:
   gui_dlog_create   gui_dlog_simple   gui_dlog_tabbed   gui_dlog_helper
   gui_available     gui_dlog_show     gui_dlog_close    gui_ctrl_create
-  gui_values_get    gui_value_set
+  gui_values_get    gui_value_get     gui_value_set     gui_ctrl_command
   
 MCP GUI Package Defines:
   d_simple        d_tabbed          d_helper
@@ -126,13 +131,13 @@ MCP GUI Package Defines:
   c_frame         c_notebook
   
 Misc:
-  set    mlevel  next    checkargs  location  newroom     pennies
-  flag?  caller  force   sysparm    contents  newexit     addpennies
-  prog   match   random  version    controls  newobject   timestamps
-  trig   stats   rmatch  getlink    setown    recycle     part_pmatch
-  dbtop  exits   moveto  setlink    owner     copyobj     checkpassword
-  srand  setseed getseed getlinks   cancall?  nextowned   setsysparm 
-  pmatch
+  set    mlevel   next    checkargs  location  newroom    pennies
+  flag?  caller   force   sysparm    contents  newexit    addpennies
+  prog   match    random  version    controls  newobject  timestamps
+  trig   stats    rmatch  getlink    setown    recycle    part_pmatch
+  dbtop  exits    moveto  setlink    owner     copyobj    checkpassword
+  srand  setseed  getseed getlinks   cancall?  nextowned  setsysparm 
+  pmatch findnext
   
 In the documentation some primitives are grouped together as:
   MATH OPERATORS
