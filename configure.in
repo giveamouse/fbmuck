@@ -86,6 +86,7 @@ AC_DEFINE_UNQUOTED(ssldir, "$ssldir", [The base path to the installation for ope
 if test "$ssldir"; then
 	INC="$INC -I$ssldir/include"
 	LIBS="$LIBS -L$ssldir/lib -lssl"
+	AC_CHECK_LIB(crypto, CRYPTO_free)
 	AC_CHECK_LIB(ssl, SSL_read)
 fi
 AC_SUBST(INC)
@@ -176,14 +177,22 @@ AC_TYPE_SIZE_T
 AC_TYPE_SIGNAL
 AC_STRUCT_TM
 AC_STRUCT_TIMEZONE
+AC_CACHE_CHECK(for struct tm.tm_gmtoff, rb_cv_member_struct_tm_tm_gmtoff,
+  [AC_TRY_COMPILE([#include <time.h>],
+    [struct tm t; t.tm_gmtoff = 3600;],
+    [rb_cv_member_struct_tm_tm_gmtoff=yes],
+    [rb_cv_member_struct_tm_tm_gmtoff=no])])
+if test "$rb_cv_member_struct_tm_tm_gmtoff" = yes; then
+  AC_DEFINE(HAVE_STRUCT_TM_TM_GMTOFF)
+fi
+
 
 dnl
 dnl Check if socklen_t is defined in sys/socket.h.
 dnl
 AC_DEFUN([TYPE_SOCKLEN_T],
 [AC_CACHE_CHECK([for socklen_t], ac_cv_type_socklen_t,
-[
-  AC_TRY_COMPILE(
+  [AC_TRY_COMPILE(
     [#include <sys/types.h>
      #include <sys/socket.h>],
     [socklen_t len = 42; return 0;],
