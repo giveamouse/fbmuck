@@ -20,7 +20,7 @@
 #define MCP_ARG_EMPTY		"\"\""
 #define MCP_ARG_DELIMITER	":"
 #define MCP_ARGLINE_DELIMCHAR1	'\n'
-#define MCP_ARGLINE_DELIMCHAR2	'\n'
+#define MCP_ARGLINE_DELIMCHAR2	'\r'
 #define MCP_SEPARATOR		" "
 #define MCP_INIT_PKG		"mcp"
 #define MCP_DATATAG		"_data-tag"
@@ -1565,6 +1565,9 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.10  2001/01/06 23:01:17  revar
+* Fixed bug with \r's in MCP arguments.
+*
 * Revision 1.9  2000/12/28 03:02:08  revar
 * Fixed support for Linux mallinfo() calls in @memory.
 * Fixed a crasher bug in ARRAY_NUNION, ARRAY_NDIFF, and ARRAY_NINTERSECT.

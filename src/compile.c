@@ -498,23 +498,23 @@ init_defs(COMPSTATE * cstat)
 	insert_def(cstat, "d_helper", "\"helper\"");
 
 	/* GUI control types */
-	insert_def(cstat, "c_menu", "\"menu\"");
-	insert_def(cstat, "c_datum", "\"datum\"");
-	insert_def(cstat, "c_label", "\"text\"");
-	insert_def(cstat, "c_hrule", "\"hrule\"");
-	insert_def(cstat, "c_vrule", "\"vrule\"");
-	insert_def(cstat, "c_button", "\"button\"");
-	insert_def(cstat, "c_checkbox", "\"checkbox\"");
-	insert_def(cstat, "c_edit", "\"edit\"");
-	insert_def(cstat, "c_multiedit", "\"multiedit\"");
-	insert_def(cstat, "c_combobox", "\"combobox\"");
-	insert_def(cstat, "c_spinner", "\"spinner\"");
-	insert_def(cstat, "c_scale", "\"scale\"");
-	insert_def(cstat, "c_listbox", "\"listbox\"");
-	insert_def(cstat, "c_frame", "\"frame\"");
-	insert_def(cstat, "c_notebook", "\"notebook\"");
+	insert_def(cstat, "c_menu",      "\"menu\"");
+	insert_def(cstat, "c_datum",     "\"datum\"");
+	insert_def(cstat, "c_label",     "\"text\"");
 	insert_def(cstat, "c_image",     "\"image\"");
+	insert_def(cstat, "c_hrule",     "\"hrule\"");
+	insert_def(cstat, "c_vrule",     "\"vrule\"");
+	insert_def(cstat, "c_button",    "\"button\"");
+	insert_def(cstat, "c_checkbox",  "\"checkbox\"");
 	insert_def(cstat, "c_radiobtn",  "\"radio\"");
+	insert_def(cstat, "c_edit",      "\"edit\"");
+	insert_def(cstat, "c_multiedit", "\"multiedit\"");
+	insert_def(cstat, "c_combobox",  "\"combobox\"");
+	insert_def(cstat, "c_spinner",   "\"spinner\"");
+	insert_def(cstat, "c_scale",     "\"scale\"");
+	insert_def(cstat, "c_listbox",   "\"listbox\"");
+	insert_def(cstat, "c_frame",     "\"frame\"");
+	insert_def(cstat, "c_notebook",  "\"notebook\"");
 
 	/* Backwards compatibility for old GUI dialog creation prims */
 	insert_def(cstat, "gui_dlog_simple", "d_simple 0 array_make_dict");
