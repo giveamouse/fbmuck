@@ -50,7 +50,7 @@ main(int argc, char **argv)
 		infile = stdin;
 	} else {
 		in_filename = (char *) string_dup(argv[1]);
-		if ((infile = fopen(in_filename, "r")) == NULL) {
+		if ((infile = fopen(in_filename, "rb")) == NULL) {
 			fprintf(stderr, "%s: unable to open input file.\n", argv[0]);
 			return 0;
 		}

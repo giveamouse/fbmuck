@@ -237,13 +237,13 @@ main(int argc, char **argv)
 	}
 
 	in_filename = (char *) string_dup(argv[1]);
-	if ((input_file = fopen(in_filename, "r")) == NULL) {
+	if ((input_file = fopen(in_filename, "rb")) == NULL) {
 		fprintf(stderr, "%s: unable to open input file.\n", argv[0]);
 		return;
 	}
 
 	out_filename = (char *) string_dup(argv[2]);
-	if ((output_file = fopen(out_filename, "w")) == NULL) {
+	if ((output_file = fopen(out_filename, "wb")) == NULL) {
 		fprintf(stderr, "%s: unable to write to output file.\n", argv[0]);
 		return;
 	}

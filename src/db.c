@@ -349,10 +349,17 @@ char *
 file_line(FILE * f)
 {
 	char buf[BUFFER_LEN];
+	int len;
 
 	if (!fgets(buf, BUFFER_LEN, f))
 		return NULL;
-	buf[strlen(buf) - 1] = '\0';
+	len = strlen(buf);
+	if (buf[len-1] == '\n') {
+		buf[--len] = '\0';
+	}
+	if (buf[len-1] == '\r') {
+		buf[--len] = '\0';
+	}
 	return alloc_string(buf);
 }
 
@@ -951,6 +958,11 @@ read_program(dbref i)
 		len = strlen(buf);
 		if (len > 0 && buf[len - 1] == '\n') {
 			buf[len - 1] = '\0';
+			len--;
+		}
+		if (len > 0 && buf[len - 1] == '\r') {
+			buf[len - 1] = '\0';
+			len--;
 		}
 		if (!*buf)
 			strcpy(buf, " ");

@@ -101,11 +101,12 @@ spit_file_segment(dbref player, const char *filename, const char *seg)
 		perror(filename);
 	} else {
 		while (fgets(buf, sizeof buf, f)) {
-			for (p = buf; *p; p++)
-				if (*p == '\n') {
+			for (p = buf; *p; p++) {
+				if (*p == '\n' || *p == '\r') {
 					*p = '\0';
 					break;
 				}
+			}
 			currline++;
 			if ((!startline || (currline >= startline)) && (!endline || (currline <= endline))) {
 				if (*buf) {
@@ -183,11 +184,12 @@ index_file(dbref player, const char *onwhat, const char *file)
 		while (fgets(buf, sizeof buf, f)) {
 			if (*buf == '~')
 				break;
-			for (p = buf; *p; p++)
-				if (*p == '\n') {
+			for (p = buf; *p; p++) {
+				if (*p == '\n' || *p == '\r') {
 					*p = '\0';
 					break;
 				}
+			}
 			if (*buf) {
 				notify(player, buf);
 			} else {

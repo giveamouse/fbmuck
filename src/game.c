@@ -109,7 +109,7 @@ dump_database_internal(void)
 
 	snprintf(tmpfile, sizeof(tmpfile), "%s.#%d#", dumpfile, epoch);
 
-	if ((f = fopen(tmpfile, "w")) != NULL) {
+	if ((f = fopen(tmpfile, "wb")) != NULL) {
 		db_write(f);
 		fclose(f);
 
@@ -128,15 +128,15 @@ dump_database_internal(void)
 #ifdef DISKBASE
 		free((void *) in_filename);
 		in_filename = string_dup(dumpfile);
-		if ((input_file = fopen(in_filename, "r")) == NULL)
+		if ((input_file = fopen(in_filename, "rb")) == NULL)
 			perror(dumpfile);
 #endif
 
 #ifdef DELTADUMPS
-		if ((delta_outfile = fopen(DELTAFILE_NAME, "w")) == NULL)
+		if ((delta_outfile = fopen(DELTAFILE_NAME, "wb")) == NULL)
 			perror(DELTAFILE_NAME);
 
-		if ((delta_infile = fopen(DELTAFILE_NAME, "r")) == NULL)
+		if ((delta_infile = fopen(DELTAFILE_NAME, "rb")) == NULL)
 			perror(DELTAFILE_NAME);
 #endif
 
@@ -187,7 +187,7 @@ panic(const char *message)
 
 	/* dump panic file */
 	snprintf(panicfile, sizeof(panicfile), "%s.PANIC", dumpfile);
-	if ((f = fopen(panicfile, "w")) == NULL) {
+	if ((f = fopen(panicfile, "wb")) == NULL) {
 		perror("CANNOT OPEN PANIC FILE, YOU LOSE");
 		sync();
 
@@ -370,14 +370,14 @@ init_game(const char *infile, const char *outfile)
 	}
 
 	in_filename = (char *) string_dup(infile);
-	if ((input_file = fopen(infile, "r")) == NULL)
+	if ((input_file = fopen(infile, "rb")) == NULL)
 		return -1;
 
 #ifdef DELTADUMPS
-	if ((delta_outfile = fopen(DELTAFILE_NAME, "w")) == NULL)
+	if ((delta_outfile = fopen(DELTAFILE_NAME, "wb")) == NULL)
 		return -1;
 
-	if ((delta_infile = fopen(DELTAFILE_NAME, "r")) == NULL)
+	if ((delta_infile = fopen(DELTAFILE_NAME, "rb")) == NULL)
 		return -1;
 #endif
 

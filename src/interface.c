@@ -3356,7 +3356,7 @@ welcome_user(struct descriptor_data *d)
 		queue_ansi(d, DEFAULT_WELCOME_MESSAGE);
 		perror("spit_file: welcome.txt");
 	} else {
-		while (fgets(buf, sizeof buf, f)) {
+		while (fgets(buf, sizeof(buf) - 3, f)) {
 			ptr = index(buf, '\n');
 			if (ptr && ptr > buf && *(ptr - 1) != '\r') {
 				*ptr++ = '\r';

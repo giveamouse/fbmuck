@@ -20,6 +20,10 @@
 
 /*
  * $Log: compress.c,v $
+ * Revision 1.5  2002/06/18 07:45:21  revar
+ * Changed end-of-line handling to be tolerant of CRLFs in MUF and macros files.
+ * Changed database opening to be in binary mode for windows portability.
+ *
  * Revision 1.4  2001/07/07 07:20:58  revar
  * Memory leak fixes, and cleanup code to make memory leaks more obvious when
  *   using MALLOC_PROFILING.
@@ -96,14 +100,16 @@ unsigned long
 comp_read_line(FILE * file)
 {
 	int c;
-	unsigned long i;
+	unsigned long i = 0;
 
-	c = 0;
-	for (i = 0; c != '\n' && c != EOF; i++) {
+	for (;;) {
 		c = fgetc(file);
-		line[i] = c;
+		if (c == '\n' || c == '\r' || c == EOF) {
+			break;
+		}
+		line[i++] = c;
 	}
-	line[i - 1] = 0;
+	line[i] = '\0';
 	return (i);
 }
 
@@ -144,8 +150,8 @@ init_compress_from_file(FILE * dicto)
 	i = 0;
 	while (!feof(dicto) && i < 4096) {
 		n = comp_read_line(dicto);
-		dict[i] = (char *) malloc(n);
-		dict2[i] = (char *) malloc(n);
+		dict[i] = (char *) malloc(n+1);
+		dict2[i] = (char *) malloc(n+1);
 		strcpy(dict2[i], line);
 		for (j = 0; line[j]; j++)
 			if (line[j] >= 'a')

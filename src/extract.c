@@ -137,7 +137,7 @@ main(int argc, char **argv)
 		fprintf(stderr, "Must be called in form 'extract <filename> <dbref>'\n");
 		exit(1);
 	}
-	if ((input_file = fopen(argv[1], "r")) == NULL) {
+	if ((input_file = fopen(argv[1], "rb")) == NULL) {
 		fprintf(stderr, "Could not open file '%d'\n", argv[1]);
 		exit(1);
 	}

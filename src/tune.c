@@ -843,7 +843,7 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 					*p = '\0';
 				while (isspace(*c))
 					c++;
-				for (p = c; *p && *p != '\n'; p++) ;
+				for (p = c; *p && *p != '\n' && *p != '\r'; p++) ;
 				*p = '\0';
 				for (p = buf; isspace(*p); p++) ;
 				if (*p) {
