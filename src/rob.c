@@ -124,7 +124,7 @@ do_kill(int descr, dbref player, const char *what, int cost)
 
 				/* now notify everybody else */
 				if (GETODROP(victim)) {
-					snprintf(buf, sizeof(buf), "%s killed %s! ", PNAME(player), PNAME(victim));
+					snprintf(buf, sizeof(buf), "%s killed %s! ", NAME(player), NAME(victim));
 					parse_oprop(descr, player, getloc(player), victim,
 								   MESGPROP_ODROP, buf, "(@Odrop)");
 				} else {

@@ -707,10 +707,6 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 	msg = uncompress(msg);
 #endif							/* COMPRESS */
 
-#if defined(ANONYMITY)
-	msg = unmangle(player, msg);
-#endif
-
 	ptr2 = msg;
 	while (ptr2 && *ptr2) {
 		ptr1 = buf;
@@ -800,10 +796,6 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 #else
 	ptr = msg;
 #endif							/* COMPRESS */
-
-#ifdef ANONYMITY
-	ptr = unmangle(player, ptr);
-#endif
 
 	if (tp_listeners) {
 		if (tp_listeners_obj || Typeof(player) == TYPE_ROOM) {
@@ -2797,7 +2789,7 @@ announce_puppets(dbref player, const char *msg, const char *prop)
 					msg2 = msg;
 					if ((ptr = (char *) get_property_class(what, prop)) && *ptr)
 						msg2 = ptr;
-					snprintf(buf, sizeof(buf), "%.512s %.3000s", PNAME(what), msg2);
+					snprintf(buf, sizeof(buf), "%.512s %.3000s", NAME(what), msg2);
 					notify_except(DBFETCH(where)->contents, what, buf, what);
 				}
 			}
@@ -2824,7 +2816,7 @@ announce_connect(int descr, dbref player)
 	}
 
 	if ((!Dark(player)) && (!Dark(loc))) {
-		snprintf(buf, sizeof(buf), "%s has connected.", PNAME(player));
+		snprintf(buf, sizeof(buf), "%s has connected.", NAME(player));
 		notify_except(DBFETCH(loc)->contents, player, buf, player);
 	}
 
@@ -2891,7 +2883,7 @@ announce_disconnect(struct descriptor_data *d)
 		notify(player, "Foreground program aborted.");
 
 	if ((!Dark(player)) && (!Dark(loc))) {
-		snprintf(buf, sizeof(buf), "%s has disconnected.", PNAME(player));
+		snprintf(buf, sizeof(buf), "%s has disconnected.", NAME(player));
 		notify_except(DBFETCH(loc)->contents, player, buf, player);
 	}
 

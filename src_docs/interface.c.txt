@@ -65,11 +65,10 @@ Arguments:	dbref (object to notify)
 		const char * (string to notify)
 		int (isprivate<unknown functionality>)
 Called From:	<everywhere>
-Calls:		uncompress, unmangle, queue_ansi, Typeof, FLAGS, OWNER,
-		Wizard, getloc, GETPECHO, do_parse_mesg, NAME, sprintf,
-		strlen
+Calls:		uncompress, queue_ansi, Typeof, FLAGS, OWNER, Wizard,
+		getloc, GETPECHO, do_parse_mesg, NAME, sprintf, strlen
 Does:
-#ifdefs:	COMPRESS, ANONYMITY
+#ifdefs:	COMPRESS
 Defines Used:
 Notes:
 1) This is (appears to be) the primary notifier for things that should not

@@ -233,10 +233,10 @@ match_list(dbref first, struct match_data *md)
 		if (first == absolute) {
 			md->exact_match = first;
 			return;
-		} else if (!string_compare(RNAME(first), md->match_name)) {
+		} else if (!string_compare(NAME(first), md->match_name)) {
 			/* if there are multiple exact matches, randomly choose one */
 			md->exact_match = choose_thing(md->match_descr, md->exact_match, first, md);
-		} else if (string_match(RNAME(first), md->match_name)) {
+		} else if (string_match(NAME(first), md->match_name)) {
 			md->last_match = first;
 			(md->match_count)++;
 		}

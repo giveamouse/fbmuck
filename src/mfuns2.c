@@ -343,7 +343,7 @@ mfn_name(MFUNARGS)
 		strcpy(buf, "#HOME#");
 		return buf;
 	}
-	strcpy(buf, RNAME(obj));
+	strcpy(buf, NAME(obj));
 	if (Typeof(obj) == TYPE_EXIT) {
 		ptr = index(buf, ';');
 		if (ptr)
@@ -374,7 +374,7 @@ mfn_fullname(MFUNARGS)
 		strcpy(buf, "#HOME#");
 		return buf;
 	}
-	strcpy(buf, RNAME(obj));
+	strcpy(buf, NAME(obj));
 	return buf;
 }
 
@@ -1526,7 +1526,7 @@ mfn_force(MFUNARGS)
 	if (!tp_zombies && !(mesgtyp & MPI_ISBLESSED))
 		ABORT_MPI("FORCE", "Permission Denied.");
 	if (!(mesgtyp & MPI_ISBLESSED)) {
-		const char *ptr = RNAME(obj);
+		const char *ptr = NAME(obj);
 		char objname[BUFFER_LEN], *ptr2;
 		dbref loc = getloc(obj);
 

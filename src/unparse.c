@@ -95,11 +95,11 @@ unparse_object(dbref player, dbref loc)
 			 ((Typeof(loc) != TYPE_PLAYER) &&
 			  (controls_link(player, loc) || (FLAGS(loc) & CHOWN_OK))))) {
 			/* show everything */
-			snprintf(buf, sizeof(buf), "%.*s(#%d%s)", (BUFFER_LEN / 2), PNAME(loc), loc, unparse_flags(loc));
+			snprintf(buf, sizeof(buf), "%.*s(#%d%s)", (BUFFER_LEN / 2), NAME(loc), loc, unparse_flags(loc));
 			return buf;
 		} else {
 			/* show only the name */
-			return PNAME(loc);
+			return NAME(loc);
 		}
 	}
 }

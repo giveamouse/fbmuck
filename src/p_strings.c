@@ -360,7 +360,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					/* if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
 					   ts_lastuseobject(ref); */
 					if (NAME(ref)) {
-						strcpy(hold, PNAME(ref));
+						strcpy(hold, NAME(ref));
 					} else {
 						hold[0] = '\0';
 					}
@@ -834,7 +834,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							ref = oper3->data.objref;
 							CHECKREMOTE(ref);
 							if (NAME(ref)) {
-								strcpy(hold, PNAME(ref));
+								strcpy(hold, NAME(ref));
 							} else {
 								hold[0] = '\0';
 							}
@@ -1228,16 +1228,8 @@ prim_stringcmp(PRIM_PROTOTYPE)
 		result = 0;
 	else if (!(oper2->data.string && oper1->data.string))
 		result = oper1->data.string ? -1 : 1;
-	else {
-#if defined(ANONYMITY)
-		char pad[16384];
-
-		strcpy(pad, unmangle(player, oper2->data.string->data));
-		result = string_compare(pad, unmangle(player, oper1->data.string->data));
-#else
+	else
 		result = string_compare(oper2->data.string->data, oper1->data.string->data);
-#endif
-	}
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushInt(result);
@@ -1255,16 +1247,8 @@ prim_strcmp(PRIM_PROTOTYPE)
 		result = 0;
 	else if (!(oper2->data.string && oper1->data.string))
 		result = oper1->data.string ? -1 : 1;
-	else {
-#if defined(ANONYMITY)
-		char pad[16384];
-
-		strcpy(pad, unmangle(player, oper2->data.string->data));
-		result = strcmp(pad, unmangle(player, oper1->data.string->data));
-#else
+	else
 		result = strcmp(oper2->data.string->data, oper1->data.string->data);
-#endif
-	}
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushInt(result);
@@ -1340,11 +1324,7 @@ prim_strlen(PRIM_PROTOTYPE)
 	if (!oper1->data.string)
 		result = 0;
 	else
-#if defined(ANONYMITY)
-		result = strlen(unmangle(player, oper1->data.string->data));
-#else
 		result = oper1->data.string->length;
-#endif
 	CLEAR(oper1);
 	PushInt(result);
 }
@@ -1410,7 +1390,7 @@ prim_notify(PRIM_PROTOTYPE)
 
 	if (oper1->data.string) {
 		if (tp_force_mlev1_name_notify && mlev < 2 && player != oper2->data.objref) {
-			prefix_message(buf, oper1->data.string->data, PNAME(player), BUFFER_LEN, 1);
+			prefix_message(buf, oper1->data.string->data, NAME(player), BUFFER_LEN, 1);
 		}
 		else
 		{
@@ -1442,7 +1422,7 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 		abort_interp("Non-string message argument (top)");
 
 	if (tp_force_mlev1_name_notify && mlev < 2) {
-		prefix_message(buf, DoNullInd(oper1->data.string), PNAME(player), BUFFER_LEN, 1);
+		prefix_message(buf, DoNullInd(oper1->data.string), NAME(player), BUFFER_LEN, 1);
 	}
 	else
 		strcpy(buf, DoNullInd(oper1->data.string));
@@ -1852,7 +1832,7 @@ prim_unparseobj(PRIM_PROTOTYPE)
 			if (result < 0 || result >= db_top)
 				snprintf(buf, sizeof(buf), "*INVALID*");
 			else
-				snprintf(buf, sizeof(buf), "%s(#%d%s)", RNAME(result), result, unparse_flags(result));
+				snprintf(buf, sizeof(buf), "%s(#%d%s)", NAME(result), result, unparse_flags(result));
 		}
 		CLEAR(oper1);
 		PushString(buf);
@@ -1869,16 +1849,9 @@ prim_smatch(PRIM_PROTOTYPE)
 	oper2 = POP();
 	if (oper1->type != PROG_STRING || oper2->type != PROG_STRING)
 		abort_interp("Non-string argument.");
-
-#if defined(ANONYMITY)
-	strcpy(buf, unmangle(player, DoNullInd(oper1->data.string)));
-	strcpy(xbuf, unmangle(player, DoNullInd(oper2->data.string)));
-#else
 	strcpy(buf, DoNullInd(oper1->data.string));
 	strcpy(xbuf, DoNullInd(oper2->data.string));
-#endif
 	result = equalstr(buf, xbuf);
-
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushInt(result);
@@ -1945,18 +1918,7 @@ prim_strencrypt(PRIM_PROTOTYPE)
 	if (!oper2->data.string || !*(oper2->data.string->data)) {
 		abort_interp("Key cannot be a null string. (2)");
 	}
-#if defined(ANONYMITY)
-	{
-		char pad[BUFFER_LEN * 2];
-		char pad2[BUFFER_LEN * 2];
-
-		strcpy(pad, unmangle(player, DoNullInd(oper1->data.string)));
-		strcpy(pad2, unmangle(player, DoNullInd(oper2->data.string)));
-		ptr = strencrypt(pad, pad2);
-	}
-#else
 	ptr = strencrypt(DoNullInd(oper1->data.string), oper2->data.string->data);
-#endif
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushString(ptr);
@@ -1977,18 +1939,7 @@ prim_strdecrypt(PRIM_PROTOTYPE)
 	if (!oper2->data.string || !*(oper2->data.string->data)) {
 		abort_interp("Key cannot be a null string. (2)");
 	}
-#if defined(ANONYMITY)
-	{
-		char pad[BUFFER_LEN * 2];
-		char pad2[BUFFER_LEN * 2];
-
-		strcpy(pad, unmangle(player, DoNullInd(oper1->data.string)));
-		strcpy(pad2, unmangle(player, DoNullInd(oper2->data.string)));
-		ptr = strdecrypt(pad, pad2);
-	}
-#else
 	ptr = strdecrypt(DoNullInd(oper1->data.string), oper2->data.string->data);
-#endif
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushString(ptr);

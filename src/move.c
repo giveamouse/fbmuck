@@ -306,7 +306,7 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 				 ((Typeof(player) == TYPE_THING) && (FLAGS(player) & (ZOMBIE | VEHICLE))))
 				&& (Typeof(exit) != TYPE_EXIT || !Dark(exit))) {
 #if !defined(QUIET_MOVES)
-				snprintf(buf, sizeof(buf), "%s has left.", PNAME(player));
+				snprintf(buf, sizeof(buf), "%s has left.", NAME(player));
 				notify_except(DBFETCH(old)->contents, player, buf, player);
 #endif
 			}
@@ -324,7 +324,7 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 			 ((Typeof(player) == TYPE_THING) && (FLAGS(player) & (ZOMBIE | VEHICLE))))
 			&& (Typeof(exit) != TYPE_EXIT || !Dark(exit))) {
 #if !defined(QUIET_MOVES)
-			snprintf(buf, sizeof(buf), "%s has arrived.", PNAME(player));
+			snprintf(buf, sizeof(buf), "%s has arrived.", NAME(player));
 			notify_except(DBFETCH(loc)->contents, player, buf, player);
 #endif
 		}
@@ -459,7 +459,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 					exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
 				if (GETODROP(exit) && !Dark(player)) {
 					parse_oprop(descr, player, dest, exit, MESGPROP_ODROP,
-								   PNAME(player), "(@Odrop)");
+								   NAME(player), "(@Odrop)");
 				}
 				enter_room(descr, player, dest, exit);
 				succ = 1;
@@ -476,7 +476,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 						exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
 					if (GETODROP(exit) && !Dark(player)) {
 						parse_oprop(descr, player, dest, exit, MESGPROP_ODROP,
-									   PNAME(player), "(@Odrop)");
+									   NAME(player), "(@Odrop)");
 					}
 					enter_room(descr, player, dest, exit);
 					succ = 1;
@@ -531,7 +531,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 					}
 					if (GETODROP(exit) && !Dark(player)) {
 						parse_oprop(descr, player, getloc(dest), exit,
-									   MESGPROP_ODROP, PNAME(player), "(@Odrop)");
+									   MESGPROP_ODROP, NAME(player), "(@Odrop)");
 					}
 					enter_room(descr, player, DBFETCH(dest)->location, exit);
 				} else {
@@ -567,7 +567,7 @@ do_move(int descr, dbref player, const char *direction, int lev)
 		/* but steal all his possessions */
 		if ((loc = DBFETCH(player)->location) != NOTHING) {
 			/* tell everybody else */
-			snprintf(buf, sizeof(buf), "%s goes home.", PNAME(player));
+			snprintf(buf, sizeof(buf), "%s goes home.", NAME(player));
 			notify_except(DBFETCH(loc)->contents, player, buf, player);
 		}
 		/* give the player the messages */
@@ -791,8 +791,8 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 			notify(player, "Put away.");
 			return;
 		} else if (Typeof(cont) == TYPE_PLAYER) {
-			notify_fmt(cont, "%s hands you %s", PNAME(player), PNAME(thing));
-			notify_fmt(player, "You hand %s to %s", PNAME(thing), PNAME(cont));
+			notify_fmt(cont, "%s hands you %s", NAME(player), NAME(thing));
+			notify_fmt(player, "You hand %s to %s", NAME(thing), NAME(cont));
 			return;
 		}
 
@@ -806,14 +806,14 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 
 		if (GETODROP(thing)) {
 			parse_oprop(descr, player, loc, thing, MESGPROP_ODROP,
-						   PNAME(player), "(@Odrop)");
+						   NAME(player), "(@Odrop)");
 		} else {
-			snprintf(buf, sizeof(buf), "%s drops %s.", PNAME(player), PNAME(thing));
+			snprintf(buf, sizeof(buf), "%s drops %s.", NAME(player), NAME(thing));
 			notify_except(DBFETCH(loc)->contents, player, buf, player);
 		}
 
 		if (GETODROP(loc)) {
-			parse_oprop(descr, player, loc, loc, MESGPROP_ODROP, PNAME(thing), "(@Odrop)");
+			parse_oprop(descr, player, loc, loc, MESGPROP_ODROP, NAME(thing), "(@Odrop)");
 		}
 		break;
 	default:
@@ -862,7 +862,7 @@ do_recycle(int descr, dbref player, const char *name)
 				if (thing == player) {
 					snprintf(buf, sizeof(buf),
 							"%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks it's legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
-							PNAME(thing));
+							NAME(thing));
 					notify_except(DBFETCH(getloc(thing))->contents, thing, buf, player);
 					notify(OWNER(player), buf);
 					notify(OWNER(player), "Now don't you feel guilty?");

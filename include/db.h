@@ -86,13 +86,6 @@ typedef int dbref;				/* offset into db */
 #define DBSTORE(x, y, z)    {DBFETCH(x)->y = z; DBDIRTY(x);}
 
 #define NAME(x)     (db[x].name)
-#if defined(ANONYMITY)
-#  define PNAME(x)  (name_mangle(x))
-#  define RNAME(x)  (unmangle(player, name_mangle(x)))
-#else
-#  define PNAME(x)  (db[x].name)
-#  define RNAME(x)  (db[x].name)
-#endif
 #define FLAGS(x)    (db[x].flags)
 #define OWNER(x)    (db[x].owner)
 

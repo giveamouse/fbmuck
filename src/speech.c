@@ -29,7 +29,7 @@ do_say(dbref player, const char *message)
 	/* notify everybody */
 	snprintf(buf, sizeof(buf), "You say, \"%s\"", message);
 	notify(player, buf);
-	snprintf(buf, sizeof(buf), "%s says, \"%s\"", PNAME(player), message);
+	snprintf(buf, sizeof(buf), "%s says, \"%s\"", NAME(player), message);
 	notify_except(DBFETCH(loc)->contents, player, buf, player);
 }
 
@@ -55,13 +55,13 @@ do_whisper(int descr, dbref player, const char *arg1, const char *arg2)
 		notify(player, "I don't know who you mean!");
 		break;
 	default:
-		snprintf(buf, sizeof(buf), "%s whispers, \"%s\"", PNAME(player), arg2);
+		snprintf(buf, sizeof(buf), "%s whispers, \"%s\"", NAME(player), arg2);
 		if (!notify_from(player, who, buf)) {
-			snprintf(buf, sizeof(buf), "%s is not connected.", PNAME(who));
+			snprintf(buf, sizeof(buf), "%s is not connected.", NAME(who));
 			notify(player, buf);
 			break;
 		}
-		snprintf(buf, sizeof(buf), "You whisper, \"%s\" to %s.", arg2, PNAME(who));
+		snprintf(buf, sizeof(buf), "You whisper, \"%s\" to %s.", arg2, NAME(who));
 		notify(player, buf);
 		break;
 	}
@@ -77,7 +77,7 @@ do_pose(dbref player, const char *message)
 		return;
 
 	/* notify everybody */
-	snprintf(buf, sizeof(buf), "%s %s", PNAME(player), message);
+	snprintf(buf, sizeof(buf), "%s %s", NAME(player), message);
 	notify_except(DBFETCH(loc)->contents, NOTHING, buf, player);
 }
 
@@ -146,14 +146,14 @@ do_page(dbref player, const char *arg1, const char *arg2)
 	}
 	if (blank(arg2))
 		snprintf(buf, sizeof(buf), "You sense that %s is looking for you in %s.",
-				PNAME(player), NAME(DBFETCH(player)->location));
+				NAME(player), NAME(DBFETCH(player)->location));
 	else
-		snprintf(buf, sizeof(buf), "%s pages from %s: \"%s\"", PNAME(player),
+		snprintf(buf, sizeof(buf), "%s pages from %s: \"%s\"", NAME(player),
 				NAME(DBFETCH(player)->location), arg2);
 	if (notify_from(player, target, buf))
 		notify(player, "Your message has been sent.");
 	else {
-		snprintf(buf, sizeof(buf), "%s is not connected.", PNAME(target));
+		snprintf(buf, sizeof(buf), "%s is not connected.", NAME(target));
 		notify(player, buf);
 	}
 }

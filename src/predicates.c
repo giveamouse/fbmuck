@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.10  2004/01/12 09:42:49  wolfwings
+ * Removed remaining Anonymity code.
+ *
  * Revision 1.9  2003/11/04 19:26:19  revar
  * Fixed a number of off-by-one crasher bugs, due to bad comparisons with db_top.
  *
@@ -280,7 +283,7 @@ can_doit(int descr, dbref player, dbref thing, const char *default_fail_msg)
 		}
 		if (GETOFAIL(thing) && !Dark(player)) {
 			parse_oprop(descr, player, loc, thing, MESGPROP_OFAIL,
-						   PNAME(player), "(@Ofail)");
+						   NAME(player), "(@Ofail)");
 		}
 		return 0;
 	} else {

@@ -39,7 +39,6 @@ extern void prim_recycle(PRIM_PROTOTYPE);
 extern void prim_setlockstr(PRIM_PROTOTYPE);
 extern void prim_getlockstr(PRIM_PROTOTYPE);
 extern void prim_part_pmatch(PRIM_PROTOTYPE);
-extern void prim_truename(PRIM_PROTOTYPE);
 extern void prim_checkpassword(PRIM_PROTOTYPE);
 extern void prim_nextowned(PRIM_PROTOTYPE);
 extern void prim_movepennies(PRIM_PROTOTYPE);
@@ -77,7 +76,7 @@ extern void prim_toadplayer(PRIM_PROTOTYPE);
     prim_owner, prim_getlink, prim_setlink, prim_setown, prim_newobject, \
     prim_newroom, prim_newexit, prim_lockedp, prim_recycle,              \
     prim_setlockstr, prim_getlockstr, prim_part_pmatch, prim_controls,   \
-    prim_truename, prim_checkpassword, prim_nextowned, prim_getlinks,    \
+    prim_checkpassword, prim_nextowned, prim_getlinks,    \
     prim_pmatch, prim_movepennies, prim_findnext, prim_nextentrance,     \
 	prim_newplayer, prim_copyplayer, prim_objmem, prim_instances,        \
 	prim_compiledp, prim_newprogram, prim_contents_array,                \

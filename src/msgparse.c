@@ -507,7 +507,7 @@ ref2str(dbref obj, char *buf, size_t buflen)
 	}
 
 	if (obj >= 0 && Typeof(obj) == TYPE_PLAYER) {
-		snprintf(buf, buflen, "*%s", RNAME(obj));
+		snprintf(buf, buflen, "*%s", NAME(obj));
 	} else {
 		snprintf(buf, buflen, "#%d", obj);
 	}

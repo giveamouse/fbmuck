@@ -603,11 +603,11 @@ do_boot(dbref player, const char *name)
 			log_status("BOOTED: %s(%d) by %s(%d)\n", NAME(victim),
 					   victim, NAME(player), player);
 			if (player != victim) {
-				snprintf(buf, sizeof(buf), "You booted %s off!", PNAME(victim));
+				snprintf(buf, sizeof(buf), "You booted %s off!", NAME(victim));
 				notify(player, buf);
 			}
 		} else {
-			snprintf(buf, sizeof(buf), "%s is not connected.", PNAME(victim));
+			snprintf(buf, sizeof(buf), "%s is not connected.", NAME(victim));
 			notify(player, buf);
 		}
 	}
@@ -675,13 +675,13 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 
 		/* notify people */
 		notify(victim, "You have been turned into a toad.");
-		snprintf(buf, sizeof(buf), "You turned %s into a toad!", PNAME(victim));
+		snprintf(buf, sizeof(buf), "You turned %s into a toad!", NAME(victim));
 		notify(player, buf);
 		log_status("TOADED: %s(%d) by %s(%d)\n", NAME(victim), victim, NAME(player), player);
 
 		/* reset name */
 		delete_player(victim);
-		snprintf(buf, sizeof(buf), "A slimy toad named %s", unmangle(victim, PNAME(victim)));
+		snprintf(buf, sizeof(buf), "A slimy toad named %s", NAME(victim));
 		free((void *) NAME(victim));
 		NAME(victim) = alloc_string(buf);
 		DBDIRTY(victim);

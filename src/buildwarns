@@ -345,7 +345,6 @@ wiz.c: In function `do_stats':
 wiz.c:532: warning: implicit declaration of function `format_time'
 wiz.c: In function `do_toad':
 wiz.c:615: warning: implicit declaration of function `send_contents'
-wiz.c:659: warning: implicit declaration of function `unmangle'
 wiz.c:659: warning: format argument is not a pointer (arg 3)
 wiz.c: In function `do_newpassword':
 wiz.c:678: warning: implicit declaration of function `ok_password'

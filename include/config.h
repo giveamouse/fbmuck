@@ -29,11 +29,6 @@
  */
 #define DETACH
 
-/* VampMUCK's Anonimity system -- It works on its own but it's pretty useless
- * without the proper MUF code. 
- */
-#undef ANONYMITY
-
 /* Makes God (#1) immune to @force, @newpassword, and being set !Wizard.  
  */
 #define GOD_PRIV

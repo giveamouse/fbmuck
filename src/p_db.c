@@ -370,35 +370,6 @@ prim_nextowned(PRIM_PROTOTYPE)
 
 
 void
-prim_truename(PRIM_PROTOTYPE)
-{
-	CHECKOP(1);
-	oper1 = POP();
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Invalid argument type.");
-
-	ref = oper1->data.objref;
-	if (ref < 0 || ref >= db_top)
-		abort_interp("Invalid object.");
-
-	if (Typeof(ref) == TYPE_GARBAGE) {
-		strcpy(buf, "<garbage>");
-	} else {
-		CHECKREMOTE(ref);
-		/* if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
-		   ts_lastuseobject(ref); */
-		if (NAME(ref)) {
-			strcpy(buf, NAME(ref));
-		} else {
-			buf[0] = '\0';
-		}
-	}
-	CLEAR(oper1);
-	PushString(buf);
-}
-
-
-void
 prim_name(PRIM_PROTOTYPE)
 {
 	CHECKOP(1);
@@ -417,7 +388,7 @@ prim_name(PRIM_PROTOTYPE)
 		/* if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
 		   ts_lastuseobject(ref); */
 		if (NAME(ref)) {
-			strcpy(buf, PNAME(ref));
+			strcpy(buf, NAME(ref));
 		} else {
 			buf[0] = '\0';
 		}
@@ -1937,7 +1908,7 @@ prim_toadplayer(PRIM_PROTOTYPE)
 		   victim, NAME(player), player);
 
 	delete_player(victim);
-	snprintf(buf, sizeof(buf), "A slimy toad named %s", unmangle(victim, PNAME(victim)));
+	snprintf(buf, sizeof(buf), "A slimy toad named %s", NAME(victim));
 	free((void *) NAME(victim));
 	NAME(victim) = alloc_string(buf);
 	DBDIRTY(victim);

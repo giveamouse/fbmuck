@@ -260,7 +260,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
 					temp_sub = NULL;
 					if (self_sub[0] == '%' && toupper(self_sub[1]) == 'N') {
 						temp_sub = self_sub;
-						self_sub = PNAME(player);
+						self_sub = NAME(player);
 					}
 					if (((result - buf) + strlen(self_sub)) > (BUFFER_LEN - 2))
 						return buf;
@@ -288,13 +288,13 @@ pronoun_substitute(int descr, dbref player, const char *str)
 					case 'S':
 					case 'r':
 					case 'R':
-						strcatn(result, sizeof(buf) - (result - buf), PNAME(player));
+						strcatn(result, sizeof(buf) - (result - buf), NAME(player));
 						break;
 					case 'a':
 					case 'A':
 					case 'p':
 					case 'P':
-						strcatn(result, sizeof(buf) - (result - buf), PNAME(player));
+						strcatn(result, sizeof(buf) - (result - buf), NAME(player));
 						strcatn(result, sizeof(buf) - (result - buf), "'s");
 						break;
 					default:
@@ -332,7 +332,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
 						break;
 					case 'n':
 					case 'N':
-						strcatn(result, sizeof(buf) - (result - buf), PNAME(player));
+						strcatn(result, sizeof(buf) - (result - buf), NAME(player));
 						break;
 					default:
 						*result = *str;
@@ -438,85 +438,6 @@ intostr(int i)
 		*ptr2-- = '-';
 	return (++ptr2);
 }
-
-const char *
-name_mangle(dbref obj)
-{
-#if defined(ANONYMITY)
-	static char pad[32];
-	PropPtr p;
-
-	if (!(p = get_property(obj, "@fakename")) || PropType(p) != PROP_STRTYP)
-		return db[obj].name;
-	snprintf(pad, sizeof(pad), "\001%s\002", l64a(obj));
-	return pad;
-#else
-	return db[obj].name;
-#endif
-}
-
-const char *
-unmangle(dbref player, const char *s)
-{
-#if defined(ANONYMITY)
-	char in[16384];
-	static char buf[16384];
-	char pad[1024];
-	char *ptr, *src, *name;
-	dbref is;
-	PropPtr p;
-
-	if (!s)
-		return s;
-
-	strcpy(in, s);
-	ptr = buf;
-	src = in;
-	*ptr = 0;
-
-	while (name = strchr(src, 1)) {
-		*(name++) = 0;
-		strcpy(ptr, src);
-		if (src = strchr(name, 2))
-			*(src++) = 0;
-		else
-			src = name + strlen(name);
-
-		is = a64l(name);
-		strcpy(pad, "@knows/");
-		strcatn(pad, sizeof(pad), NAME(is));
-
-		if ((p = get_property(is, "@disguise")) && PropType(p) == PROP_STRTYP) {
-#ifdef DISKBASE
-			propfetch(is, p);
-#endif
-			strcpy(pad, uncompress(PropDataStr(p)));
-		} else if ((p = get_property(player, pad)) && PropType(p) == PROP_STRTYP) {
-#ifdef DISKBASE
-			propfetch(player, p);
-#endif
-			strcpy(pad, uncompress(PropDataStr(p)));
-		} else if ((p = get_property(is, "@fakename")) && PropType(p) == PROP_STRTYP) {
-#ifdef DISKBASE
-			propfetch(is, p);
-#endif
-			strcpy(pad, uncompress(PropDataStr(p)));
-			else
-			strcpy(pad, NAME(is));
-
-			strcatn(ptr, sizeof(buf) - (ptr - buf), pad);
-			ptr += strlen(ptr);
-		}
-
-		strcatn(ptr, sizeof(buf) - (ptr - buf), src);
-
-		return buf;
-#else
-	return s;
-#endif
-}
-
-
 
 /*
  * Encrypt one string with another one.
