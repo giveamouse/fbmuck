@@ -74,7 +74,7 @@ typedef int dbref;				/* offset into db */
 #define MESGPROP_OECHO		"_/oecho"
 #define MESGPROP_PECHO		"_/pecho"
 #define MESGPROP_LOCK		"_/lok"
-#define MESGPROP_FLOCK		"_/fl"
+#define MESGPROP_FLOCK		"@/flk"
 #define MESGPROP_CONLOCK	"_/clk"
 #define MESGPROP_CHLOCK		"_/chlk"
 
