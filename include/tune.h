@@ -137,6 +137,7 @@ extern int tp_proplist_int_counter;
 extern int tp_lazy_mpi_istype_perm;
 extern int tp_optimize_muf;
 extern int tp_ignore_support;
+extern int tp_ignore_bidirectional;
 extern int tp_verbose_clone;
 
 extern int tune_count_parms(void);

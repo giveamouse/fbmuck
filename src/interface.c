@@ -3836,7 +3836,7 @@ static int ignore_is_ignoring_sub(dbref Player, dbref Who)
 
 int ignore_is_ignoring(dbref Player, dbref Who)
 {
-	return ignore_is_ignoring_sub(Player, Who) || ignore_is_ignoring_sub(Who, Player);
+	return ignore_is_ignoring_sub(Player, Who) || (tp_ignore_bidirectional && ignore_is_ignoring_sub(Who, Player));
 }
 
 static int ignore_dbref_compare(const void* Lhs, const void* Rhs)

@@ -323,6 +323,9 @@
 /* Enable support for ignoring players */
 #define IGNORE_SUPPORT 1
 
+/* Enable bidirectional ignoring for players */
+#define IGNORE_BIDIRECTIONAL 1
+
 /* Verbose @clone command. */
 #define VERBOSE_CLONE 0
 

@@ -38,6 +38,7 @@ Added SYSTIME_PRECISE ( -- float ) muf prim.  Returns the number of seconds
   with microsecond accuracy.
 Added CATCH_DETAILED ( -- dict ) muf prim as a more detailed alternative to
   the CATCH statement.
+Added option to selected between (uni/bi)directional in-server ignore support.
 Removed annoying 'Cannot access propdir directly' errors from MUF prop prims.
 
 

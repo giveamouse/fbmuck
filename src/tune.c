@@ -264,6 +264,7 @@ int tp_log_interactive = LOG_INTERACTIVE;
 int tp_lazy_mpi_istype_perm = LAZY_MPI_ISTYPE_PERM;
 int tp_optimize_muf = OPTIMIZE_MUF;
 int tp_ignore_support = IGNORE_SUPPORT;
+int tp_ignore_bidirectional = IGNORE_BIDIRECTIONAL;
 int tp_verbose_clone = VERBOSE_CLONE;
 
 struct tune_bool_entry {
@@ -318,6 +319,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Misc",       "allow_zombies", &tp_zombies, 0, "Enable Zombie things to relay what they hear"},
 	{"Misc",       "wiz_vehicles", &tp_wiz_vehicles, 0, "Only let Wizards set vehicle bits"},
 	{"Misc",       "ignore_support", &tp_ignore_support, 3, "Enable support for @ignoring players"},
+	{"Misc",       "ignore_bidirectional", &tp_ignore_bidirectional, 3, "Enable bidirectional @ignore"},
 
 	{NULL, NULL, NULL, 0}
 };
