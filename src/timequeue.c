@@ -881,11 +881,13 @@ dequeue_timers(int pid, char* id)
 			if (tmp == ptr) {
 				tqhead = tmp = tmp->next;
 				ptr->fr->timercount--;
+				ptr->fr = NULL;
 				free_timenode(ptr);
 				ptr = tmp;
 			} else {
 				tmp->next = ptr->next;
 				ptr->fr->timercount--;
+				ptr->fr = NULL;
 				free_timenode(ptr);
 				ptr = tmp->next;
 			}
