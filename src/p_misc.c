@@ -1024,12 +1024,14 @@ void
 prim_debug_on(PRIM_PROTOTYPE)
 {
 	FLAGS(program) |= DARK;
+	DBDIRTY(program);
 }
 
 void
 prim_debug_off(PRIM_PROTOTYPE)
 {
 	FLAGS(program) &= ~DARK;
+	DBDIRTY(program);
 }
 
 void
