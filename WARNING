@@ -1,0 +1,21 @@
+WARNING: This is a development branch ONLY.  This is not guaranteed to
+compile, work, or even make sense -- though we do hope that it will
+eventually be merged back with the main fbmuck branch.
+
+There are several issues that we are attempting, within this branch:
+1) Code simplification
+2) Code modularization
+3) Migrate to a real database system (Sleepycat db4)
+4) Fix compression so it's GPL-compatible
+5) Simplify architecture and APIs for ease of auditing
+
+There may be other goals that come up through the course of our modification;
+these are the goals we are currently working toward.
+
+Do NOT even attempt to run this code in a production or testing environment.
+As soon as it's ready, it will be re-integrated with the original codebase.
+
+You have been warned.
+
+01/16/2004
+winged@users.sourceforge.net
