@@ -34,7 +34,7 @@ nuke:
 Makefile: Makefile.in
 	./configure
 	@echo Please re-run Make, because the Makefile was re-generated.
-	false
+	@false
 
 #############################################################
 # Packaging stuff.
