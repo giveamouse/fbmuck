@@ -443,7 +443,7 @@ main(int argc, char **argv)
 			fclose(stdout);
 			fclose(stderr);
 			if (fork() != 0)
-				exit(0);
+				_exit(0);
 		}
 #endif
 
@@ -1411,6 +1411,9 @@ new_connection(int port, int sock)
 	if (newsock < 0) {
 		return 0;
 	} else {
+#ifdef F_SETFD
+		fcntl(newsock, F_SETFD, 1);
+#endif
 #ifdef USE_IPV6
 		strcpy(hostname, addrout(port, &(addr.sin6_addr), addr.sin6_port));
 		log_status("ACCEPT: %s(%d) on descriptor %d\n", hostname,
@@ -2916,10 +2919,10 @@ announce_disconnect(struct descriptor_data *d)
 }
 
 #ifdef MUD_ID
+#include <pwd.h>
 void
 do_setuid(char *name)
 {
-#include <pwd.h>
 	struct passwd *pw;
 
 	if ((pw = getpwnam(name)) == NULL) {
@@ -2932,14 +2935,14 @@ do_setuid(char *name)
 		exit(1);
 	}
 }
-
 #endif							/* MUD_ID */
 
+
 #ifdef MUD_GID
+#include <grp.h>
 void
 do_setgid(char *name)
 {
-#include <grp.h>
 	struct group *gr;
 
 	if ((gr = getgrnam(name)) == NULL) {
@@ -2952,8 +2955,8 @@ do_setgid(char *name)
 		exit(1);
 	}
 }
-
 #endif							/* MUD_GID */
+
 
 /***** O(1) Connection Optimizations *****/
 struct descriptor_data *descr_count_table[FD_SETSIZE];

@@ -304,8 +304,9 @@ extern void purge_try_pool(void);
 /* From mufevent.c */
 extern int muf_event_exists(struct frame* fr, const char* eventid);
 
-#ifdef WIN32
 /* from signal.h */
+extern void set_dumper_signals();
+#ifdef WIN32
 extern void set_console(void);
 extern void check_cosole(void);
 #endif

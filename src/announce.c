@@ -149,7 +149,7 @@ main(int argc, char *argv[])
 	}
 	if (listen(s, 1) < 0) {		/* start listening on port */
 		perror("announce: listen");
-		_exit(1);
+		exit(1);
 	}
 	foo = sizeof sin;
 	for (;;) {					/* loop forever, accepting requests & printing
@@ -157,7 +157,7 @@ main(int argc, char *argv[])
 		ns = accept(s, (struct sockaddr *) &sin, &foo);
 		if (ns < 0) {
 			perror("announce: accept");
-			_exit(1);
+			exit(1);
 		}
 #ifdef USE_IPV6
 		inet_ntop(AF_INET6, sin.sin6_addr, host, 128);

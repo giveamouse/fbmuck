@@ -208,7 +208,7 @@ panic(const char *message)
 		sync();
 
 #ifdef NOCOREDUMP
-		_exit(135);
+		exit(135);
 #else							/* !NOCOREDUMP */
 # ifdef SIGIOT
 		signal(SIGIOT, SIG_DFL);
@@ -234,7 +234,7 @@ panic(const char *message)
 		perror("CANNOT OPEN MACRO PANIC FILE, YOU LOSE");
 		sync();
 #ifdef NOCOREDUMP
-		_exit(135);
+		exit(135);
 #else							/* !NOCOREDUMP */
 #ifdef SIGIOT
 		signal(SIGIOT, SIG_DFL);
@@ -246,7 +246,7 @@ panic(const char *message)
 	sync();
 
 #ifdef NOCOREDUMP
-	_exit(136);
+	exit(136);
 #else							/* !NOCOREDUMP */
 #ifdef SIGIOT
 	signal(SIGIOT, SIG_DFL);
@@ -285,6 +285,7 @@ fork_and_dump(void)
 #else
 	if ((global_dumper_pid=fork())==0) {
 		forked_dump_process_flag = 1;
+		set_dumper_signals();
 		dump_database_internal();
 		_exit(0);
 	}

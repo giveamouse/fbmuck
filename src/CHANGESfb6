@@ -24,6 +24,7 @@ Fixed crasher with Inf in union/diff/intersect prims.
 Fixed crasher with locks in union/diff/intersect prims.
 Fixed bug in ARRAY_GETLINKS that would have returned garbage dbrefs.
 Fixed various compiler warnings given with -Wall.
+Fixed various calls to exit() and _exit() to use the correct ones.
 Changed DESCRDBREF to return #-1 for an invalid or not-logged-in descriptor.
 Changed MUF stack traces to show floats in short format.
 Changed string translations of floats to show only 15 significant digits.
@@ -35,6 +36,7 @@ Changed the compiler so that under default conditions (comment_loose),
   that an unrecognized token -might- indicate a comment mis-match, but is
   not covered by this recompile code.
 Changed $ifdef to allow for syntax like: $ifdef "__muckname=Foo Bar Muck"
+Changed forked dump process to make it not do a pointless panic() on signals.
 Added docs for ARRAY_FMTSTRINGS to muf manual.
 Added ARRAY_FILTER_FLAGS ( list:dbrefs str:flags -- list:dbrefsout ) MUF prim.
   Takes a homogenous list array of dbrefs, and filters them for those objects

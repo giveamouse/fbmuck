@@ -18,65 +18,6 @@
 /*                                                                      */
 /************************************************************************/
 
-/*
- * $Log: compress.c,v $
- * Revision 1.6  2002/12/10 12:02:35  points
- * Fixed a large number of leaks and memory issues found under Insure++.
- *
- * Revision 1.5  2002/06/18 07:45:21  revar
- * Changed end-of-line handling to be tolerant of CRLFs in MUF and macros files.
- * Changed database opening to be in binary mode for windows portability.
- *
- * Revision 1.4  2001/07/07 07:20:58  revar
- * Memory leak fixes, and cleanup code to make memory leaks more obvious when
- *   using MALLOC_PROFILING.
- *
- * Revision 1.3  2000/07/20 20:38:52  winged
- * Let's clean up some REALLY pedantic warnings, shall we?
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:43  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 02:14:16  foxen
- * Initial revision
- *
- *
- * Revision 6.0  1995/03/28  19:44:00  Felorin
- * Old digraph compression replaced by DragonFire compression scheme
- *
- * Revision 5.3  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.2  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.3  90/09/10  02:19:44  rearl
- * Introduced string compression of properties, for the
- * COMPRESS compiler option.
- *
- * Revision 1.2  90/08/11  03:51:33  rearl
- * *** empty log message ***
- *
- * Revision 1.1  90/07/19  23:02:36  casie
- * Initial revision
- *
- *
- */
-
 #include "config.h"
 
 

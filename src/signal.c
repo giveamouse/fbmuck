@@ -79,6 +79,45 @@ our_signal(int signo, void (*sighandler) (int))
 
 #endif							/* _POSIX_VERSION */
 
+void
+set_dumper_signals()
+{
+	our_signal(SIGPIPE, SIG_IGN); /* Ignore Blocked Pipe */
+	our_signal(SIGHUP,  SIG_IGN); /* Ignore Terminal Hangup */
+	our_signal(SIGCHLD, SIG_IGN); /* Ignore Child termination */
+	our_signal(SIGFPE,  SIG_IGN); /* Ignore FP exceptions */
+	our_signal(SIGUSR1, SIG_IGN); /* Ignore SIGUSR1 */
+	our_signal(SIGUSR2, SIG_IGN); /* Ignore SIGUSR2 */
+	our_signal(SIGINT,  SIG_DFL); /* Take Interrupt signal and die! */
+	our_signal(SIGTERM, SIG_DFL); /* Take Terminate signal and die! */
+	our_signal(SIGSEGV, SIG_DFL); /* Take Segfault and die! */
+#ifdef SIGTRAP
+	our_signal(SIGTRAP, SIG_DFL);
+#endif
+#ifdef SIGIOT
+	our_signal(SIGIOT, SIG_DFL);
+#endif
+#ifdef SIGEMT
+	our_signal(SIGEMT, SIG_DFL);
+#endif
+#ifdef SIGBUS
+	our_signal(SIGBUS, SIG_DFL);
+#endif
+#ifdef SIGSYS
+	our_signal(SIGSYS, SIG_DFL);
+#endif
+#ifdef SIGXCPU
+	our_signal(SIGXCPU, SIG_IGN);  /* CPU usage limit exceeded */
+#endif
+#ifdef SIGXFSZ
+	our_signal(SIGXFSZ, SIG_IGN);  /* Exceeded file size limit */
+#endif
+#ifdef SIGVTALRM
+	our_signal(SIGVTALRM, SIG_DFL);
+#endif
+}
+
+
 /*
  * set_signals()
  * set_sigs_intern(bail)
@@ -167,7 +206,7 @@ RETSIGTYPE bailout(int sig)
 	snprintf(message, sizeof(message), "BAILOUT: caught signal %d", sig);
 
 	panic(message);
-	_exit(7);
+	exit(7);
 
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
 	return 0;
@@ -291,11 +330,12 @@ void sig_shutdown(int i) {}
 void sig_dumpstatus(int i) {}
 void set_signals(void) {}
 void set_sigs_intern(int bail) {}
+
 void bailout(int sig) {
 	char message[1024];
 	snprintf(message, sizeof(message), "BAILOUT: caught signal %d", sig);
 	panic(message);
-	_exit(7);
+	exit(7);
 }
 
 void set_console() {
@@ -304,11 +344,11 @@ void set_console() {
 	InputHandle = GetStdHandle(STD_INPUT_HANDLE);
 	if (InputHandle == INVALID_HANDLE_VALUE) {
 		printf("GetStdHandle: failed\n");
-		_exit(7);
+		exit(7);
 	}
 	if (!SetConsoleMode(InputHandle, !ENABLE_PROCESSED_INPUT)) {
 		printf("SetConsoleMode: failed\n");
-		_exit(7);
+		exit(7);
 	}
 	SetConsoleTitle(VERSION);
 
