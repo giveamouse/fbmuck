@@ -355,7 +355,7 @@ editor(int descr, dbref player, const char *command)
 			break;
 		case COMPILE_COMMAND:
 			/* compile code belongs in compile.c, not in the editor */
-			do_compile(descr, player, program, 0);
+			do_compile(descr, player, program, 1);
 			notify(player, "Compiler done.");
 			break;
 		case LIST_COMMAND:

@@ -16,6 +16,7 @@
 #include "interp.h"
 #include <ctype.h>
 #include <time.h>
+#include <stdarg.h>
 
 /* This file contains code for doing "byte-compilation" of
    mud-forth programs.  As such, it contains many internal
@@ -74,10 +75,14 @@ struct PROC_LIST {
    being compiled kept.
    */
 
+#define INTMEDFLG_DIVBYZERO 1
+#define INTMEDFLG_MODBYZERO 2
+
 struct INTERMEDIATE {
 	int no;						/* which number instruction this is */
 	struct inst in;				/* instruction itself */
 	short line;					/* line number of instruction */
+	short flags;
 	struct INTERMEDIATE *next;	/* next instruction */
 };
 
@@ -238,6 +243,17 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
 /* abort compile for void functions */
 #define v_abort_compile(ST,C) { do_abort_compile(ST,C); return; }
 
+void compiler_warning(COMPSTATE* cstat, char* text, ...)
+{
+	char buf[BUFFER_LEN];
+	va_list vl;
+
+	va_start(vl, text);
+	vsnprintf(buf, sizeof(buf), text, vl);
+	va_end(vl);
+
+	notify_nolisten(cstat->player, buf, 1);
+}
 
 /*****************************************************************/
 
@@ -903,9 +919,8 @@ IntermediateIsString(struct INTERMEDIATE* ptr, const char* val)
 	return 0;
 }
 
-
 int
-OptimizeIntermediate(COMPSTATE * cstat)
+OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 {
 	struct INTERMEDIATE* curr;
 	int* Flags;
@@ -1062,19 +1077,59 @@ OptimizeIntermediate(COMPSTATE * cstat)
 
 						/* Int Int /  ==>  Div  */
 						if (IntermediateIsPrimitive(curr->next->next, DivNo)) {
-							curr->in.data.number /= curr->next->in.data.number;
-							RemoveNextIntermediate(cstat, curr);
-							RemoveNextIntermediate(cstat, curr);
-							advance = 0;
+							if (curr->next->in.data.number == 0)
+							{
+								if (!(curr->next->next->flags & INTMEDFLG_DIVBYZERO))
+								{
+									curr->next->next->flags |= INTMEDFLG_DIVBYZERO;
+
+									if (force_err_display)
+									{
+										compiler_warning(
+												cstat,
+												"Warning on line %i: Divide by zero",
+												curr->next->next->in.line
+											);
+									}
+								}
+							}
+							else
+							{
+								curr->in.data.number /= curr->next->in.data.number;
+								RemoveNextIntermediate(cstat, curr);
+								RemoveNextIntermediate(cstat, curr);
+								advance = 0;
+							}
+
 							break;
 						}
 
 						/* Int Int %  ==>  Div  */
 						if (IntermediateIsPrimitive(curr->next->next, ModNo)) {
-							curr->in.data.number %= curr->next->in.data.number;
-							RemoveNextIntermediate(cstat, curr);
-							RemoveNextIntermediate(cstat, curr);
-							advance = 0;
+							if (curr->next->in.data.number == 0)
+							{
+								if (!(curr->next->next->flags & INTMEDFLG_MODBYZERO))
+								{
+									curr->next->next->flags |= INTMEDFLG_MODBYZERO;
+
+									if (force_err_display)
+									{
+										compiler_warning(
+												cstat,
+											   	"Warning on line %i: Modulus by zero",
+											   	curr->next->next->in.line
+											);
+									}
+								}
+							}
+							else
+							{
+								curr->in.data.number %= curr->next->in.data.number;
+								RemoveNextIntermediate(cstat, curr);
+								RemoveNextIntermediate(cstat, curr);
+								advance = 0;
+							}
+
 							break;
 						}
 					}
@@ -1350,7 +1405,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 		int optcnt = 0;
 
 		do {
-			optcnt = OptimizeIntermediate(&cstat);
+			optcnt = OptimizeIntermediate(&cstat, force_err_display);
 			optimcount += optcnt;
 			passcount++;
 		} while (optcnt > 0 && --maxpasses > 0);
@@ -3589,6 +3644,8 @@ alloc_inst(void)
 
 	nu->next = 0;
 	nu->no = 0;
+	nu->line = 0;
+	nu->flags = 0;
 	nu->in.type = 0;
 	nu->in.line = 0;
 	nu->in.data.number = 0;
