@@ -127,14 +127,17 @@ prim_regexp(PRIM_PROTOTYPE)
 
 	if ((err = regexec(&re->re, text, nosubs, matches, 0)) != 0)
 	{
-		free(matches);
-		
 		if (err != REG_NOMATCH)
+		{
+			free(matches);
 			abort_interp(muf_re_error(err));
+		}
 
 		if (((nu_val = new_array_packed(0)) == NULL) ||
 			((nu_idx = new_array_packed(0)) == NULL))
 		{
+			free(matches);
+
 			if (nu_val != NULL)
 				array_free(nu_val);
 
