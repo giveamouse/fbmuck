@@ -687,6 +687,8 @@ queue_ansi(struct descriptor_data *d, const char *msg)
 }
 
 
+int notify_nolisten_level = 0;
+
 int
 notify_nolisten(dbref player, const char *msg, int isprivate)
 {
@@ -741,8 +743,19 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 						char ch = *match_args;
 
 						*match_args = '\0';
-						prefix = do_parse_prop(-1, player, player, MESGPROP_PECHO,
+
+						if (notify_nolisten_level <= 0)
+						{
+							notify_nolisten_level++;
+
+							prefix = do_parse_prop(-1, player, player, MESGPROP_PECHO,
 												"(@Pecho)", pbuf, MPI_ISPRIVATE);
+
+							notify_nolisten_level--;
+						}
+						else
+							prefix = 0;
+
 						*match_args = ch;
 
 						if (!prefix || !*prefix) {
@@ -765,6 +778,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 		}
 		firstpass = 0;
 	}
+
 	return retval;
 }
 
