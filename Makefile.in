@@ -1,7 +1,7 @@
 #!/bin/make -f
 # $Header$
 
-subdirs='src'
+subdirs=src
 RM=rm -f
 
 SSLTOP=@SSLTOP@
@@ -50,7 +50,7 @@ clean:
 	done
 
 cleaner:
-	${RM} Makefile config.status config.cache config.log
+	${RM} Makefile config.status config.cache config.log game/restart
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} cleaner; \
 	done
@@ -61,7 +61,7 @@ nuke:
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} nuke; \
 	done
-	${RM} Makefile config.status config.cache config.log
+	${RM} Makefile config.status config.cache config.log game/restart
 
 Makefile: Makefile.in
 	./configure
