@@ -6,18 +6,97 @@ MUF Prims for TCP Sockets
 	TCP_CLOSE[   str:sockid           --              ]
 	TCP_STATUS[  str:sockid           -- str:status   ]
 
-	TCP_SETMODE[ str:sockid dict:opts --              ]
+	TCP_SETMODE[ str:sockid str:name int:value --     ]
 	TCP_GETMODE[ str:sockid str:name  -- varies:value ]
 
 
+: TCP_READ[ str:sockid int:timeout -- str:data int:success ]
+	var timer
+
+	timeout @ 0 >= if
+		"__tcpread_" sockid @ strcat timer !
+	    timeout @ timer @ TIMER_START
+	then
+    {
+		"TCP.READ." sockid @ strcat
+		"TCP.ERROR." sockid @ strcat
+		"TCP.CLOSED." sockid @ strcat
+		"TIMER." timer @ strcat
+	}list
+	ARRAY_WAITFOR
+	dup "TCP.ERROR." 10 strncmp if
+		dup "TCP.CLOSED." 11 strncmp if
+			"TIMER." 6 strncmp if
+				"data" [] 1
+			else
+				pop "TCP_READ: Timed out." abort
+			then
+		else
+			pop pop "TCP_READ: Socket closed by remote host." abort
+		then
+	else
+	    pop "error" [] "TCP_READ: " swap strcat abort
+	then
+;
+
+
 MUF Events for TCP
-	"TCP.CONNECT.sockid"  Queued when a new connection request is recieved.
-	"TCP.READ.sockid"     Queued when a new line is recieved.
+	"TCP.CONNECT.sockid"  Queued when a new connection request is received.
+	"TCP.READ.sockid"     Queued when a new line is received.
 	"TCP.CLOSED.sockid"   Queued when the remote side closed the socket.
 	"TCP.ERROR.sockid"    Queued when there is an error that closes the socket.
 
 
 
+==============================================================================
+
+( Defines to make ProtoMUCK sockets code run with the proposed FB6 sockets. )
+( This should probably be in a $lib/protomuck/sockets library or something. )
+
+$ifdef __fuzzball__
+	$define sockopen
+		10 "__tcpto_" TIMER_START
+		TCP_CONNECT
+		{
+			"TCP.CONNECT." 3 pick strcat
+			"TIMER.__tcpto_"
+		}list event_waitfor
+		"TIMER.__tcpto_" strcmp not if
+			pop "Connection timed out."
+		else
+			"__tcpto_" TIMER_STOP
+			pop "noerr"
+		then
+	$enddef
+
+	$define nbsockopen
+		2 try 
+			TCP_CONNECT
+			"Operation now in progress"
+		catch
+			"" swap
+		endcatch
+	$enddef
+
+	$define sockrecv
+		"TCP.READ." swap strcat
+		dup EVENT_EXISTS if
+			1 ARRAY_MAKE EVENT_WAITFOR
+			pop "data" []
+		else
+			pop ""
+		then
+	$enddef
+
+	$def sockcheck TCP_STATUS "Open" stringcmp not
+	$def socksend 2 try TCP_SEND 1 catch pop 0 endcatch
+	$def sockclose 1 try TCP_CLOSE 1 catch pop 0 endcatch
+	$def socket? 1 try TCP_STATUS pop 1 catch pop 0 endcatch
+$endif
+
+
+
+==============================================================================
 
 ( Sample POP3 client written in MUF )
 
