@@ -2,7 +2,7 @@
 default_bits		= 2048
 distinguished_name	= req_distinguished_name
 #attributes		= req_attributes
-x509_extensions	= # The extentions to add to the self signed cert
+#x509_extensions	= # The extentions to add to the self signed cert
 string_mask = nombstr
 
 [ v3_ca ]
