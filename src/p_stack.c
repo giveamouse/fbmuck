@@ -615,8 +615,12 @@ prim_checkargs(PRIM_PROTOTYPE)
 			case 'v':
 				if (stackpos < 0)
 					ABORT_CHECKARGS("Stack underflow.");
-				if ((arg[stackpos].type != PROG_VAR) && (arg[stackpos].type != PROG_LVAR))
+				if (arg[stackpos].type != PROG_VAR &&
+					arg[stackpos].type != PROG_LVAR &&
+					arg[stackpos].type != PROG_SVAR
+				) {
 					ABORT_CHECKARGS("Expected a variable.");
+				}
 				break;
 			case 'a':
 				if (stackpos < 0)

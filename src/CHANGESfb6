@@ -8,6 +8,7 @@ Fixed possible stack information leak in pronoun_substitute.
 Fixed bug #857360: regexp related crasher.
 Fixed bug #863396: dup toadplayer sets ownership wrong.
 Fixed bug with sanity not allocating player specific data for lost+found player.
+Fixed bug with CHECKARGS not accepting all variable types for type 'v'.
 Changed regexp code to use PCRE regexp package, so we'll have consistency.
 
 
