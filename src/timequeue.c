@@ -955,21 +955,30 @@ get_pidinfo(int pid)
 }
 
 /*
- * Sleeponly values:
- *     0: kill all matching processes
- *     1: kill only matching sleeping processes
- *     2: kill only matching foreground processes
+ * killmode values:
+ *     0: kill all matching processes, MUF or MPI
+ *     1: kill all matching MUF processes
+ *     2: kill all matching foreground MUF processes
  */
 int
-dequeue_prog(dbref program, int sleeponly)
+dequeue_prog(dbref program, int killmode)
 {
 	int count = 0;
 	timequeue tmp, ptr;
 
-	while (tqhead && ((tqhead->called_prog == program) ||
-					  has_refs(program, tqhead) || (tqhead->uid == program))
-		   && ((tqhead->fr) ? (!((tqhead->fr->multitask == BACKGROUND) &&
-								 (sleeponly == 2))) : (!sleeponly))) {
+	while (tqhead) {
+		if (tqhead->called_prog != program && !has_refs(program, tqhead) && tqhead->uid != program) {
+			break;
+		}
+		if (killmode == 2) {
+			if (tqhead->fr && tqhead->fr->multitask == BACKGROUND) {
+				break;
+			}
+		} else if (killmode == 1) {
+			if (!tqhead->fr) {
+				break;
+			}
+		}
 		ptr = tqhead;
 		tqhead = tqhead->next;
 		free_timenode(ptr);
@@ -978,24 +987,27 @@ dequeue_prog(dbref program, int sleeponly)
 	}
 
 	if (tqhead) {
-		tmp = tqhead;
-		ptr = tqhead->next;
-		while (ptr) {
-			if ((ptr->called_prog == program) ||
-				(has_refs(program, ptr)) || ((ptr->uid == program)
-				&& ((ptr->fr) ? (!((ptr->fr->multitask == BACKGROUND) &&
-								   (sleeponly == 2))) : (!sleeponly)))) {
-				tmp->next = ptr->next;
-				free_timenode(ptr);
-				process_count--;
-				count++;
-				ptr = tmp;
+		for (tmp = tqhead, ptr = tqhead->next; ptr; tmp = ptr, ptr = ptr->next) {
+			if (ptr->called_prog != program && !has_refs(program, ptr) && ptr->uid != program) {
+				continue;
 			}
-			tmp = ptr;
-			ptr = ptr->next;
+			if (killmode == 2) {
+				if (ptr->fr && ptr->fr->multitask == BACKGROUND) {
+					continue;
+				}
+			} else if (killmode == 1) {
+				if (!ptr->fr) {
+					continue;
+				}
+			}
+			tmp->next = ptr->next;
+			free_timenode(ptr);
+			process_count--;
+			count++;
+			ptr = tmp;
 		}
 	}
-	count += muf_event_dequeue(program, sleeponly);
+	count += muf_event_dequeue(program, killmode);
 	for (ptr = tqhead; ptr; ptr = ptr->next) {
 		if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
 									   ptr->subtyp == TQ_MUF_TREAD)) {

@@ -182,14 +182,18 @@ muf_event_dequeue_pid(int pid)
 }
 
 
-/* static int event_has_refs(dbref program, struct frame* fr)
+/* static int event_has_refs(dbref program, struct mufevent_process *proc)
  * Checks the MUF event queue for address references on the stack or
  * dbref references on the callstack
  */
 static int
-event_has_refs(dbref program, struct frame *fr)
+event_has_refs(dbref program, struct mufevent_process *proc)
 {
 	int loop;
+	struct frame* fr = proc->fr;
+	if (!fr) {
+		return 0;
+	}
 
 	for (loop = 1; loop < fr->caller.top; loop++) {
 		if (fr->caller.st[loop] == program) {
@@ -208,15 +212,15 @@ event_has_refs(dbref program, struct frame *fr)
 }
 
 
-/* int muf_event_dequeue(dbref prog, int sleeponly)
+/* int muf_event_dequeue(dbref prog, int killmode)
  * Deregisters a program from any instances of it in the EVENT_WAIT queue.
- * Sleeponly values:
- *     0: kill all matching processes
- *     1: kill only matching sleeping processes
- *     2: kill only matching foreground processes
+ * killmode values:
+ *     0: kill all matching processes (Equivalent to 1)
+ *     1: kill all matching MUF processes
+ *     2: kill all matching foreground MUF processes
  */
 int
-muf_event_dequeue(dbref prog, int sleeponly)
+muf_event_dequeue(dbref prog, int killmode)
 {
 	struct mufevent_process *proc, *tmp;
 	int count = 0;
@@ -226,21 +230,23 @@ muf_event_dequeue(dbref prog, int sleeponly)
 		tmp = proc;
 		proc = proc->next;
 
-		if (prog == NOTHING ||
-			prog == tmp->player ||
-			prog == tmp->prog ||
-			event_has_refs(prog, tmp->fr)
-		) {
-			if (sleeponly == 0 ||
-				(sleeponly == 2 && tmp->fr->multitask != BACKGROUND)
-			) {
-				if (!tmp->fr->been_background)
-					PLAYER_SET_BLOCK(tmp->player, 0);
-				muf_event_purge(tmp->fr);
-				muf_event_process_free(tmp);
-				count++;
+		if (tmp->prog != prog && !event_has_refs(prog, tmp) && tmp->player != prog) {
+			continue;
+		}
+		if (killmode == 2) {
+			if (tmp->fr && tmp->fr->multitask == BACKGROUND) {
+				continue;
+			}
+		} else if (killmode == 1) {
+			if (!tmp->fr) {
+				continue;
 			}
 		}
+		if (!tmp->fr->been_background)
+			PLAYER_SET_BLOCK(tmp->player, 0);
+		muf_event_purge(tmp->fr);
+		muf_event_process_free(tmp);
+		count++;
 	}
 
 	return count;

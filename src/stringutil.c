@@ -878,6 +878,11 @@ has_suffix_char(const char* text, char suffix)
 	return text[tlen - 1] == suffix;
 }
 
+
+/*
+ * Like strncpy, except it guarentees null termination of the result string.
+ * It also has a more sensible argument ordering.
+ */
 char*
 strcpyn(char* buf, size_t bufsize, const char* src)
 {
@@ -891,6 +896,11 @@ strcpyn(char* buf, size_t bufsize, const char* src)
 	return buf;
 }
 
+
+/*
+ * Like strncat, except it takes the buffer size instead of the number
+ * of characters to catenate.  It also has a more sensible argument order.
+ */
 char*
 strcatn(char* buf, size_t bufsize, const char* src)
 {

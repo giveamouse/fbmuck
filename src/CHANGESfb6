@@ -24,6 +24,7 @@ Fixed bug with TRY not honoring stack locking itself.
 Fixed bug #695251: Colour not stripped from leave_mesg for !C.
 Fixed bug with crashed background saves @booting people off the main process.
 Fixed recursion problem with puppet @pecho's
+Fixed crasher bug with dequeueing of MUF-event processes.
 Changed help.txt into a muckhelp.raw file that is processed by prochelp.
 Changed property loading routines to not abort(), but to instead log corrupt
   properties when they are found.
@@ -35,6 +36,7 @@ Changed resolver reaper code to respawn resolver if it crashes.
 Changed struct match_data and match_exits to not partially match Xpress exits
   unless specifically matching exits, or partial exit matching is requested
   in the match_data struct.
+Changed MCP-GUI package version to 1.3.
 Added ARRAY_NESTED_GET ( arr idxarr -- ? ) muf prim.  Used to fetch values of
   nested subvalues of an array.
 Added ARRAY_NESTED_SET ( ? arr idxarr -- arr' ) muf prim.  Used to set values

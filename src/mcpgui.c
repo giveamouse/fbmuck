@@ -40,7 +40,7 @@ void
 gui_initialize(void)
 {
 	McpVer minver = { 1, 0 };  /* { major, minor } */
-	McpVer maxver = { 1, 2 };  /* { major, minor } */
+	McpVer maxver = { 1, 3 };  /* { major, minor } */
 
 	mcp_package_register(GUI_PACKAGE, minver, maxver, gui_pkg_callback, NULL, NULL);
 }
