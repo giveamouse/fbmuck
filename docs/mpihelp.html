@@ -442,6 +442,20 @@ returns a null string.  Example:
 <pre>
     Your computer is {if:{eq:2,3},broken!,all right.}
 </pre>
+<p><h5>Also see:
+    <a href="#not">not</a>,
+    <a href="#and">and</a>,
+    <a href="#or">or</a>,
+    <a href="#xor">xor</a>,
+    <a href="#eq">eq</a>,
+    <a href="#ne">ne</a>,
+    <a href="#lt">lt</a>,
+    <a href="#gt">gt</a>,
+    <a href="#le">le</a>,
+    <a href="#le">le</a>,
+    <a href="#default">default</a> and
+    <a href="#dbeq">dbeq</a>
+</h5>
 <p>
 
 
@@ -708,10 +722,9 @@ that are owned by the owner of the trigger object.
 <br>
 {bless:propname,object}
 <br>
-Blesses a property so that MPI executed from it will run with blessed
-<br>
+</a></h4>
+    Blesses a property so that MPI executed from it will run with blessed
 permissions.  This command itself requires blessed permissions to run.
-<br>
 <p>
 
 
@@ -719,12 +732,10 @@ permissions.  This command itself requires blessed permissions to run.
 <br>
 {unbless:propname,object}
 <br>
-Removes the blessing of a property so that MPI executed from it will no
-<br>
+</a></h4>
+    Removes the blessing of a property so that MPI executed from it will no
 longer run with blessed permissions.  This command itself requires blessed
-<br>
 permissions to run.
-<br>
 <p>
 
 
@@ -871,7 +882,11 @@ to the trigger object.  If a pattern is given, the sub-properties in the
 propdir are each compared against the smatch wildcard pattern, and only those
 that match are returned in the list.  This comparison is only done on the last
 part of the property name after the last /.
-Also refer to PROPDIR and SMATCH.
+
+<p><h5>Also see:
+    <a href="#propdir">propdir</a> and
+    <a href="#smatch">smatch</a>
+</h5>
 <p>
 
 <p><hr size=6>
@@ -1086,7 +1101,11 @@ them, but will rather just treat them as a string.
     Sort of the exact opposite of {lit:}.  This takes a string, and
 evaluates it for MPI commands embedded within it.  This can be used on
 the output of {list:}, for example.  The evaluated mpi commands will
-be run unblessed.  Also see the {eval!} command.
+be run unblessed.
+
+<p><h5>Also see:
+    <a href="#eval!">eval!</a>
+</h5>
 <p>
 
 
@@ -1097,18 +1116,20 @@ be run unblessed.  Also see the {eval!} command.
 evaluates it for MPI commands embedded within it.  This can be used on
 the output of {list:}, for example.  Unlike the {eval} command, the
 evaluated mpi commands will be run with the same blessings as the code
-that executed the {eval!}.  Also see the {eval} and {revoke} commands.
+that executed the {eval!}.
+<p><h5>Also see:
+    <a href="#eval">eval</a> and
+    <a href="#revoke">revoke</a>
+</h5>
 <p>
 
 
 <hr><h4><a name="revoke">{revoke:commands}
 <br>
-Executes the enclosed commands with all blessing permissions revoked.
-<br>
+</a></h4>
+    Executes the enclosed commands with all blessing permissions revoked.
 This is good to wrap around {eval} statements that may execute user
-<br>
 supplied code, to prevent security holes.
-<br>
 <p>
 
 
@@ -2128,8 +2149,7 @@ given expression.  This is useful for seeing why something isn't working.
 This returns the result of the evaluation of expr.
 
 <p><h5>Also see:
-    <a href="#debugif">debugif</a> and
-    <a href="#if">if</a>
+    <a href="#debugif">debugif</a>
 </h5>
 <p>
 
@@ -2150,6 +2170,11 @@ Example:
 </pre>
 to only debug the running of the command {dostuff} when the argument will
 be the player who is running the MPI.
+
+<p><h5>Also see:
+    <a href="#debug">debug</a> and
+    <a href="#if">if</a>
+</h5>
 <p>
 
 <p><hr size=6>

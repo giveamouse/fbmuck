@@ -317,13 +317,13 @@ that are owned by the owner of the trigger object.
 
 {bless:propname}
 {bless:propname,object}
-Blesses a property so that MPI executed from it will run with blessed
+    Blesses a property so that MPI executed from it will run with blessed
 permissions.  This command itself requires blessed permissions to run.
 
 
 {unbless:propname}
 {unbless:propname,object}
-Removes the blessing of a property so that MPI executed from it will no
+    Removes the blessing of a property so that MPI executed from it will no
 longer run with blessed permissions.  This command itself requires blessed
 permissions to run.
 
@@ -436,7 +436,7 @@ to the trigger object.  If a pattern is given, the sub-properties in the
 propdir are each compared against the smatch wildcard pattern, and only those
 that match are returned in the list.  This comparison is only done on the last
 part of the property name after the last /.
-Also refer to PROPDIR and SMATCH.
+
 
 
 
@@ -563,7 +563,8 @@ them, but will rather just treat them as a string.
     Sort of the exact opposite of {lit:}.  This takes a string, and
 evaluates it for MPI commands embedded within it.  This can be used on
 the output of {list:}, for example.  The evaluated mpi commands will
-be run unblessed.  Also see the {eval!} command.
+be run unblessed.
+
 
 
 {eval!:string}
@@ -571,11 +572,11 @@ be run unblessed.  Also see the {eval!} command.
 evaluates it for MPI commands embedded within it.  This can be used on
 the output of {list:}, for example.  Unlike the {eval} command, the
 evaluated mpi commands will be run with the same blessings as the code
-that executed the {eval!}.  Also see the {eval} and {revoke} commands.
+that executed the {eval!}.
 
 
 {revoke:commands}
-Executes the enclosed commands with all blessing permissions revoked.
+    Executes the enclosed commands with all blessing permissions revoked.
 This is good to wrap around {eval} statements that may execute user
 supplied code, to prevent security holes.
 
