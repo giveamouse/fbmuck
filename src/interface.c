@@ -3190,6 +3190,22 @@ pdescrflush(int c)
 	return i;
 }
 
+int
+pdescrsecure(int c)
+{
+#ifdef USE_SSL
+	struct descriptor_data *d;
+
+	d = descrdata_by_descr(c);
+
+	if (d->ssl_session)
+		return 1;
+	else
+		return 0;
+#else
+	return 0;
+#endif
+}
 
 dbref
 partial_pmatch(const char *name)

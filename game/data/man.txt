@@ -38,8 +38,7 @@ Control Structures:
   
 Stack Types and Object Types:
   string?  dbref?  address?  lock?  int?   array?  dictionary?
-  player?  thing?  program?  exit?  room?  ok?     flag?
-  float?
+  player?  thing?  program?  exit?  room?  ok?     float?
   
 Math and Comparison:
   +   -   *   /   %   <   >   =   <=   >=   ++   --   and   or   not
@@ -111,6 +110,7 @@ Connection Management:
   descrtime     descridle      descrnotify     descrboot
   descriptors   nextdescr      firstdescr      lastdescr
   descrflush    descr_setuser  descrleastidle  descrmostidle
+  descrsecure?
   
 Multi-Tasking:
   preempt  background  foreground  ispid?   fork  sleep  kill  pid  queue
@@ -1605,6 +1605,11 @@ DESCRMOSTIDLE|
 descrmostidle (d -- i)
 Returns the descriptor number for the most idle connection of the given
 player dbref.  (Requires Mucker Level 3)
+~
+DESCRSECURE?|
+descrsecure? (d -- i)
+Returns 1 if the descriptor number corresponds to a secure connection, and
+0 otherwise. (Wizbit only)
 ~
 CONIDLE|
 conidle (i -- i)

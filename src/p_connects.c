@@ -21,7 +21,6 @@ static struct inst temp1, temp2;
 static int tmp, result;
 static dbref ref;
 
-
 void
 prim_awakep(PRIM_PROTOTYPE)
 {
@@ -696,4 +695,18 @@ prim_lastdescr(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
+void
+prim_descr_securep(PRIM_PROTOTYPE)
+{
+	/* descr -> bool */
 
+	CHECKOP(1);
+	oper1 = POP();
+	if (mlev < 4)
+		abort_interp("Primitive is a wizbit only command.");
+        if (oper1->type != PROG_INTEGER)
+                abort_interp("Integer descriptor number expected.");
+
+	result = pdescrsecure(oper1->data.number);
+	PushInt(result);
+}

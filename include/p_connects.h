@@ -31,6 +31,7 @@ extern void prim_descr_notify(PRIM_PROTOTYPE);
 extern void prim_descr_dbref(PRIM_PROTOTYPE);
 extern void prim_descr_least_idle(PRIM_PROTOTYPE);
 extern void prim_descr_most_idle(PRIM_PROTOTYPE);
+extern void prim_descr_securep(PRIM_PROTOTYPE);
 
 #define PRIMS_CONNECTS_FUNCS prim_awakep, prim_online, prim_concount,      \
     prim_condbref, prim_conidle, prim_contime, prim_conhost, prim_conuser, \
@@ -39,7 +40,7 @@ extern void prim_descr_most_idle(PRIM_PROTOTYPE);
     prim_descr, prim_online_array, prim_descr_array, prim_firstdescr,      \
 	prim_lastdescr, prim_descr_time, prim_descr_host, prim_descr_user,     \
 	prim_descr_boot, prim_descr_idle, prim_descr_notify, prim_descr_dbref, \
-	prim_descr_least_idle, prim_descr_most_idle
+	prim_descr_least_idle, prim_descr_most_idle, prim_descr_securep
 
 #define PRIMS_CONNECTS_NAMES "AWAKE?", "ONLINE", "CONCOUNT",  \
     "CONDBREF", "CONIDLE", "CONTIME", "CONHOST", "CONUSER",   \
@@ -48,8 +49,8 @@ extern void prim_descr_most_idle(PRIM_PROTOTYPE);
     "DESCR", "ONLINE_ARRAY", "DESCR_ARRAY", "FIRSTDESCR",     \
 	"LASTDESCR", "DESCRTIME", "DESCRHOST", "DESCRUSER",       \
 	"DESCRBOOT", "DESCRIDLE", "DESCRNOTIFY", "DESCRDBREF",    \
-	"DESCRLEASTIDLE", "DESCRMOSTIDLE"
+	"DESCRLEASTIDLE", "DESCRMOSTIDLE", "DESCRSECURE?"
 
-#define PRIMS_CONNECTS_CNT 30
+#define PRIMS_CONNECTS_CNT 31
 
 #endif /* _P_CONNECTS_H */
