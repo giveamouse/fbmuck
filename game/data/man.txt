@@ -1629,56 +1629,56 @@ descruser (i -- s)
 Returns the username of the descriptor connection. (wizbit only)
 ~
 CONUSER|
-conuser (i -- s)
+CONUSER (i -- s)
 Returns the username of the connection. (wizbit only)
 ~
 DESCRBOOT|
-descrboot (i -- )
+DESCRBOOT (i -- )
 Takes a descriptor number and disconnects that connection from
 the server.  Basically @boot for a specific descriptor connection.
 (wizbit only)
 ~
 CONBOOT|
-conboot (i -- )
+CONBOOT (i -- )
 Takes a connection number and disconnects that connection from
 the server.  Basically @boot for a specific connection. (wizbit only)
 ~
 DESCRNOTIFY|
-descrnotify (i s -- )
+DESCRNOTIFY (i s -- )
 Sends a string to a specific descriptor connection, similar to NOTIFY.
 (Requires Mucker Level 3)
 ~
 CONNOTIFY|
-connotify (i s -- )
+CONNOTIFY (i s -- )
 Sends a string to a specific connection to the server.
 (Requires Mucker Level 3)
 ~
 FIRSTDESCR|
-firstdescr (d -- i)
+FIRSTDESCR (d -- i)
 Returns the first descriptor number associated with the given player.
 If the player object is given as #-1, then this returns the first descriptor
 in the list of all connections.
 ~
 LASTDESCR|
-lastdescr (d -- i)
+LASTDESCR (d -- i)
 Returns the last descriptor number associated with the given player.
 If the player object is given as #-1, then this returns the last descriptor
 in the list of all connections.
 ~
 DESCRCON|
-descrcon (i -- i)
+DESCRCON (i -- i)
 Takes a descriptor and returns the associated connection number,
 or 0 if no match was found.  See DESCRIPTORS, CONDESCR.
 (Requires Mucker Level 3)
 ~
 DESCRFLUSH|
-descrflush (i -- )
+DESCRFLUSH (i -- )
 Flushes the output text on the given descriptor.  If i is -1, flushes
 output on all descriptors.
 (Requires Mucker Level 3)
 ~~~
 NEXTDESCR|
-nextdescr (i -- i)
+NEXTDESCR (i -- i)
 Takes a descriptor number, and returns the next connected descriptor
 number.  To get the first descriptor number, use '1 condescr'.  Between
 these, you can step through the descriptors list.  If you try to use
@@ -1687,14 +1687,14 @@ reached the end of the descriptor list, it returns 0.
 (Requires Mucker Level 3)
 ~
 DESCRIPTORS|
-descriptors (d -- ix...i1 i) Takes a player dbref, or #-1, and returns the
+DESCRIPTORS (d -- ix...i1 i) Takes a player dbref, or #-1, and returns the
 range of descriptor numbers associated with that dbref (or all for #-1)
 with their count on top.  Descriptors are numbers that always stay the
 same for a connection, while a connection# is the relative position in
 the WHO list of a connection.  See DESCRCON, CONDESCR.
 ~
 DESCR_ARRAY|
-descr_array (d -- a) Takes a player dbref, or #-1, and returns a list
+DESCR_ARRAY (d -- a) Takes a player dbref, or #-1, and returns a list
 array that contains the current descriptor numbers associated with that
 dbref.  (Or all connected descriptors, if the dbref is #-1)  This can
 return an empty list if there are no connections for that player.
@@ -1707,18 +1707,18 @@ connection.
 See DESCRIPTORS, DESCRCON, CONDESCR.
 ~
 PID|
-pid ( -- i)
+PID ( -- i)
 Returns the process ID of the program that is currently running.
 ~
 ISPID?|
-ispid? (i -- i)
+ISPID? (i -- i)
 Takes a process id and checks to see if an event with that pid is in the
 timequeue.  It returns 1 if it is, and 0 if it is not.  ispid? will also
 return 1 if the given process id is that of the currently running program.
 This primitive requires at least mucker level 3.
 ~
 NEXTPROP|
-nextprop (d s -- s)
+NEXTPROP (d s -- s)
 This takes a dbref and a string that is the full propdir pathname of a
 property and returns the full pathname of the next property in the given
 object's given propdir, or returns a null string if that was the last
@@ -1733,13 +1733,13 @@ they would not be readable by the program with the given permissions and
 effective user id. (Requires Mucker Level 3)
 ~
 PROPDIR?|
-propdir? (d s -- i)
+PROPDIR? (d s -- i)
 Takes a dbref and a property name, and returns a boolean integer that
 tells if that property is a propdir that contains other props.
 (Requires Mucker Level 2)
 ~
 ENVPROP|
-envprop ( d s -- d ? )
+ENVPROP ( d s -- d ? )
 Takes a starting object dbref and a property name and searches down the
 environment tree from that object for a property with the given name.  If
 the property isn't found, it returns #-1 and a null string.  If the
@@ -1747,7 +1747,7 @@ property is found, it will return the dbref of the object it was found on,
 and the value it contained.
 ~
 ENVPROPSTR|
-envpropstr (d s -- d s )
+ENVPROPSTR (d s -- d s )
 Takes a starting object dbref and a property name and searches down the
 environment tree from that object for a property with the given name.  If
 the property isn't found, it returns #-1 and a null string.  If the
@@ -1755,7 +1755,7 @@ property is found, it will return the dbref of the object it was found on,
 and the string value it contained.
 ~
 NOTIFY_EXCLUDE|
-notify_exclude (d dn ... d1 n s -- )
+NOTIFY_EXCLUDE (d dn ... d1 n s -- )
 Displays the message s to all the players (or _listening objects),
 excluding the n given players, in the given room.  For example:
   #0 #1 #23 #7 3 "Hi!" notify_exclude
@@ -1764,7 +1764,7 @@ would send "Hi!" to everyone in room #0 except for players (or objects)
 if the program they would run is the same as the current program running.
 ~
 TIMEFMT|
-timefmt (s i -- s)
+TIMEFMT (s i -- s)
 Takes a format string and a SYSTIME integer and returns
 a string formatted with the time.  The format string
 is ascii text with formatting commands:
@@ -1801,13 +1801,13 @@ is ascii text with formatting commands:
   %Z -- Time zone.  "GMT", "EDT", "PST", etc.
 ~
 SLEEP|
-sleep (i -- )
+SLEEP (i -- )
 Makes the program pause here for 'i' seconds.  the value of i cannot
 be negative.  If the sleep is for more than 0 seconds, then the program
 may not thereafter use the READ primitive.
 ~
 QUEUE|
-queue (i d s -- i)
+QUEUE (i d s -- i)
 Takes a time in seconds, a program's dbref, and a parameter string.  It
 will execute the given program with the given string as the only string on
 the stack, after a delay of the given number of second.  Returns  the pid
@@ -1815,7 +1815,7 @@ of the queued process, or 0 if the timequeue was full.
 (Requires Mucker Level 3)
 ~
 FORK|
-fork ( -- i)
+FORK ( -- i)
 This primitive forks off a BACKGROUND (muf) process from the currently
 running program.  It returns the pid of the child process to the parent
 process, and returns a 0 to the child.  If the timequeue was full, then
@@ -1823,34 +1823,34 @@ it returns a -1 to the parent process, and there is no child process.
 (Requires Mucker Level 3)
 ~
 KILL|
-kill (i -- i)
+KILL (i -- i)
 Attempts to kill the process referred to by the given process ID.
 Returns 1 if the process existed, and 0 if it didn't.
 (Requires Mucker Level 3)
 ~
 TOUPPER|
-toupper (s -- s)
+TOUPPER (s -- s)
 Takes a string and returns it with all the letters in uppercase.
 ~
 TOLOWER|
-tolower (s -- s)
+TOLOWER (s -- s)
 Takes a string and returns it with all the letters in lowercase.
 ~
 STRIPLEAD|
-striplead (s -- s)
+STRIPLEAD (s -- s)
 Strips leading spaces from the given string.
 ~
 STRIPTAIL|
-striptail (s -- s)
+STRIPTAIL (s -- s)
 Strips trailing spaces from the given string.
 ~
 STRIP|
-strip (s -- s)
+STRIP (s -- s)
 This is a built in $define.  It is interpreted as "striplead striptail"
 It strips the spaces from both ends of a string.
 ~
 SMATCH|
-smatch ( s s2 -- i )
+SMATCH ( s s2 -- i )
 Takes a string s, and a string pattern, s2, to check against.  Returns true
 if the string fits the pattern.  This is case insensitive.  In the pattern
 string, the following special characters will do as follows:
@@ -1904,54 +1904,54 @@ Example patterns:
   
 ~
 SETLOCKSTR|
-setlockstr (d s -- i)
+SETLOCKSTR (d s -- i)
 Tries to set the lock on the given object to the lock expression given in
 the string.  If it was a success, then it will return a 1, otherwise, if
 the lock expression was bad, it returns a 0.  To unlock an object, set its
 lock to a null string.
 ~
 GETLOCKSTR|
-getlockstr ( d -- s )
+GETLOCKSTR ( d -- s )
 Returns the lock expression for the given object in the form of a string.
 Returns "*UNLOCKED*" if the object doesn't have a lock set.
 ~
 LOCKED?|
-locked? (d d -- i)
+LOCKED? (d d -- i)
 Takes, in order, the dbref of the player to test the lock against, and
 the dbref of object the lock is on.  It tests the lock, running programs
 as necessary, and returns a integer of 0 if it is not locked against
 them, or 1 if it is.
 ~
 UNPARSEOBJ|
-unparseobj (d -- s)
+UNPARSEOBJ (d -- s)
 Returns the name-and-flag string for an object.  It always has the dbref and
 flag string after the name, even if the player doesn't control the object.
 For example: "One(#1PW)"
 ~
 DBTOP|
-dbtop ( -- d)
+DBTOP ( -- d)
 Returns the dbref of the first object beyond the top object of the database.
 'dbtop ok?' would return a false value.
 ~
 VERSION|
-version ( -- s)
+VERSION ( -- s)
 Returns the version of this code in a string. "Muck2.2fb5.55", currently.
 ~
 TRIG|
-trig ( -- d)
+TRIG ( -- d)
 Returns the dbref of the original trigger.
 ~
 CALLER|
-caller ( -- d)
+CALLER ( -- d)
 Returns the dbref of the program that called this one, or the dbref of the
 trigger, if this wasn't called by a program.
 ~
 BITOR|
-bitor (i i -- i)
+BITOR (i i -- i)
 Does a mathematical bitwise or.
 ~
 BITXOR|
-bitxor (i i -- i)
+BITXOR (i i -- i)
 Does a mathematical bitwise exclusive or.
 ~
 BUNNY|
@@ -1966,20 +1966,20 @@ BUNNY|
 Easter Egg!
 ~
 BITAND|
-bitand (i i -- i)
+BITAND (i i -- i)
 Does a mathematical bitwise and.
 ~
 BITSHIFT|
-bitshift (i i -- i)
+BITSHIFT (i i -- i)
 Shifts the first integer by the second integer's number of bit positions.
 Same as the C << operator.  If the second integer is negative, its like >>.
 ~
 FORCE|
-force (d s -- )
+FORCE (d s -- )
 Forces player d to do action s as if they were @forced.  (wizbit only)
 ~
 PREEMPT|
-preempt ( -- )
+PREEMPT ( -- )
 Prevents a program from being swapped out to do multitasking.  Needed in
 some cases to protect crucial data from being changed while it is being
 worked on.  A program will remain in preempt mode until it's execution is
@@ -1989,7 +1989,7 @@ needing either to pause with a SLEEP, or have a wizbit on the program.
 See also, MULTITASKING.
 ~
 FOREGROUND|
-foreground ( -- )
+FOREGROUND ( -- )
 To turn on multitasking, you can issue a foreground command.  While a
 program is in foreground mode, the server will be multitasking and
 handling multiple programs at once, and input from other users, but it
@@ -1999,7 +1999,7 @@ background. A program will stay in foreground mode until it finishes
 running or until you change the mode.  See also, MULTITASKING.
 ~
 BACKGROUND|
-background ( -- )
+BACKGROUND ( -- )
 Another way to turn on multitasking is to use the background command.
 Programs in the background let the program user go on and be able to do
 other things while waiting for the program to finish.  You cannot use
@@ -2009,12 +2009,12 @@ A program will remain in the background until it finishes execution.
 See also, MULTITASKING.
 ~
 BEGIN|
-begin ( -- )
+BEGIN ( -- )
 Marks the beginning of begin-until or begin-repeat loops.
 See also, LOOPS.
 ~
 FOR|
-for (i1 i2 i3 -- i)
+FOR (i1 i2 i3 -- i)
 Marks the beginning of a iterative FOR loop, and sets up the current for
 loop with i1 as the start index, i2 as the end index, and i3 as the step. 
 If i2 is less then i1, or if i3 is negative and i2 is greater then i1, the
@@ -2023,13 +2023,13 @@ infinitely until some other condition causes an exit.
 See also, LOOPS.
 ~
 FOREACH|
-foreach (a -- @ ? )
+FOREACH (a -- @ ? )
 Marks the beginning of an iterative FOREACH loop, stepping through every
 index/value pair in the array.
 See also, LOOPS.
 ~
 UNTIL|
-until (i -- )
+UNTIL (i -- )
 If the value on top of the stack is false, then it jumps execution
 back to the instruction after the matching BEGIN or FOR statement.
 (BEGIN-UNTIL, BEGIN-REPEAT, FOR, and IF-ELSE-THEN's can all be nested as
@@ -2038,7 +2038,7 @@ If the value is true, it exits the loop, and executes the next instruction,
 following the UNTIL.  Marks the end of the current loop.  See also, LOOPS.
 ~
 REPEAT|
-repeat ( -- )
+REPEAT ( -- )
 Jumps to the matching BEGIN or FOR in a BEGIN-REPEAT or FOR loop.
 Marks the end of the current loop.  See also, LOOPS.
 ~
@@ -2047,29 +2047,29 @@ Fre'ta waz here, September '95
 Back again March '96 (Stupid spelling errors)
 ~
 WHILE|
-while (i -- )
+WHILE (i -- )
 If the value on top of the stack is false, then this causes execution
 to jump to the instruction after the UNTIL or REPEAT for the current
 loop.  If the value is true, however, execution falls through to the
 instruction after the WHILE.  See also, LOOPS.
 ~
 BREAK|
-break ( -- )
+BREAK ( -- )
 Breaks out of the innermost loop.  Jumps execution to the instruction
 after the UNTIL or REPEAT for the current loop.  See also, LOOPS.
 ~
 CONTINUE|
-continue ( -- )
+CONTINUE ( -- )
 Jumps execution to the beginning of the current loop.  See also, LOOPS.
 ~
 INSTRING|
-instring ( s s1 -- i )
+INSTRING ( s s1 -- i )
 Returns the first occurrence of string s1 in string s, or 0 if s1 is
 not found. Non-case sensitive. See also RINSTRING, INSTR, and RINSTR.
 This is an inserver define to 'tolower swap tolower swap instr'
 ~
 RINSTRING|
-rinstring ( s s1 -- i )
+RINSTRING ( s s1 -- i )
 Returns the last occurrence of string s1 in string s, or -1 if s1 is
 not found. Non-case sensitive. See also INSTRING, INSTR, and RINSTR.
 This is an inserver define to 'tolower swap tolower swap rinstr'
@@ -2139,7 +2139,7 @@ level as the creating player.  When a program is loaded from an old db,
 if it is Mucker Level 0, it is upgraded to Mucker Level 2.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 MLEVEL|
-mlevel (d -- i)
+MLEVEL (d -- i)
   returns the mucker (or priority) level of the given object.
 Also see MUCKER LEVELS.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2284,7 +2284,7 @@ Note: You can nest loops complexly, but WHILE, BREAK, and CONTINUE
   statements only refer to the innermost loop structure.
 For an example of a BEGIN-REPEAT and BEGIN-UNTIL loops, see LOOP-EXAMPLE1.
 For an example of a complex loop, see LOOP-EXAMPLE2.
-For an example of a FOR loop, see LOOP-EXAMPLE3.
+For an example of FOR and FOREACH loops, see LOOP-EXAMPLE3.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 LOOP-EXAMPLE1|
 Example of a BEGIN-REPEAT loop:
@@ -2337,13 +2337,13 @@ Example of complex FOR loop:
 Example of a FOREACH loop:
   "index1" "value1" "index2" "value2" 2 array_make_dict
   foreach
-    " - " swap strcat strcat me @ swap notify
+    " = " swap strcat strcat me @ swap notify
   repeat
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 CREDITS|
 Credits:
 The people responsible (at fault?) for this manual are:
-  Foxen (foxen@netcom.netcom.com), who wrote the original terrible docs, and
+  Revar (foxen@belfry.com), who wrote the original terrible docs, and
   WhiteFire (kinomon@glia.biostr.washington.edu), who cleaned them up a lot.
   Fre'ta (tiger@tyger.org), who fixed sme errors.
   
@@ -2425,7 +2425,7 @@ Programs referred to by props in _depart/_arrive/_connect/_disconnect
   
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PUT|
-put ( nx...n1 ni i -- nx...ni...n1 )
+PUT ( nx...n1 ni i -- nx...ni...n1 )
   Replaces the i'th item from the top of the stack with the value of ni.
 1 put is equivalent to swap pop
 Example:
@@ -2434,14 +2434,14 @@ would return on the stack:
   "a", "e", "c", "d"
 ~~~~~
 ABORT|
-abort ( s -- )
+ABORT ( s -- )
   Aborts the MUF program with an error.  ie:  '"Bad vibes." abort' would
 Stop the MUF program and tell the user a message like:
   Programmer error.  Please tell Revar the following message:
   #1234 (line 23) ABORT: Bad vibes.
 ~~~~~
 CHECKARGS|
-checkargs (??? s -- )
+CHECKARGS (??? s -- )
     Takes a string argument that contains an expression that is used
 to test the arguments on the stack below the given string.  If they
 do not match what the expression says should be there, then it aborts
@@ -2518,24 +2518,24 @@ the arguments passed to it manually, would use the test '"R{p}s" checkargs'
 to test for a valid room dbref, a range of player dbrefs or #-1s, and a
 string.
 ~~~~~~~
-date|
+DATE|
 DATE   ( -- i i i)  Returns the monthday, month, and year.  ie:  if it were
 February 6, 1992, date would return 6 2 1992 as three integers on the stack.
 ~~~~~
-gmtoffset|
+GMTOFFSET|
 GMTOFFSET ( -- i)
 Returns the machine's offset from Greenwich Mean Time in seconds.
 ~~~~~
-stringpfx|
+STRINGPFX|
 STRINGPFX (s s2 -- i)  Returns 1 if string s2 is a prefix of string s.
 If s2 is NOT a prefix of s, then it returns 0.  Case insensitive.
 ~~~~~
 PMATCH|
-pmatch (s -- d)
+PMATCH (s -- d)
 Takes a name and returns the dbref of the player.  If the name does not
 match that of a player, #-1 is returned.
 ~~~~~
-part_pmatch|
+PART_PMATCH|
 PART_PMATCH (s -- d)  Takes a player name, or the first part of the name,
 and matches it against the names of the players who are currently online.
 If the given string is a prefix of the name of a player who is online,
@@ -2560,9 +2560,9 @@ mode, respectively.  Programs set BOUND will run PREEMPT, ignoring this
 mode.  Also see PR_MODE.
 ~~~~~
 PR_MODE|FG_MODE|BG_MODE|
-pr_mode ( -- i)
-fg_mode ( -- i)
-bg_mode ( -- i)
+PR_MODE ( -- i)
+FG_MODE ( -- i)
+BG_MODE ( -- i)
 These are all standard built in defines.  They are used with MODE and
 SETMODE to show what mode the program is running in, or to set what mode
 it will run in.  For example, MODE returns an integer on the stack, that
@@ -2644,12 +2644,12 @@ A better ways to do the same thing with looping primitives would be:
     ;
 ~
 CONTROLS|
-controls ( d1 d2 -- i )
+CONTROLS ( d1 d2 -- i )
 Takes a player dbref d1 and an object dbref d2, and returns true if the
 player has control over the given object.
 ~
 SYSPARM|
-sysparm ( s -- s )
+SYSPARM ( s -- s )
 Takes a tuneable system parameter and returns its value as a string.  For
 an integer it returns it as a string, a time is returned as a string
 containing the number of seconds, a dbref is returned in standard dbref
@@ -2744,12 +2744,12 @@ Parameters available:
 (bool) playermax            - Enable or disable connection limit
 ~
 SETSYSPARM|
-setsysparm ( s1 s2 -- )
+SETSYSPARM ( s1 s2 -- )
 Assigns the @tunable parameter s1 a value given by s2.  s2 must contain a
 legal value for s1.  (wizbit only)
 ~
 DESCR_SETUSER|
-descr_setuser ( i d s -- i )
+DESCR_SETUSER ( i d s -- i )
 Reconnects descriptor i to the player with dbref d and password s.  It first
 disconnects from the old dbref, then connects the new one, as if QUIT was
 typed then the new character was logged in.  If the password doesn't match
@@ -2758,7 +2758,7 @@ returns a 1 if successful or a 0 if the given descriptor wasn't found.
 Wizbit only.
 ~
 INTERP|
-interp ( d1 d2 s -- ? )
+INTERP ( d1 d2 s -- ? )
 Takes a program dbref to run d1, the trigger to use d2, and the top stack
 item string and calls the program with the given string on the stack.
 Returns when interpretation halts, which could be the result of an exit, an
@@ -2767,7 +2767,7 @@ Return value is the top item off the stack if successful exit, or a null
 string for anything else.
 ~
 CHECKPASSWORD|
-checkpassword ( d s -- i )
+CHECKPASSWORD ( d s -- i )
 Checks if password string s is valid for player dbref d.  returns 1 on
 success, otherwise returns 0.
 Wizbit only.
@@ -2861,7 +2861,7 @@ JMP or EXIT out of a word from nested FOR loops, you will see a FORPOP
 before the JMP or EXIT for each nexted FOR loop.
 ~
 MCP_REGISTER|
-mcp_register ( strPkgName fltMinVers fltMaxVers -- )
+MCP_REGISTER ( strPkgName fltMinVers fltMaxVers -- )
   Registers an MCP package so that clients can know what is supported.
 The minimum and maximum versions supported are represented as floating
 point numbers, with the minor version number being divided by 1000.
@@ -2889,7 +2889,7 @@ Also, the process that will handle the events is kept alive, so your data
 stored in variables, or on the stack, is kept.
 ~
 MCP_BIND|
-mcp_bind ( strPkgName strMesgName addrCallback -- )
+MCP_BIND ( strPkgName strMesgName addrCallback -- )
   Binds a specific message, so if it is received, the given function is
 called.  The callback function is assumed to accept the args:
 ( intDescr dictArgs -- ) where dictArgs is a dictionary array contain-
@@ -2898,7 +2898,7 @@ argument can either have a string value, or a list array of strings,
 where the list array is used for multi-line values.
 ~
 MCP_SUPPORTS|
-mcp_supports ( intDescr strPkgName -- fltVersion )
+MCP_SUPPORTS ( intDescr strPkgName -- fltVersion )
   Returns the version number of this package that is supported by this
 connection descriptor.  If this package isn't supported, returns 0.0
 The version number is represented as a floating point number, with the
@@ -2908,7 +2908,7 @@ is represented as 1.023.  This lets you use mathematical compares to
 check version numbers.
 ~
 MCP_SEND|
-mcp_send ( intDescr strPkgName strMsgName dictArgs -- )
+MCP_SEND ( intDescr strPkgName strMsgName dictArgs -- )
   Sends an MCP message for the given package to the given connection
 descriptor.  dictArgs contains key-value pairs, where each key is
 an argument name, and the value is the argument value.  Values can
@@ -2917,7 +2917,7 @@ They all get translated into an appropriate string format before
 getting sent.
 ~
 TOKENSPLIT|
-tokensplit (strString strDelim strEscape -- strPre strPost strChar)
+TOKENSPLIT (strString strDelim strEscape -- strPre strPost strChar)
   Searches strString for the first character that matches any character in
 strDelim, so long as it is not escaped by the character given in strEscape.  
 Returns the unescaped string before the found character, the raw string after
@@ -2927,7 +2927,7 @@ returns the values:
     "ab/cd'efg"   "hi//jk'lm"   "'"
 ~
 DESCR|
-descr ( -- i)
+DESCR ( -- i)
   Returns the descriptor number that invoked this program.  The value
 returned may be -1 in the case of listener or autostart programs.
 ~
@@ -2942,13 +2942,13 @@ are between it and the top of the stack.  The marker is removed from the
 stack, and the count is pushed onto the stack.
 ~
 }LIST|
-}list  ( marker ?n ... ?1 -- array )
+}LIST  ( marker ?n ... ?1 -- array )
   Takes all stack items from the top of the stack to the topmost stack
 marker and creates a list array from them.  This is actually an inserver
 macro, defined to '} array_make'.
 ~
 }DICT|
-}dict  ( marker @n ?n ... @1 ?1 -- dictionary )
+}DICT  ( marker @n ?n ... @1 ?1 -- dictionary )
   Takes pairs of stack items from the top of the stack to the topmost stack
 marker and creates a dictionary array from them.  Each @ item is used as an
 index value for the corresponding ? value.  This is actually an inserver
@@ -2956,12 +2956,12 @@ macro, defined to '} 2 / array_make_dict'.  Be careful to make sure that
 there are an even number of stack items between the { and the }dict.
 ~
 CANCALL?|
-cancall?  (d s -- i)
+CANCALL?  (d s -- i)
   Returns true if the given program has a public or wizcall function that the
 current program has permissions to call.  Returns false, otherwise.
 ~
 WIZCALL|
-wizcall <funcname>
+WIZCALL <funcname>
   Specifies that the given function is a WIZCALL function.  A WIZCALL function
 is like a PUBLIC function, except it can only be called by wizbit programs.
 ~
@@ -3167,12 +3167,31 @@ This primitive requires at least Mucker Level 3.
 ARRAY_FINDVAL|
 ARRAY_FINDVAL (a1 ? -- a2)
 Returns a list array containing the keys of every element in the array
-a1 whose values match the given value.
+a1 whose values match the given value.  For example:
+  
+    { #5 #10 #15 #10 #20 }list #10 array_excludeval
+  
+will return a list containing 1 and 3, being the keys (indexes) of the
+matching items.
 ~
 ARRAY_EXCLUDEVAL|
 ARRAY_EXCLUDEVAL (a1 ? -- a2)
 Returns a list array containing the keys of every element in the array
-a1 whose values did NOT match the given value.
+a1 whose values did NOT match the given value.  For example:
+  
+    { #5 #10 #15 }list #10 array_excludeval
+  
+will return a list containing 0 and 2, being the keys (indexes) of the non-
+excluded items.  If you want the values, use ARRAY_DIFF or ARRAY_EXTRACT.
+Ie:
+  
+    { #5 #10 #15 }list { #10 }list array_diff
+  
+or
+  
+    { #5 #10 #15 }list dup #10 array_excludeval array_extract
+
+which will both return a list containing #5 and #15.
 ~
 ARRAY_REVERSE|
 ARRAY_REVERSE (a -- a')
