@@ -733,7 +733,11 @@ prim_event_send(PRIM_PROTOTYPE)
 		arr = new_array_dictionary();
 		array_set_strkey(&arr, "data", oper3);
 		array_set_strkey_intval(&arr, "caller_pid", fr->pid);
+		array_set_strkey_intval(&arr, "descr", fr->descr);
 		array_set_strkey_refval(&arr, "caller_prog", program);
+		array_set_strkey_refval(&arr, "trigger", fr->trig);
+		array_set_strkey_refval(&arr, "prog_uid", ProgUID);
+		array_set_strkey_refval(&arr, "player", player);
 
 		temp1.type = PROG_ARRAY;
 		temp1.data.array = arr;

@@ -3128,6 +3128,7 @@ Returns the number of pending events waiting to be processed with EVENT_WAIT.
 EVENT_WAIT|
 EVENT_WAIT ( -- ? s )
 This is an inserver muf macro, that expands to '0 array_make event_waitfor'
+See: EVENT_WAITFOR
 ~
 EVENT_EXISTS|
 EVENT_EXISTS ( s -- i )
@@ -3145,13 +3146,13 @@ from the event queue.  This returns an event-specific context data item,
 and the matching eventID string.  If an empty list array is passed to this
 primitive, then it will match any and all events, and return the first one
 pending.
-
+  
 Timer events have eventID strings that are created by prepending "TIMER."
 to the timerID passed to the TIMER_START primitive.  The context for Timer
 events is an integer, representing the systime that the timer event was
 scheduled to occur at.  This might not be the time that the event is actually
 processed at, due to system delays.
-
+  
 GUI events have eventID strings that are created by prepending "GUI." to
 the dlogID of the dialog that generated the event.  The context for GUI
 events is a dictionary contains the following keys:
@@ -3160,31 +3161,40 @@ events is a dictionary contains the following keys:
   id         Holds the ID of the control that generated the event.
   dismissed  Holds 1 if the dialog was dismissed, 0 otherwise.
   event      Holds the type of gui event.  ie: buttonpress, menuselect.
-
+  
 User events have eventID strings that are created by prepending "USER." to
 the eventID given to the EVENT_SEND muf primitive.  The context for User
 events is a dictionary containing the following keys:
   caller_pid   Holds the integer Process ID of the sending program.
   caller_prog  Holds the dbref of the sending program.
   data         Holds the stack item sent by the EVENT_SEND primitive.
-
+  descr        Holds the descr that initiated the calling program.
+  trigger      Holds the trigger dbref that initiated the calling program.
+  player       Holds the player dbref that ran the calling program.
+  prog_uid     Holds the dbref of the player whose permissions the caller
+                program is running as.
+  
 MCP events have eventID strings formatted like "MCP.packagename-mesgname"
 where 'packagename' is the name of the MCP package being invoked, and
 'mesgname' is the specific message in the package being invoked.  If the
-'mesgname' is a null string, then the trailing '-' is removed.  Some example
-MCP eventIDs are:
-  MCP.com-belfry-image        Where pkg is 'com-belfry-image' & mesg is ''
-  MCP.com-belfry-image-view   Where pkg is 'com-belfry-image' & mesg is 'view'
+'mesgname' is a null string, then the trailing '-' is removed.
+Some example MCP eventIDs are:
+    MCP.com-belfry-image       Where pkg is 'com-belfry-image' & mesg is ''
+    MCP.com-belfry-image-view  Where pkg is 'com-belfry-image' & mesg is 'view'
 The context for MCP events is a dictionary containing the following keys:
-  descr     Holds the integer descriptor of the sending connection.
-  package   Holds the string package name the MCP mesg is sent for.
-  message   Holds the string message name within that package.
-  args      Holds a dictionary, containing the message arguments.
-              Each mesg arg has an array list of strings as a value.
-
+    descr     Holds the integer descriptor of the sending connection.
+    package   Holds the string package name the MCP mesg is sent for.
+    message   Holds the string message name within that package.
+    args      Holds a dictionary, containing the message arguments.
+                Each mesg arg has an array list of strings as a value.
+  
 Read events have eventID strings of just "READ".  The context of Read events
   is the integer descriptor of the first waiting line to be READ.  To get the
   actual line sent by the user you need to use the READ primitive.
+  
+Process exit events have eventID strings that are created by prepending
+  "PROC.EXIT." to the pid of the watched process that exited.  The context
+  is the pid of the process that exited.
 ~
 BLESSPROP|
 BLESSPROP (dbrefObject strPropname -- )

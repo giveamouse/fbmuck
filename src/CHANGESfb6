@@ -1,6 +1,7 @@
 2.2fb6.00b2
 Fixed bug with MCP not properly dealing with \r's in arg strings.
 Fixed bug where being set !C didn't strip ANSI color from muf NOTIFYs.
+Fixed DoS security hole with exhausing memory via huge MCP messages.
 Changed MCP GUI code to limit to 256 "values" per dialog.
 Changed EVENT_SEND to send a dictionary instead of just a value.  The array
   will contain "data" with the value, "caller_pid" with the pid of the caller,
@@ -53,13 +54,19 @@ Added 'fbhelp' compile target, to allow unix users to get FB help, man, and
 Added SORTTYPE_SHUFFLE inserver muf define for use with ARRAY_SORT, to
   randomize a list.
 Added ->[] inserver muf define as a shortcut for array_setitem.
-Added WATCHPID ( i -- ) muf primitive.  Sends a "PROC.EXIT."  event to the
-  current process when the process referred to by the given pid exits.  If
-  the process process does not exist,  the event will be sent immediately.
-  The exit event can be retrieved by a call to EVENT_WAIT.  The event type
-  will be "PROC.EXIT." wit the pid of the process appended to it.  The pid
-  will also be returned as the data value from the event.   This primitive
-  requires at least Mucker Level 3.
+Added WATCHPID ( i -- ) muf primitive.  Sends a "PROC.EXIT.pid" event to
+  the current process when the process referred to by the given pid exits.
+  If the process process does not exist, the event will be sent immediately.
+  The exit event can be retrieved by a call to EVENT_WAITFOR.  The event
+  type will be "PROC.EXIT." with the pid of the process appended to it.
+  The pid will also be returned as the data value from the event.  This
+  primitive requires at least Mucker Level 3.
+Added four new data entries to USER muf event contexts sent by SEND_EVENT.
+  "descr" contains the descriptor that initiated the sending program.
+  "trigger" contains the dbref of the trigger that ran the sending program.
+  "player" contains the dbref of the player that ran the sending program.
+  "prog_uid" contains the dbref of the player used for permissions in the
+  sending program.
 
 
 

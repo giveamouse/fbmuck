@@ -689,7 +689,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 		strcat(out, MCP_ARG_DELIMITER);
 		strcat(out, MCP_SEPARATOR);
 		out += strlen(out);
-		sprintf(datatag, "%.8lX%.8lX", random(), random());
+		sprintf(datatag, "%.8lX", random() ^ random());
 		strcat(out, datatag);
 	}
 
@@ -771,6 +771,7 @@ mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname)
 	msg->datatag = NULL;
 	msg->args = NULL;
 	msg->incomplete = 0;
+	msg->bytes = 0;
 	msg->next = NULL;
 }
 
@@ -815,6 +816,7 @@ mcp_mesg_clear(McpMesg * msg)
 		}
 		free(tmp);
 	}
+	msg->bytes = 0;
 }
 
 
@@ -908,7 +910,7 @@ mcp_mesg_arg_getline(McpMesg * msg, const char *argname, int linenum)
 
 /*****************************************************************
  *
- * void mcp_mesg_arg_append(
+ * int mcp_mesg_arg_append(
  *         McpMesg* msg,
  *         const char* argname,
  *         const char* argval
@@ -917,52 +919,75 @@ mcp_mesg_arg_getline(McpMesg * msg, const char *argname, int linenum)
  *   Appends to the list value of the named arg in the given mesg.
  *   If that named argument doesn't exist yet, it will be created.
  *   This is used to construct arguments that have lists as values.
+ *   Returns the success state of the call.  EMCP_SUCCESS if the
+ *   call was successful.  EMCP_ARGCOUNT if this would make too
+ *   many arguments in the message.  EMCP_ARGLENGTH is this would
+ *   cause an argument to exceed the max allowed number of lines.
  *
  *****************************************************************/
 
-void
+int
 mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 {
 	McpArg *ptr = msg->args;
+	int namelen = strlen(argname);
+	int vallen = argval? strlen(argval) : 0;
 
+	if (namelen > MAX_MCP_ARGNAME_LEN) {
+		return EMCP_ARGNAMELEN;
+	}
+	if (vallen + msg->bytes > MAX_MCP_MESG_SIZE) {
+		return EMCP_MESGSIZE;
+	}
 	while (ptr && strcmp_nocase(ptr->name, argname)) {
 		ptr = ptr->next;
 	}
 	if (!ptr) {
+		if (namelen + vallen + msg->bytes > MAX_MCP_MESG_SIZE) {
+			return EMCP_MESGSIZE;
+		}
 		ptr = (McpArg *) malloc(sizeof(McpArg));
-		ptr->name = (char *) malloc(strlen(argname) + 1);
+		ptr->name = (char *) malloc(namelen + 1);
 		strcpy(ptr->name, argname);
 		ptr->value = NULL;
+		ptr->last = NULL;
 		ptr->next = NULL;
 		if (!msg->args) {
 			msg->args = ptr;
 		} else {
+			int limit = MAX_MCP_MESG_ARGS;
 			McpArg *lastarg = msg->args;
 
-			while (lastarg->next)
+			while (lastarg->next) {
+				if (!limit-->0) {
+					free(ptr->name);
+					free(ptr);
+					return EMCP_ARGCOUNT;
+				}
 				lastarg = lastarg->next;
+			}
 			lastarg->next = ptr;
 		}
+		msg->bytes += sizeof(McpArg) + namelen + 1;
 	}
 
 	if (argval) {
 		McpArgPart *nu = (McpArgPart *) malloc(sizeof(McpArgPart));
-		McpArgPart *ptr2 = ptr->value;
 
-		nu->value = (char *) malloc(strlen(argval) + 1);
+		nu->value = (char *) malloc(vallen + 1);
 		strcpy(nu->value, argval);
 		nu->next = NULL;
 
-		if (!ptr2) {
-			ptr->value = nu;
+		if (!ptr->last) {
+			ptr->value = ptr->last = nu;
 		} else {
-			while (ptr2->next) {
-				ptr2 = ptr2->next;
-			}
-			ptr2->next = nu;
+			ptr->last->next = nu;
+			ptr->last = nu;
 		}
+		msg->bytes += sizeof(McpArgPart) + vallen + 1;
 	}
 	ptr->was_shown = 0;
+	return EMCP_SUCCESS;
 }
 
 
@@ -987,14 +1012,20 @@ mcp_mesg_arg_remove(McpMesg * msg, const char *argname)
 
 	while (ptr && !strcmp_nocase(ptr->name, argname)) {
 		msg->args = ptr->next;
-		if (ptr->name)
+		msg->bytes -= sizeof(McpArg);
+		if (ptr->name) {
 			free(ptr->name);
+			msg->bytes -= strlen(ptr->name) + 1;
+		}
 		while (ptr->value) {
 			McpArgPart *ptr2 = ptr->value;
 
 			ptr->value = ptr->value->next;
-			if (ptr2->value)
+			msg->bytes -= sizeof(McpArgPart);
+			if (ptr2->value) {
+				msg->bytes -= strlen(ptr2->value) + 1;
 				free(ptr2->value);
+			}
 			free(ptr2);
 		}
 		free(ptr);
@@ -1008,14 +1039,20 @@ mcp_mesg_arg_remove(McpMesg * msg, const char *argname)
 	while (ptr) {
 		if (!strcmp_nocase(argname, ptr->name)) {
 			prev->next = ptr->next;
-			if (ptr->name)
+			msg->bytes -= sizeof(McpArg);
+			if (ptr->name) {
 				free(ptr->name);
+				msg->bytes -= strlen(ptr->name) + 1;
+			}
 			while (ptr->value) {
 				McpArgPart *ptr2 = ptr->value;
 
 				ptr->value = ptr->value->next;
-				if (ptr2->value)
+				msg->bytes -= sizeof(McpArgPart);
+				if (ptr2->value) {
+					msg->bytes -= strlen(ptr2->value) + 1;
 					free(ptr2->value);
+				}
 				free(ptr2);
 			}
 			free(ptr);
@@ -1137,7 +1174,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 			mcp_mesg_init(&reply, MCP_INIT_PKG, "");
 			mcp_mesg_arg_append(&reply, "version", "2.1");
 			mcp_mesg_arg_append(&reply, "to", "2.1");
-			sprintf(authval, "%.8lX%.8lX", random(), random());
+			sprintf(authval, "%.8lX", random() ^ random());
 			mcp_mesg_arg_append(&reply, "authentication-key", authval);
 			mfr->authkey = (char *) malloc(strlen(authval) + 1);
 			strcpy(mfr->authkey, authval);
@@ -1565,6 +1602,11 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.11  2001/02/02 05:03:44  revar
+* Added descr, trigger, player, and prog_uid datums to SEND_EVENT context.
+* Updated man.txt docs for SEND_EVENT changes and WATCHPID.
+* Added MCP message size limit.  Defaults to half a meg.
+*
 * Revision 1.10  2001/01/06 23:01:17  revar
 * Fixed bug with \r's in MCP arguments.
 *
