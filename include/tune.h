@@ -125,6 +125,7 @@ extern int tp_thing_movement;
 extern int tp_expanded_debug;
 extern int tp_proplist_int_counter;
 extern int tp_lazy_mpi_istype_perm;
+extern int tp_optimize_muf;
 
 extern int tune_count_parms(void);
 extern void tune_load_parms_from_file(FILE * f, dbref player, int cnt);

@@ -239,6 +239,9 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 	case PROG_SVAR_AT:
 		length = snprintf(buffer, buflen, "SV%d @", theinst->data.number);
 		break;
+	case PROG_SVAR_AT_CLEAR:
+		length = snprintf(buffer, buflen, "SV%d @ 0 SV%d !", theinst->data.number, theinst->data.number);
+		break;
 	case PROG_SVAR_BANG:
 		length = snprintf(buffer, buflen, "SV%d !", theinst->data.number);
 		break;

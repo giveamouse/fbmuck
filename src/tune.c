@@ -242,6 +242,7 @@ int tp_expanded_debug = EXPANDED_DEBUG_TRACE;
 int tp_proplist_int_counter = PROPLIST_INT_COUNTER;
 int tp_log_interactive = LOG_INTERACTIVE;
 int tp_lazy_mpi_istype_perm = LAZY_MPI_ISTYPE_PERM;
+int tp_optimize_muf = OPTIMIZE_MUF;
 
 struct tune_bool_entry {
 	const char *name;
@@ -289,6 +290,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"expanded_debug_trace", &tp_expanded_debug, 0},
 	{"proplist_int_counter", &tp_proplist_int_counter, 0},
 	{"lazy_mpi_istype_perm", &tp_lazy_mpi_istype_perm, 0},
+	{"optimize_muf", &tp_optimize_muf, 0},
 
 	{NULL, NULL, 0}
 };

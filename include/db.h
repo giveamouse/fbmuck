@@ -279,8 +279,9 @@ struct line {
 #define PROG_ARRAY       16		/* Array of other stack items. */
 #define PROG_MARK        17		/* Stack marker for [ and ] */
 #define PROG_SVAR_AT     18		/* @ shortcut for scoped vars */
-#define PROG_SVAR_BANG   19		/* ! shortcut for scoped vars */
-#define PROG_TRY         20		/* TRY shortcut */
+#define PROG_SVAR_AT_CLEAR 19	/* @ for scoped vars, with var clear optim */
+#define PROG_SVAR_BANG   20		/* ! shortcut for scoped vars */
+#define PROG_TRY         21		/* TRY shortcut */
 
 #define MAX_VAR         54		/* maximum number of variables including the
 								   * basic ME, LOC, TRIGGER, and COMMAND vars */

@@ -178,6 +178,7 @@ int localvar(COMPSTATE *, const char *);
 int scopedvar(COMPSTATE *, const char *);
 void copy_program(COMPSTATE *);
 void set_start(COMPSTATE *);
+void free_intermediate_node(struct INTERMEDIATE *wd);
 
 /* Character defines */
 #define BEGINCOMMENT '('
@@ -291,7 +292,7 @@ fix_addresses(COMPSTATE* cstat)
 	/* repoint publics to targets */
 	for (pub = cstat->currpubs; pub; pub = pub->next)
 		pub->addr.no = cstat->addrlist[pub->addr.no]->no +
-			cstat->addroffsets[pub->addr.no];
+				cstat->addroffsets[pub->addr.no];
 
 	/* repoint addresses to targets */
 	for (ptr = cstat->first_word; ptr; ptr = ptr->next)
@@ -303,7 +304,7 @@ fix_addresses(COMPSTATE* cstat)
 		case PROG_JMP:
 		case PROG_EXEC:
 			ptr->in.data.number = cstat->addrlist[ptr->in.data.number]->no +
-				cstat->addroffsets[ptr->in.data.number];
+					cstat->addroffsets[ptr->in.data.number];
 			break;
 		default:
 			break;
@@ -592,6 +593,185 @@ free_unused_programs()
 	}
 }
 
+/* Various flags for the IMMEDIATE instructions */
+
+#define IMMFLAG_REFERENCED	1	/* Referenced by a jump */
+
+void
+MaybeOptimizeSvarAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int BangNo)
+{
+	struct INTERMEDIATE* curr = first->next;
+	struct INTERMEDIATE* ptr;
+	int farthest = 0;
+	int i;
+
+	for(; curr; curr = curr->next) {
+		switch(curr->in.type) {
+			case PROG_PRIMITIVE:
+				/* Don't trust any physical @ or !'s in the code, someone
+					may be indirectly referencing the scoped variable */
+
+				if ((curr->in.data.number == AtNo) || 
+					(curr->in.data.number == BangNo))
+				{
+					return;
+				}
+				break;
+
+			case PROG_SVAR_AT:
+				if (curr->in.data.number == first->in.data.number) {
+					/* Can't optimize if references to the variable found before a var! */
+					return;
+				}
+				break;
+
+			case PROG_SVAR_BANG:
+				if (first->in.data.number == curr->in.data.number) {
+					if (curr->no <= farthest) {
+						/* cannot optimize as we are within a branch */
+						return;
+					} else {
+						/* Optimize it! */
+						first->in.type = PROG_SVAR_AT_CLEAR;
+						return;
+					}
+				}
+				break;
+
+			case PROG_IF:
+			case PROG_TRY:
+			case PROG_JMP:
+				ptr = cstat->addrlist[curr->in.data.number];
+				i = cstat->addroffsets[curr->in.data.number];
+				while (ptr->next && i-->0)
+					ptr = ptr->next;
+				if (ptr->no <= first->no) {
+					/* Can't optimize as we've exited the code branch the @ is in. */
+					return;
+				}
+				if (ptr->no > farthest)
+					farthest = ptr->no;
+				break;
+
+			case PROG_FUNCTION:
+				/* Don't try to optimize over functions */
+				return;
+		}
+	}
+}
+
+void
+RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE* curr)
+{
+	struct INTERMEDIATE* tmp;
+	int i;
+
+	if (!curr->next) {
+		return;
+	}
+
+	tmp = curr->next;
+	for (i = 0; i < cstat->addrcount; i++) {
+		if (cstat->addrlist[i] == tmp) {
+			cstat->addrlist[i] = curr;
+		}
+	}
+	curr->next = curr->next->next;
+	free_intermediate_node(tmp);
+	cstat->nowords--;
+}
+
+int
+ContiguousIntermediates(int* Flags, struct INTERMEDIATE* ptr, int count)
+{
+	while (count-->0) {
+		if (!ptr) {
+			return 0;
+		}
+		if ((Flags[ptr->no] & IMMFLAG_REFERENCED)) {
+			return 0;
+		}
+		ptr = ptr->next;
+	}
+	return 1;
+}
+
+int
+OptimizeIntermediate(COMPSTATE * cstat)
+{
+	struct INTERMEDIATE* curr;
+	int* Flags;
+	int i;
+	int count = 0;
+	int old_instr_count = cstat->nowords;
+	int AtNo = get_primitive("@"); /* Wince */
+	int BangNo = get_primitive("!");
+
+	/* Code assumes everything is setup nicely, if not, bad things will happen */
+
+	if (!cstat->first_word)
+		return 0;
+
+	/* renumber the instruction chain */
+	for (curr = cstat->first_word; curr; curr = curr->next)
+		curr->no = count++;
+
+	if ((Flags = (int*)malloc(sizeof(int) * count)) == 0)
+		return 0;
+
+	memset(Flags, 0, sizeof(int) * count);
+
+	/* Mark instructions which jumps reference */
+
+	for(curr = cstat->first_word; curr; curr = curr->next) {
+		switch(curr->in.type) {
+			case PROG_ADD:
+			case PROG_IF:
+			case PROG_TRY:
+			case PROG_JMP:
+			case PROG_EXEC:
+				i = cstat->addrlist[curr->in.data.number]->no +
+						cstat->addroffsets[curr->in.data.number];
+				Flags[i] |= IMMFLAG_REFERENCED;
+				break;
+		}
+	}
+
+	/* Convert all "var !" and "var @" into "var!" and "var@" */
+
+	for(curr = cstat->first_word; curr; curr = curr->next) {
+		switch(curr->in.type) {
+			case PROG_SVAR:
+				if (curr->next && curr->next->in.type == PROG_PRIMITIVE) {
+					if (curr->next->in.data.number == AtNo) {
+						if (ContiguousIntermediates(Flags, curr->next, 1)) {
+							curr->in.type = PROG_SVAR_AT;
+							RemoveNextIntermediate(cstat, curr);
+						}
+					} else if (curr->next->in.data.number == BangNo) {
+						if (ContiguousIntermediates(Flags, curr->next, 1)) {
+							curr->in.type = PROG_SVAR_BANG;
+							RemoveNextIntermediate(cstat, curr);
+						}
+					}
+				}
+				break;
+
+			case PROG_PRIMITIVE:
+				/* Future keyhole optims can be put here */
+				break;
+		}
+	}
+
+	/* Turn all var@'s which have a following var! into a var@-clear */
+
+	for(curr = cstat->first_word; curr; curr = curr->next)
+		if (curr->in.type == PROG_SVAR_AT)
+				MaybeOptimizeSvarAt(cstat, curr, AtNo, BangNo);
+
+	free(Flags);
+	return (old_instr_count - cstat->nowords);
+}
 
 /* overall control code.  Does piece-meal tokenization parsing and
    backward checking.                                            */
@@ -687,6 +867,15 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 
 	if (!cstat.procs)
 		v_abort_compile(&cstat, "Missing procedure definition.");
+
+	if (tp_optimize_muf) {
+		int optimcount = OptimizeIntermediate(&cstat);
+		if (force_err_display && optimcount > 0) {
+			char buf[BUFFER_LEN];
+			sprintf(buf, "Program optimized by %d instructions.", optimcount);
+			notify_nolisten(cstat.player, buf, 1);
+		}
+	}
 
 	/* do copying over */
 	fix_addresses(&cstat);
@@ -2660,20 +2849,26 @@ append_intermediate_chain(struct INTERMEDIATE *chain, struct INTERMEDIATE *add)
 
 
 void
+free_intermediate_node(struct INTERMEDIATE *wd)
+{
+	if (wd->in.type == PROG_STRING) {
+		if (wd->in.data.string)
+			free((void *) wd->in.data.string);
+	}
+	if (wd->in.type == PROG_FUNCTION) {
+		free((void*)wd->in.data.mufproc->procname);
+		free((void*)wd->in.data.mufproc);
+	}
+	free((void *) wd);
+}
+
+void
 free_intermediate_chain(struct INTERMEDIATE *wd)
 {
 	struct INTERMEDIATE* tempword;
 	while (wd) {
 		tempword = wd->next;
-		if (wd->in.type == PROG_STRING) {
-			if (wd->in.data.string)
-				free((void *) wd->in.data.string);
-		}
-		if (wd->in.type == PROG_FUNCTION) {
-			free((void*)wd->in.data.mufproc->procname);
-			free((void*)wd->in.data.mufproc);
-		}
-		free((void *) wd);
+		free_intermediate_node(wd);
 		wd = tempword;
 	}
 }
@@ -2748,6 +2943,7 @@ copy_program(COMPSTATE * cstat)
 		case PROG_INTEGER:
 		case PROG_SVAR:
 		case PROG_SVAR_AT:
+		case PROG_SVAR_AT_CLEAR:
 		case PROG_SVAR_BANG:
 		case PROG_LVAR:
 		case PROG_VAR:
