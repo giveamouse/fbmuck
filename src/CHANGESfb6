@@ -33,7 +33,9 @@ Added TIMER_START ( i s -- ) MUF prim.  Requests that a timer event
   Timer ids will be truncated to 32 characters.  Each MUF process can
   only have a limited number of timers, specified by the @tunee setting
   'process_timer_limit'.  Timers are listed on the @ps timequeue with
-  the PID of the timer's process in parentheses.
+  the PID of the timer's process in parentheses.  Timers are one-shot
+  events.  To get a repeating timer, you'll need to restart it when
+  you process a new timer event.
 Added TIMER_STOP ( s -- ) MUF prim.  Stops the timer with the given
   timerid, if it exists.  If there is already a timer event on the
   event queue, it will STAY on the queue until processed.  As with
