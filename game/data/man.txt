@@ -52,12 +52,12 @@ Symbols
   $define        $echo          $ifcancall     $ifdef         $iflib
   $iflibver      $ifncancall    $ifndef        $ifnlib        $ifnlibver
   $ifnver        $ifver         $include       $lib-version   $libdef
-  $note          $pubdef        $undef         $version       %
-  '              *              +              ++             -
-  --             /              <              <=             =
-  >              >=             @              \              __fuzzball__
-  __muckname     __version      {              }              }cat
-  }dict          }join          }list          }tell          
+  $note          $pragma        $pubdef        $undef         $version
+  %              '              *              +              ++
+  -              --             /              <              <= 
+  =              >              >=             @              \
+  __fuzzball__   __muckname     __version      {              }
+  }cat           }dict          }join          }list          }tell
 
 A's
   abort                     abs                       acos
@@ -476,10 +476,10 @@ $ifcancall                $ifdef                    $iflib
 $iflibver                 $ifncancall               $ifndef
 $ifnlib                   $ifnlibver                $ifnver
 $ifver                    $include                  $lib-version
-$libdef                   $note                     $pubdef
-$undef                    $version                  \
-__fuzzball__              __muckname                __version
-max_variable_count        
+$libdef                   $note                     $pragma
+$pubdef                   $undef                    $version
+\                         __fuzzball__              __muckname
+__version                 max_variable_count        
 
 ~----------------------------------------------------------------------------
 ~
@@ -852,6 +852,28 @@ Runs at compile-time.
 $ABORT
 $ABORT <message>
   Aborts compiling and prints out the error message.
+~
+~
+$PRAGMA
+$PRAGMA <pragmatype> [<args>]
+  Sets a compiler option in a backwards compatible manner.  If the pragmatype
+isn't recognized, the compiler will just ignore this line and continue its
+compile attempt.  The $pragma directive must be all on one line, and the
+entire rest of the line after the pragmatype is assumed to be arguments for
+that pragmatype.  The currently supported pragmatypes are:
+
+COMMENT_STRICT
+  This specifies that comments are in the old style that is terminated by the
+first end-paren ')' in the comment.
+
+COMMENT_RECURSE
+  This specifies that comments are in the new recursive style where any parens
+'(' in a comment must be matched by end-parens ')'.
+
+COMMENT_LOOSE
+  This is the default comment style, where the compiler tries to compile
+comments as if in comment_recurse mode, but will fall back to comment_strict
+mode if a comment fails to have balancing parens.
 ~
 ~
 \|BACKSLASH

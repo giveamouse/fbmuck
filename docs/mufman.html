@@ -62,40 +62,41 @@
   </tr>
   <tr>
     <td nowrap> &nbsp; <a href="#$note">$note</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#$pragma">$pragma</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#$pubdef">$pubdef</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#$undef">$undef</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#$version">$version</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#%">%</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#%">%</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#'">'</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#*">*</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#+">+</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#++">++</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#-">-</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#-">-</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#--">--</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#/">/</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#&lt;">&lt;</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#&lt;= ">&lt;= </a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#=">=</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#=">=</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#&gt;">&gt;</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#&gt;=">&gt;=</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#@">@</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#\">\</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#__fuzzball__">__fuzzball__</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#__fuzzball__">__fuzzball__</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#__muckname">__muckname</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#__version">__version</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#{">{</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#}">}</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#}cat">}cat</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#}cat">}cat</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#}dict">}dict</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#}join">}join</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#}list">}list</a> &nbsp; </td>
@@ -1190,19 +1191,20 @@ you want, but they are run in alphabetic order.
   <tr>
     <td width="33%"> &nbsp; <a href="#$libdef">$libdef</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#$note">$note</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#$pubdef">$pubdef</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#$pragma">$pragma</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#$pubdef">$pubdef</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#$undef">$undef</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#$version">$version</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#\">\</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#\">\</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#__fuzzball__">__fuzzball__</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#__muckname">__muckname</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#__version">__version</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#__version">__version</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#max_variable_count">max_variable_count</a> &nbsp; </td>
   </tr>
 </table></blockquote>
@@ -1830,6 +1832,33 @@ Runs at compile-time.
 <br>
 </a></h4>
   Aborts compiling and prints out the error message.
+<p>
+
+
+<hr><h4><a name="$pragma">$PRAGMA &lt;pragmatype&gt; [&lt;args&gt;]
+<br>
+</a></h4>
+  Sets a compiler option in a backwards compatible manner.  If the pragmatype
+isn't recognized, the compiler will just ignore this line and continue its
+compile attempt.  The $pragma directive must be all on one line, and the
+entire rest of the line after the pragmatype is assumed to be arguments for
+that pragmatype.  The currently supported pragmatypes are:
+
+COMMENT_STRICT
+<p>
+  This specifies that comments are in the old style that is terminated by the
+first end-paren ')' in the comment.
+
+COMMENT_RECURSE
+<p>
+  This specifies that comments are in the new recursive style where any parens
+'(' in a comment must be matched by end-parens ')'.
+
+COMMENT_LOOSE
+<p>
+  This is the default comment style, where the compiler tries to compile
+comments as if in comment_recurse mode, but will fall back to comment_strict
+mode if a comment fails to have balancing parens.
 <p>
 
 
