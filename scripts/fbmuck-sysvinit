@@ -5,7 +5,7 @@
 # fbmuck    This shell script takes care of starting and stopping
 #           FuzzBall Muck servers on this machine.
 #
-# chkconfig: 2345 82 20
+# chkconfig: 2345 82 23
 #
 # description: fbmuck is an online interactive multiplayer chat/role-play
 #              MUD server with a persistent database.
@@ -20,9 +20,9 @@
 # This script references the file /etc/fbmucks.  The /etc/fbmucks file should
 # contain a list of mucks to start/stop.  The format of /etc/fbmucks is:
 #
-#	MUCKNAME	USERNAME	MUCK_ROOT_PATH			SCRIPTNAME	PORTS
-#	tygmuck3	revar		/home/revar/tygmuck		restart		8888,8899s
-#	feepmuck	foxen		/home/foxen/muck		restart		8800
+# MUCKNAME  USERNAME  MUCK_ROOT_PATH                 SCRIPTNAME  PORTS
+# tygmuck3  tygryss   /home/revar/tygmuck            restart     8888,8899s
+# feepmuck  foxen     /home/foxen/muck               restart     8800
 #
 # Port numbers are separate by commas.  An 's' at the end of a port number
 # means that that port is designated as a secure SSL port.
@@ -38,80 +38,117 @@
 RETVAL=0
 pidfile=netmuck.pid
 who=`whoami`
+cmd=$1
+shift
+mucknames=$@
 
 # See how we were called.
-case "$1" in
+case "$cmd" in
   start)
-	# Start mucks.
-	cat /etc/fbmucks | \
-	grep -v '^[ 	]*#' |\
-	grep -v '^[ 	]*$' |\
-	while read name user path script ports; do
-		if [ "x$who" == "xroot" -o "x$who" == "x$user" ]; then
-			echo -n "Starting fbmuck for $name: "
-			ports=`echo $ports | sed 's/,/ /g' | sed 's/\([0-9]*\)s/-sport \1/g'`
-			rm -f $path/$pidfile
-			if [ "x$who" == "x$user" ]; then
-				$path/$script $ports >> /dev/null 2>&1
-			else
-				su - $user -c "$path/$script $ports >> /dev/null 2>&1"
-			fi
-			while [ ! -f $path/$pidfile ]; do
-				sleep 1
-			done
-			echo fbmuck
-		fi
-	done
-	;;
+    # Start mucks.
+    cat /etc/fbmucks | \
+    grep -v '^[ 	]*#' |\
+    grep -v '^[ 	]*$' |\
+    while read name user path script ports; do
+        if [ "x$mucknames" != "x" ]; then
+            found=0
+            for muckname in $mucknames; do
+                if [ "x$muckname" == "x$name" ]; then
+                    found=1
+                fi
+            done
+            if [ $found == 0 ]; then
+                continue
+            fi
+        fi
+        if [ "x$who" == "xroot" -o "x$who" == "x$user" ]; then
+            echo -n "Starting fbmuck for $name: "
+            ports=`echo $ports | sed 's/,/ /g' | sed 's/\([0-9]*\)s/-sport \1/g'`
+            rm -f $path/$pidfile
+            if [ "x$who" == "x$user" ]; then
+                $path/$script $ports >> /dev/null 2>&1
+            else
+                su - $user -c "$path/$script $ports >> /dev/null 2>&1"
+            fi
+            while [ ! -f $path/$pidfile ]; do
+                sleep 1
+            done
+            echo fbmuck
+        fi
+    done
+    ;;
   stop)
-	# Stop mucks.
-	cat /etc/fbmucks | \
-	grep -v '^[ 	]*#' |\
-	grep -v '^[ 	]*$' |\
-	while read name user path script ports; do
-		if [ "x$who" == "xroot" -o "x$who" == "x$user" ]; then
-			echo -n "Shutting down fbmuck for $name: "
-			if [ -f $path/$pidfile ]; then
-				pid=`cat $path/$pidfile`
-				if [ -d /proc/$pid ]; then
-					kill $pid
-					while [ ! -d /proc/$pid ]; do
-						sleep 1
-					done
-				fi
-				rm -f $path/$pidfile
-			fi
-			echo fbmuck
-		fi
-	done
-	;;
+    # Stop mucks.
+    cat /etc/fbmucks | \
+    grep -v '^[ 	]*#' |\
+    grep -v '^[ 	]*$' |\
+    while read name user path script ports; do
+        if [ "x$mucknames" != "x" ]; then
+            found=0
+            for muckname in $mucknames; do
+                if [ "x$muckname" == "x$name" ]; then
+                    found=1
+                fi
+            done
+            if [ $found == 0 ]; then
+                continue
+            fi
+        fi
+        if [ "x$who" == "xroot" -o "x$who" == "x$user" ]; then
+            echo -n "Shutting down fbmuck for $name: "
+            if [ -f $path/$pidfile ]; then
+                pid=`cat $path/$pidfile`
+                if [ -d /proc/$pid ]; then
+                    kill $pid
+                    while [ ! -d /proc/$pid ]; do
+                        sleep 1
+                    done
+                fi
+                rm -f $path/$pidfile
+            fi
+            echo fbmuck
+        fi
+    done
+    ;;
   restart)
-	$0 stop
-	$0 start
-	;;
+    $0 stop
+    $0 start
+    ;;
   status)
-	cat /etc/fbmucks | \
-	grep -v '^[ 	]*#' |\
-	grep -v '^[ 	]*$' |\
-	while read name user path script ports; do
-		if [ "x$who" == "xroot" -o "x$who" == "x$user" ]; then
-			echo -n "fbmuck for $name "
-			if [ -f $path/$pidfile ]; then
-				pid=`cat $path/$pidfile`
-				if [ -d /proc/$pid ]; then
-					echo "is running. ($pid)"
-				else
-					echo "is not running."
-				fi
-			else
-				echo "is not running."
-			fi
-		fi
-	done
-	;;
+    cat /etc/fbmucks | \
+    grep -v '^[ 	]*#' |\
+    grep -v '^[ 	]*$' |\
+    while read name user path script ports; do
+        if [ "x$mucknames" != "x" ]; then
+            found=0
+            for muckname in $mucknames; do
+                if [ "x$muckname" == "x$name" ]; then
+                    found=1
+                fi
+            done
+            if [ $found == 0 ]; then
+                continue
+            fi
+        fi
+        if [ "x$who" == "xroot" -o "x$who" == "x$user" ]; then
+            echo -n "fbmuck for $name "
+            if [ -f $path/$pidfile ]; then
+                pid=`cat $path/$pidfile`
+                if [ -d /proc/$pid ]; then
+                    echo "is running. ($pid)"
+                else
+                    echo "is not running."
+                fi
+            else
+                echo "is not running."
+            fi
+        fi
+    done
+    ;;
   *)
-	echo "Usage: $0 {start|stop|restart|status}"
-	exit 1
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
 esac
 
 exit 0
+
