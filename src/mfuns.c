@@ -412,7 +412,7 @@ mfn_select(MFUNARGS)
 	 * This allows fast hits on LARGE lists.
 	 */
 
-	limit = 88;
+	limit = 18;
 	i = targval = atoi(argv[0]);
 	do {
 		ptr = get_list_item(player, obj, perms, pname, i--);
@@ -438,10 +438,11 @@ mfn_select(MFUNARGS)
 	*out++ = '\0';
 
 	i = targval;
+	bestname[0] = '\0';
 	bestval = 0;
 	baselen = strlen(origprop);
-	pname = next_prop_name(obj, propname, origprop);
 	for (; obj != NOTHING; obj = getparent(obj)) {
+		pname = next_prop_name(obj, propname, origprop);
 		while (pname && string_prefix(pname, origprop)) {
 			ptr = pname + baselen;
 			if (*ptr == '#') ptr++;
@@ -481,9 +482,13 @@ mfn_select(MFUNARGS)
 		}
 	}
 	
-	ptr = safegetprop_strict(player, bestobj, perms, bestname);
-	if (!ptr)
-		ABORT_MPI("SELECT", "Failed property read.");
+	if (*bestname) {
+		ptr = safegetprop_strict(player, bestobj, perms, bestname);
+		if (!ptr)
+			ABORT_MPI("SELECT", "Failed property read.");
+	} else {
+		ptr = "";
+	}
 	return ptr;
 }
 
