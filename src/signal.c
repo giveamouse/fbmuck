@@ -229,7 +229,7 @@ RETSIGTYPE sig_reap(int i)
 		log2file(LOG_ERR_FILE,"SIG_CHILD signal handler called with no pid!");
 	} else {
 		if (reapedpid == global_resolver_pid) {
-			log_status("resolver exited with status %d\m", status);
+			log_status("resolver exited with status %d\n", status);
 #ifndef DISKBASE
 		} else if(reapedpid == global_dumper_pid) {
 			log_status("dumper task exited with status %d\n", status);
