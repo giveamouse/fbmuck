@@ -79,7 +79,8 @@ int mcp_internal_parse(McpFrame * mfr, const char *in);
  *              McpVer minver,
  *              McpVer maxver,
  *              McpPkg_CB callback,
- *              void* context
+ *              void* context,
+ *              ContextCleanup_CB cleanup
  *          );
  *
  *
@@ -87,7 +88,7 @@ int mcp_internal_parse(McpFrame * mfr, const char *in);
 
 void
 mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_CB callback,
-					 void *context)
+					 void *context, ContextCleanup_CB cleanup)
 {
 	McpPkg *new = (McpPkg *) malloc(sizeof(McpPkg));
 
@@ -97,6 +98,7 @@ mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_C
 	new->maxver = maxver;
 	new->callback = callback;
 	new->context = context;
+	new->cleanup = cleanup;
 
 	mcp_package_deregister(pkgname);
 	new->next = mcp_PackageList;
@@ -125,6 +127,8 @@ mcp_package_deregister(const char *pkgname)
 
 	while (ptr && !strcmp_nocase(ptr->pkgname, pkgname)) {
 		mcp_PackageList = ptr->next;
+		if (ptr->cleanup)
+			ptr->cleanup(ptr->context);
 		if (ptr->pkgname)
 			free(ptr->pkgname);
 		free(ptr);
@@ -138,6 +142,8 @@ mcp_package_deregister(const char *pkgname)
 	while (ptr) {
 		if (!strcmp_nocase(pkgname, ptr->pkgname)) {
 			prev->next = ptr->next;
+			if (ptr->cleanup)
+				ptr->cleanup(ptr->context);
 			if (ptr->pkgname)
 				free(ptr->pkgname);
 			free(ptr);
@@ -184,10 +190,10 @@ mcp_initialize()
 
 	/* McpVer twoone = {2,1}; */
 
-	mcp_package_register(MCP_NEGOTIATE_PKG, oneoh, twooh, mcp_negotiate_handler, NULL);
-	mcp_package_register("org-fuzzball-notify", oneoh, oneoh, mcppkg_simpleedit, NULL);
-	mcp_package_register("org-fuzzball-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL);
-	mcp_package_register("dns-org-mud-moo-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL);
+	mcp_package_register(MCP_NEGOTIATE_PKG, oneoh, twooh, mcp_negotiate_handler, NULL, NULL);
+	mcp_package_register("org-fuzzball-notify", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
+	mcp_package_register("org-fuzzball-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
+	mcp_package_register("dns-org-mud-moo-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
 }
 
 
@@ -1558,6 +1564,9 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.5  2000/07/07 09:23:11  revar
+* Fixed microscopic memory leak with re-registering MCP package handlers.
+*
 * Revision 1.4  2000/04/30 11:03:30  revar
 * Fixed MCP crasher bug when client fails to send authentication key.
 *

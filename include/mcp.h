@@ -49,6 +49,8 @@ typedef void (*McpPkg_CB) (struct McpFrame_T * mfr,
 
 						   McpMesg * mesg, McpVer version, void *context);
 
+typedef void (*ContextCleanup_CB) (void *context);
+
 
 
 /* This is used to keep track of registered packages. */
@@ -58,6 +60,7 @@ typedef struct McpPkg_T {
 	McpVer maxver;				/* max supported version number */
 	McpPkg_CB callback;			/* function to call with mesgs */
 	void *context;				/* user defined callback context */
+	ContextCleanup_CB cleanup;  /* callback to use to free context */
 	struct McpPkg_T *next;
 } McpPkg;
 
@@ -292,7 +295,7 @@ typedef struct McpFrame_T {
 void mcp_initialize();
 
 void mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver,
-						  McpPkg_CB callback, void *context);
+						  McpPkg_CB callback, void *context, ContextCleanup_CB cleanup);
 void mcp_package_deregister(const char *pkgname);
 
 void mcp_frame_init(McpFrame * mfr, connection_t con);

@@ -35,7 +35,7 @@ gui_initialize()
 {
 	McpVer oneoh = { 1, 0 };
 
-	mcp_package_register(GUI_PACKAGE, oneoh, oneoh, gui_pkg_callback, NULL);
+	mcp_package_register(GUI_PACKAGE, oneoh, oneoh, gui_pkg_callback, NULL, NULL);
 }
 
 

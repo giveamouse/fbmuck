@@ -31,6 +31,15 @@ struct mcp_muf_context {
 
 
 void
+muf_mcp_context_cleanup(void *context)
+{
+	struct mcp_muf_context* mmc = (struct mcp_muf_context*)context;
+
+	free(mmc);
+}
+
+
+void
 muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 {
 	struct mcp_muf_context* mmc = (struct mcp_muf_context*)context;
@@ -107,6 +116,15 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 struct mcpevent_context {
 	int pid;
 };
+
+
+void
+mcpevent_context_cleanup(void *context)
+{
+	struct mcpevent_context* mec = (struct mcpevent_context*)context;
+
+	free(mec);
+}
 
 
 void
@@ -298,11 +316,10 @@ prim_mcp_register(PRIM_PROTOTYPE)
 	vermax.vermajor = (int) oper3->data.fnumber;
 	vermax.verminor = (int) (oper3->data.fnumber * 1000) % 1000;
 
-	/* WORK: This creates a very very minor memory leak on re-registering handlers. */
 	mmc = (struct mcp_muf_context*)malloc(sizeof(struct mcp_muf_context));
 	mmc->prog = program;
 
-	mcp_package_register(pkgname, vermin, vermax, muf_mcp_callback, (void *) mmc);
+	mcp_package_register(pkgname, vermin, vermax, muf_mcp_callback, (void *) mmc, muf_mcp_context_cleanup);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -344,11 +361,10 @@ prim_mcp_register_event(PRIM_PROTOTYPE)
 	vermax.vermajor = (int) oper3->data.fnumber;
 	vermax.verminor = (int) (oper3->data.fnumber * 1000) % 1000;
 
-	/* WORK: This creates a very very minor memory leak on re-registering handlers. */
 	mec = (struct mcpevent_context*)malloc(sizeof(struct mcpevent_context));
 	mec->pid = fr->pid;
 
-	mcp_package_register(pkgname, vermin, vermax, muf_mcp_event_callback, (void *)mec);
+	mcp_package_register(pkgname, vermin, vermax, muf_mcp_event_callback, (void *)mec, mcpevent_context_cleanup);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
