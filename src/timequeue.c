@@ -750,7 +750,7 @@ dequeue_prog(dbref program, int sleeponly)
 		}
 	}
 	if (sleeponly == 1 || sleeponly == 0) {
-		// treat MUF_EVENT processes as backgrounded.
+		/* treat MUF_EVENT processes as backgrounded. */
 		count += muf_event_dequeue(program);
 	}
 	for (ptr = tqhead; ptr; ptr = ptr->next) {
