@@ -844,14 +844,14 @@ GETLINK|
 getlink ( d -- d' )
 Returns what object d is linked to, or #-1 if d is unlinked.  The
 interpretation of link depends on the type of d: for an exit, returns
-the room, player, program, action, or thing that the exit is linked
-to.  For a player, program, or thing, it returns its `home', and for
+the room, player, action, or thing that the exit is linked
+to.  For a player or thing, it returns its `home', and for
 rooms returns the drop-to.
 ~
 GETLINKS|
 getlinks ( d -- dn..d1 n )
-Returns what objects d is metalinked to.  If d is an unlinked exit,
-a program, or a room with no dropto, getlinks returns 0.  A count of
+Returns what objects d is metalinked to.  If d is an unlinked exit
+or a room with no dropto, getlinks returns 0.  A count of
 1 and #-3 is returned if the dropto is linked to HOME.
 ~
 GETPROP|
