@@ -67,8 +67,10 @@ Added four new data entries to USER muf event contexts sent by SEND_EVENT.
   "player" contains the dbref of the player that ran the sending program.
   "prog_uid" contains the dbref of the player used for permissions in the
   sending program.
-
-
+Setting a program VEHICLE (VIEWABLE) allows it to be @listed (LINK_OK is
+  no longer checked)
+Added BLESSED? (d s -- i) muf prim: given an object and a property string,
+  returns a boolean telling if that property is blessed.
 
 2.2fb6.00b1
 Fixed STOD to allow for trailing spaces after a number argument.
