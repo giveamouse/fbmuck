@@ -2,6 +2,10 @@
 
 /*
  * $Log: player.c,v $
+ * Revision 1.3  2001/04/02 10:42:49  winged
+ * Making the change-password error messages more informative -- "Sorry"
+ * doesn't quite cut it. :P
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -135,9 +139,9 @@ void
 do_password(dbref player, const char *old, const char *newobj)
 {
 	if (!PLAYER_PASSWORD(player) || strcmp(old, PLAYER_PASSWORD(player))) {
-		notify(player, "Sorry");
+		notify(player, "Sorry, old password did not match current password.");
 	} else if (!ok_password(newobj)) {
-		notify(player, "Bad new password.");
+		notify(player, "Bad new password (no spaces allowed).");
 	} else {
 		free((void *) PLAYER_PASSWORD(player));
 		PLAYER_SET_PASSWORD(player, alloc_string(newobj));
