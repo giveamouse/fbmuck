@@ -68,23 +68,6 @@ log_status(char *format, ...)
 }
 
 void
-log_conc(char *format, ...)
-{
-	va_list args;
-	FILE *conclog;
-
-	va_start(args, format);
-	if ((conclog = fopen(LOG_CONC, "a")) == NULL) {
-		fprintf(stderr, "Unable to open %s!\n", LOG_CONC);
-		vfprintf(stderr, format, args);
-	} else {
-		vfprintf(conclog, format, args);
-		fclose(conclog);
-	}
-	va_end(args);
-}
-
-void
 log_muf(char *format, ...)
 {
 	va_list args;
