@@ -83,6 +83,8 @@ LINTFLAGS= -I${INCLUDE}
 
 ANNSRC= announce.c
 
+ANNOBJ= announce.o
+
 MISCSRC= Makefile ChangeLog COPYING mkversion.sh
 
 CSRC= array.c boolexp.c compile.c compress.c create.c db.c \
@@ -140,15 +142,20 @@ resolver:	resolver.o ${LOBJ}
 
 extract: ${P} extract.o ${EOBJ} ${LOBJ}
 	 ${RM} extract
-	 ${CC} ${CFLAGS} -o extract ${EOBJ} extract.o ${LOBJ}
+	 ${CC} ${CFLAGS} -o extract ${EOBJ} extract.o ${LIBR} ${LOBJ}
 
 topwords: topwords.o hashtab.o
 	${RM} topwords
-	${CC} ${CFLAGS} -o topwords topwords.o hashtab.o
+	${CC} ${CFLAGS} -o topwords topwords.o hashtab.o ${LIBR}
 
 olddecompress: olddecomp.o oldcompress.o ${LOBJ}
 	${RM} olddecompress
-	${CC} ${CFLAGS} -o olddecompress olddecomp.o oldcompress.o ${LOBJ}
+	${CC} ${CFLAGS} -o olddecompress olddecomp.o oldcompress.o ${LIBR} \
+	 ${LOBJ}
+
+announce: ${ANNOBJ} ${LOBJ}
+	${MV} announce announce~
+	${CC} ${ANNOBJ} -o announce ${LIBR} ${LOBJ}
 
 #############################################################
 # Funky stuff for debugging and coding work.
@@ -186,7 +193,7 @@ depend:
 #
 
 clean:
-	${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} resolver.o ${TARGETS} ${OLDTARGETS}
+	${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${ANNOBJ} resolver.o ${TARGETS} ${OLDTARGETS}
 
 cleaner: clean
 	${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp
