@@ -1327,30 +1327,32 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 	new = new_array_packed(0);
 	rawstr = get_property_class(ref, dir);
 
-	while (isspace(*rawstr))
-		rawstr++;
-	while (*rawstr) {
-		if (*rawstr == '#')
-			rawstr++;
-		if (!isdigit(*rawstr))
-			break;
-		result = atoi(rawstr);
-		while (*rawstr && !isspace(*rawstr))
-			rawstr++;
+	if (rawstr) {
 		while (isspace(*rawstr))
 			rawstr++;
+		while (*rawstr) {
+			if (*rawstr == '#')
+				rawstr++;
+			if (!isdigit(*rawstr))
+				break;
+			result = atoi(rawstr);
+			while (*rawstr && !isspace(*rawstr))
+				rawstr++;
+			while (isspace(*rawstr))
+				rawstr++;
 
-		temp1.type = PROG_INTEGER;
-		temp1.data.number = count;
+			temp1.type = PROG_INTEGER;
+			temp1.data.number = count;
 
-		temp2.type = PROG_OBJECT;
-		temp2.data.number = result;
+			temp2.type = PROG_OBJECT;
+			temp2.data.number = result;
 
-		array_setitem(&new, &temp1, &temp2);
-		count++;
+			array_setitem(&new, &temp1, &temp2);
+			count++;
 
-		CLEAR(&temp1);
-		CLEAR(&temp2);
+			CLEAR(&temp1);
+			CLEAR(&temp2);
+		}
 	}
 
 	PushArrayRaw(new);
@@ -1378,6 +1380,8 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 		abort_interp("Invalid dbref. (1)");
 	if (oper2->type != PROG_STRING)
 		abort_interp("String required. (2)");
+	if (!oper2->data.string)
+		abort_interp("Non-null string required. (2)");
 	if (oper3->type != PROG_ARRAY)
 		abort_interp("Argument must be a list array of dbrefs. (3)");
 	if (oper3->data.array && oper3->data.array->type != ARRAY_PACKED)
@@ -1389,6 +1393,9 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 	strcpy(dir, DoNullInd(oper2->data.string));
 	arr = oper3->data.array;
 	buf[0] = '\0';
+
+	if (!prop_write_perms(ProgUID, ref, dir, mlev))
+		abort_interp("Permission denied.");
 
 	out = buf;
 	if (array_first(arr, &temp1)) {
@@ -1406,9 +1413,7 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 		} while (array_next(arr, &temp1));
 	}
 
-	if (!prop_write_perms(ProgUID, ref, dir, mlev))
-		abort_interp("Permission denied while trying to set protected property.");
-
+	remove_property(ref, dir);
 	propdat.flags = PROP_STRTYP;
 	propdat.data.str = buf;
 	set_property(ref, dir, &propdat);
