@@ -2,6 +2,10 @@
 
 /*
  * $Log: create.c,v $
+ * Revision 1.7  2002/03/24 12:33:53  points
+ * Moved money check to after all source/dest and name checks to make sure a
+ * player is not charged for an exit until after it will actually be created.
+ *
  * Revision 1.6  2001/11/09 17:56:05  revar
  * Fixed uninitialized program instance count in @prog.
  * Changed ANSI code handling to use ^[[0m instead of ^[[m at EOL for resetting.
@@ -1045,12 +1049,13 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 	} else if (!ok_name(action_name)) {
 		notify(player, "That's a strange name for an action!");
 		return;
-	} else if (!payfor(player, tp_exit_cost)) {
-		notify_fmt(player, "Sorry, you don't have enough %s to make an action.", tp_pennies);
-		return;
 	}
 	if (((source = parse_source(descr, player, qname)) == NOTHING))
 		return;
+        if (!payfor(player, tp_exit_cost)) {
+                notify_fmt(player, "Sorry, you don't have enough %s to make an action.", tp_pennies);
+                return;
+        }
 
 	action = new_object();
 
