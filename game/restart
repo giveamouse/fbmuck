@@ -79,10 +79,10 @@ PIDFILE="$GAMEDIR/netmuck.pid"
 
 if [ -x /usr/ucb/ps ]; then
 	PS="/usr/ucb/ps x"
-elif [ "x`uname -s`" = "xSunOS" -a `uname -r | cut -d . -f 1` -ge 5 ]; then
-	PS="ps -e"
-else
+elif ps x >> /dev/null 2>&1 ; then
 	PS="ps x"
+else
+	PS="ps -e"
 fi
 
 cd $GAMEDIR
