@@ -1161,7 +1161,9 @@ AWAKE
 {awake:player}
     Returns how many times player is connected.  This means that it will
 returns 0 if the player is not connected.  If the given object is NOT a
-player, it will return 0.  In all other cases, it will return a positive
+player, it will return 0.  If the given player is NOT local to the trigger,
+and is not the owner of the trigger, and this is not run with blessed perms,
+then this will return 0.  In all other cases, it will return a positive
 number, being how many times the given player is connected to the server.
 ~
 ~

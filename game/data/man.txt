@@ -581,8 +581,12 @@ onto the stack.
 ~
 CALL|
 call ( d -- ?? )
-Calls another program d.  d must have been compiled already. d will
-inherit the values of ME, LOC, TRIGGER, and all other variables.
+call ( d s -- ?? )
+Calls another program d.  Program d will inherit the values of ME, LOC,
+TRIGGER, and all other global variables.  If used in the second form,
+this will call the named PUBLIC function s in the given program d.
+The called program will NOT share the same localvars as the caller,
+unless the caller is calling itself.
 ~
 CEIL|
 ceil ( f - f )
