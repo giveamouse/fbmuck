@@ -1,3 +1,10 @@
+2.2fb6.00a33
+Changed the restart script to look for netmuck in /usr/local/fbmuck/bin/
+Changed netmuck to also look in /usr/local/fbmuck/bin/ for the resolver.
+Changed 'make install' to install the binaries to /usr/local/fbmuck/bin/
+
+
+
 2.2fb6.00a32
 Fixed more minor 64-bit compatability bugs with regards to time() calls.
 Fixed problem with loading an older db leaving users in insert mode.
