@@ -3638,8 +3638,8 @@ unrecognized flags.
 a program's READ, or if they are in the MUF editor.
 The "Truewizard" flag will check for a W flag with or without the QUELL set.
 The "Mucker" flag returns the most significant bit of the mucker level and
-the "Nucker" flag returns the least significant bit. (Use MLEV instead.)
-~~alsosee SET,MLEV
+the "Nucker" flag returns the least significant bit. (Use MLEVEL instead.)
+~~alsosee SET,MLEVEL
 ~
 ~
 MLEVEL

@@ -136,6 +136,7 @@ whisper      who
 ~
 ~
 ~
+~
 STARTINGOUT|STARTING_OUT|STARTING OUT
 The word 'me' refers to yourself. Some things to do when starting out:
 1) give yourself a description with "@describe me=<description>", then
@@ -147,7 +148,7 @@ Also see: @DESC, LOOK, @LOCK, ROB, @SET and GENDER
 ~
 ~
 SAY
-"<mesage>
+"<message>
 SAY <message>
 
   Says <message> out loud to everyone in the room.  If your name is Igor,
@@ -182,6 +183,8 @@ message pages.
 
   Note: Most systems use a MUF program with a global 'page' action, which
 takes the place of the built-in 'page' command, and has more features.
+Usually, you can see the extra features of this MUF page program by using
+the command 'page #help'.
 Also see: SAY, POSE and WHISPER
 ~
 ~
