@@ -1112,6 +1112,8 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	cstat.currpubs = NULL;
 	cstat.nested_fors = 0;
 	cstat.nested_trys = 0;
+	cstat.addrcount = 0;
+	cstat.addrmax = 0;
 	for (i = 0; i < MAX_VAR; i++) {
 		cstat.variables[i] = NULL;
 		cstat.variabletypes[i] = 0;
