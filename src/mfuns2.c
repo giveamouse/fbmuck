@@ -1604,17 +1604,20 @@ mfn_lmember(MFUNARGS)
 	/* {lmember:list,item,delim} */
 	int i = 1;
 	char *ptr = argv[0];
+	char *delim = NULL;
 	int len;
 	int len2 = strlen(argv[1]);
 
 	if (argc < 3)
-		strcpy(argv[2], "\r");
-	if (!*argv[2])
+		delim = "\r";
+	else
+		delim = argv[2];
+	if (!*delim)
 		ABORT_MPI("LMEMBER", "List delimiter cannot be a null string.");
-	len = strlen(argv[2]);
+	len = strlen(delim);
 	while (*ptr && !(string_prefix(ptr, argv[1]) &&
-					 (!ptr[len2] || string_prefix(ptr + len2, argv[2])))) {
-		while (*ptr && !string_prefix(ptr, argv[2]))
+					 (!ptr[len2] || string_prefix(ptr + len2, delim)))) {
+		while (*ptr && !string_prefix(ptr, delim))
 			ptr++;
 		if (*ptr)
 			ptr += len;
