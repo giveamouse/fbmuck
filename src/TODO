@@ -4,18 +4,12 @@ These items are mandatory for FB6 release.  The number prefix is priority.
   1 Change @bless and @unbless to allow specifying possible multiple props via
       an smatch wildcard argument.  Should list all props thusly blessed.
 
-  2 Add memory usage based limits on MUF progs.
-  2 Update documentation.
+  2 Update documentation.  (Especially the muf prim index.)
 
   3 Integrate multiple listener ports mods.
-  3 Fix compression bugs, or implement new compression schema.
 
-  4 Modify array code to allow floats and dbrefs as indexes.
-  4 WATCHPROP (d s -- ) Specifies that this process wants to recieve an event
-      when the given property on the given object is set, deleted, or changed.
-      The event received will have an ID of "PROPCHANGE.#dbref.propname" where
-      the dbref and the property name will be replaced by those of the property
-      you specified.
+  4 Fix compression bugs, or implement new compression schema.
+  4 Add memory usage based limits on MUF progs.
 
 
 These items may be considered to be optional for release:
@@ -37,6 +31,13 @@ These items may be considered to be optional for release:
   CORD_OPEN  (          intDescr strType -- strCordID)
   CORD_SEND  (strCordID strName dictData -- )
   CORD_CLOSE (                 strCordID -- )
+
+  Modify array code to allow floats and dbrefs as indexes.
+  WATCHPROP (d s -- ) Specifies that this process wants to recieve an event
+    when the given property on the given object is set, deleted, or changed.
+    The event received will have an ID of "PROPCHANGE.#dbref.propname" where
+    the dbref and the property name will be replaced by those of the property
+    you specified.
 
 
 

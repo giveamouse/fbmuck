@@ -63,24 +63,24 @@ Added ARRAY_SORT (arrData intSortType -- arrSortedData) muf primitive.  This
 Added TRY-CATCH-ENDCATCH exception handling.
   TRY ( i -- ) locks all but the top i stack items, so that any attempt to pop
     or change them will throw an error.  Any errors thrown inside a TRY-CATCH
-	block will jump execution immediately to the CATCH.
+    block will jump execution immediately to the CATCH.
   CATCH ( -- s ) denotes the start of exception handling code.  If an error is
     thrown in the TRY-CATCH block, then execution will jump immediately to this
-	primitive.  If no error was thrown in the TRY-CATCH block, then the code in
-	the CATCH-ENDCATCH block will not be executed.  This primitive will pop off
-	all stack items not locked by the TRY, and then unlocks the stack.  The
-	string error message that was thrown will be pushed onto the stack.
+    primitive.  If no error was thrown in the TRY-CATCH block, then the code in
+    the CATCH-ENDCATCH block will not be executed.  This primitive will pop off
+    all stack items not locked by the TRY, and then unlocks the stack.  The
+    string error message that was thrown will be pushed onto the stack.
   ENDCATCH ( -- ) denotes the end of the CATCH block.
   The ABORT ( s -- ) primitive can be used to throw arbitrary errors.
   An example of using the TRY-CATCH-ENDCATCH structure is:
     : get_a_prop ( d s -- s )
-	    2 TRY
-		    getpropstr
-		catch
-		    pop (We got an error trying to read the prop.  Ignore it.)
-			""
-		endcatch
-	;
+        2 TRY
+            getpropstr
+        catch
+            pop (We got an error trying to read the prop.  Ignore it.)
+            ""
+        endcatch
+    ;
 Added FINDNEXT ( d1 d2 s1 s2 -- d' ) muf primitive.  Searches for the next
   object in the database _after_ d1 that is owned by d2, whose name matches
   the wildcard pattern s1, and whose flags match those specified by s2.
@@ -93,11 +93,11 @@ Added FINDNEXT ( d1 d2 s1 s2 -- d' ) muf primitive.  Searches for the next
   no more objects in the database that might match all the search criteria,
   then #-1 is returned.  Otherwise, the next matching object is returned.
   This is used similarly to the NEXT primitive.  Ex:
-	#-1 begin
-		me @ "*.muf" "F" FINDNEXT
-		dup while
-		dup unparseobj .tell
-	repeat
+    #-1 begin
+        me @ "*.muf" "F" FINDNEXT
+        dup while
+        dup unparseobj .tell
+    repeat
 Added REFLIST_ADD ( d1 s1 d2 -- ) muf primitive.  Adds dbref d2 to the reflist
   in property s1 on object d1.  If d2 is already in the list, it is moved to
   the end of the reflist.
@@ -453,126 +453,126 @@ Added the ability to print the contents of scoped vars in the muf debugger.
 Added the WIZCALL MUF keyword.  Used like the PUBLIC keyword, but the calling
   program requires wizbit permissions to call the function.
 Added the following MUF primitives:
-	CANCALL?  (d s -- i)
-		Will return true if the given program has a public or wizcall function
-		that the current program has permissions to call.  Returns false,
-		otherwise.
-	ONLINE_ARRAY  ( -- a)
-		This is the same as the ONLINE primitive, except it returns a single
-		stack item which is an array of dbrefs instead of pushing every dbref
-		separately onto the stack.
-	DESCR_ARRAY  (d -- a)
-		This returns an array of descriptors that are associated with the
-		given dbref.  This is effectively the same as the sequence
-		'descriptors array_make'.
-	{  ( -- mark)
-		Pushes a marker onto the stack, for use with the }, }LIST, and }DICT
-		commands.
-	}  ( mark ?n ... ?1 -- ?n ... ?1 i )
-		Returns the count of how many stack items exist between the topmost
-		stack marker and the top of the stack.  That stack marker is removed
-		from the stack, and the count is pushed onto the top of the stack.
-		This is useful for automatically counting a number of static strings,
-		and other such things.
-	}LIST  ( mark ?n ... ?i -- array )
-		MUF primitive.  This takes all the stack items above the topmost stack
-		marker, and makes a list from them, a la array_make.  In fact, this is
-		implemented as an inserver macro with a definition of '} array_make'.
-	}DICT  ( mark @n ?n ... @1 ?1 -- dict )
-		This takes all the pairs of names (@s) and values (?s) between the
-		top of the stack and the topmost stack marker, and makes them into
-		a dictionary, a la the array_make_dict primitive.  In fact, this is
-		implemented as an inserver macro with a definition of
-		'} 2 / array_make_dict'.
-	DESCR  ( -- i)
-		Returns the connection descriptor that invoked the currently running
-		program.  This may return -1 for some listener or autostart programs.
-	TOKENSPLIT  (strString strDelim strEscape -- strPre strPost strChar)
-		Searches strString for the first character that matches any character
-		in strDelim, so long as it is not escaped by the character passed in
-		strEscape.  Returns the unescaped string before the found character,
-		the raw string after that character, and the character that was found.
-	GUI_AVAILABLE  (intDescr -- fltVersion)
-		Returns the floating point version number of the MCP GUI protocol
-		supported by the given descriptor's connection.  The version is
-		encoded in the number such that major version 8, minor version 12
-		is represented as 8.012.  If the MCP protocol is not available on
-		that descriptor, then 0.0 is returned.
-	GUI_DLOG_SIMPLE  (intDescr strTitle -- strDlogID)
-		If a user has a client that can support the MCP GUI protocol, then
-		this primitive can be used to generate a simple dialog on their
-		screen.  By "simple" I mean just an empty window with no controls.
-		The intDescr argument specifies what connection descriptor to
-		create the dialog for (ie: what user's screen to show it on), and
-		the strTitle arg specifies what the title of the dialog will be.
-		This returns a string containing the dialogid, used by other prims
-		to add controls or make various changes.  This dialog will be hidden
-		and not shown to the user until it has been displayed with the
-		GUI_DLOG_SHOW command.
-	GUI_DLOG_TABBED  (intDescr strTitle dictPages -- strDlogID)
-		If a user has a client that can support the MCP GUI protocol, then
-		this primitive can be used to generate a tabbed dialog on their
-		screen.  By "tabbed" I mean a window with a tabbed notebook, similar
-		to Win95 "property sheets", with three standard buttons at the bottom.
-		The standard buttons return values of "_ok", "_cancel", and "_apply".
-		The intDescr argument specifies what connection descriptor to create
-		the dialog for (ie: what user's screen to show it on).  The strTitle
-		arg specifies what the title of the dialog will be.  The dictPages
-		argument is a dictionary array of page ids and display names to be
-		created.  (ids as dictionary keys, display names as vals) This prim
-		returns a string containing the dialogid, used by other prims to add
-		controls or make various changes.  When you create a new control, you
-		can specify which page to put it in by passing a pageid in as the
-		value of the "pane" argument.  This dialog will be hidden and not
-		shown to the user until it has been displayed with the GUI_DLOG_SHOW
-		command.
-	GUI_DLOG_HELPER  (intDescr strTitle dictPages -- strDlogID)
-		If a user has a client that can support the MCP GUI protocol, then
-		this primitive can be used to generate a helper dialog on their
-		screen.  By "helper" I mean a dialog similar to a Win95 wizard dialog.
-		The standard buttons return values of "_cancel", and "_finish".
-		The intDescr argument specifies what connection descriptor to
-		create the dialog for (ie: what user's screen to show it on), and
-		the strTitle arg specifies what the title of the dialog will be.
-		The dictPages argument is a dictionary array of page ids and display
-		names to be created.  (ids as dictionary keys, display names as vals)
-		This returns a string containing the dialogid, used by other prims
-		to add controls or make various changes.  When you create a new
-		control, you can specify which page to put it in by passing a pageid
-		in as the value of the "pane" argument.  This dialog will be hidden
-		and not shown to the user until it has been displayed with the
-		GUI_DLOG_SHOW command.
-	GUI_DLOG_SHOW  (strDlogID -- )
-		Forces a given dialog to be shown to the user.  The strDlogId is what
-		was returned by the GUI_DLOG_CREATE (or similar) command.
-	GUI_DLOG_CLOSE  (strDlogID -- )
-		Forces a given dialog to be closed and destroyed.  The strDlogId is
-		what was returned by the GUI_DLOG_CREATE (or similar) command.
-	GUI_CTRL_CREATE  (strDlogID strType strCtrlID dictArgs -- )
-		Creates a new control in a given dialog.  strDlogID contains the
-		dlogid returned from a GUI_DLOG_SIMPLE (or similar) command.  strType
-		contains the control type.  To make debugging easier and faster,
-		MUF $defs have been provided for each control type.  They are:
-		C_DATUM, C_LABEL, C_HRULE, C_VRULE, C_BUTTON, C_CHECKBOX, C_EDIT,
-		C_MULTIEDIT, C_COMBOBOX, C_SPINNER, C_SCALE, C_LISTBOX, C_FRAME,
-		and C_NOTEBOOK.  If you use these instead of the actual type name
-		strings, then if you mistype one, it will throw an error when trying
-		to compile, instead of when you try to run it.  The strCtrlID arg
-		is the id to give the control, for use in reading the values back
-		later, or modifying the control.  dictArgs is used to pass any other
-		arguments needed to create the control.  This will be used by almost
-		all controls.  It is a dictionary array that contains argnames as
-		keys, each with an argument value.
-	GUI_VALUES_GET   (strDlogID -- dictValues)
-		Returns a dictionary containing all the control values for the given
-		dialog.  The keys are the control ids.
-	GUI_VALUE_SET    (strDlogID strCtrlID strValue -- )
-		Sets the value of a given control in a given dialog.
-	EVENT_WAIT       ( -- dictContext eventID)
-		Waits for an event to occur, pausing the MUF program.  Currently, the
-		only events are GUI events.  GUI events have eventID strings that are
-		created by prepending "GUI." to the dlogID of the dialog that generated
-		the event.
+    CANCALL?  (d s -- i)
+        Will return true if the given program has a public or wizcall function
+        that the current program has permissions to call.  Returns false,
+        otherwise.
+    ONLINE_ARRAY  ( -- a)
+        This is the same as the ONLINE primitive, except it returns a single
+        stack item which is an array of dbrefs instead of pushing every dbref
+        separately onto the stack.
+    DESCR_ARRAY  (d -- a)
+        This returns an array of descriptors that are associated with the
+        given dbref.  This is effectively the same as the sequence
+        'descriptors array_make'.
+    {  ( -- mark)
+        Pushes a marker onto the stack, for use with the }, }LIST, and }DICT
+        commands.
+    }  ( mark ?n ... ?1 -- ?n ... ?1 i )
+        Returns the count of how many stack items exist between the topmost
+        stack marker and the top of the stack.  That stack marker is removed
+        from the stack, and the count is pushed onto the top of the stack.
+        This is useful for automatically counting a number of static strings,
+        and other such things.
+    }LIST  ( mark ?n ... ?i -- array )
+        MUF primitive.  This takes all the stack items above the topmost stack
+        marker, and makes a list from them, a la array_make.  In fact, this is
+        implemented as an inserver macro with a definition of '} array_make'.
+    }DICT  ( mark @n ?n ... @1 ?1 -- dict )
+        This takes all the pairs of names (@s) and values (?s) between the
+        top of the stack and the topmost stack marker, and makes them into
+        a dictionary, a la the array_make_dict primitive.  In fact, this is
+        implemented as an inserver macro with a definition of
+        '} 2 / array_make_dict'.
+    DESCR  ( -- i)
+        Returns the connection descriptor that invoked the currently running
+        program.  This may return -1 for some listener or autostart programs.
+    TOKENSPLIT  (strString strDelim strEscape -- strPre strPost strChar)
+        Searches strString for the first character that matches any character
+        in strDelim, so long as it is not escaped by the character passed in
+        strEscape.  Returns the unescaped string before the found character,
+        the raw string after that character, and the character that was found.
+    GUI_AVAILABLE  (intDescr -- fltVersion)
+        Returns the floating point version number of the MCP GUI protocol
+        supported by the given descriptor's connection.  The version is
+        encoded in the number such that major version 8, minor version 12
+        is represented as 8.012.  If the MCP protocol is not available on
+        that descriptor, then 0.0 is returned.
+    GUI_DLOG_SIMPLE  (intDescr strTitle -- strDlogID)
+        If a user has a client that can support the MCP GUI protocol, then
+        this primitive can be used to generate a simple dialog on their
+        screen.  By "simple" I mean just an empty window with no controls.
+        The intDescr argument specifies what connection descriptor to
+        create the dialog for (ie: what user's screen to show it on), and
+        the strTitle arg specifies what the title of the dialog will be.
+        This returns a string containing the dialogid, used by other prims
+        to add controls or make various changes.  This dialog will be hidden
+        and not shown to the user until it has been displayed with the
+        GUI_DLOG_SHOW command.
+    GUI_DLOG_TABBED  (intDescr strTitle dictPages -- strDlogID)
+        If a user has a client that can support the MCP GUI protocol, then
+        this primitive can be used to generate a tabbed dialog on their
+        screen.  By "tabbed" I mean a window with a tabbed notebook, similar
+        to Win95 "property sheets", with three standard buttons at the bottom.
+        The standard buttons return values of "_ok", "_cancel", and "_apply".
+        The intDescr argument specifies what connection descriptor to create
+        the dialog for (ie: what user's screen to show it on).  The strTitle
+        arg specifies what the title of the dialog will be.  The dictPages
+        argument is a dictionary array of page ids and display names to be
+        created.  (ids as dictionary keys, display names as vals) This prim
+        returns a string containing the dialogid, used by other prims to add
+        controls or make various changes.  When you create a new control, you
+        can specify which page to put it in by passing a pageid in as the
+        value of the "pane" argument.  This dialog will be hidden and not
+        shown to the user until it has been displayed with the GUI_DLOG_SHOW
+        command.
+    GUI_DLOG_HELPER  (intDescr strTitle dictPages -- strDlogID)
+        If a user has a client that can support the MCP GUI protocol, then
+        this primitive can be used to generate a helper dialog on their
+        screen.  By "helper" I mean a dialog similar to a Win95 wizard dialog.
+        The standard buttons return values of "_cancel", and "_finish".
+        The intDescr argument specifies what connection descriptor to
+        create the dialog for (ie: what user's screen to show it on), and
+        the strTitle arg specifies what the title of the dialog will be.
+        The dictPages argument is a dictionary array of page ids and display
+        names to be created.  (ids as dictionary keys, display names as vals)
+        This returns a string containing the dialogid, used by other prims
+        to add controls or make various changes.  When you create a new
+        control, you can specify which page to put it in by passing a pageid
+        in as the value of the "pane" argument.  This dialog will be hidden
+        and not shown to the user until it has been displayed with the
+        GUI_DLOG_SHOW command.
+    GUI_DLOG_SHOW  (strDlogID -- )
+        Forces a given dialog to be shown to the user.  The strDlogId is what
+        was returned by the GUI_DLOG_CREATE (or similar) command.
+    GUI_DLOG_CLOSE  (strDlogID -- )
+        Forces a given dialog to be closed and destroyed.  The strDlogId is
+        what was returned by the GUI_DLOG_CREATE (or similar) command.
+    GUI_CTRL_CREATE  (strDlogID strType strCtrlID dictArgs -- )
+        Creates a new control in a given dialog.  strDlogID contains the
+        dlogid returned from a GUI_DLOG_SIMPLE (or similar) command.  strType
+        contains the control type.  To make debugging easier and faster,
+        MUF $defs have been provided for each control type.  They are:
+        C_DATUM, C_LABEL, C_HRULE, C_VRULE, C_BUTTON, C_CHECKBOX, C_EDIT,
+        C_MULTIEDIT, C_COMBOBOX, C_SPINNER, C_SCALE, C_LISTBOX, C_FRAME,
+        and C_NOTEBOOK.  If you use these instead of the actual type name
+        strings, then if you mistype one, it will throw an error when trying
+        to compile, instead of when you try to run it.  The strCtrlID arg
+        is the id to give the control, for use in reading the values back
+        later, or modifying the control.  dictArgs is used to pass any other
+        arguments needed to create the control.  This will be used by almost
+        all controls.  It is a dictionary array that contains argnames as
+        keys, each with an argument value.
+    GUI_VALUES_GET   (strDlogID -- dictValues)
+        Returns a dictionary containing all the control values for the given
+        dialog.  The keys are the control ids.
+    GUI_VALUE_SET    (strDlogID strCtrlID strValue -- )
+        Sets the value of a given control in a given dialog.
+    EVENT_WAIT       ( -- dictContext eventID)
+        Waits for an event to occur, pausing the MUF program.  Currently, the
+        only events are GUI events.  GUI events have eventID strings that are
+        created by prepending "GUI." to the dlogID of the dialog that generated
+        the event.
     []    (a @ -- ?)
         Defined to be the same as array_getitem
     [..]    (a @1 @2 -- a')
@@ -666,7 +666,7 @@ Changed the search restrictions for MPI _msgmacs/ macros.  Now when MPI
       Check the owner of the trigger.
       Check the Trigger itself.
       Check each object down the environment from the trigger that is
-	owned by the same player as the trigger.
+    owned by the same player as the trigger.
       Check #0.
 Changed mpi {store} permissions, to refuse to store props to properties
   under _msgmacs/ unless the mpi has wizardly permissions.
@@ -783,8 +783,8 @@ Added the following primitives:  (@ represents an index int, string, or float)
                                     starting at the given index.  Returns the
                                     resulting array.
   ARRAY_INSERTRANGE (a1 @ a2 -- a') Inserts items from array a2 into a1,
-				      starting at the given index.  Returns
-				      the resulting array.
+                      starting at the given index.  Returns
+                      the resulting array.
 
 
 
