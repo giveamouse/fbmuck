@@ -44,6 +44,18 @@ AC_SUBST(INC)
 AC_SUBST(SSLTOP)
 ])
 
+AC_ARG_WITH(lint,
+[  --with-lint[=lint_path]    use lint at lint_path, defaults to splint],
+[AC_DEFINE(LINT)
+if test "$withval" = yes; then
+  LINT=splint
+else
+  LINT=$withval
+fi
+AC_DEFINE(WITH_LINT)
+AC_SUBST(LINT)
+])
+
 dnl
 dnl Header files
 dnl

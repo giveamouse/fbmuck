@@ -92,7 +92,7 @@ CHMOD= chmod
 SRC_PREFIX=
 MKDEPEND= makedepend
 MAKE= make
-LINT= lint
+LINT= @LINT@
 MKTAGS= ctags
 # for RCS only
 GET= co
@@ -196,7 +196,7 @@ tags: ${CSRC} ${MSRC} ${MALLOBJ}
 
 lint: ${CSRC} ${MSRC} ${MALLOBJ}
 	-${RM} netmuck.lint
-	${LINT} ${LINTFLAGS} ${CSRC} ${MSRC} ${MALLOBJ} > netmuck.lint
+	-${LINT} ${LINTFLAGS} ${CSRC} ${MSRC} ${MALLSRC} > netmuck.lint
 
 ${SRC}:
 	${GET} $@
