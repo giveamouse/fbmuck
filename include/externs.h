@@ -60,12 +60,9 @@ extern int program_active(dbref program);
 /* from db.c */
 extern int number(const char *s);
 extern int ifloat(const char *s);
-extern void putproperties(FILE * f, int obj);
-extern void getproperties(FILE * f, int obj, const char *pdir);
 extern void free_line(struct line *l);
 extern void db_free_object(dbref i);
 extern void db_clear_object(dbref i);
-extern void macrodump(struct macrotable *node, FILE * f);
 extern void macroload(FILE * f);
 extern void free_prog_text(struct line *l);
 extern struct line *read_program(dbref i);

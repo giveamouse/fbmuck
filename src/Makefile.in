@@ -177,8 +177,7 @@ fbhelp: fbhelp.o ${MALLOBJ} Makefile
 	${CC} ${CFLAGS} ${INCL} ${DEFS} fbhelp.o -o fbhelp ${MALLOBJ}
 
 pcre:
-	gzip -d -c pcre-4.3.tar.gz | tar -xf -
-	mv pcre-4.3 pcre
+	gzip -d -c pcre.tar.gz | tar -xf -
 	cd pcre && ./configure --enable-static --enable-newline-is-cr
 
 libpcre.a: pcre

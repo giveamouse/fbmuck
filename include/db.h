@@ -716,10 +716,6 @@ extern struct shared_string *alloc_prog_string(const char *);
 
 extern dbref new_object(void);		/* return a new object */
 
-extern dbref getref(FILE *);	/* Read a database reference from a file. */
-
-extern void putref(FILE *, dbref);	/* Write one ref to the file */
-
 extern struct boolexp *getboolexp(FILE *);	/* get a boolexp */
 extern void putboolexp(FILE *, struct boolexp *);	/* put a boolexp */
 

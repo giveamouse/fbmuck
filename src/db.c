@@ -30,12 +30,7 @@ extern char *alloc_string(const char *);
 
 extern short db_conversion_flag;
 
-int number(const char *s);
-int ifloat(const char *s);
-void putproperties(FILE * f, int obj);
-void getproperties(FILE * f, int obj, const char *pdir);
-
-dbref
+static dbref
 getparent_logic(dbref obj)
 {
 	if (obj == NOTHING)
@@ -157,7 +152,7 @@ new_object(void)
 	return newobj;
 }
 
-void
+static void
 putref(FILE * f, dbref ref)
 {
 	if (fprintf(f, "%d\n", ref) < 0) {
@@ -178,7 +173,7 @@ putstring(FILE * f, const char *s)
 	}
 }
 
-void
+static void
 putproperties_rec(FILE * f, const char *dir, dbref obj)
 {
 	PropPtr pref;
@@ -204,7 +199,7 @@ putproperties_rec(FILE * f, const char *dir, dbref obj)
 was: void putproperties(FILE *f, PropPtr p)
  is: void putproperties(FILE *f, dbref obj)
 ***/
-void
+static void
 putproperties(FILE * f, dbref obj)
 {
 	putstring(f, "*Props*");
@@ -217,6 +212,7 @@ extern FILE *input_file;
 extern FILE *delta_infile;
 extern FILE *delta_outfile;
 
+/* FIXME: Never called from db.c, only game.c */
 void
 macrodump(struct macrotable *node, FILE * f)
 {
@@ -229,7 +225,8 @@ macrodump(struct macrotable *node, FILE * f)
 	macrodump(node->right, f);
 }
 
-char *
+/* FIXME: Only called from macroload */
+static char *
 file_line(FILE * f)
 {
 	char buf[BUFFER_LEN];
@@ -247,6 +244,7 @@ file_line(FILE * f)
 	return alloc_string(buf);
 }
 
+/* FIXME: Only called from macroload */
 void
 foldtree(struct macrotable *center)
 {
@@ -272,6 +270,7 @@ foldtree(struct macrotable *center)
 	}
 }
 
+/* FIXME: Only called from macroload */
 int
 macrochain(struct macrotable *lastnode, FILE * f)
 {
@@ -295,6 +294,7 @@ macrochain(struct macrotable *lastnode, FILE * f)
 	return (1 + macrochain(newmacro, f));
 }
 
+/* FIXME: Never called from db.c, only game.c */
 void
 macroload(FILE * f)
 {
@@ -507,7 +507,7 @@ do_peek(FILE * f)
 	return (peekch);
 }
 
-dbref
+static dbref
 getref(FILE * f)
 {
 	static char buf[BUFFER_LEN];
@@ -524,108 +524,36 @@ getref(FILE * f)
 	return (atol(buf));
 }
 
-static char xyzzybuf[BUFFER_LEN];
 static const char *
-getstring_noalloc(FILE * f)
+getstring(FILE * f)
 {
+	static char buf[BUFFER_LEN];
 	char *p;
 	char c;
 
-	if (fgets(xyzzybuf, sizeof(xyzzybuf), f) == NULL) {
-		xyzzybuf[0] = '\0';
-		return xyzzybuf;
-	}
+	if (fgets(buf, sizeof(buf), f) == NULL)
+		return alloc_string("");
 
-	if (strlen(xyzzybuf) == BUFFER_LEN - 1) {
+	if (strlen(buf) == BUFFER_LEN - 1) {
 		/* ignore whatever comes after */
-		if (xyzzybuf[BUFFER_LEN - 2] != '\n')
+		if (buf[BUFFER_LEN - 2] != '\n')
 			while ((c = fgetc(f)) != '\n') ;
 	}
-	for (p = xyzzybuf; *p; p++) {
+	for (p = buf; *p; p++) {
 		if (*p == '\n') {
 			*p = '\0';
 			break;
 		}
 	}
 
-	return xyzzybuf;
-}
-
-#define getstring(x) alloc_string(getstring_noalloc(x))
-
-/* returns true for numbers of form [ + | - ] <series of digits> */
-int
-number(const char *s)
-{
-	if (!s)
-		return 0;
-	while (isspace(*s))
-		s++;
-	if (*s == '+' || *s == '-')
-		s++;
-	if (!*s)
-		return 0;
-	for (; *s; s++)
-		if (*s < '0' || *s > '9')
-			return 0;
-	return 1;
-}
-
-/* returns true for floats of form  [+|-]<digits>.<digits>[E[+|-]<digits>] */
-int
-ifloat(const char *s)
-{
-	const char *hold;
-
-	if (!s)
-		return 0;
-	while (isspace(*s))
-		s++;
-	if (*s == '+' || *s == '-')
-		s++;
-	/* WORK: for when float parsing is improved.
-	 * if (!string_compare(s, "inf")) {
-	 * return 1;
-	 * }
-	 * if (!string_compare(s, "nan")) {
-	 * return 1;
-	 * }
-	 */
-	hold = s;
-	while ((*s) && (*s >= '0' && *s <= '9'))
-		s++;
-	if ((!*s) || (s == hold))
-		return 0;
-	if (*s != '.')
-		return 0;
-	s++;
-	hold = s;
-	while ((*s) && (*s >= '0' && *s <= '9'))
-		s++;
-	if (hold == s)
-		return 0;
-	if (!*s)
-		return 1;
-	if ((*s != 'e') && (*s != 'E'))
-		return 0;
-	s++;
-	if (*s == '+' || *s == '-')
-		s++;
-	hold = s;
-	while ((*s) && (*s >= '0' && *s <= '9'))
-		s++;
-	if (s == hold)
-		return 0;
-	if (*s)
-		return 0;
-	return 1;
+	return alloc_string(buf);
 }
 
 /*** CHANGED:
 was: PropPtr getproperties(FILE *f)
 now: void getproperties(FILE *f, dbref obj, const char *pdir)
 ***/
-void
+static void
 getproperties(FILE * f, dbref obj, const char *pdir)
 {
 	char buf[BUFFER_LEN * 3], *p;
@@ -783,7 +711,7 @@ read_program(dbref i)
 
 /* Reads in Foxen8 DB Formats */
 void
-db_read_object_foxen(FILE * f, struct object *o, dbref objno, int read_before)
+db_read_object(FILE * f, struct object *o, dbref objno, int read_before)
 {
 	int tmp, c, prop_flag = 0;
 	int j = 0;
@@ -984,7 +912,7 @@ db_read(FILE * f)
 			o = DBFETCH(thisref);
 			switch (db_load_format) {
 			case 10:
-				db_read_object_foxen(f, o, thisref, doing_deltas);
+				db_read_object(f, o, thisref, doing_deltas);
 				break;
 			default:
 				log2file("debug.log", "got to end of case for db_load_format");
