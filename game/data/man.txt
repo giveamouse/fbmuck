@@ -93,11 +93,11 @@ Connection Management:
   descrflush   conboot
   
 String Handling:
-  toupper    tolower     instring    rinstring  instr   rinstr   striplead
-  striptail  strip       unparseobj  strlen     strcat  strcut   subst
-  explode    textattr    pronoun_sub midstr     split   rsplit   fmtstring
-  ansi_strip ansi_strlen ansi_strcut tokensplit
-  
+  toupper    tolower    unparseobj  instring    rinstring   instr  rinstr
+  strlen     strcat     strcut      striplead   striptail   strip  subst
+  explode    textattr   pronoun_sub midstr      fmtstring   split  rsplit
+  tokensplit ansi_strip ansi_strlen ansi_strcut ansi_midstr
+                                                                
 Lock Handling:
   locked?   getlockstr   setlockstr   parselock   unparselock
   testlock  prettylock
