@@ -3,13 +3,14 @@
 # $Header$
 
 subdirs='src'
+RM=rm -f
 
-all:	
+all:	Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && make all; \
 	done
 
-install:
+install:	Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && make install; \
 	done
@@ -20,9 +21,23 @@ clean:
 	done
 
 cleaner:
+	${RM} Makefile config.status config.cache config.log
+	cp Makefile.cfg Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && make cleaner; \
 	done
+
+nuke:
+	${RM} Makefile config.status config.cache config.log
+	cp Makefile.cfg Makefile
+	for d in ${subdirs}; do \
+		cd $${d} && make nuke; \
+	done
+
+Makefile: Makefile.in
+	./configure
+	@echo Please re-run Make, as the Makefile was re-generated.
+	false
 
 #############################################################
 # Packaging stuff.

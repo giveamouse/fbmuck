@@ -213,16 +213,14 @@ clean:
 
 cleaner: clean
 	${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp
-	cp Makefile.cfg Makefile
 
 clobber: cleaner
 	${RM} tags *~ *.bak *.orig
 
 nuke:
 	${RM} ${OBJ} core version.o
-	${RM} ${TARGETS} tags *~ *.bak *.orig *.cpp
+	${RM} ${TARGETS} tags *~ *.bak *.orig
 	${RM} Makefile config.status ${INCLUDE}/autoconf.h
-	cp Makefile.cfg Makefile
 	-${CLEAN} *
 
 install: all
