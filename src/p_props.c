@@ -922,11 +922,11 @@ prim_parseprop(PRIM_PROTOTYPE)
 void
 prim_array_filter_prop(PRIM_PROTOTYPE)
 {
+	char pattern[BUFFER_LEN];
 	struct inst *in;
 	struct inst temp1;
 	stk_array *arr;
 	stk_array *nu;
-	char* pat;
 	char* prop;
 	const char* ptr;
 
@@ -951,7 +951,7 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 	nu = new_array_packed(0);
 	arr = oper1->data.array;
 	prop = DoNullInd(oper2->data.string);
-	pat = DoNullInd(oper3->data.string);
+	strcpy(pattern, DoNullInd(oper3->data.string));
 	if (array_first(arr, &temp1)) {
 		do {
 			in = array_getitem(arr, &temp1);
@@ -961,7 +961,7 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 				ptr = get_property_class(ref, prop);
 				if (ptr) {
 					strcpy(buf, ptr);
-					if (equalstr(buf, pat)) {
+					if (equalstr(pattern, buf)) {
 						array_appenditem(&nu, in);
 					}
 				}
