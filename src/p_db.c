@@ -189,8 +189,9 @@ prim_moveto(PRIM_PROTOTYPE)
 			if ((mlev < 3) && (!permissions(ProgUID, victim)
 							   || !permissions(ProgUID, dest)))
 				abort_interp("Permission denied.");
-			if (Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_THING &&
-				Typeof(dest) != TYPE_PLAYER) abort_interp("Bad destination object.");
+			if ((Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_THING &&
+				Typeof(dest) != TYPE_PLAYER) || dest == HOME)
+				abort_interp("Bad destination object.");
 			if (!unset_source(ProgUID, getloc(player), victim))
 				break;
 			set_source(ProgUID, victim, dest);
