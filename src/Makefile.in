@@ -122,7 +122,7 @@ CSRC= array.c boolexp.c compile.c create.c db.c debugger.c \
 	timequeue.c timestamp.c tune.c unparse.c utils.c wiz.c
 
 LSRC= copyright.c
-MSRC= reconst.c interface.c resolver.c
+MSRC= interface.c resolver.c
 
 
 COBJ= array.o boolexp.o compile.o create.o db.o debugger.o \
@@ -136,7 +136,7 @@ COBJ= array.o boolexp.o compile.o create.o db.o debugger.o \
 	timequeue.o timestamp.o tune.o unparse.o utils.o wiz.o
 
 LOBJ= copyright.o
-MOBJ= reconst.o interface.o resolver.o
+MOBJ= interface.o resolver.o
 
 
 SRC= ${MISCSRC} ${CSRC} ${LSRC} ${MSRC}
@@ -193,7 +193,7 @@ saber_src:
 	#load ${CFLAGS} ${INCL} ${DEFS} ${CSRC}
 
 saber_obj: ${CSRC} interface.o
-	#load ${OBJ} interface.o
+	#load ${COBJ} interface.o
 
 tags: ${CSRC} ${MSRC} ${MALLSRC}
 	${MKTAGS} ${CSRC} ${MALLSRC} interface.c ../include/*.h

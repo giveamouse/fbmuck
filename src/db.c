@@ -16,7 +16,6 @@
 struct object *db = 0;
 dbref db_top = 0;
 dbref recyclable = NOTHING;
-int db_load_format = 0;
 
 #ifndef DB_INITIAL_SIZE
 #  define DB_INITIAL_SIZE 10000
@@ -96,6 +95,61 @@ new_object(void)
 }
 
 void
+db_free_object(dbref i)
+{
+	struct object *o;
+
+	o = DBFETCH(i);
+	if (NAME(i))
+		free((void *) NAME(i));
+
+	if (o->properties) {
+		delete_proplist(o->properties);
+	}
+
+	if (Typeof(i) == TYPE_EXIT && o->sp.exit.dest) {
+		free((void *) o->sp.exit.dest);
+	} else if (Typeof(i) == TYPE_PLAYER) {
+		if (PLAYER_PASSWORD(i)) {
+			free((void *) PLAYER_PASSWORD(i));
+		}
+		if (PLAYER_DESCRS(i)) {
+			free(PLAYER_DESCRS(i));
+			PLAYER_SET_DESCRS(i, NULL);
+			PLAYER_SET_DESCRCOUNT(i, 0);
+		}
+		ignore_flush_cache(i);
+	}
+	if (Typeof(i) == TYPE_THING) {
+		FREE_THING_SP(i);
+	}
+	if (Typeof(i) == TYPE_PLAYER) {
+		FREE_PLAYER_SP(i);
+	}
+	if (Typeof(i) == TYPE_PROGRAM) {
+		uncompile_program(i);
+		FREE_PROGRAM_SP(i);
+	}
+}
+
+void
+db_free(void)
+{
+	dbref i;
+
+	if (db) {
+		for (i = 0; i < db_top; i++)
+			db_free_object(i);
+		free((void *) db);
+		db = 0;
+		db_top = 0;
+	}
+	clear_players();
+	clear_primitives();
+	recyclable = NOTHING;
+}
+
+void
 putref(FILE * f, dbref ref)
 {
 	if (fprintf(f, "%d\n", ref) < 0) {
@@ -116,7 +170,7 @@ putstring(FILE * f, const char *s)
 	}
 }
 
-static void
+void
 putproperties_rec(FILE * f, const char *dir, dbref obj)
 {
 	PropPtr pref;
@@ -138,11 +192,7 @@ putproperties_rec(FILE * f, const char *dir, dbref obj)
 	}
 }
 
-/*** CHANGED:
-was: void putproperties(FILE *f, PropPtr p)
- is: void putproperties(FILE *f, dbref obj)
-***/
-static void
+void
 putproperties(FILE * f, dbref obj)
 {
 	putstring(f, "*Props*");
@@ -150,10 +200,6 @@ putproperties(FILE * f, dbref obj)
 	/* putproperties_rec(f, "/", obj); */
 	putstring(f, "*End*");
 }
-
-extern FILE *input_file;
-extern FILE *delta_infile;
-extern FILE *delta_outfile;
 
 int
 db_write_object(FILE * f, dbref i)
@@ -211,10 +257,6 @@ db_write_object(FILE * f, dbref i)
 
 int deltas_count = 0;
 
-#ifndef CLUMP_LOAD_SIZE
-#  define CLUMP_LOAD_SIZE 20
-#endif
-
 /* mode == 1 for dumping all objects.  mode == 0 for deltas only.  */
 
 static void
@@ -265,7 +307,7 @@ db_write_deltas(FILE * f)
 	return (db_top);
 }
 
-static int
+int
 do_peek(FILE * f)
 {
 	int peekch;
@@ -292,7 +334,7 @@ getref(FILE * f)
 	return (atol(buf));
 }
 
-static const char *
+const char *
 getstring(FILE * f)
 {
 	static char buf[BUFFER_LEN];
@@ -317,11 +359,7 @@ getstring(FILE * f)
 	return alloc_string(buf);
 }
 
-/*** CHANGED:
-was: PropPtr getproperties(FILE *f)
-now: void getproperties(FILE *f, dbref obj, const char *pdir)
-***/
-static void
+void
 getproperties(FILE * f, dbref obj, const char *pdir)
 {
 	char buf[BUFFER_LEN * 3], *p;
@@ -359,122 +397,6 @@ getproperties(FILE * f, dbref obj, const char *pdir)
 	} else {
 		db_getprops(f, obj, pdir);
 	}
-}
-
-void
-db_free_object(dbref i)
-{
-	struct object *o;
-
-	o = DBFETCH(i);
-	if (NAME(i))
-		free((void *) NAME(i));
-
-	if (o->properties) {
-		delete_proplist(o->properties);
-	}
-
-	if (Typeof(i) == TYPE_EXIT && o->sp.exit.dest) {
-		free((void *) o->sp.exit.dest);
-	} else if (Typeof(i) == TYPE_PLAYER) {
-		if (PLAYER_PASSWORD(i)) {
-			free((void *) PLAYER_PASSWORD(i));
-		}
-		if (PLAYER_DESCRS(i)) {
-			free(PLAYER_DESCRS(i));
-			PLAYER_SET_DESCRS(i, NULL);
-			PLAYER_SET_DESCRCOUNT(i, 0);
-		}
-		ignore_flush_cache(i);
-	}
-	if (Typeof(i) == TYPE_THING) {
-		FREE_THING_SP(i);
-	}
-	if (Typeof(i) == TYPE_PLAYER) {
-		FREE_PLAYER_SP(i);
-	}
-	if (Typeof(i) == TYPE_PROGRAM) {
-		uncompile_program(i);
-		FREE_PROGRAM_SP(i);
-	}
-}
-
-void
-db_free(void)
-{
-	dbref i;
-
-	if (db) {
-		for (i = 0; i < db_top; i++)
-			db_free_object(i);
-		free((void *) db);
-		db = 0;
-		db_top = 0;
-	}
-	clear_players();
-	clear_primitives();
-	recyclable = NOTHING;
-}
-
-struct line *
-get_new_line(void)
-{
-	struct line *nu;
-
-	nu = (struct line *) malloc(sizeof(struct line));
-
-	if (!nu) {
-		fprintf(stderr, "get_new_line(): Out of memory!\n");
-		abort();
-	}
-	nu->this_line = NULL;
-	nu->next = NULL;
-	nu->prev = NULL;
-	return nu;
-}
-
-struct line *
-read_program(dbref i)
-{
-	char buf[BUFFER_LEN];
-	struct line *first;
-	struct line *prev = NULL;
-	struct line *nu;
-	FILE *f;
-	int len;
-
-	first = NULL;
-	snprintf(buf, sizeof(buf), "muf/%d.m", (int) i);
-	f = fopen(buf, "r");
-	if (!f)
-		return 0;
-
-	while (fgets(buf, BUFFER_LEN, f)) {
-		nu = get_new_line();
-		len = strlen(buf);
-		if (len > 0 && buf[len - 1] == '\n') {
-			buf[len - 1] = '\0';
-			len--;
-		}
-		if (len > 0 && buf[len - 1] == '\r') {
-			buf[len - 1] = '\0';
-			len--;
-		}
-		if (!*buf)
-			strcpy(buf, " ");
-		nu->this_line = alloc_string(buf);
-		if (!first) {
-			prev = nu;
-			first = nu;
-		} else {
-			prev->next = nu;
-			nu->prev = prev;
-			prev = nu;
-		}
-	}
-
-	fclose(f);
-	return first;
 }
 
 /* Reads in Foxen8 DB Format */
@@ -593,7 +515,7 @@ db_read_object(FILE * f, struct object *o, dbref objno, int read_before)
 	}
 }
 
-void
+static void
 autostart_progs(void)
 {
 	dbref i;
@@ -629,9 +551,9 @@ db_read(FILE * f)
 	int doing_deltas;
 	int parmcnt;
 	int dbflags = 0;
+	int db_load_format = 0;
 	char c;
 
-	db_load_format = 0;
 	doing_deltas = 0;
 
 	if ((c = getc(f)) == '*') {

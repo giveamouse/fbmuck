@@ -34,7 +34,7 @@ void toggle_numbers(dbref player, int arg[], int argc);
 
 /* Editor routines --- Also contains routines to handle input */
 
-static void
+void
 free_line(struct line *l)
 {
 	if (l->this_line)
@@ -496,6 +496,67 @@ log_program_text(struct line *first, dbref player, dbref i)
 	}
 	fputs("\n\n\n", f);
 	fclose(f);
+}
+
+struct line *
+get_new_line(void)
+{
+	struct line *nu;
+
+	nu = (struct line *) malloc(sizeof(struct line));
+
+	if (!nu) {
+		fprintf(stderr, "get_new_line(): Out of memory!\n");
+		abort();
+	}
+	nu->this_line = NULL;
+	nu->next = NULL;
+	nu->prev = NULL;
+	return nu;
+}
+
+struct line *
+read_program(dbref i)
+{
+	char buf[BUFFER_LEN];
+	struct line *first;
+	struct line *prev = NULL;
+	struct line *nu;
+	FILE *f;
+	int len;
+
+	first = NULL;
+	snprintf(buf, sizeof(buf), "muf/%d.m", (int) i);
+	f = fopen(buf, "r");
+	if (!f)
+		return 0;
+
+	while (fgets(buf, BUFFER_LEN, f)) {
+		nu = get_new_line();
+		len = strlen(buf);
+		if (len > 0 && buf[len - 1] == '\n') {
+			buf[len - 1] = '\0';
+			len--;
+		}
+		if (len > 0 && buf[len - 1] == '\r') {
+			buf[len - 1] = '\0';
+			len--;
+		}
+		if (!*buf)
+			strcpy(buf, " ");
+		nu->this_line = alloc_string(buf);
+		if (!first) {
+			prev = nu;
+			first = nu;
+		} else {
+			prev->next = nu;
+			nu->prev = prev;
+			prev = nu;
+		}
+	}
+
+	fclose(f);
+	return first;
 }
 
 void
