@@ -349,9 +349,9 @@ prim_conboot(PRIM_PROTOTYPE)
 {
 	/* int --  */
 	CHECKOP(1);
+	oper1 = POP();
 	if (mlev < 4)
 		abort_interp("Primitive is a wizbit only command.");
-	oper1 = POP();
 	if (oper1->type != PROG_INTEGER)
 		abort_interp("Argument not an integer. (1)");
 	result = oper1->data.number;
@@ -367,9 +367,9 @@ prim_descr_boot(PRIM_PROTOTYPE)
 {
 	/* int --  */
 	CHECKOP(1);
+	oper1 = POP();
 	if (mlev < 4)
 		abort_interp("Primitive is a wizbit only command.");
-	oper1 = POP();
 	if (oper1->type != PROG_INTEGER)
 		abort_interp("Argument not an integer. (1)");
 	result = pdescrboot(oper1->data.number);
