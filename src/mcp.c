@@ -24,7 +24,7 @@
 #define MCP_ARGLINE_DELIMCHAR2	'\r'
 #define MCP_SEPARATOR		" "
 #define MCP_INIT_PKG		"mcp"
-#define MCP_DATATAG		"_data-tag"
+#define MCP_DATATAG			"_data-tag"
 #define MCP_INIT_MESG		"mcp "
 #define MCP_NEGOTIATE_PKG	"mcp-negotiate"
 
@@ -809,6 +809,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 
 	/* If the message is multi-line, make sure it has a _data-tag field. */
 	if (mlineflag) {
+		strcat(out, MCP_SEPARATOR);
 		strcat(out, MCP_DATATAG);
 		strcat(out, MCP_ARG_DELIMITER);
 		strcat(out, MCP_SEPARATOR);
@@ -1730,6 +1731,9 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.16  2002/02/26 06:58:32  revar
+* Fixed bug in MCP where _datatag wasn't being preceeded by a separator space.
+*
 * Revision 1.15  2001/10/09 06:57:12  revar
 * Fixed a bug where MCP packages weren't renegotiating on a program recompile.
 * Added $pubdef muf preprocessor directive.  Sets a _defs/XXX prop on the prog.
