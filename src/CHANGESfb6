@@ -98,6 +98,16 @@ Added FINDNEXT ( d1 d2 s1 s2 -- d' ) muf primitive.  Searches for the next
 		dup while
 		dup unparseobj .tell
 	repeat
+Added REFLIST_ADD ( d1 s1 d2 -- ) muf primitive.  Adds dbref d2 to the reflist
+  in property s1 on object d1.  If d2 is already in the list, it is moved to
+  the end of the reflist.
+Added REFLIST_DEL ( d1 s1 d2 -- ) muf primitive.  Removes dbref d2 from the
+  reflist in property s1 on object d1.  If d2 is not in the list, nothing
+  happens.
+Added REFLIST_FIND ( d1 s1 d2 -- i ) muf primitive.  Finds dbref d2 in the
+  reflist in property s1 on object d1.  If d2 is not in the list, then 0 is
+  returned.  Otherwise the position of the dbref in the list is returned,
+  with the first dbref being in position 1, the second dbref in 2, etc.
 Changed MPI to not use the trigger's wizbit for permissions.  Instead, if the
   property is itself Blessed, then it gets the permissions that wizbit mpi
   used to have.

@@ -202,4 +202,8 @@ extern int db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, cons
 extern void db_getprops(FILE * f, dbref obj, const char *pdir);
 extern void db_dump_props(FILE * f, dbref obj);
 
+extern void reflist_add(dbref obj, const char* propname, dbref toadd);
+extern void reflist_del(dbref obj, const char* propname, dbref todel);
+extern int reflist_find(dbref obj, const char* propname, dbref tofind);
+
 #endif /* _PROPS_H */

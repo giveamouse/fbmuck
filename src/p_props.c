@@ -976,3 +976,86 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
+
+void
+prim_reflist_find(PRIM_PROTOTYPE)
+{
+	CHECKOP(3);
+	oper2 = POP();   /* propname */
+	oper1 = POP();   /* propobj */
+	oper3 = POP();   /* dbref */
+	if (!valid_object(oper1))
+		abort_interp("Non-object argument (1)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Non-string argument (2)");
+	if (!oper2->data.string)
+		abort_interp("Empty string argument (2)");
+	if (oper3->type != PROG_OBJECT)
+		abort_interp("Non-object argument (3)");
+	if (!prop_read_perms(ProgUID, oper1->data.objref, oper2->data.string->data, mlev))
+		abort_interp("Permission denied.");
+	CHECKREMOTE(oper1->data.objref);
+
+	result = reflist_find(oper1->data.objref, oper2->data.string->data, oper3->data.objref);
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
+	PushInt(result);
+}
+
+
+void
+prim_reflist_add(PRIM_PROTOTYPE)
+{
+	CHECKOP(3);
+	oper2 = POP();   /* propname */
+	oper1 = POP();   /* propobj */
+	oper3 = POP();   /* dbref */
+	if (!valid_object(oper1))
+		abort_interp("Non-object argument (1)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Non-string argument (2)");
+	if (!oper2->data.string)
+		abort_interp("Empty string argument (2)");
+	if (oper3->type != PROG_OBJECT)
+		abort_interp("Non-object argument (3)");
+	if (!prop_write_perms(ProgUID, oper1->data.objref, oper2->data.string->data, mlev))
+		abort_interp("Permission denied.");
+	CHECKREMOTE(oper1->data.objref);
+
+	reflist_add(oper1->data.objref, oper2->data.string->data, oper3->data.objref);
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
+}
+
+
+void
+prim_reflist_del(PRIM_PROTOTYPE)
+{
+	CHECKOP(3);
+	oper2 = POP();   /* propname */
+	oper1 = POP();   /* propobj */
+	oper3 = POP();   /* dbref */
+	if (!valid_object(oper1))
+		abort_interp("Non-object argument (1)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Non-string argument (2)");
+	if (!oper2->data.string)
+		abort_interp("Empty string argument (2)");
+	if (oper3->type != PROG_OBJECT)
+		abort_interp("Non-object argument (3)");
+	if (!prop_write_perms(ProgUID, oper1->data.objref, oper2->data.string->data, mlev))
+		abort_interp("Permission denied.");
+	CHECKREMOTE(oper1->data.objref);
+
+	reflist_del(oper1->data.objref, oper2->data.string->data, oper3->data.objref);
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
+}
+
+

@@ -414,6 +414,23 @@ Reads in list of space delimited dbrefs from a string property, and
 returns them as a list array of dbrefs.  See ARRAY_PUT_REFLIST for
 property syntax.
 ~
+REFLIST_ADD|
+REFLIST_ADD ( d1 s1 d2 -- )
+Adds dbref d2 to the reflist in property s1 on object d1.  If d2 is already
+in the list, it is moved to the end of the reflist.
+~
+REFLIST_DEL|
+REFLIST_DEL ( d1 s1 d2 -- )
+Removes dbref d2 from the reflist in property s1 on object d1.  If d2 is
+not in the list, nothing happens.
+~
+REFLIST_FIND|
+REFLIST_FIND ( d1 s1 d2 -- i )
+Finds dbref d2 in the reflist in property s1 on object d1.  If d2 is
+not in the list, then 0 is returned.  Otherwise the position of the
+dbref in the list is returned, with the first dbref being in position 1,
+the second dbref in 2, etc.
+~
 ARRAY_GET_PROPLIST|
 ARRAY_GET_PROPLIST ( d s -- a )
 Reads in properties from a classic style proplist, and returns them

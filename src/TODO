@@ -1,32 +1,21 @@
 These items are mandatory for FB6 release.  The number prefix is priority.
   1 Fix security of {lexec} by requiring all listprops to be blessed, to
-	  run blessed.
+      run blessed.
   1 Change @bless and @unbless to allow specifying possible multiple props via
-	  an smatch wildcard argument.  Should list all props thusly blessed.
+      an smatch wildcard argument.  Should list all props thusly blessed.
 
   2 Add memory usage based limits on MUF progs.
   2 Update documentation.
 
   3 Integrate multiple listener ports mods.
   3 Fix compression bugs, or implement new compression schema.
-  3 REFLIST_ADD ( ref:ToAdd ref:Object str:PropName -- ) Adds a dbref to a
-	  reflist if it is not already in the list.
-  3 REFLIST_DELETE ( ref:ToDel ref:Object str:PropName -- ) Removed a dbref
-	  from a reflist if it is in it.
-  3 REFLIST_FIND ( ref:ToFind ref:Object str:PropName -- int:Position ) Finds
-	  a given dbref in a reflist, and returns its position.  Returns 0 if not
-	  found.  The first dbref in the reflist is 1.
 
   4 Modify array code to allow floats and dbrefs as indexes.
   4 WATCHPROP (d s -- ) Specifies that this process wants to recieve an event
-	  when the given property on the given object is set, deleted, or changed.
-	  The event recieved will have an ID of "PROPCHANGE.#dbref.propname" where
-	  the dbref and the property name will be replaced by those of the property
-	  you specified.
-
-  5 CORD_OPEN  (          intDescr strType -- strCordID)
-  5 CORD_SEND  (strCordID strName dictData -- )
-  5 CORD_CLOSE (                 strCordID -- )
+      when the given property on the given object is set, deleted, or changed.
+      The event received will have an ID of "PROPCHANGE.#dbref.propname" where
+      the dbref and the property name will be replaced by those of the property
+      you specified.
 
 
 These items may be considered to be optional for release:
@@ -44,6 +33,11 @@ These items may be considered to be optional for release:
 
   ARRAY_FILTER_LOCK ([d] l -- [d']) As per ARRAY_FILTER_PROP, except only
     those dbrefs that would pass the given lock are returned.
+ 
+  CORD_OPEN  (          intDescr strType -- strCordID)
+  CORD_SEND  (strCordID strName dictData -- )
+  CORD_CLOSE (                 strCordID -- )
+
 
 
 These items may be considered to be a wishlist:
