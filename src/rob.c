@@ -208,12 +208,21 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 		switch (Typeof(who)) {
 		case TYPE_PLAYER:
 			PLAYER_ADD_PENNIES(who, amount);
-			snprintf(buf, sizeof(buf), "You give %d %s to %s.",
-					amount, amount == 1 ? tp_penny : tp_pennies, NAME(who));
-			notify(player, buf);
-			snprintf(buf, sizeof(buf), "%s gives you %d %s.",
-					NAME(player), amount, amount == 1 ? tp_penny : tp_pennies);
-			notify(who, buf);
+			if(amount >= 0) {
+				snprintf(buf, sizeof(buf), "You give %d %s to %s.",
+						amount, amount == 1 ? tp_penny : tp_pennies, NAME(who));
+				notify(player, buf);
+				snprintf(buf, sizeof(buf), "%s gives you %d %s.",
+						NAME(player), amount, amount == 1 ? tp_penny : tp_pennies);
+				notify(who, buf);
+			} else {
+				snprintf(buf, sizeof(buf), "You take %d %s from %s.",
+						-amount, amount == -1 ? tp_penny : tp_pennies, NAME(who));
+				notify(player, buf);
+				snprintf(buf, sizeof(buf), "%s takes %d %s from you!",
+						NAME(player), -amount, -amount == 1 ? tp_penny : tp_pennies);
+				notify(who, buf);
+			}
 			break;
 		case TYPE_THING:
 			THING_SET_VALUE(who, (THING_VALUE(who) + amount));
