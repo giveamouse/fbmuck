@@ -758,6 +758,9 @@ list_events(dbref player)
 		if (ptr->fr) {
 			snprintf(progstr, sizeof(progstr), "#%d", ptr->fr->caller.st[1]);
 			snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(ptr->fr->caller.st[1]));
+		} else if (ptr->typ == TQ_MPI_TYP) {
+			snprintf(progstr, sizeof(progstr), "#%d", ptr->trig);
+			snprintf(prognamestr, sizeof(prognamestr), "%s", "");
 		} else {
 			snprintf(progstr, sizeof(progstr), "#%d", ptr->called_prog);
 			snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(ptr->called_prog));
