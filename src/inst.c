@@ -110,7 +110,8 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 			    break;
 			}
 			
-			length = buflen - length;
+			/* - 1 for the "\0" at the end. */
+			length = buflen - length - 1;
 			firstflag = 1;
 			if (array_first(theinst->data.array, &temp1)) {
 				do {
@@ -284,10 +285,10 @@ debug_inst(struct inst *pc, struct inst *stack, char *buffer, int buflen, int sp
 	/* To hold Debug> ... at the beginning */
 	char buf3[32];
 	int count;
-
+	
 	assert(buflen > 1);
     
-	buffer[buflen] = '\0';
+	buffer[buflen - 1] = '\0';
 
 #ifdef DEBUGARRAYS
 	length = snprintf(buf3, 32, "Debug> %d #%d %d (", PROGRAM_INSTANCES(2), program, pc->line);
@@ -295,8 +296,9 @@ debug_inst(struct inst *pc, struct inst *stack, char *buffer, int buflen, int sp
 	length = snprintf(buf3, 32, "Debug> #%d %d (", program, pc->line);
 #endif
 	bstart = buffer + length; /* start far enough away so we can fit Debug> #xxx xxx ( thingy. */
-	length = buflen - length - 1; /* - 1 for the '\0'. */
-	bend = buffer + buflen;
+	length = buflen - length - 1; 
+	/* - 1 for the '\0' above, -2 below because also buflen is 1-based, not 0-based like buffer indexes are. */
+	bend = buffer + (buflen - 2);
 
 	/* + 10 because we must at least be able to store " ... ) ..." after that. */
 	if (bstart + 10 > bend) { /* we have no room. Eeek! */
