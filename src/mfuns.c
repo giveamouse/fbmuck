@@ -66,7 +66,7 @@ mfn_prop(MFUNARGS)
 {
 	dbref obj = what;
 	const char *ptr, *pname;
-	int blessed;
+	int blessed = 0;
 
 	pname = argv[0];
 	if (argc == 2) {
@@ -88,7 +88,7 @@ mfn_propbang(MFUNARGS)
 {
 	dbref obj = what;
 	const char *ptr, *pname;
-	int blessed;
+	int blessed = 0;
 
 	pname = argv[0];
 	if (argc == 2) {
@@ -191,7 +191,7 @@ mfn_exec(MFUNARGS)
 {
 	dbref trg, obj = what;
 	const char *ptr, *pname;
-	int blessed;
+	int blessed = 0;
 
 	pname = argv[0];
 	if (argc == 2) {
@@ -223,9 +223,9 @@ mfn_exec(MFUNARGS)
 const char *
 mfn_execbang(MFUNARGS)
 {
-	dbref trg, obj = what;
+	dbref trg = (dbref) 0, obj = what;
 	const char *ptr, *pname;
-	int blessed;
+	int blessed = 0;
 
 	pname = argv[0];
 	if (argc == 2) {
@@ -257,10 +257,10 @@ mfn_execbang(MFUNARGS)
 const char *
 mfn_index(MFUNARGS)
 {
-	dbref trg, obj = what;
-	dbref tmpobj;
+	dbref trg = (dbref) 0, obj = what;
+	dbref tmpobj = (dbref) 0;
 	const char *pname, *ptr;
-	int blessed;
+	int blessed = 0;
 
 	pname = argv[0];
 	if (argc == 2) {
@@ -298,10 +298,10 @@ mfn_index(MFUNARGS)
 const char *
 mfn_indexbang(MFUNARGS)
 {
-	dbref trg, obj = what;
-	dbref tmpobj;
+	dbref trg = (dbref) 0, obj = what;
+	dbref tmpobj = (dbref) 0;
 	const char *pname, *ptr;
-	int blessed;
+	int blessed = 0;
 
 	pname = argv[0];
 	if (argc == 2) {
@@ -391,7 +391,7 @@ mfn_listprops(MFUNARGS)
 		endbuf--;
 	}
 	if (*endbuf != PROPDIR_DELIMITER && (endbuf - pname) < (BUFFER_LEN - 2)) {
-		if (*endbuf)
+		if (*endbuf != '\0')
 			endbuf++;
 		*endbuf++ = PROPDIR_DELIMITER;
 		*endbuf++ = '\0';
@@ -400,7 +400,7 @@ mfn_listprops(MFUNARGS)
 	*buf = '\0';
 	endbuf = buf;
 	do {
-		ptr = next_prop_name(obj, tmpbuf, sizeof(tmpbuf), pname);
+		ptr = next_prop_name(obj, tmpbuf, (int) sizeof(tmpbuf), pname);
 		if (ptr && *ptr) {
 			flag = 1;
 			if (Prop_System(ptr)) {
@@ -416,7 +416,7 @@ mfn_listprops(MFUNARGS)
 					flag = 0;
 				}
 			}
-			if (flag && pattern) {
+			if ((flag != 0) && (pattern != NULL)) {
 				char *nptr;
 
 				nptr = rindex(ptr, PROPDIR_DELIMITER);
@@ -430,7 +430,7 @@ mfn_listprops(MFUNARGS)
 			if (flag) {
 				int entrylen = strlen(ptr);
 				if ((endbuf - buf) + entrylen + 2 < BUFFER_LEN) {
-					if (*buf) {
+					if (*buf != '\0') {
 						*endbuf++ = '\r';
 					}
 					strcpy(endbuf, ptr);
@@ -451,7 +451,7 @@ mfn_concat(MFUNARGS)
 	dbref obj = what;
 	char *pname;
 	const char *ptr;
-	int blessed;
+	int blessed = 0;
 
 	pname = argv[0];
 	if (argc == 2) {
@@ -483,7 +483,7 @@ mfn_select(MFUNARGS)
 	int i, targval, bestval;
 	int baselen;
 	int limit;
-	int blessed;
+	int blessed = 0;
 
 	pname = argv[1];
 	if (argc == 3) {
@@ -504,9 +504,9 @@ mfn_select(MFUNARGS)
 	do {
 		ptr = get_list_item(player, obj, perms, pname, i--, mesgtyp, &blessed);
 	} while (limit-->0 && i >= 0 && ptr && !*ptr);
-	if (!ptr)
+	if (ptr == NULL)
 		ABORT_MPI("SELECT", "Failed list read.");
-	if (*ptr)
+	if (*ptr != '\0')
 		return ptr;
 
 	/*
@@ -517,7 +517,7 @@ mfn_select(MFUNARGS)
 	/* First, normalize the base propname */
 	out = origprop;
 	in = argv[1];
-	while (*in) {
+	while (*in != '\0') {
 		*out++ = PROPDIR_DELIMITER;
 		while (*in == PROPDIR_DELIMITER) in++;
 		while (*in && *in != PROPDIR_DELIMITER) *out++ = *in++;
@@ -606,10 +606,10 @@ mfn_list(MFUNARGS)
 const char *
 mfn_lexec(MFUNARGS)
 {
-	dbref trg, obj = what;
+	dbref trg = (dbref) 0, obj = what;
 	char *pname;
 	const char *ptr;
-	int blessed;
+	int blessed = 0;
 
 	pname = argv[0];
 	if (argc == 2) {
@@ -642,10 +642,10 @@ mfn_lexec(MFUNARGS)
 const char *
 mfn_rand(MFUNARGS)
 {
-	int num;
-	dbref trg, obj = what;
+	int num = 0;
+	dbref trg = (dbref) 0, obj = what;
 	const char *pname, *ptr;
-	int blessed;
+	int blessed = 0;
 
 	pname = argv[0];
 	if (argc == 2) {
@@ -678,11 +678,11 @@ mfn_rand(MFUNARGS)
 const char *
 mfn_timesub(MFUNARGS)
 {
-	int num;
-	dbref trg, obj = what;
+	int num = 0;
+	dbref trg = (dbref) 0, obj = what;
 	const char *pname, *ptr;
-	int period, offset;
-	int blessed;
+	int period = 0, offset = 0;
+	int blessed = 0;
 
 	period = atoi(argv[0]);
 	offset = atoi(argv[1]);
@@ -699,7 +699,7 @@ mfn_timesub(MFUNARGS)
 		ABORT_MPI("TIMESUB", "Failed list read.");
 	if (period < 1)
 		ABORT_MPI("TIMESUB", "Time period too short.");
-	offset = ((((long) time(NULL) + offset) % period) * num) / period;
+	offset = (int)((((long) time(NULL) + offset) % period) * num) / period;
 	if (offset < 0)
 		offset = -offset;
 	ptr = get_list_item(what, obj, perms, pname, offset + 1, mesgtyp, &blessed);
@@ -1795,7 +1795,7 @@ mfn_money(MFUNARGS)
 		ABORT_MPI("MONEY", "Match failed.");
 	if (obj == PERMDENIED)
 		ABORT_MPI("MONEY", "Permission denied.");
-	if (tp_pennies_muf_mlev > 1 && !(mesgtype & MPI_ISBLESSED))
+	if (tp_pennies_muf_mlev > 1 && !(mesgtyp & MPI_ISBLESSED))
 		ABORT_MPI("MONEY", "Permission denied.");
 	switch (Typeof(obj)) {
 	case TYPE_THING:
@@ -1841,9 +1841,9 @@ mfn_tell(MFUNARGS)
 		ABORT_MPI("TELL", "Permission denied.");
 	*buf = '\0';
 	strcpy(buf2, argv[0]);
-	for (ptr = buf2; *ptr; ptr = ptr2) {
+	for (ptr = buf2; (ptr != NULL) && *ptr != '\0'; ptr = ptr2) {
 		ptr2 = index(ptr, '\r');
-		if (ptr2) {
+		if (ptr2 != NULL) {
 			*ptr2++ = '\0';
 		} else {
 			ptr2 = ptr + strlen(ptr);

@@ -94,7 +94,7 @@ safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp)
 		if (string_prefix(buf, "_msgmacs/"))
 			return 0;
 	}
-	if (!val) {
+	if (val == NULL) {
 		remove_property(obj, buf);
 	} else {
 		add_property(obj, buf, val, 0);

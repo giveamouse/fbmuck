@@ -1320,7 +1320,7 @@ mfn_istype(MFUNARGS)
 const char *
 mfn_fox(MFUNARGS)
 {
-	return "YARF!";
+	return "You found the easter egg!";
 }
 
 const char *
@@ -1506,6 +1506,8 @@ mfn_muf(MFUNARGS)
 		return "";
 		break;
 	}
+	/*NOTREACHED*/
+	return "";
 }
 
 
@@ -1710,6 +1712,7 @@ mfn_commas(MFUNARGS)
 	char sepbuf[BUFFER_LEN];
 	char buf2[BUFFER_LEN];
 	char tmp[BUFFER_LEN];
+	tmp[0] = '\0';
 
 	if (argc == 3)
 		ABORT_MPI("COMMAS", "Takes 1, 2, or 4 arguments.");
@@ -1742,7 +1745,7 @@ mfn_commas(MFUNARGS)
 	for (i = 1; i <= count; i++) {
 		ptr = getlitem(buf2, listbuf, "\r", i);
 		if (argc > 2) {
-			strcpy(tmp, ptr);
+			strcpyn(tmp, BUFFER_LEN, ptr);
 			ptr = MesgParse(argv[3], buf2);
 			CHECKRETURN(ptr, "COMMAS", "arg 3");
 		}
