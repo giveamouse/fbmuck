@@ -74,7 +74,7 @@ const char *infotext[] =
     "  Foxbird, Jenora, McClure, Sombre, Tiger, Winged and Wog.",
     " ",
     "The following people helped out a lot along the way:",
-    "  Fre'ta, Kim \\\"Bookwyrm\\\" Liu, Chris, Jenora, Lynx, WhiteFire,",
+    "  Fre'ta, Kim \\"Bookwyrm\\" Liu, Chris, Jenora, Lynx, WhiteFire,",
     "  Kimi, Cynbe, Myk, Taldin, Howard, darkfox, Moonchilde, Felorin, Xixia,",
     "  Doran, Riss and King_Claudius.",
     " ",
