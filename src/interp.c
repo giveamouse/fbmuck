@@ -736,7 +736,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 							if (pc <= PROGRAM_CODE(program) || (pc - 1)->line != pc->line) {
 								list_proglines(player, program, fr, pc->line, 0);
 							} else {
-								m = (char *) show_line_prims(program, pc, 15, 1);
+								m = show_line_prims(program, pc, 15, 1);
 								sprintf(buf, "     %s", m);
 								notify_nolisten(player, buf, 1);
 							}

@@ -2,6 +2,13 @@
 
 /*
  * $Log: olddecomp.c,v $
+ * Revision 1.3  2000/07/07 01:27:33  revar
+ * 64 bit cleanups.
+ * Introduced microscopic memory leaks in p_mcp.c and documented them in
+ *   comments marked with WORK.  The leaks are on the order of a few bytes
+ *   when someone re-registers what program handles a given MCP package.
+ *   Since packages generally are only registered once, this is ignorable.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -55,6 +62,8 @@
 #undef alloc_string
 #undef string_dup
 
+extern const char *old_uncompress(const char *);
+
 char *in_filename;
 FILE *infile;
 
@@ -93,7 +102,7 @@ main(int argc, char **argv)
 
 	while (fgets(buf, sizeof(buf), infile)) {
 		buf[sizeof(buf) - 1] = '\0';
-		fputs((char *) old_uncompress(buf), stdout);
+		fputs(old_uncompress(buf), stdout);
 	}
 	exit(0);
 	return 0;

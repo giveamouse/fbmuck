@@ -25,12 +25,16 @@ static int tmp, result;
 static dbref ref;
 
 
+struct mcp_muf_context {
+	dbref prog;
+};
 
 
 void
 muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 {
-	dbref obj = (dbref) context;
+	struct mcp_muf_context* mmc = (struct mcp_muf_context*)context;
+	dbref obj = mmc->prog;
 	struct mcp_binding *ptr;
 	McpArg *arg;
 	char *pkgname = mesg->package;
@@ -100,10 +104,16 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 }
 
 
+struct mcpevent_context {
+	int pid;
+};
+
+
 void
 muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 {
-	int destpid = (int) context;
+	struct mcpevent_context* mec = (struct mcpevent_context*)context;
+	int destpid = mec->pid;
 	struct frame* destfr = timequeue_pid_frame(destpid);
 	int descr = mcpframe_to_descr(mfr);
 	char *pkgname = mesg->package;
@@ -261,6 +271,7 @@ prim_mcp_register(PRIM_PROTOTYPE)
 {
 	char *pkgname;
 	McpVer vermin, vermax;
+	struct mcp_muf_context *mmc;
 
 	CHECKOP(3);
 	oper3 = POP();
@@ -287,7 +298,11 @@ prim_mcp_register(PRIM_PROTOTYPE)
 	vermax.vermajor = (int) oper3->data.fnumber;
 	vermax.verminor = (int) (oper3->data.fnumber * 1000) % 1000;
 
-	mcp_package_register(pkgname, vermin, vermax, muf_mcp_callback, (void *) program);
+	/* WORK: This creates a very very minor memory leak on re-registering handlers. */
+	mmc = (struct mcp_muf_context*)malloc(sizeof(struct mcp_muf_context));
+	mmc->prog = program;
+
+	mcp_package_register(pkgname, vermin, vermax, muf_mcp_callback, (void *) mmc);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -301,6 +316,8 @@ prim_mcp_register_event(PRIM_PROTOTYPE)
 {
 	char *pkgname;
 	McpVer vermin, vermax;
+	struct mcpevent_context *mec;
+
 
 	CHECKOP(3);
 	oper3 = POP();
@@ -327,7 +344,11 @@ prim_mcp_register_event(PRIM_PROTOTYPE)
 	vermax.vermajor = (int) oper3->data.fnumber;
 	vermax.verminor = (int) (oper3->data.fnumber * 1000) % 1000;
 
-	mcp_package_register(pkgname, vermin, vermax, muf_mcp_event_callback, (void *) fr->pid);
+	/* WORK: This creates a very very minor memory leak on re-registering handlers. */
+	mec = (struct mcpevent_context*)malloc(sizeof(struct mcpevent_context));
+	mec->pid = fr->pid;
+
+	mcp_package_register(pkgname, vermin, vermax, muf_mcp_event_callback, (void *)mec);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
