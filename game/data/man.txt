@@ -325,10 +325,61 @@ ARRAY_SETITEM|
 arra_setitem ( ? a @ -- a')
 Overwrites a given array item at index @ with new value ?.
 ~
+ARRAY_APPENDITEM|
+array_appenditem ( ? a -- a')
+Appends the given item to the given list array.
+~
 ARRAY_SETRANGE|
 array_setrange ( a1 @ a2 -- a' )
 Sets items in list a1 to vals from list a2, starting at the given
 index.  Returns the resulting array.
+~
+ARRAY_GET_PROPDIRS|
+ARRAY_GET_PROPDIRS( d s -- a )
+Returns a list array containing the names of all the sub-propdirs
+contained within the given propdir.  Any propdirs the program wouldn't
+be able to read, are left out.  (ML3 required.)
+~
+ARRAY_GET_PROPVALS|
+ARRAY_GET_PROPVALS ( d s -- a )
+Reads in properties from a propdir, and returns them in a dictionary,
+keyed by propname.  Sub- propdirs in the given propdir that do not
+have any value of their own, are left out of the returned dictionary.
+Properties that the program doesn't have perms to read are also
+left out.  Reads up to 511 props maximum. (ML3 required.)
+~
+ARRAY_PUT_PROPVALS|
+ARRAY_PUT_PROPVALS ( d s a -- )
+Takes the values in the given dictionary, and stores them in the given
+propdir on the given object.  Each dictionary entry will be saved into a
+property with the key as the name, and the value as the property value.
+Be aware that dictionary entries with keys starting with one of @ ~ _
+or . may require special permissions to save.
+~
+ARRAY_PUT_REFLIST|
+ARRAY_PUT_REFLIST ( d s a -- )
+Takes a list array of dbrefs, and stores them in a property as a space
+delimited string of dbrefs.  ie:  "#1234 #6646 #1026 #7104"
+~
+ARRAY_GET_REFLIST|
+ARRAY_GET_REFLIST ( d s -- a )
+Reads in list of space delimited dbrefs from a string property, and
+returns them as a list array of dbrefs.  See ARRAY_PUT_REFLIST for
+property syntax.
+~
+ARRAY_GET_PROPLIST|
+ARRAY_GET_PROPLIST ( d s -- a )
+Reads in properties from a classic style proplist, and returns them
+in a dictionary, keyed by propname.  Proplists can be in any of the
+common proplist styles: ie: "propname#/1", "propname/1", or "propname1".
+If the program doesn't have permission to read the list, it returns an
+empty dictionary.  Reads up to 511 props maximum.
+~
+ARRAY_PUT_PROPLIST|
+ARRAY_PUT_PROPLIST ( d s a -- )
+Takes the values in the given list array, and stores them in the given
+propdir on the given object as a sequential proplist.  This will use the
+system standard proplist format specified by @tune settings.
 ~
 ARRAY_VALS|
 array_vals ( a -- {?} )
@@ -2288,7 +2339,9 @@ moves execution to that point.  It's one early way that was used to do
 tail-recursion loops without as much overhead, and without failing due to
 system stack overflows.  It's mostly obsolete now, except that it's one
 of the three or four internal primitives used to implement if-else-then and
-begin-while-repeat loops and such.
+begin-while-repeat loops and such.  You shouldn't use JMP explicitly in
+in modern MUF code, as it is deprecated.  NOTE: Using JMP to jump into a
+different function can have problems, and is not recommended.
   
 Example of JMP as a tail-recursion optimization:
     : countforever ( i -- )
@@ -2531,6 +2584,25 @@ For example, an MCP package of version 1.1 is represented as 1.001,
 and a version of 1.23 is represented as 1.023.  This lets you use
 mathematical compares to check version numbers.
 ~
+MCP_REGISTER_EVENT|
+MCP_REGISTER_EVENT ( strPkgName fltMinVers fltMaxVers -- )
+Registers an MCP package so that clients can know what is supported,
+and marks this process as wanting to receive MCP messages as Muf Events.
+These events can be read with EVENT_WAIT, and will have event ids starting
+with "MCP.", followed by the package and message names.  The event data
+will be a dictionary, containing "descr", "package", "message", and "args"
+elements.  The args element will have a dictionary of message arguments
+as it's value.  The minimum and maximum package versions supported are
+represented as floating point numbers, with the minor version number being
+divided by 1000.  For example, an MCP package of version 1.1 is represented
+as 1.001, and a version of 1.23 is represented as 1.023.  This lets you
+use arithmetic compares to check version numbers.  Since this primitive
+arranges for MCP messages to be received as muf events, there is no need
+to use the MCP_BIND primitive with this.  A side benefit is that _any_ MCP
+message sent for this package can be caught, not just the ones you bound.
+Also, the process that will handle the events is kept alive, so your data
+stored in variables, or on the stack, is kept.
+~
 MCP_BIND|
 mcp_bind ( strPkgName strMesgName addrCallback -- )
   Binds a specific message, so if it is received, the given function is
@@ -2616,6 +2688,21 @@ encoded in the number such that major version 8, minor version 12
 is represented as 8.012.  If the MCP protocol is not available on
 that descriptor, then 0.0 is returned.
 ~
+GUI_DLOG_CREATE|
+GUI_DLOG_CREATE (intDescr strType strTitle dictArgs -- strDlogID)
+If a user has a client that can support the MCP GUI protocol, then this
+primitive can be used to generate a dialog on their screen.  The intDescr
+is the integer descriptor of the connection to show the dialog on. The
+strType is the type of the dialog to create.  Currently, the only options
+for strType are D_SIMPLE, D_TABBED, or D_HELPER.  The strTitle argument
+is the title to show in the titlebar of the dialog.  dictArgs is a
+dictionary array that contains extra optional arguments for creating
+the dialog.  In general, dictArgs is only used to specify "panes" and
+"names" for D_TABBED and D_HELPER dialogs.  This primitive returns a
+string containing the dialogid, used by other prims to add controls or
+make various changes.  This dialog will be hidden and not shown to the
+user until it has been displayed with the GUI_DLOG_SHOW command.
+~
 GUI_DLOG_SIMPLE|
 GUI_DLOG_SIMPLE (intDescr strTitle -- strDlogID)
 If a user has a client that can support the MCP GUI protocol, then
@@ -2627,7 +2714,8 @@ the strTitle arg specifies what the title of the dialog will be.
 This returns a string containing the dialogid, used by other prims
 to add controls or make various changes.  This dialog will be hidden
 and not shown to the user until it has been displayed with the
-GUI_DLOG_SHOW command.
+GUI_DLOG_SHOW command.  GUI_DLOG_SIMPLE is actually an inserver
+convenience macro that uses GUI_DLOG_CREATE.
 ~
 GUI_DLOG_TABBED|
 GUI_DLOG_TABBED (intDescr strTitle dictPages -- strDlogID)
@@ -2646,7 +2734,8 @@ controls or make various changes.  When you create a new control, you
 can specify which page to put it in by passing a pageid in as the
 value of the "pane" argument.  This dialog will be hidden and not
 shown to the user until it has been displayed with the GUI_DLOG_SHOW
-command.
+command.  GUI_DLOG_SIMPLE is actually an inserver convenience macro
+that uses GUI_DLOG_CREATE.
 ~
 GUI_DLOG_HELPER|
 GUI_DLOG_HELPER (intDescr strTitle dictPages -- strDlogID)
@@ -2664,7 +2753,8 @@ to add controls or make various changes.  When you create a new
 control, you can specify which page to put it in by passing a pageid
 in as the value of the "pane" argument.  This dialog will be hidden
 and not shown to the user until it has been displayed with the
-GUI_DLOG_SHOW command.
+GUI_DLOG_SHOW command.  GUI_DLOG_SIMPLE is actually an inserver
+convenience macro that uses GUI_DLOG_CREATE.
 ~
 GUI_DLOG_SHOW|
 GUI_DLOG_SHOW (strDlogID -- )
@@ -2702,19 +2792,103 @@ GUI_VALUE_SET|
 GUI_VALUE_SET (strDlogID strCtrlID strValue -- )
 Sets the value of a given control in a given dialog.
 ~
+ANSI_MIDSTR|
+ANSI_MIDSTR ( s i i -- s' )
+Does exactly what MIDSTR does, except it ignores ansi escapes when
+determining what section of the string to extract.
+~
+ANSI_STRLEN|
+ANSI_STRLEN ( s -- i )
+Returns the length of string s ignoring ansi escape within the string.
+~
+ANSI_STRCUT|
+ANSI_STRCUT ( s i -- s1 s2 )
+Like STRCUT, but ignores ansi escapes when finding the location to divide
+the string at.
+~
+ANSI_STRIP|
+ANSI_STRIP ( s -- s' )
+Takes a string and removes ansi escapes from with in the string, returning
+the de-ansified string.
+~
+EVENT_SEND|
+EVENT_SEND ( i s ? -- )
+Sends a "USER." event to the process referred to by the given pid.
+The target process will receive an event that can be read with EVENT_WAIT.
+The event type will be "USER." with the given event id string appended
+to it.  The given event id string will be truncated at 32 characters.
+The given arbitrary stack element will be passed on to the new process.
+ie: '23 "foobar" 3.1416 event_send' will send an event to process 23, with
+an eventid of "USER.foobar", and a floating point data value of 3.1416.
+This primitive requires at least Mucker Level 3.
+~
+ARRAY_FINDVAL|
+ARRAY_FINDVAL (a1 ? -- a2)
+Returns a list array containing the keys of every element in the array
+a1 whose values match the given value.
+~
+ARRAY_EXCLUDEVAL|
+ARRAY_EXCLUDEVAL (a1 ? -- a2)
+Returns a list array containing the keys of every element in the array
+a1 whose values did NOT match the given value.
+~
+ARRAY_REVERSE|
+ARRAY_REVERSE (a -- a')
+Takes a list array and reverses the order of its elements.
+~
+MOVEPENNIES|
+MOVEPENNIES (d1 d2 i -- )
+Moves i pennies from player/thing d1 to player/thing d2.  This is the
+first step towards making ADDPENNIES require at least ML3 (or wizbit),
+for enabling economies.
+~
+TIMER_START|
+TIMER_START ( i s -- )
+Requests that a timer event be sent to this program in i seconds,
+with an event name of "TIMER."  with the given string appended.  ie:
+'5 "one" timer_start' will cause a "TIMER.one" event to be sent to
+the program in 5 seconds.  This is used with EVENT_WAIT.  If a timer
+with the given timerid already exists, it will be rescheduled to occur
+after the new delay.  Timer ids will be truncated to 32 characters.
+Each MUF process can only have a limited number of timers, specified
+by the @tunee setting 'process_timer_limit'.  Timers are listed on
+the @ps timequeue with the PID of the timer's process in parentheses.
+Timers are one-shot events.  To get a repeating timer, you'll need to
+restart it when you process a new timer event.
+~
+TIMER_STOP|
+TIMER_STOP ( s -- )
+Stops the timer with the given timerid, if it exists.  If there is
+already a timer event on the event queue, it will STAY on the queue
+until processed.  As with the timer_start primitive, the "TIMER." part
+of the event name is assumed.  '"first" timer_stop' will stop the timer
+created by '5 "first" timer_start'.  Timer ids ARE case sensitive.
+~
+EVENT_COUNT|
+EVENT_COUNT ( -- i )
+Returns the number of pending events waiting to be processed with EVENT_WAIT.
+~
 EVENT_WAIT|
-EVENT_WAIT ( -- dictContext eventID)
-Waits for an event to occur, pausing the MUF program.  Currently, the
-only events are GUI events.  GUI events have eventID strings that are
-created by prepending "GUI." to the dlogID of the dialog that generated
-the event.
+EVENT_WAIT ( -- ? s )
+Waits for an event to occur, pausing the MUF program.  When an event is
+available to read, this returns an event-specific context data item, and
+an eventID string.
+  
+Timer events have eventID strings that are created by prepending "TIMER." to
+the id string passed to the TIMER_START call.  The context for Timer events
+is an integer systime value, specifying when the timer was scheduled for.
 
-The context dictionary for GUI events contains the folowing keys:
+GUI events have eventID strings that are created by prepending "GUI." to
+the dlogID of the dialog that generated the event.  The context for GUI
+events is a dictionary contains the folowing keys:
   descr      Holds the descriptor that generated teh event.
   dlogid     Holds the DlogID of the dialog that generated the event.
   id         Holds the ID of the control that generated the event.
   dismissed  Holds 1 if the dialog was dismissed, 0 otherwise.
   event      Holds the type of gui event.  ie: buttonpress, menuselect.
+
+WORK: USER. events.
+WORK: MCP. events.
 ~
 C_DATUM
 C_DATUM
