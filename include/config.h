@@ -201,6 +201,13 @@
 /* This gives some debug malloc profiling, but also eats some overhead,
    so only define if your using it. */
 #undef MALLOC_PROFILING
+/* If MALLOC_PROFILING is defined, you can also debug the [cm]alloc calls as
+   well.  This causes magic numbers to be added at the beginning and end of the
+   allocated memory, which are checked whenever the memory allocation code is
+   entered.  DO NOT USE THIS UNLESS YOU ARE DEBUGGING MEMORY PROBLEMS. */
+#ifdef MALLOC_PROFILING
+#undef CRT_DEBUG_ALSO
+#endif /* MALLOC_PROFILING */
 
 /************************************************************************/
 /************************************************************************/
@@ -210,6 +217,7 @@
 
 #ifdef SANITY
 #undef MALLOC_PROFILING
+#undef CRT_DEBUG_ALSO
 #endif
 
 /*
