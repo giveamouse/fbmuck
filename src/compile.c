@@ -3251,10 +3251,12 @@ free_intermediate_node(struct INTERMEDIATE *wd)
 	if (wd->in.type == PROG_FUNCTION) {
 		free((void*)wd->in.data.mufproc->procname);
 		varcnt = wd->in.data.mufproc->vars;
-		for (j = 0; j < varcnt; j++) {
-			free((void*)wd->in.data.mufproc->varnames[j]);
+		if (wd->in.data.mufproc->varnames) {
+			for (j = 0; j < varcnt; j++) {
+				free((void*)wd->in.data.mufproc->varnames[j]);
+			}
+			free((void*)wd->in.data.mufproc->varnames);
 		}
-		free((void*)wd->in.data.mufproc->varnames);
 		free((void*)wd->in.data.mufproc);
 	}
 	free((void *) wd);
@@ -3362,9 +3364,13 @@ copy_program(COMPSTATE * cstat)
 			code[i].data.mufproc->procname = string_dup(curr->in.data.mufproc->procname);
 			code[i].data.mufproc->vars = varcnt = curr->in.data.mufproc->vars;
 			code[i].data.mufproc->args = curr->in.data.mufproc->args;
-			code[i].data.mufproc->varnames = (const char**)calloc(varcnt, sizeof(char*));
-			for (j = 0; j < varcnt; j++) {
-				code[i].data.mufproc->varnames[j] = string_dup(curr->in.data.mufproc->varnames[j]);
+			if (curr->in.data.mufproc->varnames) {
+				code[i].data.mufproc->varnames = (const char**)calloc(varcnt, sizeof(char*));
+				for (j = 0; j < varcnt; j++) {
+					code[i].data.mufproc->varnames[j] = string_dup(curr->in.data.mufproc->varnames[j]);
+				}
+			} else {
+				code[i].data.mufproc->varnames = NULL;
 			}
 			break;
 		case PROG_OBJECT:
@@ -3519,10 +3525,12 @@ size_prog(dbref prog)
 		if (c[i].type == PROG_FUNCTION) {
 			byts += strlen(c[i].data.mufproc->procname) + 1;
 			varcnt = c[i].data.mufproc->vars;
-			for (j = 0; j < varcnt; j++) {
-				byts += strlen(c[i].data.mufproc->varnames[j]) + 1;
+			if (c[i].data.mufproc->varnames) {
+				for (j = 0; j < varcnt; j++) {
+					byts += strlen(c[i].data.mufproc->varnames[j]) + 1;
+				}
+				byts += sizeof(char**) * varcnt;
 			}
-			byts += sizeof(char**) * varcnt;
 			byts += sizeof(struct muf_proc_data);
 		} else if (c[i].type == PROG_STRING && c[i].data.string) {
 			byts += strlen(c[i].data.string->data) + 1;
