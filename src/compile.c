@@ -119,6 +119,7 @@ typedef struct COMPILE_STATE_T {
 
 	struct line *curr_line;		/* current line */
 	int lineno;					/* current line number */
+        int start_comment;              /* Line last comment started at */
 	const char *next_char;		/* next char * */
 	dbref player, program;		/* player and program for this compile */
 
@@ -202,7 +203,12 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
 {
 	static char _buf[BUFFER_LEN];
 
-	snprintf(_buf, sizeof(_buf), "Error in line %d: %s", cstat->lineno, c);
+	if (cstat->start_comment) {
+	  snprintf(_buf, sizeof(_buf), "Error in line %d: %s  Comment starting at line %d.", cstat->lineno, c, cstat->start_comment);
+	  cstat->start_comment = 0;
+	} else {
+	  snprintf(_buf, sizeof(_buf), "Error in line %d: %s", cstat->lineno, c);
+	}
 	if (cstat->line_copy) {
 		free((void *) cstat->line_copy);
 		cstat->line_copy = NULL;
@@ -1483,7 +1489,9 @@ next_token_raw(COMPSTATE * cstat)
 	}
 	/* take care of comments */
 	if (*cstat->next_char == BEGINCOMMENT) {
+	        cstat->start_comment = cstat->lineno;
 		do_comment(cstat, 0);
+		cstat->start_comment = 0;
 		return next_token_raw(cstat);
 	}
 	if (*cstat->next_char == BEGINSTRING)
