@@ -1,0 +1,3031 @@
+-----------------------------
+TinyMUCK 2.2fb6.00 MUF Manual
+-----------------------------
+  
+To get manual information on a topic, type MAN <topic>, the following
+topics are available:
+  
+PRIMITIVES          - Reference section relating to MUF programming.
+LOOPS               - Loops structures in MUF.
+DIRECTIVES          - Compiler directives.
+LIBRARIES           - How to use and make MUF libraries.
+LEVELS              - Restrictions by mucker level.
+MULTITASKING        - Various MUF multi-tasking information.
+FLAGS               - What effects various flags have on programs.
+DEBUGGER            - How to use the interactive debugger.
+NOTATION            - Notation used by debug dumps and the MUF debugger.
+MISCELLANEOUS       - Random bits of information.
+~
+~XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+~                                   MUF
+~XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+~
+~(NOTE: Some of the ordering was changed so the server would read the file
+~correctly)
+PRIMITIVES|
+  
+Variable Handling:
+  var    lvar    variable    localvar    !    @
+  
+Multi-Tasking:
+  preempt  background  foreground  ispid?   fork  sleep  kill  pid  queue
+  pr_mode  bg_mode     fg_mode     setmode  mode  abort
+  
+Math and Comparison:
+  +   -   *   /   %   <   >   =   <=   >=   and   or   not
+  strcmp   stringcmp   strncmp   smatch   stringpfx   dbcmp   number?
+
+Floating Point Math:
+  ceil        floor       float      sqrt      pow        frand
+  sin         cos         tan        asin      acos       atan
+  exp         log         log10      fabs      fmod       modf
+  pi          inf         round      clear     is_set?    error?
+  clear_error error_name  set_error  error_bit  error_num
+  error_string
+
+Stack Types and Object Types:
+  string?  dbref?  address?  lock?  int?   array?  dictionary?
+  player?  thing?  program?  exit?  room?  ok?     flag?
+  float?
+  
+Control Structures:
+  if     else  then   call   execute   exit   jmp     public  wizcall
+  begin  for   while  break  continue  until  repeat  foreach interp
+  
+Stack Manipulation:
+  dup   pop   swap  over  rot  rotate  pick   put    reverse
+  ldup  dupn  popn  {     }    }list   }dict  depth  lreverse
+
+Array Manipulation:
+  array_make_dict array_make
+  array_explode   array_keys      array_vals         array_count
+  array_notify    array_nunion    array_nintersect   array_ndiff
+  array_first     array_last      array_next         array_getitem
+  array_delitem   array_setitem   array_insertitem   array_getrange
+  array_delrange  array_setrange  array_insertrange
+  
+Message Management:
+  desc     succ      fail      name      truename
+  setdesc  setsucc   setfail   setname
+  drop     osucc     ofail     odrop
+  setdrop  setosucc  setofail  setodrop
+  
+Time:
+  date   gmtoffset   systime   time   timesplit   timefmt
+  
+Data Conversion:
+  atoi   intostr   dbref   int    ctoi    itoc    stod   strtof ftostr 
+  
+Property Management:
+  getprop  getpropval  getpropfval getpropstr  addprop   remove_prop
+  envprop  envpropstr  nextprop    propdir?  parseprop    setprop
+  
+I/O:
+  read   notify   notify_except   notify_exclude   tread
+  
+Connection Management:
+  awake?       online     concount  condescr       condbref
+  conhost      conuser    contime   conidle        connotify
+  descriptors  nextdescr  descrcon  descr_setuser  online_array
+  descrflush   conboot
+  
+String Handling:
+  toupper    tolower  instring    rinstring  instr   rinstr   striplead
+  striptail  strip    unparseobj  strlen     strcat  strcut   subst
+  explode    textattr pronoun_sub midstr     split   rsplit   fmtstring
+  tokensplit
+  
+Lock Handling:
+  locked?   getlockstr   setlockstr   parselock   unparselock
+  testlock  prettylock
+  
+Bitwise Operators:
+  bitor   bitand   bitxor   bitshift
+  
+MCP Mud Client Protocol commands:
+  mcp_register  mcp_bind  mcp_supports  mcp_send
+  
+MCP GUI Package Support
+  gui_available   gui_dlog_simple   gui_dlog_tabbed   gui_dlog_helper
+  gui_dlog_show   gui_dlog_close    gui_ctrl_create   gui_values_get
+  gui_value_set   event_wait
+
+MCP GUI Package Control Defines
+  c_datum         c_label           c_hrule           c_vrule
+  c_button        c_checkbox        c_edit            c_multiedit
+  c_combobox      c_listbox         c_spinner         c_scale
+  c_frame         c_notebook
+
+Misc:
+  set    mlevel  next    checkargs  location  newroom     pennies
+  flag?  caller  force   sysparm    contents  newexit     addpennies
+  prog   match   random  version    controls  newobject   timestamps
+  trig   stats   rmatch  getlink    setown    recycle     part_pmatch
+  dbtop  exits   moveto  setlink    owner     copyobj     checkpassword
+  srand  setseed getseed pmatch     getlinks  nextowned   cancall?
+  
+In the documentation some primitives are grouped together as:
+  MATH OPERATORS
+  LOGICAL OPERATORS
+  VARIABLE OPERATORS
+  
+See man <primitive> for information on each primitive.
+~
+MATH OPERATORS|+|-|*|/|%|MODULO|ADD|SUBTRACT|MULTIPLY|DIVIDE|
++ - * / % ( i1 i2 -- i )
+These words perform arithmetic operations on numbers. `+' = addition
+(i1 + i2); `-' = subtraction (i1 - i2); `*' = multiplication (i1 times
+i2, or i1 * i2); `/' = division (i1 divided by i2, or i1 / i2) with
+integer division truncation of fractions; `%' = modulo (remainder of
+i1 / i2, or i1 % i2)  Floats cannot use the % modulo function.  See
+the FMOD or MODF primitives.
+You may use these operators on different types of data, ie dbrefs,
+local variables, and variables.  Floats may be combined with integers.
+~
+LOGICAL OPERATORS|<|>|<=|>=|=|LESS THAN|GREATER THAN|EQUALS|
+< > = <= >= ( x1 x2 -- i )
+Performs relational operations on x1 and x2. These return i
+as 1 if the expression is true, and i as 0 otherwise.
+~
+ACOS|
+acos ( f -- f )
+Returns the inverse cosine of a float.  Only operates within the range
+from 0 to PI.
+~
+ASIN|
+asin ( f -- f )
+Returns the inverse sine of a float.  Only operates within the range from 
+-PI/2 to PI/2.
+~
+ATAN|
+atan ( f -- f )
+Returns the inverse tangent of a float.  Only operates within the range
+from -PI/2 to PI/2.
+~
+ATAN2|
+atan2 ( fy fx -- f )
+Returns the inverse tangent of (fy / fx), taking into account the signs
+of both values, and avoiding problems with DIVBY0.  This is useful to
+get an angle from X-Y coordinates.
+~
+DIST3D|
+dist3D ( fx fy fz -- f )
+Returns the distance of the XYZ coordinate (fx,fy,fz) from the origin.
+~
+XYZ_TO_POLAR|
+xyz_to_polar ( fx fy fz -- fr ft fp )
+Converts the XYZ coordinate (fx, fy, fz) to the spherical polar coordinate
+(fr, ft, fp).  fr is the radius, ft is theta (the plane angle), and fp is phi
+(the elevation angle)
+~
+POLAR_TO_XYZ|
+polar_to_xyz ( fr ft fp -- fx fy fz )
+Converts the spherical polar coordinate (fr, ft, fp) to the XYZ coordinate
+(fx, fy, fz).  fr is the radius, ft is theta (the plane angle), and fp is phi
+(the elevation angle)
+~
+~
+ARRAY?|
+array? ( ? -- i )
+Tests if stack item is an array.  Returns i as 1 if so, 0 if
+otherwise.
+~
+ARRAY_COUNT|
+array_count ( a -- i )
+Returns the count of number of items in the array.
+~
+ARRAY_DELITEM|
+array_delitem ( a @ -- a' )
+Removes an item with index @ from an array.
+~
+ARRAY_DELRANGE|
+array_delrange ( a @ @ -- a' )
+Deletes a range of items between two indexes (inclusive) from
+an array.
+~
+ARRAY_EXPLODE|
+array_explode ( a -- {@ ?} )
+Explodes an array into a stackrange of its index/value pairs.
+    Example:  "idx0" "val0" "idx1" "val1" 2
+~
+ARRAY_FIRST|
+array_first ( a -- @ i )
+Returns the first index in array, and a boolean which is false
+if there are no items are in the array.
+~
+ARRAY_GETITEM|
+array_getitem ( a @ -- ? )
+Returns item with index @ from an array.
+~
+ARRAY_GETRANGE|
+array_getrange ( a @ @ -- a' )
+Returns as an array the range between two indexes (inclusive)
+from an array.
+~
+ARRAY_INSERTITEM|
+array_insertitem ( ? a @ -- a' )
+Inserts a given value into an array.
+~
+ARRAY_INSERTRANGE|
+array_insertrange ( a1 @ a2 -- a' )
+Inserts items from array a2 into a1, starting at the given index.
+Returns the resulting array.
+~
+ARRAY_KEYS|
+array_keys ( a -- {@} )
+Returns the keys of an array in a stackrange.
+    Example:  "idx0" "idx1" 2 
+~
+ARRAY_LAST|
+array_last ( a -- @ i )
+Returns the last index in array, and a boolean which is false
+if there are no items are in the array.
+~
+ARRAY_MAKE|
+array_make ( {?} -- a )
+Creates a list type array from a stackrange.
+~
+ARRAY_MAKE_DICT|
+array_make_dict ( {@ ?} -- a )
+Creates a dictionary type array from a stackrange of index/value
+pairs.
+~
+ARRAY_NDIFF|
+array_ndiff ( {a} -- a )
+Return an array containing the difference of all the given
+arrays in the stackrange.  Multiple arrays are consecutively
+processed against the results of the previous difference, from
+the top of the stack down.
+~
+ARRAY_NEXT|
+array_next ( a @ -- @ i )
+Returns the next index in the array, and a boolean which
+is false if there are no items left.
+~
+ARRAY_NINTERSECT|
+array_nintersect ( {a} -- a )
+Returns an array containing the intersection of all the given
+arrays in the stackrange.  Multiple arrays are consecutively
+processed against the results of the previous intersection, from
+the top of the stack down.
+~
+ARRAY_NOTIFY|
+array_notify ( a1 a2 -- )
+Notifies all strings in array a1 to all dbrefs in array a2.  Arrays
+must be homogenous of their respective types.
+~
+ARRAY_NUNION|
+array_nunion ( {a} -- a )
+Returns an array containing the union of values of all the given
+arrays in the stackrange.
+~
+ARRAY_PREV|
+array_prev ( a @ -- @ i )
+Returns the previous index in the array, and a boolean which
+is false if there are no items left.
+~
+ARRAY_SETITEM|
+arra_setitem ( ? a @ -- a')
+Overwrites a given array item at index @ with new value ?.
+~
+ARRAY_SETRANGE|
+array_setrange ( a1 @ a2 -- a' )
+Sets items in list a1 to vals from list a2, starting at the given
+index.  Returns the resulting array.
+~
+ARRAY_VALS|
+array_vals ( a -- {?} )
+Returns the values of an array in a stackrange.
+    Example: "val0" "val1" 2
+~
+ADDPENNIES|
+addpennies ( d i -- )
+d must be a player or thing object.  Adds i pennies to object d.
+Without Wizard permissions, addpennies may only give players pennies,
+limited to between zero and MAX_PENNIES.
+~
+ADDPROP|
+addprop ( d s1 s2 i -- )
+Sets property associated with s1 in object d.  Note that if s2 is null
+"", then i will be used.  Otherwise, s2 is always used.  All four
+parameters must be on the stack; none may be omitted.  If the
+effective user of the program does not control the object in question
+and the property begins with an underscore `_', the property cannot be
+changed.  The same goes for properties beginning with a dot `.' which
+cannot be read without permission. 
+~
+AND|
+and ( x y -- i )
+Performs the boolean `and' operation on x and y, returning i as 1 if
+both i1 and i2 are TRUE, and returning i as 0 otherwise.
+~
+ATOI|
+atoi ( s -- i )
+Turns string s into integer i.  If s is not a string, then 0 is pushed
+onto the stack.
+~
+CALL|
+call ( d -- ?? )
+Calls another program d.  d must have been compiled already. d will
+inherit the values of ME, LOC, TRIGGER, and all other variables.
+~
+CEIL|
+ceil ( f - f )
+Returns the next highest integer, as a floating point type.
+~
+CLEAR|
+clear ( -- )
+Clears all error flags for floating point math operations.
+See also ERROR?.
+~
+CLEAR_ERROR|
+clear_error ( s|i -- i )
+Clears a specific error flag for floating point math operations.
+See also ERROR?.
+~
+CONTENTS|
+contents ( d -- d' )
+Pushes the dbref of the first thing contained by d.  This dbref can
+then be referenced by `next' to cycle through all of the contents of
+d.  d may be a room or a player.
+~
+COPYOBJ|
+copyobj ( d -- d' )
+Creates a new object (returning d' on top of the stack), that is a
+copy of object d. Each program is allowed to create only one new
+object per run.
+~
+COS|
+cos ( f -- f )
+Returns the cosine of a float.  Only operates in the range of
+-PI/4 to PI/4.
+~
+CTOI|
+ctoi ( s - i )
+Converts the first character in s into its ASCII equivilent.
+See also ITOC.
+~
+DBCMP|
+dbcmp ( d1 d2 -- i )
+Performs comparison of database objects d1 and d2. If they are the
+same object, then i is 1, otherwise i is 0.
+Use of this primitive is deprecated, as dbrefs may be compared with
+the standard comparison functions (< <= > >= =).
+~
+DBREF|
+dbref ( i -- d )
+Converts integer i to object reference d.
+~
+DESC|
+desc ( d -- s )
+Takes object d and returns its description (@desc) string field.
+~
+DICTIONARY?|
+dictionary ( ? -- i )
+Tests if stack item is an array of dictionary type.  Returns i as 1
+if so, 0 if otherwise.
+~
+DROP|
+drop ( d -- s )
+Takes object d and returns its drop (@drop) string field.
+~
+DUP|
+dup ( x -- x x )
+Duplicates the item at the top of the stack.
+~
+DUPN|
+dupn ( ?n..?1 i -- ?n..?1 ?n..?1 )
+Duplicates the top i stack items.
+See also LDUP.
+~
+ERROR?|
+error? ( -- i )
+Returns true if any of the floating point error flags have been set.  In
+most cases, an error condition in a math operation will return a zero value
+(except in the case of integer math, which will wrap around on an overflow
+or underflow condition).  It is possible to poll for error conditions after
+every math operation, or when a '0' result is found.
+The following is a list of the current Error Flags:
+        DIV_ZERO  - (0) Division by zero attempted.
+        NAN       - (1) Result was not a number.
+        IMAGINARY - (2) Result would be imaginary. 
+        FBOUNDS   - (3) Floating-point inputs were out of range.
+        IBOUNDS   - (4) Calculation resulted in an integer overflow or
+                        underflow.
+~
+ERROR_BIT|
+error_bit ( s -- i )
+Returns the bit identifier for a given floating point error flag string name.
+See also ERROR?.
+~
+ERROR_NAME|
+error_name ( i -- s )
+Returns the string name for the error flag, given a floating point error
+identifier.
+See also ERROR?.
+~
+ERROR_NUM|
+error_num ( -- i )
+Returns the total number of floating point error flag types.
+See also ERROR?.
+~
+ERROR_STR|
+error_str ( s|i -- s )
+Returns a user-readable error string, given a floating point error identifier.
+See also ERROR?.
+~
+EXECUTE|
+execute ( a -- ?? )
+Executes the function pointed to by the address a on the stack.
+~
+EXIT|
+exit ( -- )
+Exits from the word currently being executed, returning control to the calling
+word, at the statement immediately after the location of the call (exiting
+the program if applicable).
+~
+EXIT?|
+exit? ( d -- i )
+Returns 1 if object d is an exit object, 0 if otherwise.
+See also player?, program?, room?, thing?, ok?.
+~
+EXITS|
+exits ( d -- d' )
+Returns the first exit in the linked exit list of room/player/object d.
+This list can be transversed with `next'.
+~
+EXP|
+exp ( f -- f )
+Returns the value of e raised to the power of the passed float.
+~
+EXPLODE|
+explode ( s1 s2 -- ... i )
+s2 is the delimiter string, and s1 is the target string, which will be
+fragmented, with i pushed on top of the stack as the number of strings
+s1 was broken into.  For instance:
+    "Hello world" " " explode
+will result in
+    "world" "Hello" 2
+on the stack.  (Note that if you read these items off in order, they
+will come out "Hello" first, then "world".)  For TinyMUCK 2.2, s2 may
+be any length.  But "" (null string) is not an acceptable string for
+parameter s2.
+~
+FABS|
+fabs ( f -- f )
+Returns the absolute value of the float f.
+~
+FAIL|
+fail ( d -- s )
+Takes object d and returns its fail (@fail) string field.
+~
+FLAG?|
+flag? ( d s -- i )
+Reads the flag of object d, specified by s, and returns its state: 1 =
+on; 0 = off.  The ! token may be used before the name of a flag to negate
+the check and check for the absense of the flag.  Different flags may be
+supported in different installations.  flag? returns 0 for unsupported or
+unrecognized flags.
+You can check the "interactive" flag to see if a player is currently in
+a program's READ, or if they are in the MUF editor.
+The "Truewizard" flag will check for a W flag with or without the QUELL set.
+The "Mucker" flag returns the most significant bit of the mucker level and
+the "Nucker" flag returns the least significant bit.
+~
+FLOAT|
+float ( i -- f )
+Converts integer to floating point type.
+~
+FLOAT?|
+float? ( ? -- i )
+Returns true if the item on the stack is a floating point value.
+~
+FLOOR|
+floor ( f -- f )
+Returns the next lowest integer number, as a floating point type.
+~
+FMOD|
+fmod ( f1 f2 -- f )
+Returns the floating point remainder of (f1/f2).
+~
+FMTSTRING|
+fmtstring ( ?n..?1 s -- s )
+Allows for string formatting with format substitutions, as per C's printf.
+FMTSTRING can be used to format complicated and long strings, as well as
+multi-lined (with embedded new-lines) strings.  These strings can consist
+entirely of user-specified text, formatted variable entries (as values taken
+from the stack) or a combination of both.
+
+The start of a format substitution in the string is noted by a '%'.  If a
+literal '%' is needed in the string, a '%%' may be used.  The format of a
+substitution is as follows: '%[-,|][+, ][0][number][.number]type'
+Where 'number' is an integer value, and 'type' is one of the following
+identifiers:
+        i - integer argument
+        s - string argument
+        d - dbref number, in the form of #123
+        D - dbref name reference; given a dbref, will print the associated
+            name for that object - terminates on bad reference
+        l - pretty-lock, given a lock, will print the description
+        f - float in xxx.yyy form
+        e - float in x.yyEzz form
+        g - shorter of forms e or f
+        ~ - default representation of any stack type
+        ? - unknown type argument, will print a string stating what the
+            variable type is
+~
+FRAND|
+frand ( -- f )
+Returns a random floating point number between 0 and 1.
+~
+FTOSTR|
+ftostr ( f -- s )
+Converts a floating point number into a string.  Always includes the decimal
+point.  FTOSTR can return either the xxx.yyy form or the x.yyyEzz form of
+a float, depending on which would give the shortest string length.
+See also FMTSTRING.
+~
+GETLINK|
+getlink ( d -- d' )
+Returns what object d is linked to, or #-1 if d is unlinked.  The
+interpretation of link depends on the type of d: for an exit, returns
+the room, player, program, action, or thing that the exit is linked
+to.  For a player, program, or thing, it returns its `home', and for
+rooms returns the drop-to.
+~
+GETLINKS|
+getlinks ( d -- dn..d1 n )
+Returns what objects d is metalinked to.  If d is an unlinked exit,
+a program, or a room with no dropto, getlinks returns 0.  A count of
+1 and #-3 is returned if the dropto is linked to HOME.
+~
+GETPROP|
+GETPROP (d s -- ?)
+    Gets the value of a given property, and puts it on the stack.
+This can return a lock, a string, a dbref, or an integer, depending
+on the type of the property.  Permissions are the same as those for
+GETPROPSTR.  This primitive returns 0 if no such property exists, of
+if it is a valueless propdir.  Also see SETPROP, ADDPROP, REMOVE_PROP,
+GETPROPSTR, GETPROPVAL, INT?, DBREF?, STRING?, and LOCK?.
+~~~~
+GETPROPSTR|
+getpropstr ( d s -- s )
+s must be a string. Retrieves string associated with property s in
+object d.  If the property is cleared, "" (null string) is returned.
+~
+GETPROPVAL|
+getpropval ( d s -- i )
+s must be a string. Retrieves the integer value i associated with
+property s in object d. If the property is cleared, 0 is returned.
+~
+GETPROPFVAL|
+getpropfval ( d s -- f )
+returns the float value stored in the property
+~
+GETSEED|
+getseed ( -- s )
+Returns the the current SRAND seed string.
+~
+IF|
+if ... [ else ... ] then ( x -- )
+Examines boolean value x.  If x is TRUE, the sequence of statements
+after the 'if' up until the `then' (or until the `else' if it is
+present) performed. If it is FALSE, then these statements are skipped,
+and if an `else' is present, the statements between the `else' and the
+`then' are performed.  Control continues as usual at the statement
+after the `then'.  Note that checking the top of the stack actually
+pops it, so if you want to re-use it, you should dup (see DUP) it
+before the if. For every IF in a word, there MUST be a THEN, and
+vice-versa.  ELSE is optional.
+~
+INF|
+inf ( -- f )
+Returns the value of an Infinite result.  Most functions will not
+accept this value as a legal input.
+~
+INSTR|
+instr ( s s1 -- i )
+Returns the first occurrence of string s1 in string s, or 0 if s1 is
+not found.  See also rinstr and instring.
+~
+INT|
+int ( x -- i )
+Converts variable, float, or object x to integer i.
+~
+INTOSTR|
+intostr ( x -- s )
+x must be an integer or a dbref. Converts x into string s.
+~
+IS_SET?|
+is_set? ( s|i - i )
+Checks if a specific floating point error flag is set.
+See also ERROR?.
+~
+ITOC|
+itoc ( i -- s )
+Converts an integer i to its ASCII equivilent character, or a null
+if i is not a valid display character.
+See also CTOI.
+~
+LDUP|
+ldup ( {?} -- {?} {?} )
+Duplicates a stackrange on top of the stack.
+~
+LOCATION|
+location ( d -- d' )
+Returns location of object d as object d'.
+~
+LOG|
+log ( f -- f )
+Returns the natural log of float f.  Requires a value greater than
+zero.  Very small values will return INF.
+~
+LOG10|
+log10 ( f -- f )
+Returns the log base 10 of float f.  Requires a value greater than
+zero.  Very small values will return INF.
+~
+LREVERSE|
+lreverse ( ?n..?1 i -- ?1..?n i )
+Reverses the order of the top i stack items, leaving i.
+~
+MATCH|
+match ( s -- d )
+Takes string s, first checks all objects in the user's inventory, then
+checks all objects in the current room, as well as all exits that the
+player may use, and returns object d which contains string s.  If
+nothing is found, d = #-1. If ambiguous, d = #-2. If HOME, d = #-3.
+~
+MIDSTR|
+midstr ( s i1 i2 -- s )
+Returns the substring of i2 characters, starting with the first
+character after i1.  i1 and i2 must both be positive.
+~
+MODF 
+modf ( f1 -- f1' f2' )|
+Returns the integral and fractional parts of f1, both as floats. 
+~
+MOVETO|
+moveto ( d1 d2 -- )
+Moves object d1 to object d2.
+MOVETO is affected by the following rules:
+    a) If the object being moved is !JUMP_OK and is it being moved by someone
+       other than the object's owner, then the moveto fails.
+    b) If the object being moved is a person and either the source or
+       destination rooms (if not owned by the person being moved) are
+       !JUMP_OK, the moveto fails.
+    c) If the object being moved is not a player, is owned by the owner of
+       either the source or destination rooms, and either room where the
+       ownership matches is !JUMP_OK, the moveto fails.
+The moveto succeeds under any other circumstances.  MOVETO rules follow the
+permissions of the current effective userid.  MOVETO will run programs in
+the @desc and @succ/@fail of a room when moving a player.
+~
+NAME|
+name ( d -- s )
+Takes object d and returns its name (@name) string field.
+~
+TRUENAME|
+truename ( d -- s )
+Takes object d and returns its true name string field.
+This is the same as name if the MUCK doesn't use anoniminity.
+~
+NEXT|
+next ( d -- d' )
+Takes object d and returns the next thing in the linked contents/exits
+list of d's location.
+~
+NEXTOWNED|
+next ( d -- d' )
+When called with a player dbref, returns the dbref of the first object they
+own.  Subsequent calls to those object dbrefs returns the next object owned
+by that same player.  When no more objects are left owned by that player,
+#-1 is returned.  The order of the objects is not guarenteed, but when used
+correctly, each object owned by that player will be returned exactly once.
+The player object itself will NOT be returned.
+See also NEXT.
+~
+NOT|
+not ( x -- i )
+Performs the boolean `not' operation on x, returning i as 1 if x is
+FALSE, and returning i as 0 otherwise.
+~
+NOTIFY|
+notify ( d s -- )
+d must be a player object. s must be a string. Tells player d message
+s.  If s is null it will print nothing.  This primitive will trigger
+the _listen'er property on the object the message is sent to, unless
+the program that would be run is the same as one one currently running.
+~
+NOTIFY_EXCEPT|
+notify_except ( d1 d2 s -- )
+d1 must be a room object, s must be a string.  Tells everyone at
+location d1 except object d2 message s.  If object d2 is not a player
+or NOTHING (#-1) all players are notified.  If s is null it prints
+nothing.  NOTE: notify_except is now only an inserver $define.  It is
+translated to '1 swap notify_exclude'.  Please see the man sections on
+NOTIFY_EXCLUDE and DIRECTIVES for more information.
+~
+NUMBER?|
+number? ( s -- i )
+Returns 1 if string on top of the stack contains a number. Otherwise
+returns 0.
+~
+ODROP|
+odrop ( d -- s )
+Takes object d and returns its odrop (@odrop) string field.
+~
+OFAIL|
+ofail ( d -- s )
+Takes object d and returns its ofail (@ofail) string field.
+~
+OK?|
+ok? ( x -- i )
+Takes x and returns 1 if x is a type dbref, as well as 0 or above,
+below the top of the database, and is not an object of type garbage.
+See also exit?, player?, program?, thing?.
+~
+OR|
+or ( x y -- i )
+Performs the boolean `or' operation on x and y. Returns i as 1 if
+either x or y is TRUE, returns i as 0 otherwise.
+~
+OSUCC|
+osucc ( d -- s )
+Takes object d and returns its osuccess (@osucc) string field.
+~
+OVER|
+over ( x y -- x y x )
+Duplicates the second-to-top thing on the stack.  This is the same as 2 pick.
+~
+OWNER|
+owner ( d -- d' )
+d is any database object. Returns d', the player object that owns d.
+If d is a player, d' will be the same as d.
+~
+PENNIES|
+pennies ( d -- i )
+Gets the amount of pennies player object d has, or the penny value of thing d.
+~
+PI|
+pi ( -- f )
+Returns the value of PI.
+~
+PICK|
+pick ( ni ... n1 i -- ni ... n1 ni )
+Takes the i'th thing from the top of the stack and pushes it on the top.
+1 pick is equivalent to dup, and 2 pick is equivalent to over.
+~
+PLAYER?|
+player? ( d -- i )
+Returns 1 if object d is a player object, otherwise returns 0.
+If the dbref is that of an invalid object, it will return 0.
+See also program?, room?, thing?, exit?, ok?.
+~
+POP|
+pop ( x -- )
+Pops the top of the stack into oblivion.
+~
+POPN|
+popn ( ?n..?1 i -- )
+Pops the top i stack items.
+~
+POW
+pow ( f1 f2 -- f )|
+Returns f1 to the power of f2.  If f1 is zero, f2 must be greater than
+zero.  If f1 is less than zero, f2 must be an integer value.
+~
+PROG|
+prog ( -- d)
+Returns the dbref of the currently running program.
+~
+PROGRAM?|
+program? ( d -- i )
+Returns 1 if object d is a program, otherwise returns 0.
+If the dbref is that of an invalid object, it will return 0.
+See also player?, room?, thing?, exit?, ok?.
+~
+PRONOUN_SUB|
+pronoun_sub ( d s -- s' )
+Takes database object d and substitutes string s according to o-message
+rules.  For example:
+  me @ "%N has lost %p marbles." pronoun_sub
+  
+would return:
+  "Igor has lost his marbles."
+  
+if the player's name was Igor and his sex were male.
+d does not have to be a player for the substitutions to work.
+  
+The substitutions are
+  %a/%A for absolute possessive (his/hers/its, His/Hers/Its)
+  %s/%S for subjective pronouns (he/she/it, He/She/It)
+  %o/%O for objective pronouns (him/her/it, Him/Her/It)
+  %p/%P for possessive pronouns (his/her/its, His/Her/Its)
+  %r/%R for reflexive pronouns (himself/herself/itself,
+                                 Himself/Herself/Itself)
+  %n/%N for the player's name.
+  
+if it comes across a %X substitution, where X is any character not listed
+in the above substitutions table, it will search down the environment tree
+from d to try to find the appropriate %X property for use in substitution.
+~
+RANDOM|
+random ( -- i )
+Returns a random integer from 0 to the MAXINT of the system running the MUCK.
+In general this number is (2^31)-1 or 2,147,483,647 (2.1 billion).
+~
+READ|
+read ( -- s )
+Reads a string s from the user. This command should not be used in a
+program that is locked (as opposed to linked) to an object, as the
+lock will always fail and print the fail messages at read time.  It
+cannot be used in a program associated with a room object.
+~
+REMOVE_PROP|
+remove_prop ( d s -- )
+Removes property s from object d.  If the property begins with an
+underscore, `_' or a dot `.', and the effective user does not have
+permission on that object, the call fails.
+~
+REVERSE|
+reverse ( ?n..?1 i -- ?1..?n )
+Reverses the order of the top i items on the stack.
+See also LREVERSE.
+~
+RINSTR|
+rinstr ( s s1 -- i )
+Returns the last occurrence of string s1 in string s, or 0 if s1 is
+not found.  '"abcbcba" "bc" rinstr' returns 4.  See also instr.
+~
+RMATCH|
+rmatch ( d s -- d' )
+Takes string s, checks all objects and actions associated with object
+d, and returns object d' which matches that string.  For example,
+matches actions and inventory objects for a player object, actions on
+a thing object, etc.  If nothing is found, d' = #-1.  if ambiguous, d'
+= #-2. If HOME, d' = #-3.
+~
+ROOM?|
+room? ( d -- i )
+Returns 1 if object d is a room, otherwise returns 0.  If the dbref is that
+of an invalid object, it will return 0.  A dbref of #-3 (HOME) returns 1.
+See also player?, program?, thing?, exit?, and ok?.
+~
+ROT|
+rot ( x y z -- y z x )
+Rotates the top three things on the stack.  This is equivalent to 3 rotate.
+~
+ROTATE|
+rotate ( ni ... n1 i -- n(i-1) ... n1 ni )
+Rotates the top i things on the stack.   '"a" "b" "c" "d" 4 rotate' would
+leave "b" "c" "d" "a" on the stack.  Using a negative rotational value rotates
+backwards.  ie: '"a" "b" "c" "d" -4 rotate'  would leave "d" "a" "b" "c" on
+the stack.
+~
+ROUND|
+round ( f -- f )
+Rounds to the nearest integer, and returns as a floating point value.
+~
+RSPLIT|
+rsplit ( s1 s2 -- s1' s2' )
+Splits a string, as SPLIT, but splits on the last occurence of s2.
+See also SPLIT.
+~
+SET|
+set ( d s -- )
+  Sets flag s to object d.  Currently settable things are: abode, chown,
+dark, haven, jump, link, sticky.  Boolean operations (e.g. `!abode')
+work as expected.
+See also setname, setdesc, and flag?.
+~
+SET_ERROR|
+set_error ( s|i -- i )
+Sets the specified error flag for floating point operations.
+See also ERROR?.
+~
+SETDESC|SETSUCC|SETFAIL|SETDROP|SETOSUCC|SETOFAIL|SETODROP|
+setdesc setsucc setfail setdrop setosucc setofail setodrop (d s -- )
+  Takes object d, and sets the string field specified to s. A program
+may only set string fields of objects that are owned by the effective
+user of the program, or any object if the program is Wizard.  These are
+all actually $defines to addprop with the appropriate property name.
+They are effectively defined as:
+$define setdesc  "_/de"  swap 0 addprop $enddef
+$define setsucc  "_/sc"  swap 0 addprop $enddef
+$define setfail  "_/fl"  swap 0 addprop $enddef
+$define setdrop  "_/dr"  swap 0 addprop $enddef
+$define setosucc "_/osc" swap 0 addprop $enddef
+$define setofail "_/ofl" swap 0 addprop $enddef
+$define setodrop "_/odr" swap 0 addprop $enddef
+  
+See also set, setname, addprop, getpropstr, remove_prop, desc, succ,
+fail, drop, osucc, ofail, and odrop.
+~
+SETNAME|
+setname  ( d s -- )
+  Takes object d, and sets the name to s. A program may only set the
+names of objects that are owned by the effective user of the program,
+or any object if the program is Wizard.  The name of a player can never
+be set, since that would normally require a password.
+See also set, name, and setdesc.
+~
+SETSEED|
+setseed ( s -- )
+Sets the seed for SRAND.  Only the first thirty-two characters are
+significant.  If SRAND is called before SETSEED is called, then SRAND
+is seeded with a semi-random value.
+~
+SIN|
+sin ( f -- f )
+Returns the sine of a float.  Only operates within the range of
+-PI/4 and PI/4.
+~
+SPLIT|
+split ( s1 s2 -- s1' s2' )
+Splits string s1 at the first found instance of s2.  If there are no
+matches of s2 in s1, will return s1 and a null string.
+Also see RSPLIT.
+~
+SQRT|
+sqrt ( f -- f )
+Returns a float's square root.  Expects a value greater than or equal
+to zero.
+~
+SRAND|
+srand ( -- i )
+Generates a seeded random number.
+See also setseed and getseed.
+~
+STOD
+stod ( s -- d )
+Attempts to extract a dbref from s, recognizing both plain numerical
+strings, and those prepended with a '#' sign.
+~
+STRCAT|
+strcat ( s1 s2 -- s )
+  Concatenates two strings s1 and s2 and pushes the result s = s1s2
+onto the stack.
+~
+STRCMP|
+strcmp ( s1 s2 -- i )
+Compares strings s1 and s2. Returns i as 0 if they are equal,
+otherwise returns i as the difference between the first non-matching
+character in the strings.  For example, "a" "z" strcmp returns 25.
+The reason it returns a 0 for a match, and the difference on a non-match,
+is to allow for nice things like string sorting functions.
+This primitive is case sensitive, unlike stringcmp.
+See also strncmp.
+~
+STRCUT|
+strcut ( s i -- s1 s2 )
+Cuts string s after its i'th character.  For example,
+   "Foobar" 3 strcut
+returns
+   "Foo" "bar"
+If i is zero or greater than the length of s, returns a null string in
+the first or second position, respectively.
+~
+STRDECRYPT|
+strdecrypt ( s1 s2 -- s3 )
+  Takes the encrypted string s1, and decrypts it, using the key s2, returning
+the plaintext string s3.  Also see STRENCRYPT.
+~
+STRENCRYPT|
+strencrypt ( s1 s2 -- s3 )
+  Takes the plaintext string s1, and encrypts it, using the key s2,
+returning the encrypted string s3.  Note: s3 will be 2 characters longer
+than s1.  Also Note: The longer your key string is, the more secure the data
+will be, up to the length of the data itself.  The encryption technique used
+here is pretty simple, so I highly doubt it breaks any laws to take it
+outside the USA.  By the same token, it probably shouldn't be trusted with
+any really important data.  I'm not an expert at cryptography, so this ain't
+DES.  Also see STRDECRYPT.
+~
+STRINGCMP|
+stringcmp ( s1 s2 -- i )
+Compares strings s1 and s2. Returns i as 0 if they are equal,
+otherwise returns i as the difference between the first non-matching
+character in the strings.  For example, "a" "z" stringcmp returns 25.
+This function is not case sensitive, unlike strcmp.  See also strncmp.
+~
+STRLEN|
+strlen ( s -- i )
+Returns the length of string s.
+~
+STRNCMP|
+strncmp ( s1 s2 i -- i' )
+Compares the first i characters in strings s1 and s2.
+Return value is like strcmp.  See also stringcmp.
+~
+STRTOF|
+strtof ( s - f )
+Converts a string into a floating point type.
+STRTOF recognizes most standard forms of floating point representation,
+including the xxx.yyy and x.yyyEzz forms.
+~
+SUBST|
+subst ( s1 s2 s3 -- s )
+s1 is the string to operate on, s2 is the string to change all occurrences
+of s3 into, and s is resultant string.  For example:
+    "HEY_YOU_THIS_IS" " " "_" subst
+results in
+    "HEY YOU THIS IS"
+s2 and s3 may be of any length.
+~
+SUCC|
+succ ( d -- s )
+Takes object d and returns its success (@succ) string field s.
+~
+SWAP|
+swap ( x y -- y x )
+Takes objects x and y on the stack and reverses their order.
+~
+TAN|
+tan ( f -- f )
+Returns the tangent of a float.  Only operates within the range of
+-PI/4 to PI/4.
+~
+TEXTATTR|ATTRIBUTES|
+textattr ( s1 s2 -- s )
+Takes a plain text string s1 and adds the neccesary codes to make the
+output s display with the given attributes s2, when shown with an
+appropriate client.  The attributes are passed to TEXTATTR in s2 as a
+series of comma separated attribute names.
+
+These are the attributes currently recognized:
+  reset    bold   dim       uline    flash   reverse
+  black    red    yellow    green    cyan    blue    magenta    white
+  bg_black bg_red bg_yellow bg_green bg_cyan bg_blue bg_magenta bg_white
+~
+THING?|
+thing? ( d -- i )
+Returns i as 1 if object d is a thing, otherwise returns i as 0.
+See also player?, program?, room?, exit?, ok?.
+~
+TIME|
+time ( -- s m h )
+Returns the time of day as integers on the stack, seconds, then minutes,
+then hours.
+~
+TREAD|
+tread ( i -- s i )
+Acts like a timed READ call.  If the user does not provide input within
+the given number of seconds, the READ call will time-out and return a
+false boolean, otherwise it returns a true boolean and the string value
+entered.
+See also READ.
+~
+VAR|
+var <name>
+When used outside of a word, the compiler allows the use of <name> as
+a variable in all words sequentially defined after the var declaration.
+
+When used inside a word, a variable local to each invocation of a given
+word; recursive calls each get their own scoped variables.
+
+See also @, VARIABLE, and LOCALVAR.
+~
+VARIABLE|
+variable ( i -- v )
+Converts integer i to variable reference v. Of the pre-defined variables,
+`me' corresponds to integer 0, `loc' to 1, and `trigger' to 2. Thus:
+     me @
+and
+     0 variable @
+will do the same thing (returning the user's dbref). User-defined variables
+are numbered sequentially starting at 3 by the compiler. Note that these
+variable numbers can be used even if variables have not been formally
+declared, making implementation of such things as arrays conveniently easy.
+See @, !, and VAR.
+~
+VARIABLE OPERATORS|@|!|AT|BANG|
+@ ( v -- x )
+Retrieves variable v's value x.
+  
+! ( x v -- )
+Sets variable v's value to x.
+See also variable, var, lvar, localvar, and miscellaneous.
+~
+AWAKE?|
+awake? ( d -- i )
+Passed a players dbref, returns the number of connections they have to
+the game. This will be 0 if they are not connected.
+~
+ONLINE|
+online ( -- d ... i )
+Returns a dbref for every connection to the server, and lastly the number
+of connections.
+~
+ONLINE_ARRAY|
+online_array ( -- a )
+Returns a single stack item, which is a list array, containing a dbref for
+every connection to the server.
+~
+SYSTIME|
+systime ( -- i )
+Returns the number of seconds from Jan 1, 1970. This is compatible with
+the system timestamps and may be broken down into useful values through
+'timesplit'.
+~
+DBREF?|
+dbref? ( x -- i )
+Returns true if x is a dbref.
+~
+DEPTH|
+depth ( -- i )
+Returns the number of items on the stack.
+~
+TIMESTAMPS|
+timestamps ( d -- i i2 i3 i4 )
+Returns the following for a program, the time created (i), the time last
+modified (i2), the time last used (i3), and the number of uses(i4) for
+any object.
+~
+INT?|
+int? ( x -- i )
+Returns true if x is a int.
+~
+SETLINK|
+setlink     ( d1 d2 -- )
+Takes an exit dbref d1, and sets its destination to d2.  You must have
+control of the exit, and if the exit is already linked, it must be unlinked
+first by doing setlink with #-1 as the destination.
+~
+STRING?|
+string? ( x -- i )
+Returns true if x is a string.
+~
+TIMESPLIT|
+timesplit ( i -- is im ih id im iy iw iyd )
+Splits a systime value into 8 values in the following order: seconds,
+minutes, hours, monthday, month, year, weekday, yearday.  Weekday starts
+with sunday as 1, and yearday is the day of the year (1-366).
+~
+NEWROOM|
+newroom (d s -- d)
+Takes the dbref of the parent and the name of the room. It returns the
+dbref of the created room. Owner is the person running the program.
+(program must have a wizbit)
+~
+NEWOBJECT|
+newobject (d s -- d)
+Takes location and name and returns new thing's dbref.
+Owner is the person running the program.
+(program must have a wizbit)
+~
+NEWEXIT|
+newexit (d s -- d)
+Takes location and name and returns new exit's dbref.
+Owner is the person running the program.
+(program must have a wizbit)
+~
+STATS|
+stats ( d -- total rooms exits things programs players garbage )
+Returns the number of objects owned by 'd', or the total objects in
+the system if d == #-1. This is broken up into a total, rooms, exits,
+things, programs, players, and garbage. This functions much as the
+@STAT command.
+(Needs Mucker Level 3)
+~
+~XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+~FuzzBall 4.0 things
+~
+PUBLIC|
+PUBLIC <functionname>
+Declares a previously defined function to be public for execution by other
+programs.  This is a compile-time directive, not a run-time primitive.  To
+call a public function, put the dbref of the program on the stack, then put
+a string, containing the function name, on the stack, then use CALL.
+For example:
+  #888 "functionname" CALL
+~
+WIZCALL|
+WIZCALL <functionname>
+Declares a previously defined function to be callable from other programs,
+as long as the calling program has wizbit permissions.  This is a compile-
+time directive, not a run-time primitive.  To call a public function, put
+the dbref of the program on the stack, then put a string, containing the
+function name, on the stack, then use CALL.
+For example:
+  #888 "functionname" CALL
+~
+LVAR|
+LVAR <varname>
+This declares a variable as a local variable, that is local to a specific
+program.  If another program calls this program, the values of the local
+variables will not be changed in the calling program, even if the called
+program changes them.
+~
+LOCALVAR|
+localvar (i -- l)
+Takes an integer and returns the respective local variable.  Similar to
+the 'variable' primitive.
+~
+SETOWN|
+setown (d d -- )
+Sets the ownership of the first object to the player given in the second
+dbref. (wizbit only)
+~
+RECYCLE|
+recycle (d -- )
+Recycles the given object d.  Will not recycle players, the global
+environment, the player starting room, or any currently running program.
+(Can recycle objects owned by uid if running with Mucker Level 3
+permissions.  Can recycle other people's items with wizbit)
+~
+CONCOUNT|
+concount ( -- i)
+Returns how many connections to the server there are.
+(Requires Mucker Level 3)
+~
+CONDBREF|
+condbref (i -- d)
+Returns the dbref of the player connected to this connection.
+(Requires Mucker Level 3)
+~
+CONTIME|
+contime (i -- i)
+Returns how many seconds the given connection has been connected
+to the server.  (Requires Mucker Level 3)
+~
+CONIDLE|
+conidle (i -- i)
+Returns how many seconds the connection has been idle.
+(Requires Mucker Level 3)
+~
+CONDESCR|
+condescr ( i -- i )
+Takes a connection number and returns the descriptor number associated
+with it.  (Requires Mucker Level 3)  See DESCRIPTORS, DESCRCON.
+~
+CONHOST|
+conhost (i -- s)
+Returns the hostname of the connection. (wizbit only)
+~
+CONUSER|
+conuser (i -- s)
+Returns the username of the connection. (wizbit only)
+~
+CONBOOT|
+conboot (i -- )
+Takes a connection number and disconnects that connection from
+the server.  Basically @boot for a specific connection. (wizbit only)
+~
+CONNOTIFY|
+connotify (i s -- )
+Sends a string to a specific connection to the server.
+(Requires Mucker Level 3)
+~
+DESCRCON|
+descrcon (i -- i)
+Takes a descriptor and returns the associated connection number,
+or 0 if no match was found.  See DESCRIPTORS, CONDESCR.
+(Requires Mucker Level 3)
+~
+DESCRFLUSH|
+descrflush (i -- )
+Flushes the output text on the given descriptor.  If i is -1, flushes
+output on all descriptors.
+(Requires Mucker Level 3)
+~~~
+NEXTDESCR|
+nextdescr (i -- i)
+Takes a descriptor number, and returns the next connected descriptor
+number.  To get the first descriptor number, use '1 condescr'.  Between
+these, you can step through the descriptors list.  If you try to use
+nextdescr on an invalid descriptor, it will return 0.  If you have
+reached the end of the descriptor list, it returns 0.
+(Requires Mucker Level 3)
+~
+DESCRIPTORS|
+descriptors (d -- ix...i1 i) Takes a player dbref, or #-1, and returns the
+range of descriptor numbers associated with that dbref (or all for #-1)
+with their count on top.  Descriptors are numbers that always stay the
+same for a connection, while a connection# is the relative position in
+the WHO list of a connection.  See DESCRCON, CONDESCR.
+~
+DESCR_ARRAY|
+descr_array (d -- a) Takes a player dbref, or #-1, and returns a list
+array that contains the current descriptor numbers associated with that
+dbref.  (Or all connected descriptors, if the dbref is #-1)  This can
+return an empty list if there are no connections for that player.
+This is effectively the same as the sequence 'descriptors array_make',
+but doesn't overflow the stack if too many descriptors are available.
+Descriptors are numbers that always stay the same for a connection,
+while a connection# is the relative position in the WHO list of a
+connection.
+
+See DESCRIPTORS, DESCRCON, CONDESCR.
+~
+PID|
+pid ( -- i)
+Returns the process ID of the program that is currently running.
+~
+ISPID?|
+ispid? (i -- i)
+Takes a process id and checks to see if an event with that pid is in the
+timequeue.  It returns 1 if it is, and 0 if it is not.  ispid? will also
+return 1 if the given process id is that of the currently running program.
+This primitive requires at least mucker level 3.
+~
+NEXTPROP|
+nextprop (d s -- s)
+This takes a dbref and a string that is the full propdir pathname of a
+property and returns the full pathname of the next property in the given
+object's given propdir, or returns a null string if that was the last
+property in the propdir.  To *start* the search, give it a propdir name
+ending in a '/', or a blank string.  For example, '#10 "/" NEXTPROP'
+returns the name of the first property in the root propdir of object #10,
+and '#28 "/letters/" NEXTPROP' would return the name of the first
+property in the 'letters/' propdir on object #28.  A blank string is the
+same as "/".  If you try to do a Nextprop on a non-existant property, you
+will have a null string returned to you. Nextprop will skip properties if
+they would not be readable by the program with the given permissions and
+effective user id. (Requires Mucker Level 3)
+~
+PROPDIR?|
+propdir? (d s -- i)
+Takes a dbref and a property name, and returns a boolean integer that
+tells if that property is a propdir that contains other props.
+(Requires Mucker Level 3)
+~
+ENVPROP|
+envprop ( d s -- d ? )
+Takes a starting object dbref and a property name and searches down the
+environment tree from that object for a property with the given name.  If
+the property isn't found, it returns #-1 and a null string.  If the
+property is found, it will return the dbref of the object it was found on,
+and the value it contained.
+~
+ENVPROPSTR|
+envpropstr (d s -- d s )
+Takes a starting object dbref and a property name and searches down the
+environment tree from that object for a property with the given name.  If
+the property isn't found, it returns #-1 and a null string.  If the
+property is found, it will return the dbref of the object it was found on,
+and the string value it contained.
+~
+NOTIFY_EXCLUDE|
+notify_exclude (d dn ... d1 n s -- )
+Displays the message s to all the players (or _listening objects),
+excluding the n given players, in the given room.  For example:
+  #0 #1 #23 #7 3 "Hi!" notify_exclude
+would send "Hi!" to everyone in room #0 except for players (or objects)
+#1, #7, and #23.  _listener's will not be triggered by a notify_exclude
+if the program they would run is the same as the current program running.
+~
+TIMEFMT|
+timefmt (s i -- s)
+Takes a format string and a SYSTIME integer and returns
+a string formatted with the time.  The format string
+is ascii text with formatting commands:
+  %% -- "%"
+  %a -- abbreviated weekday name.
+  %A -- full weekday name.
+  %b -- abbreviated month name.
+  %B -- full month name.
+  %C -- "%A %B %e, %Y"
+  %c -- "%x %X"
+  %D -- "%m/%d/%y"
+  %d -- month day, "01" - "31"
+  %e -- month day, " 1" - "31"
+  %h -- "%b"
+  %H -- hour, "00" - "23"
+  %I -- hour, "01" - "12"
+  %j -- year day, "001" - "366"
+  %k -- hour, " 0" - "23"
+  %l -- hour, " 1" - "12"
+  %M -- minute, "00" - "59"
+  %m -- month, "01" - "12"
+  %p -- "AM" or "PM"
+  %R -- "%H:%M"
+  %r -- "%I:%M:%S %p"
+  %S -- seconds, "00" - "59"
+  %T -- "%H:%M:%S"
+  %U -- week number of the year. "00" - "52"
+  %w -- week day number, "0" - "6"
+  %W -- week# of year, starting on a monday, "00" - "52"
+  %X -- "%H:%M:%S"
+  %x -- "%m/%d/%y"
+  %y -- year, "00" - "99"
+  %Y -- year, "1900" - "2155"
+  %Z -- Time zone.  "GMT", "EDT", "PST", etc.
+~
+SLEEP|
+sleep (i -- )
+Makes the program pause here for 'i' seconds.  the value of i cannot
+be negative.  If the sleep is for more than 0 seconds, then the program
+may not thereafter use the READ primitive.
+~
+QUEUE|
+queue (i d s -- i)
+Takes a time in seconds, a program's dbref, and a parameter string.  It
+will execute the given program with the given string as the only string on
+the stack, after a delay of the given number of second.  Returns  the pid
+of the queued process, or 0 if the timequeue was full.
+(Requires Mucker Level 3)
+~
+FORK|
+fork ( -- i)
+This primitive forks off a BACKGROUND (muf) process from the currently
+running program.  It returns the pid of the child process to the parent
+process, and returns a 0 to the child.  If the timequeue was full, then
+it returns a -1 to the parent process, and there is no child process.
+(Requires Mucker Level 3)
+~
+KILL|
+kill (i -- i)
+Attempts to kill the process referred to by the given process ID.
+Returns 1 if the process existed, and 0 if it didn't.
+(Requires Mucker Level 3)
+~
+TOUPPER|
+toupper (s -- s)
+Takes a string and returns it with all the letters in uppercase.
+~
+TOLOWER|
+tolower (s -- s)
+Takes a string and returns it with all the letters in lowercase.
+~
+STRIPLEAD|
+striplead (s -- s)
+Strips leading spaces from the given string.
+~
+STRIPTAIL|
+striptail (s -- s)
+Strips trailing spaces from the given string.
+~
+STRIP|
+strip (s -- s)
+This is a built in $define.  It is interpreted as "striplead striptail"
+It strips the spaces from both ends of a string.
+~
+SMATCH|
+smatch ( s s2 -- i )
+Takes a string s, and a string pattern, s2, to check against.  Returns true
+if the string fits the pattern.  This is case insensitive.  In the pattern
+string, the following special characters will do as follows:
+  
+   *  A '?' matches any single character.
+  
+   *  A '*' matches any number of any characters.
+  
+   *  '{word1|word2|etc}' will match a single word, if it is one of those
+        given, separated by | characters, between the {}s.  A word ends with
+        a space or at the end of the string.  The given example would match
+        either the words "word1", "word2", or "etc".
+        {} word patterns will only match complete words: "{foo}*" and "{foo}p"
+        do not match "foop" and "*{foo}" and "p{foo}" do not match "pfoo".
+        {} word patterns can be easily meaningless; they will match nothing
+        if they:
+           (a) contains spaces,
+           (b) do not follow a wildcard, space or beginning of string,
+           (c) are not followed by a wildcard, space or end of string.
+  
+   *  If the first char of a {} word set is a '^', then it will match a single
+        word if it is NOT one of those contained within the {}s.  Example:
+        '{^Foxen|Fiera}' will match any single word EXCEPT for Foxen or Fiera.
+  
+   *  '[aeiou]' will match a single character as long as it is one of those
+        contained between the []s.  In this case, it matches any vowel.
+  
+   *  If the first char of a [] char set is a '^', then it will match a single
+        character if it is NOT one of those contained within the []s.  Example:
+        '[^aeiou]' will match any single character EXCEPT for a vowel.
+  
+   *  If a [] char set contains two characters separated by a '-', then it will
+        match any single character that is between those two given characters.
+        Example:  '[a-z0-9_]' would match any single character between 'a' and
+        'z', inclusive, any character between '0' and '9', inclusive, or a '_'.
+  
+   *  The '\' character will disable the special meaning of the character that
+        follows it, matching it literally.
+  
+Example patterns:
+  "d*g" matches "dg", "dog", "doog", "dorfg", etc.
+  "d?g" matches "dog", "dig" and "dug" but not "dg" or "drug".
+  "M[rs]." matches "Mr." and "Ms."
+  "M[a-z]" matches "Ma", "Mb", etc.
+  "[^a-z]" matches anything but an alphabetical character.
+  "{Moira|Chupchup}*" matches "Moira snores" and "Chupchup arghs."
+  "{Moira|Chupchup}*" does NOT match "Moira' snores".
+  "{Foxen|Lynx|Fier[ao]} *t[iy]ckle*\?"  Will match any string starting with
+    'Foxen', 'Lynx', 'Fiera', or 'Fiero', that contains either 'tickle' or
+    'tyckle' and ends with a '?'.
+  
+~
+SETLOCKSTR|
+setlockstr (d s -- i)
+Tries to set the lock on the given object to the lock expression given in
+the string.  If it was a success, then it will return a 1, otherwise, if
+the lock expression was bad, it returns a 0.  To unlock an object, set its
+lock to a null string.
+~
+GETLOCKSTR|
+getlockstr ( d -- s )
+Returns the lock expression for the given object in the form of a string.
+Returns "*UNLOCKED*" if the object doesn't have a lock set.
+~
+LOCKED?|
+locked? (d d -- i)
+Takes, in order, the dbref of the player to test the lock against, and
+the dbref of object the lock is on.  It tests the lock, running programs
+as necessary, and returns a integer of 0 if it is not locked against
+them, or 1 if it is.
+~
+UNPARSEOBJ|
+unparseobj (d -- s)
+Returns the name-and-flag string for an object.  It always has the dbref and
+flag string after the name, even if the player doesn't control the object.
+For example: "One(#1PW)"
+~
+DBTOP|
+dbtop ( -- d)
+Returns the dbref of the first object beyond the top object of the database.
+'dbtop ok?' would return a false value.
+~
+VERSION|
+version ( -- s)
+Returns the version of this code in a string. "Muck2.2fb5.55", currently.
+~
+TRIG|
+trig ( -- d)
+Returns the dbref of the original trigger.
+~
+CALLER|
+caller ( -- d)
+Returns the dbref of the program that called this one, or the dbref of the
+trigger, if this wasn't called by a program.
+~
+BITOR|
+bitor (i i -- i)
+Does a mathematical bitwise or.
+~
+BITXOR|
+bitxor (i i -- i)
+Does a mathematical bitwise exclusive or.
+~
+BUNNY|
+    __
+  ,'  `.
+ /      \
+|~~~~~~~~|
+|========|
+\        /
+ `.____,'
+  
+Easter Egg!
+~
+BITAND|
+bitand (i i -- i)
+Does a mathematical bitwise and.
+~
+BITSHIFT|
+bitshift (i i -- i)
+Shifts the first integer by the second integer's number of bit positions.
+Same as the C << operator.  If the second integer is negative, its like >>.
+~
+FORCE|
+force (d s -- )
+Forces player d to do action s as if they were @forced.  (wizbit only)
+~
+PREEMPT|
+preempt ( -- )
+Prevents a program from being swapped out to do multitasking.  Needed in
+some cases to protect crucial data from being changed while it is being
+worked on.  A program will remain in preempt mode until it's execution is
+completed.  Basically what this command does is to turn off multitasking,
+but then you have a limit on how many instructions you can run without
+needing either to pause with a SLEEP, or have a wizbit on the program.
+See also, MULTITASKING.
+~
+FOREGROUND|
+foreground ( -- )
+To turn on multitasking, you can issue a foreground command.  While a
+program is in foreground mode, the server will be multitasking and
+handling multiple programs at once, and input from other users, but it
+will be blocking any input from the user of the program until the program
+finishes.  You cannot foreground a program once it is running in the
+background. A program will stay in foreground mode until it finishes
+running or until you change the mode.  See also, MULTITASKING.
+~
+BACKGROUND|
+background ( -- )
+Another way to turn on multitasking is to use the background command.
+Programs in the background let the program user go on and be able to do
+other things while waiting for the program to finish.  You cannot use
+the READ command in a background program.  Once a program is put into
+background mode, you cannot set it into foreground or preempt mode.
+A program will remain in the background until it finishes execution.
+See also, MULTITASKING.
+~
+BEGIN|
+begin ( -- )
+Marks the beginning of begin-until or begin-repeat loops.
+See also, LOOPS.
+~
+FOR|
+for (i1 i2 i3 -- i)
+Marks the beginning of a iterative FOR loop, and sets up the current for
+loop with i1 as the start index, i2 as the end index, and i3 as the step. 
+If i2 is less then i1, or if i3 is negative and i2 is greater then i1, the
+entire loop is skipped without executing.  If i3 is 0 the loop will run
+infinitely until some other condition causes an exit.
+See also, LOOPS.
+~
+FOREACH|
+foreach (a -- @ ? )
+Marks the beginning of an iterative FOREACH loop, stepping through every
+index/value pair in the array.
+See also, LOOPS.
+~
+UNTIL|
+until (i -- )
+If the value on top of the stack is false, then it jumps execution
+back to the instruction after the matching BEGIN or FOR statement.
+(BEGIN-UNTIL, BEGIN-REPEAT, FOR, and IF-ELSE-THEN's can all be nested as
+much as you want.)
+If the value is true, it exits the loop, and executes the next instruction,
+following the UNTIL.  Marks the end of the current loop.  See also, LOOPS.
+~
+REPEAT|
+repeat ( -- )
+Jumps to the matching BEGIN or FOR in a BEGIN-REPEAT or FOR loop.
+Marks the end of the current loop.  See also, LOOPS.
+~
+GRAFFITI|
+Fre'ta waz here, September '95
+Back again March '96 (Stupid spelling errors)
+~
+WHILE|
+while (i -- )
+If the value on top of the stack is false, then this causes execution
+to jump to the instruction after the UNTIL or REPEAT for the current
+loop.  If the value is true, however, execution falls through to the
+instruction after the WHILE.  See also, LOOPS.
+~
+BREAK|
+break ( -- )
+Breaks out of the innermost loop.  Jumps execution to the instruction
+after the UNTIL or REPEAT for the current loop.  See also, LOOPS.
+~
+CONTINUE|
+continue ( -- )
+Jumps execution to the beginning of the current loop.  See also, LOOPS.
+~
+INSTRING|
+instring ( s s1 -- i )
+Returns the first occurrence of string s1 in string s, or 0 if s1 is
+not found. Non-case sensitive. See also RINSTRING, INSTR, and RINSTR.
+This is an inserver define to 'tolower swap tolower swap instr'
+~
+RINSTRING|
+rinstring ( s s1 -- i )
+Returns the last occurrence of string s1 in string s, or -1 if s1 is
+not found. Non-case sensitive. See also INSTRING, INSTR, and RINSTR.
+This is an inserver define to 'tolower swap tolower swap rinstr'
+~XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+MUCKER LEVELS|LEVELS|MUCKER1|MUCKER2|MUCKER3|MUCKER4|
+Mucker Levels:
+  
+  There are now four levels of MUCKERs in fb4.0.  Level zero is a
+non-mucker. They cannot use the editor, and MUF programs owned by them
+cannot be run.
+  
+  Level one MUCKER's are apprentices.  Their powers are restricted as they
+cannot get information about any object that is not in the same room they
+are.  ie:  OWNER, NAME, LOCATION, etc all fail if the object isn't in the
+same room as the player.  Level one MUCKER programs always run as if they
+are set SETUID.  NOTIFY, NOTIFY_EXCEPT, and NOTIFY_EXCLUDE will refuse to
+send messages to rooms the user is not in.  Level one programs cannot use
+ADDPENNIES.  Level one programs don't list DARK objects or rooms in the
+contents of a room, unless they are controlled by the program owner.
+Additionally, level one programs have an absolute instruction limit that
+is the same size as the PREEMPT instruction limit.  This is usually
+around 20,000 instructions.
+  
+  Level two MUCKERs are also called Journeymen.  Their permissions are
+equivalent to the permissions for a normal MUCKER under older versions
+of the server.  Level two programs can run as many as four times the
+number of instructions that a preempt program could.  This is usually
+around 80,000 instructions.
+  
+  Level three MUCKERs are referred to as Masters.  They can use the con-
+nection info primitives (ie: CONDBREF, ONLINE, etc.), read the EXITS list
+of any room, use NEXTPROP on objects, can use NEWROOM, NEWOBJECT, NEWEXIT,
+and COPYOBJ without limitations, can use QUEUE and KILL, and can override
+the permissions restrictions of MOVETO.  You only give a player MUCKER
+level 3 if they are very trusted.  There is no absolute instruction count
+limit for level three or above, except for programs running in PREEMPT mode.
+  
+  A player who is wizbitted is effectively Mucker Level 4.  MUCKER level
+four is required for the RECYCLE primitive, the CONHOST primitive, the
+FORCE primitive, and the SETOWN primitive.  ML4 also allows overriding
+of permissions of the SET* primitives, and property permissions.  Props
+not listed by NEXTPROP with ML3 are listed with ML4.  Programs running
+ML4 do not even have instruction limits on PREEMPT mode programs.
+  
+  The MUCKER level permissions that a program runs at is the lesser of
+it's own MUCKER level and the MUCKER level of it's owner.
+  If it is owned by a player who is MUCKER level 2, and it is MUCKER
+level 3, then it runs at Mucker level 2.  The one exception to this is
+programs owned by a Wizard player.  They run at Mucker level 2 if the
+program itself is not wizbit, and at Mucker level 4 if the program IS
+set wizbit.
+  
+  Mucker level is referred to in flags lists by M# where the # is the
+Mucker level.  Level zero objects don't show a flag for it.  Example:
+Revar(#37PM3)
+  In verbose flags lists, Mucker levels greater than zero are shown
+by MUCKER# where # is the mucker level.
+  
+  To set a level on a player or program, use the level number as the
+flag name.  MUCKER is the same as 2, and !MUCKER is the same as 0.
+Example:  @set Revar=2
+  A player may set the MUCKER level on a program they own to any level
+lower than or equal to their own level, and a wizard may set a program
+or player to any MUCKER level.
+  When a program is created, it is automatically set to the same MUCKER
+level as the creating player.  When a program is loaded from an old db,
+if it is Mucker Level 0, it is upgraded to Mucker Level 2.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MLEVEL|
+mlevel (d -- i)
+  returns the mucker (or priority) level of the given object.
+Also see MUCKER LEVELS.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MULTITASKING|
+Multitasking:
+There are 3 modes that a program can be in when running:  foreground,
+  background, and preempt.  A program running in the foreground lets other
+  users and programs have timeslices (ie multitasking), but blocks input
+  from the program user.  Background mode allows the user to also go on and
+  do other things and issue other commands, but will not allow the program
+  to do READs.  Preempt mode means that the program runs to completion
+  without multitasking, taking full control of the interpreter and not
+  letting other users or progs have timeslices, but imposes an instruction
+  count limit unless the program is a wizard program.
+Programs run by @locks, @descs, @succs, @fails, and @drops default to the
+  preempt mode when they run.  Programs run by actions linked to them
+  default to running in foreground mode.  QUEUEd program events, such as
+  those set up by _listen, _connect, _disconnect, etc, and those QUEUEd by
+  other programs default to running in background mode. (NOTE: these
+  programs cannot be changed out of background mode)
+  
+See also FOREGROUND, BACKGROUND, PREEMPT, FORK, QUEUE, KILL, and SLEEP.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+DIRECTIVES|
+Compiler directives for MUF:
+    
+$define <defname> <definition> $enddef
+  Basically the same as C's #define <defname> <definition>
+  
+$def <defname> <definition>
+  This is the same as $define, except that the definition stops at the end
+  of the program line, without using an ending $enddef.
+  
+$undef <defname>
+  About the same as C's #undef <defname>
+  
+$echo <string>
+  Echos the given string to the screen of the person compiling the program.
+  Runs at compile-time.
+  
+__version
+  A pre$defined macro that contains the current server version.
+  Contains the same string that the VERSION primitive returns.
+  
+$ifdef <condition> <compile this if true> $else <compile if false> $endif
+$ifndef <condition> <compile this if true> $else <compile if false> $endif
+  where <condition> is either a $defined name, or a test that consists of
+  a $defined name, a comparator (=, <, or >) and a test value, all in one
+  word without space.  The $else clause is optional.  Compiler directives
+  are nestable also.  Some examples:
+  $ifndef __version>Muck2.2fb3.5 $define envprop .envprop $enddef $endif
+  $define ploc $ifdef proplocs .proploc $else $endif $enddef
+  
+$include <dbref|progreg>
+  Sets a bunch of $defines from the properties in the /_defs/ propdir.
+  For example, if object #345 had the following properties:
+    /_defs/desc: "_/de" getpropstr
+    /_defs/setpropstr: dup if 0 addprop else pop remove_prop then
+    /_defs/setpropval: dup if "" swap addprop else pop remove_prop then
+    /_defs/setprop: dup int? if setpropval else setpropstr then
+  then if a program contained '$include #345' in it, then all subsequent
+  references to 'desc', 'setpropstr', 'setpropval', and 'setprop' would
+  be expanded to the string values of their respective programs. ie:
+  'desc' would be replaced throughout the program with '"_/de" getpropstr'
+  NOTE:  You cannot have a slash in a definition name.  ie: The property
+  _defs/a/b:foo  will NOT make a definition named a/b.
+  
+You can escape a token in MUF so that it will be interpreted literally.
+  ie:  \.pmatch will try to compile '.pmatch' without expanding it as a
+  macro.  This lets you make special things with $defines such as:
+  $define addprop over over or if \addprop else pop pop remove_prop $enddef
+  so that all the 'addprop's in the program will be expanded to the
+  definition, but the 'addprop' in the definition will not try to expand
+  recursively.  It will call the actual addprop.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+LIBRARIES|
+Libraries:
+  
+How to use a library:
+    1) Use "@register lib" to list what libraries exist.
+    2) Use "@view $lib/<libraryname>" to list the docs on that library.
+    3) When you've found the library and the function you want, then all
+        you have to do in your program is, at the beginning of it,
+          $include $lib/<libraryname>
+        then just use the function name to invoke it later in your program
+        and it will run as if it were a function in your program.
+  
+How to make a library:
+    1) create a program with several useful generic subroutines.
+    2) DOCUMENT those subroutines in a commented out header in the prog.
+    3) @set <program>=_docs:<command to list those DOCS you made>
+    4) make sure that all the functions are declared PUBLIC.
+    5) Make sure the program is set LINK_OK.
+    6) Globally register the program with the @register command with a
+        prefix of "lib/".  ie: @reg lib-strings=lib/strings
+    7) Set up the interface for each function on the program. To do this,
+        you will need to set properties on the program in the form
+          _defs/<callname>:"$<libname>" match "<funcname>" call
+        where <callname> is the name that you want to have people use to
+        invoke it in their programs, <libname> is the registered name you
+        gave it (ie: lib/strings), and <funcname> is the actual name of
+        the function in the program.  Example:
+          @set lib-strings=_defs/.split:"$lib/strings" match "split" call
+    8) You're done!
+  
+Currently standard libraries:
+    $lib/strings      Functions for manipulating strings.
+    $lib/props        Routines for searching for properties, or setting them.
+    $lib/lmgr         Standard list manager routines.
+    $lib/stackrng     Routines to handle variable sized ranges on the stack.
+    $lib/edit         String range editing and manipulation routines.
+    $lib/editor       Standard user text editor.
+    $lib/mesg         Standard message manager routines.
+    $lib/mesgbox      Routines for handling lists of messages.
+    $lib/match        Object or string matching routines.
+    $lib/reflist      Dbref-list management routines.
+    $lib/index        Hashed linked list manager with partial key matching.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+LOOPS|
+Loops:
+  
+The BEGIN or FOR statement marks the beginning of a loop.
+Either the UNTIL or the REPEAT statement marks the end of the loop.
+  REPEAT will do an unconditional jump back to the BEGIN or FOR statement.
+  UNTIL checks to see if the value on the stack is false.  If it is, it
+    jumps back to the BEGIN or FOR statement, otherwise, it falls through
+    on execution to the statement after the UNTIL.
+Within a loop, even within IF-ELSE-THEN structures within the loop
+  structure, you can place WHILE, CONTINUE, or BREAK statements.  There
+  is no limit as to how many, or in what combinations these instructions
+  are used.
+  A WHILE statement checks to see if the value on the stack is false.
+    If it is, execution jumps to the first statement after the end of
+    the loop.  If the value was true, execution falls through to the
+    statement after the WHILE.
+  The CONTINUE statement forces execution to jump to the beginning of
+    the loop, at the BEGIN or FOR.
+  The BREAK statement forces execution to jump to the end of the loop,
+    at the statement after the REPEAT or UNTIL, effectively exiting the
+    loop.
+Note: You can nest loops complexly, but WHILE, BREAK, and CONTINUE
+  statements only refer to the innermost loop structure.
+For an example of a BEGIN-REPEAT and BEGIN-UNTIL loops, see LOOP-EXAMPLE1.
+For an example of a complex loop, see LOOP-EXAMPLE2.
+For an example of a FOR loop, see LOOP-EXAMPLE3.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+LOOP-EXAMPLE1|
+Example of a BEGIN-REPEAT loop:
+  0 begin
+    dup 10 < while
+    1 +
+    me @ over intostr notify
+  repeat
+Example of the same loop as a BEGIN-UNTIL loop:
+  0 begin
+    1 +
+    me @ over intostr notify
+    dup 10 =
+  until
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+LOOP-EXAMPLE2|
+Example of a complex loop structure:
+  101 begin                       (BEGIN the outer loop)
+    dup while 1 -                 (This WHILE, ...)
+    dup not if break then         (this BREAK, and..)
+    dup 2 % not if continue then  (this CONTINUE refer to the outer loop)
+    dup 10 % not if
+      15 begin                    (BEGIN inner loop)
+        dup while 1 -             (This WHILE, and.. )
+        dup 5 % not if break then (... this BREAK, refer to inner loop)
+      repeat                      (This REPEAT statement ends inner loop.)
+    then
+    dup 7 % not if continue then  (This CONTINUE, and...)
+    dup 3 % not if dup 9 % while then (this WHILE refer to the outer loop)
+    dup intostr me @ swap notify
+  dup 1 = until pop               (This UNTIL ends the outer loop)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+LOOP-EXAMPLE3|
+Example of a FOR loop:
+  1 10 1 for
+    me @ swap intostr notify
+  repeat
+Example of nested FOR loops:
+  1 5 1 for
+    "" swap 1 -1 for
+      intostr strcat
+    repeat
+    me @ swap notify
+  repeat
+Example of complex FOR loop:
+  -10 10 1 for
+    me @ over intostr notify
+    not
+  until
+Example of a FOREACH loop:
+  "index1" "value1" "index2" "value2" 2 array_make_dict
+  foreach
+    " - " swap strcat strcat me @ swap notify
+  repeat
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CREDITS|
+Credits:
+The people responsible (at fault?) for this manual are:
+  Foxen (foxen@netcom.netcom.com), who wrote the original terrible docs, and
+  WhiteFire (kinomon@glia.biostr.washington.edu), who cleaned them up a lot.
+  Fre'ta (tiger@tyger.org), who fixed sme errors.
+  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FLAGS|HARDUID|SETUID|AUTOSTART|BOUND|
+Flags that have importance to MUF:
+  
+If a program is set DARK (DEBUG), then when it is run, it will print out
+  a stack trace for each instruction executed, to the player running the
+  program.  This is useful for debugging programs.
+  
+If a program is set ZOMBIE, then when the owner runs it, they will enter an
+  interactive debugger, useful for following a program as it runs and
+  changing it to see what different situations do.  See also DEBUGGER.
+  
+On dbload, if a program is set ABODE (AUTOSTART), *AND* it is owned by
+  a wizard, then it will be placed in the timequeue with a delay of 0 and
+  a string parm of "Startup".  Autostart programs run with the location
+  NOTHING (#-1) rather than the location of the owner of the program.
+  
+If a program has the HAVEN flag set on it (HARDUID) then it runs with
+  the uid and permissions of the owner of the trigger of the program.
+  If the program is a timequeue event with trigger of #-1, then it
+  will run with the permissions and uid of the program owner as in SETUID.
+  
+If a program is set both SETUID and HARDUID, and it is owned by a wizard,
+  then it inherits the uid and mucker level of the program that called it.
+  If it was not called by a program, then it runs SETUID.  This is useful
+  for writing libraries.
+  
+Programs set BUILDER (BOUND) run in preempt mode, regardless of the mode
+  of the program.  ie: a foreground program, while running in a program set
+  BOUND, will run pre-empt, with the multitasking effectively shut off.
+  
+A program that is set WIZARD ignores almost all permissions checking.
+  
+The Mucker Level of the program also has a great deal of influence on what
+  a program can and cannot do.  See MUCKER LEVELS for more information.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MISCELLANEOUS|LISTENERS|_LISTEN|_CONNECT|_DISCONNECT|COMMAND|CONNECT|DISCONNECT|
+When a message is notify_except'ed or notify_exclude'ed to a room, and
+  LISTENERS and LISTENERS_ENV are defined, then it will run ALL the
+  programs referred to in all the _listen properties down the environment
+  tree,  And in all of the objects in the room with LISTENERS_OBJ defined.
+  Also, the muf NOTIFY primitive was changed to run the _listen program
+  on an object or player if a message is sent to them that way.
+  
+There is a COMMAND variable, similar to ME, LOC, and TRIGGER, except that
+  it contains a string.  The string contains the command the user typed
+  that triggered the the program, without the command line arguments.  ie:
+  if there was an exit named "abracadabra;foo bar;frozzboz" that was linked
+  to the program, and the user typed in "foo bar baz", then the program
+  would run with "baz" on the stack, and "foo bar" in the global COMMAND
+  variable.
+  
+Programs are compiled when they are run or called, or when explicitly
+  compiled in the editor.  They are compiled with the uid of the owner of
+  the program.  After unuse, programs will be removed from memory until
+  needed again.
+  
+A room or player may have a "_connect" property set that contains the
+  dbref of a program to run when a player connects.  The program must be
+  either link_ok or must be owned by the player connecting.  When the
+  program is run, the string on the stack will be "Connect", the "loc @"
+  will be the location of the connecting player, the "me @" will be the
+  connecting player, and the "trigger @" (and "trig") will be the object
+  that had the _connect property on it.  All programs referred to by
+  _connect properties on the player, and on rooms down the environment tree
+  from the player, will be QUEUEd up to run.  When a player disconnects,
+  programs referred to by _disconnect properties will be run in a similar
+  manner.  (connect and disconnect _actions_ are also implemented.)
+  
+Programs referred to by props in _depart/_arrive/_connect/_disconnect
+  propdirs will all be queued up, eliminating the need for a dispatcher
+  program.  An example would be _connect/announce:1234  That would queue up
+  program #1234 when a player connects.  The name ("announce") is not
+  important, and can be anything you want, but they are queued up in
+  alphabetic order.
+  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PUT|
+put ( nx...n1 ni i -- nx...ni...n1 )
+  Replaces the i'th item from the top of the stack with the value of ni.
+1 put is equivalent to swap pop
+Example:
+  "a" "b" "c" "d" "e" 3 put
+would return on the stack:
+  "a", "e", "c", "d"
+~~~~~
+ABORT|
+abort ( s -- )
+  Aborts the MUF program with an error.  ie:  '"Bad vibes." abort' would
+Stop the MUF program and tell the user a message like:
+  Programmer error.  Please tell Revar the following message:
+  #1234 (line 23) ABORT: Bad vibes.
+~~~~~
+CHECKARGS|
+checkargs (??? s -- )
+    Takes a string argument that contains an expression that is used
+to test the arguments on the stack below the given string.  If they
+do not match what the expression says should be there, then it aborts
+the running program with an appropriate Program Error Message.  The
+expression is formed from single character argument tests that refer
+to different argument types.  The tests are:
+  
+   a - function address.
+   d - dbref.  (#-1, #-2, #-3 are okay)
+   D - valid, non-garbage dbref.  (#-1, #-2 NOT allowed.  #-3 is okay)
+   e - exit dbref.  (#-1, #-2 allowed)
+   E - exit dbref.  (#-1, #-2 NOT allowed)
+   f - program dbref.  (#-1, #-2 allowed)
+   F - program dbref.  (#-1, #-2 NOT allowed)
+   i - integer.
+   l - lock boolean expression.
+   p - player dbref.  (#-1, #-2 allowed)
+   P - player dbref.  (#-1, #-2 NOT allowed)
+   r - room dbref.  (#-1, #-2 allowed)  (#-3 is a room)
+   R - room dbref.  (#-1, #-2 NOT allowed)  (#-3 is a room)
+   s - string.
+   S - non-null string.
+   t - thing dbref.  (#-1, #-2 allowed)
+   T - thing dbref.  (#-1, #-2 NOT allowed)
+   v - local or global variable.
+   ? - any stack item type.
+  
+Tests can be repeated multiple times by following the test with a number.
+ie: '"i12" checkargs' would test the stack for 12 integers.
+  
+The last test in the string expression will be done on the top stack item.
+Tests are done from the top of the stack down, in order, so the last test
+that fails in a string expression will be the one that the Program Error
+will be given for.  ie: '"sdSi" checkargs' will test that the top stack
+item is an integer, then it tests that the next item down is a non-null
+string, then it tests the third item from the top to see if it is a dbref,
+and lastly it tests to make sure that the 4th item from the top is a string.
+  
+Spaces are ignored, so "s d i" is the same as "sdi".  However, multipliers
+are ignored if they follow a space, so "s 4d i" is also the same as "sdi".
+This is because you are basically telling it to repeat the space 4 times,
+and since spaces are ignored, it has no effect.
+  
+If you have a function that takes a stack item of any type, you can use
+the "?" test.  "?" will match a string, integer, dbref, or any other type.
+  
+Since sometimes arguments are passed in ranges, such as the way that the
+explode primitive returns multiple strings with an integer count on top,
+there is a way to group arguments, to show that you expect to receive a
+range of that type.  ie: '"{s}" checkargs' would test the stack for a set
+of strings like '"first" "second" "third" "fourth" 4' where the top stack
+item tells how many strings to expect within the range.
+  
+Sometimes a function takes a range of paired arguments, such as:
+'"one" 1 "two" 2 "three" 3 "four" 4 4' where the count on the top of the
+range refers to the number of pairs.  To test for the range given above,
+you would use '"{si}" checkargs' to tell it that you want to check for
+a range of paired strings and integers.  You can group as many argument
+tests together in a range as you would like.  ie: you could use "{sida}"
+as an expression to test for a range of related strings, integers, dbrefs,
+and function addresses.
+  
+Since the argument multipliers refer to the previous test OR range, you
+can test for two string ranges with the test '"{s}2" checkargs'.  ie:
+It would succeed on a stack of: '"one" "two" "three" 3 "four" "five" 2'.
+'"{s2}" checkargs', however, would test for one range of paired strings.
+ie: It would succeed with a stack of: '"one" "1" "two" "2" "three" "3" 3'.
+  
+If, for some reason, you need to pass a range of ranges to a function,
+you can test for it by nesting the braces.  ie: '"{{s}}" checkargs'
+  
+Now, as one last example, the primitive notify_exclude, if we were to test
+the arguments passed to it manually, would use the test '"R{p}s" checkargs'
+to test for a valid room dbref, a range of player dbrefs or #-1s, and a
+string.
+~~~~~~~
+date|
+DATE   ( -- i i i)  Returns the monthday, month, and year.  ie:  if it were
+February 6, 1992, date would return 6 2 1992 as three integers on the stack.
+~~~~~
+gmtoffset|
+GMTOFFSET ( -- i)
+Returns the machine's offset from Greenwich Mean Time in seconds.
+~~~~~
+stringpfx|
+STRINGPFX (s s2 -- i)  Returns 1 if string s2 is a prefix of string s.
+If s2 is NOT a prefix of s, then it returns 0.  Case insensitive.
+~~~~~
+PMATCH|
+pmatch (s -- d)
+Takes a name and returns the dbref of the player.  If the name does not
+match that of a player, #-1 is returned.
+~~~~~
+part_pmatch|
+PART_PMATCH (s -- d)  Takes a player name, or the first part of the name,
+and matches it against the names of the players who are currently online.
+If the given string is a prefix of the name of a player who is online,
+then their dbref is returned.  If two players could be matched by the
+given string, it returns a #-2.  If None of the players online match,
+then it returns a #-1.
+~~~~~
+MODE|
+MODE ( -- i)
+Returns an integer denoting the current multitasking mode.  This ignores
+BOUND bits on programs.  The integer this returns will be the same as
+one of those defined by the standard $defines bg_mode, fg_mode, and
+pr_mode, being background, foreground, and preempt mode, respectively.
+Also see PR_MODE.
+~~~~~
+SETMODE|
+SETMODE (i -- )
+Sets the current multitasking mode to the given mode.  The integer this
+uses will be the same as one of those defined by the standard $defines
+bg_mode, fg_mode, and pr_mode, being background, foreground, and preempt
+mode, respectively.  Programs set BOUND will run PREEMPT, ignoring this
+mode.  Also see PR_MODE.
+~~~~~
+PR_MODE|FG_MODE|BG_MODE|
+pr_mode ( -- i)
+fg_mode ( -- i)
+bg_mode ( -- i)
+These are all standard built in defines.  They are used with MODE and
+SETMODE to show what mode the program is running in, or to set what mode
+it will run in.  For example, MODE returns an integer on the stack, that
+you can compare against pr_mode, fg_mode, or bg_mode, to determine what
+mode the program is in.  pr_mode is defined as 0, fg_mode is defined as 1,
+and bg_mode is defined as 2.
+~~~~~
+ADDRESS?|
+ADDRESS? (? -- i)
+Returns true if the top stack item is a function address.
+~~~~~
+LOCK?|
+LOCK? (? -- i)
+    Returns true if the top stack item is a lock.  Also see GETPROP, SETPROP,
+PARSELOCK, UNPARSELOCK, PRETTYLOCK, and TESTLOCK.
+~~~~~
+SETPROP|
+SETPROP (d s ? -- )
+Stores a lock, dbref, integer, or string into the named property on the
+given object.  Permissions are the same as for ADDPROP.  Also see SETPROP,
+ADDPROP, REMOVE_PROP, GETPROPSTR, and GETPROPVAL.
+~~~~
+PARSELOCK|
+PARSELOCK (s -- l)
+    Parses a lock string into a lock.  If the parsing failed, then the lock
+returned will be a TRUE_BOOLEXP, which is logically false to an 'if' test.
+Also see UNPARSELOCK, LOCK?, PRETTYLOCK, TESTLOCK, GETLOCKSTR, SETLOCKSTR,
+and LOCKED?.
+~~~~
+UNPARSELOCK|
+UNPARSELOCK (l -- s)
+    Unparses a lock into a string fit for program editing.  Also see LOCK?,
+PARSELOCK, PRETTYLOCK, TESTLOCK, GETLOCKSTR, SETLOCKSTR, and LOCKED?.
+~~~~
+PRETTYLOCK|
+PRETTYLOCK (l -- s)
+    Unparses a lock into a string fit for players to see.  Also see LOCK?,
+PARSELOCK, UNPARSELOCK, TESTLOCK, GETLOCKSTR, SETLOCKSTR, and LOCKED?.
+~~~~
+TESTLOCK|
+TESTLOCK (d l -- i)
+    Tests the player dbref against the given lock.  If the test was successful,
+then this returns a 1.  If the test failed, then this returns a 0.  Also see
+LOCK?, PARSELOCK, UNPARSELOCK, PRETTYLOCK, GETLOCKSTR, SETLOCKSTR, and LOCKED?
+~~~~
+PARSEPROP|
+PARSEPROP (d s s i -- s)
+    Returns the string output of the MPI Parser, given an object, a
+property name to parse, an input string for the {&how} variable, and an
+integer that should either be 1, for when you want {delay} messages to be
+sent to the player only, or 0, when you want the rest of the players in
+the room to get the omessages. NOTE: for security reasons, you cannot use
+PARSEPROP with a mucker level of less than 3.
+~~~~
+JMP|
+JMP (a -- )
+  The JMP primitive takes an address like those supplied by 'funcname and
+moves execution to that point.  It's one early way that was used to do
+tail-recursion loops without as much overhead, and without failing due to
+system stack overflows.  It's mostly obsolete now, except that it's one
+of the three or four internal primitives used to implement if-else-then and
+begin-while-repeat loops and such.
+  
+Example of JMP as a tail-recursion optimization:
+    : countforever ( i -- )
+        1 +
+        dup intostr .tell
+        'countforever jmp
+    ;
+  
+A better ways to do the same thing with looping primitives would be:
+    : countforever ( i -- )
+        begin
+            1 +
+            dup intostr .tell
+        repeat
+    ;
+~
+CONTROLS|
+controls ( d1 d2 -- i )
+Takes a player dbref d1 and an object dbref d2, and returns true if the
+player has control over the given object.
+~
+SYSPARM|
+sysparm ( s -- s )
+Takes a tuneable system parameter and returns its value as a string.  For
+an integer it returns it as a string, a time is returned as a string
+containing the number of seconds, a dbref is returned in standard dbref
+format, and boolean is returned as 'yes' or 'no'
+Checking an invalid parameter or a parameter requiring higher permissions
+than the program has will return an empty string.
+  
+Parameters available:
+(str)  dumpwarn_mesg        - Message to warn of a coming DB dump
+(str)  deltawarn_mesg       - Message to warn of a coming delta dump
+(str)  dumpdeltas_mesg      - Message telling of a delta dump
+(str)  dumping_mesg         - Message telling of a DB dump
+(str)  dumpdone_mesg        - Message notifying a dump is done
+(str)  penny                - A single currency
+(str)  pennies              - Plural currency
+(str)  cpenny               - Capitolized currency
+(str)  cpennies             - Capitolized plural currency
+(str)  muckname             - The name of the MUCK
+(str)  rwho_passwd          - Password for RWHO servers (Wizbit only)
+(str)  rwho_server          - RWHO server to connect to (Wizbit only)
+(str)  huh_mesg             - Message for invalid commands
+(str)  leave_mesg           - Message given when QUIT is used
+(str)  idle_boot_mesg       - Message given to an idle booted user
+(str)  register_mesg        - Message for a failed 'create' at login
+(str)  playermax_warnmesg   - Message warning off too many connects
+(str)  playermax_bootmesg   - Error given when a player cannot connect
+(time) rwho_interval        - Interval between RWHO updates
+(time) dump_interval        - Interval between dumps
+(time) dump_warntime        - Warning prior to a dump
+(time) monolithic_interval  - Max time between full DB dumps
+(time) clean_interval       - Interval between unused object purges
+(time) aging_time           - When an object is considered old and unused
+(time) maxidle              - Maximum idle time allowed
+(int)  max_object_endowment - Max value of an object
+(int)  object_cost          - Cost to create an object
+(int)  exit_cost            - Cost to create an exit
+(int)  link_cost            - Cost to link an exit
+(int)  room_cost            - Cost to dig a room
+(int)  lookup_cost          - Cost to lookup a player name
+(int)  max_pennies          - Max number of pennies a player can own
+(int)  penny_rate           - Rate for finding pennies
+(int)  start_pennies        - Starting wealth for new players
+(int)  kill_base_cost       - Number of pennies for a 100 percent chance
+(int)  kill_min_cost        - Minimum cost for doing a kill
+(int)  kill_bonus           - Bonus for a successful kill
+(int)  command_burst_size   - Maximum number of commands per burst
+(int)  commands_per_time    - Commands per time slice after burst
+(int)  command_time_msec    - Time slice length in milliseconds
+(int)  max_delta_objs       - Max percent of changed objects for a delta
+(int)  max_loaded_objs      - Max percent of the DB in memory at once
+(int)  max_process_limit    - Total processes allowed
+(int)  max_plyr_processes   - Processes allowed for each player
+(int)  max_instr_count      - Max preempt mode instructions
+(int)  instr_slice          - Max uninterrupted instructions per time slice
+(int)  mpi_max_commands     - Max number of uninterruptable MPI commands
+(int)  pause_min            - Pause between input and output servicing
+(int)  free_frames_pool     - Number of program frames pre-allocated
+(int)  listen_mlev          - Minimum MUCKER level for _listen programs
+(int)  playermax_limit      - Manimum allowed connections
+(ref)  player_start         - The home for players without a home
+(bool) use_hostnames        - Do reverse domain name lookup
+(bool) log_commands         - The server logs commands (Wizbit only)
+(bool) log_failed_commands  - The server logs failed commands (Wizbit only)
+(bool) log_programs         - The server logs programs (Wizbit only)
+(bool) dbdump_warning       - Warn about coming DB dumps
+(bool) deltadump_warning    - Warn about coming delta dumps
+(bool) periodic_program_purge - Purge unused programs from memory
+(bool) support_rwho         - Use RWHO server
+(bool) secure_who           - WHO works only in command mode
+(bool) who_doing            - Server support for @doing
+(bool) realms_control       - Support for realm wizzes
+(bool) allow_listeners      - Allow listeners
+(bool) allow_listeners_obj  - Objects can be listeners
+(bool) allow_listeners_env  - Listeners can be up the environment
+(bool) allow_zombies        - Zombie objects allowed
+(bool) wiz_vehicles         - Only wizzes can make vehicles
+(bool) force_mlev1_name_notify - M1 programs forced to show name on notify
+(bool) restrict_kill        - Can only kill KILL_OK players
+(bool) registration         - Only wizzes can create players
+(bool) teleport_to_player   - Allow use of exits linked to players
+(bool) secure_teleport      - Check teleport permissions for personal exits
+(bool) exit_darking         - Players can set exits dark
+(bool) thing_darking        - Players can set objects dark
+(bool) dark_sleepers        - Sleepers are effectively dark
+(bool) who_hides_dark       - Dark players are hidden (Wizbit only)
+(bool) compatible_priorities - Backwards compatibility for exit priorities
+(bool) do_mpi_parsing       - Parse MPI strings in messages
+(bool) look_propqueues      - Look triggers _lookq propqueue
+(bool) lock_envcheck        - Locks will check the environment
+(bool) diskbase_propvals    - Allow diskbasing of property values
+(bool) idleboot             - Enable or disable idlebooting
+(bool) playermax            - Enable or disable connection limit
+~
+DESCR_SETUSER|
+descr_setuser ( i d s -- i )
+Reconnects descriptor i to the player with dbref d and password s.  It first
+disconnects from the old dbref, then connects the new one, as if QUIT was
+typed then the new character was logged in.  If the password doesn't match
+the player's password, then it gives a permission denied error.  This
+returns a 1 if successful or a 0 if the given descriptor wasn't found.
+Wizbit only.
+~
+INTERP|
+interp ( d1 d2 s -- ? )
+Takes a program dbref to run d1, the trigger to use d2, and the top stack
+item string and calls the program with the given string on the stack.
+Returns when interpretation halts, which could be the result of an exit, an
+error, or a primitive that suspends execution such as sleep or read.
+Return value is the top item off the stack if successful exit, or a null
+string for anything else.
+~
+CHECKPASSWORD|
+checkpassword ( d s -- i )
+Checks if password string s is valid for player dbref d.  returns 1 on
+success, otherwise returns 0.
+Wizbit only.
+~
+DEBUGGER|ZOMBIE|DEBUGGING|
+To use the interactive debugger, set the ZOMBIE (Z) flag on a program.  When
+  you run a programm you own which is set ZOMBIE, you will be placed in the
+  interactive MUF debugger.
+When you enter the debugger, the program counter will be placed at the entry
+  point of the MUF.  This should always be the start of a function.  From
+  there, you may set breakpoints, examine or change the stack or variables,
+  list lines of code, step through, or continue execution.
+Every time execution halts and returns you to the debugger, the argument
+  stack is displayed, as well as a dump of the current line.  If execution
+  is at the beginning of the line, the actual line of source will be
+  displayed, otherwise the compiled instructions will be displayed with the
+  current instruction marked by surrounding braces.
+For more information, see DEBUGGER-COMMANDS, BREAKPOINTS, and NOTATION.
+~
+DEBUGGER-COMMANDS|
+cont            continues execution until a breakpoint is hit.
+finish          completes execution of current function.
+step [NUM]      executes one (or NUM, 1) lines of muf.
+stepi [NUM]     executes one (or NUM, 1) muf instructions.
+next [NUM]      like step, except skips CALL and EXECUTE.
+nexti [NUM]     like stepi, except skips CALL and EXECUTE.
+break LINE#     sets breakpoint at given LINE number.
+break FUNCNAME  sets breakpoint at start of given function.
+breaks          lists all currently set breakpoints.
+delete NUM      deletes breakpoint by NUM, as listed by 'breaks'
+where [LEVS]    displays function call backtrace of up to num levels deep.
+stack [NUM]     shows the top num items on the stack.
+print v#        displays the value of given global variable #.
+print lv#       displays the value of given local variable #.
+trace [on|off]  turns on/off debug stack tracing.
+list [L1,[L2]]  lists source code of given line range.
+list FUNCNAME   lists source code of given function.
+listi [L1,[L2]] lists instructions in given line range.
+listi FUNCNAME  lists instructions in given function.
+words           lists all function word names in program.
+words PATTERN   lists all function word names that match PATTERN.
+exec FUNCNAME   calls given function with the current stack data.
+prim PRIMITIVE  executes given primitive with current stack data.
+push DATA       pushes an int, dbref, var, or string onto the stack.
+pop             pops top data item off the stack.
+help            displays this help screen.
+quit            stop execution here.
+~
+BREAKPOINTS|
+Breakpoints can be set on a specefic line number, or on execution of a
+  specific word.  To set a breakpoint, simply enter 'break LINE', as in
+  'break 123', or 'break WORD', as in 'break do-something'.  To list current
+  breakpoints, simply enter the command 'breaks'.  To delete a breakpoint,
+  'delete NUM', where NUM is the number 'breaks' listed for that breakpoint.
+An implied breakpoint is always triggered on return of words after an
+  execute, or an EXEC, when the line they were called from was stepped with
+  next.
+A breakpoint is triggered after execution of the program has continued with
+  either 'continue', 'finish', or while in a word called when 'next' or
+  'nexti' is used.
+~
+NOTATION|
+Instruction notation as given by DEBUG dumps and the MUF debugger:
+PRIMITIVE:      A call to that primitive. (As in POP or ROTATE)
+NUM:            An integer. (As in 5 or -154)
+#dbref:         An object dbref. (As in #1 or #63516)
+"Text":         A string.  If it is displayed followed by ..., the string was
+                cut to save space. (As in "Wizard" or "Hello world!")
+[Lock]:         A lock in it's native structure. (As in [#0|!#0])
+VNUM:           Variable number NUM. (As in V0 or V10)
+LVNUM:          Local variable number NUM. (As in LV2 or LV5)
+(word):         The start of a word. (As in (do-something))
+'word:          The address of word. (As in 'do-something)
+'#dbref'word:   The address of word in another program.
+                (As in '#5'do-something)
+EXEC->word:     A subroutine call to word. (As in EXEC->do-something)
+JMP->word:      A jump to word. (As in JMP->do-something)
+IF->lineNUM:    An internal IF jump.  If the top stack item is 0, the jump
+                occurs, otherwise this is just a no-op. (As in IF->line9)
+JMP->lineNUM:   An internal jump used by IF-ELSE-THEN and loops.
+                (As in JMP->line9)
+???:            An unknown instruction type. (As in ???)
+???<file:line>: An instruction that has been freed.  If you see this please
+                report it to the current code maintainer.
+                (As in ???<p_db.c:1042>)
+Some tokens are just used as placeholders, and disappear as soon as the MUF
+is compiled.  These are BEGIN, and THEN.  In addition, FOR loops will
+produce at least two extra instruction, and an IF->lineNUM.  FORITER, the
+iteration counter, and FORPOP, which cleans up from the for loop.  If you
+JMP or EXIT out of a word from nested FOR loops, you will see a FORPOP
+before the JMP or EXIT for each nexted FOR loop.
+~
+MCP_REGISTER|
+mcp_register ( strPkgName fltMinVers fltMaxVers -- )
+  Registers an MCP package so that clients can know what is supported.
+The minimum and maximum versions supported are represented as floating
+point numbers, with the minor version number being divided by 1000.
+For example, an MCP package of version 1.1 is represented as 1.001,
+and a version of 1.23 is represented as 1.023.  This lets you use
+mathematical compares to check version numbers.
+~
+MCP_BIND|
+mcp_bind ( strPkgName strMesgName addrCallback -- )
+  Binds a specific message, so if it is received, the given function is
+called.  The callback function is assumed to accept the args:
+( intDescr dictArgs -- ) where dictArgs is a dictionary array contain-
+ing key-value pairs that represent the arguments of the message.  Each
+argument can either have a string value, or a list array of strings,
+where the list array is used for multi-line values.
+~
+MCP_SUPPORTS|
+mcp_supports ( intDescr strPkgName -- fltVersion )
+  Returns the version number of this package that is supported by this
+connection descriptor.  If this package isn't supported, returns 0.0
+The version number is represented as a floating point number, with the
+minor version number being divided by 1000.  For example, an MCP
+package of version 1.1 is represented as 1.001, and a version of 1.23
+is represented as 1.023.  This lets you use mathematical compares to
+check version numbers.
+~
+MCP_SEND|
+mcp_send ( intDescr strPkgName strMsgName dictArgs -- )
+  Sends an MCP message for the given package to the given connection
+descriptor.  dictArgs contains key-value pairs, where each key is
+an argument name, and the value is the argument value.  Values can
+be strings, floats, dbrefs, integers, or array lists of strings.
+They all get translated into an appropriate string format before
+getting sent.
+~
+TOKENSPLIT|
+tokensplit (strString strDelim strEscape -- strPre strPost strChar)
+  Searches strString for the first character that matches any character in
+strDelim, so long as it is not escaped by the character given in strEscape.  
+Returns the unescaped string before the found character, the raw string after
+that character, and the character that was found.  For example:
+    "ab//cd/'efg'hi//jk'lm"   "'"   "/"   TOKENSPLIT
+returns the values:
+    "ab/cd'efg"   "hi//jk'lm"   "'"
+~
+DESCR|
+descr ( -- i)
+  Returns the descriptor number that invoked this program.  The value
+returned may be -1 in the case of listener or autostart programs.
+~
+{|
+{  ( -- marker)
+  Pushes a marker onto the stack, to be used with } or }list or }dict.
+~
+}|
+}  ( marker ?n ... ?1 -- ?n ... ?1 i )
+  Finds the topmost marker in the stack, and counts how many stack items
+are between it and the top of the stack.  The marker is removed from the
+stack, and the count is pushed onto the stack.
+~
+}LIST|
+}list  ( marker ?n ... ?1 -- array )
+  Takes all stack items from the top of the stack to the topmost stack
+marker and creates a list array from them.  This is actually an inserver
+macro, defined to '} array_make'.
+~
+}DICT|
+}dict  ( marker @n ?n ... @1 ?1 -- dictionary )
+  Takes pairs of stack items from the top of the stack to the topmost stack
+marker and creates a dictionary array from them.  Each @ item is used as an
+index value for the corresponding ? value.  This is actually an inserver
+macro, defined to '} 2 / array_make_dict'.  Be careful to make sure that
+there are an even number of stack items between the { and the }dict.
+~
+CANCALL?|
+cancall?  (d s -- i)
+  Returns true if the given program has a public or wizcall function that the
+current program has permissions to call.  Returns false, otherwise.
+~
+WIZCALL|
+wizcall <funcname>
+  Specifies that the given function is a WIZCALL function.  A WIZCALL function
+is like a PUBLIC function, except it can only be called by wizbit programs.
+~
+GUI_AVAILABLE|
+GUI_AVAILABLE (intDescr -- fltVersion)
+Returns the floating point version number of the MCP GUI protocol
+supported by the given descriptor's connection.  The version is
+encoded in the number such that major version 8, minor version 12
+is represented as 8.012.  If the MCP protocol is not available on
+that descriptor, then 0.0 is returned.
+~
+GUI_DLOG_SIMPLE|
+GUI_DLOG_SIMPLE (intDescr strTitle -- strDlogID)
+If a user has a client that can support the MCP GUI protocol, then
+this primitive can be used to generate a simple dialog on their
+screen.  By "simple" I mean just an empty window with no controls.
+The intDescr argument specifies what connection descriptor to
+create the dialog for (ie: what user's screen to show it on), and
+the strTitle arg specifies what the title of the dialog will be.
+This returns a string containing the dialogid, used by other prims
+to add controls or make various changes.  This dialog will be hidden
+and not shown to the user until it has been displayed with the
+GUI_DLOG_SHOW command.
+~
+GUI_DLOG_TABBED|
+GUI_DLOG_TABBED (intDescr strTitle dictPages -- strDlogID)
+If a user has a client that can support the MCP GUI protocol, then
+this primitive can be used to generate a tabbed dialog on their
+screen.  By "tabbed" I mean a window with a tabbed notebook, similar
+to Win95 "property sheets", with three standard buttons at the bottom.
+The standard buttons return values of "_ok", "_cancel", and "_apply".
+The intDescr argument specifies what connection descriptor to create
+the dialog for (ie: what user's screen to show it on).  The strTitle
+arg specifies what the title of the dialog will be.  The dictPages
+argument is a dictionary array of page ids and display names to be
+created.  (ids as dictionary keys, display names as vals) This prim
+returns a string containing the dialogid, used by other prims to add
+controls or make various changes.  When you create a new control, you
+can specify which page to put it in by passing a pageid in as the
+value of the "pane" argument.  This dialog will be hidden and not
+shown to the user until it has been displayed with the GUI_DLOG_SHOW
+command.
+~
+GUI_DLOG_HELPER|
+GUI_DLOG_HELPER (intDescr strTitle dictPages -- strDlogID)
+If a user has a client that can support the MCP GUI protocol, then
+this primitive can be used to generate a helper dialog on their
+screen.  By "helper" I mean a dialog similar to a Win95 wizard dialog.
+The standard buttons return values of "_cancel", and "_finish".
+The intDescr argument specifies what connection descriptor to
+create the dialog for (ie: what user's screen to show it on), and
+the strTitle arg specifies what the title of the dialog will be.
+The dictPages argument is a dictionary array of page ids and display
+names to be created.  (ids as dictionary keys, display names as vals)
+This returns a string containing the dialogid, used by other prims
+to add controls or make various changes.  When you create a new
+control, you can specify which page to put it in by passing a pageid
+in as the value of the "pane" argument.  This dialog will be hidden
+and not shown to the user until it has been displayed with the
+GUI_DLOG_SHOW command.
+~
+GUI_DLOG_SHOW|
+GUI_DLOG_SHOW (strDlogID -- )
+Forces a given dialog to be shown to the user.  The strDlogId is what
+was returned by the GUI_DLOG_CREATE (or similar) command.
+~
+GUI_DLOG_CLOSE|
+GUI_DLOG_CLOSE (strDlogID -- )
+Forces a given dialog to be closed and destroyed.  The strDlogId is
+what was returned by the GUI_DLOG_CREATE (or similar) command.
+~
+GUI_CTRL_CREATE|
+GUI_CTRL_CREATE (strDlogID strType strCtrlID dictArgs -- )
+Creates a new control in a given dialog.  strDlogID contains the dlogid
+returned from a GUI_DLOG_SIMPLE (or similar) command.  strType contains
+the control type.  To make debugging easier and faster, MUF $defs have
+been provided for each control type.  They are:
+  C_DATUM, C_LABEL, C_HRULE, C_VRULE, C_BUTTON, C_CHECKBOX, C_EDIT,
+  C_MULTIEDIT, C_COMBOBOX, C_SPINNER, C_SCALE, C_LISTBOX, C_FRAME,
+  C_NOTEBOOK.
+If you use these instead of the actual type name strings, then if you
+mistype one, it will throw an error when trying to compile, instead of
+when you try to run it.  The strCtrlID arg is the id to give the control,
+for use in reading the values back later, or modifying the control.
+dictArgs is used to pass any other arguments needed to create the control.
+This will be used by almost all controls.  It is a dictionary array that
+contains argnames as keys, each with an argument value.
+~
+GUI_VALUES_GET|
+GUI_VALUES_GET (strDlogID -- dictValues)
+Returns a dictionary containing all the control values for the given
+dialog.  The keys are the control ids.
+~
+GUI_VALUE_SET|
+GUI_VALUE_SET (strDlogID strCtrlID strValue -- )
+Sets the value of a given control in a given dialog.
+~
+EVENT_WAIT|
+EVENT_WAIT ( -- dictContext eventID)
+Waits for an event to occur, pausing the MUF program.  Currently, the
+only events are GUI events.  GUI events have eventID strings that are
+created by prepending "GUI." to the dlogID of the dialog that generated
+the event.
+
+The context dictionary for GUI events contains the folowing keys:
+  descr      Holds the descriptor that generated teh event.
+  dlogid     Holds the DlogID of the dialog that generated the event.
+  id         Holds the ID of the control that generated the event.
+  dismissed  Holds 1 if the dialog was dismissed, 0 otherwise.
+  event      Holds the type of gui event.  ie: buttonpress, menuselect.
+~
+C_DATUM
+C_DATUM
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a Datum control in a GUI dialog.
+The Datum control is a non-visible control that just holds a value.  It's
+useful for keeping program state information.
+The only control arguments that this control type can use are:
+    value    Holds the value of the control.
+~
+C_LABEL
+C_LABEL
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a text label control in a GUI dialog.
+The label control is just a text label, nothing more.
+The only control arguments that this control type can use are:
+    value    Holds the value of the control.
+    pane     The pane in which to place this control.  Some controls, like
+             the notebook or frame controls, create new panes in which you
+             can place controls.
+    newline  If 1, next control will be at the beginning of the next row.
+             If 0, next control will be in the next column to the right.
+             Defaults to 1.
+    sticky   Which sides of the cell this control sticks to.  This is a
+             string with any or all of the letters 'n', 's', 'e', or 'w'.
+    colspan  Number of columns this control spans across.  Defaults to 1.
+    rowspan  Number of rows this control spans across.  Defaults to 1.
+    colskip  Number of columns to skip before placing this control.
+             Defaults to 0.
+    hweight  How much the starting column of this control should expand.
+             When filling unused space, if there are two columns, one with
+             hweight 2 and the other with hweight 1, then the column with
+             hweight 2 will be expanded twice as much as the other column.
+             The default hweight is 0.  Note that the last control in the
+             given column sets the hweight for the column.
+    vweight  How much the starting row of this control should expand.
+             When filling unused space, if there are two rows, one with
+             vweight 2 and the other with vweight 1, then the row with
+             vweight 2 will be expanded twice as much as the other row.
+             The default hweight is 0.  Note that the last control in the
+             given row sets the vweight for the row.
+    toppad   Number of pixels padding to add above this control.
+    leftpad  Number of pixels padding to add to the left of this control.
+~
+C_HRULE
+C_HRULE
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a Horizontal Rule control in a GUI dialog.
+The hrule control is just a horizontal line, nothing more.
+The only control arguments that this control type can use are:
+    height   Number of pixels of vertical thickness of the horizontal line.
+    pane     The pane in which to place this control.  Some controls, like
+             the notebook or frame controls, create new panes in which you
+             can place controls.
+    newline  If 1, next control will be at the beginning of the next row.
+             If 0, next control will be in the next column to the right.
+             Defaults to 1.
+    sticky   Which sides of the cell this control sticks to.  This is a
+             string with any or all of the letters 'n', 's', 'e', or 'w'.
+    colspan  Number of columns this control spans across.  Defaults to 1.
+    rowspan  Number of rows this control spans across.  Defaults to 1.
+    colskip  Number of columns to skip before placing this control.
+             Defaults to 0.
+    hweight  How much the starting column of this control should expand.
+             When filling unused space, if there are two columns, one with
+             hweight 2 and the other with hweight 1, then the column with
+             hweight 2 will be expanded twice as much as the other column.
+             The default hweight is 0.  Note that the last control in the
+             given column sets the hweight for the column.
+    vweight  How much the starting row of this control should expand.
+             When filling unused space, if there are two rows, one with
+             vweight 2 and the other with vweight 1, then the row with
+             vweight 2 will be expanded twice as much as the other row.
+             The default hweight is 0.  Note that the last control in the
+             given row sets the vweight for the row.
+    toppad   Number of pixels padding to add above this control.
+    leftpad  Number of pixels padding to add to the left of this control.
+~
+C_VRULE
+C_VRULE
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a Vertical Rule control in a GUI dialog.
+The vrule control is just a vertical line, nothing more.
+The only control arguments that this control type can use are:
+    width    Number of pixels of horizontal thickness of the vertical line.
+    pane     The pane in which to place this control.  Some controls, like
+             the notebook or frame controls, create new panes in which you
+             can place controls.
+    newline  If 1, next control will be at the beginning of the next row.
+             If 0, next control will be in the next column to the right.
+             Defaults to 1.
+    sticky   Which sides of the cell this control sticks to.  This is a
+             string with any or all of the letters 'n', 's', 'e', or 'w'.
+    colspan  Number of columns this control spans across.  Defaults to 1.
+    rowspan  Number of rows this control spans across.  Defaults to 1.
+    colskip  Number of columns to skip before placing this control.
+             Defaults to 0.
+    hweight  How much the starting column of this control should expand.
+             When filling unused space, if there are two columns, one with
+             hweight 2 and the other with hweight 1, then the column with
+             hweight 2 will be expanded twice as much as the other column.
+             The default hweight is 0.  Note that the last control in the
+             given column sets the hweight for the column.
+    vweight  How much the starting row of this control should expand.
+             When filling unused space, if there are two rows, one with
+             vweight 2 and the other with vweight 1, then the row with
+             vweight 2 will be expanded twice as much as the other row.
+             The default hweight is 0.  Note that the last control in the
+             given row sets the vweight for the row.
+    toppad   Number of pixels padding to add above this control.
+    leftpad  Number of pixels padding to add to the left of this control.
+~
+C_BUTTON
+C_BUTTON
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a Button control in a GUI dialog.
+The Button control is a simple button the user can press.
+The only control arguments that this control type can use are:
+    text     The text label that will show on the button face.
+    width    Number of characters text the button should be able to hold.
+    dismiss  If 1, the dialog will be dismissed when this button is pressed.
+             Defaults to 1.
+    pane     The pane in which to place this control.  Some controls, like
+             the notebook or frame controls, create new panes in which you
+             can place controls.
+    newline  If 1, next control will be at the beginning of the next row.
+             If 0, next control will be in the next column to the right.
+             Defaults to 1.
+    sticky   Which sides of the cell this control sticks to.  This is a
+             string with any or all of the letters 'n', 's', 'e', or 'w'.
+    colspan  Number of columns this control spans across.  Defaults to 1.
+    rowspan  Number of rows this control spans across.  Defaults to 1.
+    colskip  Number of columns to skip before placing this control.
+             Defaults to 0.
+    hweight  How much the starting column of this control should expand.
+             When filling unused space, if there are two columns, one with
+             hweight 2 and the other with hweight 1, then the column with
+             hweight 2 will be expanded twice as much as the other column.
+             The default hweight is 0.  Note that the last control in the
+             given column sets the hweight for the column.
+    vweight  How much the starting row of this control should expand.
+             When filling unused space, if there are two rows, one with
+             vweight 2 and the other with vweight 1, then the row with
+             vweight 2 will be expanded twice as much as the other row.
+             The default hweight is 0.  Note that the last control in the
+             given row sets the vweight for the row.
+    toppad   Number of pixels padding to add above this control.
+    leftpad  Number of pixels padding to add to the left of this control.
+~
+C_CHECKBOX
+C_CHECKBOX
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a CheckBox control in a GUI dialog.
+The CheckBox control is used for indicating simple "on/off" boolean settings.
+The only control arguments that this control type can use are:
+    text     The text label that will show to the right of the checkbox.
+    onvalue  The value this control should have when checked.
+    offvalue The value this control should have when not checked.
+    value    The current state/value of the control.  This should match either
+             the value of the "onvalue" or "offvalue" argument.
+    pane     The pane in which to place this control.  Some controls, like
+             the notebook or frame controls, create new panes in which you
+             can place controls.
+    newline  If 1, next control will be at the beginning of the next row.
+             If 0, next control will be in the next column to the right.
+             Defaults to 1.
+    sticky   Which sides of the cell this control sticks to.  This is a
+             string with any or all of the letters 'n', 's', 'e', or 'w'.
+    colspan  Number of columns this control spans across.  Defaults to 1.
+    rowspan  Number of rows this control spans across.  Defaults to 1.
+    colskip  Number of columns to skip before placing this control.
+             Defaults to 0.
+    hweight  How much the starting column of this control should expand.
+             When filling unused space, if there are two columns, one with
+             hweight 2 and the other with hweight 1, then the column with
+             hweight 2 will be expanded twice as much as the other column.
+             The default hweight is 0.  Note that the last control in the
+             given column sets the hweight for the column.
+    vweight  How much the starting row of this control should expand.
+             When filling unused space, if there are two rows, one with
+             vweight 2 and the other with vweight 1, then the row with
+             vweight 2 will be expanded twice as much as the other row.
+             The default hweight is 0.  Note that the last control in the
+             given row sets the vweight for the row.
+    toppad   Number of pixels padding to add above this control.
+    leftpad  Number of pixels padding to add to the left of this control.
+~
+C_EDIT
+C_EDIT
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a single-line text Edit control in a GUI dialog.
+The Edit control is used for single-line text string editing.
+The only control arguments that this control type can use are:
+    text     The text label that will show to the left of the control.
+             Defaults to "" (no label).  If there is a label, then this
+             control will be split across two columns, with the label in
+             the first one, the edit control in the second.
+    value    The current contents/value of the control.
+    maxlen   The maximum string length allowed.  Defaults to 1024 chars.
+    width    Number of average character widths wide this control should be.
+             Defaults to 40 characters wide.
+    height   Number of lines high this control will be.  Defaults to 1.
+             If this is greater than 1, then text will wrap as you type it,
+             but you still won't be able to insert carriage returns.
+    pane     The pane in which to place this control.  Some controls, like
+             the notebook or frame controls, create new panes in which you
+             can place controls.
+    newline  If 1, next control will be at the beginning of the next row.
+             If 0, next control will be in the next column to the right.
+             Defaults to 1.
+    sticky   Which sides of the cell this control sticks to.  This is a
+             string with any or all of the letters 'n', 's', 'e', or 'w'.
+    colspan  Number of columns this control spans across.  Defaults to 1.
+    rowspan  Number of rows this control spans across.  Defaults to 1.
+    colskip  Number of columns to skip before placing this control.
+             Defaults to 0.
+    hweight  How much the starting column of this control should expand.
+             When filling unused space, if there are two columns, one with
+             hweight 2 and the other with hweight 1, then the column with
+             hweight 2 will be expanded twice as much as the other column.
+             The default hweight is 0.  Note that the last control in the
+             given column sets the hweight for the column.
+    vweight  How much the starting row of this control should expand.
+             When filling unused space, if there are two rows, one with
+             vweight 2 and the other with vweight 1, then the row with
+             vweight 2 will be expanded twice as much as the other row.
+             The default hweight is 0.  Note that the last control in the
+             given row sets the vweight for the row.
+    toppad   Number of pixels padding to add above this control.
+    leftpad  Number of pixels padding to add to the left of this control.
+~
+C_MULTIEDIT
+C_MULTIEDIT
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a Multi-line text Edit control in a GUI dialog.
+The MultiEdit control is used for multi-line text string editing.
+The only control arguments that this control type can use are:
+    value    The current contents/value of the control.
+    width    Number of average character widths wide this control should be.
+             Defaults to 40 characters wide.
+    height   Number of lines high this control will be.  Defaults to 1.
+    font     Specifies whether the font used is "fixed" or "proportional".
+    pane     The pane in which to place this control.  Some controls, like
+             the notebook or frame controls, create new panes in which you
+             can place controls.
+    newline  If 1, next control will be at the beginning of the next row.
+             If 0, next control will be in the next column to the right.
+             Defaults to 1.
+    sticky   Which sides of the cell this control sticks to.  This is a
+             string with any or all of the letters 'n', 's', 'e', or 'w'.
+    colspan  Number of columns this control spans across.  Defaults to 1.
+    rowspan  Number of rows this control spans across.  Defaults to 1.
+    colskip  Number of columns to skip before placing this control.
+             Defaults to 0.
+    hweight  How much the starting column of this control should expand.
+             When filling unused space, if there are two columns, one with
+             hweight 2 and the other with hweight 1, then the column with
+             hweight 2 will be expanded twice as much as the other column.
+             The default hweight is 0.  Note that the last control in the
+             given column sets the hweight for the column.
+    vweight  How much the starting row of this control should expand.
+             When filling unused space, if there are two rows, one with
+             vweight 2 and the other with vweight 1, then the row with
+             vweight 2 will be expanded twice as much as the other row.
+             The default hweight is 0.  Note that the last control in the
+             given row sets the vweight for the row.
+    toppad   Number of pixels padding to add above this control.
+    leftpad  Number of pixels padding to add to the left of this control.
+~
+C_COMBOBOX
+C_COMBOBOX
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a Win95 style combobox with a pulldown menu of options.
+The ComboBox control is used for selecting from multiple standard options
+in a compact form factor.  Optionally the user can enter arbitrary data.
+The only control arguments that this control type can use are:
+    text     The text label that will show to the left of the control.
+             Defaults to "" (no label).  If there is a label, then this
+             control will be split across two columns, with the label in
+             the first one, the combobox control in the second.
+    value    The current contents/value of the control.
+    width    Number of average character widths wide this control should be.
+             Defaults to 20 characters wide.
+    options  Contains a list of entries for the combobox pulldown menu, one
+             per line.
+    editable If 1, the user can edit the value arbitrarily.  If 0, then the
+             user can only pick a value from the combobox pulldown menu.
+             Defaults to 0
+    sorted   Causes the contents of the pulldown menu to be auto-sorted.
+    pane     The pane in which to place this control.  Some controls, like
+             the notebook or frame controls, create new panes in which you
+             can place controls.
+    newline  If 1, next control will be at the beginning of the next row.
+             If 0, next control will be in the next column to the right.
+             Defaults to 1.
+    sticky   Which sides of the cell this control sticks to.  This is a
+             string with any or all of the letters 'n', 's', 'e', or 'w'.
+    colspan  Number of columns this control spans across.  Defaults to 1.
+    rowspan  Number of rows this control spans across.  Defaults to 1.
+    colskip  Number of columns to skip before placing this control.
+             Defaults to 0.
+    hweight  How much the starting column of this control should expand.
+             When filling unused space, if there are two columns, one with
+             hweight 2 and the other with hweight 1, then the column with
+             hweight 2 will be expanded twice as much as the other column.
+             The default hweight is 0.  Note that the last control in the
+             given column sets the hweight for the column.
+    vweight  How much the starting row of this control should expand.
+             When filling unused space, if there are two rows, one with
+             vweight 2 and the other with vweight 1, then the row with
+             vweight 2 will be expanded twice as much as the other row.
+             The default hweight is 0.  Note that the last control in the
+             given row sets the vweight for the row.
+    toppad   Number of pixels padding to add above this control.
+    leftpad  Number of pixels padding to add to the left of this control.
+~
+C_LISTBOX
+C_LISTBOX
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a ListBox control in a GUI dialog.  The ListBox control is used
+for selecting one or more entries from a list of options.
+The only control arguments that this control type can use are:
+    value    The list of the currently selected list items, given as a list
+             of integers that refer to list positions.  0 is the first item.
+    font     Specifies whether the font used is "fixed" or "proportional".
+    width    Number of average character widths wide this control should be.
+             Defaults to 40 characters wide.
+    height   Number of lines high this control will be.  Defaults to 10.
+    options  The list of entries for the listbox contents, one per line.
+    selectmode  One of "single", "multiple", or "extended".  Specifies how
+             list item selection is performed, and whether more than one item
+             can be selected at a time.
+    pane     The pane in which to place this control.  Some controls, like
+             the notebook or frame controls, create new panes in which you
+             can place controls.
+    newline  If 1, next control will be at the beginning of the next row.
+             If 0, next control will be in the next column to the right.
+             Defaults to 1.
+    sticky   Which sides of the cell this control sticks to.  This is a
+             string with any or all of the letters 'n', 's', 'e', or 'w'.
+    colspan  Number of columns this control spans across.  Defaults to 1.
+    rowspan  Number of rows this control spans across.  Defaults to 1.
+    colskip  Number of columns to skip before placing this control.
+             Defaults to 0.
+    hweight  How much the starting column of this control should expand.
+             When filling unused space, if there are two columns, one with
+             hweight 2 and the other with hweight 1, then the column with
+             hweight 2 will be expanded twice as much as the other column.
+             The default hweight is 0.  Note that the last control in the
+             given column sets the hweight for the column.
+    vweight  How much the starting row of this control should expand.
+             When filling unused space, if there are two rows, one with
+             vweight 2 and the other with vweight 1, then the row with
+             vweight 2 will be expanded twice as much as the other row.
+             The default hweight is 0.  Note that the last control in the
+             given row sets the vweight for the row.
+    toppad   Number of pixels padding to add above this control.
+    leftpad  Number of pixels padding to add to the left of this control.
+~
+C_SPINNER
+C_SPINNER
+~
+C_SCALE
+C_SCALE
+~
+C_FRAME
+C_FRAME
+~
+C_NOTEBOOK
+C_NOTEBOOK
+
