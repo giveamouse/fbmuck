@@ -50,7 +50,7 @@ muf_re* muf_re_get(struct shared_string* pattern, int flags, const char** errmsg
 	{
 		if ((flags != re->flags) || strcmp(DoNullInd(pattern), DoNullInd(re->pattern)))
 		{
-			pcre_free(&re->re);
+			pcre_free(re->re);
 
 			if (re->pattern && (--re->pattern->links == 0))
     			free((void *)re->pattern);
