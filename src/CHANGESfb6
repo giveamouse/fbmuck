@@ -1,4 +1,6 @@
 2.2fb6.00b4
+Added the ability to allow wizards to use the OVERODE_TOKEN on WHO.
+Fixed permissions problem when both GOD_PRIV and tp_who_doing are set.
 Fixed bug #424057 -- MATCH and PMATCH primitives now strip ansi sequences
   before processing.
 Fixed _msgmacs searching to allow blessed environment room msgmacs.
