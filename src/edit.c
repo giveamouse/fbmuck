@@ -24,7 +24,6 @@ void insert(dbref player, const char *line);
 struct line *get_new_line(void);
 struct line *read_program(dbref i);
 void do_compile(int descr, dbref player, dbref program, int force_err_disp);
-void free_line(struct line *l);
 void free_prog_text(struct line *l);
 void prog_clean(struct frame *fr);
 void val_and_head(dbref player, int arg[], int argc);
@@ -34,6 +33,26 @@ void do_list_publics(dbref player, dbref program);
 void toggle_numbers(dbref player, int arg[], int argc);
 
 /* Editor routines --- Also contains routines to handle input */
+
+static void
+free_line(struct line *l)
+{
+	if (l->this_line)
+		free((void *) l->this_line);
+	free((void *) l);
+}
+
+void
+free_prog_text(struct line *l)
+{
+	struct line *next;
+
+	while (l) {
+		next = l->next;
+		free_line(l);
+		l = next;
+	}
+}
 
 /* This routine determines if a player is editing or running an interactive
    command.  It does it by checking the frame pointer field of the player ---
@@ -445,6 +464,64 @@ do_delete(dbref player, dbref program, int arg[], int argc)
 		notify(player, "Too many arguments!");
 		break;
 	}
+}
+
+void
+log_program_text(struct line *first, dbref player, dbref i)
+{
+	FILE *f;
+	char fname[BUFFER_LEN];
+	time_t lt = time(NULL);
+
+	strcpy(fname, PROGRAM_LOG);
+	f = fopen(fname, "a");
+	if (!f) {
+		log_status("Couldn't open file %s!\n", fname);
+		return;
+	}
+
+	fputs("#######################################", f);
+	fputs("#######################################\n", f);
+	fprintf(f, "PROGRAM %s, SAVED AT %s BY %s(%d)\n", unparse_object(player, i), ctime(&lt),
+			NAME(player), player);
+	fputs("#######################################", f);
+	fputs("#######################################\n\n", f);
+
+	while (first) {
+		if (!first->this_line)
+			continue;
+		fputs(first->this_line, f);
+		fputc('\n', f);
+		first = first->next;
+	}
+	fputs("\n\n\n", f);
+	fclose(f);
+}
+
+void
+write_program(struct line *first, dbref i)
+{
+	FILE *f;
+	char fname[BUFFER_LEN];
+
+	snprintf(fname, sizeof(fname), "muf/%d.m", (int) i);
+	f = fopen(fname, "w");
+	if (!f) {
+		log_status("Couldn't open file %s!\n", fname);
+		return;
+	}
+	while (first) {
+		if (!first->this_line)
+			continue;
+		if (fputs(first->this_line, f) == EOF) {
+			abort();
+		}
+		if (fputc('\n', f) == EOF) {
+			abort();
+		}
+		first = first->next;
+	}
+	fclose(f);
 }
 
 /* quit from edit mode.  Put player back into the regular game mode */

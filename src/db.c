@@ -30,26 +30,6 @@ extern char *alloc_string(const char *);
 
 extern short db_conversion_flag;
 
-void
-free_line(struct line *l)
-{
-	if (l->this_line)
-		free((void *) l->this_line);
-	free((void *) l);
-}
-
-void
-free_prog_text(struct line *l)
-{
-	struct line *next;
-
-	while (l) {
-		next = l->next;
-		free_line(l);
-		l = next;
-	}
-}
-
 static void
 db_grow(dbref newtop)
 {
@@ -208,7 +188,7 @@ file_line(FILE * f)
 }
 
 /* FIXME: Only called from macroload */
-void
+static void
 foldtree(struct macrotable *center)
 {
 	int count = 0;
@@ -234,7 +214,7 @@ foldtree(struct macrotable *center)
 }
 
 /* FIXME: Only called from macroload */
-int
+static int
 macrochain(struct macrotable *lastnode, FILE * f)
 {
 	char *line, *line2;
@@ -268,64 +248,6 @@ macroload(FILE * f)
 	for (count /= 2; count--; macrotop = macrotop->right) ;
 	foldtree(macrotop);
 	return;
-}
-
-void
-log_program_text(struct line *first, dbref player, dbref i)
-{
-	FILE *f;
-	char fname[BUFFER_LEN];
-	time_t lt = time(NULL);
-
-	strcpy(fname, PROGRAM_LOG);
-	f = fopen(fname, "a");
-	if (!f) {
-		log_status("Couldn't open file %s!\n", fname);
-		return;
-	}
-
-	fputs("#######################################", f);
-	fputs("#######################################\n", f);
-	fprintf(f, "PROGRAM %s, SAVED AT %s BY %s(%d)\n", unparse_object(player, i), ctime(&lt),
-			NAME(player), player);
-	fputs("#######################################", f);
-	fputs("#######################################\n\n", f);
-
-	while (first) {
-		if (!first->this_line)
-			continue;
-		fputs(first->this_line, f);
-		fputc('\n', f);
-		first = first->next;
-	}
-	fputs("\n\n\n", f);
-	fclose(f);
-}
-
-void
-write_program(struct line *first, dbref i)
-{
-	FILE *f;
-	char fname[BUFFER_LEN];
-
-	snprintf(fname, sizeof(fname), "muf/%d.m", (int) i);
-	f = fopen(fname, "w");
-	if (!f) {
-		log_status("Couldn't open file %s!\n", fname);
-		return;
-	}
-	while (first) {
-		if (!first->this_line)
-			continue;
-		if (fputs(first->this_line, f) == EOF) {
-			abort();
-		}
-		if (fputc('\n', f) == EOF) {
-			abort();
-		}
-		first = first->next;
-	}
-	fclose(f);
 }
 
 int
@@ -390,7 +312,7 @@ int deltas_count = 0;
 
 /* mode == 1 for dumping all objects.  mode == 0 for deltas only.  */
 
-void
+static void
 db_write_list(FILE * f, int mode)
 {
 	dbref i;
@@ -436,28 +358,6 @@ db_write_deltas(FILE * f)
 	putstring(f, "***END OF DUMP***");
 	fflush(f);
 	return (db_top);
-}
-
-dbref
-parse_dbref(const char *s)
-{
-	const char *p;
-	long x;
-
-	x = atol(s);
-	if (x > 0) {
-		return x;
-	} else if (x == 0) {
-		/* check for 0 */
-		for (p = s; *p; p++) {
-			if (*p == '0')
-				return 0;
-			if (!isspace(*p))
-				break;
-		}
-	}
-	/* else x < 0 or s != 0 */
-	return NOTHING;
 }
 
 static int
@@ -672,7 +572,7 @@ read_program(dbref i)
 	return first;
 }
 
-/* Reads in Foxen8 DB Formats */
+/* Reads in Foxen8 DB Format */
 void
 db_read_object(FILE * f, struct object *o, dbref objno, int read_before)
 {
