@@ -20,7 +20,4 @@ for, and (if used in a #ifdef) what branches of code they enable/disable.
 The contents of this posting will be placed in the file README in the
 src-docs/ directory, where it can be updated as needed.
 
-/* $Log: README,v $
-/* Revision 1.1  2000/02/18 00:34:53  winged
-/* Inital contents of post 12304 on sourceforge in fbmuck project
-/* */
+/* $Id$ */
