@@ -3,6 +3,9 @@ Fixed infinite loop parenting bug.  I think.
 Fixed a lot of uninitialized struct frame variables in chile of FORK.
 Changed input quotas to not count MCP messages.
 Changed command logging to not list null commands.
+Changed READ to _not_ return blank lines unless the process asked for them.
+Added READ_WANTS_BLANKS ( -- ) muf primitive, to indicate the process wants
+  READ to be able to return blank "" lines.
 
 
 

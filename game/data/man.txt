@@ -1125,35 +1125,42 @@ in the above substitutions table, it will search down the environment tree
 from d to try to find the appropriate %X property for use in substitution.
 ~
 RANDOM|
-random ( -- i )
+RANDOM ( -- i )
 Returns a random integer from 0 to the MAXINT of the system running the MUCK.
 In general this number is (2^31)-1 or 2,147,483,647 (2.1 billion).
 ~
 READ|
-read ( -- s )
+READ ( -- s )
 Reads a string s from the user. This command should not be used in a
 program that is locked (as opposed to linked) to an object, as the
 lock will always fail and print the fail messages at read time.  It
 cannot be used in a program associated with a room object.
 ~
+READ_WANTS_BLANKS|
+READ_WANTS_BLANKS ( -- )
+Tells the interpreter that this process wants to be able to receive blank
+lines from the READ primitive.  If this is not executed, the process will
+silently ignore blank ("") lines in READ.  This only needs to be done once
+per process, and isn't reversable.
+~
 REMOVE_PROP|
-remove_prop ( d s -- )
+REMOVE_PROP ( d s -- )
 Removes property s from object d.  If the property begins with an
 underscore, `_' or a dot `.', and the effective user does not have
 permission on that object, the call fails.
 ~
 REVERSE|
-reverse ( ?n..?1 i -- ?1..?n )
+REVERSE ( ?n..?1 i -- ?1..?n )
 Reverses the order of the top i items on the stack.
 See also LREVERSE.
 ~
 RINSTR|
-rinstr ( s s1 -- i )
+RINSTR ( s s1 -- i )
 Returns the last occurrence of string s1 in string s, or 0 if s1 is
 not found.  '"abcbcba" "bc" rinstr' returns 4.  See also instr.
 ~
 RMATCH|
-rmatch ( d s -- d' )
+RMATCH ( d s -- d' )
 Takes string s, checks all objects and actions associated with object
 d, and returns object d' which matches that string.  For example,
 matches actions and inventory objects for a player object, actions on

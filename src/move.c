@@ -2,6 +2,11 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.12  2001/10/29 05:57:11  revar
+ * Changed READ to _not_ return blank lines unless the process asked for them.
+ * Added READ_WANTS_BLANKS ( -- ) muf primitive, to indicate the process wants
+ *   READ to be able to return blank "" lines.
+ *
  * Revision 1.11  2001/10/28 22:49:00  revar
  * Fixed infinite loop parenting bug.  I think.
  * Fixed a lot of uninitialized struct frame variables in chile of FORK.
@@ -283,11 +288,50 @@ maybe_dropto(int descr, dbref loc, dbref dropto)
 */
 
 int
+location_loop_check(dbref source, dbref dest)
+{   
+  unsigned int level = 0;
+  unsigned int place = 0;
+  dbref pstack[MAX_PARENT_DEPTH+2];
+
+  if (source == dest) {
+    return 1;
+  }
+  pstack[0] = source;
+  pstack[1] = dest;
+
+  while (level < MAX_PARENT_DEPTH) {
+    dest = getloc(dest);
+    if (dest == NOTHING) {     /* We should never get this */
+      return 1;
+    }
+    if (dest == HOME) {        /* We should never get this, either. */
+      return 1;
+    }
+    if (dest == (dbref) 0) {   /* Reached the top of the chain. */
+      return 0;
+    }
+    /* Check to see if we've found this item before.. */
+    for (place = 0; place < (level+2); place++) {
+      if (pstack[place] == dest) {
+        return 1;
+      }
+    }
+    pstack[level+2] = dest;
+    level++;
+  }
+  return 1;
+}
+
 parent_loop_check(dbref source, dbref dest)
 {   
   unsigned int level = 0;
   unsigned int place = 0;
   dbref pstack[MAX_PARENT_DEPTH+2];
+
+  if (location_loop_check(source, dest)) {
+	  return 1;
+  }
 
   if (source == dest) {
     return 1;
