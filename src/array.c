@@ -263,6 +263,8 @@ array_tree_alloc_node(array_iter * key)
 void
 array_tree_free_node(array_tree * p)
 {
+	assert(AVL_LF(p) == NULL);
+	assert(AVL_RT(p) == NULL);
 	CLEAR(AVL_KEY(p));
 	CLEAR(&p->data);
 	free(p);
@@ -326,9 +328,9 @@ array_tree_remove_node(array_iter * key, array_tree ** root)
 		} else if (!(AVL_RT(avl))) {
 			avl = AVL_LF(avl);
 		} else {
-			tmp =
-					array_tree_remove_node(AVL_KEY(array_tree_getmax(AVL_LF(avl))),
-										   &AVL_LF(avl));
+			tmp = array_tree_remove_node(
+					AVL_KEY(array_tree_getmax(AVL_LF(avl))),
+					&AVL_LF(avl));
 			if (!tmp)
 				abort();		/* this shouldn't be possible. */
 			AVL_LF(tmp) = AVL_LF(avl);
@@ -364,6 +366,8 @@ array_tree_delete_all(array_tree * p)
 		return;
 	array_tree_delete_all(AVL_LF(p));
 	array_tree_delete_all(AVL_RT(p));
+	AVL_LF(p) = NULL;
+	AVL_RT(p) = NULL;
 	array_tree_free_node(p);
 }
 
@@ -1635,6 +1639,9 @@ array_get_intkey_strval(stk_array * arr, int key)
 
 /*
  * $Log: array.c,v $
+ * Revision 1.22  2002/02/17 01:54:00  revar
+ * Changed array_tree_free_node() to assert() that subnodes must be NULL.
+ *
  * Revision 1.21  2002/02/17 01:52:11  winged
  * even more stuff for splint
  *
