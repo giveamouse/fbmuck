@@ -60,6 +60,8 @@ Fixed give messages for wizards removing pennies from players.
 Fixed @recycle to give a proper message for attempts to recycle garbage.
 Fixed bug #604213: @kill and event_waitfor error.
 Fixed bug #606415: new programs are "in use".
+Fixed bug #608081: Scoped vars lost with FORK prim.
+Fixed bug #515341: "pid getpidinfo" returns empty array.
 Fixed bug where listen and queued programs wouldn't get the pids they initially
   claimed they were going to get.
 Added workaround for bug #555198: Compile warning on Mac OS X.
