@@ -2041,10 +2041,9 @@ prim_array_get_ignorelist(PRIM_PROTOTYPE)
 
 	nu = new_array_packed(0);
 
-	if (*tp_ignore_prop)
+	if (tp_ignore_support)
 	{
-
-		rawstr = get_property_class(ref, tp_ignore_prop);
+		rawstr = get_property_class(ref, IGNORE_PROP);
 		rawstr = get_uncompress(rawstr);
 
 		if (rawstr) {

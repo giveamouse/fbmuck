@@ -3718,7 +3718,7 @@ static int Ignore_IsIgnoringSub(dbref Player, dbref Who)
 	int Top, Bottom;
 	dbref* List;
 
-	if (!*tp_ignore_prop)
+	if (!tp_ignore_support)
 		return 0;
 
 	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) == TYPE_GARBAGE))
@@ -3788,13 +3788,13 @@ int Ignore_PrimeCache(dbref Player)
 	int Count = 0;
 	int i;
 
-	if (!*tp_ignore_prop)
+	if (!tp_ignore_support)
 		return 0;
 
 	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) != TYPE_PLAYER))
 		return 0;
 
-	if ((Txt = get_uncompress(get_property_class(Player, tp_ignore_prop))) == NULL)
+	if ((Txt = get_uncompress(get_property_class(Player, IGNORE_PROP))) == NULL)
 	{
 		PLAYER_SET_IGNORE_LAST(Player, AMBIGUOUS);
 		return 0;
@@ -3861,8 +3861,9 @@ void Ignore_FlushCache(dbref Player)
 		free(PLAYER_IGNORE_CACHE(Player));
 		PLAYER_SET_IGNORE_CACHE(Player, NULL);
 		PLAYER_SET_IGNORE_COUNT(Player, 0);
-		PLAYER_SET_IGNORE_LAST(Player, NOTHING);
 	}
+
+	PLAYER_SET_IGNORE_LAST(Player, NOTHING);
 }
 
 void Ignore_FlushAllCache()
@@ -3882,15 +3883,16 @@ void Ignore_FlushAllCache()
 				free(PLAYER_IGNORE_CACHE(i));
 				PLAYER_SET_IGNORE_CACHE(i, NULL);
 				PLAYER_SET_IGNORE_COUNT(i, 0);
-				PLAYER_SET_IGNORE_LAST(i, NOTHING);
 			}
+
+			PLAYER_SET_IGNORE_LAST(i, NOTHING);
 		}
 	}
 }
 
 void Ignore_AddPlayer(dbref Player, dbref Who)
 {
-	if (!*tp_ignore_prop)
+	if (!tp_ignore_support)
 		return;
 
 	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) == TYPE_GARBAGE))
@@ -3899,12 +3901,14 @@ void Ignore_AddPlayer(dbref Player, dbref Who)
 	if ((Who < 0) || (Who >= db_top) || (Typeof(Who) == TYPE_GARBAGE))
 		return;
 
-	reflist_add(OWNER(Player), tp_ignore_prop, OWNER(Who));
+	reflist_add(OWNER(Player), IGNORE_PROP, OWNER(Who));
+
+	Ignore_FlushCache(OWNER(Player));
 }
 
 void Ignore_RemovePlayer(dbref Player, dbref Who)
 {
-	if (!*tp_ignore_prop)
+	if (!tp_ignore_support)
 		return;
 
 	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) == TYPE_GARBAGE))
@@ -3913,17 +3917,21 @@ void Ignore_RemovePlayer(dbref Player, dbref Who)
 	if ((Who < 0) || (Who >= db_top) || (Typeof(Who) == TYPE_GARBAGE))
 		return;
 
-	reflist_del(OWNER(Player), tp_ignore_prop, OWNER(Who));
+	reflist_del(OWNER(Player), IGNORE_PROP, OWNER(Who));
+
+	Ignore_FlushCache(OWNER(Player));
 }
 
 void Ignore_RemoveFromAllPlayers(dbref Player)
 {
 	int i;
 
-	if (!*tp_ignore_prop)
+	if (!tp_ignore_support)
 		return;
 
 	for(i = 0; i < db_top; i++)
 		if (Typeof(i) == TYPE_PLAYER)
-			reflist_del(i, tp_ignore_prop, Player);
+			reflist_del(i, IGNORE_PROP, Player);
+
+	Ignore_FlushAllCache();
 }

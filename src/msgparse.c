@@ -289,6 +289,9 @@ safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp)
 		if (*ptr == '\r' || *ptr == PROP_DELIMITER)
 			return 0;
 
+	if (Prop_System(buf))
+		return 0;
+	
 	if (!(mesgtyp & MPI_ISBLESSED)) {
 		if (Prop_Hidden(buf))
 			return 0;
@@ -326,6 +329,12 @@ safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int
 		return NULL;
 	}
 	strcpy(bbuf, inbuf);
+
+	if (Prop_System(bbuf))
+	{
+		notify_nolisten(player, "PropFetch: Permission denied.", 1);
+		return NULL;
+	}
 
 	if (!(mesgtyp & MPI_ISBLESSED)) {
 		if (Prop_Hidden(bbuf)) {

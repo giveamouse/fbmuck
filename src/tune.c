@@ -40,8 +40,6 @@ const char *tp_pcreate_flags = PCREATE_FLAGS;
 const char *tp_reserved_names = RESERVED_NAMES;
 const char *tp_reserved_player_names = RESERVED_PLAYER_NAMES;
 
-const char *tp_ignore_prop = IGNORE_PROP;
-
 struct tune_str_entry {
 	const char *group;
 	const char *name;
@@ -77,7 +75,6 @@ struct tune_str_entry tune_str_list[] = {
 	{"Database",   "pcreate_flags", &tp_pcreate_flags, 0, 1, "Initial Player Flags"},
 	{"Database",   "reserved_names", &tp_reserved_names, 0, 1, "Reserved names smatch"},
 	{"Database",   "reserved_player_names", &tp_reserved_player_names, 0, 1, "Reserved player names smatch"},
-	{"Database",   "ignore_prop", &tp_ignore_prop, 4, 1, "Property containing ignored players reflist"},
 
 	{NULL, NULL, NULL, 0, 0}
 };
@@ -266,6 +263,7 @@ int tp_proplist_int_counter = PROPLIST_INT_COUNTER;
 int tp_log_interactive = LOG_INTERACTIVE;
 int tp_lazy_mpi_istype_perm = LAZY_MPI_ISTYPE_PERM;
 int tp_optimize_muf = OPTIMIZE_MUF;
+int tp_ignore_support = IGNORE_SUPPORT;
 
 struct tune_bool_entry {
 	const char *group;
@@ -317,6 +315,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"WHO",        "who_doing", &tp_who_doing, 0, "Show '_/do' property value in WHO lists"},
 	{"Misc",       "allow_zombies", &tp_zombies, 0, "Enable Zombie things to relay what they hear"},
 	{"Misc",       "wiz_vehicles", &tp_wiz_vehicles, 0, "Only let Wizards set vehicle bits"},
+	{"Misc",       "ignore_support", &tp_ignore_support, 3, "Enable support for @ignoring players"},
 
 	{NULL, NULL, NULL, 0}
 };
@@ -740,9 +739,6 @@ tune_setparm(const char *parmname, const char *val)
 				parmval++;
 			*tstr->str = string_dup(parmval);
 			tstr->isdefault = 0;
-
-			if (tstr->str == &tp_ignore_prop)
-				Ignore_FlushAllCache();
 
 			return 0;
 		}

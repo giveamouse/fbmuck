@@ -1,5 +1,10 @@
 /* $Header$
  * $Log: params.h,v $
+ * Revision 1.9  2002/09/10 21:51:12  sombre
+ * Removed ignore_prop @tune.
+ * Added ignore_support @tune.
+ * Added "system only" @__sys__ propdir.
+ *
  * Revision 1.8  2002/06/19 07:17:57  revar
  * Added pcreate_flags @tune to specify what flags players are created with.
  * Added and merged Windows specific winfuzz4 changes.
@@ -1896,4 +1901,8 @@
 #define ANSI_BG_MAGENTA	"\033[45m"
 #define ANSI_BG_WHITE	"\033[47m"
 
+/* Ignore related defines */
+
+#define IGNORE_PROP "@__sys__/ignore/def"
+ 
 #endif /* _PARAMS_H */

@@ -773,10 +773,11 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 		if (*pname == '^' && number(pname + 1))
 			ival = atoi(++pname);
 
-		if (!Wizard(OWNER(player)) && (Prop_SeeOnly(type) || Prop_Hidden(type))) {
+		if (Prop_System(type) || (!Wizard(OWNER(player)) && (Prop_SeeOnly(type) || Prop_Hidden(type)))) {
 			notify(player, "Permission denied.");
 			return;
 		}
+
 		if (!(*pname)) {
 			ts_modifyobject(thing);
 			remove_property(thing, type);
@@ -1001,7 +1002,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 		return;
 	}
 
-	if (!Wizard(OWNER(player)) && (Prop_SeeOnly(pname) || Prop_Hidden(pname))) {
+	if (Prop_System(pname) || (!Wizard(OWNER(player)) && (Prop_SeeOnly(pname) || Prop_Hidden(pname)))) {
 		notify(player, "Permission denied.");
 		return;
 	}

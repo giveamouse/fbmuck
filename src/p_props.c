@@ -26,6 +26,8 @@ static char buf[BUFFER_LEN];
 int
 prop_read_perms(dbref player, dbref obj, const char *name, int mlev)
 {
+	if (Prop_System(name))
+		return 0;
 	if ((mlev < 3) && Prop_Private(name) && !permissions(player, obj))
 		return 0;
 	if ((mlev < 4) && Prop_Hidden(name))
@@ -36,6 +38,9 @@ prop_read_perms(dbref player, dbref obj, const char *name, int mlev)
 int
 prop_write_perms(dbref player, dbref obj, const char *name, int mlev)
 {
+	if (Prop_System(name))
+		return 0;
+
 	if (mlev < 3) {
 		if (!permissions(player, obj)) {
 			if (Prop_Private(name))
@@ -784,17 +789,15 @@ prim_nextprop(PRIM_PROTOTYPE)
 				 program, pc->line, ref, pname, buf);
 #endif
 
-		if (mlev < 4) {
-			while (pname && !prop_read_perms(ProgUID, ref, pname, mlev)) {
-				tmpname = next_prop_name(ref, exbuf, pname);
+		while (pname && !prop_read_perms(ProgUID, ref, pname, mlev)) {
+			tmpname = next_prop_name(ref, exbuf, pname);
 
 #ifdef LOG_PROPS
-				log2file("props.log", "#%d (%d) NEXTPROP: o=%d n=\"%s\" on=\"%s\"",
-						 program, pc->line, ref, tmpname, pname);
+			log2file("props.log", "#%d (%d) NEXTPROP: o=%d n=\"%s\" on=\"%s\"",
+					 program, pc->line, ref, tmpname, pname);
 #endif
 
-				pname = tmpname;
-			}
+			pname = tmpname;
 		}
 	}
 	if (pname) {

@@ -81,8 +81,7 @@ Added IGNORE_DEL ( d1 d2 -- ) removes d2 from d1's ignore list.
 Added ARRAY_GET_IGNORELIST ( d -- a ) returns an array of d's ignores.
 Added support for ignoring (gagging) players, ignores are mutual in that if
   player A ignores player B, A will not hear B, and B will not hear A.
-Added ignore_prop @tune to specify the directory the ignore list is held under,
-  if set blank ignore support is disabled, defaults to "@ignore/def".
+Added ignore_support @tune to specify if @ignore is supported.
 Added max_ml4_preempt_count @tune to specify the maximum number of instructions
   an mlevel4 (wizbitted) program may run before it is aborted, if set to 0
   no limit is imposed.  Defaults to 0.
@@ -92,6 +91,8 @@ Added reserved_player_names @tune which when set to a smatch pattern will refuse
   any player creations or renames which match said pattern.  Defaults to "".
 Added @delta alias for @dlt command (a la glowmuck).
 Added @proginfo command (backported from glowmuck).
+Added @__sys__ propdir for storing system only data, neither users nor wizards
+  may read or write any properties contained within this propdir.
 Removed dead concentrater log code.
 Removed dead LOCKOUT code from include/config.h.
 

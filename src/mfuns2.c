@@ -155,6 +155,8 @@ mfn_testlock(MFUNARGS)
 		ABORT_MPI("TESTLOCK", "Match failed. (arg2)");
 	if (obj == PERMDENIED)
 		ABORT_MPI("TESTLOCK", "Permission denied. (arg2)");
+	if (Prop_System(argv[1]))
+		ABORT_MPI("TESTLOCK", "Permission denied. (arg2)");
 	if (!(mesgtyp & MPI_ISBLESSED)) {
 		if (Prop_Hidden(argv[1]))
 			ABORT_MPI("TESTLOCK", "Permission denied. (arg2)");

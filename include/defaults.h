@@ -320,7 +320,7 @@
 /* Smatch pattern of player names that cannot be used. */
 #define RESERVED_PLAYER_NAMES ""
 
-/* Property containing reflist of ignored players */
-#define IGNORE_PROP "@ignore/def"
+/* Enable support for ignoring players */
+#define IGNORE_SUPPORT 1
 
 #endif /* _DEFAULTS_H */

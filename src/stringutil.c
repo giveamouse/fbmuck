@@ -819,3 +819,24 @@ void PrefixMessage(char* Dest, const char* Src, const char* Prefix, int BufferLe
 
 	*Dest = '\0';
 }
+
+int IsPropPrefix(const char* Property, const char* Prefix)
+{
+	while(*Property == PROPDIR_DELIMITER)
+		Property++;
+
+	while(*Prefix == PROPDIR_DELIMITER)
+		Prefix++;
+
+	while(*Prefix)
+	{
+		if (*Property == '\0')
+			return 0;
+
+		if (*Property++ != *Prefix++)
+			return 0;
+	}
+
+	return (*Property == '\0') || (*Property == PROPDIR_DELIMITER);
+}
+

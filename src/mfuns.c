@@ -403,7 +403,9 @@ mfn_listprops(MFUNARGS)
 		ptr = next_prop_name(obj, tmpbuf, pname);
 		if (ptr && *ptr) {
 			flag = 1;
-			if (!(mesgtyp & MPI_ISBLESSED)) {
+			if (Prop_System(ptr)) {
+				flag = 0;
+			} else if (!(mesgtyp & MPI_ISBLESSED)) {
 				if (Prop_Hidden(ptr)) {
 					flag = 0;
 				}

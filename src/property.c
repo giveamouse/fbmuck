@@ -58,9 +58,6 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 		FLAGS(player) |= LISTENER;
 	}
 
-	if (*tp_ignore_prop && (Typeof(player) == TYPE_PLAYER) && !string_compare(pname, tp_ignore_prop))
-		Ignore_FlushCache(player);
-
 	w = strcpy(buf, pname);
 
 	/* truncate propnames with a ':' in them at the ':' */
@@ -209,6 +206,10 @@ remove_proplist_item(dbref player, PropPtr p, int allp)
 	if (!p)
 		return;
 	ptr = PropName(p);
+
+	if (Prop_System(ptr))
+		return;
+
 	if (!allp) {
 		if (*ptr == PROP_HIDDEN)
 			return;
@@ -245,28 +246,11 @@ remove_property_list(dbref player, int all)
 		}
 	}
 
-	if (*tp_ignore_prop && (Typeof(player) == TYPE_PLAYER))
-		Ignore_FlushCache(player);
-
 #ifdef DISKBASE
 	dirtyprops(player);
 #endif
 
 	DBDIRTY(player);
-}
-
-int IsPropPrefix(const char* Property, const char* Prefix)
-{
-	while(*Prefix)
-	{
-		if (*Property == '\0')
-			return 0;
-
-		if (*Property++ != *Prefix++)
-			return 0;
-	}
-
-	return (*Property == '\0') || (*Property == PROPDIR_DELIMITER);
 }
 
 /* removes property --- if it's not there then ignore */
@@ -276,9 +260,6 @@ remove_property_nofetch(dbref player, const char *pname)
 	PropPtr l;
 	char buf[BUFFER_LEN];
 	char *w;
-
-	if (*tp_ignore_prop && (Typeof(player) == TYPE_PLAYER) && IsPropPrefix(tp_ignore_prop, pname))
-		Ignore_FlushCache(player);
 
 	w = strcpy(buf, pname);
 
