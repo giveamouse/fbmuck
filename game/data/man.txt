@@ -3770,6 +3770,25 @@ Returns a list array containing the pids of all the processes running the
 given program.  If #-1 is passed to this, then the array will contain the
 pids of all active processes.
 ~
+GETPIDINFO|
+GETPIDINFO ( i -- a )
+Takes a process ID and returns a dictionary containing a lot of information
+about the given process.  The dictionary has the following keys:
+    PID           Integer process ID of the given process.
+    CALLED_PROG   Dbref of the called program.
+    TRIG          Dbref of the trigger that initiated the process.
+    PLAYER        Dbref of the player who started the process.
+    CALLED_DATA   String data passed to the program.
+    INSTCNT       Int count of muf instructions that the process has run so far.
+    DESCR         Integer connection descriptor that initiated this program.
+    CPU           Float percent of CPU this process has used since starting.
+    NEXTRUN       Integer systime of when this process will next resume.
+    STARTED       Integer systime of when this process was started.
+    TYPE          String process type.  "MUF", "MPI" or "UNK".
+    SUBTYPE       String process subtype.  For MUF type, it can be "READ",
+                    "TREAD", "TIMER", "LISTEN", "QUEUE" or "DELAY" For MPI type,
+                    it can be "QUEUE" or "DELAY"
+~
 TOADPLAYER|
 TOADPLAYER ( d1 d2 -- )
 @toads player d2, and chowns all their posessions to player d1.

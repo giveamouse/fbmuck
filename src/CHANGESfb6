@@ -48,6 +48,8 @@ Fixed bad macro definition of gui_dlog_simple.
 Fixed error with FORK muf prim not duplicating forstack and trystacks.
 Fixed erroneous handling of proplists in simpleedit MCP package.
 Fixed a bug where MCP packages weren't renegotiating on a program recompile.
+Added GETPIDINFO ( i -- a ) muf primitive.  Returns a dictionary of info
+  on the given specified process.  See muf helpfile for more usage info.
 Added $pubdef muf preprocessor directive.  Sets a _defs/XXX prop on the prog.
 Added $version muf directive.  Sets the _version prop on the program.
 Added $lib-version muf directive.  Sets the _lib-version prop on the program.

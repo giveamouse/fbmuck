@@ -892,10 +892,22 @@ get_pidinfo(int pid)
 		temp1.type = PROG_STRING;
 		temp1.data.string = alloc_prog_string("SUBTYPE");
 		temp2.type = PROG_STRING;
-		temp2.data.string = 	(ptr->typ == TQ_MUF_READ) ? alloc_prog_string("READ") :
-						(ptr->typ == TQ_MUF_TREAD) ? alloc_prog_string("TREAD") :
-						(ptr->typ == TQ_MUF_TIMER) ? alloc_prog_string("TIMER") :
-						(ptr->typ == TQ_MUF_DELAY) ? alloc_prog_string("DELAY") : alloc_prog_string("");
+		if (ptr->typ == TQ_MUF_TYP) {
+			temp2.data.string = (ptr->subtyp == TQ_MUF_READ) ? alloc_prog_string("READ") :
+							(ptr->subtyp == TQ_MUF_TREAD) ? alloc_prog_string("TREAD") :
+							(ptr->subtyp == TQ_MUF_QUEUE) ? alloc_prog_string("QUEUE") :
+							(ptr->subtyp == TQ_MUF_LISTEN) ? alloc_prog_string("LISTEN") :
+							(ptr->subtyp == TQ_MUF_TIMER) ? alloc_prog_string("TIMER") :
+							(ptr->subtyp == TQ_MUF_DELAY) ? alloc_prog_string("DELAY") :
+							alloc_prog_string("");
+		} else if (ptr->typ == TQ_MPI_TYP) {
+			int subtyp = (ptr->subtyp & TQ_MPI_SUBMASK);
+			temp2.data.string = (subtyp == TQ_MPI_QUEUE) ? alloc_prog_string("QUEUE") :
+							(subtyp == TQ_MPI_DELAY) ? alloc_prog_string("DELAY") :
+							alloc_prog_string("");
+		} else {
+			temp2.data.string = alloc_prog_string("");
+		}
 		array_setitem(&nw, &temp1, &temp2);
 		CLEAR(&temp1);
 		CLEAR(&temp2);
