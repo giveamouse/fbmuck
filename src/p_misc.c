@@ -238,7 +238,8 @@ prim_kill(PRIM_PROTOTYPE)
 void
 prim_force(PRIM_PROTOTYPE)
 {
-	struct inst *oper1, *oper2; /* declared local to prevent re-entrancy issues! */
+	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
 
 	int i;
 
@@ -588,7 +589,8 @@ prim_prettylock(PRIM_PROTOTYPE)
 void
 prim_testlock(PRIM_PROTOTYPE)
 {
-	struct inst *oper1, *oper2; /* declared local to prevent re-entrancy issues! */
+	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
 
 
 	/* d d - i */

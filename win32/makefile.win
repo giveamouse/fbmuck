@@ -5,21 +5,21 @@ NULL=
 NULL=nul
 !ENDIF 
 
-NMSRCDIR=.\src
+NMSRCDIR=.\winsrc
 RSSRCDIR=.\win32
 OUTDIR=.\game
 INTDIR=.\compile
-INCDIR=.\include
+INCDIR=.\winsrc
 
 CPP=cl.exe
-#CPP_OPS=/nologo /MLd /W3 /Gm /GX /ZI /Od /D "_DEBUG" /D "_WIN32_" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D FD_SETSIZE=4096 /YX /I"$(INCDIR)" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
-CPP_OPS=/nologo /ML /W3 /GX /O2 /D "_WIN32_" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "FD_SETSIZE=4096" /I"$(INCDIR)" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /c
+#CPP_OPS=/nologo /MLd /W3 /Gm /GX /ZI /Od /D "_DEBUG" /D "_WIN32_" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D FD_SETSIZE=4096 /D "HAVE_CONFIG_H" /YX /I"$(INCDIR)" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
+CPP_OPS=/nologo /ML /W3 /GX /O2 /D "_WIN32_" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "FD_SETSIZE=4096" /D "HAVE_CONFIG_H" /I"$(INCDIR)" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /c
 LINK32=link.exe
 LINK32_OPS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
-#LINK32_OPS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib winmm.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\netmuck.pdb" /debug /machine:I386 /pdbtype:sept 
+#LINK32_OPS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib winmm.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\fbmuck.pdb" /debug /machine:I386 /pdbtype:sept 
 
 
-ALL : "$(OUTDIR)\restart.exe" "$(OUTDIR)\netmuck.exe"
+ALL : "$(OUTDIR)\restart.exe" "$(OUTDIR)\fbmuck.exe"
 
 CLEAN :
         -@erase "$(INTDIR)\*.obj"
@@ -81,6 +81,7 @@ NMUCK_OBJS= \
         "$(INTDIR)\p_mcp.obj" \
         "$(INTDIR)\p_misc.obj" \
         "$(INTDIR)\p_props.obj" \
+        "$(INTDIR)\p_regex.obj" \
         "$(INTDIR)\p_stack.obj" \
         "$(INTDIR)\p_strings.obj" \
         "$(INTDIR)\player.obj" \
@@ -88,6 +89,7 @@ NMUCK_OBJS= \
         "$(INTDIR)\property.obj" \
         "$(INTDIR)\props.obj" \
         "$(INTDIR)\random.obj" \
+        "$(INTDIR)\regex.obj" \
         "$(INTDIR)\rob.obj" \
         "$(INTDIR)\rwho.obj" \
         "$(INTDIR)\sanity.obj" \
@@ -117,9 +119,9 @@ NMUCK_OBJS= \
 
 
 
-"$(OUTDIR)\netmuck.exe" : "$(OUTDIR)" "$(INTDIR)" $(NMUCK_OBJS)
+"$(OUTDIR)\fbmuck.exe" : "$(OUTDIR)" "$(INTDIR)" $(NMUCK_OBJS)
     $(LINK32) @<<
-  $(LINK32_OPS) /out:"$(OUTDIR)\netmuck.exe" $(NMUCK_OBJS)
+  $(LINK32_OPS) /out:"$(OUTDIR)\fbmuck.exe" $(NMUCK_OBJS)
 <<
 
 

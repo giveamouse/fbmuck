@@ -735,7 +735,9 @@ prim_setmode(PRIM_PROTOTYPE)
 void
 prim_interp(PRIM_PROTOTYPE)
 {
-	struct inst *oper1, *oper2, *oper3; /* declared local to prevent re-entrancy issues! */
+	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper3 = NULL; /* prevents re-entrancy issues! */
 
 	struct inst *rv=NULL;
 	char buf[BUFFER_LEN];

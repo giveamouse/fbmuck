@@ -833,7 +833,10 @@ prim_parseprop(PRIM_PROTOTYPE)
 {
 	const char *temp;
 	char *ptr;
-	struct inst *oper1, *oper2, *oper3, *oper4; /* declared local to prevent re-entrancy issues! */
+	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper3 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper4 = NULL; /* prevents re-entrancy issues! */
 
 	char buf[BUFFER_LEN];
 	char type[BUFFER_LEN];
@@ -1093,10 +1096,10 @@ prim_blessedp(PRIM_PROTOTYPE)
 void
 prim_parsepropex(PRIM_PROTOTYPE)
 {
-	struct inst*	oper1;
-	struct inst*	oper2;
-	struct inst*	oper3;
-	struct inst*	oper4;
+	struct inst*	oper1 = NULL; /* prevents reentrancy issues! */
+	struct inst*	oper2 = NULL; /* prevents reentrancy issues! */
+	struct inst*	oper3 = NULL; /* prevents reentrancy issues! */
+	struct inst*	oper4 = NULL; /* prevents reentrancy issues! */
 	stk_array*		vars;
 	const char*		mpi;
 	char*			str = 0;

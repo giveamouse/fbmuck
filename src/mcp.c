@@ -1094,7 +1094,7 @@ mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 			McpArg *lastarg = msg->args;
 
 			while (lastarg->next) {
-				if (!limit-- > 0) {
+				if (limit-- <= 0) {
 					free(ptr->name);
 					free(ptr);
 					return EMCP_ARGCOUNT;

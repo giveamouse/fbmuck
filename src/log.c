@@ -161,7 +161,7 @@ log_command(char *format, ...)
 void
 strip_evil_characters(char *badstring)
 {
- 	unsigned char *s = badstring;
+ 	unsigned char *s = (unsigned char*)badstring;
  
  	if (!s)
   		return;

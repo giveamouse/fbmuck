@@ -473,7 +473,7 @@ int main (int argc, char **argv) {
 
 // Setup the command line
    args[0]=(char *) malloc(2048);
-   args[0]="netmuck";
+   args[0]="fbmuck";
    cmdcount = 0;
    for (i = 1; i < argc; i++) {
       cmdcount++;
@@ -508,7 +508,7 @@ int main (int argc, char **argv) {
    cmdcount++;
    args[cmdcount]=0;
    
-   execv("netmuck", args);
+   execv("fbmuck", args);
 
    printf("Error spawning server. Cannot restart.\n");
 

@@ -153,6 +153,7 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 			abort();			/* bad type */
 		}
 	}
+	return 0;
 }
 
 
@@ -547,6 +548,7 @@ getboolexp1(FILE * f)
 
   error:
 	abort();					/* bomb out */
+	return NULL;
 }
 
 struct boolexp *

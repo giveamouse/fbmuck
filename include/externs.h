@@ -79,6 +79,7 @@ extern void do_open(int descr, dbref player, const char *direction, const char *
 extern void do_link(int descr, dbref player, const char *name, const char *room_name);
 extern void do_dig(int descr, dbref player, const char *name, const char *pname);
 extern void do_create(dbref player, char *name, char *cost);
+extern void do_clone(int descr, dbref player, char *name);
 extern void do_prog(int descr, dbref player, const char *name);
 extern void do_mcpedit(int descr, dbref player, const char *name);
 extern void do_mcpprogram(int descr, dbref player, const char* name);
@@ -86,6 +87,7 @@ extern void mcpedit_program(int descr, dbref player, dbref prog, const char* nam
 extern void do_attach(int descr, dbref player, const char *action_name, const char *source_name);
 extern int unset_source(dbref player, dbref loc, dbref action);
 extern int link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list);
+extern int link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list);
 extern void do_action(int descr, dbref player, const char *action_name, const char *source_name);
 
 /* from edit.c */
@@ -103,6 +105,7 @@ extern void dump_deltas(void);
 extern void fork_and_dump(void);
 
 /* From hashtab.c */
+extern unsigned int hash(const char *s, unsigned int hash_size);
 extern hash_data *find_hash(const char *s, hash_tab * table, unsigned size);
 extern hash_entry *add_hash(const char *name, hash_data data, hash_tab * table, unsigned size);
 extern int free_hash(const char *name, hash_tab * table, unsigned size);
@@ -319,6 +322,7 @@ extern void log_other(char *format, ...);
 extern void notify_fmt(dbref player, char *format, ...);
 extern void log_program_text(struct line *first, dbref player, dbref i);
 extern void log_command(char *format, ...);
+extern void log_user(dbref player, dbref program, char *logmessage);
 
 /* From timestamp.c */
 extern void ts_newobject(struct object *thing);

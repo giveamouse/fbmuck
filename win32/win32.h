@@ -11,6 +11,7 @@ extern void check_console();
 #define chdir _chdir
 #define getpid _getpid
 #define strncasecmp _strnicmp
+#define strcasecmp _stricmp
 #define vsnprintf _vsnprintf
 #define snprintf _snprintf
 

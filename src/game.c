@@ -7,7 +7,7 @@
 #include <ctype.h>
 #include <signal.h>
 
-#ifdef WIN32
+#ifndef WIN32
 #include <sys/wait.h>
 #endif
 

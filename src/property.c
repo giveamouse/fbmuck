@@ -10,7 +10,7 @@
 #include "props.h"
 #include "externs.h"
 #include "interface.h"
-#include <strings.h>
+#include <string.h>
 #include <math.h>
 
 #ifdef COMPRESS

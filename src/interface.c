@@ -30,11 +30,13 @@
 #include <ctype.h>
 
 #ifndef WIN32
-#define NEED_SOCKLEN_T
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
+# define NEED_SOCKLEN_T
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <netdb.h>
+# include <arpa/inet.h>
+#else
+  typedef int socklen_t;
 #endif
 
 #ifdef AIX

@@ -184,48 +184,6 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	}
 }
 
-/*
- * link_exit()
- *
- * This routine connects an exit to a bunch of destinations.
- *
- * 'player' contains the player's name.
- * 'exit' is the the exit whose destinations are to be linked.
- * 'dest_name' is a character string containing the list of exits.
- *
- * 'dest_list' is an array of dbref's where the valid destinations are
- * stored.
- *
- */
-
-#ifdef mips
-int
-link_exit(descr, player, exit, dest_name, dest_list)
-int descr;
-dbref player, exit;
-char *dest_name;
-dbref dest_list[];
-
-#else							/* !mips */
-int
-link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list)
-#endif							/* mips */
-{
-	return _link_exit(descr, player, exit, dest_name, dest_list, 0);
-}
-
-/*
- * link_exit_dry()
- *
- * like link_exit(), but only checks whether the link would be ok or not.
- * error messages are still output.
- */
-int
-link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list)
-{
-	return _link_exit(descr, player, exit, dest_name, dest_list, 1);
-}
-
 int
 _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list, int dryrun)
 {
@@ -320,6 +278,38 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 		return 0;
 		
 	return ndest;
+}
+
+/*
+ * link_exit()
+ *
+ * This routine connects an exit to a bunch of destinations.
+ *
+ * 'player' contains the player's name.
+ * 'exit' is the the exit whose destinations are to be linked.
+ * 'dest_name' is a character string containing the list of exits.
+ *
+ * 'dest_list' is an array of dbref's where the valid destinations are
+ * stored.
+ *
+ */
+
+int
+link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list)
+{
+	return _link_exit(descr, player, exit, dest_name, dest_list, 0);
+}
+
+/*
+ * link_exit_dry()
+ *
+ * like link_exit(), but only checks whether the link would be ok or not.
+ * error messages are still output.
+ */
+int
+link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list)
+{
+	return _link_exit(descr, player, exit, dest_name, dest_list, 1);
 }
 
 /* do_link

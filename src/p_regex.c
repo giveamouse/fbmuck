@@ -7,7 +7,14 @@
 #include <stdio.h>
 #include <time.h>
 #include <ctype.h>
-#include <regex.h>
+
+#ifdef WIN32
+# define __STDC__ 1
+# include "./regex.h"
+#else
+# include <regex.h>
+#endif
+
 #include "db.h"
 #include "tune.h"
 #include "inst.h"

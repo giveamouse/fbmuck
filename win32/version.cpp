@@ -19,7 +19,7 @@
 #include "externs.h"
 
 const char *generation = "1";
-const char *creation = "Wed Oct 24  at 17:28:28 2001 ";
+const char *creation = "sometime after Mon Jun 16 2003";
 const char *version = PATCHLEVEL;
 
 const char *infotext[] =
@@ -47,8 +47,8 @@ const char *infotext[] =
     "  Points:                            Bug Finder/Lead/Developer",
     " ",
     "  Our Sourceforge developers (http://sourceforge.net/projects/fbmuck/):",
-    "  Akari, Caspian, Cerilus, Fentonator, Ferretbun, Foxbird, Jenora,",
-    "  McClure, Tiger, Winged and Wog.",
+    "  Akari, Arcticwolf (Schneelocke), Caspian, Cerilus, Fentonator, Ferretbun,",
+    "  Foxbird, Jenora, McClure, Sombre, Tiger, Winged and Wog.",
     " ",
     "The following people helped out a lot along the way:",
     "  Fre'ta, Kim \"Bookwyrm\" Liu, Chris, Jenora, Lynx, WhiteFire,",
@@ -77,10 +77,10 @@ const char *infotext[] =
 void
 do_credits(dbref player)
 {
-	int i;
+    int i;
 
-	for (i = 0; infotext[i]; i++) {
-		notify(player, infotext[i]);
-	}
+    for (i = 0; infotext[i]; i++) {
+        notify(player, infotext[i]);
+    }
 }
 
