@@ -10,18 +10,22 @@ this is a standalone library.
 */
 
 #include 	"config.h"
-#include	<fcntl.h>
-#include	<sys/file.h>
-#include	<sys/time.h>
-#include	<sys/types.h>
-#include	<sys/socket.h>
-#include	<netinet/in.h>
-#include	<netdb.h>
+
+#ifndef WIN32
+# include	<fcntl.h>
+# include	<sys/file.h>
+# include	<sys/types.h>
+# include	<sys/socket.h>
+# include	<netinet/in.h>
+# include	<netdb.h>
+#endif
 
 #define	DGRAMPORT		6888
 
 #ifndef	NO_HUGE_RESOLVER_CODE
+# ifndef WIN32
 extern struct hostent *gethostbyname(const char *);
+# endif
 #endif
 
 static int dgramfd = -1;
@@ -75,7 +79,7 @@ rwhocli_setup(const char *server, const char *serverpw, const char *myname,
 
 	if (*p != '\0') {
 #ifndef	NO_HUGE_RESOLVER_CODE
-		if ((hp = gethostbyname((char *) server)) == (struct hostent *) 0)
+		if ((hp = (struct hostent *) gethostbyname((char *) server)) == (struct hostent *) 0)
 			return (1);
 		(void) bcopy(hp->h_addr, (char *) &addr.sin_addr, hp->h_length);
 #else

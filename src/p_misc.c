@@ -223,7 +223,7 @@ prim_kill(PRIM_PROTOTYPE)
 void
 prim_force(PRIM_PROTOTYPE)
 {
-	struct inst *oper1, *oper2;
+	struct inst *oper1, *oper2; /* declared local to prevent re-entrancy issues! */
 
 	int i;
 
@@ -573,7 +573,8 @@ prim_prettylock(PRIM_PROTOTYPE)
 void
 prim_testlock(PRIM_PROTOTYPE)
 {
-	struct inst *oper1, *oper2;
+	struct inst *oper1, *oper2; /* declared local to prevent re-entrancy issues! */
+
 
 	/* d d - i */
 	CHECKOP(2);
@@ -903,14 +904,14 @@ prim_watchpid(PRIM_PROTOTYPE)
 		}
 
 		if (!*cur) {
-			*cur = malloc (sizeof (**cur));
+			*cur = (struct mufwatchpidlist*) malloc (sizeof (**cur));
 			if (!*cur) {
 				abort_interp ("Internal memory error.\n");
 			}
 			(*cur)->next = 0;
 			(*cur)->pid = fr->pid;
 
-			waitee = malloc (sizeof (*waitee));
+			waitee = (struct mufwatchpidlist*) malloc (sizeof (*waitee));
 			if (!waitee) {
 				abort_interp ("Internal memory error.\n");
 			}

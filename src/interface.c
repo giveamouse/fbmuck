@@ -10,9 +10,13 @@
 #include "mpi.h"
 
 #include <sys/types.h>
+
+#ifndef WIN32
 #include <sys/file.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
+#endif
+
 #include <fcntl.h>
 #if defined (HAVE_ERRNO_H)
 # include <errno.h>
@@ -24,11 +28,14 @@
 #endif
 #endif
 #include <ctype.h>
+
+#ifndef WIN32
 #define NEED_SOCKLEN_T
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#endif
 
 #ifdef AIX
 # include <sys/select.h>
@@ -199,6 +206,9 @@ void kill_resolver(void);
 #ifdef USE_SSL
 ssize_t socket_read(struct descriptor_data *d, void *buf, size_t count);
 ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count);
+#elif WIN32
+#define socket_write(d, buf, count) send(d->descriptor, buf, count,0)
+#define socket_read(d, buf, count) recv(d->descriptor, buf, count,0)
 #else
 #define socket_write(d, buf, count) write(d->descriptor, buf, count)
 #define socket_read(d, buf, count) read(d->descriptor, buf, count)
@@ -282,6 +292,11 @@ main(int argc, char **argv)
 	int sanity_interactive;
 	int sanity_autofix;
 	int val;
+#ifdef WIN32
+	WORD wVersionRequested;
+	WSADATA wsaData;
+	int err;
+#endif
 
 	listener_port[0] = TINYPORT;
 
@@ -515,6 +530,25 @@ main(int argc, char **argv)
 		}
 
 
+#ifdef WIN32
+	wVersionRequested = MAKEWORD( 2, 0 );
+ 
+	err = WSAStartup( wVersionRequested, &wsaData );
+	if ( err != 0 ) {
+		perror("Unable to start socket layer");
+		return 1;
+	}
+ 
+	if ( LOBYTE( wsaData.wVersion ) != 2 ||
+			HIBYTE( wsaData.wVersion ) != 0 ) {
+		perror("Winsock 2.0 or later is required to run this application.");
+		WSACleanup( );
+		return 1; 
+	}
+
+	set_console(); // Setup the console to handle CTRL+C
+#endif
+
 		/* go do it */
 		shovechars();
 
@@ -525,6 +559,10 @@ main(int argc, char **argv)
 		}
 
 		do_dequeue(-1, (dbref) 1, "all");
+
+#ifdef WIN32
+		WSACleanup();
+#endif
 
 		if (tp_rwho) {
 			rwhocli_shutdown();
@@ -570,6 +608,7 @@ main(int argc, char **argv)
 #endif
 
 		if (restart_flag) {
+#ifndef WIN32
 			char **argslist;
 			char numbuf[32];
 			int argcnt = numsocks + 2;
@@ -604,6 +643,11 @@ main(int argc, char **argv)
 
 				fprintf(stderr, "Could not find restart script!\n");
 			}
+#else	/* WIN32 */
+			char* argbuf[1];
+			argbuf[0] = NULL;
+			execv("restart", argbuf);
+#endif	/* WIN32 */
 		}
 	}
 
@@ -897,7 +941,9 @@ max_open_files(void)
 
 	return (long) file_limit.rlim_cur;
 
-# else							/* !RLIMIT */
+# elif WIN32					/* !RLIMIT && WIN32 */
+	return FD_SETSIZE;
+# else							/* !RLIMIT && !WIN32 */
 /*
  * Don't know what else to do, try getdtablesize().
  * email other bright ideas to me. :) (whitefire)
@@ -1008,6 +1054,9 @@ shovechars()
 		next_muckevent();
 		process_commands();
 		muf_event_process();
+#ifdef WIN32
+		check_console(); // Handle possible CTRL+C
+#endif
 
 		for (d = descriptor_list; d; d = dnext) {
 			dnext = d->next;
@@ -1079,11 +1128,19 @@ shovechars()
 			timeout.tv_usec = (tp_pause_min % 1000) * 1000L;
 		}
 		gettimeofday(&sel_in,NULL);
+#ifndef WIN32
 		if (select(maxd, &input_set, &output_set, (fd_set *) 0, &timeout) < 0) {
 			if (errno != EINTR) {
 				perror("select");
 				return;
 			}
+#else
+		if (select(maxd, &input_set, &output_set, (fd_set *) 0, &timeout) == SOCKET_ERROR) {
+			if (WSAGetLastError() != WSAEINTR) {
+				perror("select");
+				return;
+			}
+#endif
 		} else {
 			gettimeofday(&sel_out,NULL);
 			if (sel_out.tv_usec < sel_in.tv_usec) {
@@ -1103,6 +1160,7 @@ shovechars()
 			for (i = 0; i < numsocks; i++) {
 				if (FD_ISSET(sock[i], &input_set)) {
 					if (!(newd = new_connection(listener_port[i], sock[i]))) {
+#ifndef WIN32
 						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE
 							/*
 							*  && errno != ETIMEDOUT
@@ -1118,6 +1176,12 @@ shovechars()
 							perror("new_connection");
 							/* return; */
 						}
+#else	/* WIN32 */
+						if (WSAGetLastError() != WSAEINTR && WSAGetLastError() != EMFILE) {
+							perror("new_connection");
+							/* return; */
+						}
+#endif	/* WIN32 */
 					} else {
 						if (newd->descriptor >= maxd)
 							maxd = newd->descriptor + 1;
@@ -1128,6 +1192,7 @@ shovechars()
 			for (i = 0; i < ssl_numsocks; i++) {
 				if (FD_ISSET(ssl_sock[i], &input_set)) {
 					if (!(newd = new_connection(ssl_listener_port[i], ssl_sock[i]))) {
+#ifndef WIN32
 						if (errno 
 							&& errno != EINTR 
 							&& errno != EMFILE
@@ -1136,6 +1201,12 @@ shovechars()
 							perror("new_connection");
 							/* return; */
 						}
+#else
+						if (WSAGetLastError() != WSAEINTR && WSAGetLastError() != EMFILE) {
+							perror("new_connection");
+							/* return; */
+						}
+#endif
 					} else {
 						if (newd->descriptor >= maxd)
 							maxd = newd->descriptor + 1;
@@ -1777,11 +1848,19 @@ process_output(struct descriptor_data *d)
 
 	for (qp = &d->output.head; (cur = *qp);) {
 		cnt = socket_write(d, cur->start, cur->nchars);
+#ifndef WIN32
 		if (cnt < 0) {
 			if (errno == EWOULDBLOCK)
 				return 1;
 			return 0;
 		}
+#else
+		if (cnt < 0 || cnt == SOCKET_ERROR) {
+			if (WSAGetLastError() == WSAEWOULDBLOCK)
+				return 1;
+			return 0;
+		}
+#endif
 		d->output_size -= cnt;
 		if (cnt == cur->nchars) {
 			d->output.lines--;
@@ -1803,20 +1882,28 @@ process_output(struct descriptor_data *d)
 void
 make_nonblocking(int s)
 {
-#if !defined(O_NONBLOCK) || defined(ULTRIX)	/* POSIX ME HARDER */
-# ifdef FNDELAY					/* SUN OS */
-#  define O_NONBLOCK FNDELAY
-# else
-#  ifdef O_NDELAY				/* SyseVil */
-#   define O_NONBLOCK O_NDELAY
-#  endif						/* O_NDELAY */
-# endif							/* FNDELAY */
-#endif
+#ifndef WIN32
+# if !defined(O_NONBLOCK) || defined(ULTRIX)	/* POSIX ME HARDER */
+#  ifdef FNDELAY					/* SUN OS */
+#   define O_NONBLOCK FNDELAY
+#  else
+#   ifdef O_NDELAY				/* SyseVil */
+#    define O_NONBLOCK O_NDELAY
+#   endif						/* O_NDELAY */
+#  endif							/* FNDELAY */
+# endif
 
 	if (fcntl(s, F_SETFL, O_NONBLOCK) == -1) {
 		perror("make_nonblocking: fcntl");
 		panic("O_NONBLOCK fcntl failed");
 	}
+#else /* WIN32 */
+	unsigned long O_NONBLOCK = 1;
+	if (ioctlsocket(s, FIONBIO, &O_NONBLOCK) == SOCKET_ERROR) {
+		perror("make_nonblocking: ioctlsocket");
+		panic("O_NONBLOCK ioctlsocket failed");
+	}
+#endif /* WIN32 */
 }
 
 void
@@ -1889,10 +1976,18 @@ process_input(struct descriptor_data *d)
 	char *p, *pend, *q, *qend;
 
 	got = socket_read(d, buf, sizeof buf);
-#ifdef USE_SSL
+#ifndef WIN32
+# ifdef USE_SSL
 	if ( (got <= 0) && errno != EWOULDBLOCK ) 
-#else
+# else
 	if (got <= 0)
+# endif
+#else
+# ifdef USE_SSL
+	if ( (got <= 0 || got == SOCKET_ERROR) && WSAGetLastError() != EWOULDBLOCK ) 
+# else
+	if (got <= 0 || got == SOCKET_ERROR)
+# endif
 #endif
 		return 0;
 	if (!d->raw_input) {
@@ -2715,10 +2810,46 @@ descrdata_by_count(int c)
 
 struct descriptor_data *descr_lookup_table[FD_SETSIZE];
 
+#ifdef WIN32
+int descr_hash_table[FD_SETSIZE];
+
+int sethash_descr(int d) {
+   for (int i = 0; i < FD_SETSIZE; i++) {
+      if (descr_hash_table[i] == -1) { descr_hash_table[i] = d; return i; }
+   }
+   fprintf(stderr,"descr hash table full!", NULL); // Should NEVER happen
+   return -1;
+}
+
+int gethash_descr(int d) {
+   for (int i = 0; i < FD_SETSIZE; i++) {
+      if (descr_hash_table[i] == d) return i;
+   }
+   fprintf(stderr,"descr hash value missing!", NULL); // Should NEVER happen
+   return -1;
+ 
+}
+
+void unsethash_descr(int d) {
+   for (int i = 0; i < FD_SETSIZE; i++) {
+      if (descr_hash_table[i] == d) {
+         descr_hash_table[i] = -1;
+         return;
+      }
+   }
+   fprintf(stderr,"descr hash value missing!", NULL); // Should NEVER happen
+}
+#endif
+
 void
 init_descriptor_lookup()
 {
 	int i;
+#ifdef WIN32
+	for (i = 0; i < FD_SETSIZE; i++) {
+		descr_hash_table[i] = -1;
+	}
+#endif
 	for (i = 0; i < FD_SETSIZE; i++) {
 		descr_lookup_table[i] = NULL;
 	}
@@ -2820,7 +2951,11 @@ void
 remember_descriptor(struct descriptor_data *d)
 {
 	if (d) {
+#ifdef WIN32
+		descr_lookup_table[sethash_descr(d->descriptor)] = d;
+#else
 		descr_lookup_table[d->descriptor] = d;
+#endif
 	}
 }
 
@@ -2828,17 +2963,26 @@ void
 forget_descriptor(struct descriptor_data *d)
 {
 	if (d) {
+#ifdef WIN32
+		unsethash_descr(d->descriptor);
+#else
 		descr_lookup_table[d->descriptor] = NULL;
+#endif
 	}
 }
 
 struct descriptor_data *
 lookup_descriptor(int c)
 {
+#ifdef WIN32
+	if ( c < 0 ) return NULL;
+	return descr_lookup_table[gethash_descr(c)];
+#else 
 	if (c >= FD_SETSIZE || c < 0) {
 		return NULL;
 	}
 	return descr_lookup_table[c];
+#endif
 }
 
 struct descriptor_data *
@@ -3412,11 +3556,17 @@ ssize_t socket_read(struct descriptor_data *d, void *buf, size_t count) {
 			i = SSL_get_error(d->ssl_session, i);
 			if ( (i == SSL_ERROR_WANT_READ) || (i == SSL_ERROR_WANT_WRITE) ) {
 				/* log_status("SSL read: Return wouldblock.\n", "version"); */
-				errno = EWOULDBLOCK;
+#ifndef WIN32
+ 				errno = EWOULDBLOCK;
+#else
+				WSASetLastError(WSAEWOULDBLOCK);
+#endif
 				return -1;
 			} else {
 				/* log_status("SSL read: Return EBADF.\n", "version"); */
+#ifndef WIN32
 				errno = EBADF;
+#endif
 				return -1;
 			}
 		}
@@ -3435,11 +3585,17 @@ ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count) {
 			i = SSL_get_error(d->ssl_session, i);
 			if ( (i == SSL_ERROR_WANT_READ) || (i == SSL_ERROR_WANT_WRITE) ) {
 				/* log_status("SSL write: Return wouldblock.\n", "version"); */
-				errno = EWOULDBLOCK;
+#ifndef WIN32
+ 				errno = EWOULDBLOCK;
+#else
+				WSASetLastError(WSAEWOULDBLOCK);
+#endif
 				return -1;
 			} else { 
 				/* log_status("SSL write: Return EBADF.\n", "version"); */
+#ifndef WIN32
 				errno = EBADF;
+#endif
 				return -1;
 			}
 		}

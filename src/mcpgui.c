@@ -1,7 +1,7 @@
+#include "config.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/time.h>
 #include "interface.h"
 #include "mcp.h"
 #include "mcpgui.h"
@@ -299,7 +299,7 @@ gui_dlog_alloc(int descr, Gui_CB callback, GuiErr_CB error_cb, void *context)
 	DlogData *ptr;
 
 	while (1) {
-		snprintf(tmpid, sizeof(tmpid), "%08lX", (unsigned long)random());
+		snprintf(tmpid, sizeof(tmpid), "%08lX", (unsigned long)RANDOM());
 		if (!gui_dlog_find(tmpid)) {
 			break;
 		}

@@ -6,8 +6,10 @@
 /* Wizard-only commands */
 
 #include <stdio.h>
-#include <sys/time.h>
-#include <sys/resource.h>
+
+#ifndef WIN32
+# include <sys/resource.h>
+#endif
 
 #ifndef MALLOC_PROFILING
 #  ifndef HAVE_MALLOC_H

@@ -1,10 +1,10 @@
 /* mcp.c: MUD Client Protocol.
    Part of the FuzzBall distribution. */
 
+#include "config.h"
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <sys/time.h>
 #include "db.h"
 #include "externs.h"
 #include "mcp.h"
@@ -814,7 +814,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 		strcat(out, MCP_ARG_DELIMITER);
 		strcat(out, MCP_SEPARATOR);
 		out += strlen(out);
-		snprintf(datatag, sizeof(datatag), "%.8lX", (unsigned long)(random() ^ random()));
+		snprintf(datatag, sizeof(datatag), "%.8lX", (unsigned long)(RANDOM() ^ RANDOM()));
 		strcat(out, datatag);
 	}
 
@@ -1089,7 +1089,7 @@ mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 			McpArg *lastarg = msg->args;
 
 			while (lastarg->next) {
-				if (!limit-->0) {
+				if (!limit-- > 0) {
 					free(ptr->name);
 					free(ptr);
 					return EMCP_ARGCOUNT;
@@ -1303,7 +1303,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 			mcp_mesg_init(&reply, MCP_INIT_PKG, "");
 			mcp_mesg_arg_append(&reply, "version", "2.1");
 			mcp_mesg_arg_append(&reply, "to", "2.1");
-			snprintf(authval, sizeof(authval), "%.8lX", (unsigned long)(random() ^ random()));
+			snprintf(authval, sizeof(authval), "%.8lX", (unsigned long)(RANDOM() ^ RANDOM()));
 			mcp_mesg_arg_append(&reply, "authentication-key", authval);
 			mfr->authkey = (char *) malloc(strlen(authval) + 1);
 			strcpy(mfr->authkey, authval);

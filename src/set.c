@@ -1011,3 +1011,61 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 	}
 	notify(player, "Property set.");
 }
+
+void
+set_flags_from_tunestr(dbref obj, const char* tunestr)
+{
+	const char *p = tunestr;
+	object_flag_type f;
+
+	for (;;) {
+		char pcc = toupper(*p);
+		if (pcc == '\0' || pcc == '\n' || pcc == '\r') {
+			break;
+		} else if (pcc == '0') {
+			SetMLevel(obj, 0);
+		} else if (pcc == '1') {
+			SetMLevel(obj, 1);
+		} else if (pcc == '2') {
+			SetMLevel(obj, 2);
+		} else if (pcc == '3') {
+			SetMLevel(obj, 3);
+		} else if (pcc == 'A') {
+			f = ABODE;
+		} else if (pcc == 'B') {
+			f = BUILDER;
+		} else if (pcc == 'C') {
+			f = CHOWN_OK;
+		} else if (pcc == 'D') {
+			f = DARK;
+		} else if (pcc == 'H') {
+			f = HAVEN;
+		} else if (pcc == 'J') {
+			f = JUMP_OK;
+		} else if (pcc == 'K') {
+			f = KILL_OK;
+		} else if (pcc == 'L') {
+			f = LINK_OK;
+		} else if (pcc == 'M') {
+			SetMLevel(obj, 2);
+		} else if (pcc == 'Q') {
+			f = QUELL;
+		} else if (pcc == 'S') {
+			f = STICKY;
+		} else if (pcc == 'V') {
+			f = VEHICLE;
+		} else if (pcc == 'W') {
+			/* f = WIZARD;     This is very bad to auto-set. */
+		} else if (pcc == 'X') {
+			f = XFORCIBLE;
+		} else if (pcc == 'Z') {
+			f = ZOMBIE;
+		}
+		FLAGS(obj) |= f;
+		p++;
+	}
+	ts_modifyobject(obj);
+	DBDIRTY(obj);
+}
+
+

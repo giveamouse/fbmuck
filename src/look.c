@@ -8,7 +8,6 @@
 /* commands which look at things */
 
 #include <ctype.h>
-#include <sys/time.h>
 #include "db.h"
 #include "tune.h"
 #include "mpi.h"

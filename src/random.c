@@ -1,8 +1,8 @@
 /* Various 'random' functions for general use in the FB6 MUCK server. */
 /* Attributions as given, modified by Jonah 'Points' Safar */
 
+#include "config.h"
 #include <stdio.h>
-#include <time.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -257,8 +257,8 @@ MD5(void *dest, const void *orig, int len)
 	struct xMD5Context context;
 
 	xMD5Init(&context);
-	xMD5Update(&context, orig, len);
-	xMD5Final(dest, &context);
+	xMD5Update(&context, (const byte*)orig, len);
+	xMD5Final((byte*)dest, &context);
 }
 
 

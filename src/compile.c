@@ -1518,8 +1518,8 @@ void
 do_directive(COMPSTATE * cstat, char *direct)
 {
 	char temp[BUFFER_LEN];
-	char *tmpname;
-	char *tmpptr;
+	char *tmpname = NULL;
+	char *tmpptr = NULL;
 	int i = 0;
 	int j;
 
@@ -1802,8 +1802,10 @@ do_directive(COMPSTATE * cstat, char *direct)
 		tmpname = (char *) next_token_raw(cstat);
 		if (!tmpname || !*tmpname)
 		{
-			free(tmpptr);
-		        v_abort_compile(cstat, "I don't understand what function you want to check for.");
+			if (tmpptr) {
+				free(tmpptr);
+			}
+			v_abort_compile(cstat, "I don't understand what function you want to check for.");
 		}
 		while (*cstat->next_char)
 			cstat->next_char++;
@@ -1888,7 +1890,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 			tmpptr = (char *) get_property_class(i, "_lib-version");
 		}
 		if (!tmpptr || !*tmpptr) {
-			tmpptr = malloc(4);
+			tmpptr = (char*)malloc(4 * sizeof(char));
 			strcpy(tmpptr, "0.0");
 			needFree = 1;
 		} else { 

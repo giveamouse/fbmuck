@@ -36,6 +36,7 @@ const char *tp_proplist_counter_fmt = PROPLIST_COUNTER_FORMAT;
 const char *tp_proplist_entry_fmt = PROPLIST_ENTRY_FORMAT;
 
 const char *tp_ssl_keyfile_passwd = SSL_KEYFILE_PASSWD;
+const char *tp_pcreate_flags = PCREATE_FLAGS;
 
 struct tune_str_entry {
 	const char *group;
@@ -69,6 +70,7 @@ struct tune_str_entry tune_str_list[] = {
 	{"Misc",       "leave_mesg", &tp_leave_mesg, 0, 1, "Logoff message"},
 	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, 1, "Command unrecognized warning"},
 	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, 4, 1, "Password for SSL keyfile"},
+	{"Database",   "pcreate_flags", &tp_pcreate_flags, 0, 1, "Initial Player Flags"},
 
 	{NULL, NULL, NULL, 0, 0}
 };

@@ -334,7 +334,7 @@ RCLEAR(struct inst *oper, char *file, int line)
 		break;
 	}
 	oper->line = line;
-	oper->data.addr = (void *) file;
+	oper->data.addr = (struct prog_addr *) file;
 	oper->type = PROG_CLEARED;
 }
 
@@ -547,7 +547,7 @@ copy_fors(struct forvars *forstack)
 
 	for (in = forstack; in; in = in->next) {
 		if (!for_pool) {
-			nu = malloc(sizeof(struct forvars));
+			nu = (struct forvars *) malloc(sizeof(struct forvars));
 		} else {
 			nu = for_pool;
 			if (*last_for == for_pool->next) {
@@ -578,7 +578,7 @@ push_for(struct forvars *forstack)
 	struct forvars *nu;
 
 	if (!for_pool) {
-		nu = malloc(sizeof(struct forvars));
+		nu = (struct forvars *) malloc(sizeof(struct forvars));
 	} else {
 		nu = for_pool;
 		if (*last_for == for_pool->next) {
@@ -618,7 +618,7 @@ copy_trys(struct tryvars *trystack)
 
 	for (in = trystack; in; in = in->next) {
 		if (!try_pool) {
-			nu = malloc(sizeof(struct tryvars));
+			nu = (struct tryvars*) malloc(sizeof(struct tryvars));
 		} else {
 			nu = try_pool;
 			if (*last_try == try_pool->next) {
@@ -649,7 +649,7 @@ push_try(struct tryvars *trystack)
 	struct tryvars *nu;
 
 	if (!try_pool) {
-		nu = malloc(sizeof(struct tryvars));
+		nu = (struct tryvars*) malloc(sizeof(struct tryvars));
 	} else {
 		nu = try_pool;
 		if (*last_try == try_pool->next) {
@@ -832,7 +832,7 @@ reload(struct frame *fr, int atop, int stop)
 
 
 int
-false(struct inst *p)
+false_inst(struct inst *p)
 {
 	return ((p->type == PROG_STRING && (!p->data.string || !(*p->data.string->data)))
 			|| (p->type == PROG_MARK)
@@ -1289,7 +1289,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			if (fr->trys.top && atop - fr->trys.st->depth < 1)
 				abort_loop("Stack protection fault.", NULL, NULL);
 			temp1 = arg + --atop;
-			if (false(temp1))
+			if (false_inst(temp1))
 				pc = pc->data.call;
 			else
 				pc++;
@@ -1666,7 +1666,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			copyinst(arg + atop - 1, &retval);
 			rv = &retval;
 		} else {
-			if (!false(arg + atop - 1)) {
+			if (!false_inst(arg + atop - 1)) {
 				rv = (struct inst *) 1;
 			} else {
 				rv = NULL;

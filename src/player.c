@@ -107,7 +107,7 @@ create_player(const char *name, const char *password)
 	/* initialize everything */
 	NAME(player) = alloc_string(name);
 	DBFETCH(player)->location = tp_player_start;	/* home */
-	FLAGS(player) = TYPE_PLAYER | PCREATE_FLAGS;
+	FLAGS(player) = TYPE_PLAYER;
 	OWNER(player) = player;
 	ALLOC_PLAYER_SP(player);
 	PLAYER_SET_HOME(player, tp_player_start);
@@ -124,6 +124,8 @@ create_player(const char *name, const char *password)
 	add_player(player);
 	DBDIRTY(player);
 	DBDIRTY(tp_player_start);
+
+	set_flags_from_tunestr(player, tp_pcreate_flags);
 
 	return player;
 }

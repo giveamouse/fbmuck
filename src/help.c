@@ -212,6 +212,13 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 	struct dirent *dp;
 #endif
 
+#ifdef WIN32
+	char   *dirname;
+	HANDLE  hFind;
+	BOOL    bMore;
+	WIN32_FIND_DATA finddata;
+#endif
+
 	if (!topic || !*topic)
 		return 0;
 
@@ -241,9 +248,33 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 	if (!*buf) {
 		return 0;				/* no such file or directory */
 	}
-#else							/* !DIR_AVALIBLE */
+#elif WIN32
+	/* TO DO: (1) exact match, or (2) partial match, but unique */
+	*buf = 0;
+
+	dirname = (char *) malloc(strlen(dir) + 5);
+	strcpy(dirname, dir);
+	strcat(dirname, "*.*");
+	hFind = FindFirstFile(dirname,&finddata);
+	bMore = (hFind != (HANDLE) -1);
+
+	free(dirname);
+
+	while (bMore) {
+		if (!(finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+			if ((partial && string_prefix(finddata.cFileName, topic)) ||
+				(!partial && !string_compare(finddata.cFileName,topic))
+				)
+			{
+				sprintf(buf, "%s/%s", dir, finddata.cFileName);
+				break;
+			}
+		}
+		bMore = FindNextFile(hFind, &finddata);
+	}
+#else                           /* !DIR_AVAILABLE && !WIN32 */
 	snprintf(buf, sizeof(buf), "%s/%s", dir, topic);
-#endif							/* !DIR_AVALIBLE */
+#endif 
 
 	if (stat(buf, &st)) {
 		return 0;
@@ -342,13 +373,19 @@ void
 do_info(dbref player, const char *topic, const char *seg)
 {
 	char *buf;
+	int f;
+	int cols;
 
 #ifdef DIR_AVALIBLE
 	DIR *df;
 	struct dirent *dp;
 #endif
-	int f;
-	int cols;
+#ifdef WIN32
+	HANDLE  hFind;
+	BOOL    bMore;
+	WIN32_FIND_DATA finddata;
+	char    *dirname;
+#endif
 
 	if (*topic) {
 		if (!show_subfile(player, INFO_DIR, topic, seg, TRUE)) {
@@ -385,9 +422,47 @@ do_info(dbref player, const char *topic, const char *seg)
 		else
 			notify(player, "No information files are available.");
 		free(buf);
-#else							/* !DIR_AVALIBLE */
+#elif WIN32
+		buf = (char *) calloc(1,80);
+		(void) strcpy(buf, "    ");
+		f = 0;
+		cols = 0;
+
+		dirname = (char *) malloc(strlen(INFO_DIR) + 4);
+		strcpy(dirname, INFO_DIR);
+		strcat(dirname, "*.*");
+		hFind = FindFirstFile(dirname,&finddata);
+		bMore = (hFind != (HANDLE) -1);
+
+		free(dirname);
+
+		while (bMore) {
+			if (!(finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+				if (!f)
+					notify(player, "Available information files are:");
+				if ((cols++ > 2) || ((strlen(buf) + strlen(finddata.cFileName)) > 63)) {
+					notify(player,buf);
+					(void) strcpy(buf, "    ");
+					cols = 0;
+				}
+			    (void) strcat(strcat(buf, finddata.cFileName), " ");
+				f = strlen(buf);
+				while((f %20) != 4)
+					buf[f++] = ' ';
+				buf[f] = '\0';
+			}
+			bMore = FindNextFile(hFind, &finddata);
+		}
+		
+		if (f)
+			notify(player, buf);
+		else
+			notify(player, "There are no information files available.");
+
+		free(buf);
+#else							/* !DIR_AVALIBLE && !WIN32 */
 		notify(player, "Index not available on this system.");
-#endif							/* !DIR_AVALIBLE */
+#endif							/* !DIR_AVALIBLE && !WIN32 */
 	}
 }
 #else /* STANDALONE_HELP */

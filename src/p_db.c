@@ -1370,7 +1370,7 @@ prim_newexit(PRIM_PROTOTYPE)
 void
 prim_lockedp(PRIM_PROTOTYPE)
 {
-	struct inst *oper1, *oper2;
+	struct inst *oper1, *oper2; /* prevents re-entrancy issues! */
 
 	/* d d - i */
 	CHECKOP(2);

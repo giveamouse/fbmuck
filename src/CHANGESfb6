@@ -30,6 +30,8 @@ Added USERLOG (str:mesg -- ) MUF prim.  Logs an arbitrary message to the user
   The program must be running at a mucker level at least equal to the @tune
   value 'userlog_mlev' (defaults to 3) to write this log entry.
 Added timestamps to stderr warnings for double-CLEARs and double prog_cleans.
+Added pcreate_flags @tune to specify what flags players are created with.
+Added and merged Windows specific winfuzz4 changes.
 Changed FMTSTRING and ARRAY_FMTSTRINGS MUF prims to be ANSI-aware.
 Changed all sprintf()s in the code to snprintf()s.
 

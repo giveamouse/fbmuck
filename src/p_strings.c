@@ -1395,7 +1395,8 @@ prim_atoi(PRIM_PROTOTYPE)
 void
 prim_notify(PRIM_PROTOTYPE)
 {
-	struct inst *oper1, *oper2;
+	struct inst *oper1, *oper2; /* declared local to prevent re-entrancy issues! */
+
 	char buf2[BUFFER_LEN * 2];
 
 	CHECKOP(2);
@@ -1430,7 +1431,8 @@ void
 prim_notify_exclude(PRIM_PROTOTYPE)
 {
 	/* roomD excludeDn ... excludeD1 nI messageS  -- */
-	struct inst *oper1, *oper2;
+	struct inst *oper1, *oper2; /* declared local to prevent re-entrancy issues! */
+
 	char buf2[BUFFER_LEN * 2];
 
 	CHECKOP(2);

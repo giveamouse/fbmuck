@@ -12,6 +12,16 @@
 #include "interface.h"
 #include <strings.h>
 
+#ifdef WIN32
+# include <limits>
+using namespace std;
+# define INF (numeric_limits<float>::infinity())
+# define NINF (-1 * numeric_limits<float>::infinity())
+#else
+# define INF (9.9E999)
+# define NINF (-9.9E999)
+#endif
+
 #ifdef COMPRESS
 extern const char *compress(const char *);
 extern const char *old_uncompress(const char *);
@@ -932,9 +942,9 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 			tpnt[2] = toupper(tpnt[2]);
 			if (!strncmp(tpnt, "INF", 3)) {
 				if (!dtemp) {
-					mydat.data.fval = 9.99E999;
+					mydat.data.fval = INF;
 				} else {
-					mydat.data.fval = -9.99E999;
+					mydat.data.fval = NINF;
 				}
 			} else {
 				if (!strncmp(tpnt, "NAN", 3)) {

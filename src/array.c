@@ -199,7 +199,9 @@ array_tree_height_diff(array_tree * node)
 |*| Note to self: don't do : max (x++,y)
 |*| Kim
 \*/
+#ifndef WIN32
 #define max(a, b)       (a > b ? a : b)
+#endif
 
 static void
 array_tree_fixup_height(array_tree * node)
@@ -1010,7 +1012,7 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 					arr->links--;
 					arr = *harr = array_decouple(arr);
 				}
-				arr->data.packed =
+				arr->data.packed = (array_data*)
 						realloc(arr->data.packed, sizeof(array_data) * (arr->items + 1));
 				copyinst(item, &arr->data.packed[arr->items]);
 				return (++arr->items);
@@ -1069,7 +1071,7 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
-			arr->data.packed =
+			arr->data.packed = (array_data*)
 					realloc(arr->data.packed, sizeof(array_data) * (arr->items + 1));
 			for (i = arr->items++; i > idx->data.number; i--) {
 				copyinst(&arr->data.packed[i - 1], &arr->data.packed[i]);
@@ -1306,9 +1308,8 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 				arr->links--;
 				arr = *harr = array_decouple(arr);
 			}
-			arr->data.packed =
-					realloc(arr->data.packed,
-							sizeof(array_data) * (arr->items + inarr->items));
+			arr->data.packed = (struct inst*)
+					realloc(arr->data.packed, sizeof(array_data) * (arr->items + inarr->items));
 			copyinst(start, &idx);
 			copyinst(start, &didx);
 			idx.data.number = arr->items - 1;
@@ -1409,7 +1410,8 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 				didx.data.number++;
 			}
 			arr->items -= (eidx - sidx + 1);
-			arr->data.packed = realloc(arr->data.packed, sizeof(array_data) * (arr->items));
+			arr->data.packed = (array_data*)
+					realloc(arr->data.packed, sizeof(array_data) * (arr->items));
 			return arr->items;
 			break;
 		}

@@ -17,7 +17,9 @@
 #include "config.h"
 #include "interface.h"
 #include "externs.h"
+#include "version.h"
 
+#ifndef WIN32
 #include <signal.h>
 #include <sys/wait.h>
 
@@ -212,6 +214,7 @@ RETSIGTYPE sig_reap(int i)
 	 * Second is the database dumper.  If resolver exits, we should
 	 * note it in the log -- at least give the admin the option of
 	 * knowing about it, and dealing with it as necessary. */
+
 	/* The fix for SSL connections getting closed when databases were
 	 * saved with DISKBASE disabled required closing all sockets 
 	 * when the server fork()ed.  This made it impossible for that
@@ -242,4 +245,92 @@ RETSIGTYPE sig_reap(int i)
 	return RETSIGVAL;
 }
 
+
+
+#else /* WIN32 */
+
+#include <wincon.h>
+#include <windows.h>
+#define VK_C         0x43
+#define CONTROL_KEY (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) 
+
+
+
+void sig_reap(int i) {}
+void sig_shutdown(int i) {}
+void sig_dumpstatus(int i) {}
+void set_signals(void) {}
+void set_sigs_intern(int bail) {}
+void bailout(int sig) {
+	char message[1024];
+	sprintf(message, "BAILOUT: caught signal %d", sig);
+	panic(message);
+	_exit(7);
+}
+
+void set_console() {
+	HANDLE InputHandle;
+
+	InputHandle = GetStdHandle(STD_INPUT_HANDLE);
+	if (InputHandle == INVALID_HANDLE_VALUE) {
+		printf("GetStdHandle: failed\n");
+		_exit(7);
+	}
+	if (!SetConsoleMode(InputHandle, !ENABLE_PROCESSED_INPUT)) {
+		printf("SetConsoleMode: failed\n");
+		_exit(7);
+	}
+	SetConsoleTitle(VERSION);
+
+}
+
+void check_console() {
+
+	HANDLE InputHandle;
+	INPUT_RECORD ipRecord;
+	DWORD EventsWaiting;
+	DWORD EventsRead;
+	DWORD EventCount=0;
+	BOOL result;
+	CHAR c;
+
+	InputHandle = GetStdHandle(STD_INPUT_HANDLE);
+	if (InputHandle == INVALID_HANDLE_VALUE) {
+		printf("GetStdHandle: Failed\n");
+		bailout(2);
+	}
+
+
+	result = GetNumberOfConsoleInputEvents(InputHandle, &EventsWaiting);
+	if (result) {
+		if (EventsWaiting > 0 ) {
+			EventCount = 0;
+			while (EventCount < EventsWaiting) {
+				result = ReadConsoleInput(InputHandle, &ipRecord, 1, &EventsRead);
+				if (result) {
+					switch(ipRecord.EventType) {
+					case KEY_EVENT:
+						c = ipRecord.Event.KeyEvent.uChar.AsciiChar;
+						if (3 == c )
+							bailout(2);
+						break;
+					default:
+						break;
+					}
+				} else {
+					printf("ReadConsoleInput: failed\n");
+					bailout(2);
+				}
+				EventCount++;
+			}
+		}
+	} else {
+		printf("GetNumberOfConsoleInputEvents: failed\n");
+		bailout(2);
+	}
+
+}
+
+
+#endif // WIN32
 

@@ -42,8 +42,16 @@ arith_type(struct inst *op1, struct inst *op2)
 			|| (op1->type == PROG_INTEGER && op2->type == PROG_FLOAT));
 }
 
-#define INF (9.9E999)
-#define NINF (-9.9E999)
+
+#ifdef WIN32
+# include <limits>
+using namespace std;
+# define INF (numeric_limits<float>::infinity())
+# define NINF (-1 * numeric_limits<float>::infinity())
+#else
+# define INF (9.9E999)
+# define NINF (-9.9E999)
+#endif
 
 int
 nogood(float test)
@@ -290,7 +298,7 @@ prim_and(PRIM_PROTOTYPE)
 	CHECKOP(2);
 	oper1 = POP();
 	oper2 = POP();
-	result = !false(oper1) && !false(oper2);
+	result = !false_inst(oper1) && !false_inst(oper2);
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushInt(result);
@@ -302,7 +310,7 @@ prim_or(PRIM_PROTOTYPE)
 	CHECKOP(2);
 	oper1 = POP();
 	oper2 = POP();
-	result = !false(oper1) || !false(oper2);
+	result = !false_inst(oper1) || !false_inst(oper2);
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushInt(result);
@@ -313,7 +321,7 @@ prim_not(PRIM_PROTOTYPE)
 {
 	CHECKOP(1);
 	oper1 = POP();
-	result = false(oper1);
+	result = false_inst(oper1);
 	CLEAR(oper1);
 	PushInt(result);
 }

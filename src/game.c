@@ -6,7 +6,10 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <signal.h>
+
+#ifdef WIN32
 #include <sys/wait.h>
+#endif
 
 #include "db.h"
 #include "props.h"
@@ -122,6 +125,10 @@ dump_database_internal(void)
 		fclose(delta_infile);
 #endif
 
+#ifdef WIN32
+		(void) unlink(dumpfile); /* Delete old file before rename */
+#endif
+
 		if (rename(tmpfile, dumpfile) < 0)
 			perror(tmpfile);
 
@@ -154,6 +161,9 @@ dump_database_internal(void)
 	if ((f = fopen(tmpfile, "w")) != NULL) {
 		macrodump(macrotop, f);
 		fclose(f);
+#ifdef WIN32
+		unlink(MACRO_FILE);
+#endif
 		if (rename(tmpfile, MACRO_FILE) < 0)
 			perror(tmpfile);
 	} else {

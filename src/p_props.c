@@ -843,7 +843,8 @@ prim_parseprop(PRIM_PROTOTYPE)
 {
 	const char *temp;
 	char *ptr;
-	struct inst *oper1, *oper2, *oper3, *oper4;
+	struct inst *oper1, *oper2, *oper3, *oper4; /* declared local to prevent re-entrancy issues! */
+
 	char buf[BUFFER_LEN];
 	char type[BUFFER_LEN];
 

@@ -1,0 +1,125 @@
+
+!IF "$(OS)" == "Windows_NT"
+NULL=
+!ELSE 
+NULL=nul
+!ENDIF 
+
+NMSRCDIR=.\src
+RSSRCDIR=.\win32
+OUTDIR=.\game
+INTDIR=.\compile
+INCDIR=.\include
+
+CPP=cl.exe
+#CPP_OPS=/nologo /MLd /W3 /Gm /GX /ZI /Od /D "_DEBUG" /D "_WIN32_" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D FD_SETSIZE=4096 /YX /I"$(INCDIR)" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
+CPP_OPS=/nologo /ML /W3 /GX /O2 /D "_WIN32_" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "FD_SETSIZE=4096" /I"$(INCDIR)" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /c
+LINK32=link.exe
+LINK32_OPS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
+#LINK32_OPS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib winmm.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\netmuck.pdb" /debug /machine:I386 /pdbtype:sept 
+
+
+ALL : "$(OUTDIR)\restart.exe" "$(OUTDIR)\netmuck.exe"
+
+CLEAN :
+        -@erase "$(INTDIR)\*.obj"
+	-@erase "$(INTDIR)\vc60.idb"
+        -@erase "$(INTDIR)\*.exe"
+
+"$(OUTDIR)" :
+    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
+
+{$(NMSRCDIR)}.cpp{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_OPS) $<
+<<
+
+$(INTDIR)\restart.obj : $(RSSRCDIR)\restart.cpp
+   $(CPP) $(CPP_OPS) $(RSSRCDIR)\restart.cpp
+
+	
+RSTART_OBJS="$(INTDIR)\restart.obj"
+NMUCK_OBJS= \
+        "$(INTDIR)\array.obj" \
+        "$(INTDIR)\boolexp.obj" \
+        "$(INTDIR)\compile.obj" \
+        "$(INTDIR)\compress.obj" \
+        "$(INTDIR)\copyright.obj" \
+        "$(INTDIR)\create.obj" \
+        "$(INTDIR)\db.obj" \
+        "$(INTDIR)\debugger.obj" \
+        "$(INTDIR)\disassem.obj" \
+        "$(INTDIR)\diskprop.obj" \
+        "$(INTDIR)\edit.obj" \
+        "$(INTDIR)\events.obj" \
+        "$(INTDIR)\game.obj" \
+        "$(INTDIR)\hashtab.obj" \
+        "$(INTDIR)\help.obj" \
+        "$(INTDIR)\inst.obj" \
+        "$(INTDIR)\interface.obj" \
+        "$(INTDIR)\interp.obj" \
+        "$(INTDIR)\log.obj" \
+        "$(INTDIR)\look.obj" \
+        "$(INTDIR)\match.obj" \
+        "$(INTDIR)\mcp.obj" \
+        "$(INTDIR)\mcpgui.obj" \
+        "$(INTDIR)\mcppkgs.obj" \
+        "$(INTDIR)\mfuns.obj" \
+        "$(INTDIR)\mfuns2.obj" \
+        "$(INTDIR)\move.obj" \
+        "$(INTDIR)\msgparse.obj" \
+        "$(INTDIR)\mufevent.obj" \
+        "$(INTDIR)\p_array.obj" \
+        "$(INTDIR)\p_db.obj" \
+        "$(INTDIR)\p_error.obj" \
+        "$(INTDIR)\p_float.obj" \
+        "$(INTDIR)\p_math.obj" \
+        "$(INTDIR)\p_mcp.obj" \
+        "$(INTDIR)\p_misc.obj" \
+        "$(INTDIR)\p_props.obj" \
+        "$(INTDIR)\p_stack.obj" \
+        "$(INTDIR)\p_strings.obj" \
+        "$(INTDIR)\player.obj" \
+        "$(INTDIR)\propdirs.obj" \
+        "$(INTDIR)\property.obj" \
+        "$(INTDIR)\props.obj" \
+        "$(INTDIR)\random.obj" \
+        "$(INTDIR)\rob.obj" \
+        "$(INTDIR)\rwho.obj" \
+        "$(INTDIR)\sanity.obj" \
+        "$(INTDIR)\set.obj" \
+        "$(INTDIR)\signal.obj" \
+        "$(INTDIR)\smatch.obj" \
+        "$(INTDIR)\speech.obj" \
+        "$(INTDIR)\strftime.obj" \
+        "$(INTDIR)\timequeue.obj" \
+        "$(INTDIR)\timestamp.obj" \
+        "$(INTDIR)\tune.obj" \
+        "$(INTDIR)\unparse.obj" \
+        "$(INTDIR)\utils.obj" \
+        "$(INTDIR)\wiz.obj" \
+        "$(INTDIR)\crt_malloc.obj" \
+        "$(INTDIR)\oldcompress.obj" \
+        "$(INTDIR)\p_connects.obj" \
+        "$(INTDIR)\predicates.obj" \
+        "$(INTDIR)\stringutil.obj" \
+        "$(INTDIR)\win32.obj" \
+        "$(INTDIR)\version.obj"
+
+"$(OUTDIR)\restart.exe" : "$(OUTDIR)" "$(INTDIR)" $(RSTART_OBJS)
+    $(LINK32) @<<
+  $(LINK32_OPS)  /out:"$(OUTDIR)\restart.exe" $(RSTART_OBJS)
+<<
+
+
+
+"$(OUTDIR)\netmuck.exe" : "$(OUTDIR)" "$(INTDIR)" $(NMUCK_OBJS)
+    $(LINK32) @<<
+  $(LINK32_OPS) /out:"$(OUTDIR)\netmuck.exe" $(NMUCK_OBJS)
+<<
+
+

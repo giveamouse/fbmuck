@@ -3,14 +3,13 @@
 
 #include "copyright.h"
 
+#include "config.h"
 #include <sys/types.h>
 #include <stdio.h>
-#include <time.h>
 #include <ctype.h>
 #include <math.h>
 #include <stdlib.h>
 
-#include "config.h"
 #include "db.h"
 #include "tune.h"
 #include "inst.h"
@@ -26,8 +25,15 @@ static int result;
 static float fresult;
 static char buf[BUFFER_LEN];
 
-#define INF (9.9E999)
-#define NINF (-9.9E999)
+#ifdef WIN32
+#include <limits>
+using namespace std;
+# define INF (numeric_limits<float>::infinity())
+# define NINF (-1 * numeric_limits<float>::infinity())
+#else
+# define INF (9.9E999)
+# define NINF (-9.9E999)
+#endif
 
 int
 no_good(float test)
@@ -111,7 +117,7 @@ void
 prim_pi(PRIM_PROTOTYPE)
 {
 	CHECKOP(0);
-	fresult = F_PI;
+	fresult = (float) F_PI;
 	CHECKOFLOW(1);
 	PushFloat(fresult);
 }
@@ -253,7 +259,7 @@ prim_atan(PRIM_PROTOTYPE)
 	if (!no_good(oper1->data.fnumber)) {
 		fresult = (float) atan((double) oper1->data.fnumber);
 	} else {
-		fresult = H_PI;
+		fresult = (float) H_PI;
 	}
 	CLEAR(oper1);
 	PushFloat(fresult);

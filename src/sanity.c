@@ -735,7 +735,7 @@ create_lostandfound(dbref * player, dbref * room)
 		*player = new_object();
 		NAME(*player) = alloc_string(player_name);
 		LOCATION(*player) = *room;
-		FLAGS(*player) = TYPE_PLAYER | PCREATE_FLAGS | SANEBIT;
+		FLAGS(*player) = TYPE_PLAYER |  SANEBIT;
 		OWNER(*player) = *player;
 		PLAYER_SET_HOME(*player, *room);
 		EXITS(*player) = NOTHING;
