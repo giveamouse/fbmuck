@@ -66,7 +66,6 @@ extern void db_clear_object(dbref i);
 extern void macroload(FILE * f);
 extern void free_prog_text(struct line *l);
 extern char *show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, int markpc);
-extern dbref db_write_deltas(FILE * f);
 
 
 /* From create.c */
@@ -98,7 +97,6 @@ extern void do_list(dbref player, dbref program, int *oarg, int argc);
 extern void do_dump(dbref player, const char *newfile);
 extern void do_shutdown(dbref player);
 extern void dump_warning(void);
-extern void dump_deltas(void);
 extern void fork_and_dump(void);
 
 /* From hashtab.c */
@@ -367,7 +365,6 @@ extern void spawn_resolver();
 
 /* from events.c */
 extern void dump_db_now(void);
-extern void delta_dump_now(void);
 
 /* from mesgparse.c */
 extern void mesg_init(void);

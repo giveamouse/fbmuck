@@ -233,8 +233,6 @@ void resolve_hostnames(void);
 #define FREE(x) (free((void *) x))
 
 extern FILE *input_file;
-extern FILE *delta_infile;
-extern FILE *delta_outfile;
 
 short db_conversion_flag = 0;
 short db_decompression_flag = 0;
@@ -596,12 +594,6 @@ main(int argc, char **argv)
 		purge_mfns();
 		cleanup_game();
 		tune_freeparms();
-#endif
-
-#ifdef DELTADUMPS
-		fclose(delta_infile);
-		fclose(delta_outfile);
-		(void) unlink(DELTAFILE_NAME);
 #endif
 
 #ifdef MALLOC_PROFILING

@@ -7,8 +7,6 @@
 #include "interp.h"
 
 const char *tp_dumpwarn_mesg = DUMPWARN_MESG;
-const char *tp_deltawarn_mesg = DELTAWARN_MESG;
-const char *tp_dumpdeltas_mesg = DUMPDELTAS_MESG;
 const char *tp_dumping_mesg = DUMPING_MESG;
 const char *tp_dumpdone_mesg = DUMPDONE_MESG;
 
@@ -55,9 +53,7 @@ struct tune_str_entry tune_str_list[] = {
 	{"Currency", "cpenny", &tp_cpenny, 0, 1, "Currency name, capitalized"},
 	{"Currency", "cpennies", &tp_cpennies, 0, 1, "Currency name, capitalized, plural"},
 	{"DB Dumps", "dumpwarn_mesg", &tp_dumpwarn_mesg, 0, 1, "Full dump warning mesg"},
-	{"DB Dumps", "deltawarn_mesg", &tp_deltawarn_mesg, 0, 1, "Delta dump warning mesg"},
 	{"DB Dumps", "dumping_mesg", &tp_dumping_mesg, 0, 1, "Full dump start mesg"},
-	{"DB Dumps", "dumpdeltas_mesg", &tp_dumpdeltas_mesg, 0, 1, "Delta dump start mesg"},
 	{"DB Dumps", "dumpdone_mesg", &tp_dumpdone_mesg, 0, 1, "Dump completion message"},
 	{"Idle Boot", "idle_boot_mesg", &tp_idle_mesg, 0, 1, "Boot message for idling out"},
 	{"Player Max", "playermax_warnmesg", &tp_playermax_warnmesg, 0, 1,
@@ -103,7 +99,6 @@ struct tune_time_entry {
 struct tune_time_entry tune_time_list[] = {
 	{"Database", "aging_time", &tp_aging_time, 0,
 	 "When to considered an object old and unused"},
-	{"DB Dumps", "dump_interval", &tp_dump_interval, 0, "Interval between delta dumps"},
 	{"DB Dumps", "dump_warntime", &tp_dump_warntime, 0, "Interval between warning and dump"},
 	{"DB Dumps", "monolithic_interval", &tp_monolithic_interval, 0,
 	 "Interval between full dumps"},
@@ -134,7 +129,6 @@ int tp_commands_per_time = COMMANDS_PER_TIME;
 int tp_command_time_msec = COMMAND_TIME_MSEC;
 int tp_max_output = MAX_OUTPUT;
 
-int tp_max_delta_objs = MAX_DELTA_OBJS;
 int tp_max_process_limit = MAX_PROCESS_LIMIT;
 int tp_max_plyr_processes = MAX_PLYR_PROCESSES;
 int tp_max_instr_count = MAX_INSTR_COUNT;
@@ -210,8 +204,6 @@ struct tune_val_entry tune_val_list[] = {
 	{"Spam Limits", "max_output", &tp_max_output, 0, "Max output buffer size"},
 	{"Tuning", "pause_min", &tp_pause_min, 0, "Min ms to pause between MUF timeslices"},
 	{"Tuning", "free_frames_pool", &tp_free_frames_pool, 0, "Size of MUF process frame pool"},
-	{"Tuning", "max_delta_objs", &tp_max_delta_objs, 0,
-	 "Percentage changed objects to force full dump"},
 
 	{NULL, NULL, NULL, 0}
 };
@@ -244,7 +236,6 @@ int tp_log_commands = LOG_COMMANDS;
 int tp_log_failed_commands = LOG_FAILED_COMMANDS;
 int tp_log_programs = LOG_PROGRAMS;
 int tp_dbdump_warning = DBDUMP_WARNING;
-int tp_deltadump_warning = DELTADUMP_WARNING;
 int tp_dumpdone_warning = DUMPDONE_WARNING;
 int tp_periodic_program_purge = PERIODIC_PROGRAM_PURGE;
 int tp_rwho = RWHO;
@@ -305,8 +296,6 @@ struct tune_bool_entry tune_bool_list[] = {
 	 "Use legacy exit priority levels on things"},
 	{"DB Dumps", "dbdump_warning", &tp_dbdump_warning, 0,
 	 "Enable warning messages for full DB dumps"},
-	{"DB Dumps", "deltadump_warning", &tp_deltadump_warning, 0,
-	 "Enable warning messages for delta DB dumps"},
 	{"DB Dumps", "dumpdone_warning", &tp_dumpdone_warning, 0,
 	 "Enable notification of DB dump completion"},
 	{"Idle Boot", "idleboot", &tp_idleboot, 0, "Enable booting of idle players"},

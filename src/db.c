@@ -255,28 +255,11 @@ db_write_object(FILE * f, dbref i)
 	return 0;
 }
 
-int deltas_count = 0;
-
-/* mode == 1 for dumping all objects.  mode == 0 for deltas only.  */
-
-static void
-db_write_list(FILE * f, int mode)
-{
-	dbref i;
-
-	for (i = db_top; i-- > 0;) {
-		if (mode == 1 || (FLAGS(i) & OBJECT_CHANGED)) {
-			if (fprintf(f, "#%d\n", i) < 0)
-				abort();
-			db_write_object(f, i);
-			FLAGS(i) &= ~OBJECT_CHANGED;	/* clear changed flag */
-		}
-	}
-}
-
 dbref
 db_write(FILE * f)
 {
+	dbref i;
+
 	putstring(f, "***Foxen8 TinyMUCK DUMP Format***");
 
 	putref(f, db_top);
@@ -284,25 +267,16 @@ db_write(FILE * f)
 	putref(f, tune_count_parms());
 	tune_save_parms_to_file(f);
 
-	db_write_list(f, 1);
+	for (i = db_top; i-- > 0;) {
+		if (fprintf(f, "#%d\n", i) < 0)
+			abort();
+		db_write_object(f, i);
+		FLAGS(i) &= ~OBJECT_CHANGED;	/* clear changed flag */
+	}
 
 	fseek(f, 0L, 2);
 	putstring(f, "***END OF DUMP***");
 
-	fflush(f);
-	deltas_count = 0;
-	return (db_top);
-}
-
-dbref
-db_write_deltas(FILE * f)
-{
-	fseek(f, 0L, 2);			/* seek end of file */
-	putstring(f, "***Foxen8 Deltas Dump Extention***");
-	db_write_list(f, 0);
-
-	fseek(f, 0L, 2);
-	putstring(f, "***END OF DUMP***");
 	fflush(f);
 	return (db_top);
 }
@@ -420,8 +394,6 @@ db_read_object(FILE * f, struct object *o, dbref objno, int read_before)
 	tmp = getref(f);			/* flags list */
 	tmp &= ~DUMP_MASK;
 	FLAGS(objno) |= tmp;
-
-	FLAGS(objno) &= ~SAVED_DELTA;
 
 	/* timestamps */
 	o->ts.created = getref(f);

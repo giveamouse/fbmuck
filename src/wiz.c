@@ -527,20 +527,6 @@ do_stats(dbref player, const char *name)
 
 		notify_fmt(player, "%7d total object%s                     %7d old & unused", total,
 				   (total == 1) ? " " : "s", oldobjs);
-
-#ifdef DELTADUMPS
-		{
-			char buf[BUFFER_LEN];
-			struct tm *time_tm;
-			time_t lasttime = (time_t) get_property_value(0, "_sys/lastdumptime");
-
-			time_tm = localtime(&lasttime);
-			(void) format_time(buf, 40, "%a %b %e %T %Z", time_tm);
-			notify_fmt(player, "%7d unsaved object%s     Last dump: %s", altered,
-					   (altered == 1) ? "" : "s", buf);
-		}
-#endif
-
 	}
 }
 
