@@ -902,8 +902,9 @@ do_recycle(int descr, dbref player, const char *name)
 				/* NOTREACHED */
 				break;
 			}
+			snprintf(buf, sizeof(buf), "Thank you for recycling %.512s (#%d).", NAME(thing), thing);
 			recycle(descr, player, thing);
-			notify(player, "Thank you for recycling.");
+			notify(player, buf);
 		}
 	}
 }
