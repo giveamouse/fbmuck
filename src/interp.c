@@ -36,6 +36,12 @@
    execution.
    */
 
+/* The static variable 'err' defined below means to die immediately when
+ * set to this value. do_abort_silent() uses this.
+ *
+ * Otherwise err++ seems popular.
+ */
+#define ERROR_DIE_NOW -1
 
 void
 p_null(PRIM_PROTOTYPE)
@@ -1361,7 +1367,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			abort_loop_hard("Program internal error. Unknown instruction type.", NULL, NULL);
 		}						/* switch */
 		if (err) {
-			if (fr->trys.top) {
+			if (err != ERROR_DIE_NOW && fr->trys.top) {
 				while (fr->trys.st->call_level < stop) {
 					if (stop > 1 && program != sys[stop - 1].progref) {
 						if (sys[stop - 1].progref > db_top ||
@@ -1584,12 +1590,14 @@ do_abort_interp(dbref player, const char *msg, struct inst *pc,
 	return;
 }
 
-
+/*
+ * Errors set with this will not be caught.
+ *
+ * This will always result in program termination the next time
+ * interp_loop() checks for this.
+ */
 void
 do_abort_silent(void)
 {
-	/* WORK:  killing this program's pid may not exit, but instead will
-	 * be caught in a TRY-CATCH block.  This may be undesirable. */
-	err++;
+	err = ERROR_DIE_NOW;
 }
-

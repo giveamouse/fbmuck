@@ -15,7 +15,7 @@ Fixed some tiny buffer overrun errors with muf debugging.
 Added docs of supported MCP GUI ctrl-commands to the GUI_CTRL_COMMAND muf
   manual entry.
 Changed @list to view only muf programs set VIEWABLE, as opposed to LINK_OK.
-
+Made 'PID KILL' kill the current program, never triggering a CATCH.
 
 
 2.2fb6.00b3
