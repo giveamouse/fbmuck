@@ -66,4 +66,6 @@ int array_set_strkey_intval(stk_array ** arr, const char *key, int val);
 int array_set_strkey_strval(stk_array ** harr, const char *key, const char *val);
 int array_set_strkey_refval(stk_array ** harr, const char *key, dbref val);
 
+char* array_get_intkey_strval(stk_array * arr, int key);
+
 #endif							/* MUFARRAY_H */

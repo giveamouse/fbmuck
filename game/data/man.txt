@@ -2869,7 +2869,7 @@ the program in 5 seconds.  This is used with EVENT_WAIT.  If a timer
 with the given timerid already exists, it will be rescheduled to occur
 after the new delay.  Timer ids will be truncated to 32 characters.
 Each MUF process can only have a limited number of timers, specified
-by the @tunee setting 'process_timer_limit'.  Timers are listed on
+by the @tune setting 'process_timer_limit'.  Timers are listed on
 the @ps timequeue with the PID of the timer's process in parentheses.
 Timers are one-shot events.  To get a repeating timer, you'll need to
 restart it when you process a new timer event.
@@ -2898,16 +2898,38 @@ is an integer systime value, specifying when the timer was scheduled for.
 
 GUI events have eventID strings that are created by prepending "GUI." to
 the dlogID of the dialog that generated the event.  The context for GUI
-events is a dictionary contains the folowing keys:
-  descr      Holds the descriptor that generated teh event.
+events is a dictionary contains the following keys:
+  descr      Holds the descriptor that generated the event.
   dlogid     Holds the DlogID of the dialog that generated the event.
   id         Holds the ID of the control that generated the event.
   dismissed  Holds 1 if the dialog was dismissed, 0 otherwise.
   event      Holds the type of gui event.  ie: buttonpress, menuselect.
 
-WORK: TIMER. events.
-WORK: USER. events.
-WORK: MCP. events.
+Timer events have eventID strings that are created by prepending "TIMER."
+to the timerID passed to the TIMER_START primitive.  The context for Timer
+events is an integer, representing the systime that the timer was really
+scheduled to occur at.
+
+User events have eventID strings that are created by prepending "USER." to
+the eventID given to the EVENT_SEND muf primitive.  The context for User
+events is a dictionary containing the following keys:
+  caller_pid   Holds the integer Process ID of the sending program.
+  caller_prog  Holds the dbref of the sending program.
+  data         Holds the stack item sent by the EVENT_SEND primitive.
+
+MCP events have eventID strings formatted like "MCP.packagename-mesgname"
+where 'packagename' is the name of the MCP package being invoked, and
+'mesgname' is the specific message in the package being invoked.  If the
+'mesgname' is a null string, then the trailing '-' is removed.  Some example
+MCP eventIDs are:
+  MCP.com-belfry-image        Where pkg is 'com-belfry-image' & mesg is ''
+  MCP.com-belfry-image-view   Where pkg is 'com-belfry-image' & mesg is 'view'
+The context for MCP events is a dictionary containing the following keys:
+  descr     Holds the integer descriptor of the sending connection.
+  package   Holds the string package name the MCP mesg is sent for.
+  package   Holds the string message name within that package.
+  args      Holds a dictionary, containing the message arguments.
+              Each mesg arg has an array list of strings as a value.
 ~
 C_DATUM
 C_DATUM
