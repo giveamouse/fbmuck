@@ -5,6 +5,7 @@ Fixed a bug in GUI_VALUE_SET that checked for 2 args, but popped 3.
 Fixed arg ordering bug in the REFLIST_* muf primitives.  Now matches docs.
 Added docs of supported MCP GUI ctrl-commands to the GUI_CTRL_COMMAND muf
   manual entry.
+Changed @list to view only muf programs set VIEWABLE, as opposed to LINK_OK.
 
 
 
