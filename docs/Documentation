@@ -1,16 +1,25 @@
 Documents bundled:
 
 Documentation
-MIPS:			MIPS port notes.
+Documentation:		This file
+INSTALLATION		Installation notes
 MUCK.doc:		TinyMUCK non-programming documentation
-MUD.doc:		Standard MUD documentation
 MUF-tutorial		Beginner's tutorial on MUF
 MUF.examples		Examples of MUF code
 MUF.manual		MUF programmer's manual
-README.CON:		Information on Virus' concentrator and how to use it.
 README:			Standard MUD distribution stuff
-forth.ref:		MUF cheatsheet
+README.ssl:		Information on how to set up SSL-enabled servers
+RWHO.docs		Frequently asked questions about RWHO and mudwho
+edit-help.txt		MUF program editor help
+help.txt		An introduction to TinyMUCK (for TinyMUD people)
+macro.hlp		Using MUF macros
 minimal.db.README:	How to set up a MUD database.
+mpi-intro		An introduction to MPI in the fb5.xx MUCK game
+mpi-intro.html		HTML version of mpi-intro
+mpi-intro2		Foxen's intermediate guide to MPI programming
+mpihelp.html		MPI manual for fbmuck 6.00
+muck.doc		More TinyMUCK non-programming documentation
+sample.policies		Sample policies file
 technical.doc:		For technical people only.
 
 Non-Documentation
@@ -22,7 +31,7 @@ SUPPORT:	When there's a bug, in the neighbourhood,
 
 Acknowledgements:
 
-MUD.doc written by Chysalis and Three.
+muck.doc written by Chysalis and Three.
 (jdstone@uokmax.uucp && martin@grunt.berkeley.edu)
 
 HAVEN, ABODE, page with message done by Random (russ@uokmax.uucp)
