@@ -1190,8 +1190,9 @@ process_special(COMPSTATE * cstat, const char *token)
 
 					nu->in.data.mufproc->vars++;
 					nu->in.data.mufproc->args++;
-					if (varspec)
-						free((void *) varspec);
+				}
+				if (varspec) {
+					free((void *) varspec);
 				}
 			} while(!argsdone);
 		}
