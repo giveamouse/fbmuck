@@ -71,7 +71,7 @@ package:
 	cd src && make prochelp
 	mv -f src/prochelp ${TMPPKGDIR}
 	cd src && make cleaner
-	cp -fp configure Makefile.in mkdir_recursive fbmuck.spec fuzzball.spec INSTALLATION README ${TMPPKGDIR}
+	cp -fp configure Makefile.in mkdir_recursive fbmuck.spec fuzzball.cnf INSTALLATION README ${TMPPKGDIR}
 	ln -s src/CHANGESfb  ${TMPPKGDIR}/CHANGESfb
 	ln -s src/CHANGESfb2 ${TMPPKGDIR}/CHANGESfb2
 	ln -s src/CHANGESfb3 ${TMPPKGDIR}/CHANGESfb3
@@ -80,7 +80,8 @@ package:
 	ln -s src/CHANGESfb6 ${TMPPKGDIR}/CHANGESfb6
 	ln -s 'src/==WARNING==' ${TMPPKGDIR}/'==WARNING=='
 	cp -fpr docs ${TMPPKGDIR}
-	cp -fpr contrib ${TMPPKGDIR}
+	mkdir ${TMPPKGDIR}/contrib
+	cp -fpr contrib/jresolver ${TMPPKGDIR}/contrib
 	cp -fpr src_docs ${TMPPKGDIR}
 	mkdir ${TMPPKGDIR}/include
 	cp -fp include/*.h include/*.in ${TMPPKGDIR}/include
