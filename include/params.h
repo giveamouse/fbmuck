@@ -1,5 +1,8 @@
 /* $Header$
  * $Log: params.h,v $
+ * Revision 1.5  2000/09/04 22:07:12  winged
+ * Added MUD_GID define support code
+ *
  * Revision 1.4  2000/07/18 18:18:19  winged
  * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
  *
@@ -91,6 +94,9 @@
 
 /* Turn this back on when you want MUD to set from root to some user_id */
 /* #define MUD_ID "MUCK" */
+
+/* Turn this on when you want MUCK to set to a specific group ID... */
+/* #define MUD_GID "MUCK" */
 
 /* Used for breaking out of muf READs or for stopping foreground programs. */
 #define BREAK_COMMAND "@Q"

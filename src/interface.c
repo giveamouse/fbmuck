@@ -121,7 +121,7 @@ void boot_player_off(dbref player);
 const char *addrout(struct in6_addr *, unsigned short);
 #else
 const char *addrout(long, unsigned short);
-#endif
+#endif /* USE_IPV6 */
 void dump_users(struct descriptor_data *d, char *user);
 struct descriptor_data *new_connection(int sock);
 void parse_connect(const char *msg, char *command, char *user, char *pass);
@@ -151,6 +151,12 @@ int online(dbref player);
 int online_init(void);
 dbref online_next(int *ptr);
 long max_open_files(void);
+#ifdef MUD_ID
+void do_setuid(char *user);
+#endif /* MUD_ID */
+#ifdef MUD_GID
+void do_setgid(char *group);
+#endif /* MUD_GID */
 
 #ifdef SPAWN_HOST_RESOLVER
 void kill_resolver(void);
@@ -372,6 +378,11 @@ main(int argc, char **argv)
 		do_setuid(MUD_ID);
 	}
 #endif							/* MUD_ID */
+#ifdef MUD_GID
+	if (!sanity_interactive) {
+		do_setgid(MUD_GID);
+	}
+#endif							/* MUD_GID */
 
 	/* Initialize MCP and some packages. */
 	mcp_initialize();
@@ -2302,6 +2313,25 @@ do_setuid(char *name)
 
 #endif							/* MUD_ID */
 
+#ifdef MUD_GID
+void
+do_setgid(char *name)
+{
+#include <grp.h>
+	struct group *gr;
+
+	if ((gr = getgrnam(name)) == NULL) {
+		log_status("can't get grent for group %s\n", name);
+		exit(1);
+	}
+	if (setgid(gr->gr_gid) == -1) {
+		log_status("can't setgid(%d): ",gr->gr_gid);
+		perror("setgid");
+		exit(1);
+	}
+}
+
+#endif							/* MUD_GID */
 
 /***** O(1) Connection Optimizations *****/
 struct descriptor_data *descr_count_table[FD_SETSIZE];
