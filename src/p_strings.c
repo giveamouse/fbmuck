@@ -1500,8 +1500,13 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 		}
 
 		if (tp_listeners) {
-			notify_listeners(player, program, where, where, buf, 0);
-			if (tp_listeners_env) {
+			for (tmp = 0, i = count; i-- > 0;) {
+				if (excluded[i] == where)
+					tmp = 1;
+			}
+			if (!tmp)
+				notify_listeners(player, program, where, where, buf, 0);
+			if (tp_listeners_env && !tmp) {
 				what = DBFETCH(where)->location;
 				for (; what != NOTHING; what = DBFETCH(what)->location)
 					notify_listeners(player, program, what, where, buf, 0);
