@@ -119,8 +119,8 @@ typedef struct COMPILE_STATE_T {
 
 	struct line *curr_line;		/* current line */
 	int lineno;			/* current line number */
-        int start_comment;              /* Line last comment started at */
-        int force_comment;              /* Only attempt certain compile. */
+	int start_comment;              /* Line last comment started at */
+	int force_comment;              /* Only attempt certain compile. */
 	const char *next_char;		/* next char * */
 	dbref player, program;		/* player and program for this compile */
 
@@ -1292,7 +1292,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	cstat.curr_line = PROGRAM_FIRST(program_in);
 	cstat.lineno = 1;
 	cstat.start_comment = 0;
-	cstat.force_comment = 0;
+	cstat.force_comment = tp_muf_comments_strict? 1 : 0;
 	cstat.next_char = NULL;
 	if (cstat.curr_line)
 		cstat.next_char = cstat.curr_line->this_line;
@@ -1494,9 +1494,9 @@ next_token_raw(COMPSTATE * cstat)
 	if (*cstat->next_char == BEGINCOMMENT) {
 		cstat->start_comment = cstat->lineno;
 		if (cstat->force_comment == 1) {
-		  do_comment(cstat, -1);
+			do_comment(cstat, -1);
 		} else {
-		  do_comment(cstat, 0);
+			do_comment(cstat, 0);
 		}
 		cstat->start_comment = 0;
 		return next_token_raw(cstat);
@@ -1580,38 +1580,62 @@ int do_old_comment(COMPSTATE * cstat)
 /* skip comments, recursive style */
 int do_new_comment(COMPSTATE * cstat, int depth)
 {
-        int retval = 0;
+	int retval = 0;
+	int in_str = 0;
+	const char *ptr;
 
-	if(!*cstat->next_char || *cstat->next_char != BEGINCOMMENT)
-	  return 2;
-	  /* v_abort_compile(cstat, "Expected comment."); */
-	if(depth >= 7 /*arbitrary*/)
-	  return 3;
-	  /* v_abort_compile(cstat, "Comments nested too deep (more than 7 levels)."); */
+	if (!*cstat->next_char || *cstat->next_char != BEGINCOMMENT)
+		return 2;
+	if (depth >= 7 /*arbitrary*/)
+		return 3;
 	cstat->next_char++;  /* Advance past BEGINCOMMENT */
 
 	while (*cstat->next_char != ENDCOMMENT) {
-		if(!(*cstat->next_char)) {
+		if (!(*cstat->next_char)) {
 			do {
 				advance_line(cstat);
-				if(!cstat->curr_line)
-				  return 1;
-				  /* v_abort_compile(cstat, "Unterminated comment."); */
+				if (!cstat->curr_line) {
+					return 1;
+				}
 			} while(!(*cstat->next_char));
-		} else if(*cstat->next_char == BEGINCOMMENT) {
+		} else if (*cstat->next_char == BEGINCOMMENT) {
 			retval = do_new_comment(cstat, depth+1);
-			if (retval) return retval;
-			/* if(cstat->compile_err) return;  /* EOF w/unterminated */
-		} else
+			if (retval) {
+				return retval;
+			}
+		} else {
 			cstat->next_char++;
+		}
 	};
 
 	cstat->next_char++;  /* Advance past ENDCOMMENT */
-	if(!(*cstat->next_char))
+	ptr = cstat->next_char;
+	while (*ptr) {
+		if (in_str) {
+			if (*ptr == ENDSTRING) {
+				in_str = 0;
+			}
+		} else {
+			if (*ptr == BEGINSTRING) {
+				in_str = 1;
+			} else if (*ptr == ENDSTRING) {
+				in_str = 1;
+				break;
+			}
+		}
+		ptr++;
+	}
+	if (in_str) {
+		compiler_warning(
+			cstat,
+			"Warning on line %i: Unterminated string may indicate unterminated comment. Comment starts on line %i.",
+			cstat->lineno, cstat->start_comment
+		);
+	}
+	if (!(*cstat->next_char))
 		advance_line(cstat);
-	if(depth && !cstat->curr_line) /* EOF? Don't care if done (depth==0) */
-	  return 1;
-	  /* v_abort_compile(cstat, "Unterminated comment."); */
+	if (depth && !cstat->curr_line) /* EOF? Don't care if done (depth==0) */
+		return 1;
 	return 0;
 }
 
@@ -1619,50 +1643,54 @@ int do_new_comment(COMPSTATE * cstat, int depth)
 void
 do_comment(COMPSTATE * cstat, int depth)
 {
-        unsigned int next_char = 0;  /* Save state if needed. */
+	unsigned int next_char = 0;  /* Save state if needed. */
 	int lineno = 0;
 	struct line *curr_line = NULL;
 	int macrosubs = 0;
 	int retval = 0;
 
-        if (!depth && !cstat->force_comment) {
-	        next_char = cstat->line_copy?
-		  cstat->next_char - cstat->line_copy : 0;
+	if (!depth && !cstat->force_comment) {
+		next_char = cstat->line_copy?
+			cstat->next_char - cstat->line_copy : 0;
 		macrosubs = cstat->macrosubs;
 		lineno = cstat->lineno;
 		curr_line = cstat->curr_line;
 	}
 
 	if (!depth) {
-	  if ((retval = do_new_comment(cstat,0))) {
-	    if (cstat->force_comment) {
-	      switch (retval) {
-	      case 1: v_abort_compile(cstat, "Unterminated comment.");
-		break;
-	      case 2: v_abort_compile(cstat, "Expected comment.");
-		break;
-	      case 3: v_abort_compile(cstat, "Comments nested too deep (more than 7 levels).");
-		break;
-	      }
-	      return;
-	    } else {
-	      /* Set back up, drop through for retry. */
-	      if (cstat->line_copy) {
-		free((void *) cstat->line_copy);
-		cstat->line_copy = NULL;
-	      }
-	      cstat->curr_line = curr_line;
-	      cstat->macrosubs = macrosubs;
-	      cstat->lineno = lineno;
-	      if (cstat->curr_line)
-		cstat->next_char = (cstat->line_copy = alloc_string(cstat->curr_line->this_line)) + next_char;
-	      else
-		cstat->next_char = (cstat->line_copy = NULL);
-	    }
-	  } else {
-	    /* Comment hunt worked, new-style. */
-	    return;
-	  }
+		if ((retval = do_new_comment(cstat, 0))) {
+			if (cstat->force_comment) {
+				switch (retval) {
+				case 1:
+					v_abort_compile(cstat, "Unterminated comment.");
+					break;
+				case 2:
+					v_abort_compile(cstat, "Expected comment.");
+					break;
+				case 3:
+					v_abort_compile(cstat, "Comments nested too deep (more than 7 levels).");
+					break;
+				}
+				return;
+			} else {
+				/* Set back up, drop through for retry. */
+				if (cstat->line_copy) {
+					free((void *) cstat->line_copy);
+					cstat->line_copy = NULL;
+				}
+				cstat->curr_line = curr_line;
+				cstat->macrosubs = macrosubs;
+				cstat->lineno = lineno;
+				if (cstat->curr_line) {
+					cstat->next_char = (cstat->line_copy = alloc_string(cstat->curr_line->this_line)) + next_char;
+				} else {
+					cstat->next_char = (cstat->line_copy = NULL);
+				}
+			}
+		} else {
+			/* Comment hunt worked, new-style. */
+			return;
+		}
 	}
 
 	if (do_old_comment(cstat)) {

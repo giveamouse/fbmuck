@@ -146,7 +146,7 @@
  * in select() between player input/output servicings.  Larger numbers
  * slow FOREGROUND and BACKGROUND MUF programs, but reduce CPU usage.
  */
-#define PAUSE_MIN 100
+#define PAUSE_MIN 0
 
 /* FREE_FRAMES_POOL is the number of program frames that are always
  *  available without having to allocate them.  Helps prevent memory
@@ -252,6 +252,9 @@
 
 /* Allow MUF to perform bytecode optimizations. */
 #define OPTIMIZE_MUF 1
+
+/* force MUF comments to use strict oldstyle, and not allow recursion. */
+#define MUF_COMMENTS_STRICT 1
 
 /* Enable or diable the global 'HOME' command. */
 #define ALLOW_HOME 1

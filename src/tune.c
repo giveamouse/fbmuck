@@ -266,6 +266,7 @@ int tp_optimize_muf = OPTIMIZE_MUF;
 int tp_ignore_support = IGNORE_SUPPORT;
 int tp_ignore_bidirectional = IGNORE_BIDIRECTIONAL;
 int tp_verbose_clone = VERBOSE_CLONE;
+int tp_muf_comments_strict = MUF_COMMENTS_STRICT;
 
 struct tune_bool_entry {
 	const char *group;
@@ -306,6 +307,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"MUF",        "optimize_muf", &tp_optimize_muf, 0, "Enable MUF bytecode optimizer"},
 	{"MUF",        "expanded_debug_trace", &tp_expanded_debug, 0, "MUF debug trace shows array contents"},
 	{"MUF",        "force_mlev1_name_notify", &tp_force_mlev1_name_notify, 0, "MUF notify prepends username at ML1"},
+	{"MUF",        "muf_comments_strict", &tp_muf_comments_strict, 0, "MUF comments are strict and not recursive"},
 	{"Player Max", "playermax", &tp_playermax, 0, "Limit number of concurrent players allowed"},
 	{"Properties", "look_propqueues", &tp_look_propqueues, 0, "When a player looks, trigger _look/ propqueues"},
 	{"Properties", "lock_envcheck", &tp_lock_envcheck, 0, "Locks check environment for properties"},
