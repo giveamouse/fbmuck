@@ -1214,8 +1214,14 @@ process_special(COMPSTATE * cstat, const char *token)
 		struct INTERMEDIATE *eef;
 
 		eef = find_if(cstat);
-		if (!eef)
-			abort_compile(cstat, "ELSE without IF.");
+		if (!eef) {
+			eef = find_begin(cstat);
+			if (eef) {
+				abort_compile(cstat, "Unterminated Loop structure at ELSE.");
+			} else {
+				abort_compile(cstat, "ELSE without IF.");
+			}
+		}
 
 		new = new_inst(cstat);
 		new->no = cstat->nowords++;
@@ -1231,8 +1237,14 @@ process_special(COMPSTATE * cstat, const char *token)
 		struct INTERMEDIATE *eef;
 
 		eef = find_else(cstat);
-		if (!eef)
-			abort_compile(cstat, "THEN without IF.");
+		if (!eef) {
+			eef = find_begin(cstat);
+			if (eef) {
+				abort_compile(cstat, "Unterminated Loop structure at THEN.");
+			} else {
+				abort_compile(cstat, "THEN without IF.");
+			}
+		}
 
 		prealloc_inst(cstat);
 		eef->in.data.number = get_address(cstat, cstat->nextinst, 0);
@@ -1293,8 +1305,14 @@ process_special(COMPSTATE * cstat, const char *token)
 
 		curr = locate_for(cstat);
 		eef = find_begin(cstat);
-		if (!eef)
-			abort_compile(cstat, "UNTIL without BEGIN.");
+		if (!eef) {
+			eef = find_else(cstat);
+			if (eef) {
+				abort_compile(cstat, "Unterminated IF-THEN structure at UNTIL.");
+			} else {
+				abort_compile(cstat, "UNTIL without BEGIN.");
+			}
+		}
 		new = new_inst(cstat);
 		new->no = cstat->nowords++;
 		new->in.type = PROG_IF;
@@ -1363,8 +1381,14 @@ process_special(COMPSTATE * cstat, const char *token)
 
 		curr = locate_for(cstat);
 		eef = find_begin(cstat);
-		if (!eef)
-			abort_compile(cstat, "REPEAT without BEGIN.");
+		if (!eef) {
+			eef = find_else(cstat);
+			if (eef) {
+				abort_compile(cstat, "Unterminated IF-THEN structure at REPEAT.");
+			} else {
+				abort_compile(cstat, "REPEAT without BEGIN.");
+			}
+		}
 		new = new_inst(cstat);
 		new->no = cstat->nowords++;
 		new->in.type = PROG_JMP;
