@@ -130,6 +130,8 @@ int tp_playermax_limit = PLAYERMAX_LIMIT;
 int tp_process_timer_limit = PROCESS_TIMER_LIMIT;
 int tp_cmd_log_threshold_msec = CMD_LOG_THRESHOLD_MSEC;
 
+int tp_mcp_muf_mlev = MCP_MUF_MLEV;
+
 
 struct tune_val_entry {
 	const char *name;
@@ -171,6 +173,7 @@ struct tune_val_entry tune_val_list[] = {
 	{"playermax_limit", &tp_playermax_limit, 0},
 	{"process_timer_limit", &tp_process_timer_limit, 0},
     {"cmd_log_threshold_msec", &tp_cmd_log_threshold_msec, 0},
+	{"mcp_muf_mlev", &tp_mcp_muf_mlev, 0},
 
 	{NULL, NULL, 0}
 };

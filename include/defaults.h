@@ -194,6 +194,9 @@
  * by the owner of that room, as well as by the object owner, and Wizards. */
 #define REALMS_CONTROL 0
 
+/* Forbid MCP and MCP-GUI calls at less than given mucker level. 4 = wiz */
+#define MCP_MUF_MLEV 3
+
 /* Allows 'listeners' (see CHANGES file) */
 #define LISTENERS 1
 
@@ -215,7 +218,6 @@
 /* Force Mucker Level 1 muf progs to prepend names on notify's to players
  * other than the using player, and on notify_except's and notify_excludes. */
 #define FORCE_MLEV1_NAME_NOTIFY 1
-
 /* Define these to let players set TYPE_THING and TYPE_EXIT objects dark. */
 #define EXIT_DARKING 1
 #define THING_DARKING 1
