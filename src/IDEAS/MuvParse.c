@@ -912,7 +912,7 @@ getScopedVarDeclAssign(COMPSTATE* cstat)
 
 	pushParseState(cstat);
 
-	if ((vartype = getVarType(cstat))) {
+	if ((vartype = getVarType(cstat)))
 	{
 		if (!getIdentifier(cstat, ident, sizeof(ident)))
 		{
@@ -930,7 +930,8 @@ getScopedVarDeclAssign(COMPSTATE* cstat)
 				revertParseState(cstat);
 				return 0;
 			}
-			if (vartype != PROG_UNTYPED && ed.type != vartype) {
+			if (typeMatches(vartype, ed.type))
+			{
 				do_abort_compile(cstat, "Assigned value does not match declared variable type.");
 				revertParseState(cstat);
 				return 0;
@@ -1050,11 +1051,11 @@ getArrayDeclExpr(COMPSTATE* cstat)
 				valtype = PROG_UNTYPED;
 			}
 
-			if (isNextChar(cstat, '@')) {
+			if (isNextChar(cstat, '=') && isNextChar(cstat, '>')) {
 				if (firstpass) {
 					dictflag = 1;
 				} else if (!dictflag) {
-					do_abort_compile(cstat, "Inconsistent array/dictionary declaration.  First value may be missing a @.");
+					do_abort_compile(cstat, "Inconsistent array/dictionary declaration.  First value may be missing a =>.");
 					free_expression(out);
 					revertParseState(cstat);
 					return oed;
@@ -1070,12 +1071,13 @@ getArrayDeclExpr(COMPSTATE* cstat)
 
 				out = chain_append(out, ked.expr);
 			} else if (dictflag) {
-				do_abort_compile(cstat, "Missing @ in dictionary declaration.");
+				do_abort_compile(cstat, "Missing => in dictionary declaration.");
 				free_expression(out);
 				revertParseState(cstat);
 				return oed;
 			}
 
+			firstpass = 0;
 			out = chain_append(out, ved.expr);
 		} while (isNextChar(cstat, ','));
 
@@ -1287,7 +1289,7 @@ getProcedureCall(COMPSTATE* cstat)
 		}
 	}
 	
-	if (!calltype) {
+	if (!p) {
 		/* Check for inserver primitives */
 		primnum = get_primitive(ident);
 		if (primnum) {
@@ -2685,25 +2687,6 @@ getForStatement(COMPSTATE* cstat)
 struct expression_data
 getForeachStatement(COMPSTATE* cstat)
 {
-	pushParseState(cstat);
-
-	if (isNextToken(cstat, "foreach") &&
-		isNextChar(cstat, '(') &&
-		isScopedVariable(cstat) &&
-		isNextChar(cstat, ',') &&
-		isScopedVariable(cstat) &&
-		isNextChar(cstat, ';') &&
-		isExpression(cstat) &&
-		isNextChar(cstat, ')') &&
-		isStatement(cstat))
-	{
-		popParseState(cstat);
-		return 1;
-	}
-
-	revertParseState(cstat);
-	return 0;
-
 	struct expression_data aed = {0, NULL}; /* Conditional ED */
 	struct expression_data sed = {0, NULL}; /* Statement ED */
 	struct expression_data oed = {0, NULL}; /* Output ED */
@@ -2725,6 +2708,24 @@ getForeachStatement(COMPSTATE* cstat)
 		return oed;
 	}
 
+	aed = getExpression(cstat);
+	if (!aed.type) {
+		do_abort_compile(cstat, "Bad array expression in foreach statement.");
+		revertParseState(cstat);
+		return oed;
+	}
+	if (aed.type != PROG_UNTYPED && getArrayDepth(aed.type) < 1) {
+		do_abort_compile(cstat, "Expected an expression returning an array in foreach statement.");
+		revertParseState(cstat);
+		return oed;
+	}
+
+	if (!isNextChar(cstat, ';')) {
+		do_abort_compile(cstat, "Expected ';' after array expression in foreach statement.");
+		revertParseState(cstat);
+		return oed;
+	}
+
 	keyvar = getVariable(cstat);
 	if (!keyvar) {
 		do_abort_compile(cstat, "Undeclared key variable in foreach statement.");
@@ -2732,8 +2733,8 @@ getForeachStatement(COMPSTATE* cstat)
 		return oed;
 	}
 
-	if (!isNextChar(cstat, ',')) {
-		do_abort_compile(cstat, "Expected , between key and value variables in for statement.");
+	if (!isNextToken(cstat, "=>")) {
+		do_abort_compile(cstat, "Expected => between key and value variables in foreach statement.");
 		revertParseState(cstat);
 		return oed;
 	}
@@ -2741,25 +2742,6 @@ getForeachStatement(COMPSTATE* cstat)
 	valvar = getVariable(cstat);
 	if (!valvar) {
 		do_abort_compile(cstat, "Undeclared value variable in foreach statement.");
-		revertParseState(cstat);
-		return oed;
-	}
-
-	if (!isNextChar(cstat, ';')) {
-		do_abort_compile(cstat, "Expected ; in foreach statement.");
-		revertParseState(cstat);
-		return oed;
-	}
-
-	aed = getExpression(cstat);
-	if (!aed.type) {
-		do_abort_compile(cstat, "Bad array expression in foreach statement.");
-		revertParseState(cstat);
-		return oed;
-	}
-
-	if (aed.type != PROG_UNTYPED && getArrayDepth(aed.type) < 1) {
-		do_abort_compile(cstat, "Expected an expression returning an array in foreach statement.");
 		revertParseState(cstat);
 		return oed;
 	}
