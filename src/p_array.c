@@ -150,9 +150,10 @@ prim_array_vals(PRIM_PROTOTYPE)
 			copyinst(oper2, &arg[((*top)++)]);
 			oper2 = NULL;
 		} while (array_next(arr, &temp1));
+
+		CLEAR(&temp1);
 	}
 
-	CLEAR(&temp1);
 	CLEAR(&temp2);
 	PushInt(result);
 }
