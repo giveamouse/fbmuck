@@ -2,6 +2,9 @@
 
 /*
  * $Log: move.c,v $
+ * Revision 1.13  2001/10/29 07:48:59  revar
+ * Fixed parent loop checks to allow moving into #0.
+ *
  * Revision 1.12  2001/10/29 05:57:11  revar
  * Changed READ to _not_ return blank lines unless the process asked for them.
  * Added READ_WANTS_BLANKS ( -- ) muf primitive, to indicate the process wants
@@ -302,8 +305,8 @@ location_loop_check(dbref source, dbref dest)
 
   while (level < MAX_PARENT_DEPTH) {
     dest = getloc(dest);
-    if (dest == NOTHING) {     /* We should never get this */
-      return 1;
+    if (dest == NOTHING) {
+      return 0;
     }
     if (dest == HOME) {        /* We should never get this, either. */
       return 1;
@@ -344,8 +347,8 @@ parent_loop_check(dbref source, dbref dest)
          dest = THING_HOME(dest);
        } */
     dest = getparent(dest);
-    if (dest == NOTHING) {     /* We should never get this */
-      return 1;
+    if (dest == NOTHING) {
+      return 0;
     }
     if (dest == HOME) {        /* We should never get this, either. */
       return 1;
