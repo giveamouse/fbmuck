@@ -325,7 +325,7 @@ display limited to the possessions of <player>.
 message is displayed when a player successfully uses <object>.  Without
 a message argument, it clears the message. It can be abbreviated @succ.
 <object> can be specified as <name> or #<number>, or as 'me' or 'here'.
-This is the same as '@set <object>=_/dr:[text]'
+This is the same as '@set <object>=_/sc:[text]'
 See also @OSUCCESS.
 ~~~
 @teleport
