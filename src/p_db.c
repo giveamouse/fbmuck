@@ -1089,7 +1089,7 @@ prog_can_link_to(int mlev, dbref who, object_flag_type what_type, dbref where)
 {
 	if (where == HOME)
 		return 1;
-	if (where < 0 || where > db_top)
+	if (where < 0 || where >= db_top)
 		return 0;
 	switch (what_type) {
 	case TYPE_EXIT:

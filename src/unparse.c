@@ -87,7 +87,7 @@ unparse_object(dbref player, dbref loc)
 	case HOME:
 		return "*HOME*";
 	default:
-		if (loc < 0 || loc > db_top)
+		if (loc < 0 || loc >= db_top)
 			return "*INVALID*";
 
 		if (!(FLAGS(player) & STICKY) &&

@@ -1371,7 +1371,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				temp1 = arg + --atop;
 				if (temp1->type != PROG_ADD)
 					abort_loop("Argument is not an address.", temp1, NULL);
-				if (temp1->data.addr->progref > db_top ||
+				if (temp1->data.addr->progref >= db_top ||
 					temp1->data.addr->progref < 0 ||
 					(Typeof(temp1->data.addr->progref) != TYPE_PROGRAM))
 							abort_loop_hard("Internal error.  Invalid address.", temp1, NULL);
@@ -1393,7 +1393,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				temp1 = arg + --atop;
 				if (temp1->type != PROG_ADD)
 					abort_loop("Argument is not an address.", temp1, NULL);
-				if (temp1->data.addr->progref > db_top ||
+				if (temp1->data.addr->progref >= db_top ||
 					temp1->data.addr->progref < 0 ||
 					(Typeof(temp1->data.addr->progref) != TYPE_PROGRAM))
 							abort_loop_hard("Internal error.  Invalid address.", temp1, NULL);
@@ -1494,7 +1494,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 			case IN_RET:
 				if (stop > 1 && program != sys[stop - 1].progref) {
-					if (sys[stop - 1].progref > db_top ||
+					if (sys[stop - 1].progref >= db_top ||
 						sys[stop - 1].progref < 0 ||
 						(Typeof(sys[stop - 1].progref) != TYPE_PROGRAM))
 								abort_loop_hard("Internal error.  Invalid address.", NULL, NULL);
@@ -1680,7 +1680,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			if (err != ERROR_DIE_NOW && fr->trys.top) {
 				while (fr->trys.st->call_level < stop) {
 					if (stop > 1 && program != sys[stop - 1].progref) {
-						if (sys[stop - 1].progref > db_top ||
+						if (sys[stop - 1].progref >= db_top ||
 							sys[stop - 1].progref < 0 ||
 							(Typeof(sys[stop - 1].progref) != TYPE_PROGRAM))
 									abort_loop_hard("Internal error.  Invalid address.", NULL, NULL);

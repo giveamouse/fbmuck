@@ -1849,7 +1849,7 @@ prim_unparseobj(PRIM_PROTOTYPE)
 			snprintf(buf, sizeof(buf), "*HOME*");
 			break;
 		default:
-			if (result < 0 || result > db_top)
+			if (result < 0 || result >= db_top)
 				snprintf(buf, sizeof(buf), "*INVALID*");
 			else
 				snprintf(buf, sizeof(buf), "%s(#%d%s)", RNAME(result), result, unparse_flags(result));

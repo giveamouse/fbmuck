@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.9  2003/11/04 19:26:19  revar
+ * Fixed a number of off-by-one crasher bugs, due to bad comparisons with db_top.
+ *
  * Revision 1.8  2003/10/07 07:24:28  revar
  * Fixed possible crasher bug with autostart programs.
  *
@@ -147,7 +150,7 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
 {
 	if (where == HOME)
 		return 1;
-	if (where < 0 || where > db_top)
+	if (where < 0 || where >= db_top)
 		return 0;
 	switch (what_type) {
 	case TYPE_EXIT:

@@ -1,3 +1,8 @@
+2.2fb6.02
+Fixed a number of off-by-one crasher bugs, due to bad comparisons with db_top.
+
+
+
 2.2fb6.01
 Fixed bug with configure script not finding tm_gmtoff under OS X.
 Fixed bug with 'configure --with-ssl=SSLTOPDIR' not working.

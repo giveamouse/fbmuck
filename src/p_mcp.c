@@ -433,7 +433,7 @@ prim_mcp_bind(PRIM_PROTOTYPE)
 		abort_interp("Function address expected. (3)");
 	if (!oper1->data.string || !*oper1->data.string->data)
 		abort_interp("Package name cannot be a null string. (1)");
-	if (oper3->data.addr->progref > db_top ||
+	if (oper3->data.addr->progref >= db_top ||
 		oper3->data.addr->progref < 0 || (Typeof(oper3->data.addr->progref) != TYPE_PROGRAM)) {
 		abort_interp("Invalid address. (3)");
 	}
