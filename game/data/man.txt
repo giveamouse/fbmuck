@@ -3059,6 +3059,38 @@ GUI_CTRL_COMMAND|
 GUI_CTRL_COMMAND (strDlogID strCtrlID strCommand dictArgs -- )
 This is the generic primitive for executing a GUI control specific command.
 The dictionary contains the arguments for the given command.
+  
+At the time of this writing, the following commands are supported:
+  
+"insert" Inserts text or list items into the given control.
+         Takes the following arguments:
+           "values" list of values or text to insert.
+           "before" position in widget to insert before.  Defaults to "end".
+  
+"delete" Deletes text or list items from the given control.
+         Takes the following arguments if the widget is a listbox:
+           "items" The list of listbox items to delete, given by index.
+         Takes the following arguments if the widget is not a listbox:
+           "first" gives the first item to delete.
+           "last"  gives the last item of the range to delete.  If not given,
+                   this defaults to the same value as "first".
+  
+"select" Selects text or list items in the given control.
+         Takes the following arguments if the widget is a listbox:
+           "items" The list of listbox items to select, given by index.
+                   All other items will be deselected.
+         Takes the following arguments if the widget is not a listbox:
+           "first" gives the first character to select.
+           "last"  gives the last character of the range to select.  If not
+                   given, this defaults to the same value as "first".
+  
+"show"   Scrolls the given item or character into view.
+         Takes the following arguments:
+           "position" The item or character position to make visible.
+  
+"cursor" Moves the cursor of the given control.
+         Takes the following arguments:
+           "position" The item or character to move the cursor to or before.
 ~
 ANSI_MIDSTR|
 ANSI_MIDSTR ( s i i -- s' )
