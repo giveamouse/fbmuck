@@ -6,8 +6,12 @@ Added new @tune -- lazy_mpi_istype_perm.  This changes the permissions for
   {istype} to be the lazy, pre-5.56 method, allowing {istype} to reference
   remote objects.
 Changed default setting for GOD_PRIV to be defined, not undef'd.
-Fixed crasher #201633 -- Server crashes when program FORCEs itself to be
-  @recycled.
+Fixed crasher #201633 -- Server now does not crash when program FORCEs
+  itself to be @recycled.  As a side result of this, there is now another
+  statuslog line prefix to be aware of: 'SANITYCHECK:'.  If this prefix shows
+  up in your status log, it generally points to a bug in the code that called
+  the function that logged the SANITYCHECK:.  Which means, if you see this,
+  please let us know at http://sourceforge.net/projects/fbmuck/.  Thanks!
 Fixed a memory leak with using 'var!' in MUF.
 Fixed interp_loop() based MUF prims to honor TRY-CATCH stack locks.
 Fixed a bug in GUI_VALUE_SET that checked for 2 args, but popped 3.
