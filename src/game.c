@@ -969,7 +969,7 @@ process_command(int descr, dbref player, char *command)
 			case 'p':
 			case 'P':
 				/* @password, @pcreate, @pecho, @program, 
-				   @proginfo, @propset, @ps */
+				   @propset, @ps */
 				switch (command[2]) {
 				case 'a':
 				case 'A':
@@ -991,10 +991,6 @@ process_command(int descr, dbref player, char *command)
 					if (string_prefix("@program", command)) {
 						Matched("@program");
 						do_prog(descr, player, arg1);
-						break;
-					} else if (string_prefix("@proginfo", command)) {
-						Matched("@proginfo");
-						do_proginfo(player, arg1);
 						break;
 					} else {
 						Matched("@propset");

@@ -288,7 +288,6 @@ extern void interactive(int descr, dbref player, const char *command);
 /* From compile.c */
 extern void uncompile_program(dbref i);
 extern void do_uncompile(dbref player);
-extern void do_proginfo(dbref player, const char *arg);
 extern void free_unused_programs(void);
 extern int get_primitive(const char *);
 extern void do_compile(int descr, dbref in_player, dbref in_program, int force_err_disp);

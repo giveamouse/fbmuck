@@ -609,68 +609,6 @@ do_uncompile(dbref player)
 }
 
 void
-do_proginfo(dbref player, const char *arg)
-{
-	char buf[BUFFER_LEN];
-	dbref thing, i;
-	time_t now = time(NULL);
-	int tcnt=0, tsize=0, tinst=0, timem=0, ccnt, csize, cinst, cimem;
-
-	if( *arg != '#' ) {
-		if (!string_compare(arg, "all")) {
-			if (Wizard(OWNER(player))) {
-				notify_nolisten(player, "Inst Object ProgSz Insts Name", 1);
-				
-				for(i = 0; i < db_top; i++) {
-					if(Typeof(i) == TYPE_PROGRAM && PROGRAM_SIZ(i)) {
-						tcnt  += ccnt  = PROGRAM_INSTANCES(i);
-						tsize += csize = size_object(i, 0);
-						timem += cimem = size_prog(i);
-						tinst += cinst = PROGRAM_SIZ(i);
-						snprintf(buf, sizeof(buf), "%4d %6d %6d %5d %s by %s",
-							ccnt, csize, cimem, cinst,
-							unparse_object(player, i), NAME(OWNER(i))
-						);
-						notify_nolisten(player, buf, 1);
-					}
-				}
-				snprintf(buf, sizeof(buf), "%4d %6d %6d %5d Total",
-					tcnt, tsize, timem, tinst);
-				notify_nolisten(player, buf, 1);
-			} else {
-				notify_nolisten(player, "Usage: @proginfo #prognum", 1);
-			}
-		} else {
-			if (Wizard(OWNER(player))) {
-				notify_nolisten(player, "Usage: @proginfo <#prognum|all>", 1);
-			} else {
-				notify_nolisten(player, "Usage: @proginfo #prognum", 1);
-			}
-		}
-		return;
-	}
-
-	thing = (dbref) atoi(arg+1);
-
-	if(((dbref) thing == NOTHING) || (thing < 0) || (thing >= db_top) || Typeof(thing) != TYPE_PROGRAM || !controls(player,thing)) {
-		if(Wizard(OWNER(player))) {
-			notify_nolisten(player, "That's not a program.", 1);
-		} else {
-			notify_nolisten(player, "Permission denied.", 1);
-		}
-		return;
-	}
-
-	notify_nolisten(player, "1 = cleanable, 0 = used recently", 1);
-	snprintf(buf, sizeof(buf), "AI: %d Age: %d Instances: %d==0?",
-		!(FLAGS(thing) & (ABODE|INTERNAL)),
-		(now - DBFETCH(thing)->ts.lastused) > tp_clean_interval,
-		PROGRAM_INSTANCES(thing)
-	);
-	notify_nolisten(player, buf, 1);
-}
-
-void
 free_unused_programs()
 {
 	dbref i;
