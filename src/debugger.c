@@ -234,7 +234,7 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
 		do {
 			lastinst = pinst;
 			if (--j == fr->system.top) {
-				pinst = fr->pc + 1;
+				pinst = fr->pc;
 			} else {
 				ref = fr->system.st[j].progref;
 				pinst = fr->system.st[j].offset;
@@ -281,7 +281,7 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
 			notify_nolisten(player, buf, 1);
 			flag = ((FLAGS(player) & INTERNAL) ? 1 : 0);
 			FLAGS(player) &= ~INTERNAL;
-			list_proglines(player, ref, fr, (pinst - 1)->line, 0);
+			list_proglines(player, ref, fr, pinst->line, 0);
 			if (flag) {
 				FLAGS(player) |= INTERNAL;
 			}
