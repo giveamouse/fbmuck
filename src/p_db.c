@@ -497,7 +497,11 @@ prim_pmatch(PRIM_PROTOTYPE)
 		abort_interp("Non-string argument.");
 	if (!oper1->data.string)
 		abort_interp("Empty string argument.");
-	ref = lookup_player(oper1->data.string->data);
+	if (!string_compare(oper1->data.string->data, "me")) {
+		ref = player;
+	} else {
+		ref = lookup_player(oper1->data.string->data);
+	}
 	CLEAR(oper1);
 	PushObject(ref);
 }
