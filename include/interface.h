@@ -1,6 +1,10 @@
 
 /* $Header$
  * $Log: interface.h,v $
+ * Revision 1.5  2001/01/10 07:35:26  revar
+ * Ported a bunch of DESCR* connection muf prims from ProtoMuck.
+ * Ported PNAME-OK? and NAME-OK? muf prims from ProtoMuck.
+ *
  * Revision 1.4  2000/08/12 06:14:17  revar
  * Changed {ontime} and {idle} to refer to the least idle of a users connections.
  * Changed maximum MUF stacksize to 1024 elements.
@@ -59,17 +63,28 @@ extern void emergency_shutdown(void);
 extern int boot_off(dbref player);
 extern void boot_player_off(dbref player);
 extern int online(dbref player);
+extern int index_descr(int c);
 extern int* get_player_descrs(dbref player, int*count);
 extern int least_idle_player_descr(dbref who);
+extern int most_idle_player_descr(dbref who);
 extern int pcount(void);
+extern int pdescrcount(void);
 extern int pidle(int c);
+extern int pdescridle(int c);
 extern int pdbref(int c);
+extern int pdescrdbref(int c);
 extern int pontime(int c);
+extern int pdescrontime(int c);
 extern char *phost(int c);
+extern char *pdescrhost(int c);
 extern char *puser(int c);
-extern int pfirstdescr(dbref who);
+extern char *pdescruser(int c);
+extern int pfirstdescr();
+extern int plastdescr();
 extern void pboot(int c);
+extern int pdescrboot(int c);
 extern void pnotify(int c, char *outstr);
+extern int pdescrnotify(int c, char *outstr);
 extern int dbref_first_descr(dbref c);
 extern int pdescr(int c);
 extern int pdescrcon(int c);

@@ -2415,6 +2415,18 @@ init_descriptor_lookup()
 	}
 }
 
+
+int
+index_descr(int index)
+{
+    if((index < 0) || (index >= FD_SETSIZE))
+		return -1;
+	if(descr_lookup_table[index] == NULL)
+		return -1;
+	return descr_lookup_table[index]->descriptor;
+}
+
+
 int*
 get_player_descrs(dbref player, int* count)
 {
@@ -2556,12 +2568,42 @@ pidle(int c)
 	return -1;
 }
 
+int
+pdescridle(int c)
+{
+	struct descriptor_data *d;
+	time_t now;
+
+	d = descrdata_by_descr(c);
+
+	(void) time(&now);
+	if (d) {
+		return (now - d->last_time);
+	}
+
+	return -1;
+}
+
 dbref
 pdbref(int c)
 {
 	struct descriptor_data *d;
 
 	d = descrdata_by_count(c);
+
+	if (d) {
+		return (d->player);
+	}
+
+	return NOTHING;
+}
+
+dbref
+pdescrdbref(int c)
+{
+	struct descriptor_data *d;
+
+	d = descrdata_by_descr(c);
 
 	if (d) {
 		return (d->player);
@@ -2586,6 +2628,21 @@ pontime(int c)
 	return -1;
 }
 
+int
+pdescrontime(int c)
+{
+	struct descriptor_data *d;
+	time_t now;
+
+	d = descrdata_by_descr(c);
+
+	(void) time(&now);
+	if (d) {
+		return (now - d->connected_at);
+	}
+	return -1;
+}
+
 char *
 phost(int c)
 {
@@ -2601,11 +2658,39 @@ phost(int c)
 }
 
 char *
+pdescrhost(int c)
+{
+	struct descriptor_data *d;
+
+	d = descrdata_by_descr(c);
+
+	if (d) {
+		return ((char *) d->hostname);
+	}
+
+	return (char *) NULL;
+}
+
+char *
 puser(int c)
 {
 	struct descriptor_data *d;
 
 	d = descrdata_by_count(c);
+
+	if (d) {
+		return ((char *) d->username);
+	}
+
+	return (char *) NULL;
+}
+
+char *
+pdescruser(int c)
+{
+	struct descriptor_data *d;
+
+	d = descrdata_by_descr(c);
 
 	if (d) {
 		return ((char *) d->username);
@@ -2639,6 +2724,30 @@ least_idle_player_descr(dbref who)
 }
 
 
+int
+most_idle_player_descr(dbref who)
+{
+	struct descriptor_data *d;
+	struct descriptor_data *best_d = NULL;
+	int dcount, di;
+	int* darr;
+	long best_time = 0;
+
+	darr = get_player_descrs(who, &dcount);
+	for (di = 0; di < dcount; di++) {
+		d = descrdata_by_descr(darr[di]);
+		if (d && (!best_time || d->last_time < best_time)) {
+			best_d = d;
+			best_time = d->last_time;
+		}
+	}
+	if (best_d) {
+		return best_d->con_number;
+	}
+	return 0;
+}
+
+
 void
 pboot(int c)
 {
@@ -2652,6 +2761,23 @@ pboot(int c)
 		/* shutdownsock(d); */
 	}
 }
+
+int 
+pdescrboot(int c)
+{
+    struct descriptor_data *d;
+
+    d = descrdata_by_descr(c);
+
+    if (d) {
+		process_output(d);
+		d->booted = 1;
+		/* shutdownsock(d); */
+		return 1;
+    }
+	return 0;
+}
+
 
 void
 pnotify(int c, char *outstr)
@@ -2668,6 +2794,22 @@ pnotify(int c, char *outstr)
 
 
 int
+pdescrnotify(int c, char *outstr)
+{
+	struct descriptor_data *d;
+
+	d = descrdata_by_descr(c);
+
+	if (d) {
+		queue_ansi(d, outstr);
+		queue_write(d, "\r\n", 2);
+		return 1;
+	}
+	return 0;
+}
+
+
+int
 pdescr(int c)
 {
 	struct descriptor_data *d;
@@ -2679,6 +2821,40 @@ pdescr(int c)
 	}
 
 	return -1;
+}
+
+
+int 
+pdescrcount(void)
+{
+    return current_descr_count;
+}
+
+
+int 
+pfirstdescr(void)
+{
+    struct descriptor_data *d;
+
+	d = descrdata_by_count(1);
+    if (d) {
+		return d->descriptor;
+	}
+
+	return 0;
+}
+
+
+int 
+plastdescr(void)
+{
+    struct descriptor_data *d;
+
+	d = descrdata_by_count(current_descr_count);
+	if (d) {
+		return d->descriptor;
+	}
+	return 0;
 }
 
 

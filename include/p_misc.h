@@ -28,6 +28,9 @@ extern void prim_timer_stop(PRIM_PROTOTYPE);
 extern void prim_event_count(PRIM_PROTOTYPE);
 extern void prim_event_exists(PRIM_PROTOTYPE);
 extern void prim_event_send(PRIM_PROTOTYPE);
+extern void prim_pname_okp(PRIM_PROTOTYPE);
+extern void prim_name_okp(PRIM_PROTOTYPE);
+extern void prim_force_level(PRIM_PROTOTYPE);
 
 #define PRIMS_MISC_FUNCS prim_time, prim_date, prim_gmtoffset,            \
     prim_systime, prim_timesplit, prim_timefmt, prim_queue, prim_kill,    \
@@ -35,7 +38,8 @@ extern void prim_event_send(PRIM_PROTOTYPE);
     prim_abort, prim_ispidp, prim_parselock, prim_unparselock,            \
     prim_prettylock, prim_testlock, prim_sysparm, prim_cancallp,          \
     prim_setsysparm, prim_timer_start, prim_timer_stop, prim_event_count, \
-	prim_event_exists, prim_event_send
+	prim_event_exists, prim_event_send, prim_pname_okp, prim_name_okp,    \
+	prim_force_level
 
 #define PRIMS_MISC_NAMES "TIME", "DATE", "GMTOFFSET",         \
     "SYSTIME", "TIMESPLIT", "TIMEFMT", "QUEUE", "KILL",       \
@@ -43,9 +47,10 @@ extern void prim_event_send(PRIM_PROTOTYPE);
     "ABORT", "ISPID?", "PARSELOCK", "UNPARSELOCK",            \
     "PRETTYLOCK", "TESTLOCK", "SYSPARM", "CANCALL?",	      \
     "SETSYSPARM", "TIMER_START", "TIMER_STOP", "EVENT_COUNT", \
-	"EVENT_EXISTS", "EVENT_SEND"
+	"EVENT_EXISTS", "EVENT_SEND", "PNAME-OK?", "NAME-OK?",    \
+	"FORCE_LEVEL"
 
-#define PRIMS_MISC_CNT 27
+#define PRIMS_MISC_CNT 30
 
 
 #endif /* _P_MISC_H */
