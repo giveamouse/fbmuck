@@ -151,6 +151,25 @@ log_command(char *format, ...)
 }
 
 void
+strip_evil_characters(char *badstring)
+{
+	int s;
+	int stringlen;
+	if(badstring == NULL)
+		return;
+	stringlen=strlen(badstring);
+	for (s = 0; s<stringlen,badstring[s]!='\0'; s++)
+	{
+		badstring[s] &= 0x7f;      /* high ascii */
+		if(badstring[s] == '\033') /* ESC */
+			badstring[s] = '[';
+		if(badstring[s] < ' ')     /* control characters */
+			badstring[s] = '_';
+	}
+	return;
+}
+
+void
 log_user(dbref player, dbref program, char *logmessage)
 {
 	char logformat[BUFFER_LEN];
@@ -168,6 +187,7 @@ log_user(dbref player, dbref program, char *logmessage)
 	snprintf(logformat,BUFFER_LEN,"%s(#%d) [%s(#%d)] at %.32s: ", NAME(player), player, NAME(program), program, buf);
 	len = BUFFER_LEN - strlen(logformat)-1;
 	strncat (logformat, logmessage, len);
+	strip_evil_characters(logformat);
 	log2file(USER_LOG,"%s",logformat);
 }
 
