@@ -168,6 +168,7 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 	char sectname[256];
 	char *sectptr;
 	char *osectptr;
+	char *divpos;
 	char buf[256];
 	char buf2[256];
 	char buf3[256];
@@ -184,7 +185,12 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 			currsect = sptr->section;
 			for (ptr = topichead; ptr; ptr = ptr->next) {
 				if (!strcasecmp(currsect, ptr->section)) {
-					cnt = strlen(ptr->topic);
+					divpos = index(ptr->topic, '|');
+					if (!divpos) {
+						cnt = strlen(ptr->topic);
+					} else {
+						cnt = divpos - ptr->topic;
+					}
 					if (cnt > longest) {
 						longest = cnt;
 					}
@@ -193,6 +199,9 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 		}
 	}
 	cols = 78 / (longest + 2);
+	if (cols < 1) {
+		cols = 1;
+	}
 	width = 78 / cols;
 	for (sptr = secthead; sptr; sptr = sptr->next) {
 		if (!strncasecmp(whichsect, sptr->section, strlen(whichsect))) {
@@ -286,6 +295,9 @@ print_sections(FILE * f, FILE * hf, int cols)
 	fprintf(f, "                   List of Topics by Category:\n \n");
 	fprintf(f, "You can get more help on the following topics:\n \n");
 	fprintf(hf, HTML_SECTLIST_HEAD);
+	if (cols < 1) {
+		cols = 1;
+	}
 	width = 78 / cols;
 	for (sptr = secthead; sptr; sptr = sptr->next) {
 		currsect = sptr->section;
@@ -325,6 +337,7 @@ print_topics(FILE * f, FILE * hf)
 	char buf3[256];
 	char alph;
 	char firstletter;
+	char *divpos;
 	int cnt = 0;
 	int width;
 	int hcol = 0;
@@ -347,13 +360,21 @@ print_topics(FILE * f, FILE * hf)
 			firstletter = toupper(ptr->topic[0]);
 			if (firstletter == alph || (!isalpha(alph) && !isalpha(firstletter))) {
 				cnt++;
-				len = strlen(ptr->topic);
+				divpos = index(ptr->topic, '|');
+				if (!divpos) {
+					len = strlen(ptr->topic);
+				} else {
+					len = divpos - ptr->topic;
+				}
 				if (len > longest) {
 					longest = len;
 				}
 			}
 		}
 		cols = 78 / (longest + 2);
+		if (cols < 1) {
+			cols = 1;
+		}
 		width = 78 / cols;
 
 		if (cnt > 0) {
