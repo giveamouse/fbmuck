@@ -721,8 +721,6 @@ getstring_noalloc(FILE * f)
 
 #define getstring(x) alloc_string(getstring_noalloc(x))
 
-#define alloc_compressed(x) alloc_string(compress(x))
-
 /* returns true for numbers of form [ + | - ] <series of digits> */
 int
 number(const char *s)

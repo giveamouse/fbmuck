@@ -18,8 +18,6 @@
 #include "interface.h"
 #include "externs.h"
 
-#define alloc_compressed(x) alloc_string(compress(x))
-
 
 static dbref
 match_controlled(int descr, dbref player, const char *name)
