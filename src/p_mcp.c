@@ -101,6 +101,88 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 }
 
 
+int
+stuff_dict_in_mesg(stk_array* arr, McpMesg* msg)
+{
+	struct inst argname, *argval;
+	char buf[64];
+	int result;
+	
+	result = array_first(arr, &argname);
+	while (result) {
+		if (argname.type != PROG_STRING) {
+			CLEAR(&argname);
+			return -1;
+		}
+		if (!argname.data.string || !*argname.data.string->data) {
+			CLEAR(&argname);
+			return -2;
+		}
+		argval = array_getitem(arr, &argname);
+		switch (argval->type) {
+		case PROG_ARRAY:{
+				struct inst subname, *subval;
+				int contd = array_first(argval->data.array, &subname);
+
+				mcp_mesg_arg_remove(msg, argname.data.string->data);
+				while (contd) {
+					subval = array_getitem(argval->data.array, &subname);
+					switch (subval->type) {
+					case PROG_STRING:
+						mcp_mesg_arg_append(msg, argname.data.string->data,
+											DoNullInd(subval->data.string));
+						break;
+					case PROG_INTEGER:
+						sprintf(buf, "%d", subval->data.number);
+						mcp_mesg_arg_append(msg, argname.data.string->data, buf);
+						break;
+					case PROG_OBJECT:
+						sprintf(buf, "#%d", subval->data.number);
+						mcp_mesg_arg_append(msg, argname.data.string->data, buf);
+						break;
+					case PROG_FLOAT:
+						sprintf(buf, "%g", subval->data.fnumber);
+						mcp_mesg_arg_append(msg, argname.data.string->data, buf);
+						break;
+					default:
+						CLEAR(&argname);
+						return -3;
+					}
+					contd = array_next(argval->data.array, &subname);
+				}
+				CLEAR(&subname);
+				break;
+			}
+		case PROG_STRING:
+			mcp_mesg_arg_remove(msg, argname.data.string->data);
+			mcp_mesg_arg_append(msg, argname.data.string->data,
+								DoNullInd(argval->data.string));
+			break;
+		case PROG_INTEGER:
+			sprintf(buf, "%d", argval->data.number);
+			mcp_mesg_arg_remove(msg, argname.data.string->data);
+			mcp_mesg_arg_append(msg, argname.data.string->data, buf);
+			break;
+		case PROG_OBJECT:
+			sprintf(buf, "#%d", argval->data.number);
+			mcp_mesg_arg_remove(msg, argname.data.string->data);
+			mcp_mesg_arg_append(msg, argname.data.string->data, buf);
+			break;
+		case PROG_FLOAT:
+			sprintf(buf, "%g", argval->data.fnumber);
+			mcp_mesg_arg_remove(msg, argname.data.string->data);
+			mcp_mesg_arg_append(msg, argname.data.string->data, buf);
+			break;
+		default:
+			CLEAR(&argname);
+			return -4;
+		}
+		result = array_next(arr, &argname);
+	}
+	return 0;
+}
+
+
 void
 prim_mcp_register(PRIM_PROTOTYPE)
 {
@@ -252,7 +334,6 @@ prim_mcp_send(PRIM_PROTOTYPE)
 	char buf[BUFFER_LEN];
 	int descr;
 	McpFrame *mfr;
-	struct inst argname, *argval;
 	stk_array *arr;
 
 	CHECKOP(4);
@@ -285,78 +366,26 @@ prim_mcp_send(PRIM_PROTOTYPE)
 		McpMesg msg;
 
 		mcp_mesg_init(&msg, pkgname, msgname);
-		result = array_first(arr, &argname);
-		while (result) {
-			if (argname.type != PROG_STRING) {
-				CLEAR(&argname);
-				mcp_mesg_clear(&msg);
-				abort_interp("Args dictionary can only have string keys. (4)");
-			}
-			if (!argname.data.string || !*argname.data.string->data) {
-				CLEAR(&argname);
-				mcp_mesg_clear(&msg);
-				abort_interp("Args dictionary cannot have a null string key. (4)");
-			}
-			argval = array_getitem(arr, &argname);
-			switch (argval->type) {
-			case PROG_ARRAY:{
-					struct inst subname, *subval;
-					int contd = array_first(argval->data.array, &subname);
 
-					while (contd) {
-						subval = array_getitem(argval->data.array, &subname);
-						switch (subval->type) {
-						case PROG_STRING:
-							mcp_mesg_arg_append(&msg,
-												argname.data.string->data,
-												DoNullInd(subval->data.string));
-							break;
-						case PROG_INTEGER:
-							sprintf(buf, "%d", subval->data.number);
-							mcp_mesg_arg_append(&msg, argname.data.string->data, buf);
-							break;
-						case PROG_OBJECT:
-							sprintf(buf, "#%d", subval->data.number);
-							mcp_mesg_arg_append(&msg, argname.data.string->data, buf);
-							break;
-						case PROG_FLOAT:
-							sprintf(buf, "%g", subval->data.fnumber);
-							mcp_mesg_arg_append(&msg, argname.data.string->data, buf);
-							break;
-						default:
-							CLEAR(&argname);
-							mcp_mesg_clear(&msg);
-							abort_interp("Unsupported value type in list value. (4)");
-						}
-						contd = array_next(argval->data.array, &subname);
-					}
-					CLEAR(&subname);
+		result = stuff_dict_in_mesg(arr, &msg);
+		if (result) {
+			mcp_mesg_clear(&msg);
+			switch (result) {
+				case -1:
+					abort_interp("Args dictionary can only have string keys. (4)");
 					break;
-				}
-			case PROG_STRING:
-				mcp_mesg_arg_append(&msg, argname.data.string->data,
-									DoNullInd(argval->data.string));
-				break;
-			case PROG_INTEGER:
-				sprintf(buf, "%d", argval->data.number);
-				mcp_mesg_arg_append(&msg, argname.data.string->data, buf);
-				break;
-			case PROG_OBJECT:
-				sprintf(buf, "#%d", argval->data.number);
-				mcp_mesg_arg_append(&msg, argname.data.string->data, buf);
-				break;
-			case PROG_FLOAT:
-				sprintf(buf, "%g", argval->data.fnumber);
-				mcp_mesg_arg_append(&msg, argname.data.string->data, buf);
-				break;
-			default:
-				CLEAR(&argname);
-				mcp_mesg_clear(&msg);
-				abort_interp("Unsupported value type in args dictionary. (4)");
+				case -2:
+					abort_interp("Args dictionary cannot have a null string key. (4)");
+					break;
+				case -3:
+					abort_interp("Unsupported value type in list value. (4)");
+					break;
+				case -4:
+					abort_interp("Unsupported value type in args dictionary. (4)");
+					break;
 			}
-			result = array_next(arr, &argname);
 		}
-		CLEAR(&argname);
+		
 		mcp_frame_output_mesg(mfr, &msg);
 		mcp_mesg_clear(&msg);
 	}
@@ -415,14 +444,21 @@ prim_gui_available(PRIM_PROTOTYPE)
 }
 
 
+
 void
-prim_gui_dlog_simple(PRIM_PROTOTYPE)
+prim_gui_dlog_create(PRIM_PROTOTYPE)
 {
 	char *dlogid = NULL;
 	char *title = NULL;
+	char *wintype = NULL;
+	stk_array *arr = NULL;
+	McpMesg msg;
+	McpFrame *mfr;
 
-	CHECKOP(2);
-	oper2 = POP();				/* str  title */
+	CHECKOP(4);
+	oper4 = POP();				/* arr  args */
+	oper3 = POP();				/* str  title */
+	oper2 = POP();				/* str  type */
 	oper1 = POP();				/* int  descr */
 
 	if (oper1->type != PROG_INTEGER)
@@ -430,179 +466,60 @@ prim_gui_dlog_simple(PRIM_PROTOTYPE)
 	if (!GuiSupported(oper1->data.number))
 		abort_interp("The MCP GUI package is not supported for this connection.");
 	if (oper2->type != PROG_STRING)
-		abort_interp("Window title string expected. (2)");
-	title = oper2->data.string ? oper2->data.string->data : "";
+		abort_interp("Window type string expected. (3)");
+	if (oper3->type != PROG_STRING)
+		abort_interp("Window title string expected. (3)");
+	if (oper4->type != PROG_ARRAY)
+		abort_interp("Window options array expected. (4)");
 
-	dlogid = GuiSimple(oper1->data.number, title, fbgui_muf_event_cb, fr);
+	title = oper3->data.string ? oper3->data.string->data : "";
+	wintype = oper2->data.string ? oper2->data.string->data : "simple";
+	arr = oper4->data.array;
+	mfr = descr_mcpframe(oper1->data.number);
 
-	muf_dlog_add(fr, dlogid);
+	if (!mfr)
+		abort_interp("Invalid descriptor number. (1)");
 
-	CLEAR(oper1);
-	CLEAR(oper2);
+	dlogid = gui_dlog_alloc(oper1->data.number, fbgui_muf_event_cb, fr);
+	mcp_mesg_init(&msg, GUI_PACKAGE, "dlog-create");
+	mcp_mesg_arg_append(&msg, "title", title);
 
-	PushString(dlogid);
-}
-
-
-
-void
-prim_gui_dlog_tabbed(PRIM_PROTOTYPE)
-{
-	char **pageids = NULL;
-	char **pagenames = NULL;
-	int pagecount = 0;
-	int i = 0;
-	char *dlogid = NULL;
-	char *title = NULL;
-	struct inst argname;
-	array_data *argval;
-
-	CHECKOP(3);
-	oper3 = POP();				/* dict pages */
-	oper2 = POP();				/* str  title */
-	oper1 = POP();				/* int  descr */
-
-	if (oper1->type != PROG_INTEGER)
-		abort_interp("Integer descriptor number expected. (1)");
-	if (!GuiSupported(oper1->data.number))
-		abort_interp("The MCP GUI package is not supported for this connection.");
-	if (oper2->type != PROG_STRING)
-		abort_interp("Window title string expected. (2)");
-	if (oper3->type != PROG_ARRAY)
-		abort_interp("Dictionary of panes expected. (3)");
-
-	title = oper2->data.string ? oper2->data.string->data : "";
-	pagecount = array_count(oper3->data.array);
-	pageids = (char **) malloc(pagecount * sizeof(char *));
-	pagenames = (char **) malloc(pagecount * sizeof(char *));
-
-	i = 0;
-	result = array_first(oper3->data.array, &argname);
-	while (result) {
-		if (argname.type != PROG_STRING) {
-			CLEAR(&argname);
-			free(pagenames);
-			free(pageids);
-			abort_interp("Args dictionary can only have string keys. (3)");
+	result = stuff_dict_in_mesg(arr, &msg);
+	if (result) {
+		mcp_mesg_clear(&msg);
+		switch (result) {
+			case -1:
+				abort_interp("Args dictionary can only have string keys. (4)");
+				break;
+			case -2:
+				abort_interp("Args dictionary cannot have a null string key. (4)");
+				break;
+			case -3:
+				abort_interp("Unsupported value type in list value. (4)");
+				break;
+			case -4:
+				abort_interp("Unsupported value type in args dictionary. (4)");
+				break;
 		}
-		if (!argname.data.string || !*argname.data.string->data) {
-			CLEAR(&argname);
-			free(pagenames);
-			free(pageids);
-			abort_interp("Panes dictionary cannot have a null string key. (3)");
-		}
-		argval = array_getitem(oper3->data.array, &argname);
-		if (argval->type != PROG_STRING) {
-			CLEAR(&argname);
-			free(pagenames);
-			free(pageids);
-			abort_interp("Panes dictionary can only have string values. (3)");
-		}
-		if (!argval->data.string || !*argval->data.string->data) {
-			CLEAR(&argname);
-			free(pagenames);
-			free(pageids);
-			abort_interp("Panes dictionary cannot have a null string value. (3)");
-		}
-		pageids[i] = argname.data.string->data;
-		pagenames[i] = argval->data.string->data;
-		i++;
-		result = array_next(oper3->data.array, &argname);
 	}
-	dlogid = GuiTabbed(oper1->data.number, title, pagecount, pagenames,
-					   pageids, fbgui_muf_event_cb, fr);
+	
+	mcp_mesg_arg_remove(&msg, "type");
+	mcp_mesg_arg_append(&msg, "type", wintype);
+	mcp_mesg_arg_remove(&msg, "dlogid");
+	mcp_mesg_arg_append(&msg, "dlogid", dlogid);
 
+	mcp_frame_output_mesg(mfr, &msg);
+	mcp_mesg_clear(&msg);
 	muf_dlog_add(fr, dlogid);
-
-	free(pagenames);
-	free(pageids);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
 	CLEAR(oper3);
+	CLEAR(oper4);
 
 	PushString(dlogid);
 }
 
-
-void
-prim_gui_dlog_helper(PRIM_PROTOTYPE)
-{
-	char **pageids = NULL;
-	char **pagenames = NULL;
-	int pagecount = 0;
-	int i = 0;
-	char *dlogid = NULL;
-	char *title = NULL;
-	struct inst argname;
-	array_data *argval;
-
-	CHECKOP(3);
-	oper3 = POP();				/* dict pages */
-	oper2 = POP();				/* str  title */
-	oper1 = POP();				/* int  descr */
-
-	if (oper1->type != PROG_INTEGER)
-		abort_interp("Integer descriptor number expected. (1)");
-	if (!GuiSupported(oper1->data.number))
-		abort_interp("The MCP GUI package is not supported for this connection.");
-	if (oper2->type != PROG_STRING)
-		abort_interp("Window title string expected. (2)");
-	if (oper3->type != PROG_ARRAY)
-		abort_interp("Dictionary of panes expected. (3)");
-
-	title = oper2->data.string ? oper2->data.string->data : "";
-	pagecount = array_count(oper3->data.array);
-	pageids = (char **) malloc(pagecount * sizeof(char *));
-	pagenames = (char **) malloc(pagecount * sizeof(char *));
-
-	i = 0;
-	result = array_first(oper3->data.array, &argname);
-	while (result) {
-		if (argname.type != PROG_STRING) {
-			CLEAR(&argname);
-			free(pagenames);
-			free(pageids);
-			abort_interp("Args dictionary can only have string keys. (3)");
-		}
-		if (!argname.data.string || !*argname.data.string->data) {
-			CLEAR(&argname);
-			free(pagenames);
-			free(pageids);
-			abort_interp("Panes dictionary cannot have a null string key. (3)");
-		}
-		argval = array_getitem(oper3->data.array, &argname);
-		if (argval->type != PROG_STRING) {
-			CLEAR(&argname);
-			free(pagenames);
-			free(pageids);
-			abort_interp("Panes dictionary can only have string values. (3)");
-		}
-		if (!argval->data.string || !*argval->data.string->data) {
-			CLEAR(&argname);
-			free(pagenames);
-			free(pageids);
-			abort_interp("Panes dictionary cannot have a null string value. (3)");
-		}
-		pageids[i] = argname.data.string->data;
-		pagenames[i] = argval->data.string->data;
-		i++;
-		result = array_next(oper3->data.array, &argname);
-	}
-	dlogid = GuiHelper(oper1->data.number, title, pagecount, pagenames,
-					   pageids, fbgui_muf_event_cb, fr);
-
-	muf_dlog_add(fr, dlogid);
-
-	free(pagenames);
-	free(pageids);
-
-	CLEAR(oper1);
-	CLEAR(oper2);
-	CLEAR(oper3);
-
-	PushString(dlogid);
-}
 
 
 void
@@ -653,18 +570,17 @@ prim_gui_dlog_close(PRIM_PROTOTYPE)
 void
 prim_gui_ctrl_create(PRIM_PROTOTYPE)
 {
-	char buf[BUFFER_LEN];
-	char **argslist = NULL;
-	int argcount = 0;
-	int i = 0;
+	int vallines = 0;
+	char **vallist = NULL;
 	char *dlogid = NULL;
 	char *ctrlid = NULL;
 	char *ctrltype = NULL;
-	char *fullargstr = NULL;
-	char *tmpstr = NULL;
-	struct inst argname;
-	array_data *argval;
 	stk_array *arr;
+	McpMesg msg;
+	McpFrame *mfr;
+	int descr;
+	int i;
+	char cmdname[64];
 
 	CHECKOP(4);
 	oper4 = POP();				/* dict args */
@@ -686,137 +602,61 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
 		abort_interp("Control ID string expected. (3)");
 
 	if (oper4->type != PROG_ARRAY)
-		abort_interp("Dictionary of panes expected. (4)");
+		abort_interp("Dictionary of arguments expected. (4)");
 
-	dlogid = oper1->data.string ? oper1->data.string->data : "";
-	ctrltype = oper2->data.string ? oper2->data.string->data : "";
+	dlogid = oper1->data.string->data;
+	ctrltype = oper2->data.string->data;
 	ctrlid = oper3->data.string ? oper3->data.string->data : NULL;
 	arr = oper4->data.array;
-	argcount = array_count(arr);
-	argslist = (char **) malloc(2 * (argcount + 1) * sizeof(char *));
 
-	i = 0;
-	result = array_first(arr, &argname);
-	while (result) {
-		if (argname.type != PROG_STRING) {
-			CLEAR(&argname);
-			while (i-- > 0)
-				free(argslist[i * 2 + 1]);
-			free(argslist);
-			abort_interp("Args dictionary can only have string keys. (4)");
-		}
-		if (!argname.data.string || !*argname.data.string->data) {
-			CLEAR(&argname);
-			while (i-- > 0)
-				free(argslist[i * 2 + 1]);
-			free(argslist);
-			abort_interp("Args dictionary cannot have a null string key. (4)");
-		}
-		argval = array_getitem(arr, &argname);
-		switch (argval->type) {
-		case PROG_ARRAY:{
-				struct inst subname, *subval;
-				int contd = array_first(argval->data.array, &subname);
-				int firstlineflag = 1;
-				fullargstr = (char *) malloc(2 * sizeof(char));
+	descr = gui_dlog_get_descr(dlogid);
+	mfr = descr_mcpframe(descr);
 
-				*fullargstr = '\0';
-				while (contd) {
-					char *subvalstr = NULL;
-
-					subval = array_getitem(argval->data.array, &subname);
-					switch (subval->type) {
-					case PROG_STRING:
-						subvalstr = DoNullInd(subval->data.string);
-						break;
-					case PROG_INTEGER:
-						sprintf(buf, "%d", subval->data.number);
-						subvalstr = buf;
-						break;
-					case PROG_OBJECT:
-						sprintf(buf, "#%d", subval->data.number);
-						subvalstr = buf;
-						break;
-					case PROG_FLOAT:
-						sprintf(buf, "%g", subval->data.fnumber);
-						subvalstr = buf;
-						break;
-					default:
-						CLEAR(&subname);
-						CLEAR(&argname);
-						while (i-- > 0)
-							free(argslist[i * 2 + 1]);
-						free(argslist);
-						free(fullargstr);
-						abort_interp("Unsupported value type in arguments list. (4)");
-					}
-					fullargstr = (char *) realloc(fullargstr,
-												  (strlen(fullargstr) + strlen(subvalstr) +
-												   2));
-					if (firstlineflag) {
-						firstlineflag = 0;
-					} else {
-						strcat(fullargstr, "\n");
-					}
-					strcat(fullargstr, subvalstr);
-					contd = array_next(argval->data.array, &subname);
-				}
-				CLEAR(&subname);
-				break;
-			}
-
-		case PROG_STRING:
-			tmpstr = DoNullInd(argval->data.string);
-			fullargstr = (char *) realloc(fullargstr, (strlen(tmpstr) + 1));
-			strcpy(fullargstr, tmpstr);
-			break;
-
-		case PROG_INTEGER:
-			sprintf(buf, "%d", argval->data.number);
-			fullargstr = (char *) realloc(fullargstr, (strlen(buf) + 1));
-			strcpy(fullargstr, buf);
-			break;
-
-		case PROG_OBJECT:
-			sprintf(buf, "#%d", argval->data.number);
-			fullargstr = (char *) realloc(fullargstr, (strlen(buf) + 1));
-			strcpy(fullargstr, buf);
-			break;
-
-		case PROG_FLOAT:
-			sprintf(buf, "%g", argval->data.fnumber);
-			fullargstr = (char *) realloc(fullargstr, (strlen(buf) + 1));
-			strcpy(fullargstr, buf);
-			break;
-
-		default:
-			CLEAR(&argname);
-			while (i-- > 0)
-				free(argslist[i * 2 + 1]);
-			free(argslist);
-			abort_interp("Args dictionary contains a bad value type. (4)");
-			break;
-		}
-		argslist[2 * i] = argname.data.string->data;
-		argslist[2 * i + 1] = fullargstr;
-		fullargstr = NULL;
-		i++;
-		result = array_next(arr, &argname);
-	}
-	argslist[2 * i] = NULL;
-	argslist[2 * i + 1] = NULL;
-
-	result = gui_ctrl_make_v(dlogid, ctrltype, NULL, ctrlid, NULL, NULL, 0, argslist);
-
-	while (i-- > 0)
-		free(argslist[i * 2 + 1]);
-	free(argslist);
-
-	if (result == EGUINODLOG)
+	if (!mfr)
 		abort_interp("No such dialog currently exists. (1)");
-	if (result == EGUINOSUPPORT)
-		abort_interp
-				("Internal error: The given dialog's descriptor doesn't support the GUI package. (1)");
+
+	if (!GuiSupported(descr))
+		abort_interp("Internal error: The given dialog's descriptor doesn't support the GUI package. (1)");
+
+	sprintf(cmdname, "ctrl-%.55s", ctrltype);
+	mcp_mesg_init(&msg, GUI_PACKAGE, cmdname);
+
+	result = stuff_dict_in_mesg(arr, &msg);
+	if (result) {
+		mcp_mesg_clear(&msg);
+		switch (result) {
+			case -1:
+				abort_interp("Args dictionary can only have string keys. (4)");
+				break;
+			case -2:
+				abort_interp("Args dictionary cannot have a null string key. (4)");
+				break;
+			case -3:
+				abort_interp("Unsupported value type in list value. (4)");
+				break;
+			case -4:
+				abort_interp("Unsupported value type in args dictionary. (4)");
+				break;
+		}
+	}
+	
+	vallines = mcp_mesg_arg_linecount(&msg, "value");
+	if (ctrlid && vallines > 0) {
+		vallist = (char**)malloc(sizeof(char*) * vallines);
+		for (i = 0; i < vallines; i++)
+			vallist[i] = mcp_mesg_arg_getline(&msg, "value", i);
+		gui_value_set_local(dlogid, ctrlid, vallines, vallist);
+		free(vallist);
+	}
+
+	mcp_mesg_arg_remove(&msg, "dlogid");
+	mcp_mesg_arg_append(&msg, "dlogid", dlogid);
+
+	mcp_mesg_arg_remove(&msg, "id");
+	mcp_mesg_arg_append(&msg, "id", ctrlid);
+
+	mcp_frame_output_mesg(mfr, &msg);
+	mcp_mesg_clear(&msg);
 
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -847,7 +687,7 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 		abort_interp("String or string list control value expected. (3)");
 
 	if (oper2->type != PROG_STRING)
-		abort_interp("String control id expected. (2)");
+		abort_interp("String control ID expected. (2)");
 	if (!oper2->data.string || !oper2->data.string->data[0])
 		abort_interp("Invalid dialog ID. (2)");
 

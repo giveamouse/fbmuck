@@ -1,5 +1,11 @@
 2.2fb6.00a30
 Reformatted all code to a uniform code style based off of K&R.
+Removed GUI_DLOG_SIMPLE MUF primitive and replaced it with a macro that
+  uses the new GUI_DLOG_CREATE primitive.
+Removed GUI_DLOG_TABBED MUF primitive and replaced it with a macro that
+  uses the new GUI_DLOG_CREATE primitive.
+Removed GUI_DLOG_HELPER MUF primitive and replaced it with a macro that
+  uses the new GUI_DLOG_CREATE primitive.
 Added MAX_VARIABLE_COUNT $define to let MUF programs know what the highest
   variable number can be for Vars, Local Vars, and Scoped Vars.
 Added an EXPANDED_DEBUG_TRACE @tune option to allow display of expanded
@@ -12,6 +18,24 @@ Added an ERR_NAN?        convenience macro define for '1 is_set?'
 Added an ERR_IMAGINARY?  convenience macro define for '2 is_set?'
 Added an ERR_FBOUNDS?    convenience macro define for '3 is_set?'
 Added an ERR_IBOUNDS?    convenience macro define for '4 is_set?'
+Added a D_SIMPLE inserver define for specifying "simple" dialogs.
+Added a D_TABBED inserver define for specifying "tabbed" dialogs.
+Added a D_HELPER inserver define for specifying "helper" dialogs.
+Added GUI_DLOG_CREATE (intDescr strType strTitle dictArgs -- strDlogID)
+  If a user has a client that can support the MCP GUI protocol, then this
+  primitive can be used to generate a dialog on their screen.  The intDescr
+  is the integer descriptor of the connection to show the dialog on. The
+  strType is the type of the dialog to create.  Currently, the only options
+  for strType are D_SIMPLE, D_TABBED, or D_HELPER.  The strTitle argument is
+  the title to show in the titlebar of the dialog.  dictArgs is a dictionary
+  array that contains extra optional arguments for creating the dialog.
+  In general, dictArgs is only used to specify "panes" and "names" for
+  D_TABBED and D_HELPER dialogs.  This returns a string containing the
+  dialogid, used by other prims to add controls or make various changes.
+  This dialog will be hidden and not shown to the user until it has been
+  displayed with the GUI_DLOG_SHOW command.
+Added ARRAY_APPENDITEM ( ? a -- a') MUF prim.  Appends the given item to
+  the given list array.
 Added SETSYSPARM ( s1 s2 -- ) MUF prim.  Assigns the @tunable parameter s1
   a value given by s2.  s2 must contain a legal value for s1. (wizbit only)
 Added ARRAY_FINDVAL (a1 ? -- a2) MUF prim.  Returns a list array containing

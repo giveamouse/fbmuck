@@ -343,7 +343,7 @@ init_defs(COMPSTATE * cstat)
 	insert_intdef(cstat, "pr_mode", PREEMPT);
 	insert_intdef(cstat, "max_variable_count", MAX_VAR);
 
-	/* make defines for compatability to removed primitives */
+	/* Make defines for compatability to removed primitives */
 	insert_def(cstat, "desc", "\"_/de\" getpropstr");
 	insert_def(cstat, "succ", "\"_/sc\" getpropstr");
 	insert_def(cstat, "fail", "\"_/fl\" getpropstr");
@@ -370,7 +370,7 @@ init_defs(COMPSTATE * cstat)
 	insert_def(cstat, "err_fbounds?", "3 is_set?");
 	insert_def(cstat, "err_ibounds?", "4 is_set?");
 
-	/* array convenience defines */
+	/* Array convenience defines */
 	insert_def(cstat, "}list", "} array_make");
 	insert_def(cstat, "}dict", "}  2 / array_make_dict");
 	insert_def(cstat, "[]", "array_getitem");
@@ -378,6 +378,11 @@ init_defs(COMPSTATE * cstat)
 	insert_def(cstat, "array_diff", "2 array_ndiff");
 	insert_def(cstat, "array_union", "2 array_nunion");
 	insert_def(cstat, "array_intersect", "2 array_nintersect");
+
+	/* GUI dialog types */
+	insert_def(cstat, "d_simple", "\"simple\"");
+	insert_def(cstat, "d_tabbed", "\"tabbed\"");
+	insert_def(cstat, "d_helper", "\"helper\"");
 
 	/* GUI control types */
 	insert_def(cstat, "c_datum", "\"datum\"");
@@ -394,13 +399,18 @@ init_defs(COMPSTATE * cstat)
 	insert_def(cstat, "c_listbox", "\"listbox\"");
 	insert_def(cstat, "c_frame", "\"frame\"");
 	insert_def(cstat, "c_notebook", "\"notebook\"");
-	/* insert_def(cstat, "ctrl_image",     "\"image\""); */
-	/* insert_def(cstat, "ctrl_radiobtn",  "\"radio\""); */
+	/* insert_def(cstat, "c_image",     "\"image\""); */
+	/* insert_def(cstat, "c_radiobtn",  "\"radio\""); */
 
-	/* include any defines set in #0's _defs/ propdir. */
+	/* Backwards compatibility for old GUI dialog creation prims */
+	insert_def(cstat, "gui_dlog_simple", "d_simple 0 array_make_dict");
+    insert_def(cstat, "gui_dlog_tabbed", "d_tabbed swap \"panes\" over array_keys array_make \"names\" 4 rotate array_vals array_make 2 array_make_dict gui_dlog_create");
+    insert_def(cstat, "gui_dlog_helper", "d_helper swap \"panes\" over array_keys array_make \"names\" 4 rotate array_vals array_make 2 array_make_dict gui_dlog_create");
+
+	/* Include any defines set in #0's _defs/ propdir. */
 	include_defs(cstat, (dbref) 0);
 
-	/* include any defines set in program owner's _defs/ propdir. */
+	/* Include any defines set in program owner's _defs/ propdir. */
 	include_defs(cstat, OWNER(cstat->program));
 }
 

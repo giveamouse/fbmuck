@@ -99,6 +99,7 @@ int GuiSupported(int descr);
 /*
  * Second, create a dialog window.
  */
+char *gui_dlog_alloc(int descr, Gui_CB callback, void *context);
 char *GuiSimple(int descr, char *title, Gui_CB callback, void *context);
 char *GuiTabbed(int descr, char *title, int pagecount, char **pagenames, char **pageids,
 				Gui_CB callback, void *context);
