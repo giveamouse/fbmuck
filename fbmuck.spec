@@ -1,7 +1,7 @@
 Summary: 		The FuzzBall TinyMUCK online chat/MUD server
 Name: 			fbmuck
-Version: 		6.00rc7
-Release: 		2mdk
+Version: 		6.00rc9
+Release: 		1
 Group: 			Networking/Chat
 Distribution:	Linux-Mandrake
 Copyright: 		GPL
@@ -72,6 +72,9 @@ fi
 
 
 %changelog
+
+* Sat Nov 09 2002 Schneelocke <schnee@gl00on.net> 6.00rc9-1
+- bumped version number to 6.00rc9
 
 * Fri Oct 11 2002 Revar <revar@belfry.com> 6.00rc7-2mdk
 - fixed sysv-init scripts issues.
