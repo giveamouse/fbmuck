@@ -182,11 +182,65 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 	return;
 }
 
+int
+blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild, int blessp)
+{
+	char propname[BUFFER_LEN];
+	char wld[BUFFER_LEN];
+	char buf[BUFFER_LEN];
+	char buf2[BUFFER_LEN];
+	char *ptr, *wldcrd = wld;
+	PropPtr propadr, pptr;
+	int i, cnt = 0;
+	int recurse = 0;
+
+	strcpy(wld, wild);
+	i = strlen(wld);
+	if (i && wld[i - 1] == PROPDIR_DELIMITER)
+		strcat(wld, "*");
+	for (wldcrd = wld; *wldcrd == PROPDIR_DELIMITER; wldcrd++) ;
+	if (!strcmp(wldcrd, "**"))
+		recurse = 1;
+
+	for (ptr = wldcrd; *ptr && *ptr != PROPDIR_DELIMITER; ptr++) ;
+	if (*ptr)
+		*ptr++ = '\0';
+
+	propadr = first_prop(thing, (char *) dir, &pptr, propname);
+	while (propadr) {
+		if (equalstr(wldcrd, propname)) {
+			sprintf(buf, "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+			if ((!Prop_Hidden(buf) && !(PropFlags(propadr) & PROP_SYSPERMS))
+				|| Wizard(OWNER(player))) {
+				if (!*ptr || recurse) {
+					cnt++;
+					if (blessp) {
+						set_property_flags(thing, buf, PROP_BLESSED);
+						sprintf(buf2, "Blessed %s", buf);
+					} else {
+						clear_property_flags(thing, buf, PROP_BLESSED);
+						sprintf(buf2, "Unblessed %s", buf);
+					}
+					notify(player, buf2);
+				}
+				if (recurse)
+					ptr = "**";
+				cnt += blessprops_wildcard(player, thing, buf, ptr, blessp);
+			}
+		}
+		propadr = next_prop(pptr, propadr, propname);
+	}
+	return cnt;
+}
+
+
 void
 do_unbless(int descr, dbref player, const char *what, const char *propname)
 {
 	dbref victim, loc;
 	struct match_data md;
+	char buf[BUFFER_LEN];
+	int cnt;
 
 	if (!tp_zombies && (!Wizard(player) || Typeof(player) != TYPE_PLAYER)) {
 		notify(player, "Only Wizard players may use this command.");
@@ -210,8 +264,9 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
 		return;
 	}
 
-	clear_property_flags(victim, propname, PROP_BLESSED);
-	notify(player, "Property unblessed.");
+	cnt = blessprops_wildcard(player, victim, "", propname, 0);
+	sprintf(buf, "%d propert%s unblessed.", cnt, (cnt == 1)? "y" : "ies");
+	notify(player, buf);
 }
 
 
@@ -220,6 +275,8 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 {
 	dbref victim, loc;
 	struct match_data md;
+	char buf[BUFFER_LEN];
+	int cnt;
 
 	if (force_level) {
 		notify(player, "Can't @force an @bless.");
@@ -248,8 +305,9 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 		return;
 	}
 
-	set_property_flags(victim, propname, PROP_BLESSED);
-	notify(player, "Property blessed.");
+	cnt = blessprops_wildcard(player, victim, "", propname, 1);
+	sprintf(buf, "%d propert%s blessed.", cnt, (cnt == 1)? "y" : "ies");
+	notify(player, buf);
 }
 
 void
