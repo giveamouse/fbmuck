@@ -1616,7 +1616,7 @@ player dbref.  (Requires Mucker Level 3)
 DESCRSECURE?|
 descrsecure? (d -- i)
 Returns 1 if the descriptor number corresponds to a secure connection, and
-0 otherwise. (Wizbit only)
+0 otherwise. (Requires Mucker Level 3)
 ~
 CONIDLE|
 conidle (i -- i)
