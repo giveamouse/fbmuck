@@ -1079,20 +1079,15 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 						abort_interp("Too many propdirs to put in an array!");
 					}
 
-					temp2.type = PROG_STRING;
-					temp2.data.string = alloc_prog_string(propname);
-
-					temp1.type = PROG_INTEGER;
-					temp1.data.number = count++;
-
-					array_setitem(&nu, &temp1, &temp2);
-					CLEAR(&temp1);
-					CLEAR(&temp2);
+					array_set_intkey_strval(&nu, count++, propname);
 				}
 			}
 		}
 		propadr = next_prop(pptr, propadr, propname);
 	}
+
+	CLEAR(oper1);
+	CLEAR(oper2);
 
 	PushArrayRaw(nu);
 }
