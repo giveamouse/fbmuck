@@ -527,27 +527,40 @@ main(int argc, char **argv)
 #endif
 
 		if (restart_flag) {
-			char portlist[BUFFER_LEN];
+			char **argslist;
 			char numbuf[16];
+			int argcnt = numsocks + 2;
+			int argnum = 1;
 
-			portlist[0] = '\0';
+#ifdef USE_SSL
+			argcnt += ssl_numsocks;
+#endif
+
+			argslist = (char**)calloc(argcnt, sizeof(char*));
+
 			for (i = 0; i < numsocks; i++) {
 				sprintf(numbuf, "%d", listener_port[i]);
-				if (*portlist) {
-					strcat(portlist, " ");
-				}
-				strcat(portlist, numbuf);
+				argslist[argnum] = (char*)malloc(strlen(numbuf)+1);
+				strcpy(argslist[argnum++], numbuf);
 			}
+
 #ifdef USE_SSL
 			for (i = 0; i < ssl_numsocks; i++) {
 				sprintf(numbuf, "-sport %d", ssl_listener_port[i]);
-				if (*portlist) {
-					strcat(portlist, " ");
-				}
-				strcat(portlist, numbuf);
+				argslist[argnum] = (char*)malloc(strlen(numbuf)+1);
+				strcpy(argslist[argnum++], numbuf);
 			}
-#endif /* SJP  designate ports are secure */
-			execl("restart", "restart", portlist, (char *) 0);
+#endif
+
+			if (!fork()) {
+				argslist[0] = "./restart";
+				execv(argslist[0], argslist);
+
+				argslist[0] = "restart";
+				execv(argslist[0], argslist);
+
+				fprintf(stderr, "Could not find restart script!\n");
+			}
 		}
 	}
 
