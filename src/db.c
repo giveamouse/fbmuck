@@ -1379,14 +1379,13 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		o->exits = getref(f);
 		PLAYER_SET_PENNIES(objno, getref(f));
 		password = getstring(f);
-		if (dtype <= 8 && password && *password) {
+		if (dtype <= 8 && password) {
 			set_password_raw(objno, NULL);
 			set_password(objno, password);
+			free((void*) password);
 		} else {
 			set_password_raw(objno, password);
 		}
-		if (password)
-			free((void*) password);
 		PLAYER_SET_CURR_PROG(objno, NOTHING);
 		PLAYER_SET_INSERT_MODE(objno, 0);
 		PLAYER_SET_DESCRS(objno, NULL);
