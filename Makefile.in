@@ -4,7 +4,7 @@
 subdirs=src
 RM=rm -f
 
-SSLTOP=@SSLTOP@
+SSLTOP=@ssldir@
 RPMDIR="/usr/src/RPM/"
 
 all:	Makefile
@@ -26,7 +26,7 @@ install-sysv-inits:	Makefile
 	done
 
 cert game/server.pem:
-	@if grep "^#define USE_SSL" include/autoconf.h > /dev/null; then \
+	@if grep "^#define HAVE_LIBSSL" include/autoconf.h > /dev/null; then \
 		echo; \
 		if [ -r game/data/server.pem ]; then \
 			echo "Will not overwrite game/data/server.pem"; \
