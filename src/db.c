@@ -2,6 +2,10 @@
 
 /*
  * $Log: db.c,v $
+ * Revision 1.4  2000/07/08 09:36:12  tiger
+ * Fixed legacy DB load so loading the minimal.db and creating a program does
+ *   not automatically put you into insert mode.
+ *
  * Revision 1.3  2000/05/23 22:34:54  wog
  * Changed number() to not think "-" or "+" is a number.
  *
@@ -1164,6 +1168,8 @@ db_read_object_old(FILE * f, struct object *o, dbref objno)
 		o->exits = NOTHING;
 		PLAYER_SET_PENNIES(objno, pennies);
 		PLAYER_SET_PASSWORD(objno, password);
+		PLAYER_SET_CURR_PROG(objno, NOTHING);
+		PLAYER_SET_INSERT_MODE(objno, 0);
 		break;
 	case TYPE_GARBAGE:
 		OWNER(objno) = NOTHING;
@@ -1273,6 +1279,8 @@ db_read_object_new(FILE * f, struct object *o, dbref objno)
 		o->exits = getref(f);
 		PLAYER_SET_PENNIES(objno, getref(f));
 		PLAYER_SET_PASSWORD(objno, getstring(f));
+		PLAYER_SET_CURR_PROG(objno, NOTHING);
+		PLAYER_SET_INSERT_MODE(objno, 0);
 		break;
 	}
 }
