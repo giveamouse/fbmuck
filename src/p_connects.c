@@ -182,7 +182,7 @@ prim_descr_idle(PRIM_PROTOTYPE)
 void
 prim_descr_least_idle(PRIM_PROTOTYPE)
 {
-	/* int -- int */
+	/* obj -- int */
 	CHECKOP(1);
 	oper1 = POP();
 	if (mlev < 3)
@@ -203,7 +203,7 @@ prim_descr_least_idle(PRIM_PROTOTYPE)
 void
 prim_descr_most_idle(PRIM_PROTOTYPE)
 {
-	/* int -- int */
+	/* obj -- int */
 	CHECKOP(1);
 	oper1 = POP();
 	if (mlev < 3)

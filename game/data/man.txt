@@ -24,39 +24,72 @@ MISCELLANEOUS       - Random bits of information.
 ~correctly)
 PRIMITIVES|
   
+Stack Manipulation:
+  dup   pop   swap  over  rot  rotate  pick   put    reverse
+  ldup  dupn  popn  {     }    }list   }dict  depth  lreverse
+
 Variable Handling:
-  var    lvar    variable    localvar    !    @
-  
-Multi-Tasking:
-  preempt  background  foreground  ispid?   fork  sleep  kill  pid  queue
-  pr_mode  bg_mode     fg_mode     setmode  mode  abort
-  
-Math and Comparison:
-  +   -   *   /   %   <   >   =   <=   >=   ++   --   and   or   not
-  strcmp   stringcmp   strncmp   smatch   stringpfx   dbcmp   number?
-
-Floating Point Math:
-  ceil        floor       float      sqrt      pow        frand
-  sin         cos         tan        asin      acos       atan
-  exp         log         log10      fabs      fmod       modf
-  pi          inf         round      clear     is_set?    error?
-  clear_error error_name  set_error  error_bit error_num
-  error_string
-
-Stack Types and Object Types:
-  string?  dbref?  address?  lock?  int?   array?  dictionary?
-  player?  thing?  program?  exit?  room?  ok?     flag?
-  float?
+   !   @   lvar   var   localvar   variable
   
 Control Structures:
   if     else  then     call   execute   exit   jmp     public  wizcall
   begin  for   while    break  continue  until  repeat  foreach interp
   try    catch endcatch
   
-Stack Manipulation:
-  dup   pop   swap  over  rot  rotate  pick   put    reverse
-  ldup  dupn  popn  {     }    }list   }dict  depth  lreverse
+Stack Types and Object Types:
+  string?  dbref?  address?  lock?  int?   array?  dictionary?
+  player?  thing?  program?  exit?  room?  ok?     flag?
+  float?
+  
+Math and Comparison:
+  +   -   *   /   %   <   >   =   <=   >=   ++   --   and   or   not
+  strcmp   stringcmp   strncmp   smatch   stringpfx   dbcmp   number?
+  
+Bitwise Operators:
+  bitor   bitand   bitxor   bitshift
+  
+Floating Point Math:
+ sin     asin    cos     acos    tan     atan    atan2
+ pi      inf     sqrt    pow     exp     log     log10
+ floor   ceil    round   fabs    modf    fmod    frand
+ float
 
+Floating Point Errors:
+ error?     is_set?     set_error  clear         clear_error
+ error_bit  error_name  error_num  error_string
+
+String Handling:
+  instr        rinstr        instring     rinstring    unparseobj
+  strlen       strcat        strcut       explode      pronoun_sub
+  toupper      tolower       strip        striplead    striptail
+  split        rsplit        subst        midstr       fmtstring
+  tokensplit   textattr      ansi_strip   ansi_strlen  ansi_strcut
+  ansi_midstr  explode_array
+                                                                
+Data Type Conversion:
+  atoi   intostr   dbref   int    ctoi    itoc    stod   strtof ftostr 
+  
+Message Management:
+  desc     succ      fail      name      truename
+  setdesc  setsucc   setfail   setname
+  drop     osucc     ofail     odrop
+  setdrop  setosucc  setofail  setodrop
+  
+Property Management:
+  getprop   getpropval  getpropfval getpropstr  addprop      remove_prop
+  envprop   envpropstr  nextprop    propdir?    parseprop    setprop
+  blessprop unblessprop reflist_add reflist_del reflist_find
+  
+I/O:
+  read   notify   notify_except   notify_exclude   tread
+  
+Time:
+  date   gmtoffset   systime   time   timesplit   timefmt
+  
+Lock Handling:
+  locked?   getlockstr   setlockstr   parselock   unparselock
+  testlock  prettylock
+  
 Array Manipulation:
   array_make         array_make_dict    array_notify       array_appenditem
   array_getitem      array_delitem      array_setitem      array_insertitem
@@ -70,46 +103,18 @@ Array Manipulation:
   array_matchkey     array_matchval     array_extract      array_join
   array_sort
   
-Message Management:
-  desc     succ      fail      name      truename
-  setdesc  setsucc   setfail   setname
-  drop     osucc     ofail     odrop
-  setdrop  setosucc  setofail  setodrop
-  
-Time:
-  date   gmtoffset   systime   time   timesplit   timefmt
-  
-Data Conversion:
-  atoi   intostr   dbref   int    ctoi    itoc    stod   strtof ftostr 
-  
-Property Management:
-  getprop   getpropval  getpropfval getpropstr  addprop      remove_prop
-  envprop   envpropstr  nextprop    propdir?    parseprop    setprop
-  blessprop unblessprop reflist_add reflist_del reflist_find
-  
-I/O:
-  read   notify   notify_except   notify_exclude   tread
-  
 Connection Management:
-  awake?       online     concount  condescr       condbref
-  conhost      conuser    contime   conidle        connotify
-  descriptors  nextdescr  descrcon  descr_setuser  online_array
-  descrflush   conboot
+  awake?        online         online_array    concount
+  condescr      condbref       conhost         conuser
+  descrcon      descrdbref     descrhost       descruser
+  contime       conidle        connotify       conboot
+  descrtime     descridle      descrnotify     descrboot
+  descriptors   nextdescr      firstdescr      lastdescr
+  descrflush    descr_setuser  descrleastidle  descrmostidle
   
-String Handling:
-  instr        rinstr        instring     rinstring    unparseobj
-  strlen       strcat        strcut       explode      pronoun_sub
-  toupper      tolower       strip        striplead    striptail
-  split        rsplit        subst        midstr       fmtstring
-  tokensplit   textattr      ansi_strip   ansi_strlen  ansi_strcut
-  ansi_midstr  explode_array
-                                                                
-Lock Handling:
-  locked?   getlockstr   setlockstr   parselock   unparselock
-  testlock  prettylock
-  
-Bitwise Operators:
-  bitor   bitand   bitxor   bitshift
+Multi-Tasking:
+  preempt  background  foreground  ispid?   fork  sleep  kill  pid  queue
+  pr_mode  bg_mode     fg_mode     setmode  mode  abort
   
 MUF Event Support:
   event_wait   event_waitfor   event_count    timer_start    timer_stop
@@ -124,20 +129,20 @@ MCP GUI Package Support:
   gui_values_get    gui_value_get     gui_value_set     gui_ctrl_command
   
 MCP GUI Package Defines:
-  d_simple        d_tabbed          d_helper
-  c_datum         c_label           c_hrule           c_vrule
-  c_button        c_checkbox        c_edit            c_multiedit
-  c_combobox      c_listbox         c_spinner         c_scale
+  d_simple        d_tabbed       d_helper
+  c_datum         c_label        c_image       c_hrule      c_vrule
+  c_button        c_checkbox     c_radio       c_edit       c_multiedit
+  c_combobox      c_listbox      c_spinner     c_scale      c_menu
   c_frame         c_notebook
   
 Misc:
-  set    mlevel   next    checkargs  location  newroom    pennies
-  flag?  caller   force   sysparm    contents  newexit    addpennies
-  prog   match    random  version    controls  newobject  timestamps
-  trig   stats    rmatch  getlink    setown    recycle    part_pmatch
-  dbtop  exits    moveto  setlink    owner     copyobj    checkpassword
-  srand  setseed  getseed getlinks   cancall?  nextowned  setsysparm 
-  pmatch findnext
+  set     mlevel    next      checkargs  location    newroom    pennies
+  flag?   caller    force     sysparm    contents    newexit    addpennies
+  prog    match     random    version    controls    newobject  timestamps
+  trig    stats     rmatch    getlink    setown      recycle    part_pmatch
+  dbtop   exits     moveto    setlink    owner       copyobj    checkpassword
+  srand   setseed   getseed   getlinks   cancall?    nextowned  setsysparm 
+  pmatch  findnext  name-ok?  pname-ok?  force_level
   
 In the documentation some primitives are grouped together as:
   MATH OPERATORS
@@ -148,14 +153,18 @@ See man <primitive> for information on each primitive.
 ~
 MATH OPERATORS|+|-|*|/|%|MODULO|ADD|SUBTRACT|MULTIPLY|DIVIDE|
 + - * / % ( n1 n2 -- i )
-These words perform arithmetic operations on numbers. `+' = addition
-(n1 + n2); `-' = subtraction (n1 - n2); `*' = multiplication (n1 times
-n2, or n1 * n2); `/' = division (n1 divided by n2, or n1 / n2) with
-integer division truncation of fractions; `%' = modulo (remainder of
-n1 / n2, or n1 % n2)  Floats cannot use the % modulo function.  See
-the FMOD or MODF primitives.
-You may use these operators on different types of data, ie dbrefs,
-local variables, and variables.  Floats may be combined with integers.
+These words perform arithmetic operations on numbers.
+  `+' = addition (n1 + n2);
+  `-' = subtraction (n1 - n2);
+  `*' = multiplication (n1 times n2, or n1 * n2);
+  `/' = division (n1 divided by n2, or n1 / n2) with integer division
+        truncation of fractions;
+  `%' = modulo (remainder of n1 / n2, or n1 % n2)  Floats cannot use the %
+        modulo function.  See the FMOD or MODF primitives.
+  
+You may use these operators arbitrarily on integers and floats.  You may
+also use these operators on dbrefs and vars, so long as the second arg is
+an integer.
 ~
 INCREMENT|++|
 ++ ( v -- )
@@ -696,6 +705,12 @@ FMOD|
 fmod ( f1 f2 -- f )
 Returns the floating point remainder of (f1/f2).
 ~
+MODF|
+modf ( f -- fi ff )
+The modf primitive breaks f into an integral part and a fractional part,
+each of which has the same sign as f.  Both returned values are floats.
+fi is the integral part, while ff is the fractional part.
+~
 FMTSTRING|
 fmtstring ( ?n..?1 s -- s )
 Allows for string formatting with format substitutions, as per C's printf.
@@ -786,7 +801,7 @@ GETSEED|
 getseed ( -- s )
 Returns the the current SRAND seed string.
 ~
-IF|
+IF|ELSE|THEN|
 if ... [ else ... ] then ( x -- )
 Examines boolean value x.  If x is TRUE, the sequence of statements
 after the 'if' up until the `then' (or until the `else' if it is
@@ -1519,10 +1534,36 @@ condbref (i -- d)
 Returns the dbref of the player connected to this connection.
 (Requires Mucker Level 3)
 ~
+DESCRDBREF|
+descrdbref (i -- d)
+Returns the dbref of the player connected to this descriptor number.
+This may return #-1 if there is no player connected to the given descriptor.
+(Requires Mucker Level 3)
+~
+DESCRTIME|
+descrtime (i -- i)
+Returns how many seconds the given descriptor connection has been connected
+to the server.  (Requires Mucker Level 3)
+~
 CONTIME|
 contime (i -- i)
 Returns how many seconds the given connection has been connected
 to the server.  (Requires Mucker Level 3)
+~
+DESCRIDLE|
+descridle (i -- i)
+Returns how many seconds the descriptor connection has been idle.
+(Requires Mucker Level 3)
+~
+DESCRLEASTIDLE|
+descrleastidle (d -- i)
+Returns the descriptor number for the least idle connection of the given
+player dbref.  (Requires Mucker Level 3)
+~
+DESCRMOSTIDLE|
+descrmostidle (d -- i)
+Returns the descriptor number for the most idle connection of the given
+player dbref.  (Requires Mucker Level 3)
 ~
 CONIDLE|
 conidle (i -- i)
@@ -1534,23 +1575,54 @@ condescr ( i -- i )
 Takes a connection number and returns the descriptor number associated
 with it.  (Requires Mucker Level 3)  See DESCRIPTORS, DESCRCON.
 ~
+DESCRHOST|
+descrhost (i -- s)
+Returns the hostname of the descriptor connection. (wizbit only)
+~
 CONHOST|
 conhost (i -- s)
 Returns the hostname of the connection. (wizbit only)
 ~
+DESCRUSER|
+descruser (i -- s)
+Returns the username of the descriptor connection. (wizbit only)
+~
 CONUSER|
 conuser (i -- s)
 Returns the username of the connection. (wizbit only)
+~
+DESCRBOOT|
+descrboot (i -- )
+Takes a descriptor number and disconnects that connection from
+the server.  Basically @boot for a specific descriptor connection.
+(wizbit only)
 ~
 CONBOOT|
 conboot (i -- )
 Takes a connection number and disconnects that connection from
 the server.  Basically @boot for a specific connection. (wizbit only)
 ~
+DESCRNOTIFY|
+descrnotify (i s -- )
+Sends a string to a specific descriptor connection, similar to NOTIFY.
+(Requires Mucker Level 3)
+~
 CONNOTIFY|
 connotify (i s -- )
 Sends a string to a specific connection to the server.
 (Requires Mucker Level 3)
+~
+FIRSTDESCR|
+firstdescr (d -- i)
+Returns the first descriptor number associated with the given player.
+If the player object is given as #-1, then this returns the first descriptor
+in the list of all connections.
+~
+LASTDESCR|
+lastdescr (d -- i)
+Returns the last descriptor number associated with the given player.
+If the player object is given as #-1, then this returns the last descriptor
+in the list of all connections.
 ~
 DESCRCON|
 descrcon (i -- i)
@@ -2944,9 +3016,9 @@ Creates a new control in a given dialog.  strDlogID contains the dlogid
 returned from a GUI_DLOG_SIMPLE (or similar) command.  strType contains
 the control type.  To make debugging easier and faster, MUF $defs have
 been provided for each control type.  They are:
-  C_DATUM, C_LABEL, C_HRULE, C_VRULE, C_BUTTON, C_CHECKBOX, C_EDIT,
-  C_MULTIEDIT, C_COMBOBOX, C_SPINNER, C_SCALE, C_LISTBOX, C_FRAME,
-  C_NOTEBOOK.
+  C_DATUM, C_LABEL, C_IMAGE, C_HRULE, C_VRULE, C_BUTTON, C_CHECKBOX,
+  C_RADIOBTN, C_EDIT, C_MULTIEDIT, C_COMBOBOX, C_SPINNER, C_SCALE,
+  C_LISTBOX, C_MENU, C_FRAME, C_NOTEBOOK.
 If you use these instead of the actual type name strings, then if you
 mistype one, it will throw an error when trying to compile, instead of
 when you try to run it.  The strCtrlID arg is the id to give the control,
@@ -3119,32 +3191,35 @@ UNBLESSPROP|
 UNBLESSPROP (dbrefObject strPropname -- )
 Unblesses the given property for MPI.  Requires Wizbit perms.
 ~
-C_DATUM|
-C_DATUM ( -- s )
-This is a standard server define used in conjunction with GUI_CTRL_CREATE
-to create a Datum control in a GUI dialog.
-The Datum control is a non-visible control that just holds a value.  It's
-useful for keeping program state information.
-The only control arguments that this control type can use are:
+GUI OPTIONS|GUI_OPTIONS|GUIOPTIONS|
+MCP GUI Options
+The MCP GUI package has several common options used when creating controls
+in dialog.  These options are common to almost all control types.  They
+are as follows:
     value    Holds the value of the control.
-~
-C_LABEL|
-C_LABEL ( -- s )
-This is a standard server define used in conjunction with GUI_CTRL_CREATE
-to create a text label control in a GUI dialog.
-The label control is just a text label, nothing more.
-The only control arguments that this control type can use are:
-    value    Holds the value of the control.
+    valname  Specifies the name used with GUI_VALUE_GET/SET, to refer to the
+             value for this control.  Multiple controls can stare the same
+             valname, in the case of radio buttons and the like.
+    report   If set to 1, image, checkbox, and radiobutton controls will send
+             a 'buttonpress' event when the user clicks on them.  All other
+             control types send a 'valchanged' gui event when their value
+             is changed If the value is changed several times within a few
+             seconds, only the final value is guaranteed to have a valchanged
+             event.  It is possible to receive valchanged events even though
+             the value appears to have not changed.
     pane     The pane in which to place this control.  Some controls, like
              the notebook or frame controls, create new panes in which you
              can place controls.
     newline  If 1, next control will be at the beginning of the next row.
-             If 0, next control will be in the next column to the right.
-             Defaults to 1.
+             If 0, next control will be in the next column to the right,
+             taking into account colspan and colskip.  Defaults to 1.
     sticky   Which sides of the cell this control sticks to.  This is a
-             string with any or all of the letters 'n', 's', 'e', or 'w'.
-    colspan  Number of columns this control spans across.  Defaults to 1.
+             string with any or all of the letters 'n', 's', 'e', or 'w',
+             corresponding to north, south, east, and west.
+    row      If specified, forces the control to be placed in the given row.
+    column   If specified, forces the control to be placed in the given column.
     rowspan  Number of rows this control spans across.  Defaults to 1.
+    colspan  Number of columns this control spans across.  Defaults to 1.
     colskip  Number of columns to skip before placing this control.
              Defaults to 0.
     hweight  How much the starting column of this control should expand.
@@ -3152,165 +3227,140 @@ The only control arguments that this control type can use are:
              hweight 2 and the other with hweight 1, then the column with
              hweight 2 will be expanded twice as much as the other column.
              The default hweight is 0.  Note that the last control in the
-             given column sets the hweight for the column.
+             given column sets the hweight for the column.  If no hweights
+             are given in a pane, then if the pane is forced to be wider
+             than the contained controls, the empty space will be placed
+             in the right side of the pane.
     vweight  How much the starting row of this control should expand.
              When filling unused space, if there are two rows, one with
              vweight 2 and the other with vweight 1, then the row with
              vweight 2 will be expanded twice as much as the other row.
              The default hweight is 0.  Note that the last control in the
-             given row sets the vweight for the row.
+             given row sets the vweight for the row.  If no vweights
+             are given in a pane, then if the pane is forced to be taller
+             than the contained controls, the empty space will be placed
+             in the bottom of the pane.
     toppad   Number of pixels padding to add above this control.
     leftpad  Number of pixels padding to add to the left of this control.
+~
+C_DATUM|
+C_DATUM ( -- s )
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a Datum control in a GUI dialog.  The Datum control is a non-
+visible control that just holds a value.  It's useful for keeping program
+state information.
+The control has no control-specific options.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
+~
+C_MENU|
+C_MENU ( -- s)
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a menu control in a GUI dialog.  The menu control is a pull-down
+menu that a user can select commands from.  It can contain labels, hrules,
+buttons, checkboxes, radiobuttons, and other menus.
+The control options specific to this type of control are:
+    text    The text to display as the user-visible name of this menu. For
+            example: "Settings", "Help", etc.
+    pane    The id of the menu in which to place this menu as a cascading
+            menu.  If specified as "", then this is a toplevel menu.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE
+~
+C_LABEL|
+C_LABEL ( -- s )
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a text label control in a GUI dialog.  The label control is just
+a text label, nothing more.
+The control options specific to this type of control are:
+    value    Contains the text to be displayed.
+    justify  Which way to justify the text, if word wrapped.  Can be one of
+             left, right, or center.
+    maxwidth The max width in pixels for the label, before it word wraps.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
+~
+C_IMAGE|
+C_IMAGE ( -- s )
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create an image control in a GUI dialog.  The image control is a picture
+whose image is loaded from a URL.
+The control options specific to this type of control are:
+    value    Holds the url of the image to be displayed.
+    width    The width of the image in pixels.  This is required.
+    height   The height of the image in pixels.  This is required.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 C_HRULE|
 C_HRULE ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Horizontal Rule control in a GUI dialog.
 The hrule control is just a horizontal line, nothing more.
-The only control arguments that this control type can use are:
+The control options specific to this type of control are:
     height   Number of pixels of vertical thickness of the horizontal line.
-    pane     The pane in which to place this control.  Some controls, like
-             the notebook or frame controls, create new panes in which you
-             can place controls.
-    newline  If 1, next control will be at the beginning of the next row.
-             If 0, next control will be in the next column to the right.
-             Defaults to 1.
-    sticky   Which sides of the cell this control sticks to.  This is a
-             string with any or all of the letters 'n', 's', 'e', or 'w'.
-    colspan  Number of columns this control spans across.  Defaults to 1.
-    rowspan  Number of rows this control spans across.  Defaults to 1.
-    colskip  Number of columns to skip before placing this control.
-             Defaults to 0.
-    hweight  How much the starting column of this control should expand.
-             When filling unused space, if there are two columns, one with
-             hweight 2 and the other with hweight 1, then the column with
-             hweight 2 will be expanded twice as much as the other column.
-             The default hweight is 0.  Note that the last control in the
-             given column sets the hweight for the column.
-    vweight  How much the starting row of this control should expand.
-             When filling unused space, if there are two rows, one with
-             vweight 2 and the other with vweight 1, then the row with
-             vweight 2 will be expanded twice as much as the other row.
-             The default hweight is 0.  Note that the last control in the
-             given row sets the vweight for the row.
-    toppad   Number of pixels padding to add above this control.
-    leftpad  Number of pixels padding to add to the left of this control.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 C_VRULE|
 C_VRULE ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Vertical Rule control in a GUI dialog.
 The vrule control is just a vertical line, nothing more.
-The only control arguments that this control type can use are:
+The control options specific to this type of control are:
     width    Number of pixels of horizontal thickness of the vertical line.
-    pane     The pane in which to place this control.  Some controls, like
-             the notebook or frame controls, create new panes in which you
-             can place controls.
-    newline  If 1, next control will be at the beginning of the next row.
-             If 0, next control will be in the next column to the right.
-             Defaults to 1.
-    sticky   Which sides of the cell this control sticks to.  This is a
-             string with any or all of the letters 'n', 's', 'e', or 'w'.
-    colspan  Number of columns this control spans across.  Defaults to 1.
-    rowspan  Number of rows this control spans across.  Defaults to 1.
-    colskip  Number of columns to skip before placing this control.
-             Defaults to 0.
-    hweight  How much the starting column of this control should expand.
-             When filling unused space, if there are two columns, one with
-             hweight 2 and the other with hweight 1, then the column with
-             hweight 2 will be expanded twice as much as the other column.
-             The default hweight is 0.  Note that the last control in the
-             given column sets the hweight for the column.
-    vweight  How much the starting row of this control should expand.
-             When filling unused space, if there are two rows, one with
-             vweight 2 and the other with vweight 1, then the row with
-             vweight 2 will be expanded twice as much as the other row.
-             The default hweight is 0.  Note that the last control in the
-             given row sets the vweight for the row.
-    toppad   Number of pixels padding to add above this control.
-    leftpad  Number of pixels padding to add to the left of this control.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 C_BUTTON|
 C_BUTTON ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Button control in a GUI dialog.
 The Button control is a simple button the user can press.
-The only control arguments that this control type can use are:
+The control options specific to this type of control are:
     text     The text label that will show on the button face.
     width    Number of characters text the button should be able to hold.
     dismiss  If 1, the dialog will be dismissed when this button is pressed.
              Defaults to 1.
-    pane     The pane in which to place this control.  Some controls, like
-             the notebook or frame controls, create new panes in which you
-             can place controls.
-    newline  If 1, next control will be at the beginning of the next row.
-             If 0, next control will be in the next column to the right.
-             Defaults to 1.
-    sticky   Which sides of the cell this control sticks to.  This is a
-             string with any or all of the letters 'n', 's', 'e', or 'w'.
-    colspan  Number of columns this control spans across.  Defaults to 1.
-    rowspan  Number of rows this control spans across.  Defaults to 1.
-    colskip  Number of columns to skip before placing this control.
-             Defaults to 0.
-    hweight  How much the starting column of this control should expand.
-             When filling unused space, if there are two columns, one with
-             hweight 2 and the other with hweight 1, then the column with
-             hweight 2 will be expanded twice as much as the other column.
-             The default hweight is 0.  Note that the last control in the
-             given column sets the hweight for the column.
-    vweight  How much the starting row of this control should expand.
-             When filling unused space, if there are two rows, one with
-             vweight 2 and the other with vweight 1, then the row with
-             vweight 2 will be expanded twice as much as the other row.
-             The default hweight is 0.  Note that the last control in the
-             given row sets the vweight for the row.
-    toppad   Number of pixels padding to add above this control.
-    leftpad  Number of pixels padding to add to the left of this control.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 C_CHECKBOX|
 C_CHECKBOX ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a CheckBox control in a GUI dialog.
 The CheckBox control is used for indicating simple "on/off" boolean settings.
-The only control arguments that this control type can use are:
+The control options specific to this type of control are:
     text     The text label that will show to the right of the checkbox.
     onvalue  The value this control should have when checked.
     offvalue The value this control should have when not checked.
     value    The current state/value of the control.  This should match either
              the value of the "onvalue" or "offvalue" argument.
-    pane     The pane in which to place this control.  Some controls, like
-             the notebook or frame controls, create new panes in which you
-             can place controls.
-    newline  If 1, next control will be at the beginning of the next row.
-             If 0, next control will be in the next column to the right.
-             Defaults to 1.
-    sticky   Which sides of the cell this control sticks to.  This is a
-             string with any or all of the letters 'n', 's', 'e', or 'w'.
-    colspan  Number of columns this control spans across.  Defaults to 1.
-    rowspan  Number of rows this control spans across.  Defaults to 1.
-    colskip  Number of columns to skip before placing this control.
-             Defaults to 0.
-    hweight  How much the starting column of this control should expand.
-             When filling unused space, if there are two columns, one with
-             hweight 2 and the other with hweight 1, then the column with
-             hweight 2 will be expanded twice as much as the other column.
-             The default hweight is 0.  Note that the last control in the
-             given column sets the hweight for the column.
-    vweight  How much the starting row of this control should expand.
-             When filling unused space, if there are two rows, one with
-             vweight 2 and the other with vweight 1, then the row with
-             vweight 2 will be expanded twice as much as the other row.
-             The default hweight is 0.  Note that the last control in the
-             given row sets the vweight for the row.
-    toppad   Number of pixels padding to add above this control.
-    leftpad  Number of pixels padding to add to the left of this control.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
+~
+C_RADIOBTN|
+C_RADIOBTN ( -- s )
+This is a standard server define used in conjunction with GUI_CTRL_CREATE
+to create a radio button control in a GUI dialog.
+The radio button control is used for selecting one of a number of options.
+The control options specific to this type of control are:
+    text     The text label that will show to the right of the radio button.
+    valname  The name used to refer to the value of this radio button group.
+             A radio button group is defined as radio buttons that share the
+             same valname.
+    selvalue The value of this radio button group, when this is selected.
+    value    The current state/value of the radio button group.  This should
+             match one of the selvalues of a radio button in this group.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 C_EDIT|
 C_EDIT ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a single-line text Edit control in a GUI dialog.
 The Edit control is used for single-line text string editing.
-The only control arguments that this control type can use are:
+The control options specific to this type of control are:
     text     The text label that will show to the left of the control.
              Defaults to "" (no label).  If there is a label, then this
              control will be split across two columns, with the label in
@@ -3322,70 +3372,22 @@ The only control arguments that this control type can use are:
     height   Number of lines high this control will be.  Defaults to 1.
              If this is greater than 1, then text will wrap as you type it,
              but you still won't be able to insert carriage returns.
-    pane     The pane in which to place this control.  Some controls, like
-             the notebook or frame controls, create new panes in which you
-             can place controls.
-    newline  If 1, next control will be at the beginning of the next row.
-             If 0, next control will be in the next column to the right.
-             Defaults to 1.
-    sticky   Which sides of the cell this control sticks to.  This is a
-             string with any or all of the letters 'n', 's', 'e', or 'w'.
-    colspan  Number of columns this control spans across.  Defaults to 1.
-    rowspan  Number of rows this control spans across.  Defaults to 1.
-    colskip  Number of columns to skip before placing this control.
-             Defaults to 0.
-    hweight  How much the starting column of this control should expand.
-             When filling unused space, if there are two columns, one with
-             hweight 2 and the other with hweight 1, then the column with
-             hweight 2 will be expanded twice as much as the other column.
-             The default hweight is 0.  Note that the last control in the
-             given column sets the hweight for the column.
-    vweight  How much the starting row of this control should expand.
-             When filling unused space, if there are two rows, one with
-             vweight 2 and the other with vweight 1, then the row with
-             vweight 2 will be expanded twice as much as the other row.
-             The default hweight is 0.  Note that the last control in the
-             given row sets the vweight for the row.
-    toppad   Number of pixels padding to add above this control.
-    leftpad  Number of pixels padding to add to the left of this control.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 C_MULTIEDIT|
 C_MULTIEDIT ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Multi-line text Edit control in a GUI dialog.
 The MultiEdit control is used for multi-line text string editing.
-The only control arguments that this control type can use are:
+The control options specific to this type of control are:
     value    The current contents/value of the control.
     width    Number of average character widths wide this control should be.
              Defaults to 40 characters wide.
     height   Number of lines high this control will be.  Defaults to 1.
     font     Specifies whether the font used is "fixed" or "proportional".
-    pane     The pane in which to place this control.  Some controls, like
-             the notebook or frame controls, create new panes in which you
-             can place controls.
-    newline  If 1, next control will be at the beginning of the next row.
-             If 0, next control will be in the next column to the right.
-             Defaults to 1.
-    sticky   Which sides of the cell this control sticks to.  This is a
-             string with any or all of the letters 'n', 's', 'e', or 'w'.
-    colspan  Number of columns this control spans across.  Defaults to 1.
-    rowspan  Number of rows this control spans across.  Defaults to 1.
-    colskip  Number of columns to skip before placing this control.
-             Defaults to 0.
-    hweight  How much the starting column of this control should expand.
-             When filling unused space, if there are two columns, one with
-             hweight 2 and the other with hweight 1, then the column with
-             hweight 2 will be expanded twice as much as the other column.
-             The default hweight is 0.  Note that the last control in the
-             given column sets the hweight for the column.
-    vweight  How much the starting row of this control should expand.
-             When filling unused space, if there are two rows, one with
-             vweight 2 and the other with vweight 1, then the row with
-             vweight 2 will be expanded twice as much as the other row.
-             The default hweight is 0.  Note that the last control in the
-             given row sets the vweight for the row.
-    toppad   Number of pixels padding to add above this control.
-    leftpad  Number of pixels padding to add to the left of this control.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 C_COMBOBOX|
 C_COMBOBOX ( -- s )
@@ -3393,7 +3395,7 @@ This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Win95 style combobox with a pulldown menu of options.
 The ComboBox control is used for selecting from multiple standard options
 in a compact form factor.  Optionally the user can enter arbitrary data.
-The only control arguments that this control type can use are:
+The control options specific to this type of control are:
     text     The text label that will show to the left of the control.
              Defaults to "" (no label).  If there is a label, then this
              control will be split across two columns, with the label in
@@ -3407,39 +3409,15 @@ The only control arguments that this control type can use are:
              user can only pick a value from the combobox pulldown menu.
              Defaults to 0
     sorted   Causes the contents of the pulldown menu to be auto-sorted.
-    pane     The pane in which to place this control.  Some controls, like
-             the notebook or frame controls, create new panes in which you
-             can place controls.
-    newline  If 1, next control will be at the beginning of the next row.
-             If 0, next control will be in the next column to the right.
-             Defaults to 1.
-    sticky   Which sides of the cell this control sticks to.  This is a
-             string with any or all of the letters 'n', 's', 'e', or 'w'.
-    colspan  Number of columns this control spans across.  Defaults to 1.
-    rowspan  Number of rows this control spans across.  Defaults to 1.
-    colskip  Number of columns to skip before placing this control.
-             Defaults to 0.
-    hweight  How much the starting column of this control should expand.
-             When filling unused space, if there are two columns, one with
-             hweight 2 and the other with hweight 1, then the column with
-             hweight 2 will be expanded twice as much as the other column.
-             The default hweight is 0.  Note that the last control in the
-             given column sets the hweight for the column.
-    vweight  How much the starting row of this control should expand.
-             When filling unused space, if there are two rows, one with
-             vweight 2 and the other with vweight 1, then the row with
-             vweight 2 will be expanded twice as much as the other row.
-             The default hweight is 0.  Note that the last control in the
-             given row sets the vweight for the row.
-    toppad   Number of pixels padding to add above this control.
-    leftpad  Number of pixels padding to add to the left of this control.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 C_LISTBOX|
 C_LISTBOX ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a ListBox control in a GUI dialog.  The ListBox control is used
 for selecting one or more entries from a list of options.
-The only control arguments that this control type can use are:
+The control options specific to this type of control are:
     value    The list of the currently selected list items, given as a list
              of integers that refer to list positions.  0 is the first item.
     font     Specifies whether the font used is "fixed" or "proportional".
@@ -3450,80 +3428,31 @@ The only control arguments that this control type can use are:
     selectmode  One of "single", "multiple", or "extended".  Specifies how
              list item selection is performed, and whether more than one item
              can be selected at a time.
-    pane     The pane in which to place this control.  Some controls, like
-             the notebook or frame controls, create new panes in which you
-             can place controls.
-    newline  If 1, next control will be at the beginning of the next row.
-             If 0, next control will be in the next column to the right.
-             Defaults to 1.
-    sticky   Which sides of the cell this control sticks to.  This is a
-             string with any or all of the letters 'n', 's', 'e', or 'w'.
-    colspan  Number of columns this control spans across.  Defaults to 1.
-    rowspan  Number of rows this control spans across.  Defaults to 1.
-    colskip  Number of columns to skip before placing this control.
-             Defaults to 0.
-    hweight  How much the starting column of this control should expand.
-             When filling unused space, if there are two columns, one with
-             hweight 2 and the other with hweight 1, then the column with
-             hweight 2 will be expanded twice as much as the other column.
-             The default hweight is 0.  Note that the last control in the
-             given column sets the hweight for the column.
-    vweight  How much the starting row of this control should expand.
-             When filling unused space, if there are two rows, one with
-             vweight 2 and the other with vweight 1, then the row with
-             vweight 2 will be expanded twice as much as the other row.
-             The default hweight is 0.  Note that the last control in the
-             given row sets the vweight for the row.
-    toppad   Number of pixels padding to add above this control.
-    leftpad  Number of pixels padding to add to the left of this control.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 C_SPINNER|
 C_SPINNER ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Spinner control in a GUI dialog.  The Spinner control is used
 for setting an integer value, that can be incremented and decremented via
-up and down buttons.  The only control arguments that this control type
-can use are:
+up and down buttons.
+The control options specific to this type of control are:
     value    The current integer value of the control.
     text     If given, makes a label with the given text next to the spinner.
     minval   The minimum integer value that this control can be set to.
     maxval   The maximum integer value that this control can be set to.
     width    Number of digits that this control should be able to hold.
              Defaults to 12 digits.
-    pane     The pane in which to place this control.  Some controls, like
-             the notebook or frame controls, create new panes in which you
-             can place controls.
-    newline  If 1, next control will be at the beginning of the next row.
-             If 0, next control will be in the next column to the right.
-             Defaults to 1.
-    sticky   Which sides of the cell this control sticks to.  This is a
-             string with any or all of the letters 'n', 's', 'e', or 'w'.
-    colspan  Number of columns this control spans across.  Defaults to 1.
-    rowspan  Number of rows this control spans across.  Defaults to 1.
-    colskip  Number of columns to skip before placing this control.
-             Defaults to 0.
-    hweight  How much the starting column of this control should expand.
-             When filling unused space, if there are two columns, one with
-             hweight 2 and the other with hweight 1, then the column with
-             hweight 2 will be expanded twice as much as the other column.
-             The default hweight is 0.  Note that the last control in the
-             given column sets the hweight for the column.
-    vweight  How much the starting row of this control should expand.
-             When filling unused space, if there are two rows, one with
-             vweight 2 and the other with vweight 1, then the row with
-             vweight 2 will be expanded twice as much as the other row.
-             The default hweight is 0.  Note that the last control in the
-             given row sets the vweight for the row.
-    toppad   Number of pixels padding to add above this control.
-    leftpad  Number of pixels padding to add to the left of this control.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 C_SCALE|
 C_SCALE ( -- s )
 This is a standard server define used in conjunction with GUI_CTRL_CREATE
 to create a Scale control in a GUI dialog.  The Scale control is used for
 setting a floating point value, that can be changed by moving a slider.
-The only control arguments that this control type
-can use are:
+The control options specific to this type of control are:
     value      The current floating point value of the control.
     text       If given, makes a label with the given text next to the scale.
     minval     The minimum value that this control can be set to.
@@ -3538,32 +3467,8 @@ can use are:
                Defaults to 100 pixels.
     width      The length of the short axis of the scale, in pixels.
                Defaults to 15 pixels.
-    pane       The pane in which to place this control.  Some controls, like
-               the notebook or frame controls, create new panes in which you
-               can place controls.
-    newline    If 1, next control will be at the beginning of the next row.
-               If 0, next control will be in the next column to the right.
-               Defaults to 1.
-    sticky     Which sides of the cell this control sticks to.  This is a
-               string with any or all of the letters 'n', 's', 'e', or 'w'.
-    colspan    Number of columns this control spans across.  Defaults to 1.
-    rowspan    Number of rows this control spans across.  Defaults to 1.
-    colskip    Number of columns to skip before placing this control.
-               Defaults to 0.
-    hweight    How much the starting column of this control should expand.
-               When filling unused space, if there are two columns, one with
-               hweight 2 and the other with hweight 1, then the column with
-               hweight 2 will be expanded twice as much as the other column.
-               The default hweight is 0.  Note that the last control in the
-               given column sets the hweight for the column.
-    vweight    How much the starting row of this control should expand.
-               When filling unused space, if there are two rows, one with
-               vweight 2 and the other with vweight 1, then the row with
-               vweight 2 will be expanded twice as much as the other row.
-               The default hweight is 0.  Note that the last control in the
-               given row sets the vweight for the row.
-    toppad     Number of pixels padding to add above this control.
-    leftpad    Number of pixels padding to add to the left of this control.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 C_FRAME|
 C_FRAME ( -- s )
@@ -3572,38 +3477,41 @@ to create a frame control in a GUI dialog.  Frame controls are used to
 contain and organize other controls.  Frames can be either invisible
 containers that just organize the positions of other controls, or they
 can be visible groupboxes with borders and labels.
-The only control arguments that this control type can use are:
+The control options specific to this type of control are:
     text        If set, the frame, as a groupbox, will have the given label.
     visible     If set to 1, causes a border to be drawn around the frame.
     collapsible This, is set to 1, allows the group box to be collapsed.
     collapsed   If the frame is collapsible, this sets the state to collapsed.
-    pane        The pane in which to place this control.  Some controls, like
-                the notebook or frame controls, create new panes in which you
-                can place controls.
-    newline     If 1, next control will be at the beginning of the next row.
-                If 0, next control will be in the next column to the right.
-                Defaults to 1.
-    sticky      Which sides of the cell this control sticks to.  This is a
-                string with any or all of the letters 'n', 's', 'e', or 'w'.
-    colspan     Number of columns this control spans across.  Defaults to 1.
-    rowspan     Number of rows this control spans across.  Defaults to 1.
-    colskip     Number of columns to skip before placing this control.
-                Defaults to 0.
-    hweight     How much the starting column of this control should expand.
-                When filling unused space, if there are two columns, one with
-                hweight 2 and the other with hweight 1, then the column with
-                hweight 2 will be expanded twice as much as the other column.
-                The default hweight is 0.  Note that the last control in the
-                given column sets the hweight for the column.
-    vweight     How much the starting row of this control should expand.
-                When filling unused space, if there are two rows, one with
-                vweight 2 and the other with vweight 1, then the row with
-                vweight 2 will be expanded twice as much as the other row.
-                The default hweight is 0.  Note that the last control in the
-                given row sets the vweight for the row.
-    toppad      Number of pixels padding to add above this control.
-    leftpad     Number of pixels padding to add to the left of this control.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 C_NOTEBOOK|
 C_NOTEBOOK ( -- s )
+This is a standard server define used in conjunction with GUI_CTRL_CREATE to
+create a tabbed notebook control in a GUI dialog.  Tabbed notebook controls
+are used to contain and organize other controls in multiple pages that the
+user can select between.
+The control options specific to this type of control are:
+    panes       The list of pane ids to create.  Those are used by other
+                controls, when you wish to specify which pane the control
+                is in.
+    names       The list of names that should be displayed on the pane's tabs.
+                The first name should be for the first pane, the second name
+                should be for the second name, etc.
+    width       The minimum width of the notebook's client area, in pixels.
+    height      The minimum height of the notebook's client area, in pixels.
+
+See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
+~
+FORCE_LEVEL
+force_level ( -- i)
+Returns non-zero if the code we are running was triggered by an @force.
+~
+NAME-OK?|
+name-ok? (s -- i)
+Returns true if the given string would be okay as a general object's name.
+~
+PNAME-OK?|
+name-ok? (s -- i)
+Returns true if the given string would be okay as a player name.
 
