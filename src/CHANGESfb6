@@ -7,6 +7,8 @@ Fixed bug #602793: @q now dequeues progs in EVENT_WAITFOR.
 Fixed bug #619557: WHO with EVENT_WAITFOR no longer blocks input incorrectly.
 Fixed @dlt, @delta and @usage commands to give a more specific error message
   to wizzes when not compiled in.
+Fixed compiler warnings about incompatible pointer types in calls to time(3), 
+  ctime(3), gmtime(3)
 Changed help.txt into a muckhelp.raw file that is processed by prochelp.
 Changed property loading routines to not abort(), but to instead log corrupt
   properties when they are found.
