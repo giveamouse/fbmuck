@@ -135,15 +135,12 @@ prim_regexp(PRIM_PROTOTYPE)
 	{
 		if (matchcnt != PCRE_ERROR_NOMATCH)
 		{
-			free(matches);
 			abort_interp(muf_re_error(matchcnt));
 		}
 
 		if (((nu_val = new_array_packed(0)) == NULL) ||
 			((nu_idx = new_array_packed(0)) == NULL))
 		{
-			free(matches);
-
 			if (nu_val != NULL)
 				array_free(nu_val);
 
@@ -158,8 +155,6 @@ prim_regexp(PRIM_PROTOTYPE)
 		if (((nu_val = new_array_packed(matchcnt)) == NULL) ||
 			((nu_idx = new_array_packed(matchcnt)) == NULL))
 		{
-			free(matches);
-
 			if (nu_val != NULL)
 				array_free(nu_val);
 
@@ -193,8 +188,6 @@ prim_regexp(PRIM_PROTOTYPE)
 
 			if ((nu = new_array_packed(2)) == NULL)
 			{
-				free(matches);
-
 				array_free(nu_val);
 				array_free(nu_idx);
 
@@ -232,8 +225,6 @@ prim_regexp(PRIM_PROTOTYPE)
 			CLEAR(&val);
 		}
 	}
-
-	free(matches);
 
 	CLEAR(oper3);
 	CLEAR(oper2);
@@ -292,7 +283,6 @@ prim_regsub(PRIM_PROTOTYPE)
 		{
 			if (matchcnt != PCRE_ERROR_NOMATCH)
 			{
-				free(matches);
 				abort_interp(muf_re_error(matchcnt));
 			}
 
@@ -334,7 +324,6 @@ prim_regsub(PRIM_PROTOTYPE)
 
 						if ((idx < 0) || (idx >= matchcnt))
 						{
-							free(matches);
 							abort_interp("Invalid \\subexp in substitution string. (3)");
 						}
 
@@ -349,7 +338,6 @@ prim_regsub(PRIM_PROTOTYPE)
 
 							if (count > write_left)
 							{
-								free(matches);
 								abort_interp("Operation would result in overflow");
 							}
 
@@ -388,8 +376,6 @@ prim_regsub(PRIM_PROTOTYPE)
 			break;
 		}
 	}
-
-	free(matches);
 
 	if (*text != '\0')
 		abort_interp("Operation would result in overflow");
