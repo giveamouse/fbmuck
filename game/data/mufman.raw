@@ -2795,7 +2795,7 @@ ARRAY_INSERTITEM ( ? a @ -- a' )
   Inserts a given value into an array.
 ~
 ~
-ARRAY_APPENDITEM
+ARRAY_APPENDITEM|[]<-
 ARRAY_APPENDITEM ( ? a -- a')
 
   Appends the given item to the given list array.
