@@ -12,7 +12,7 @@ basicConstraints = CA:true
 
 [ req_distinguished_name ]
 0.organizationName              = Muck name
-0.organizationName_default      = Testing Fuzzball
+0.organizationName_default      = MyMuck
 
 emailAddress                    = Email Address (the muck administrator)
 emailAddress_max                = 40

@@ -1,6 +1,6 @@
 Summary: 	The FuzzBall TinyMUCK online chat/MUD server
 Name: 		fbmuck
-Version: 	6.00b4
+Version: 	6.00b5
 Release: 	1
 Group: 		Amusements/Games
 Copyright: 	GPL

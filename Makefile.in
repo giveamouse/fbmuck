@@ -71,7 +71,7 @@ package:
 	cd src && make prochelp
 	mv -f src/prochelp ${TMPPKGDIR}
 	cd src && make cleaner
-	cp -fp configure Makefile.in INSTALLATION README ${TMPPKGDIR}
+	cp -fp configure Makefile.in mkdir_recursive fbmuck.spec fuzzball.spec INSTALLATION README ${TMPPKGDIR}
 	ln -s src/CHANGESfb  ${TMPPKGDIR}/CHANGESfb
 	ln -s src/CHANGESfb2 ${TMPPKGDIR}/CHANGESfb2
 	ln -s src/CHANGESfb3 ${TMPPKGDIR}/CHANGESfb3
@@ -80,6 +80,7 @@ package:
 	ln -s src/CHANGESfb6 ${TMPPKGDIR}/CHANGESfb6
 	ln -s 'src/==WARNING==' ${TMPPKGDIR}/'==WARNING=='
 	cp -fpr docs ${TMPPKGDIR}
+	cp -fpr contrib ${TMPPKGDIR}
 	cp -fpr src_docs ${TMPPKGDIR}
 	mkdir ${TMPPKGDIR}/include
 	cp -fp include/*.h include/*.in ${TMPPKGDIR}/include
@@ -90,11 +91,12 @@ package:
 	cp -fp src/COMPILING src/BUG_FORM ${TMPPKGDIR}/src
 	chmod +rw ${TMPPKGDIR}/src/*
 	chmod +x ${TMPPKGDIR}/configure
+	chmod +x ${TMPPKGDIR}/mkdir_recursive
 	mkdir ${TMPPKGDIR}/scripts
 	cp -fp  scripts/fbmuck-sysvinit     ${TMPPKGDIR}/scripts
 	chmod +x ${TMPPKGDIR}/scripts/*
 	mkdir ${TMPPKGDIR}/game
-	cp -fp game/restart game/optimdb ${TMPPKGDIR}/game
+	cp -fp game/restart game/restart.in game/optimdb ${TMPPKGDIR}/game
 	mkdir ${TMPPKGDIR}/game/logs
 	cp -fp game/logs/README ${TMPPKGDIR}/game/logs
 	mkdir ${TMPPKGDIR}/game/muf
@@ -128,7 +130,7 @@ package:
 	tar -cf - fbmuck-`cat ${TMPREV}` | gzip -9 > fbmuck-`cat ${TMPREV}`.tar.gz
 	rm -rf fbmuck-`cat ${TMPREV}` ${TMPREV}
 
-sprm: package
+srpm: package
 	head -1 `/bin/ls -1d src/CHANGESfb* | sort -nr | head -1` | cut -c4- > ${TMPREV}
 	cp -f fbmuck-`cat ${TMPREV}`.tar.gz /usr/src/redhat/SOURCES
 	cp -f fbmuck.spec /usr/src/redhat/SPECS/fbmuck.spec
