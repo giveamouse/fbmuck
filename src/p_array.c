@@ -1514,7 +1514,6 @@ prim_array_findval(PRIM_PROTOTYPE)
 	struct inst *in;
 	stk_array *arr;
 	stk_array *new;
-	int found = 0;
 
 	CHECKOP(2);
 	oper2 = POP();				/* ???  index */
@@ -1530,7 +1529,113 @@ prim_array_findval(PRIM_PROTOTYPE)
 			if (!array_idxcmp(in, oper2)) {
 				array_appenditem(&new, &temp1);
 			}
-		} while (!found && array_next(arr, &temp1));
+		} while (array_next(arr, &temp1));
+	}
+
+	CLEAR(oper2);
+	CLEAR(oper1);
+
+	PushArrayRaw(new);
+}
+
+void
+prim_array_matchkey(PRIM_PROTOTYPE)
+{
+	struct inst *in;
+	stk_array *arr;
+	stk_array *new;
+
+	CHECKOP(2);
+	oper2 = POP();				/* str  pattern */
+	oper1 = POP();				/* arr  Array */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Argument not a string pattern. (2)");
+
+	new = new_array_dictionary();
+	arr = oper1->data.array;
+	if (array_first(arr, &temp1)) {
+		do {
+			if (temp1.type == PROG_STRING) {
+				if (equalstr(DoNullInd(oper2->data.string), DoNullInd(temp1.data.string))) {
+					in = array_getitem(arr, &temp1);
+					array_setitem(&new, &temp1, in);
+				}
+			}
+		} while (array_next(arr, &temp1));
+	}
+
+	CLEAR(oper2);
+	CLEAR(oper1);
+
+	PushArrayRaw(new);
+}
+
+void
+prim_array_matchval(PRIM_PROTOTYPE)
+{
+	struct inst *in;
+	stk_array *arr;
+	stk_array *new;
+
+	CHECKOP(2);
+	oper2 = POP();				/* str  pattern */
+	oper1 = POP();				/* arr  Array */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Argument not a string pattern. (2)");
+
+	new = new_array_dictionary();
+	arr = oper1->data.array;
+	if (array_first(arr, &temp1)) {
+		do {
+			in = array_getitem(arr, &temp1);
+			if (in->type == PROG_STRING) {
+				if (equalstr(DoNullInd(oper2->data.string), DoNullInd(in->data.string))) {
+					array_setitem(&new, &temp1, in);
+				}
+			}
+		} while (array_next(arr, &temp1));
+	}
+
+	CLEAR(oper2);
+	CLEAR(oper1);
+
+	PushArrayRaw(new);
+}
+
+void
+prim_array_extract(PRIM_PROTOTYPE)
+{
+	struct inst *in;
+	struct inst *key;
+	stk_array *arr;
+	stk_array *karr;
+	stk_array *new;
+
+	CHECKOP(2);
+	oper2 = POP();				/* arr  indexes */
+	oper1 = POP();				/* arr  Array */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
+	if (oper2->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (2)");
+
+	new = new_array_dictionary();
+	arr = oper1->data.array;
+	karr = oper2->data.array;
+	if (array_first(karr, &temp1)) {
+		do {
+			key = array_getitem(karr, &temp1);
+			if (key) {
+				in = array_getitem(arr, key);
+				if (in) {
+					array_setitem(&new, key, in);
+				}
+			}
+		} while (array_next(karr, &temp1));
 	}
 
 	CLEAR(oper2);
@@ -1545,7 +1650,6 @@ prim_array_excludeval(PRIM_PROTOTYPE)
 	struct inst *in;
 	stk_array *arr;
 	stk_array *new;
-	int found = 0;
 
 	CHECKOP(2);
 	oper2 = POP();				/* ???  index */
@@ -1561,7 +1665,7 @@ prim_array_excludeval(PRIM_PROTOTYPE)
 			if (array_idxcmp(in, oper2)) {
 				array_appenditem(&new, &temp1);
 			}
-		} while (!found && array_next(arr, &temp1));
+		} while (array_next(arr, &temp1));
 	}
 
 	CLEAR(oper2);
@@ -1569,3 +1673,84 @@ prim_array_excludeval(PRIM_PROTOTYPE)
 
 	PushArrayRaw(new);
 }
+
+
+void
+prim_array_join(PRIM_PROTOTYPE)
+{
+	struct inst *in;
+	stk_array *arr;
+	char outbuf[BUFFER_LEN];
+	char* ptr;
+	const char* text;
+	char* delim;
+	int tmplen;
+	int done;
+
+	CHECKOP(2);
+	oper2 = POP();				/* str  joinstr */
+	oper1 = POP();				/* arr  Array */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Argument not a string pattern. (2)");
+
+	arr = oper1->data.array;
+	delim = DoNullInd(oper2->data.string);
+	ptr = outbuf;
+	*outbuf = '\0';
+	done = !array_first(arr, &temp1);
+	while (!done) {
+		in = array_getitem(arr, &temp1);
+		switch (in->type) {
+			case PROG_STRING:
+				text = DoNullInd(in->data.string);
+				break;
+			case PROG_INTEGER:
+				sprintf(buf, "%d", in->data.number);
+				text = buf;
+				break;
+			case PROG_OBJECT:
+				sprintf(buf, "#%d", in->data.number);
+				text = buf;
+				break;
+			case PROG_FLOAT:
+				sprintf(buf, "%g", in->data.fnumber);
+				text = buf;
+				break;
+			case PROG_LOCK:
+				text = unparse_boolexp(ProgUID, in->data.lock, 1);
+				break;
+			default:
+				text = "<UNSUPPORTED>";
+				break;
+		}
+		if ( ptr != outbuf) {
+			tmplen = strlen(delim);
+			if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1) {
+				strncpy(ptr, delim, BUFFER_LEN - (ptr - outbuf) - 1);
+				outbuf[BUFFER_LEN - 1] = '\0';
+				break;
+			} else {
+				strcpy(ptr, delim);
+				ptr += tmplen;
+			}
+		}
+		tmplen = strlen(text);
+		if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1) {
+			strncpy(ptr, text, BUFFER_LEN - (ptr - outbuf) - 1);
+			outbuf[BUFFER_LEN - 1] = '\0';
+			break;
+		} else {
+			strcpy(ptr, text);
+			ptr += tmplen;
+		}
+		done = !array_next(arr, &temp1);
+	}
+
+	CLEAR(oper2);
+	CLEAR(oper1);
+
+	PushString(outbuf);
+}
+
