@@ -597,6 +597,8 @@ free_unused_programs()
 
 #define IMMFLAG_REFERENCED	1	/* Referenced by a jump */
 
+
+/* Checks code for valid fetch-and-clear optim changes, and does them. */
 void
 MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int BangNo)
 {
@@ -604,15 +606,21 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 	struct INTERMEDIATE* ptr;
 	int farthest = 0;
 	int i;
+	int lvarflag = 0;
+
+	if (first->in.type == PROG_LVAR_AT || first->in.type == PROG_LVAR_AT_CLEAR)
+		lvarflag = 1;
 
 	for(; curr; curr = curr->next) {
 		switch(curr->in.type) {
 			case PROG_PRIMITIVE:
 				/* Don't trust any physical @ or !'s in the code, someone
 					may be indirectly referencing the scoped variable */
+				/* Don't trust any exit's in the code for lvars. */
 
 				if ((curr->in.data.number == AtNo) || 
-					(curr->in.data.number == BangNo))
+					(curr->in.data.number == BangNo) ||
+					(curr->in.data.number == IN_RET && lvarflag))
 				{
 					return;
 				}
@@ -620,9 +628,7 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 
 			case PROG_LVAR_AT:
 			case PROG_LVAR_AT_CLEAR:
-				if (first->in.type == PROG_LVAR_AT || 
-					first->in.type == PROG_LVAR_AT_CLEAR
-				) {
+				if (lvarflag) {
 					if (curr->in.data.number == first->in.data.number) {
 						/* Can't optimize if references to the variable found before a var! */
 						return;
@@ -632,9 +638,7 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 
 			case PROG_SVAR_AT:
 			case PROG_SVAR_AT_CLEAR:
-				if (first->in.type == PROG_SVAR_AT || 
-					first->in.type == PROG_SVAR_AT_CLEAR
-				) {
+				if (!lvarflag) {
 					if (curr->in.data.number == first->in.data.number) {
 						/* Can't optimize if references to the variable found before a var! */
 						return;
@@ -643,9 +647,7 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 				break;
 
 			case PROG_LVAR_BANG:
-				if (first->in.type == PROG_LVAR_AT || 
-					first->in.type == PROG_LVAR_AT_CLEAR
-				) {
+				if (lvarflag) {
 					if (first->in.data.number == curr->in.data.number) {
 						if (curr->no <= farthest) {
 							/* cannot optimize as we are within a branch */
@@ -660,9 +662,7 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 				break;
 
 			case PROG_SVAR_BANG:
-				if (first->in.type == PROG_SVAR_AT || 
-					first->in.type == PROG_SVAR_AT_CLEAR
-				) {
+				if (!lvarflag) {
 					if (first->in.data.number == curr->in.data.number) {
 						if (curr->no <= farthest) {
 							/* cannot optimize as we are within a branch */
@@ -698,6 +698,7 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 	}
 }
 
+
 void
 RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE* curr)
 {
@@ -718,6 +719,7 @@ RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE* curr)
 	free_intermediate_node(tmp);
 	cstat->nowords--;
 }
+
 
 void
 RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE* curr)
@@ -757,6 +759,7 @@ RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE* curr)
 	RemoveNextIntermediate(cstat, curr);
 }
 
+
 int
 ContiguousIntermediates(int* Flags, struct INTERMEDIATE* ptr, int count)
 {
@@ -772,6 +775,7 @@ ContiguousIntermediates(int* Flags, struct INTERMEDIATE* ptr, int count)
 	return 1;
 }
 
+
 int
 IntermediateIsPrimitive(struct INTERMEDIATE* ptr, int primnum)
 {
@@ -783,6 +787,7 @@ IntermediateIsPrimitive(struct INTERMEDIATE* ptr, int primnum)
 	return 0;
 }
 
+
 int
 IntermediateIsInteger(struct INTERMEDIATE* ptr, int val)
 {
@@ -793,6 +798,7 @@ IntermediateIsInteger(struct INTERMEDIATE* ptr, int val)
 	}
 	return 0;
 }
+
 
 int
 IntermediateIsString(struct INTERMEDIATE* ptr, const char* val)
@@ -807,6 +813,7 @@ IntermediateIsString(struct INTERMEDIATE* ptr, const char* val)
 	}
 	return 0;
 }
+
 
 int
 OptimizeIntermediate(COMPSTATE * cstat)
