@@ -2,6 +2,17 @@
 
 /*
  * $Log: interface.c,v $
+ * Revision 1.11  2000/08/03 15:14:40  ferretbun
+ *
+ *
+ * #if 0'd out all the hard-path'd execl() lines for resolver. IFF there is
+ * a system out there where execl()ing "./resolver" doesn't work then we
+ * should use autoconf to specify the full install path.
+ *
+ * Reasoning: multiple execl()s in search of one program in a fixed but
+ * undefined location just aren't cuspy.
+ *
+ *
  * Revision 1.10  2000/07/29 02:27:06  revar
  * Changed 'make install' to install programs to /usr/local/fbmuck/bin/
  * Changed restart script to use the netmuck binary in /usr/local/fbmuck/bin/
@@ -1093,12 +1104,15 @@ spawn_resolver()
 		dup(resolver_sock[0]);
 		dup(resolver_sock[0]);
 		execl("./resolver", "resolver", NULL);
+#if 0
+		execl("@bindir@/resolver", "resolver", NULL);
 		execl("./bin/resolver", "resolver", NULL);
 		execl("/usr/lib/fbmuck/resolver", "resolver", NULL);
 		execl("/usr/local/fbmuck/bin/resolver", "resolver", NULL);
 		execl("/usr/local/bin/resolver", "resolver", NULL);
 		execl("../src/resolver", "resolver", NULL);
 		execl("resolver", "resolver", NULL);
+#endif
 		perror("resolver execlp");
 		_exit(1);
 	}
