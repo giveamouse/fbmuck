@@ -98,7 +98,8 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 	}
 }
 
-/*@null@*/static array_tree * 
+/*@null@*/
+static array_tree * 
 array_tree_find(array_tree * avl, array_iter * key)
 {
 	int cmpval;
@@ -236,12 +237,13 @@ array_tree_balance_node(array_tree * a)
 	return a;
 }
 
+/*@null@*/
 array_tree *
 array_tree_alloc_node(array_iter * key)
 {
 	array_tree *new_node;
 
-	new_node = (array_tree *) malloc(sizeof(array_tree));
+	new_node = (array_tree *) calloc(1,sizeof(array_tree));
 	if (!new_node) {
 		fprintf(stderr, "array_tree_alloc_node(): Out of Memory!\n");
 		abort();
@@ -1632,6 +1634,9 @@ array_get_intkey_strval(stk_array * arr, int key)
 
 /*
  * $Log: array.c,v $
+ * Revision 1.20  2002/02/17 01:01:29  winged
+ * More changes for splint
+ *
  * Revision 1.19  2002/02/17 00:39:36  winged
  * Updates for lint output
  *
