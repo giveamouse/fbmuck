@@ -1,3 +1,10 @@
+2.2fb6.00a30
+Added MAX_VARIABLE_COUNT $define to let MUF programs know what the highest
+  variable number can be for Vars, Local Vars, and Scoped Vars.
+Fixed crasher bug with MCP-GUI and players logging out and back in.
+
+
+
 2.2fb6.00a29
 Added boolean secure_thing_movement @tune param.  Enables triggering of the
   _arrive/, _depart/, etc. propqueues for Thing objects as well as Players.
