@@ -860,7 +860,7 @@ db_free_object(dbref i)
 	struct object *o;
 
 	o = DBFETCH(i);
-	if (NAME(i) && Typeof(i) != TYPE_GARBAGE)
+	if (NAME(i))
 		free((void *) NAME(i));
 
 #ifdef DISKBASE
