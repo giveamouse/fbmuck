@@ -297,7 +297,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 				
 			break;
 		}
-		if(!dryrun)
+		if(!dryrun) {
 			if (dest == HOME) {
 				notify(player, "Linked to HOME.");
 			} else {
