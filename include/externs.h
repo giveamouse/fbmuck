@@ -351,9 +351,6 @@ size_t Base64Decode(void* outbuf, size_t outbuflen, const char* inbuf);
 /* from mcppkgs.c */
 extern void show_mcp_error(McpFrame * mfr, char *topic, char *text);
 
-/* from diskprop.c */
-extern void dispose_all_oldprops(void);
-
 /* from rwho.c */
 extern int rwhocli_shutdown(void);
 extern int rwhocli_setup(const char *server, const char *serverpw, const char *myname, const char *comment);
