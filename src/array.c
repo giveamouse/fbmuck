@@ -69,11 +69,11 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
 			val1 = array_getitem(a->data.array, &idx1);
 			val2 = array_getitem(b->data.array, &idx2);
 			res = array_tree_compare(&idx1, &idx2, case_sens);
-			if (res) {
+			if (res != 0) {
 				return res;
 			}
 			res = array_tree_compare(val1, val2, case_sens);
-			if (res) {
+			if (res != 0) {
 				return res;
 			}
 		} else if (more1) {
