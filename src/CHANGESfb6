@@ -1,4 +1,10 @@
 2.2fb6.00b4
+Fixed bug #205753 -- env-looping problems.
+Fixed bug #450413 -- Problems with forks within loops.
+Fixed problem with certain MUF primitives changing an object's last_used
+  timestamp on content, exit or name check, but not for prop-reading or any
+  other access.  MUF only updates the last_used timestamp now when the
+  moveto primitive is used.
 Fixed permissions problem when both GOD_PRIV and tp_who_doing are set.
 Fixed bug #424057 -- MATCH and PMATCH primitives now strip ansi sequences
   before processing.
