@@ -2,6 +2,12 @@
 
 /*
  * $Log: db.c,v $
+ * Revision 1.6  2000/08/12 06:14:17  revar
+ * Changed {ontime} and {idle} to refer to the least idle of a users connections.
+ * Changed maximum MUF stacksize to 1024 elements.
+ * Optimized almost all MUF connection primitives to be O(1) instead of O(n),
+ *   by using lookup tables instead of searching a linked list.
+ *
  * Revision 1.5  2000/07/18 18:15:02  winged
  * Various fixes to support warning-free compiling under -Wall -Wstrict-prototypes -Wno-format -- not all warnings fixed or found yet
  *
@@ -983,9 +989,16 @@ db_free_object(dbref i)
 
 	if (Typeof(i) == TYPE_EXIT && o->sp.exit.dest) {
 		free((void *) o->sp.exit.dest);
-	} else if (Typeof(i) == TYPE_PLAYER && PLAYER_PASSWORD(i)) {
-		free((void *) PLAYER_PASSWORD(i));
-	}
+    } else if (Typeof(i) == TYPE_PLAYER) {
+        if (PLAYER_PASSWORD(i)) {
+			free((void*)PLAYER_PASSWORD(i));
+        }
+        if (PLAYER_DESCRS(i)){ 
+			free(PLAYER_DESCRS(i));
+			PLAYER_SET_DESCRS(i, NULL);
+			PLAYER_SET_DESCRCOUNT(i, 0);
+        }
+    }
 	if (Typeof(i) == TYPE_THING) {
 		FREE_THING_SP(i);
 	}
@@ -1173,6 +1186,8 @@ db_read_object_old(FILE * f, struct object *o, dbref objno)
 		PLAYER_SET_PASSWORD(objno, password);
 		PLAYER_SET_CURR_PROG(objno, NOTHING);
 		PLAYER_SET_INSERT_MODE(objno, 0);
+		PLAYER_SET_DESCRS(objno, NULL);
+		PLAYER_SET_DESCRCOUNT(objno, 0);
 		break;
 	case TYPE_GARBAGE:
 		OWNER(objno) = NOTHING;
@@ -1284,6 +1299,8 @@ db_read_object_new(FILE * f, struct object *o, dbref objno)
 		PLAYER_SET_PASSWORD(objno, getstring(f));
 		PLAYER_SET_CURR_PROG(objno, NOTHING);
 		PLAYER_SET_INSERT_MODE(objno, 0);
+		PLAYER_SET_DESCRS(objno, NULL);
+		PLAYER_SET_DESCRCOUNT(objno, 0);
 		break;
 	}
 }
@@ -1437,6 +1454,8 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		PLAYER_SET_PASSWORD(objno, getstring(f));
 		PLAYER_SET_CURR_PROG(objno, NOTHING);
 		PLAYER_SET_INSERT_MODE(objno, 0);
+		PLAYER_SET_DESCRS(objno, NULL);
+		PLAYER_SET_DESCRCOUNT(objno, 0);
 		break;
 	case TYPE_PROGRAM:
 		ALLOC_PROGRAM_SP(objno);

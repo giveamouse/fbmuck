@@ -74,7 +74,6 @@ void notify_except(dbref first, dbref exception, const char *msg, dbref who);
 int ok_password(const char *password);
 int ok_player_name(const char *name);
 void parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg, const char *prefix, const char *whatcalled);
-int pfirstconn(dbref who);
 void prog_clean(struct frame *fr);
 int prop_read_perms(dbref player, dbref obj, const char *name, int mlev);
 int prop_write_perms(dbref player, dbref obj, const char *name, int mlev);

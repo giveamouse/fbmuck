@@ -1,6 +1,12 @@
 /* $Header$
  *
  * $Log: db.h,v $
+ * Revision 1.9  2000/08/12 06:14:17  revar
+ * Changed {ontime} and {idle} to refer to the least idle of a users connections.
+ * Changed maximum MUF stacksize to 1024 elements.
+ * Optimized almost all MUF connection primitives to be O(1) instead of O(n),
+ *   by using lookup tables instead of searching a linked list.
+ *
  * Revision 1.8  2000/07/18 18:18:18  winged
  * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
  *
@@ -378,7 +384,7 @@ struct line {
 								   * basic ME, LOC, TRIGGER, and COMMAND vars */
 #define RES_VAR          4		/* no of reserved variables */
 
-#define STACK_SIZE       512	/* maximum size of stack */
+#define STACK_SIZE       1024	/* maximum size of stack */
 
 struct shared_string {			/* for sharing strings in programs */
 	int links;					/* number of pointers to this struct */
@@ -604,6 +610,8 @@ struct player_specific {
 	short insert_mode;			/* in insert mode? */
 	short block;
 	const char *password;
+	int *descrs;
+	int descr_count;
 };
 
 #define THING_SP(x)		(DBFETCH(x)->sp.player.sp)
@@ -627,6 +635,8 @@ struct player_specific {
 #define PLAYER_INSERT_MODE(x)	(PLAYER_SP(x)->insert_mode)
 #define PLAYER_BLOCK(x)		(PLAYER_SP(x)->block)
 #define PLAYER_PASSWORD(x)	(PLAYER_SP(x)->password)
+#define PLAYER_DESCRS(x)    (PLAYER_SP(x)->descrs)
+#define PLAYER_DESCRCOUNT(x)    (PLAYER_SP(x)->descr_count)
 
 #define PLAYER_SET_HOME(x,y)		(PLAYER_SP(x)->home = y)
 #define PLAYER_SET_PENNIES(x,y)		(PLAYER_SP(x)->pennies = y)
@@ -635,6 +645,8 @@ struct player_specific {
 #define PLAYER_SET_INSERT_MODE(x,y)	(PLAYER_SP(x)->insert_mode = y)
 #define PLAYER_SET_BLOCK(x,y)		(PLAYER_SP(x)->block = y)
 #define PLAYER_SET_PASSWORD(x,y)	(PLAYER_SP(x)->password = y)
+#define PLAYER_SET_DESCRS(x,y)		(PLAYER_SP(x)->descrs = y)
+#define PLAYER_SET_DESCRCOUNT(x,y)	(PLAYER_SP(x)->descr_count = y)
 
 /* union of type-specific fields */
 

@@ -2,6 +2,12 @@
 
 /*
  * $Log: wiz.c,v $
+ * Revision 1.7  2000/08/12 06:14:17  revar
+ * Changed {ontime} and {idle} to refer to the least idle of a users connections.
+ * Changed maximum MUF stacksize to 1024 elements.
+ * Optimized almost all MUF connection primitives to be O(1) instead of O(n),
+ *   by using lookup tables instead of searching a linked list.
+ *
  * Revision 1.6  2000/07/20 20:21:40  winged
  * Fixes to not have uninitialized pointers floating around anymore
  *
@@ -667,28 +673,28 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 		}
 		dequeue_prog(victim, 0);	/* dequeue progs that player's running */
 
-		FLAGS(victim) = (FLAGS(victim) & ~TYPE_MASK) | TYPE_THING;
-		OWNER(victim) = player;	/* you get it */
-		THING_SET_VALUE(victim, 1);	/* don't let him keep his
-									   * immense wealth */
-
 		/* notify people */
 		notify(victim, "You have been turned into a toad.");
 		sprintf(buf, "You turned %s into a toad!", PNAME(victim));
 		notify(player, buf);
 		log_status("TOADED: %s(%d) by %s(%d)\n", NAME(victim), victim, NAME(player), player);
 
-		delete_player(victim);
-		FREE_PLAYER_SP(victim);
-		ALLOC_THING_SP(victim);
-		THING_SET_HOME(victim, PLAYER_HOME(player));
-
 		/* reset name */
+		delete_player(victim);
 		sprintf(buf, "A slimy toad named %s", unmangle(victim, PNAME(victim)));
 		free((void *) NAME(victim));
 		NAME(victim) = alloc_string(buf);
 		DBDIRTY(victim);
 		boot_player_off(victim);
+
+		FREE_PLAYER_SP(victim);
+		ALLOC_THING_SP(victim);
+		THING_SET_HOME(victim, PLAYER_HOME(player));
+
+		FLAGS(victim) = (FLAGS(victim) & ~TYPE_MASK) | TYPE_THING;
+		OWNER(victim) = player;	/* you get it */
+		THING_SET_VALUE(victim, 1);	/* don't let him keep his
+									 * immense wealth */
 	}
 }
 

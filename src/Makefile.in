@@ -200,7 +200,7 @@ depend:
 	chmod -w Makefile
 
 Makefile: Makefile.in
-	./configure
+	cd .. && ./configure
 	@echo Please re-run Make, as the Makefile was re-generated.
 	false
 
@@ -235,7 +235,8 @@ install: all
 	${CHMOD} 755 ${TARGETS}
 	${MV} ${TARGETS} ${INSTALL_BINDIR}
 
-	${INSTALL} ${TARGETS} ${DESTDIR}/${bindir}
+# Err, what the heck is this following line?
+#	 ${INSTALL} ${TARGETS} ${DESTDIR}/${bindir}
 
 # #######################################################################
 # #######################################################################

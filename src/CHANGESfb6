@@ -1,9 +1,13 @@
 2.2fb6.00a33
+Changed the build scripts to do 'configure' from the directory above src.
 Changed the restart script to look for netmuck in /usr/local/fbmuck/bin/
-Changed netmuck to also look in /usr/local/fbmuck/bin/ for the resolver.
 Changed 'make install' to install the binaries to /usr/local/fbmuck/bin/
 Changed 'get' command to disable zombie thieving of player/container contents.
+Changed {ontime} and {idle} to refer to the least idle of a users connections.
+Changed maximum MUF stacksize to 1024 elements.
 Optimized {select} MPI command to make it fast on very sparse lists.
+Optimized almost all MUF connection primitives to be O(1) instead of O(n),
+  by using lookup tables instead of searching a linked list.
 Added {timing} MPI command to show how long a command takes to execute.
 
 

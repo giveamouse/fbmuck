@@ -1,6 +1,12 @@
 
 /* $Header$
  * $Log: interface.h,v $
+ * Revision 1.4  2000/08/12 06:14:17  revar
+ * Changed {ontime} and {idle} to refer to the least idle of a users connections.
+ * Changed maximum MUF stacksize to 1024 elements.
+ * Optimized almost all MUF connection primitives to be O(1) instead of O(n),
+ *   by using lookup tables instead of searching a linked list.
+ *
  * Revision 1.3  2000/07/18 18:18:19  winged
  * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
  *
@@ -53,6 +59,8 @@ extern void emergency_shutdown(void);
 extern int boot_off(dbref player);
 extern void boot_player_off(dbref player);
 extern int online(dbref player);
+extern int* get_player_descrs(dbref player, int*count);
+extern int least_idle_player_descr(dbref who);
 extern int pcount(void);
 extern int pidle(int c);
 extern int pdbref(int c);
