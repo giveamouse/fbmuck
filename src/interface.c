@@ -73,10 +73,6 @@
 #include "externs.h"
 #include "interp.h"
 
-#ifdef __APPLE__
-    typedef unsigned int socklen_t;
-#endif
-
 int shutdown_flag = 0;
 int restart_flag = 0;
 

@@ -42,9 +42,6 @@ extern int errno;
 char *Name;						/* name of this program for error messages */
 char msg[32768];
 
-#ifdef __APPLE__
-    typedef unsigned int socklen_t;
-#endif
 
 char*
 strcpyn(char* buf, size_t bufsize, const char* src)
