@@ -94,7 +94,11 @@ struct descriptor_data {
 	McpFrame mcpframe;
 } *descriptor_list = 0;
 
-static int sock;
+#define MAX_LISTEN_SOCKS 16
+
+static int numsocks = 0;
+static int listener_port[MAX_LISTEN_SOCKS];
+static int sock[MAX_LISTEN_SOCKS];
 static int ndescriptors = 0;
 extern void fork_and_dump(void);
 
@@ -107,7 +111,7 @@ extern int rwhocli_userlogin(const char *uid, const char *name, time_t tim);
 extern int rwhocli_userlogout(const char *uid);
 
 void process_commands(void);
-void shovechars(int port);
+void shovechars();
 void shutdownsock(struct descriptor_data *d);
 struct descriptor_data *initializesock(int s, const char *hostname);
 void make_nonblocking(int s);
@@ -119,12 +123,12 @@ int boot_off(dbref player);
 void boot_player_off(dbref player);
 
 #ifdef USE_IPV6
-const char *addrout(struct in6_addr *, unsigned short);
+const char *addrout(int, struct in6_addr *, unsigned short);
 #else
-const char *addrout(long, unsigned short);
+const char *addrout(int, long, unsigned short);
 #endif /* USE_IPV6 */
 void dump_users(struct descriptor_data *d, char *user);
-struct descriptor_data *new_connection(int sock);
+struct descriptor_data *new_connection(int port, int sock);
 void parse_connect(const char *msg, char *command, char *user, char *pass);
 void set_userstring(char **userstring, const char *command);
 int do_command(struct descriptor_data *d, char *command);
@@ -179,7 +183,6 @@ extern FILE *input_file;
 extern FILE *delta_infile;
 extern FILE *delta_outfile;
 
-static unsigned short resolver_myport;
 short db_conversion_flag = 0;
 short db_decompression_flag = 0;
 short wizonly_mode = 0;
@@ -193,11 +196,11 @@ unsigned long sel_prof_idle_use;
 void
 show_program_usage(char *prog)
 {
-	fprintf(stderr, "Usage: %s [<options>] [infile [outfile [portnum]]]\n", prog);
+	fprintf(stderr, "Usage: %s [<options>] [infile [outfile [portnum [portnum ...]]]]\n", prog);
 	fprintf(stderr, "    Arguments:\n");
 	fprintf(stderr, "        infile          db file loaded at startup.  optional with -dbin.\n");
 	fprintf(stderr, "        outfile         output db file to save to.  optional with -dbout.\n");
-	fprintf(stderr, "        portnum         port number to listen for connections on.\n");
+	fprintf(stderr, "        portnum         port num to listen for conns on. (16 ports max)\n");
 	fprintf(stderr, "    Options:\n");
 	fprintf(stderr, "        -dbin INFILE    use INFILE as the database to load at startup.\n");
 	fprintf(stderr, "        -dbout OUTFILE  use OUTFILE as the output database to save to.\n");
@@ -220,21 +223,20 @@ extern int sanity_violated;
 int
 main(int argc, char **argv)
 {
-	int whatport;
 	FILE *ffd;
 	char *infile_name;
 	char *outfile_name;
-	int i, plain_argnum, nomore_options;
+	int i, nomore_options;
 	int sanity_skip;
 	int sanity_interactive;
 	int sanity_autofix;
+	int val;
 
-	resolver_myport = whatport = TINYPORT;
+	listener_port[0] = TINYPORT;
 
     init_descriptor_lookup();
     init_descr_count_lookup();
 
-	plain_argnum = 0;
 	nomore_options = 0;
 	sanity_skip = 0;
 	sanity_interactive = 0;
@@ -275,7 +277,8 @@ main(int argc, char **argv)
 				if (i + 1 >= argc) {
 					show_program_usage(*argv);
 				}
-				resolver_myport = whatport = atoi(argv[++i]);
+				if (numsocks < MAX_LISTEN_SOCKS)
+					listener_port[numsocks++] = atoi(argv[++i]);
 
 			} else if (!strcmp(argv[i], "-gamedir")) {
 				if (i + 1 >= argc) {
@@ -292,22 +295,22 @@ main(int argc, char **argv)
 				show_program_usage(*argv);
 			}
 		} else {
-			plain_argnum++;
-			switch (plain_argnum) {
-			case 1:
+			if (!infile_name) {
 				infile_name = argv[i];
-				break;
-			case 2:
+			} else if (!outfile_name) {
 				outfile_name = argv[i];
-				break;
-			case 3:
-				resolver_myport = whatport = atoi(argv[i]);
-				break;
-			default:
-				show_program_usage(*argv);
-				break;
+			} else {
+				val = atoi(argv[i]);
+				if (val < 1 || val > 65535) {
+					show_program_usage(*argv);
+				}
+				if (numsocks < MAX_LISTEN_SOCKS)
+					listener_port[numsocks++] = val;
 			}
 		}
+	}
+	if (numsocks < 1) {
+		numsocks = 1;
 	}
 	if (!infile_name || !outfile_name) {
 		show_program_usage(*argv);
@@ -414,7 +417,7 @@ main(int argc, char **argv)
 
 
 		/* go do it */
-		shovechars(whatport);
+		shovechars();
 
 		if (restart_flag) {
 			close_sockets("\r\nServer restarting.  Try logging back on in a few minutes.\r\n");
@@ -460,10 +463,18 @@ main(int argc, char **argv)
 #endif
 
 		if (restart_flag) {
+			char portlist[BUFFER_LEN];
 			char numbuf[16];
 
-			sprintf(numbuf, "%d", whatport);
-			execl("restart", "restart", numbuf, (char *) 0);
+			portlist[0] = '\0';
+			for (i = 0; i < numsocks; i++) {
+				sprintf(numbuf, "%d", listener_port[i]);
+				if (*portlist) {
+					strcat(portlist, " ");
+				}
+				strcat(portlist, numbuf);
+			}
+			execl("restart", "restart", portlist, (char *) 0);
 		}
 	}
 
@@ -790,7 +801,7 @@ static int con_players_curr = 0;	/* for playermax checks. */
 extern void purge_free_frames(void);
 
 void
-shovechars(int port)
+shovechars()
 {
 	fd_set input_set, output_set;
 	time_t now;
@@ -803,9 +814,12 @@ shovechars(int port)
 	struct descriptor_data *newd;
 	struct timeval sel_in, sel_out;
 	int avail_descriptors;
+	int i;
 
-	sock = make_socket(port);
-	maxd = sock + 1;
+	for (i = 0; i < numsocks; i++) {
+		sock[i] = make_socket(listener_port[i]);
+		maxd = sock[i] + 1;
+	}
 	gettimeofday(&last_slice, (struct timezone *) 0);
 
 	avail_descriptors = max_open_files() - 5;
@@ -842,8 +856,11 @@ shovechars(int port)
 
 		FD_ZERO(&input_set);
 		FD_ZERO(&output_set);
-		if (ndescriptors < avail_descriptors)
-			FD_SET(sock, &input_set);
+		if (ndescriptors < avail_descriptors) {
+			for (i = 0; i < numsocks; i++) {
+				FD_SET(sock[i], &input_set);
+			}
+		}
 		for (d = descriptor_list; d; d = d->next) {
 			if (d->input.lines > 100)
 				timeout = slice_timeout;
@@ -883,26 +900,28 @@ shovechars(int port)
 			}
 			sel_prof_idle_use++;
 			(void) time(&now);
-			if (FD_ISSET(sock, &input_set)) {
-				if (!(newd = new_connection(sock))) {
-					if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE
-						/*
-						 *  && errno != ETIMEDOUT
-						 *  && errno != ECONNRESET
-						 *  && errno != ENOTCONN
-						 *  && errno != EPIPE
-						 *  && errno != ECONNREFUSED
-						 *#ifdef EPROTO
-						 *  && errno != EPROTO
-						 *#endif
-						 */
-							) {
-						perror("new_connection");
-						/* return; */
+			for (i = 0; i < numsocks; i++) {
+				if (FD_ISSET(sock[i], &input_set)) {
+					if (!(newd = new_connection(listener_port[i], sock[i]))) {
+						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE
+							/*
+							*  && errno != ETIMEDOUT
+							*  && errno != ECONNRESET
+							*  && errno != ENOTCONN
+							*  && errno != EPIPE
+							*  && errno != ECONNREFUSED
+							*#ifdef EPROTO
+							*  && errno != EPROTO
+							*#endif
+							*/
+								) {
+							perror("new_connection");
+							/* return; */
+						}
+					} else {
+						if (newd->descriptor >= maxd)
+							maxd = newd->descriptor + 1;
 					}
-				} else {
-					if (newd->descriptor >= maxd)
-						maxd = newd->descriptor + 1;
 				}
 			}
 #ifdef SPAWN_HOST_RESOLVER
@@ -1022,7 +1041,7 @@ wall_wizards(const char *msg)
 
 
 struct descriptor_data *
-new_connection(int sock)
+new_connection(int port, int sock)
 {
 	int newsock;
 
@@ -1040,11 +1059,11 @@ new_connection(int sock)
 		return 0;
 	} else {
 #ifdef USE_IPV6
-		strcpy(hostname, addrout(&(addr.sin6_addr), addr.sin6_port));
+		strcpy(hostname, addrout(port, &(addr.sin6_addr), addr.sin6_port));
 		log_status("ACCEPT: %s(%d) on descriptor %d\n", hostname,
 				   ntohs(addr.sin6_port), newsock);
 #else
-		strcpy(hostname, addrout(addr.sin_addr.s_addr, addr.sin_port));
+		strcpy(hostname, addrout(port, addr.sin_addr.s_addr, addr.sin_port));
 		log_status("ACCEPT: %s(%d) on descriptor %d\n", hostname,
 				   ntohs(addr.sin_port), newsock);
 #endif
@@ -1166,9 +1185,9 @@ resolve_hostnames()
 
 const char *
 #ifdef USE_IPV6
-addrout(struct in6_addr *a, unsigned short prt)
+addrout(int lport, struct in6_addr *a, unsigned short prt)
 #else
-addrout(long a, unsigned short prt)
+addrout(int lport, long a, unsigned short prt)
 #endif
 {
 	static char buf[128];
@@ -1234,7 +1253,7 @@ addrout(long a, unsigned short prt)
 #ifdef USE_IPV6
 	inet_ntop(AF_INET6, a, ip6addr, 128);
 #ifdef SPAWN_HOST_RESOLVER
-	sprintf(buf, "%s(%u)%u\n", ip6addr, prt, resolver_myport);
+	sprintf(buf, "%s(%u)%u\n", ip6addr, prt, lport);
 	if (tp_hostnames) {
 		write(resolver_sock[1], buf, strlen(buf));
 	}
@@ -1247,7 +1266,7 @@ addrout(long a, unsigned short prt)
 #ifdef SPAWN_HOST_RESOLVER
 	sprintf(buf, "%ld.%ld.%ld.%ld(%u)%u\n",
 			(a >> 24) & 0xff,
-			(a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt, resolver_myport);
+			(a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt, lport);
 	if (tp_hostnames) {
 		write(resolver_sock[1], buf, strlen(buf));
 	}
@@ -1956,27 +1975,30 @@ void
 close_sockets(const char *msg)
 {
 	struct descriptor_data *d, *dnext;
+	int i;
 
 	for (d = descriptor_list; d; d = dnext) {
 		dnext = d->next;
 		write(d->descriptor, msg, strlen(msg));
 		write(d->descriptor, shutdown_message, strlen(shutdown_message));
-		clearstrings(d);			/** added to clean up **/
+		clearstrings(d);
 		if (shutdown(d->descriptor, 2) < 0)
 			perror("shutdown");
 		close(d->descriptor);
-		freeqs(d);				/****/
-		*d->prev = d->next;			/****/
-		if (d->next)						/****/
-			d->next->prev = d->prev;		/****/
-		if (d->hostname)							/****/
-			free((void *) d->hostname);		/****/
-		if (d->username)								/****/
-			free((void *) d->username);			/****/
-		FREE(d);				/****/
-		ndescriptors--;				/****/
+		freeqs(d);
+		*d->prev = d->next;
+		if (d->next)
+			d->next->prev = d->prev;
+		if (d->hostname)
+			free((void *) d->hostname);
+		if (d->username)
+			free((void *) d->username);
+		FREE(d);
+		ndescriptors--;
 	}
-	close(sock);
+	for (i = 0; i < numsocks; i++) {
+		close(sock[i]);
+	}
 }
 
 

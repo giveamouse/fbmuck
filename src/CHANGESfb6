@@ -110,6 +110,7 @@ Added REFLIST_FIND ( d1 s1 d2 -- i ) muf primitive.  Finds dbref d2 in the
   reflist in property s1 on object d1.  If d2 is not in the list, then 0 is
   returned.  Otherwise the position of the dbref in the list is returned,
   with the first dbref being in position 1, the second dbref in 2, etc.
+Added support for multiple listener sockets, a la FB5.
 Changed MPI to not use the trigger's wizbit for permissions.  Instead, if the
   property is itself Blessed, then it gets the permissions that wizbit mpi
   used to have.

@@ -1,16 +1,11 @@
-These items are mandatory for FB6 release.  The number prefix is priority.
-  1 Change @bless and @unbless to allow specifying possible multiple props via
-      an smatch wildcard argument.  Should list all props thusly blessed.
-
-  2 Update documentation.  (Especially the muf prim index.)
-
-  3 Integrate multiple listener ports mods.
-
-  4 Fix compression bugs, or implement new compression schema.
-  4 Add memory usage based limits on MUF progs.
+These items are mandatory for FB6 release:
+  Update documentation.  (Especially the muf prim index.)
 
 
-These items may be considered to be optional for release:
+These items are deferred:
+  Fix compression bugs, or implement new compression schema.
+  Add memory usage based limits on MUF progs.
+
   Separate MPI perms away from Builder bit a la ProtoMUCK.
   Implement Viewable flag for MUF program @listing.
   Add Per-User CPU usage throttles.

@@ -181,5 +181,5 @@ touch $RESTARTS_LOGFILE
 echo "`date` - `who am i`" >> $RESTARTS_LOGFILE
 
 # echo "Server started at: `date`"
-$SERVER -gamedir $GAMEDIR -dbin $DBIN -dbout $DBOUT -port $PORT > $STDOUTERR_LOGFILE 2>&1 &
+$SERVER -gamedir $GAMEDIR -dbin $DBIN -dbout $DBOUT $PORT > $STDOUTERR_LOGFILE 2>&1 &
 
