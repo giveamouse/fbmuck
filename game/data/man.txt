@@ -2305,7 +2305,14 @@ $pubdef \<defname> <rest_of_line>
     E.g.: $pubdef tell me @ swap notify
     would put a _defs/tell:me @ swap notify prop on the program object.
     Def names cannot have ':' nor '/' in them.
-
+ 
+$libdef <function>
+$libdef \<function>
+    Sets up an _defs/ prop on the program to call the specified function.
+	E.g.: $libdef myfunc
+	would put an '_defs/myfunc:<program dbref> "myfunc" call' prop on the
+	program object.
+	
 $cleardefs [ALL]
     Ignores program _defs/ when compiling the program. Wizards can use
     $cleardefs ALL to also ignore #0 _defs/ when compiling. This does
