@@ -1905,6 +1905,8 @@ check_connect(struct descriptor_data *d, const char *msg)
 			queue_string(d, "\r\n");
 			log_status("FAILED CREATE %s on descriptor %d\n", user, d->descriptor);
 		}
+	} else if (!*command) {
+		/* do nothing */
 	} else {
 		welcome_user(d);
 	}
