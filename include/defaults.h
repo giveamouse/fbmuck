@@ -262,3 +262,6 @@
 /* Define to 0 to prevent diskbasing of property values, or to 1 to allow. */
 #define DISKBASE_PROPVALS 1
 
+/* Define to 1 to cause muf debug tracing to display expanded arrays. */
+#define EXPANDED_DEBUG_TRACE 1
+

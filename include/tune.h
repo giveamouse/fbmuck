@@ -111,6 +111,7 @@ extern int tp_log_read;
 extern int tp_allow_home;
 extern int tp_enable_prefix;
 extern int tp_thing_movement;
+extern int tp_expanded_debug;
 
 extern int tune_count_parms();
 extern void tune_load_parms_from_file(FILE *f, dbref player, int cnt);
