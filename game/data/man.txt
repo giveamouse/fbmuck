@@ -2243,8 +2243,10 @@ $version <float>
 $lib-version <float>
 	Sets the _lib-version string property on the program to <float>.
 
-$author <string>
-	Sets the _author string property on the program to <string>.
+$author <rest_of_line>
+	Sets the _author string property on the program to <rest_of_line>.
+	The preferred format is an email address with name comment. ie:
+	   $author Revar Desmera <revar@belfry.com>
 
 $note <rest_of_line>
 	Sets the _note string property on the program to <rest_of_line>.

@@ -7,6 +7,9 @@ Fixed crasher bug with muf process kill while handling mufevent.
 Fixed bug with GETPIDINFO returning timer event info for a process.
 Fixed hanging bug in fbmuck init script, when fbmuck errors out.
 Fixed crasher with GETLINKS primitive.
+Fixed $author and $note directives to stop them from storing garbage.
+Fixed crasher bug in ARRAY_FILTER_PROP.
+Fixed error in ARRAY_FILTER_PROP processing of compressed strings.
 Changed SSL cert/key load failures to just disable SSL, instead of exiting.
 Changed SSL cert/key load failure error reporting to show file path/name.
 Changed commandline to accept -sport with a warning when SSL not supported.

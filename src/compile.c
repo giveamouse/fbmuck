@@ -1694,7 +1694,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 			v_abort_compile(cstat, "Not a floating point number for the version.");
 		add_property(cstat->program, "_version", tmpname, 0);
 		while (*cstat->next_char)
-				cstat->next_char++;
+			cstat->next_char++;
 		advance_line(cstat);
 		free(tmpname);
 
@@ -1702,10 +1702,11 @@ do_directive(COMPSTATE * cstat, char *direct)
 		tmpname = (char *) next_token_raw(cstat);
 		if (!ifloat(tmpname))
 			v_abort_compile(cstat, "Not a floating point number for the version.");
+		add_property(cstat->program, "_lib-version", tmpname, 0);
 		while (*cstat->next_char)
 			cstat->next_char++;
 		advance_line(cstat);
-		add_property(cstat->program, "_lib-version", tmpname, 0);
+		free(tmpname);
 
 	} else if (!string_compare(temp, "author")) {
 		while(*cstat->next_char && isspace(*cstat->next_char))
@@ -1713,8 +1714,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 		tmpname = (char *) cstat->next_char;
 		while (*cstat->next_char)
 			cstat->next_char++;
-		advance_line(cstat);
 		add_property(cstat->program, "_author", tmpname, 0);
+		advance_line(cstat);
 
 	} else if (!string_compare(temp, "note")) {
 		while(*cstat->next_char && isspace(*cstat->next_char))
@@ -1722,8 +1723,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 		tmpname = (char *) cstat->next_char;
 		while (*cstat->next_char)
 			cstat->next_char++;
-		advance_line(cstat);
 		add_property(cstat->program, "_note", tmpname, 0);
+		advance_line(cstat);
 
 	} else if (!string_compare(temp, "ifdef") || !string_compare(temp, "ifndef")) {
 		int invert_flag = !string_compare(temp, "ifndef");

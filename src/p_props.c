@@ -955,17 +955,20 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 	if (array_first(arr, &temp1)) {
 		do {
 			in = array_getitem(arr, &temp1);
-			ref = in->data.objref;
-			CHECKREMOTE(ref);
-			if (prop_read_perms(ProgUID, ref, prop, mlev)) {
-				ptr = get_property_class(ref, prop);
-				if (ptr) {
-					strcpy(buf, ptr);
-				} else {
-					strcpy(buf, "");
-				}
-				if (equalstr(pattern, buf)) {
-					array_appenditem(&nu, in);
+			if (valid_object(in)) {
+				ref = in->data.objref;
+				CHECKREMOTE(ref);
+				if (prop_read_perms(ProgUID, ref, prop, mlev)) {
+					ptr = get_property_class(ref, prop);
+					if (ptr) {
+						ptr = get_uncompress(ptr);
+						strcpy(buf, ptr);
+					} else {
+						strcpy(buf, "");
+					}
+					if (equalstr(pattern, buf)) {
+						array_appenditem(&nu, in);
+					}
 				}
 			}
 		} while (array_next(arr, &temp1));
