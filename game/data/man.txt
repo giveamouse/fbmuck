@@ -558,6 +558,22 @@ on the stack.  (Note that if you read these items off in order, they
 will come out "Hello" first, then "world".)  For TinyMUCK 2.2, s2 may
 be any length.  But "" (null string) is not an acceptable string for
 parameter s2.
+
+Also see: EXPLODE_ARRAY
+~
+EXPLODE_ARRAY|
+explode_array( s1 s2 -- a )
+s2 is the delimiter string, and s1 is the target string.  s1 will be split
+up at each place where s2 is found in s1, and all the parts will be returned
+in a list array.  For instance:
+    "alpha, beta, gamma"  ", "  explode_array
+will result in a list array that is identical to:
+    { "alpha" "beta" "gamma" }list
+s2 cannot be a null string, but it can be of any non-zero length.  When s2
+is more than one character long, the delimiter is considered to be the
+entire s2 string.  The delimiters are removed from the results.
+  
+Also see: EXPLODE
 ~
 FABS|
 fabs ( f -- f )
@@ -2887,6 +2903,7 @@ events is a dictionary contains the folowing keys:
   dismissed  Holds 1 if the dialog was dismissed, 0 otherwise.
   event      Holds the type of gui event.  ie: buttonpress, menuselect.
 
+WORK: TIMER. events.
 WORK: USER. events.
 WORK: MCP. events.
 ~
