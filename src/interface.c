@@ -1050,6 +1050,7 @@ shovechars()
  
 	if (!SSL_CTX_use_certificate_file (ssl_ctx, SSL_CERT_FILE, SSL_FILETYPE_PEM)) {
 		log_status("Could not load certificate file %s\n", SSL_CERT_FILE);
+		fprintf(stderr, "Could not load certificate file %s\n", SSL_CERT_FILE);
 		ssl_status_ok = 0;
 	}
 	if (ssl_status_ok) {
@@ -1058,12 +1059,14 @@ shovechars()
 
 		if (!SSL_CTX_use_PrivateKey_file (ssl_ctx, SSL_KEY_FILE, SSL_FILETYPE_PEM)) {
 			log_status("Could not load private key file %s\n", SSL_KEY_FILE);
+			fprintf(stderr, "Could not load private key file %s\n", SSL_KEY_FILE);
 			ssl_status_ok = 0;
 		}
 	}
 	if (ssl_status_ok) {
 		if (!SSL_CTX_check_private_key (ssl_ctx)) {
 			log_status("Private key does not check out and appears to be invalid.\n");
+			fprintf(stderr, "Private key does not check out and appears to be invalid.\n");
 			ssl_status_ok = 0;
 		}
 	}
@@ -1141,7 +1144,7 @@ shovechars()
 				FD_SET(d->descriptor, &output_set);
 #ifdef USE_SSL
 			if (d->ssl_session) {
-			/* SSL may want to write even if the output queue is empty */
+				/* SSL may want to write even if the output queue is empty */
 				if ( ! SSL_is_init_finished(d->ssl_session) ) {
 					/* log_status("SSL : Init not finished.\n", "version"); */
 					FD_CLR(d->descriptor, &output_set);
