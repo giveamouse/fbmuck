@@ -22,7 +22,7 @@ Added PROGRAM_GETLINES ( d -- a ) or ( d i1 -- a ) or ( d i1 i2 -- a )
   non-zero argument returns an array of the specified line only. 
   With two non-zero arguments returns all lines i1 through i2 inclusive.
   Zero-valued arguments will effectively be ignored. Program must be
-  controlled by the program's UID, be set VEIWABLE, or the program must
+  controlled by the program's UID, be set VIEWABLE, or the program must
   be running with wizard permissions.
 
 2.2fb6.00b3
