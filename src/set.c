@@ -158,7 +158,6 @@ do_doing(int descr, dbref player, const char *name, const char *mesg)
 			notify(player, "Doing cleared.");
 		}
 	}
-	}
 }
 
 void
