@@ -19,6 +19,8 @@ Fixed bug #666898: _default pronouns for any miss, not only empty.
 Fixed bug with TRY not honoring stack locking itself.
 Fixed bug where programs placed in @flocks weren't run from {force}.
 Fixed bug with optimiser crashing on div/mod by zero.
+Fixed bug with TRY not honoring stack locking itself.
+Fixed bug #695251: Colour not stripped from leave_mesg for !C.
 Changed help.txt into a muckhelp.raw file that is processed by prochelp.
 Changed property loading routines to not abort(), but to instead log corrupt
   properties when they are found.
