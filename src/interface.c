@@ -2141,6 +2141,9 @@ close_sockets(const char *msg)
 
 	for (d = descriptor_list; d; d = dnext) {
 		dnext = d->next;
+		if (d->connected) {
+			forget_player_descr(d->player, d->descriptor);
+		}
 		socket_write(d, msg, strlen(msg));
 		socket_write(d, shutdown_message, strlen(shutdown_message));
 		clearstrings(d);
@@ -2158,6 +2161,7 @@ close_sockets(const char *msg)
 		FREE(d);
 		ndescriptors--;
 	}
+	update_desc_count_table();
 	for (i = 0; i < numsocks; i++) {
 		close(sock[i]);
 	}

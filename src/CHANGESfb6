@@ -26,6 +26,7 @@ Fixed some tiny buffer overrun errors with muf debugging.
 Fixed 'PID KILL' to kill the current program, without triggering a CATCH.
 Fixed erroneous error messages in GUI_CTRL_COMMAND.
 Fixed MCP GUI event handlers to return multi-line 'data' args.
+Fixed irregular crasher bug with @shutdown.
 Added new @tune -- lazy_mpi_istype_perm.  This changes the permissions for
   {istype} to be the lazy, pre-5.56 method, allowing {istype} to reference
   remote objects.
