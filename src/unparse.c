@@ -2,6 +2,9 @@
 
 /*
  * $Log: unparse.c,v $
+ * Revision 1.3  2002/03/27 10:44:10  revar
+ * Fixed crasher bug with letting object names grow near to BUFFER_LEN length.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -152,7 +155,7 @@ unparse_object(dbref player, dbref loc)
 			 ((Typeof(loc) != TYPE_PLAYER) &&
 			  (controls_link(player, loc) || (FLAGS(loc) & CHOWN_OK))))) {
 			/* show everything */
-			sprintf(buf, "%s(#%d%s)", PNAME(loc), loc, unparse_flags(loc));
+			sprintf(buf, "%.*s(#%d%s)", (BUFFER_LEN / 2), PNAME(loc), loc, unparse_flags(loc));
 			return buf;
 		} else {
 			/* show only the name */

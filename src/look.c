@@ -552,21 +552,30 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	}
 	switch (Typeof(thing)) {
 	case TYPE_ROOM:
-		sprintf(buf, "%s  Owner: %s  Parent: ", unparse_object(player, thing),
+		sprintf(buf, "%.*s  Owner: %s  Parent: ",
+				(BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
+				unparse_object(player, thing),
 				NAME(OWNER(thing)));
 		strcat(buf, unparse_object(player, DBFETCH(thing)->location));
 		break;
 	case TYPE_THING:
-		sprintf(buf, "%s  Owner: %s  Value: %d", unparse_object(player, thing),
+		sprintf(buf, "%.*s  Owner: %s  Value: %d",
+				(BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
+				unparse_object(player, thing),
 				NAME(OWNER(thing)), THING_VALUE(thing));
 		break;
 	case TYPE_PLAYER:
-		sprintf(buf, "%s  %s: %d  ", unparse_object(player, thing),
+		sprintf(buf, "%.*s  %s: %d  ", 
+				(BUFFER_LEN - strlen(tp_cpennies) - 35),
+				unparse_object(player, thing),
 				tp_cpennies, PLAYER_PENNIES(thing));
 		break;
 	case TYPE_EXIT:
 	case TYPE_PROGRAM:
-		sprintf(buf, "%s  Owner: %s", unparse_object(player, thing), NAME(OWNER(thing)));
+		sprintf(buf, "%.*s  Owner: %s",
+				(BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
+				unparse_object(player, thing),
+				NAME(OWNER(thing)));
 		break;
 	case TYPE_GARBAGE:
 		strcpy(buf, unparse_object(player, thing));
