@@ -88,10 +88,10 @@ cd $GAMEDIR
 
 umask 077
 
-# Max open files/descriptors
-( ulimit -n 1024 >> /dev/null 2>&1 ) && ( ulimit -n unlimited >> /dev/null 2>&1 )
+# Maximize resource limits
+ulimit -n `ulimit -Hn` ;# let us use all descriptors our hardlimit allows.
+ulimit -t `ulimit -Ht` ;# let us use all CPU time our hardlimit allows.
 
-ulimit -t unlimited   ;# Max amount of cpu time in seconds
 
 if [ -r $PIDFILE -a -s $PIDFILE ]; then
 	muckpid=`cat $PIDFILE`
