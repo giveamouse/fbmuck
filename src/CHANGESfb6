@@ -49,6 +49,10 @@ Fixed a few typos in README and README.ssl.
 Fixed fbmuck.spec to use current version number (6.00rc7) and changed
   Source url to reflect sourceforge changes.
 Fixed uses of '#' and '*' instead of NUMBER_TOKEN and LOOKUP_TOKEN.
+Fixed do_armageddon to log @armageddon attempts by non-wizards.
+Fixed do_{describe,idescribe,doing,fail,success,drop_message,osuccess,ofail,
+  odrop,oecho,pecho} to acknowledge cleared messages more clearly.
+Fixed do_restrict to display current status when no arguments are given.
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.
@@ -84,6 +88,9 @@ Added reserved_names @tune which when set to a smatch pattern will refuse any
   object creations or renames which match said pattern.  Defaults to "".
 Added reserved_player_names @tune which when set to a smatch pattern will refuse
   any player creations or renames which match said pattern.  Defaults to "".
+Added @delta alias for @dlt command (a la glowmuck).
+Removed dead concentrater log code.
+Removed dead LOCKOUT code from include/config.h.
 
 
 

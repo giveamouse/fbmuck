@@ -172,10 +172,6 @@
 
 #define RESOLVER_PID_FILE "hostfind.pid"	/* Write the resolver pid to ... */
 
-#ifdef LOCKOUT
-# define LOCKOUT_FILE "data/lockout.txt"
-#endif							/* LOCKOUT */
-
 #ifdef DETACH
 # define LOG_FILE     "logs/fbmuck"     /* Log stdout to ... */
 # define LOG_ERR_FILE "logs/fbmuck.err" /* Log stderr to ... */

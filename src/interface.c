@@ -2477,6 +2477,7 @@ do_armageddon(dbref player, const char *msg)
 
 	if (!Wizard(player)) {
 		notify(player, "Sorry, but you don't look like the god of War to me.");
+		log_status("ILLEGAL ARMAGEDDON: tried by %s\n", unparse_object(player, player));
 		return;
 	}
 	snprintf(buf, sizeof(buf), "\r\nImmediate shutdown initiated by %s.\r\n", NAME(player));

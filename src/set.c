@@ -120,7 +120,11 @@ do_describe(int descr, dbref player, const char *name, const char *description)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETDESC(thing, description);
-		notify(player, "Description set.");
+		if(description && *description) {
+			notify(player, "Description set.");
+		} else {
+			notify(player, "Description cleared.");
+		}
 	}
 }
 
@@ -132,7 +136,11 @@ do_idescribe(int descr, dbref player, const char *name, const char *description)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETIDESC(thing, description);
-		notify(player, "Description set.");
+		if(description && *description) {
+			notify(player, "Description set.");
+		} else {
+			notify(player, "Description cleared.");
+		}
 	}
 }
 
@@ -144,7 +152,12 @@ do_doing(int descr, dbref player, const char *name, const char *mesg)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETDOING(thing, mesg);
-		notify(player, "Doing set.");
+		if(mesg && *mesg) {
+			notify(player, "Doing set.");
+		} else {
+			notify(player, "Doing cleared.");
+		}
+	}
 	}
 }
 
@@ -156,7 +169,11 @@ do_fail(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETFAIL(thing, message);
-		notify(player, "Message set.");
+		if(message && *message) {
+			notify(player, "Message set.");
+		} else {
+			notify(player, "Message cleared.");
+		}
 	}
 }
 
@@ -168,7 +185,11 @@ do_success(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETSUCC(thing, message);
-		notify(player, "Message set.");
+		if(message && *message) {
+			notify(player, "Message set.");
+		} else {
+			notify(player, "Message cleared.");
+		}
 	}
 }
 
@@ -181,7 +202,11 @@ do_drop_message(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETDROP(thing, message);
-		notify(player, "Message set.");
+		if(message && *message) {
+			notify(player, "Message set.");
+		} else {
+			notify(player, "Message cleared.");
+		}
 	}
 }
 
@@ -193,7 +218,11 @@ do_osuccess(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETOSUCC(thing, message);
-		notify(player, "Message set.");
+		if(message && *message) {
+			notify(player, "Message set.");
+		} else {
+			notify(player, "Message cleared.");
+		}
 	}
 }
 
@@ -205,7 +234,11 @@ do_ofail(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETOFAIL(thing, message);
-		notify(player, "Message set.");
+		if(message && *message) {
+			notify(player, "Message set.");
+		} else {
+			notify(player, "Message cleared.");
+		}
 	}
 }
 
@@ -217,7 +250,11 @@ do_odrop(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETODROP(thing, message);
-		notify(player, "Message set.");
+		if(message && *message) {
+			notify(player, "Message set.");
+		} else {
+			notify(player, "Message cleared.");
+		}
 	}
 }
 
@@ -229,7 +266,11 @@ do_oecho(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETOECHO(thing, message);
-		notify(player, "Message set.");
+		if(message && *message) {
+			notify(player, "Message set.");
+		} else {
+			notify(player, "Message cleared.");
+		}
 	}
 }
 
@@ -241,7 +282,11 @@ do_pecho(int descr, dbref player, const char *name, const char *message)
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		ts_modifyobject(thing);
 		SETPECHO(thing, message);
-		notify(player, "Message set.");
+		if(message && *message) {
+			notify(player, "Message set.");
+		} else {
+			notify(player, "Message cleared.");
+		}
 	}
 }
 

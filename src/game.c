@@ -448,7 +448,9 @@ do_restrict(dbref player, const char *arg)
 		wizonly_mode = 0;
 		notify(player, "Login access is now unrestricted.");
 	} else {
-		notify(player, "Argument must be 'on' or 'off'.");
+		notify_fmt(player, "Restricted connection mode is currently %s.",
+			wizonly_mode ? "on" : "off"
+		);
 	}
 }
 
@@ -715,8 +717,17 @@ process_command(int descr, dbref player, char *command)
 					break;
 				case 'e':
 				case 'E':
-					Matched("@describe");
-					do_describe(descr, player, arg1, arg2);
+#ifdef DELTADUMPS
+					if(command[3] == 'l' || command[3] == 'L') {
+						Matched("@delta");
+						do_delta(player);
+					} else {
+#endif /* DELTADUMPS */
+						Matched("@describe");
+						do_describe(descr, player, arg1, arg2);
+#ifdef DELTADUMPS						
+					}
+#endif /* DELTADUMPS */						
 					break;
 				case 'i':
 				case 'I':
