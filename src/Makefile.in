@@ -72,7 +72,7 @@ LIBR=@LIBS@
 #
 # Include path, Cflags...
 #
-CFLAGS= ${OPTIM} ${DEFS} -I${INCLUDE}
+CFLAGS= ${OPTIM} ${DEFS} -I${INCLUDE} -DBINDIR=\"${INSTALL_BINDIR}\"
 
 #
 # for saving old copies.

@@ -1240,6 +1240,13 @@ spawn_resolver()
 		close(1);
 		dup(resolver_sock[0]);
 		dup(resolver_sock[0]);
+#ifdef BINDIR
+		{
+			char resolverpath[1025];
+			sprintf(resolverpath,"%s/resolver",BINDIR);
+			execl(resolverpath,"resolver",NULL);
+		}
+#endif
 		execl("/usr/local/bin/resolver", "resolver", NULL);
 		execl("./resolver", "resolver", NULL);
 #if 0
