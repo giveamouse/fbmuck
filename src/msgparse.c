@@ -234,18 +234,21 @@ string_substitute(const char *str, const char *oldstr, const char *newstr, char 
 	char *ptr2 = buf;
 	const char *ptr3;
 	int len = strlen(oldstr);
+	int clen = 0;
 
 	if (len == 0) {
 		strcpy(buf, str);
 		return buf;
 	}
-	while (*ptr) {
+	while (*ptr && clen < (maxlen+2)) {
 		if (!strncmp(ptr, oldstr, len)) {
 			for (ptr3 = newstr; ((ptr2 - buf) < (maxlen - 2)) && *ptr3;)
 				*(ptr2++) = *(ptr3++);
 			ptr += len;
+			clen += len;
 		} else {
 			*(ptr2++) = *(ptr++);
+			clen++;
 		}
 	}
 	*ptr2 = '\0';
@@ -881,11 +884,13 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 	}
 	if (Typeof(player) == TYPE_GARBAGE) {
 		mesg_rec_cnt--;
+		outbuf[maxchars - 1] = '\0';
 		return NULL;
 	}
 	if (Typeof(what) == TYPE_GARBAGE) {
 		notify_nolisten(player, "MPI Error: Garbage trigger.", 1);
 		mesg_rec_cnt--;
+		outbuf[maxchars - 1] = '\0';
 		return NULL;
 	}
 	strcpy(wbuf, inbuf);
@@ -942,6 +947,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									(varflag ? cmdbuf : mfun_list[s].name), MFUN_ARGEND);
 							notify_nolisten(player, dbuf, 1);
 							mesg_rec_cnt--;
+							outbuf[maxchars - 1] = '\0';
 							return NULL;
 						}
 						for (i = 0; i < argc; i++) {
@@ -974,6 +980,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									free(argv[i + (varflag? 1 : 0)]);
 								}
 								mesg_rec_cnt--;
+								outbuf[maxchars - 1] = '\0';
 								return NULL;
 							}
 						}
@@ -992,6 +999,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									}
 								}
 								mesg_rec_cnt--;
+								outbuf[maxchars - 1] = '\0';
 								return NULL;
 							}
 							if (argv[0]) {
@@ -1044,6 +1052,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 										free(argv[i]);
 									}
 									mesg_rec_cnt--;
+									outbuf[maxchars - 1] = '\0';
 									return NULL;
 								}
 							}
@@ -1078,6 +1087,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 								free(argv[i]);
 							}
 							mesg_rec_cnt--;
+							outbuf[maxchars - 1] = '\0';
 							return NULL;
 						} else if (mfun_list[s].maxargs > 0 && argc > mfun_list[s].maxargs) {
 							char *zptr = get_mvar("how");
@@ -1090,6 +1100,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 								free(argv[i]);
 							}
 							mesg_rec_cnt--;
+							outbuf[maxchars - 1] = '\0';
 							return NULL;
 						} else {
 							ptr = mfun_list[s].mfn(descr, player, what, perms, argc,
@@ -1100,6 +1111,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									free(argv[i]);
 								}
 								mesg_rec_cnt--;
+								outbuf[maxchars - 1] = '\0';
 								return NULL;
 							}
 							if (mfun_list[s].postp) {
@@ -1116,6 +1128,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 										free(argv[i]);
 									}
 									mesg_rec_cnt--;
+									outbuf[maxchars - 1] = '\0';
 									return NULL;
 								}
 								ptr = dptr;
@@ -1147,6 +1160,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									free(argv[i]);
 								}
 								mesg_rec_cnt--;
+								outbuf[maxchars - 1] = '\0';
 								return NULL;
 							}
 						}
@@ -1166,6 +1180,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 							free(argv[i]);
 						}
 						mesg_rec_cnt--;
+						outbuf[maxchars - 1] = '\0';
 						return NULL;
 					}
 				} else {
@@ -1200,6 +1215,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 		free(argv[i]);
 	}
 	mesg_rec_cnt--;
+	outbuf[maxchars - 1] = '\0';
 	return (outbuf);
 }
 

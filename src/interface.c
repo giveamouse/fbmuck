@@ -1687,6 +1687,7 @@ initializesock(int s, const char *hostname)
 #endif
 	d->connected = 0;
 	d->booted = 0;
+	d->player = -1;
 	d->con_number = 0;
 	d->connected_at = time(NULL);
 	make_nonblocking(s);
@@ -2492,6 +2493,7 @@ close_sockets(const char *msg)
 			free((void *) d->hostname);
 		if (d->username)
 			free((void *) d->username);
+		mcp_frame_clear(&d->mcpframe);
 		FREE(d);
 		ndescriptors--;
 	}

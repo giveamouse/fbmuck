@@ -297,6 +297,10 @@ mcp_frame_clear(McpFrame * mfr)
 	McpFrameList* mfrl = mcp_frame_list;
 	McpFrameList* prev;
 
+	if (mfr->authkey) {
+	        free(mfr->authkey);
+	        mfr->authkey = NULL;
+	}
 	while (tmp) {
 		mfr->packages = tmp->next;
 		if (tmp->pkgname)

@@ -402,6 +402,9 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 			break;
 		}
 		DBFETCH(thing)->sp.exit.ndest = ndest;
+		if (DBFETCH(thing)->sp.exit.dest) {
+		    free(DBFETCH(thing)->sp.exit.dest);
+		}
 		DBFETCH(thing)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * ndest);
 		for (i = 0; i < ndest; i++) {
 			(DBFETCH(thing)->sp.exit.dest)[i] = good_dest[i];

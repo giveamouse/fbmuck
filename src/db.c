@@ -1403,6 +1403,7 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		PROGRAM_SET_PROFTIME(objno, 0, 0);
 		PROGRAM_SET_PROFSTART(objno, 0);
 		PROGRAM_SET_PROF_USES(objno, 0);
+		PROGRAM_SET_INSTANCES(objno, 0);
 
 		if (dtype < 8 && (FLAGS(objno) & LINK_OK)) {
 			/* set Viewable flag on Link_ok programs. */

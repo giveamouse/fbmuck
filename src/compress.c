@@ -20,6 +20,9 @@
 
 /*
  * $Log: compress.c,v $
+ * Revision 1.6  2002/12/10 12:02:35  points
+ * Fixed a large number of leaks and memory issues found under Insure++.
+ *
  * Revision 1.5  2002/06/18 07:45:21  revar
  * Changed end-of-line handling to be tolerant of CRLFs in MUF and macros files.
  * Changed database opening to be in binary mode for windows portability.
@@ -89,8 +92,11 @@
 static int table_initialized = 0;
 static char *dict[4096], *dict2[4096], line[80], buffer[40], chksum_buf[80];
 static int seconds[43][43], special_case = 5;
-static int c_index, repeats;
-static int lastmatch, completematch, maxmatch;
+static int c_index = 0;
+static int repeats = 0;
+static int lastmatch = 0;
+static int completematch = 0;
+static int maxmatch = 0;
 static unsigned char *to=NULL;
 
 static const char copyright[] = "Copyright 1995 by Dragon's Eye Productions.";
@@ -153,10 +159,13 @@ init_compress_from_file(FILE * dicto)
 		dict[i] = (char *) malloc(n+1);
 		dict2[i] = (char *) malloc(n+1);
 		strcpy(dict2[i], line);
+		dict2[i][n] = '\0';
 		for (j = 0; line[j]; j++)
 			if (line[j] >= 'a')
 				line[j] -= 32;
-		strcpy(dict[i++], line);
+		strcpy(dict[i], line);
+		dict[i][n] = '\0';
+		i++;
 	}
 	if (i < 4096) {
 		fprintf(stderr, "Too few words in compression wordlist!  Aborting.\n");
@@ -351,12 +360,12 @@ compression_filter(char c)
 			do {
 				--maxmatch;
 			} while ((dict[maxmatch][c_index] != d) && (lastmatch < maxmatch));
-	if (dict[lastmatch][c_index + 1] == 0)
-		if (dict[lastmatch][c_index] == d)
-			completematch = lastmatch;
 	if (lastmatch == maxmatch)
 		if (dict[lastmatch][c_index] != d)
 			goto sendout2;
+	if (dict[lastmatch][c_index + 1] == 0)
+		if (dict[lastmatch][c_index] == d)
+			completematch = lastmatch;
 	buffer[c_index++] = c;
 	return;
 }
@@ -438,7 +447,11 @@ const char *
 compress(const char *s)
 {
 	static unsigned char buf[BUFFER_LEN];
-	int a, b, c, d, e;
+	int a = 0;
+	int b = 0;
+	int c = 0;
+	int d = 0;
+	int e = 0;
 	char buffer2[40];
 	int done = 0;
 
@@ -601,12 +614,12 @@ compress(const char *s)
 				do {
 					--maxmatch;
 				} while ((dict[maxmatch][c_index] != d) && (lastmatch < maxmatch));
-		if (dict[lastmatch][c_index + 1] == 0)
-			if (dict[lastmatch][c_index] == d)
-				completematch = lastmatch;
 		if (lastmatch == maxmatch)
 			if (dict[lastmatch][c_index] != d)
 				goto sendout;
+		if (dict[lastmatch][c_index + 1] == 0)
+			if (dict[lastmatch][c_index] == d)
+				completematch = lastmatch;
 		buffer[c_index++] = c;
 	  nextchar1:;
 	}

@@ -1359,7 +1359,7 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 {
 	stk_array *arr;
 	array_data *itm;
-	int sidx, eidx;
+	int sidx, eidx, totsize;
 	array_iter idx;
 	array_iter didx;
 
@@ -1410,8 +1410,9 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 				didx.data.number++;
 			}
 			arr->items -= (eidx - sidx + 1);
+			totsize = (arr->items)?arr->items:1;
 			arr->data.packed = (array_data*)
-					realloc(arr->data.packed, sizeof(array_data) * (arr->items));
+					realloc(arr->data.packed, sizeof(array_data) * totsize);
 			return arr->items;
 			break;
 		}

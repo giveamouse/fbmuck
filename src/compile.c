@@ -1318,8 +1318,10 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 		new_word = next_word(&cstat, token);
 
 		/* test for errors */
-		if (cstat.compile_err)
+		if (cstat.compile_err) {
+		        free((void *) token);
 			return;
+		}
 
 		if (new_word) {
 			if (!cstat.first_word)
@@ -2275,11 +2277,13 @@ process_special(COMPSTATE * cstat, const char *token)
 		nu->in.data.number = IN_RET;
 
 		varcnt = cstat->curr_proc->in.data.mufproc->vars;
-		cstat->curr_proc->in.data.mufproc->varnames =
-				(const char**)calloc(varcnt, sizeof(char*));
-		for (i = 0; i < varcnt; i++) {
+		if (varcnt) {
+		    cstat->curr_proc->in.data.mufproc->varnames =
+			(const char**)calloc(varcnt, sizeof(char*));
+		    for (i = 0; i < varcnt; i++) {
 			cstat->curr_proc->in.data.mufproc->varnames[i] = cstat->scopedvars[i];
 			cstat->scopedvars[i] = 0;
+		    }
 		}
 		cstat->curr_proc = 0;
 		return nu;
@@ -3527,11 +3531,15 @@ copy_program(COMPSTATE * cstat)
 			code[i].data.mufproc->procname = string_dup(curr->in.data.mufproc->procname);
 			code[i].data.mufproc->vars = varcnt = curr->in.data.mufproc->vars;
 			code[i].data.mufproc->args = curr->in.data.mufproc->args;
-			if (curr->in.data.mufproc->varnames) {
+			if (varcnt) {
+			    if (curr->in.data.mufproc->varnames) {
 				code[i].data.mufproc->varnames = (const char**)calloc(varcnt, sizeof(char*));
 				for (j = 0; j < varcnt; j++) {
-					code[i].data.mufproc->varnames[j] = string_dup(curr->in.data.mufproc->varnames[j]);
+				    code[i].data.mufproc->varnames[j] = string_dup(curr->in.data.mufproc->varnames[j]);
 				}
+			    } else {
+				code[i].data.mufproc->varnames = NULL;
+			    }
 			} else {
 				code[i].data.mufproc->varnames = NULL;
 			}

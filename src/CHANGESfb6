@@ -1,4 +1,6 @@
 2.2fb6.00rc9
+Fixed a large number of minor memory leaks.
+Fixed a large number of memory access problems.
 Fixed crasher when @Q was typed before logging in.
 Fixed crasher in prochelp when given too-long topic titles.
 Fixed infloop problem in vehicles calling envprop when secure_thing_movement
