@@ -1,5 +1,8 @@
+2.2fb6.00rc8
+
+
+
 2.2fb6.00rc7
-Fixed crasher bug (null pointer dereference) in DESCR_SETUSER.
 Changed spawn_resolver behavior -- now prints to status log if it can't spawn
   the resolver properly.  Previously used perror(), and didn't send it to
   error.log properly if it failed.
@@ -37,6 +40,7 @@ Fixed bug #579119: ltimestr now works right with snprintf.
 Fixed bug #576552: Telnet keepalives no longer reset player's idletime.
 Fixed bug #568297: @sweep will list all listener env rooms.
 Fixed bug #577291: 'configure --with-ssl' checks for SSL header/lib existence.
+Fixed crasher bug (null pointer dereference) in DESCR_SETUSER.
 Fixed crasher bug with @mcpprogram with no arguments.
 Fixed @ps to list progref & name by the first program on the caller stack.
 Fixed ARRAY_GET_PROPDIRS muf prim, which pretty much just didn't work before.
@@ -102,8 +106,9 @@ Added max_ml4_preempt_count @tune to specify the maximum number of instructions
   no limit is imposed.  Defaults to 0.
 Added reserved_names @tune which when set to a smatch pattern will refuse any
   object creations or renames which match said pattern.  Defaults to "".
-Added reserved_player_names @tune which when set to a smatch pattern will refuse
-  any player creations or renames which match said pattern.  Defaults to "".
+Added reserved_player_names @tune which when set to a smatch pattern will
+  refuse any player creations or renames which match said pattern.  Defaults
+  to "" (matches nothing).
 Added @delta alias for @dlt command (a la glowmuck).
 Added @proginfo command (backported from glowmuck).
 Added @__sys__ propdir for storing system only data, neither users nor wizards
