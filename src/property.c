@@ -539,6 +539,10 @@ genderof(int descr, dbref player)
 		return GENDER_MALE;
 	else if (has_property_strict(descr, player, player, "sex", "female", 0))
 		return GENDER_FEMALE;
+	else if (has_property_strict(descr, player, player, "sex", "hermaphrodite", 0))
+		return GENDER_HERM;
+	else if (has_property_strict(descr, player, player, "sex", "herm", 0))
+		return GENDER_HERM;
 	else if (has_property_strict(descr, player, player, "sex", "neuter", 0))
 		return GENDER_NEUTER;
 	else

@@ -1,107 +1,5 @@
 /* $Header$ */
 
-/*
- * $Log: stringutil.c,v $
- * Revision 1.6  2001/11/09 17:56:05  revar
- * Fixed uninitialized program instance count in @prog.
- * Changed ANSI code handling to use ^[[0m instead of ^[[m at EOL for resetting.
- *
- * Revision 1.5  2001/07/07 07:20:59  revar
- * Memory leak fixes, and cleanup code to make memory leaks more obvious when
- *   using MALLOC_PROFILING.
- *
- * Revision 1.4  2001/04/13 19:55:55  wog
- * Fixed bug #407427: Big arrays crash with expanded_debug
- * I hope.
- * In the process made inst.c's routines honor their buflen arguments.
- * As a side effect of this snprintf is used and a portable implementation has
- * been taken and slightly modified from
- * http://www.fiction.net/~blong/programs/snprintf.c
- * Changes were made to Makefile.in, autoconf.h.in and configure.in to accomadate
- * this.
- *
- * Additionally a prepend_string has been added to stringutil.c since debug_inst
- * now works from the top of the stack down to construct it's stack listing.
- *
- * Revision 1.3  2000/07/19 01:33:18  revar
- * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
- * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
- *
- * Revision 1.2  2000/03/29 12:21:02  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/16 03:23:29  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:27:44  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/12 03:05:08  foxen
- * Initial revision
- *
- * Revision 5.17  1994/03/21  15:14:15  foxen
- * Syntactical bugfix in exit_prefix()
- *
- * Revision 5.16  1994/03/21  11:00:42  foxen
- * Autoconfiguration mods.
- *
- * Revision 5.15  1994/03/14  12:20:58  foxen
- * Fb5.20 release checkpoint.
- *
- * Revision 5.14  1994/03/14  12:08:46  foxen
- * Initial portability mods and bugfixes.
- *
- * Revision 5.13  1994/02/11  05:52:41  foxen
- * Memory cleanup and monitoring code mods.
- *
- * Revision 5.12  1994/01/18  20:52:20  foxen
- * Version 5.15 release.
- *
- * Revision 5.11  1993/12/20  06:22:51  foxen
- * *** empty log message ***
- *
- * Revision 5.1  1993/12/17  00:07:33  foxen
- * initial revision.
- *
- * Revision 1.10  90/09/28  12:25:08  rearl
- * Moved alloc_string() and alloc_prog_string() to here.
- *
- * Revision 1.9  90/09/18  08:02:25  rearl
- * Speedups mainly, improved upper/lowercase lookup.
- *
- * Revision 1.8  90/09/16  04:43:06  rearl
- * Preparation code added for disk-based MUCK.
- *
- * Revision 1.7  90/09/10  02:19:51  rearl
- * Introduced string compression of properties, for the
- * COMPRESS compiler option.
- *
- * Revision 1.6  90/08/15  03:08:38  rearl
- * Messed around with pronoun_substitute.  Hopefully made it easier to use.
- *
- * Revision 1.5  90/08/02  18:50:43  rearl
- * Fixed bug in capitalized self-substitutions.
- *
- * Revision 1.4  90/08/02  02:17:16  rearl
- * Capital % substitutions now automatically capitalize the
- * corresponding self-sub property.  Example: %O -> Her.
- *
- * Revision 1.3  90/07/29  17:45:08  rearl
- * Pronoun substitution for programs fixed.
- *
- * Revision 1.2  90/07/22  04:28:33  casie
- * Added %r/%R substitutions for reflexive pronouns.
- *
- * Revision 1.1  90/07/19  23:04:13  casie
- * Initial revision
- *
- *
- */
 
 #include "copyright.h"
 #include "config.h"
@@ -110,6 +8,7 @@
 #include "props.h"
 #include "params.h"
 #include "interface.h"
+#include "mpi.h"
 
 /* String utilities */
 
@@ -250,12 +149,12 @@ string_match(register const char *src, register const char *sub)
  *
  * %-type substitutions for pronouns
  *
- * %a/%A for absolute possessive (his/hers/its, His/Hers/Its)
- * %s/%S for subjective pronouns (he/she/it, He/She/It)
- * %o/%O for objective pronouns (him/her/it, Him/Her/It)
- * %p/%P for possessive pronouns (his/her/its, His/Her/Its)
- * %r/%R for reflexive pronouns (himself/herself/itself,
- *                                Himself/Herself/Itself)
+ * %a/%A for absolute possessive (his/hers/hirs/its, His/Hers/Hirs/Its)
+ * %s/%S for subjective pronouns (he/she/sie/it, He/She/Sie/It)
+ * %o/%O for objective pronouns (him/her/hir/it, Him/Her/Hir/It)
+ * %p/%P for possessive pronouns (his/her/hir/its, His/Her/Hir/Its)
+ * %r/%R for reflexive pronouns (himself/herself/hirself/itself,
+ *                                Himself/Herself/Hirself/Itself)
  * %n    for the player's name.
  */
 char *
@@ -264,18 +163,22 @@ pronoun_substitute(int descr, dbref player, const char *str)
 	char c;
 	char d;
 	char prn[3];
+	char globprop[128];
 	static char buf[BUFFER_LEN * 2];
 	char orig[BUFFER_LEN];
+	char sexbuf[BUFFER_LEN];
 	char *result;
+	const char *sexstr;
 	const char *self_sub;		/* self substitution code */
+	const char *temp_sub;
 	dbref mywhere = player;
 	int sex;
 
-	static const char *subjective[4] = { "", "it", "she", "he" };
-	static const char *possessive[4] = { "", "its", "her", "his" };
-	static const char *objective[4] = { "", "it", "her", "him" };
-	static const char *reflexive[4] = { "", "itself", "herself", "himself" };
-	static const char *absolute[4] = { "", "its", "hers", "his" };
+	static const char *subjective[5] = { "", "it", "she", "he", "sie" };
+	static const char *possessive[5] = { "", "its", "her", "his", "hir" };
+	static const char *objective[5] = { "", "it", "her", "him", "hir" };
+	static const char *reflexive[5] = { "", "itself", "herself", "himself", "hirself" };
+	static const char *absolute[5] = { "", "its", "hers", "his", "hirs" };
 
 	prn[0] = '%';
 	prn[2] = '\0';
@@ -288,6 +191,14 @@ pronoun_substitute(int descr, dbref player, const char *str)
 	str = orig;
 
 	sex = genderof(descr, player);
+	sexstr = get_property_class(player, "sex");
+	sexstr = do_parse_mesg(descr, player, player, sexstr, "(Lock)", sexbuf,
+						(MPI_ISPRIVATE | MPI_ISLOCK |
+							(Prop_Blessed(player, "sex")? MPI_ISBLESSED : 0)));
+	while (sexstr && isspace(*sexstr)) sexstr++;
+	if (!sexstr || !*sexstr) {
+		sexstr = "_default";
+	}
 	result = buf;
 	while (*str) {
 		if (*str == '%') {
@@ -301,20 +212,33 @@ pronoun_substitute(int descr, dbref player, const char *str)
 				d = (isupper(c)) ? c : toupper(c);
 
 #ifdef COMPRESS
+				sprintf(globprop, "_pronouns/%.64s/%s", uncompress(sexstr), prn);
 				if (d == 'A' || d == 'S' || d == 'O' || d == 'P' || d == 'R' || d == 'N') {
 					self_sub = uncompress(get_property_class(mywhere, prn));
 				} else {
 					self_sub = uncompress(envpropstr(&mywhere, prn));
 				}
+				if (!self_sub) {
+					self_sub = uncompress(get_property_class(0, globprop));
+				}
 #else
+				sprintf(globprop, "_pronouns/%.64s/%s", sexstr, prn);
 				if (d == 'A' || d == 'S' || d == 'O' || d == 'P' || d == 'R' || d == 'N') {
 					self_sub = get_property_class(mywhere, prn);
 				} else {
 					self_sub = envpropstr(&mywhere, prn);
 				}
+				if (!self_sub) {
+					self_sub = get_property_class(0, globprop);
+				}
 #endif
 
 				if (self_sub) {
+					temp_sub = NULL;
+					if (self_sub[0] == '%' && toupper(self_sub[1]) == 'N') {
+						temp_sub = self_sub;
+						self_sub = PNAME(player);
+					}
 					if (((result - buf) + strlen(self_sub)) > (BUFFER_LEN - 2))
 						return buf;
 					strcat(result, self_sub);
@@ -322,6 +246,15 @@ pronoun_substitute(int descr, dbref player, const char *str)
 						*result = toupper(*result);
 					result += strlen(result);
 					str++;
+					if (temp_sub) {
+						if (((result - buf) + strlen(temp_sub+2)) > (BUFFER_LEN - 2))
+							return buf;
+						strcat(result, temp_sub+2);
+						if (isupper(temp_sub[1]) && islower(*result))
+							*result = toupper(*result);
+						result += strlen(result);
+						str++;
+					}
 				} else if (sex == GENDER_UNASSIGNED) {
 					switch (c) {
 					case 'n':

@@ -145,6 +145,7 @@ typedef int dbref;				/* offset into db */
 #define GENDER_NEUTER       0x1	/* neuter */
 #define GENDER_FEMALE       0x2	/* for women */
 #define GENDER_MALE         0x3	/* for men */
+#define GENDER_HERM         0x4	/* for hermaphrodites */
 
 #define KILL_OK	         0x4000	/* Kill_OK bit.  Means you can be killed. */
 #define HAVEN           0x10000	/* can't kill here */

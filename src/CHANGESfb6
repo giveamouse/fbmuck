@@ -1,6 +1,9 @@
 2.2fb6.00b6
 Added MUF $define for }join as '} array_make "" array_join'
 Added ProgName field to @ps display.
+Added sie/hir/hirself/etc pronouns for 'herm' and 'hermaphrodite' gender.
+Added generic gender pronoun support via _pronouns/GENDER/%X props on #0.
+Added default gender pronoun overrides via _pronouns/_default/%X props on #0.
 Changed @ps display code to be cleaner.
 
 
