@@ -211,7 +211,12 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
 		cstat->force_err_display) {
 		notify_nolisten(cstat->player, _buf, 1);
 	} else {
-		log_muf("MUF compiler warning in program %d:\n%s\n", cstat->program, _buf);
+		log_muf("%s(#%d) [%s(#%d)] %s(#%d) %s\n",
+			NAME(OWNER(cstat->program)), OWNER(cstat->program),
+			NAME(cstat->program), cstat->program,
+			NAME(cstat->player), cstat->player,
+			_buf
+		);
 	}
 	cstat->compile_err++;
 	if (cstat->compile_err > 1) {

@@ -24,6 +24,7 @@ Added ARRAY_FILTER_FLAGS ( list:dbrefs str:flags -- list:dbrefsout ) MUF prim.
 Added RFE #498330: For "recycle" [success] message, put the #dbref.
 Added RFE #788992: Allow @recycle by dbref
 Added RFE #782388: Nested MUF comments
+Added RFE #578523: muf-errors log: owner and nicer format
 
 
 

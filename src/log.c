@@ -97,12 +97,19 @@ log_muf(char *format, ...)
 {
 	va_list args;
 	FILE *muflog;
+	time_t lt;
+	char buf[40];
 
 	va_start(args, format);
+	lt = time(NULL);
+
 	if ((muflog = fopen(LOG_MUF, "a")) == NULL) {
 		fprintf(stderr, "Unable to open %s!\n", LOG_MUF);
+		fprintf(stderr, "%.16s: ", ctime(&lt));
 		vfprintf(stderr, format, args);
 	} else {
+		format_time(buf, 32, "%c", localtime(&lt));
+		fprintf(muflog, "%.32s: ", buf);
 		vfprintf(muflog, format, args);
 		fclose(muflog);
 	}
