@@ -26,6 +26,7 @@ Fixed bug in ARRAY_GETLINKS that would have returned garbage dbrefs.
 Fixed various compiler warnings given with -Wall.
 Fixed various calls to exit() and _exit() to use the correct ones.
 Fixed bug #806163: Invalid param to newobject crashes MUCK
+Fixed crasher bug with mufevents not dequeuing before executing process.
 Changed DESCRDBREF to return #-1 for an invalid or not-logged-in descriptor.
 Changed MUF stack traces to show floats in short format.
 Changed string translations of floats to show only 15 significant digits.

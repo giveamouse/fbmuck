@@ -738,21 +738,20 @@ void
 muf_event_process(void)
 {
 	int limit = 10;
-	struct mufevent_process *proc, *tmp;
+	struct mufevent_process **prev, *proc;
 	struct mufevent *ev;
 	dbref current_program;
 	int block, is_fg;
 
-	proc = mufevent_processes;
-	while (proc && limit > 0) {
-		tmp = proc->next;
+	prev = &mufevent_processes;
+	while ((proc = *prev) != NULL && limit > 0) {
 		if (proc->fr) {
 			if (proc->filtercount > 0) {
 				/* Search prog's event list for the apropriate event type. */
 
 				/* HACK:  This is probably inefficient to be walking this
-				* queue over and over. Hopefully it's usually a short list.
-				*/
+				 * queue over and over. Hopefully it's usually a short list.
+				 */
 				ev = muf_event_pop_specific(proc->fr, proc->filtercount, proc->filters);
 			} else {
 				/* Pop first event off of prog's event queue. */
@@ -760,11 +759,11 @@ muf_event_process(void)
 			}
 			if (ev) {
 				--limit;
-
+				*prev = (*prev)->next;
 				if (proc->fr->argument.top + 1 >= STACK_SIZE) {
 					/* Uh oh! That MUF program's stack is full!
-					* Print an error, free the frame, and exit.
-					*/
+					 * Print an error, free the frame, and exit.
+					 */
 					notify_nolisten(proc->player, "Program stack overflow.", 1);
 					prog_clean(proc->fr);
 				} else {
@@ -786,11 +785,11 @@ muf_event_process(void)
 				}
 				muf_event_free(ev);
 
-				tmp = proc->next; /* proc->next may have changed */
 				proc->fr = NULL;  /* We do NOT want to free this program after every EVENT_WAIT. */
 				muf_event_process_free(proc);
+				continue; /* Current item was changed, so prev remains same. */
 			}
 		}
-		proc = tmp;
+		prev = &((*prev)->next);
 	}
 }
