@@ -229,6 +229,9 @@ show_program_usage(char *prog)
 	fprintf(stderr, "        -dbin INFILE    use INFILE as the database to load at startup.\n");
 	fprintf(stderr, "        -dbout OUTFILE  use OUTFILE as the output database to save to.\n");
 	fprintf(stderr, "        -port NUMBER    sets the port number to listen for connections on.\n");
+#ifdef USE_SSL
+	fprintf(stderr, "        -sport NUMBER    sets the port number for secure connections\n");
+#endif
 	fprintf(stderr, "        -gamedir PATH   changes directory to PATH before starting up.\n");
 	fprintf(stderr, "        -convert        load the db, save in current format, and quit.\n");
 	fprintf(stderr, "        -decompress     when saving db, save in uncompressed format.\n");
