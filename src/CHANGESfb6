@@ -1,3 +1,9 @@
+2.2fb6.03
+Added improved SSL error reporting, via stderr.
+Fixed {debug} MPI tracing for some systems including Linux.
+
+
+
 2.2fb6.02
 Added @tunables for addpennies, movepennies, and pennies. MPI {money} is disabled if pennies MLEV>1.
 Moved pennies from a thing/player-only trait to a global property, @/value.

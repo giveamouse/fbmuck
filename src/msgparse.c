@@ -822,29 +822,29 @@ mesg_args(char *wbuf, argv_typ argv, char ulv, char sep, char dlv, char quot, in
 
 
 char *
-cr2slash(char *buf, const char *in)
+cr2slash(char *buf, int buflen, const char *in)
 {
 	char *ptr = buf;
 	const char *ptr2 = in;
 
-	do {
+	for (ptr = buf, ptr2 = in; *ptr2 && ptr-buf<buflen-3; ptr2++) {
 		if (*ptr2 == '\r') {
-			ptr2++;
 			*(ptr++) = '\\';
 			*(ptr++) = 'r';
 		} else if (*ptr2 == ESCAPE_CHAR) {
-			ptr2++;
 			*(ptr++) = '\\';
 			*(ptr++) = '[';
+		} else if (*ptr2 == '`') {
+			*(ptr++) = '\\';
+			*(ptr++) = '`';
 		} else if (*ptr2 == '\\') {
-			ptr2++;
 			*(ptr++) = '\\';
 			*(ptr++) = '\\';
 		} else {
-			*(ptr++) = *(ptr2++);
+			*(ptr++) = *ptr2;
 		}
-	} while (*(ptr - 1) && (ptr - buf < BUFFER_LEN - 3));
-	buf[BUFFER_LEN - 1] = '\0';
+	}
+	*(ptr++) = '\0';
 	return buf;
 }
 
@@ -1018,16 +1018,21 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									(varflag ? cmdbuf : mfun_list[s].name), MFUN_ARGSTART);
 							for (i = (varflag ? 1 : 0); i < argc; i++) {
 								if (i) {
-									snprintf(dbuf, sizeof(dbuf), "%.512s%c ", dbuf, MFUN_ARGSEP);
+									const char tbuf[] = { MFUN_ARGSEP, '\0' };
+									strcatn(dbuf, sizeof(dbuf), tbuf);
 								}
-								cr2slash(ebuf, argv[i]);
-								if (strlen(ebuf) > 512) {
-									snprintf(dbuf, sizeof(dbuf), "%.512s\"%.512s...\"", dbuf, ebuf);
-								} else {
-									snprintf(dbuf, sizeof(dbuf), "%.512s\"%s\"", dbuf, ebuf);
+								cr2slash(ebuf, sizeof(ebuf)/8, argv[i]);
+								strcatn(dbuf, sizeof(dbuf), "`");
+								strcatn(dbuf, sizeof(dbuf), ebuf);
+								if (strlen(ebuf) >= (sizeof(ebuf)/8)-2) {
+									strcatn(dbuf, sizeof(dbuf), "...");
 								}
+								strcatn(dbuf, sizeof(dbuf), "`");
 							}
-							snprintf(dbuf, sizeof(dbuf), "%.512s%c", dbuf, MFUN_ARGEND);
+							{
+								const char tbuf[] = { MFUN_ARGEND, '\0' };
+								strcatn(dbuf, sizeof(dbuf), tbuf);
+							}
 							notify_nolisten(player, dbuf, 1);
 						}
 						if (mfun_list[s].stripp) {
@@ -1065,16 +1070,21 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									(varflag ? cmdbuf : mfun_list[s].name), MFUN_ARGSTART);
 							for (i = (varflag ? 1 : 0); i < argc; i++) {
 								if (i) {
-									snprintf(dbuf, sizeof(dbuf), "%.512s%c ", dbuf, MFUN_ARGSEP);
+									const char tbuf[] = { MFUN_ARGSEP, '\0' };
+									strcatn(dbuf, sizeof(dbuf), tbuf);
 								}
-								cr2slash(ebuf, argv[i]);
-								if (strlen(ebuf) > 128) {
-									snprintf(dbuf, sizeof(dbuf), "%.512s\"%.128s...\"", dbuf, ebuf);
-								} else {
-									snprintf(dbuf, sizeof(dbuf), "%.512s\"%s\"", dbuf, ebuf);
+								cr2slash(ebuf, sizeof(ebuf)/8, argv[i]);
+								strcatn(dbuf, sizeof(dbuf), "`");
+								strcatn(dbuf, sizeof(dbuf), ebuf);
+								if (strlen(ebuf) >= (sizeof(ebuf)/8)-2) {
+									strcatn(dbuf, sizeof(dbuf), "...");
 								}
+								strcatn(dbuf, sizeof(dbuf), "`");
 							}
-							snprintf(dbuf, sizeof(dbuf), "%s%c", dbuf, MFUN_ARGEND);
+							{
+								const char tbuf[] = { MFUN_ARGEND, '\0' };
+								strcatn(dbuf, sizeof(dbuf), tbuf);
+							}
 						}
 						if (argc < mfun_list[s].minargs) {
 							char *zptr = get_mvar("how");
@@ -1135,7 +1145,13 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 							}
 						}
 						if (mesgtyp & MPI_ISDEBUG) {
-							snprintf(dbuf, sizeof(dbuf), "%.512s = \"%.512s\"", dbuf, cr2slash(ebuf, ptr));
+							strcatn(dbuf, sizeof(dbuf), " = `");
+							cr2slash(ebuf, sizeof(ebuf)/8, ptr);
+							strcatn(dbuf, sizeof(dbuf), ebuf);
+							if (strlen(ebuf) >= (sizeof(ebuf)/8)-2) {
+								strcatn(dbuf, sizeof(dbuf), "...");
+							}
+							strcatn(dbuf, sizeof(dbuf), "`");
 							notify_nolisten(player, dbuf, 1);
 						}
 					} else if (msg_is_macro(player, what, perms, cmdbuf, mesgtyp)) {
@@ -1207,8 +1223,9 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 	if ((mesgtyp & MPI_ISDEBUG) && showtextflag) {
 		char *zptr = get_mvar("how");
 
-		snprintf(dbuf, sizeof(dbuf), "%s %*s\"%.512s\"", zptr, (mesg_rec_cnt * 2 - 4), "",
-				cr2slash(buf2, outbuf));
+		snprintf(dbuf, sizeof(dbuf), "%s %*s`%.512s`",
+		        zptr, (mesg_rec_cnt * 2 - 4), "",
+				cr2slash(buf2, sizeof(buf2), outbuf));
 		notify_nolisten(player, dbuf, 1);
 	}
 	for (i = 0; i < argc; i++) {

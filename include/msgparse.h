@@ -29,7 +29,7 @@ char *stripspaces(char *buf, char *in);
 char *string_substitute(const char *str, const char *oldstr, const char *newstr, char *buf,
 
 						int maxlen);
-char *cr2slash(char *buf, const char *in);
+char *cr2slash(char *buf, int buflen, const char *in);
 
 int get_list_count(dbref trig, dbref what, dbref perms, const char *listname, int mesgtyp, int* blessed);
 const char *get_list_item(dbref trig, dbref what, dbref perms, const char *listname, int itemnum, int mesgtyp, int* blessed);
