@@ -88,6 +88,9 @@ package:
 	cp -fp src/COMPILING src/BUG_FORM ${TMPPKGDIR}/src
 	chmod +rw ${TMPPKGDIR}/src/*
 	chmod +x ${TMPPKGDIR}/configure
+	mkdir ${TMPPKGDIR}/scripts
+	cp -fp  scripts/fbmuck-sysvinit     ${TMPPKGDIR}/scripts
+	chmod +x ${TMPPKGDIR}/scripts/*
 	mkdir ${TMPPKGDIR}/game
 	cp -fp game/restart game/optimdb ${TMPPKGDIR}/game
 	mkdir ${TMPPKGDIR}/game/logs
