@@ -26,6 +26,7 @@ Fixed restart code so that it'll work with newer pid-checking restart scripts.
 Fixed small non-growing memory leak with dbloaded garbage object names.
 Fixed crasher bug with letting object names grow near to BUFFER_LEN length.
 Fixed errors with MUF bytecode localvar fetch-and-clear optimization.
+Fixed MacOS X portability compile errors with socklen_t.
 
 
 
