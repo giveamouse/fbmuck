@@ -7,11 +7,9 @@ Returns:	void
 Called from:	process_command	(game.c)
 		back_it_up	(sanity.c)
 Calls:		Wizard, God, free, alloc_string, sprintf, notify, dump_db_now
-Does:		Calls dump_db_now if player is a wizard.  Updates dumpfile
-		(string representing the name of the file to dump to) if
-		player is Wizard and supplies it; if GOD_PRIV is defined,
-		only updates dumpfile if player is God.  (Updates dumpfile
-		before calling dump_db_now.)
+Does:		Does nothing if player is not a Wizard.  Updates dumpfile
+		location if applicable and calls dump_db_now.  If GOD_PRIV
+		is defined, only God can update the dumpfile.
 #ifdefs:	GOD_PRIV
 #defines:	none
 Notes:
@@ -25,6 +23,17 @@ Does:		Calls delta_dump_now if player is a Wizard.
 #ifdefs:	none
 #defines:	none
 Notes:		If DELTADUMPS is not defined, this function is not compiled.
+
+Function name:	do_shutdown
+Arguments:	dbref		(player issuing command)
+Returns:	void
+Called from:	process_command (game.c)
+Calls:		Wizard, log_status, unparse_object, notify
+Does:		Sets the shutdown flag and resets the restart flag if 
+		player is a Wizard.
+#ifdefs:	none
+#defines:	none
+Notes:		none
 
 Function name:	do_restart
 Arguments:	dbref		(player issuing command)
@@ -181,6 +190,9 @@ Notes:		the #define Matched() is only used in this function.
 
 /*
 * $Log: game.c.txt,v $
+* Revision 1.3  2000/02/18 02:23:13  mcclure
+* *** empty log message ***
+*
 * Revision 1.2  2000/02/18 00:22:22  winged
 * Fixed description of do_dump
 *
