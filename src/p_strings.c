@@ -1708,11 +1708,11 @@ prim_ansi_strcut(PRIM_PROTOTYPE)
 		} else {
 			loc++;
 			if (loc == oper2->data.number) {
-				*op = '\0';
 				break;
 			}
 		}
 	}
+	*op = '\0';
 	memcpy((void *) outbuf2, (const void *) ptr,
 		   oper1->data.string->length - (ptr - oper1->data.string->data) + 1);
 
