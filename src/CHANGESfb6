@@ -5,6 +5,7 @@ Fixed bug #973899: fb-announce not compiled with ${CFLAGS}
 Fixed bug #970128: array_get_reflist chokes on negative dbrefs
 Fixed bug #925712: getpidinfo on MPI process crashes
 Fixed bug #924349: descrboot and conboot crash on non-wiz call.
+Added feature #563307: array_filter_prop matching non-strings
 
 
 2.2fb6.02

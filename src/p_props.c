@@ -955,13 +955,44 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 				ref = in->data.objref;
 				CHECKREMOTE(ref);
 				if (prop_read_perms(ProgUID, ref, prop, mlev)) {
-					ptr = get_property_class(ref, prop);
-					if (ptr) {
-						ptr = uncompress(ptr);
-						strcpy(buf, ptr);
-					} else {
-						strcpy(buf, "");
+					PropPtr pptr = get_property(ref, prop);
+
+					if (pptr)
+					{
+						switch(PropType(pptr))
+						{
+							case PROP_STRTYP:
+								strncpy(buf, uncompress(PropDataStr(pptr)), BUFFER_LEN);
+							break;
+
+							case PROP_LOKTYP:
+								if (PropFlags(pptr) & PROP_ISUNLOADED) {
+									strncpy(buf, "*UNLOCKED*", BUFFER_LEN);
+								} else {
+									strncpy(buf, unparse_boolexp(ProgUID, PropDataLok(pptr), 0), BUFFER_LEN);
+								}
+							break;
+
+							case PROP_REFTYP:
+								snprintf(buf, BUFFER_LEN, "#%i", PropDataRef(pptr));
+							break;
+
+							case PROP_INTTYP:
+								snprintf(buf, BUFFER_LEN, "%i", PropDataVal(pptr));
+							break;
+
+							case PROP_FLTTYP:
+								snprintf(buf, BUFFER_LEN, "%lg", PropDataFVal(pptr));
+							break;
+
+							default:
+								strncpy(buf, "", BUFFER_LEN);
+							break;
+						}
 					}
+					else
+						strncpy(buf, "", BUFFER_LEN);
+
 					if (equalstr(pattern, buf)) {
 						array_appenditem(&nu, in);
 					}
@@ -1231,7 +1262,7 @@ prim_parsepropex(PRIM_PROTOTYPE)
 						break;
 
 						case PROG_FLOAT:
-							snprintf(var_buf, BUFFER_LEN, "%f", val->data.fnumber);
+							snprintf(var_buf, BUFFER_LEN, "%lg", val->data.fnumber);
 						break;
 
 						case PROG_OBJECT:
