@@ -1,7 +1,4 @@
 2.2fb6.00rc9
-Fixed a large number of minor memory leaks.
-Fixed a large number of memory access problems.
-Fixed crasher when @Q was typed before logging in.
 Fixed crasher in prochelp when given too-long topic titles.
 Fixed infloop problem in vehicles calling envprop when secure_thing_movement
   not set.  Bug #621067.
@@ -13,6 +10,10 @@ Fixed @dlt, @delta and @usage commands to give a more specific error message
 Fixed compiler warnings about incompatible pointer types in calls to time(3), 
   ctime(3), gmtime(3)
 Fixes @sweep to not list both pose and page with 'p' actions.
+Fixed crasher when @Q was typed before logging in.
+Fixed a large number of memory access problems.
+Fixed a large number of minor memory leaks.
+Fixed a crasher bug with earlier memory cleanups.
 Changed help.txt into a muckhelp.raw file that is processed by prochelp.
 Changed property loading routines to not abort(), but to instead log corrupt
   properties when they are found.

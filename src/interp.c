@@ -320,10 +320,12 @@ RCLEAR(struct inst *oper, char *file, int line)
 		if (oper->data.mufproc) {
 			free((void*) oper->data.mufproc->procname);
 			varcnt = oper->data.mufproc->vars;
-			for (j = 0; j < varcnt; j++) {
-				free((void*)oper->data.mufproc->varnames[j]);
+			if (oper->data.mufproc->varnames) {
+				for (j = 0; j < varcnt; j++) {
+					free((void*)oper->data.mufproc->varnames[j]);
+				}
+				free((void*) oper->data.mufproc->varnames);
 			}
-			free((void*) oper->data.mufproc->varnames);
 			free((void*) oper->data.mufproc);
 		}
 		break;
