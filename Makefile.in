@@ -44,6 +44,8 @@ cleaner:
 		cd $${d} && ${MAKE} cleaner; \
 	done
 
+distclean: cleaner
+
 nuke:
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} nuke; \
