@@ -27,8 +27,8 @@ extern long next_muckevent_time(void);
 extern void next_muckevent(void);
 
 /* from timequeue.c */
-extern void handle_read_event(int descr, dbref player, const char *command);
-extern void read_event_notify(int descr, dbref player);
+extern void handle_read_event(int descr, dbref player, const char* command);
+extern int read_event_notify(int descr, dbref player, const char* cmd);
 extern int add_muf_read_event(int descr, dbref player, dbref prog, struct frame *fr);
 extern int add_muf_queue_event(int descr, dbref player, dbref loc, dbref trig, dbref prog,
 						   const char *argstr, const char *cmdstr, int listen_p);

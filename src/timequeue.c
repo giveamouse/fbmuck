@@ -341,29 +341,32 @@ add_muf_delay_event(int delay, int descr, dbref player, dbref loc, dbref trig, d
 
 
 
-void
-read_event_notify(int descr, dbref player)
+int
+read_event_notify(int descr, dbref player, const char* cmd)
 {
 	timequeue ptr;
 
-	if (muf_event_read_notify(descr, player)) {
-		return;
+	if (muf_event_read_notify(descr, player, cmd)) {
+		return 1;
 	}
 
 	ptr = tqhead;
 	while (ptr) {
 		if (ptr->uid == player) {
 			if (ptr->fr && ptr->fr->multitask != BACKGROUND) {
-				struct inst temp;
+				if (*cmd || ptr->fr->wantsblanks) {
+					struct inst temp;
 
-				temp.type = PROG_INTEGER;
-				temp.data.number = descr;
-				muf_event_add(ptr->fr, "READ", &temp, 1);
-				return;
+					temp.type = PROG_INTEGER;
+					temp.data.number = descr;
+					muf_event_add(ptr->fr, "READ", &temp, 1);
+					return 1;
+				}
 			}
 		}
 		ptr = ptr->next;
 	}
+	return 0;
 }
 
 
@@ -992,10 +995,7 @@ dequeue_prog(dbref program, int sleeponly)
 			ptr = ptr->next;
 		}
 	}
-	if (sleeponly == 1 || sleeponly == 0) {
-		/* treat MUF_EVENT processes as backgrounded. */
-		count += muf_event_dequeue(program);
-	}
+	count += muf_event_dequeue(program, sleeponly);
 	for (ptr = tqhead; ptr; ptr = ptr->next) {
 		if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
 									   ptr->subtyp == TQ_MUF_TREAD)) {
@@ -1123,7 +1123,7 @@ do_dequeue(int descr, dbref player, const char *arg1)
 				process_count--;
 			}
 			tqhead = NULL;
-			muf_event_dequeue(NOTHING);
+			muf_event_dequeue(NOTHING, 0);
 			notify_nolisten(player, "Time queue cleared.", 1);
 		} else {
 			if (!number(arg1)) {

@@ -132,7 +132,7 @@ muf_event_register(dbref player, dbref prog, struct frame *fr)
  * 0 otherwise.
  */
 int
-muf_event_read_notify(int descr, dbref player)
+muf_event_read_notify(int descr, dbref player, const char* cmd)
 {
 	struct mufevent_process *ptr;
 
@@ -140,12 +140,14 @@ muf_event_read_notify(int descr, dbref player)
 	while (ptr) {
 		if (ptr->player == player) {
 			if (ptr->fr && ptr->fr->multitask != BACKGROUND) {
-				struct inst temp;
+				if (*cmd || ptr->fr->wantsblanks) {
+					struct inst temp;
 
-				temp.type = PROG_INTEGER;
-				temp.data.number = descr;
-				muf_event_add(ptr->fr, "READ", &temp, 1);
-				return 1;
+					temp.type = PROG_INTEGER;
+					temp.data.number = descr;
+					muf_event_add(ptr->fr, "READ", &temp, 1);
+					return 1;
+				}
 			}
 		}
 		ptr = ptr->next;
@@ -206,11 +208,15 @@ event_has_refs(dbref program, struct frame *fr)
 }
 
 
-/* int muf_event_dequeue(dbref prog)
+/* int muf_event_dequeue(dbref prog, int sleeponly)
  * Deregisters a program from any instances of it in the EVENT_WAIT queue.
+ * Sleeponly values:
+ *     0: kill all matching processes
+ *     1: kill only matching sleeping processes
+ *     2: kill only matching foreground processes
  */
 int
-muf_event_dequeue(dbref prog)
+muf_event_dequeue(dbref prog, int sleeponly)
 {
 	struct mufevent_process *proc, *tmp;
 	int count = 0;
@@ -219,13 +225,21 @@ muf_event_dequeue(dbref prog)
 	while (proc) {
 		tmp = proc;
 		proc = proc->next;
-		if (prog == NOTHING || tmp->player == prog || tmp->prog == prog
-				|| event_has_refs(prog, tmp->fr)) {
-			if (!tmp->fr->been_background)
-				PLAYER_SET_BLOCK(tmp->player, 0);
-			muf_event_purge(tmp->fr);
-			muf_event_process_free(tmp);
-			count++;
+
+		if (prog == NOTHING ||
+			prog == tmp->player ||
+			prog == tmp->prog ||
+			event_has_refs(prog, tmp->fr)
+		) {
+			if (sleeponly == 0 ||
+				(sleeponly == 2 && tmp->fr->multitask != BACKGROUND)
+			) {
+				if (!tmp->fr->been_background)
+					PLAYER_SET_BLOCK(tmp->player, 0);
+				muf_event_purge(tmp->fr);
+				muf_event_process_free(tmp);
+				count++;
+			}
 		}
 	}
 

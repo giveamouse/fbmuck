@@ -174,6 +174,7 @@ struct descriptor_data *new_connection(int port, int sock);
 void parse_connect(const char *msg, char *command, char *user, char *pass);
 void set_userstring(char **userstring, const char *command);
 int do_command(struct descriptor_data *d, char *command);
+int is_interface_command(const char* cmd);
 char *strsave(const char *s);
 int make_socket(int);
 int queue_string(struct descriptor_data *, const char *);
@@ -1968,19 +1969,6 @@ strsave(const char *s)
 void
 save_command(struct descriptor_data *d, const char *command)
 {
-	if (d->connected && !string_compare((char *) command, BREAK_COMMAND)) {
-		if (dequeue_prog(d->player, 2))
-			notify(d->player, "Foreground program aborted.");
-		PLAYER_SET_BLOCK(d->player, 0);
-		if (!(FLAGS(d->player) & INTERACTIVE))
-			return;
-	}
-	if (d->connected && PLAYER_BLOCK(d->player)) {
-		char cmdbuf[BUFFER_LEN];
-		if (!mcp_frame_process_input(&d->mcpframe, command, cmdbuf, sizeof(cmdbuf))) {
-			return;
-		}
-	}
 	add_to_queue(&d->input, command, strlen(command) + 1);
 }
 
@@ -2151,33 +2139,34 @@ process_commands(void)
 		for (d = descriptor_list; d; d = dnext) {
 			dnext = d->next;
 			if (d->quota > 0 && (t = d->input.head)) {
-				if (d->connected && PLAYER_BLOCK(d->player)) {
-					char* tmp = t->start;
-					/* dequote MCP quoting. */
+				if (d->connected && PLAYER_BLOCK(d->player) && !is_interface_command(t->start)) {
+					char *tmp = t->start;
 					if (!strncmp(tmp, "#$\"", 3)) {
+						/* Un-escape MCP escaped lines */
 						tmp += 3;
 					}
-					if (strncmp(tmp, WHO_COMMAND, sizeof(WHO_COMMAND) - 1) &&
-						strcmp(tmp, QUIT_COMMAND) &&
-						strncmp(tmp, PREFIX_COMMAND, sizeof(PREFIX_COMMAND) - 1) &&
-						strncmp(tmp, SUFFIX_COMMAND, sizeof(SUFFIX_COMMAND) - 1) &&
-						strncmp(t->start, "#$#", 3) /* MCP mesg. */ )
-					{
-						/* WORK: send player's foreground/preempt programs an exclusive READ mufevent */
-						read_event_notify(d->descriptor, d->player);
+					/* WORK: send player's foreground/preempt programs an exclusive READ mufevent */
+					if (!read_event_notify(d->descriptor, d->player, tmp) && !*tmp) {
+						/* Didn't send blank line.  Eat it.  */
+						nprocessed++;
+						d->input.head = t->nxt;
+						d->input.lines--;
+						if (!d->input.head) {
+							d->input.tail = &d->input.head;
+							d->input.lines = 0;
+						}
+						free_text_block(t);
 					}
 				} else {
 					if (strncmp(t->start, "#$#", 3)) {
-						/* Not an MCP mesg. */
+						/* Not an MCP mesg, so count this against quota. */
 						d->quota--;
 					}
 					nprocessed++;
 					if (!do_command(d, t->start)) {
 						d->booted = 2;
-						/* process_output(d); */
-						/* shutdownsock(d);  */
+						/* Disconnect player next pass through main event loop. */
 					}
-					/* start former else block */
 					d->input.head = t->nxt;
 					d->input.lines--;
 					if (!d->input.head) {
@@ -2185,11 +2174,33 @@ process_commands(void)
 						d->input.lines = 0;
 					}
 					free_text_block(t);
-					/* end former else block */
 				}
 			}
 		}
 	} while (nprocessed > 0);
+}
+
+int
+is_interface_command(const char* cmd)
+{
+	const char* tmp = cmd;
+	if (!strncmp(tmp, "#$\"", 3)) {
+		/* dequote MCP quoting. */
+		tmp += 3;
+	}
+	if (!strncmp(cmd, "#$#", 3)) /* MCP mesg. */
+		return 1;
+	if (!string_compare(tmp, BREAK_COMMAND))
+		return 1;
+	if (!strcmp(tmp, QUIT_COMMAND))
+		return 1;
+	if (!strncmp(tmp, WHO_COMMAND, strlen(WHO_COMMAND)))
+		return 1;
+	if (!strncmp(tmp, PREFIX_COMMAND, strlen(PREFIX_COMMAND)))
+		return 1;
+	if (!strncmp(tmp, SUFFIX_COMMAND, strlen(SUFFIX_COMMAND)))
+		return 1;
+	return 0;
 }
 
 int
@@ -2198,14 +2209,32 @@ do_command(struct descriptor_data *d, char *command)
 	char buf[BUFFER_LEN];
 	char cmdbuf[BUFFER_LEN];
 
-	if (d->connected)
-		ts_lastuseobject(d->player);
 	if (!mcp_frame_process_input(&d->mcpframe, command, cmdbuf, sizeof(cmdbuf))) {
 		d->quota++;
 		return 1;
 	}
 	command = cmdbuf;
-	if (!strcmp(command, QUIT_COMMAND)) {
+	if (d->connected)
+		ts_lastuseobject(d->player);
+
+	if (!string_compare(command, BREAK_COMMAND)) {
+		if (dequeue_prog(d->player, 2)) {
+			if (d->output_prefix) {
+				queue_ansi(d, d->output_prefix);
+				queue_write(d, "\r\n", 2);
+			}
+			queue_ansi(d, "Foreground program aborted.\r\n");
+			if ((FLAGS(d->player) & INTERACTIVE))
+				if ((FLAGS(d->player) & READMODE))
+					process_command(d->descriptor, d->player, command);
+			if (d->output_suffix) {
+				queue_ansi(d, d->output_suffix);
+				queue_write(d, "\r\n", 2);
+			}
+		}
+		PLAYER_SET_BLOCK(d->player, 0);
+		return 1;
+	} else if (!strcmp(command, QUIT_COMMAND)) {
 		return 0;
 	} else if ((!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1)) ||
                    (*command == OVERIDE_TOKEN &&
