@@ -918,15 +918,15 @@ prim_gui_ctrl_command(PRIM_PROTOTYPE)
 	if (!oper1->data.string || !*oper1->data.string->data)
 		abort_interp("Non-null dialog ID string expected. (1)");
 
-	if (oper2->type != PROG_STRING)
-		abort_interp("Control command string expected. (2)");
-	if (!oper2->data.string || !*oper2->data.string->data)
-		abort_interp("Non-null control command string expected. (2)");
-
 	if (oper3->type != PROG_STRING)
-		abort_interp("Control ID string expected. (3)");
+		abort_interp("Control ID string expected. (2)");
 	if (!oper3->data.string || !*oper3->data.string->data)
-		abort_interp("Non-null control ID string expected. (3)");
+		abort_interp("Non-null control ID string expected. (2)");
+
+	if (oper2->type != PROG_STRING)
+		abort_interp("Control command string expected. (3)");
+	if (!oper2->data.string || !*oper2->data.string->data)
+		abort_interp("Non-null control command string expected. (3)");
 
 	if (oper4->type != PROG_ARRAY)
 		abort_interp("Dictionary of arguments expected. (4)");
