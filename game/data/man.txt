@@ -138,7 +138,8 @@ MCP GUI Package Defines:
   c_frame         c_notebook
   
 MUF Program and Process Meta-Primitives.
-  instances   compiled?   compile   uncompile   program_getlines
+  instances       compiled?   compile   uncompile   program_getlines
+  debugger_break
   
 Misc:
   addpennies  caller          cancall?     checkargs     checkpassword
@@ -3903,6 +3904,13 @@ last line.  If i2 and i2 are the same, and non-zero, then only that line
 will be returned, as a list array with a single string element.  The target
 program must be controlled by the current program's UID, be set VIEWABLE,
 or the current program must be running with wizard permissions.
+~
+DEBUGGER_BREAK|
+DEBUGGER_BREAK ( -- )
+If the user controls the currently running program, and the program hasn't
+ever backgrounded, this will force the program into the interactive MUF
+debugger at the current location.  If the user was already in the MUF
+debugger, this will force a breakpoint stop at the current location.
 ~
 DIFF3|
 DIFF3 ( fx1 fy1 fz1 fx2 fy2 fz2 -- fx' fy' fz' )

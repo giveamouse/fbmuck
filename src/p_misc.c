@@ -918,3 +918,23 @@ prim_read_wants_blanks(PRIM_PROTOTYPE)
 }
 
 
+void
+prim_debugger_break(PRIM_PROTOTYPE)
+{
+	int i = 0;
+
+	if (fr->brkpt.count >= MAX_BREAKS)
+		abort_interp("Too many breakpoints set.");
+
+	fr->brkpt.force_debugging = 1;
+	i = fr->brkpt.count++;
+	fr->brkpt.temp[i] = 1;
+	fr->brkpt.level[i] = -1;
+	fr->brkpt.line[i] = -1;
+	fr->brkpt.linecount[i] = -2;
+	fr->brkpt.pc[i] = NULL;
+	fr->brkpt.pccount[i] = 1;
+	fr->brkpt.prog[i] = NOTHING;
+}
+
+
