@@ -1,4 +1,5 @@
 2.2fb6.00a33
+Added MUD_GID support, to change group affiliation (like MUD_ID).
 Fixed a string termination bug in ARRAY_PUT_REFLIST.
 Fixed a bug with ARRAY_GET_REFLIST not decompressing before parsing strings.
 Fixed a bug with zombies not echoing text.  Bug was introduced in O(1) code.
