@@ -2,6 +2,10 @@
 
 /*
  * $Log: create.c,v $
+ * Revision 1.5  2001/10/29 19:36:15  fentonator
+ *
+ * Resolution for feature request #476091 (Tuneable room parent default).
+ *
  * Revision 1.4  2000/08/23 10:00:02  revar
  * Added @tops, @muftops, and @mpitops profiling commands.
  * Changed examine to show a program's cumulative runtimes.
@@ -529,7 +533,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	while ((newparent != NOTHING) && !(FLAGS(newparent) & ABODE))
 		newparent = DBFETCH(newparent)->location;
 	if (newparent == NOTHING)
-		newparent = GLOBAL_ENVIRONMENT;
+		newparent = tp_default_room_parent;
 
 	NAME(room) = alloc_string(name);
 	DBFETCH(room)->location = newparent;

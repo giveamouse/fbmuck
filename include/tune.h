@@ -81,6 +81,7 @@ extern int tp_mcp_muf_mlev;
 
 /* dbrefs */
 extern dbref tp_player_start;
+extern dbref tp_default_room_parent;
 
 
 

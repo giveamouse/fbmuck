@@ -185,6 +185,7 @@ struct tune_val_entry tune_val_list[] = {
 
 /* dbrefs */
 dbref tp_player_start = PLAYER_START;
+dbref tp_default_room_parent = GLOBAL_ENVIRONMENT;
 
 
 struct tune_ref_entry {
@@ -196,6 +197,7 @@ struct tune_ref_entry {
 
 struct tune_ref_entry tune_ref_list[] = {
 	{"player_start", TYPE_ROOM, &tp_player_start, 0},
+	{"default_room_parent", TYPE_ROOM, &tp_default_room_parent, 0},
 	{NULL, 0, NULL, 0}
 };
 
