@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <ctype.h>
+#include <float.h>
 #include "db.h"
 #include "tune.h"
 #include "inst.h"
@@ -39,17 +40,17 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 {
 	if (a->type != b->type) {
 		if (a->type == PROG_INTEGER && b->type == PROG_FLOAT) {
-			if (a->data.number > b->data.fnumber) {
+			if (((float)a->data.number - b->data.fnumber) >= FLT_EPSILON) {
 				return 1;
-			} else if (a->data.number < b->data.fnumber) {
+			} else if ((b->data.fnumber - (float)a->data.number) >= FLT_EPSILON) {
 				return -1;
 			} else {
 				return 0;
 			}
 		} else if (b->type == PROG_INTEGER && a->type == PROG_FLOAT) {
-			if (a->data.fnumber > b->data.number) {
+			if ((a->data.fnumber - (float)b->data.number) >= FLT_EPSILON) {
 				return 1;
-			} else if (a->data.fnumber < b->data.number) {
+			} else if (((float)b->data.number - a->data.fnumber) >= FLT_EPSILON) {
 				return -1;
 			} else {
 				return 0;
@@ -59,9 +60,9 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 	}
 	/* Indexes are of same type if we reached here. */
 	if (a->type == PROG_FLOAT) {
-		if (a->data.fnumber > b->data.fnumber) {
+		if ((a->data.fnumber - b->data.fnumber) >= FLT_EPSILON) {
 			return 1;
-		} else if (a->data.fnumber < b->data.fnumber) {
+		} else if ((b->data.fnumber - a->data.fnumber) >= FLT_EPSILON) {
 			return -1;
 		} else {
 			return 0;
@@ -70,7 +71,7 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 		char *astr = (a->data.string) ? a->data.string->data : "";
 		char *bstr = (b->data.string) ? b->data.string->data : "";
 
-		if (case_sens) {
+		if (0 != case_sens) {
 			return strcmp(astr, bstr);
 		} else {
 			return string_compare(astr, bstr);
@@ -88,7 +89,7 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 	} else if (a->type == PROG_ADD) {
 		int result = (a->data.addr->progref - b->data.addr->progref);
 
-		if (result) {
+		if (0 != result) {
 			return result;
 		}
 		return (a->data.addr->data - b->data.addr->data);
@@ -97,7 +98,7 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 	}
 }
 
-static array_tree *
+/*@null@*/static array_tree * 
 array_tree_find(array_tree * avl, array_iter * key)
 {
 	int cmpval;
@@ -118,7 +119,7 @@ array_tree_find(array_tree * avl, array_iter * key)
 static int
 array_tree_height_of(array_tree * node)
 {
-	if (node)
+	if (node != NULL)
 		return node->height;
 	else
 		return 0;
@@ -127,7 +128,7 @@ array_tree_height_of(array_tree * node)
 static int
 array_tree_height_diff(array_tree * node)
 {
-	if (node)
+	if (node != NULL)
 		return (array_tree_height_of(AVL_RT(node)) - array_tree_height_of(AVL_LF(node)));
 	else
 		return 0;
@@ -1630,6 +1631,9 @@ array_get_intkey_strval(stk_array * arr, int key)
 
 /*
  * $Log: array.c,v $
+ * Revision 1.18  2002/02/17 00:24:02  winged
+ * changes to use FLT_EPSILON
+ *
  * Revision 1.17  2001/07/15 07:38:38  revar
  * Various fixes for double-CLEAR()ing of array loop indexes.
  *
