@@ -444,6 +444,8 @@ handle_read_event(int descr, dbref player, const char *command)
 
 		if (!flag && fr) {
 			interp_loop(player, prog, fr, 0);
+			/* WORK: if more input is pending, send the READ mufevent again. */
+			/* WORK: if no input is pending, clear READ mufevent from all of this player's programs. */
 		}
 
 		/*

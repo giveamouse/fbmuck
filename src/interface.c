@@ -2,6 +2,9 @@
 
 /*
  * $Log: interface.c,v $
+ * Revision 1.4  2000/07/09 09:21:37  revar
+ * Marked places that need code for handling READ Mufevents.
+ *
  * Revision 1.3  2000/06/15 18:18:31  revar
  * Fixed some ugly code formatting in the usage message output.
  * Changed code to look for the resolver program at:
@@ -1748,24 +1751,27 @@ process_commands(void)
 		nprocessed = 0;
 		for (d = descriptor_list; d; d = dnext) {
 			dnext = d->next;
-			if (d->quota > 0 && (t = d->input.head)
-				&& (!(d->connected && PLAYER_BLOCK(d->player)))) {
-				d->quota--;
-				nprocessed++;
-				if (!do_command(d, t->start)) {
-					d->booted = 2;
-					/* process_output(d); */
-					/* shutdownsock(d);  */
+			if (d->quota > 0 && (t = d->input.head)) {
+				if (PLAYER_BLOCK(d->player)) {
+					/* WORK: send player's foreground/preempt programs an exclusive READ mufevent */
+				} else if (!d->connected) {
+					d->quota--;
+					nprocessed++;
+					if (!do_command(d, t->start)) {
+						d->booted = 2;
+						/* process_output(d); */
+						/* shutdownsock(d);  */
+					}
+					/* start former else block */
+					d->input.head = t->nxt;
+					d->input.lines--;
+					if (!d->input.head) {
+						d->input.tail = &d->input.head;
+						d->input.lines = 0;
+					}
+					free_text_block(t);
+					/* end former else block */
 				}
-				/* start former else block */
-				d->input.head = t->nxt;
-				d->input.lines--;
-				if (!d->input.head) {
-					d->input.tail = &d->input.head;
-					d->input.lines = 0;
-				}
-				free_text_block(t);
-				/* end former else block */
 			}
 		}
 	} while (nprocessed > 0);
