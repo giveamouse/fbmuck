@@ -16,6 +16,7 @@ Fixed bug #744385: MPI list funcs LREMOVE doesn't act on single item {null:}
 Fixed bug #789414: Catching a failed CALL breaks scoped variables
 Fixed bug #659197: array_join truncates quietly
 Fixed bug #785968: "man =" doesn't work
+Fixed bug #659864: Preempt MPI descloop
 Fixed crasher re unterminated comments in RFE #782388 nested comments patch.
 Fixed "RFE" #670187: recycling a room sends zombies home quietly
 Changed DESCRDBREF to return #-1 for an invalid or not-logged-in descriptor.

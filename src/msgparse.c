@@ -877,20 +877,22 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 
 	mesg_rec_cnt++;
 	if (mesg_rec_cnt > 26) {
+		char *zptr = get_mvar("how");
+		snprintf(dbuf, sizeof(dbuf), "%s Recursion limit exceeded.", zptr);
+		notify_nolisten(player, dbuf, 1);
 		mesg_rec_cnt--;
-		strncpy(outbuf, inbuf, maxchars);
-		outbuf[maxchars - 1] = '\0';
-		return outbuf;
+		outbuf[0] = '\0';
+		return NULL;
 	}
 	if (Typeof(player) == TYPE_GARBAGE) {
 		mesg_rec_cnt--;
-		outbuf[maxchars - 1] = '\0';
+		outbuf[0] = '\0';
 		return NULL;
 	}
 	if (Typeof(what) == TYPE_GARBAGE) {
 		notify_nolisten(player, "MPI Error: Garbage trigger.", 1);
 		mesg_rec_cnt--;
-		outbuf[maxchars - 1] = '\0';
+		outbuf[0] = '\0';
 		return NULL;
 	}
 	strcpyn(wbuf, sizeof(wbuf), inbuf);
@@ -947,7 +949,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									(varflag ? cmdbuf : mfun_list[s].name), MFUN_ARGEND);
 							notify_nolisten(player, dbuf, 1);
 							mesg_rec_cnt--;
-							outbuf[maxchars - 1] = '\0';
+							outbuf[0] = '\0';
 							return NULL;
 						}
 						for (i = 0; i < argc; i++) {
@@ -980,7 +982,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									free(argv[i + (varflag? 1 : 0)]);
 								}
 								mesg_rec_cnt--;
-								outbuf[maxchars - 1] = '\0';
+								outbuf[0] = '\0';
 								return NULL;
 							}
 						}
@@ -999,7 +1001,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									}
 								}
 								mesg_rec_cnt--;
-								outbuf[maxchars - 1] = '\0';
+								outbuf[0] = '\0';
 								return NULL;
 							}
 							if (argv[0]) {
@@ -1038,8 +1040,6 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 						if (mfun_list[s].parsep) {
 							for (i = (varflag ? 1 : 0); i < argc; i++) {
 								ptr = MesgParse(argv[i], buf);
-								argv[i] = (char*)realloc(argv[i], strlen(buf) + 1);
-								strcpy(argv[i], buf);
 								if (!ptr) {
 									char *zptr = get_mvar("how");
 
@@ -1052,9 +1052,11 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 										free(argv[i]);
 									}
 									mesg_rec_cnt--;
-									outbuf[maxchars - 1] = '\0';
+									outbuf[0] = '\0';
 									return NULL;
 								}
+								argv[i] = (char*)realloc(argv[i], strlen(buf) + 1);
+								strcpy(argv[i], buf);
 							}
 						}
 						if (mesgtyp & MPI_ISDEBUG) {
@@ -1087,7 +1089,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 								free(argv[i]);
 							}
 							mesg_rec_cnt--;
-							outbuf[maxchars - 1] = '\0';
+							outbuf[0] = '\0';
 							return NULL;
 						} else if (mfun_list[s].maxargs > 0 && argc > mfun_list[s].maxargs) {
 							char *zptr = get_mvar("how");
@@ -1100,7 +1102,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 								free(argv[i]);
 							}
 							mesg_rec_cnt--;
-							outbuf[maxchars - 1] = '\0';
+							outbuf[0] = '\0';
 							return NULL;
 						} else {
 							ptr = mfun_list[s].mfn(descr, player, what, perms, argc,
@@ -1111,7 +1113,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									free(argv[i]);
 								}
 								mesg_rec_cnt--;
-								outbuf[maxchars - 1] = '\0';
+								outbuf[0] = '\0';
 								return NULL;
 							}
 							if (mfun_list[s].postp) {
@@ -1128,7 +1130,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 										free(argv[i]);
 									}
 									mesg_rec_cnt--;
-									outbuf[maxchars - 1] = '\0';
+									outbuf[0] = '\0';
 									return NULL;
 								}
 								ptr = dptr;
@@ -1160,7 +1162,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									free(argv[i]);
 								}
 								mesg_rec_cnt--;
-								outbuf[maxchars - 1] = '\0';
+								outbuf[0] = '\0';
 								return NULL;
 							}
 						}
@@ -1180,7 +1182,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 							free(argv[i]);
 						}
 						mesg_rec_cnt--;
-						outbuf[maxchars - 1] = '\0';
+						outbuf[0] = '\0';
 						return NULL;
 					}
 				} else {
@@ -1244,17 +1246,32 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms, const char *in
 	if ((mesgtyp & MPI_NOHOW) == 0)
 	{
 		if (new_mvar("how", howvar))
-			return outbuf;
+		{
+			snprintf(howvar, sizeof(howvar), "%s Out of MPI variables.", abuf);
+			notify_nolisten(player, howvar, 1);
+			varc = mvarcnt;
+			return NULL;
+		}
 		strcpy(howvar, abuf);
 	}
 
 	if (new_mvar("cmd", cmdvar))
-		return outbuf;
+	{
+		snprintf(cmdvar, sizeof(cmdvar), "%s Out of MPI variables.", abuf);
+		notify_nolisten(player, cmdvar, 1);
+		varc = mvarcnt;
+		return NULL;
+	}
 	strcpy(cmdvar, match_cmdname);
 	strcpy(tmpcmd, match_cmdname);
 
 	if (new_mvar("arg", argvar))
-		return outbuf;
+	{
+		snprintf(argvar, sizeof(argvar), "%s Out of MPI variables.", abuf);
+		notify_nolisten(player, argvar, 1);
+		varc = mvarcnt;
+		return NULL;
+	}
 	strcpy(argvar, match_args);
 	strcpy(tmparg, match_args);
 
