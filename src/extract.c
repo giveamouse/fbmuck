@@ -3,6 +3,10 @@
 
 /*
  * $Log: extract.c,v $
+ * Revision 1.3  2002/04/15 10:25:44  revar
+ * Changed database format to Foxen7 format, which uses MD5 hashed passwords.
+ * Added -godpasswd option to reset the God character's password.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -132,7 +136,7 @@ check_player(dbref obj)
 	printf("Home: %s\n", unparse_object(me, PLAYER_HOME(obj)));
 	printf("First action: %s\n", unparse_object(me, DBFETCH(obj)->exits));
 	printf("%s: %d\n", tp_cpennies, PLAYER_PENNIES(obj));
-	printf("Password: %s\n", PLAYER_PASSWORD(obj));
+	printf("Password MD5 hash: %s\n", PLAYER_PASSWORD(obj));
 }
 
 void

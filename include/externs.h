@@ -150,6 +150,9 @@ extern void do_password(dbref player, const char *old, const char *newobj);
 extern void add_player(dbref who);
 extern void delete_player(dbref who);
 extern void clear_players(void);
+extern void set_password_raw(dbref player, const char*password);
+extern void set_password(dbref player, const char*password);
+extern int check_password(dbref player, const char*password);
 
 /* From predicates.c */
 extern int can_link_to(dbref who, object_flag_type what_type, dbref where);
@@ -315,6 +318,8 @@ extern void disassemble(dbref player, dbref program);
 void *init_seed(char *seed);
 void delete_seed(void *buffer);
 unsigned long rnd(void *buffer);
+void MD5base64(char* dest, const void* orig, int len);
+void Base64Encode(char* outbuf, const void* inbuf, size_t inlen);
 
 /* from mcppkgs.c */
 extern void show_mcp_error(McpFrame * mfr, char *topic, char *text);

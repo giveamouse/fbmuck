@@ -576,7 +576,7 @@ db_write_list(FILE * f, int mode)
 dbref
 db_write(FILE * f)
 {
-	putstring(f, "***Foxen6 TinyMUCK DUMP Format***");
+	putstring(f, "***Foxen7 TinyMUCK DUMP Format***");
 
 	putref(f, db_top);
 	putref(f, DB_PARMSINFO
@@ -609,7 +609,7 @@ dbref
 db_write_deltas(FILE * f)
 {
 	fseek(f, 0L, 2);			/* seek end of file */
-	putstring(f, "***Foxen6 Deltas Dump Extention***");
+	putstring(f, "***Foxen7 Deltas Dump Extention***");
 	db_write_list(f, 0);
 
 	fseek(f, 0L, 2);
@@ -1067,7 +1067,9 @@ db_read_object_old(FILE * f, struct object *o, dbref objno)
 		PLAYER_SET_HOME(objno, exits);
 		o->exits = NOTHING;
 		PLAYER_SET_PENNIES(objno, pennies);
-		PLAYER_SET_PASSWORD(objno, password);
+		set_password_raw(objno, NULL);
+		set_password(objno, password);
+		free((void*) password);
 		PLAYER_SET_CURR_PROG(objno, NOTHING);
 		PLAYER_SET_INSERT_MODE(objno, 0);
 		PLAYER_SET_DESCRS(objno, NULL);
@@ -1093,6 +1095,7 @@ void
 db_read_object_new(FILE * f, struct object *o, dbref objno)
 {
 	int j;
+	const char *password;
 
 	db_clear_object(objno);
 	FLAGS(objno) = 0;
@@ -1180,7 +1183,10 @@ db_read_object_new(FILE * f, struct object *o, dbref objno)
 		PLAYER_SET_HOME(objno, getref(f));
 		o->exits = getref(f);
 		PLAYER_SET_PENNIES(objno, getref(f));
-		PLAYER_SET_PASSWORD(objno, getstring(f));
+		password = getstring(f);
+		set_password_raw(objno, NULL);
+		set_password(objno, password);
+		free((void*) password);
 		PLAYER_SET_CURR_PROG(objno, NOTHING);
 		PLAYER_SET_INSERT_MODE(objno, 0);
 		PLAYER_SET_DESCRS(objno, NULL);
@@ -1195,6 +1201,7 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 {
 	int tmp, c, prop_flag = 0;
 	int j = 0;
+	const char *password;
 
 	if (read_before) {
 		db_free_object(objno);
@@ -1333,7 +1340,14 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		PLAYER_SET_HOME(objno, (prop_flag ? getref(f) : j));
 		o->exits = getref(f);
 		PLAYER_SET_PENNIES(objno, getref(f));
-		PLAYER_SET_PASSWORD(objno, getstring(f));
+		password = getstring(f);
+		if (dtype <= 8 && *password) {
+			set_password_raw(objno, NULL);
+			set_password(objno, password);
+			free((void*) password);
+		} else {
+			set_password_raw(objno, password);
+		}
 		PLAYER_SET_CURR_PROG(objno, NOTHING);
 		PLAYER_SET_INSERT_MODE(objno, 0);
 		PLAYER_SET_DESCRS(objno, NULL);
@@ -1463,6 +1477,23 @@ db_read(FILE * f)
 #endif
 			}
 			db_grow(i);
+		} else if (!strcmp(special, "**Foxen7 TinyMUCK DUMP Format***")) {
+			db_load_format = 9;
+			i = getref(f);
+			dbflags = getref(f);
+			if (dbflags & DB_PARMSINFO) {
+				parmcnt = getref(f);
+				tune_load_parms_from_file(f, NOTHING, parmcnt);
+			}
+			if (dbflags & DB_COMPRESSED) {
+#ifdef COMPRESS
+				init_compress_from_file(f);
+#else
+				fprintf(stderr, "This server is not compiled to read compressed databases.\n");
+				return -1;
+#endif
+			}
+			db_grow(i);
 		} else if (!strcmp(special, "***Foxen Deltas Dump Extention***")) {
 			db_load_format = 4;
 			doing_deltas = 1;
@@ -1477,6 +1508,9 @@ db_read(FILE * f)
 			doing_deltas = 1;
 		} else if (!strcmp(special, "***Foxen6 Deltas Dump Extention***")) {
 			db_load_format = 8;
+			doing_deltas = 1;
+		} else if (!strcmp(special, "***Foxen7 Deltas Dump Extention***")) {
+			db_load_format = 9;
 			doing_deltas = 1;
 		}
 		if (doing_deltas && !db) {
@@ -1519,6 +1553,7 @@ db_read(FILE * f)
 			case 6:
 			case 7:
 			case 8:
+			case 9:
 				db_read_object_foxen(f, o, thisref, db_load_format, doing_deltas);
 				break;
 			}
@@ -1554,6 +1589,10 @@ db_read(FILE * f)
 				} else if (special && !strcmp(special, "***Foxen6 Deltas Dump Extention***")) {
 					free((void *) special);
 					db_load_format = 8;
+					doing_deltas = 1;
+				} else if (special && !strcmp(special, "***Foxen7 Deltas Dump Extention***")) {
+					free((void *) special);
+					db_load_format = 9;
 					doing_deltas = 1;
 				} else {
 					if (special)

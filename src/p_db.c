@@ -459,7 +459,7 @@ prim_setname(PRIM_PROTOTYPE)
 			/* check for null password */
 			if (!*password) {
 				abort_interp("Player namechange requires password.");
-			} else if (strcmp(password, DoNull(PLAYER_PASSWORD(ref)))) {
+			} else if (!check_password(ref, password)) {
 				abort_interp("Incorrect password.");
 			} else if (string_compare(b, NAME(ref)) && !ok_player_name(b)) {
 				abort_interp("You can't give a player that name.");
@@ -1502,17 +1502,10 @@ prim_checkpassword(PRIM_PROTOTYPE)
 		abort_interp("Password string expected. (2)");
 	ptr = oper2->data.string ? oper2->data.string->data : "";
 	if (ref != NOTHING) {
-		const char *passwd = PLAYER_PASSWORD(ref);
-		result = 1;
-		if (!passwd) {
-			if (*ptr)
-				result = 0;
-		} else {
-			if (strcmp(ptr, PLAYER_PASSWORD(ref)))
-				result = 0;
-		}
-	} else
+		result = check_password(ref, ptr);
+	} else {
 		result = 0;
+	}
 
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -2018,8 +2011,7 @@ prim_newpassword(PRIM_PROTOTYPE)
     if (ref != NOTHING && !valid_player(oper2))
 		abort_interp("Player dbref expected. (1)");
     CHECKREMOTE(ref);
-    free((void *) PLAYER_PASSWORD(ref));
-	PLAYER_SET_PASSWORD(ref, alloc_string(ptr2));
+	set_password(ref, ptr2);
     CLEAR(oper1);
     CLEAR(oper2);
 }

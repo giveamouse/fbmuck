@@ -76,7 +76,7 @@ xMD5Init(struct xMD5Context *ctx)
  * of bytes.
  */
 void
-xMD5Update(struct xMD5Context *ctx, byte const *buf, int len)
+xMD5Update(struct xMD5Context *ctx, const byte *buf, int len)
 {
 	word32 t;
 
@@ -251,13 +251,84 @@ xMD5Transform(word32 buf[4], word32 const in[16])
 
 
 void
-MD5(void *dest, void *orig, int len)
+MD5(void *dest, const void *orig, int len)
 {
 	struct xMD5Context context;
 
 	xMD5Init(&context);
 	xMD5Update(&context, orig, len);
 	xMD5Final(dest, &context);
+}
+
+
+void
+Base64Encode(char* outbuf, const void* inbuf, size_t inlen)
+{
+	const char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	const unsigned char* inb = (unsigned char*)inbuf;
+	unsigned char* out;
+	size_t numb;
+	size_t endcnt;
+	size_t i;
+
+	numb = inlen;
+	if (numb > 0) {
+		unsigned int acc = 0;
+		out = (unsigned char*)outbuf;
+		for (i = 0; i < numb; i++) {
+			if (i % 3 == 0) {
+				acc = inb[i];
+			} else if (i % 3 == 1) {
+				acc <<= 8;
+				acc |= inb[i];
+			} else {
+				acc <<= 8;
+				acc |= inb[i];
+
+				*out++ = b64[(acc >> 18) & 0x3f];
+				*out++ = b64[(acc >> 12) & 0x3f];
+				*out++ = b64[(acc >> 6) & 0x3f];
+				*out++ = b64[acc & 0x3f];
+			}
+		}
+		if (i % 3 == 0) {
+		    endcnt = 0;
+		} else if (i % 3 == 1) {
+			endcnt = 2;
+		} else {
+		    endcnt = 1;
+		}
+		for (; i % 3; i++) {
+			acc <<= 8;
+		}
+		if (endcnt > 0) {
+			*out++ = b64[(acc >> 18) & 0x3f];
+			*out++ = b64[(acc >> 12) & 0x3f];
+			if (endcnt < 2)
+				*out++ = b64[(acc >> 6) & 0x3f];
+			if (endcnt < 1)
+				*out++ = b64[acc & 0x3f];
+			while (endcnt-->0)
+				*out++ = '=';
+		}
+	}
+	*out++ = '\0';
+
+	out = (unsigned char*)outbuf;
+	while (*out) {
+		if (*out++ > 127)
+			abort();
+	}
+}
+
+
+void
+MD5base64(char *dest, const void *orig, int len)
+{
+	void* tmp = (void*)malloc(16);
+	MD5(tmp, orig, len);
+	Base64Encode(dest, tmp, 16);
+	free(tmp);
 }
 
 /*****************************************************************/

@@ -113,7 +113,7 @@ sane_dump_object(dbref player, const char *arg)
 		SanPrint(player, "  Home:           %s", unparse(PLAYER_HOME(d)));
 		SanPrint(player, "  Pennies:        %d", PLAYER_PENNIES(d));
 		if (player < 0) {
-			SanPrint(player, "  Password:       %s", PLAYER_PASSWORD(d));
+			SanPrint(player, "  Password MD5:   %s", PLAYER_PASSWORD(d));
 		}
 		break;
 
@@ -731,6 +731,7 @@ create_lostandfound(dbref * player, dbref * room)
 				 "using %s", unparse(GOD));
 		*player = GOD;
 	} else {
+		const char *rpass;
 		*player = new_object();
 		NAME(*player) = alloc_string(player_name);
 		LOCATION(*player) = *room;
@@ -739,14 +740,16 @@ create_lostandfound(dbref * player, dbref * room)
 		PLAYER_SET_HOME(*player, *room);
 		EXITS(*player) = NOTHING;
 		PLAYER_SET_PENNIES(*player, tp_start_pennies);
-		PLAYER_SET_PASSWORD(*player, rand_password());
+		rpass = rand_password();
+		PLAYER_SET_PASSWORD(*player, NULL);
+		set_password(*player, rpass);
 		PLAYER_SET_CURR_PROG(*player, NOTHING);
 		PLAYER_SET_INSERT_MODE(*player, 0);
 		PUSH(*player, DBFETCH(*room)->contents);
 		DBDIRTY(*player);
 		add_player(*player);
 		log2file("logs/sanfixed", "Using %s (with password %s) to resolve "
-				 "unknown owner", unparse(*player), PLAYER_PASSWORD(*player));
+				 "unknown owner", unparse(*player), rpass);
 	}
 	OWNER(*room) = *player;
 	DBDIRTY(*room);

@@ -3,6 +3,10 @@
 
 /*
  * $Log: set.c,v $
+ * Revision 1.6  2002/04/15 10:25:44  revar
+ * Changed database format to Foxen7 format, which uses MD5 hashed passwords.
+ * Added -godpasswd option to reset the God character's password.
+ *
  * Revision 1.5  2002/04/03 01:47:22  mcclure
  *
  * Added float type information to @propset error message.
@@ -188,7 +192,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
 				notify(player, "You must specify a password to change a player name.");
 				notify(player, "E.g.: name player = newname password");
 				return;
-			} else if (strcmp(password, DoNull(PLAYER_PASSWORD(thing)))) {
+			} else if (!check_password(thing, password)) {
 				notify(player, "Incorrect password.");
 				return;
 			} else if (string_compare(newname, NAME(thing))

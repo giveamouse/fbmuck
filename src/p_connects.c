@@ -586,14 +586,8 @@ prim_descr_setuser(PRIM_PROTOTYPE)
 		abort_interp("Password string expected.");
 	ptr = oper3->data.string ? oper3->data.string->data : NULL;
 	if (ref != NOTHING) {
-		const char *passwd = PLAYER_PASSWORD(ref);
-		if (!passwd) {
-			if (ptr && *ptr)
-				abort_interp("Incorrect password.");
-		} else {
-			if (!ptr || strcmp(ptr, passwd))
-				abort_interp("Incorrect password.");
-		}
+		if (!check_password(ref, ptr))
+			abort_interp("Incorrect password.");
 	}
 
 	if (ref != NOTHING) {

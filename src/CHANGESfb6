@@ -1,5 +1,6 @@
 2.2fb6.00rc4
 Changed MUF debugger so it breakpoints just before the program would exit.
+Changed database format to Foxen7 format, which uses MD5 hashed passwords.
 Added MUF bytecode optimizer.
 Added optimize_muf boolean @tune parameter.
 Added .debug/lastcrashtime human-readable timestamp property for muf crashes.
@@ -8,6 +9,7 @@ Added color/bold hilighting of muf crashes and backtraces to make them a bit
 Added support for showing original scopevar names in debugging output.
 Added support for using original scopevar names in debugger.
 Added sanity check for bad exit link counts.
+Added -godpasswd option to reset the God character's password.
 Fixed bug in MCP where _datatag wasn't being preceeded by a separator space.
 Fixed bad error messages argument numbers in several array_* primitives.
 Fixed bug where COMPILE state left some values uninitialized.
@@ -24,6 +26,7 @@ Fixed restart code so that it'll work with newer pid-checking restart scripts.
 Fixed small non-growing memory leak with dbloaded garbage object names.
 Fixed crasher bug with letting object names grow near to BUFFER_LEN length.
 Fixed errors with MUF bytecode localvar fetch-and-clear optimization.
+
 
 
 2.2fb6.00rc3

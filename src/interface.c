@@ -226,25 +226,26 @@ show_program_usage(char *prog)
 {
 	fprintf(stderr, "Usage: %s [<options>] [infile [outfile [portnum [portnum ...]]]]\n", prog);
 	fprintf(stderr, "    Arguments:\n");
-	fprintf(stderr, "        infile          db file loaded at startup.  optional with -dbin.\n");
-	fprintf(stderr, "        outfile         output db file to save to.  optional with -dbout.\n");
-	fprintf(stderr, "        portnum         port num to listen for conns on. (16 ports max)\n");
+	fprintf(stderr, "        infile           db file loaded at startup.  optional with -dbin.\n");
+	fprintf(stderr, "        outfile          output db file to save to.  optional with -dbout.\n");
+	fprintf(stderr, "        portnum          port num to listen for conns on. (16 ports max)\n");
 	fprintf(stderr, "    Options:\n");
-	fprintf(stderr, "        -dbin INFILE    use INFILE as the database to load at startup.\n");
-	fprintf(stderr, "        -dbout OUTFILE  use OUTFILE as the output database to save to.\n");
-	fprintf(stderr, "        -port NUMBER    sets the port number to listen for connections on.\n");
+	fprintf(stderr, "        -dbin INFILE     use INFILE as the database to load at startup.\n");
+	fprintf(stderr, "        -dbout OUTFILE   use OUTFILE as the output database to save to.\n");
+	fprintf(stderr, "        -port NUMBER     sets the port number to listen for connections on.\n");
 #ifdef USE_SSL
 	fprintf(stderr, "        -sport NUMBER    sets the port number for secure connections\n");
 #endif
-	fprintf(stderr, "        -gamedir PATH   changes directory to PATH before starting up.\n");
-	fprintf(stderr, "        -convert        load the db, save in current format, and quit.\n");
-	fprintf(stderr, "        -decompress     when saving db, save in uncompressed format.\n");
-	fprintf(stderr, "        -nosanity       don't do db sanity checks at startup time.\n");
-	fprintf(stderr, "        -insanity       load db, then enter the interactive sanity editor.\n");
-	fprintf(stderr, "        -sanfix         attempt to auto-fix a corrupt db after loading.\n");
-	fprintf(stderr, "        -wizonly        only allow wizards to login.\n");
-	fprintf(stderr, "        -version        display this server's version.\n");
-	fprintf(stderr, "        -help           display this message.\n");
+	fprintf(stderr, "        -gamedir PATH    changes directory to PATH before starting up.\n");
+	fprintf(stderr, "        -convert         load the db, then save and quit.\n");
+	fprintf(stderr, "        -decompress      when saving db, save in uncompressed format.\n");
+	fprintf(stderr, "        -nosanity        don't do db sanity checks at startup time.\n");
+	fprintf(stderr, "        -insanity        load db, then enter the interactive sanity editor.\n");
+	fprintf(stderr, "        -sanfix          attempt to auto-fix a corrupt db after loading.\n");
+	fprintf(stderr, "        -wizonly         only allow wizards to login.\n");
+	fprintf(stderr, "        -godpasswd PASS  reset God(#1)'s password to PASS.  Implies -convert\n");
+	fprintf(stderr, "        -version         display this server's version.\n");
+	fprintf(stderr, "        -help            display this message.\n");
 	exit(1);
 }
 
@@ -257,6 +258,7 @@ main(int argc, char **argv)
 	FILE *ffd;
 	char *infile_name;
 	char *outfile_name;
+	char *num_one_new_passwd = NULL;
 	int i, nomore_options;
 	int sanity_skip;
 	int sanity_interactive;
@@ -303,6 +305,17 @@ main(int argc, char **argv)
 					show_program_usage(*argv);
 				}
 				outfile_name = argv[++i];
+
+			} else if (!strcmp(argv[i], "-godpasswd")) {
+				if (i + 1 >= argc) {
+					show_program_usage(*argv);
+				}
+				num_one_new_passwd = argv[++i];
+				if (!ok_password(num_one_new_passwd)) {
+					fprintf(stderr, "Bad -godpasswd password.\n");
+					exit(1);
+				}
+				db_conversion_flag = 1;
 
 			} else if (!strcmp(argv[i], "-port")) {
 				if (i + 1 >= argc) {
@@ -457,6 +470,10 @@ main(int argc, char **argv)
 	if (init_game(infile_name, outfile_name) < 0) {
 		fprintf(stderr, "Couldn't load %s!\n", infile_name);
 		exit(2);
+	}
+
+	if (num_one_new_passwd != NULL) {
+		set_password(GOD, num_one_new_passwd);
 	}
 
 	if (!sanity_interactive && !db_conversion_flag) {

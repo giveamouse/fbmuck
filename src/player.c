@@ -2,6 +2,10 @@
 
 /*
  * $Log: player.c,v $
+ * Revision 1.4  2002/04/15 10:25:44  revar
+ * Changed database format to Foxen7 format, which uses MD5 hashed passwords.
+ * Added -godpasswd option to reset the God character's password.
+ *
  * Revision 1.3  2001/04/02 10:42:49  winged
  * Making the change-password error messages more informative -- "Sorry"
  * doesn't quite cut it. :P
@@ -79,6 +83,55 @@ lookup_player(const char *name)
 	}
 }
 
+
+int
+check_password(dbref player, const char* password)
+{
+	char md5buf[64];
+	const char *processed = password;
+	const char *pword = PLAYER_PASSWORD(player);
+
+	if (*password) {
+		MD5base64(md5buf, password, strlen(password));
+		processed = md5buf;
+	}
+	
+	if (!pword || !*pword)
+		return 1;
+
+	if (!strcmp(pword, processed))
+		return 1;
+
+	return 0;
+}
+
+
+void
+set_password_raw(dbref player, const char* password)
+{
+	PLAYER_SET_PASSWORD(player, password);
+	DBDIRTY(player);
+}
+
+
+void
+set_password(dbref player, const char* password)
+{
+	char md5buf[64];
+	const char *processed = password;
+
+	if (*password) {
+		MD5base64(md5buf, password, strlen(password));
+		processed = md5buf;
+	}
+	
+	if (PLAYER_PASSWORD(player))
+		free((void *) PLAYER_PASSWORD(player));
+
+	set_password_raw(player, alloc_string(processed));
+}
+
+
 dbref
 connect_player(const char *name, const char *password)
 {
@@ -93,9 +146,7 @@ connect_player(const char *name, const char *password)
 	}
 	if (player == NOTHING)
 		return NOTHING;
-	if (PLAYER_PASSWORD(player)
-		&& *PLAYER_PASSWORD(player)
-		&& strcmp(PLAYER_PASSWORD(player), password))
+	if (!check_password(player, password))
 		return NOTHING;
 
 	return player;
@@ -122,7 +173,8 @@ create_player(const char *name, const char *password)
 	DBFETCH(player)->exits = NOTHING;
 
 	PLAYER_SET_PENNIES(player, tp_start_pennies);
-	PLAYER_SET_PASSWORD(player, alloc_string(password));
+	set_password_raw(player, NULL);
+	set_password(player, password);
 	PLAYER_SET_CURR_PROG(player, NOTHING);
 	PLAYER_SET_INSERT_MODE(player, 0);
 
@@ -138,13 +190,12 @@ create_player(const char *name, const char *password)
 void
 do_password(dbref player, const char *old, const char *newobj)
 {
-	if (!PLAYER_PASSWORD(player) || strcmp(old, PLAYER_PASSWORD(player))) {
+	if (!PLAYER_PASSWORD(player) || !check_password(player, old)) {
 		notify(player, "Sorry, old password did not match current password.");
 	} else if (!ok_password(newobj)) {
 		notify(player, "Bad new password (no spaces allowed).");
 	} else {
-		free((void *) PLAYER_PASSWORD(player));
-		PLAYER_SET_PASSWORD(player, alloc_string(newobj));
+		set_password(player, newobj);
 		DBDIRTY(player);
 		notify(player, "Password changed.");
 	}
