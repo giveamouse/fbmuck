@@ -1918,7 +1918,10 @@ do_command(struct descriptor_data *d, char *command)
 	command = cmdbuf;
 	if (!strcmp(command, QUIT_COMMAND)) {
 		return 0;
-	} else if (!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1)) {
+	} else if ((!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1)) ||
+                   (*command == OVERIDE_TOKEN &&
+                    (!strncmp(command+1, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))
+                   )) {
 		if (d->output_prefix) {
 			queue_ansi(d, d->output_prefix);
 			queue_write(d, "\r\n", 2);
@@ -1934,10 +1937,13 @@ do_command(struct descriptor_data *d, char *command)
 				dump_users(d, command + sizeof(WHO_COMMAND) - 1);
 			}
 		} else {
-			if (can_move(d->descriptor, d->player, buf, 2)) {
+			if ((!(TrueWizard(OWNER(d->player)) &&
+                              (*command == OVERIDE_TOKEN))) &&
+                            can_move(d->descriptor, d->player, buf, 2)) {
 				do_move(d->descriptor, d->player, buf, 2);
 			} else {
-				dump_users(d, command + sizeof(WHO_COMMAND) - 1);
+				dump_users(d, command + sizeof(WHO_COMMAND) - 
+                                           ((*command == OVERIDE_TOKEN)?0:1));
 			}
 		}
 		if (d->output_suffix) {
@@ -2229,15 +2235,17 @@ dump_users(struct descriptor_data *e, char *user)
 	extern const char *uncompress(const char *);
 #endif
 
-#ifdef GOD_PRIV
+/* #ifdef GOD_PRIV */
+/* -- Wizard should always override tp_who_doing JES
 	if (tp_who_doing) {
 		wizard = e->connected && God(e->player);
 	} else {
 		wizard = e->connected && Wizard(e->player);
 	}
-#else
+*/
+/* #else */
 	wizard = e->connected && Wizard(e->player);
-#endif
+/* #endif */
 
 	while (*user && (isspace(*user) || *user == '*')) {
 		if (tp_who_doing && *user == '*' && e->connected && Wizard(e->player))
