@@ -239,6 +239,8 @@ show_program_usage(char *prog)
 	fprintf(stderr, "        -port NUMBER     sets the port number to listen for connections on.\n");
 #ifdef USE_SSL
 	fprintf(stderr, "        -sport NUMBER    sets the port number for secure connections\n");
+#else
+	fprintf(stderr, "        -sport NUMBER    Ignored.  SSL support isn't compiled in.\n");
 #endif
 	fprintf(stderr, "        -gamedir PATH    changes directory to PATH before starting up.\n");
 	fprintf(stderr, "        -convert         load the db, then save and quit.\n");
@@ -338,6 +340,13 @@ main(int argc, char **argv)
 				}
 				if ( (ssl_numsocks + numsocks) < MAX_LISTEN_SOCKS)
 					ssl_listener_port[ssl_numsocks++] = atoi(argv[++i]);
+#else
+			} else if (!strcmp(argv[i], "-sport")) {
+				if (i + 1 >= argc) {
+					show_program_usage(*argv);
+				}
+				i++;
+				fprintf(stderr, "SSL unsupported.  Ignoring -sport.\n");
 #endif
 			} else if (!strcmp(argv[i], "-gamedir")) {
 				if (i + 1 >= argc) {
@@ -933,34 +942,47 @@ shovechars()
 	int avail_descriptors;
 	int i;
 
+#ifdef USE_SSL
+	int ssl_status_ok = 1;
+#endif
+
 	for (i = 0; i < numsocks; i++) {
 		sock[i] = make_socket(listener_port[i]);
 		maxd = sock[i] + 1;
 	}
+
 #ifdef USE_SSL
 	SSL_load_error_strings ();
  	OpenSSL_add_ssl_algorithms (); 
 	ssl_ctx = SSL_CTX_new (SSLv23_server_method ());
  
 	if (!SSL_CTX_use_certificate_file (ssl_ctx, SSL_CERT_FILE, SSL_FILETYPE_PEM)) {
-		log_status("Could not load certificate file\n");
-		exit(1); /* SJP  handle errors better */
+		log_status("Could not load certificate file %s\n", SSL_CERT_FILE);
+		ssl_status_ok = 0;
 	}
-	SSL_CTX_set_default_passwd_cb(ssl_ctx, pem_passwd_cb);
-	SSL_CTX_set_default_passwd_cb_userdata(ssl_ctx, (void*)tp_ssl_keyfile_passwd);
+	if (ssl_status_ok) {
+		SSL_CTX_set_default_passwd_cb(ssl_ctx, pem_passwd_cb);
+		SSL_CTX_set_default_passwd_cb_userdata(ssl_ctx, (void*)tp_ssl_keyfile_passwd);
 
-	if (!SSL_CTX_use_PrivateKey_file (ssl_ctx, SSL_KEY_FILE, SSL_FILETYPE_PEM)) {
-		log_status("Could not load private key file\n");
-		exit(1); /* SJP  handle errors better */
+		if (!SSL_CTX_use_PrivateKey_file (ssl_ctx, SSL_KEY_FILE, SSL_FILETYPE_PEM)) {
+			log_status("Could not load private key file %s\n", SSL_KEY_FILE);
+			ssl_status_ok = 0;
+		}
 	}
-	if (!SSL_CTX_check_private_key (ssl_ctx)) {
-		log_status("Private key does not check out\n");
-		exit(1); /* SJP  handle errors better */
+	if (ssl_status_ok) {
+		if (!SSL_CTX_check_private_key (ssl_ctx)) {
+			log_status("Private key does not check out and appears to be invalid.\n");
+			ssl_status_ok = 0;
+		}
 	}
  
-	for (i = 0; i < ssl_numsocks; i++) {
-		ssl_sock[i] = make_socket(ssl_listener_port[i]);
-		maxd = ssl_sock[i] + 1;
+	if (ssl_status_ok) {
+		for (i = 0; i < ssl_numsocks; i++) {
+			ssl_sock[i] = make_socket(ssl_listener_port[i]);
+			maxd = ssl_sock[i] + 1;
+		}
+	} else {
+		ssl_numsocks = 0;
 	}
 #endif
 	gettimeofday(&last_slice, (struct timezone *) 0);

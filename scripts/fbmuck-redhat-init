@@ -63,28 +63,29 @@ case "$cmd" in
             ports=`echo $ports | sed 's/,/ /g' | sed 's/\([0-9]*\)s/-sport \1/g'`
             rm -f $path/$pidfile
             echo -n "Starting $name fbmuck: "
-            if [ -x "$path/$script" ]; then
-                if [ "x$who" = "x$user" ]; then
-                    $path/$script $ports >> /dev/null 2>&1
-                    if [ $? == 0 ]; then
-                        success "start $name fbmuck"
-                    else
-                        failure "start $name fbmuck"
-                    fi
-                else
-                    su - $user -c "$path/$script $ports >> /dev/null 2>&1"
-                    if [ $? == 0 ]; then
-                        success "start $name fbmuck"
-                    else
-                        failure "start $name fbmuck"
-                    fi
-                fi
-                while [ ! -f $path/$pidfile ]; do
-                    sleep 1
-                done
+	    failed=0
+            if [ "x$who" = "x$user" ]; then
+                $path/$script $ports
+		if [ $? == 0 ]; then
+                    success "start $name fbmuck"
+		else
+		    failed=1
+                    failure "start $name fbmuck"
+		fi
             else
-                failure "start $name fbmuck: could not execute $path/$script"
+                rcode=`su $user -c "$path/$script $ports; echo \\\$?"`
+		if [ "$rcode" == 0 ]; then
+                    success "start $name fbmuck"
+		else
+		    failed=1
+                    failure "start $name fbmuck"
+		fi
             fi
+	    if [ $failed == 0 ]; then
+		while [ ! -f $path/$pidfile ]; do
+		    sleep 1
+		done
+	    fi
             echo ""
         fi
     done
@@ -120,9 +121,9 @@ case "$cmd" in
                     fi
                     # Wait for server to complete a clean shutdown.
                     # If the process doesn't change status for a period
-                    # longer than two minutes, assume it is hung, and exit.
+                    # longer than sixty seconds, assume it is hung, and exit.
                     laststat="S"
-                    limitcnt=120
+                    limitcnt=60
                     while [ -d /proc/$pid ]; do
                         newstat=`grep 'State:' /proc/$pid/status|awk '{print $2}'`
                         if [ "x$newstat" != "xR" -a "x$laststat" = "x$newstat" ]; then
@@ -132,7 +133,7 @@ case "$cmd" in
                                 break
                             fi
                         else
-                            limitcnt=120
+                            limitcnt=60
                             laststat=$newstat
                         fi
                         sleep 1

@@ -1657,7 +1657,7 @@ prim_findnext(PRIM_PROTOTYPE)
 	init_checkflags(player, DoNullInd(oper4->data.string), &check);
 	for (i = item; i < db_top; i++) {
 		if ((who == NOTHING || OWNER(i) == who) &&
-			checkflags(i, check) && NAME(i) &&
+			checkflags(i, check) && NAME(i) && Typeof(i) != TYPE_GARBAGE &&
 			(!*name || equalstr(buf, (char *) NAME(i))))
 		{
 			ref = i;

@@ -815,10 +815,16 @@ get_pidinfo(int pid)
 
 	timequeue ptr = tqhead;
 	nw = new_array_dictionary();
-	while (ptr && (ptr->eventnum != pid)) {
+	while (ptr) {
+		if (ptr->eventnum == pid) {
+			if (ptr->typ != TQ_MUF_TYP || ptr->subtyp != TQ_MUF_TIMER) {
+				break;
+			}
+		}
 		ptr = ptr->next;
 	}
-	if (ptr && (ptr->eventnum == pid)) {
+	if (ptr && (ptr->eventnum == pid) &&
+			(ptr->typ != TQ_MUF_TYP || ptr->subtyp != TQ_MUF_TIMER)) {
 		if (ptr->fr) {
 			etime = rtime - ptr->fr->started;
 			if (etime > 0) {

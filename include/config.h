@@ -64,8 +64,8 @@
 /*
  * Some systems can hang for up to 30 seconds while trying to resolve
  * hostnames.  Define this to use a non-blocking second process to resolve
- * hostnames for you.  NOTE:  You need to compile the 'resolver' program
- * (make resolver) and put it in the directory that the netmuck program is
+ * hostnames for you.  NOTE:  You need to compile the 'fb-resolver' program
+ * (make resolver) and put it in the directory that the fbmuck program is
  * run from.
  */
 #define SPAWN_HOST_RESOLVER
@@ -161,7 +161,12 @@
 #define PROGRAM_LOG "logs/programs"	/* text of changed programs */
 
 #define MACRO_FILE  "muf/macros"
-#define PID_FILE    "netmuck.pid"	/* Write the server pid to ... */
+
+/*
+ * File to write the server pid to.  This is generally "netmuck.pid"
+ * for historical reasons.
+ */
+#define PID_FILE    "netmuck.pid"
 
 #define RESOLVER_PID_FILE "hostfind.pid"	/* Write the resolver pid to ... */
 
@@ -170,8 +175,8 @@
 #endif							/* LOCKOUT */
 
 #ifdef DETACH
-# define LOG_FILE "logs/netmuck"	/* Log stdout to ... */
-# define LOG_ERR_FILE "logs/netmuck.err"	/* Log stderr to ... */
+# define LOG_FILE     "logs/fbmuck"     /* Log stdout to ... */
+# define LOG_ERR_FILE "logs/fbmuck.err" /* Log stderr to ... */
 #endif							/* DETACH */
 
 /************************************************************************

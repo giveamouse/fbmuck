@@ -1,3 +1,16 @@
+2.2fb6.00rc6
+Added "objtype" field to results of SYSPARM_ARRAY, for when the sysparm is
+  of the "dbref" type.  The "objtype" field specifies what type the dbref is
+  restricted to.
+Fixed crasher bug with muf process kill while handling mufevent.
+Fixed bug with GETPIDINFO returning timer event info for a process.
+Fixed hanging bug in fbmuck init script, when fbmuck errors out.
+Changed SSL cert/key load failures to just disable SSL, instead of exiting.
+Changed SSL cert/key load failure error reporting to show file path/name.
+Changed commandline to accept -sport with a warning when SSL not supported.
+
+
+
 2.2fb6.00rc5
 Added SYSPARM_ARRAY ( str:pattern -- listofdict:sysparminfo ) MUF prim.
   Returns a list of dictionaries with info about each @tune parameter that

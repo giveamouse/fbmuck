@@ -527,6 +527,32 @@ tune_parms_array(const char* pattern, int mlev)
 				array_set_strkey_strval(&item, "name",  tref->name);
 				array_set_strkey_refval(&item, "value", *tref->ref);
 				array_set_strkey_intval(&item, "mlev",  tref->security);
+				switch (tref->typ) {
+					case NOTYPE:
+						array_set_strkey_strval(&item, "objtype",  "any");
+						break;
+					case TYPE_PLAYER:
+						array_set_strkey_strval(&item, "objtype",  "player");
+						break;
+					case TYPE_THING:
+						array_set_strkey_strval(&item, "objtype",  "thing");
+						break;
+					case TYPE_ROOM:
+						array_set_strkey_strval(&item, "objtype",  "room");
+						break;
+					case TYPE_EXIT:
+						array_set_strkey_strval(&item, "objtype",  "exit");
+						break;
+					case TYPE_PROGRAM:
+						array_set_strkey_strval(&item, "objtype",  "program");
+						break;
+					case TYPE_GARBAGE:
+						array_set_strkey_strval(&item, "objtype",  "garbage");
+						break;
+					default:
+						array_set_strkey_strval(&item, "objtype",  "unknown");
+						break;
+				}
 
 				temp1.type = PROG_ARRAY;
 				temp1.data.array = item;
