@@ -775,6 +775,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 	}
 	init_match(descr, player, name, NOTYPE, &md);
 	match_everything(&md);
+	match_absolute(&md);
 	if ((thing = noisy_match_result(&md)) == NOTHING)
 		return;
 
