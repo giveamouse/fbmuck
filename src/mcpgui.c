@@ -39,10 +39,10 @@ void gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context);
 void
 gui_initialize(void)
 {
-	McpVer oneoh  = { 1, 0 };
-	McpVer oneone = { 1, 1 };
+	McpVer minver = { 1, 0 };  /* { major, minor } */
+	McpVer maxver = { 1, 2 };  /* { major, minor } */
 
-	mcp_package_register(GUI_PACKAGE, oneoh, oneone, gui_pkg_callback, NULL, NULL);
+	mcp_package_register(GUI_PACKAGE, minver, maxver, gui_pkg_callback, NULL, NULL);
 }
 
 
