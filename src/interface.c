@@ -232,8 +232,6 @@ void resolve_hostnames(void);
 
 #define FREE(x) (free((void *) x))
 
-#ifndef BOOLEXP_DEBUGGING
-
 extern FILE *input_file;
 extern FILE *delta_infile;
 extern FILE *delta_outfile;
@@ -448,6 +446,7 @@ main(int argc, char **argv)
 			fprintf(ffd, "%d\n", getpid());
 			fclose(ffd);
 		}
+		log_status("%s PID is: %d\n", argv[0], getpid());
 
 #ifdef DETACH
 		if (!sanity_interactive && !db_conversion_flag) {
@@ -661,9 +660,6 @@ main(int argc, char **argv)
 	exit(0);
 	return 0;
 }
-
-#endif							/* BOOLEXP_DEBUGGING */
-
 
 int
 queue_ansi(struct descriptor_data *d, const char *msg)
