@@ -40,17 +40,17 @@ Current Planned Tasks for fb6.00 (9/30/96):
     Clean up the struct specific fields of objects.
 
     WAITPROP (d s -- s)  Waits for deletion or change of given property.
-    TRIGDESCR ( -- i) relates the descriptor that started this program.
++   TRIGDESCR ( -- i) relates the descriptor that started this program.
 
     Implement following MUF prims: Make @tunable format str for list formats.
-	GETLISTRANGE (i i d s -- {s})
-	SETLISTRANGE ({s} i d s -- )
-	CLEARLISTRANGE (i i d s -- )
+~	GETLISTRANGE (i i d s -- {s})
+~	SETLISTRANGE ({s} i d s -- )
+    CLEARLISTRANGE (i i d s -- )
 	MOVELISTRANGE (i i i d s -- )
 
     Add a way to let programs edit and compile programs.
     Make Properties store privs and ownership.
-    Make MUF ARRAYs that are dynamically allocated.
++   Make MUF ARRAYs that are dynamically allocated.
 
 
 
@@ -68,18 +68,18 @@ Kimi okays. A way for _listen to know if an @message/@omessage triggered them,
  say/pose muf's would make the former useless.
 
 Current:
-    document the _sys/ properties somewhere.
-?   Add .rsplit to $lib/strings
+    Document the _sys/ properties somewhere.
+-   Add .rsplit to $lib/strings
     Make Huh? sysparm message exec for MPI, with dbref 0 perms.
 
     Change compiler to bytecode style.  Use fn ptrs.
 
-?   Make server force ZOMBIES to look whenever it moves them.  All cases.
-?   Make dropto treat zombies like players for triggering.
++   Make server force ZOMBIES to look whenever it moves them.  All cases.
++   Make dropto treat zombies like players for triggering.
 ?   Make dropto not drop zombies.
 
 ?   Document the CONTROLS and SYSPARM muf primitives.
-    Write mpi-intro docs. (mostly done)
++   Write mpi-intro docs. (mostly done)
 
 ?   Make pose strip starting space for ',:;!?. or space.
 
@@ -99,9 +99,9 @@ Current:
 
   
 KNOWN BUGS:
-?   SETLINK should allow linking exits and rooms to #-3
++   SETLINK should allow linking exits and rooms to #-3
 ?   Make recursion limit in boolexp parsing.  ie no (((...((((( to crash with.
-1/2 Make internal MUF addresses use dbref+index instead of memory pointer.
++   Make internal MUF addresses use dbref+index instead of memory pointer.
 
 
 PROBLEMS:
@@ -122,8 +122,8 @@ PRIMITIVES:
 
 ENHANCEMENTS:
     Let smatch() return the unknown parameters.
-    Add in Anon funcs. : Fn "cat" "dog" "bat" 3 ': strcmp > ; .sort ;
-    Make ticked macros and prims compile to anony funcs.
+-   Add in Anon funcs. : Fn "cat" "dog" "bat" 3 ': strcmp > ; .sort ;
+-   Make ticked macros and prims compile to anony funcs.
 
 
 COMMANDS:

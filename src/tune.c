@@ -127,6 +127,7 @@ int tp_free_frames_pool = FREE_FRAMES_POOL;
 int tp_listen_mlev = LISTEN_MLEV;
 int tp_playermax_limit = PLAYERMAX_LIMIT;
 int tp_process_timer_limit = PROCESS_TIMER_LIMIT;
+int tp_cmd_log_threshold_msec = CMD_LOG_THRESHOLD_MSEC;
 
 
 struct tune_val_entry {
@@ -167,6 +168,7 @@ struct tune_val_entry tune_val_list[] = {
 	{"listen_mlev", &tp_listen_mlev, 0},
 	{"playermax_limit", &tp_playermax_limit, 0},
 	{"process_timer_limit", &tp_process_timer_limit, 0},
+    {"cmd_log_threshold_msec", &tp_cmd_log_threshold_msec, 0},
 
 	{NULL, NULL, 0}
 };

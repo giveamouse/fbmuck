@@ -938,6 +938,11 @@ mesg_args(char *wbuf, argv_typ argv, char ulv, char sep, char dlv, char quot, in
 			lev--;
 			if (lev < 0) {
 				buf[r] = '\0';
+				if (argv[argc]) {
+					free(argv[argc]);
+					argv[argc] = NULL;
+				}
+				argv[argc] = (char*)malloc(((buf + r) - ptr) + 1);
 				strcpy(argv[argc++], ptr);
 				ptr = buf + r + 1;
 				break;
@@ -946,6 +951,11 @@ mesg_args(char *wbuf, argv_typ argv, char ulv, char sep, char dlv, char quot, in
 		} else if (!litflag && lev < 1 && buf[r] == sep) {
 			if (argc < maxargs - 1) {
 				buf[r] = '\0';
+				if (argv[argc]) {
+					free(argv[argc]);
+					argv[argc] = NULL;
+				}
+				argv[argc] = (char*)malloc(((buf + r) - ptr) + 1);
 				strcpy(argv[argc++], ptr);
 				ptr = buf + r + 1;
 			}
@@ -1004,8 +1014,8 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 	char *dptr;
 	int p, q, s;
 	int i;
-	char argv[9][BUFFER_LEN];
-	int argc;
+	char *argv[10] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+	int argc = 0;
 	int showtextflag = 0;
 	int literalflag = 0;
 
@@ -1017,10 +1027,12 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 		return outbuf;
 	}
 	if (Typeof(player) == TYPE_GARBAGE) {
+		mesg_rec_cnt--;
 		return NULL;
 	}
 	if (Typeof(what) == TYPE_GARBAGE) {
 		notify_nolisten(player, "MPI Error: Garbage trigger.", 1);
+		mesg_rec_cnt--;
 		return NULL;
 	}
 	strcpy(wbuf, inbuf);
@@ -1076,7 +1088,12 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									zptr, MFUN_LEADCHAR,
 									(varflag ? cmdbuf : mfun_list[s].name), MFUN_ARGEND);
 							notify_nolisten(player, dbuf, 1);
+							mesg_rec_cnt--;
 							return NULL;
+						}
+						for (i = 0; i < argc; i++) {
+							free(argv[i]);
+							argv[i] = NULL;
 						}
 						if (wbuf[p] == MFUN_ARGEND) {
 							argc = 0;
@@ -1100,6 +1117,10 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 								sprintf(ebuf, "%s %c%s%c: End brace not found.",
 										zptr, MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
 								notify_nolisten(player, ebuf, 1);
+								for (i = 0; i < argc; i++) {
+									free(argv[i + (varflag? 1 : 0)]);
+								}
+								mesg_rec_cnt--;
 								return NULL;
 							}
 						}
@@ -1113,8 +1134,17 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 								sprintf(ebuf, "%s %c%s%c: Unrecognized variable.",
 										zptr, MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
 								notify_nolisten(player, ebuf, 1);
+								for (i = 0; i < argc; i++) {
+									free(argv[i + (varflag? 1 : 0)]);
+								}
+								mesg_rec_cnt--;
 								return NULL;
 							}
+							if (argv[0]) {
+								free(argv[0]);
+								argv[0] = NULL;
+							}
+							argv[0] = (char*)malloc(strlen(zptr) + 1);
 							strcpy(argv[0], zptr);
 						}
 						if (mesgtyp & MPI_ISDEBUG) {
@@ -1144,7 +1174,9 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 						}
 						if (mfun_list[s].parsep) {
 							for (i = (varflag ? 1 : 0); i < argc; i++) {
-								ptr = MesgParse(argv[i], argv[i]);
+								ptr = MesgParse(argv[i], buf);
+								argv[i] = (char*)realloc(argv[i], strlen(buf) + 1);
+								strcpy(argv[i], buf);
 								if (!ptr) {
 									char *zptr = get_mvar("how");
 
@@ -1153,6 +1185,10 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 											(varflag ? cmdbuf : mfun_list[s].name),
 											MFUN_ARGEND, i + 1);
 									notify_nolisten(player, dbuf, 1);
+									for (i = 0; i < argc; i++) {
+										free(argv[i]);
+									}
+									mesg_rec_cnt--;
 									return NULL;
 								}
 							}
@@ -1183,6 +1219,10 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									zptr, MFUN_LEADCHAR,
 									(varflag ? cmdbuf : mfun_list[s].name), MFUN_ARGEND);
 							notify_nolisten(player, ebuf, 1);
+							for (i = 0; i < argc; i++) {
+								free(argv[i]);
+							}
+							mesg_rec_cnt--;
 							return NULL;
 						} else if (mfun_list[s].maxargs > 0 && argc > mfun_list[s].maxargs) {
 							char *zptr = get_mvar("how");
@@ -1191,12 +1231,20 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 									zptr, MFUN_LEADCHAR,
 									(varflag ? cmdbuf : mfun_list[s].name), MFUN_ARGEND);
 							notify_nolisten(player, ebuf, 1);
+							for (i = 0; i < argc; i++) {
+								free(argv[i]);
+							}
+							mesg_rec_cnt--;
 							return NULL;
 						} else {
 							ptr = mfun_list[s].mfn(descr, player, what, perms, argc,
 												   argv, buf, mesgtyp);
 							if (!ptr) {
 								outbuf[q] = '\0';
+								for (i = 0; i < argc; i++) {
+									free(argv[i]);
+								}
+								mesg_rec_cnt--;
 								return NULL;
 							}
 							if (mfun_list[s].postp) {
@@ -1209,6 +1257,10 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 											(varflag ? cmdbuf : mfun_list[s].name),
 											MFUN_ARGEND);
 									notify_nolisten(player, ebuf, 1);
+									for (i = 0; i < argc; i++) {
+										free(argv[i]);
+									}
+									mesg_rec_cnt--;
 									return NULL;
 								}
 								ptr = dptr;
@@ -1219,6 +1271,10 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 							notify_nolisten(player, dbuf, 1);
 						}
 					} else if (msg_is_macro(player, what, perms, cmdbuf)) {
+						for (i = 0; i < argc; i++) {
+							free(argv[i]);
+							argv[i] = NULL;
+						}
 						if (wbuf[p] == MFUN_ARGEND) {
 							argc = 0;
 							p++;
@@ -1232,6 +1288,10 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 								sprintf(ebuf, "%s %c%s%c: End brace not found.",
 										zptr, MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
 								notify_nolisten(player, ebuf, 1);
+								for (i = 0; i < argc; i++) {
+									free(argv[i]);
+								}
+								mesg_rec_cnt--;
 								return NULL;
 							}
 						}
@@ -1246,6 +1306,10 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 						sprintf(ebuf, "%s %c%s%c: Unrecognized function.",
 								zptr, MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
 						notify_nolisten(player, ebuf, 1);
+						for (i = 0; i < argc; i++) {
+							free(argv[i]);
+						}
+						mesg_rec_cnt--;
 						return NULL;
 					}
 				} else {
@@ -1275,6 +1339,9 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 		sprintf(dbuf, "%s %*s\"%.512s\"", zptr, (mesg_rec_cnt * 2 - 4), "",
 				cr2slash(buf2, outbuf));
 		notify_nolisten(player, dbuf, 1);
+	}
+	for (i = 0; i < argc; i++) {
+		free(argv[i]);
 	}
 	mesg_rec_cnt--;
 	return (outbuf);

@@ -286,4 +286,7 @@
 /* Specifies the maximum number of timers allowed per process. */
 #define PROCESS_TIMER_LIMIT 4
 
+/* Log commands that take longer than this many milliseconds */
+#define CMD_LOG_THRESHOLD_MSEC 1000
+
 #endif /* _DEFAULTS_H */

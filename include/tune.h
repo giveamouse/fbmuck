@@ -72,6 +72,7 @@ extern int tp_free_frames_pool;
 extern int tp_listen_mlev;
 extern int tp_playermax_limit;
 extern int tp_process_timer_limit;
+extern int tp_cmd_log_threshold_msec;
 
 
 

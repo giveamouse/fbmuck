@@ -1,17 +1,16 @@
-Integrate @tops and profiling code.
-Integrate time() speedups.
-Integrate connection-number O(1) lookup table.
-Integrate descriptor-number O(1) lookup table.
-Integrate player-descriptor O(1) lookup tables.
+Fix wizbit MPI security hole.
 
-ARRAY_NOTIFY ([d] [s] -- ) Takes a homogenous list array of dbrefs, and a
-    homogenous list array of strings, and displays the strings to the given
-    dbrefs.
+Integrate LOG_INTERACTIVE @tune.
+Integrate multiple listener ports mods.
+Integrate time() speedups.
+
+GUI_LIST_ADD     (strDlogID strCtrlID arrItems intPos -- )
+    Adds items into the middle of a control's list.
+GUI_LIST_DEL     (strDlogID strCtrlID intPosFrom intPosTo -- )
+    Deletes items from the middle of a control's list.
 ARRAY_FILTER_PROP ([d] s1 s2 -- [d']) Takes a homogenous list array of dbrefs,
     and returns a list array with only those dbrefs who have a property
     specified by s1, set to a value that smatch matches s2.
 ARRAY_EXTRACT ([?] [@] -- [?]} Takes an array, and returns every element whose
     name is in the index array. (The @ means an index item.  String or int.)
-GETPROPLIST ( d s -- [s] ) for reading stringlists from proplists.
-SETPROPLIST ( d s [s] -- ) for saving stringlists to proplists.
 

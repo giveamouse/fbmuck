@@ -66,7 +66,7 @@ int free_mfuncs(int downto);
 
 #define ABORT_MPI(funam,mesg) { sprintf(buf, "%s %c%s%c: %s", get_mvar("how"), MFUN_LEADCHAR, funam, MFUN_ARGEND, mesg);  notify_nolisten(player, buf, 1);  return NULL; }
 
-typedef char argv_typ[10][BUFFER_LEN];
+typedef char **argv_typ;
 
 #define MesgParse(in,out) mesg_parse(descr, player, what, perms, (in), (out), BUFFER_LEN, mesgtyp)
 

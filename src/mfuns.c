@@ -22,20 +22,22 @@ mfn_func(MFUNARGS)
 {
 	char *funcname;
 	char *ptr=NULL, *def;
+	char namebuf[BUFFER_LEN];
+	char argbuf[BUFFER_LEN];
+	char defbuf[BUFFER_LEN];
 	int i;
 
-	funcname = MesgParse(argv[0], argv[0]);
+	funcname = MesgParse(argv[0], namebuf);
 	CHECKRETURN(funcname, "FUNC", "name argument (1)");
 
 	def = argv[argc - 1];
 	for (i = 1; i < argc - 1; i++) {
-		ptr = MesgParse(argv[i], argv[i]);
+		ptr = MesgParse(argv[i], argbuf);
 		CHECKRETURN(ptr, "FUNC", "variable name argument");
-		sprintf(buf, "{with:%.*s,{:%d},%.*s}", MAX_MFUN_NAME_LEN, ptr, i,
+		sprintf(defbuf, "{with:%.*s,{:%d},%.*s}", MAX_MFUN_NAME_LEN, ptr, i,
 				(BUFFER_LEN - MAX_MFUN_NAME_LEN - 20), def);
-		strcpy(def, buf);
 	}
-	i = new_mfunc(funcname, def);
+	i = new_mfunc(funcname, defbuf);
 	if (i == 1)
 		ABORT_MPI("FUNC", "Function Name too long.");
 	if (i == 2)

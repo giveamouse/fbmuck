@@ -137,6 +137,7 @@
 #define PARMFILE_NAME "data/parmfile.cfg"	/* The file for config parms */
 #define WORDLIST_FILE "data/wordlist.txt"	/* File for compression dict. */
 
+#define LOG_CMD_TIMES "logs/cmd-times"	/* Command times Log */
 #define LOG_GRIPE   "logs/gripes"	/* Gripes Log */
 #define LOG_STATUS  "logs/status"	/* System errors and stats */
 #define LOG_CONC    "logs/concentrator"	/* Concentrator errors and stats */

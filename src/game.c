@@ -433,6 +433,9 @@ process_command(int descr, dbref player, char *command)
 	char pbuf[BUFFER_LEN];
 	char xbuf[BUFFER_LEN];
 	char ybuf[BUFFER_LEN];
+	struct timeval starttime;
+	struct timeval endtime;
+	double totaltime;
 
 	if (command == 0)
 		abort();
@@ -489,6 +492,9 @@ process_command(int descr, dbref player, char *command)
 			command = &pbuf[0];
 		}
 	}
+
+	/* profile how long command takes. */
+	gettimeofday(&starttime, NULL);
 
 	/* if player is a wizard, and uses overide token to start line... */
 	/* ... then do NOT run actions, but run the command they specify. */
@@ -1243,6 +1249,26 @@ process_command(int descr, dbref player, char *command)
 		}
 	}
 
+	/* calculate time command took. */
+	gettimeofday(&endtime, NULL);
+	if (starttime.tv_usec > endtime.tv_usec) {
+		endtime.tv_usec += 1000000;
+		endtime.tv_sec -= 1;
+	}
+	endtime.tv_usec -= starttime.tv_usec;
+	endtime.tv_sec -= starttime.tv_sec;
+
+	totaltime = endtime.tv_sec + (endtime.tv_usec * 1.0e-6);
+	if (totaltime > (tp_cmd_log_threshold_msec / 1000.0)) {
+		log2file(LOG_CMD_TIMES, "%6.3fs, %.16s: %s%s%s%s(%d) in %s(%d):%s %s",
+					totaltime, ctime(&starttime.tv_sec),
+					Wizard(OWNER(player)) ? "WIZ: " : "",
+					(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
+					(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
+					NAME(OWNER(player)), (int) player,
+					NAME(DBFETCH(player)->location),
+					(int) DBFETCH(player)->location, " ", command);
+	}
 }
 
 #undef Matched

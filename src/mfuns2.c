@@ -535,23 +535,24 @@ mfn_count(MFUNARGS)
 const char *
 mfn_with(MFUNARGS)
 {
+	char namebuf[BUFFER_LEN];
+	char cmdbuf[BUFFER_LEN];
 	char vbuf[BUFFER_LEN];
 	char *ptr, *valptr;
 	int v, cnt;
 
-	ptr = MesgParse(argv[0], argv[0]);
+	ptr = MesgParse(argv[0], namebuf);
 	CHECKRETURN(ptr, "WITH", "arg 1");
 	v = new_mvar(ptr, vbuf);
 	if (v == 1)
 		ABORT_MPI("WITH", "Variable name too long.");
 	if (v == 2)
 		ABORT_MPI("WITH", "Too many variables already defined.");
-	valptr = MesgParse(argv[1], argv[1]);
+	valptr = MesgParse(argv[1], vbuf);
 	CHECKRETURN(valptr, "WITH", "arg 2");
 	*buf = '\0';
-	strcpy(vbuf, valptr);
 	for (cnt = 2; cnt < argc; cnt++) {
-		ptr = MesgParse(argv[cnt], argv[cnt]);
+		ptr = MesgParse(argv[cnt], cmdbuf);
 		if (!ptr) {
 			sprintf(buf, "%s %cWITH%c (arg %d)", get_mvar("how"),
 					MFUN_LEADCHAR, MFUN_ARGEND, cnt);
@@ -568,13 +569,16 @@ const char *
 mfn_fold(MFUNARGS)
 {
 	int iter_limit = MAX_MFUN_LIST_LEN;
+	char varname[BUFFER_LEN];
+	char sepinbuf[BUFFER_LEN];
+	char listbuf[BUFFER_LEN];
 	char tmp[BUFFER_LEN];
 	char tmp2[BUFFER_LEN];
 	char *ptr, *ptr2;
 	char *sepin = argv[4];
 	int seplen, v;
 
-	ptr = MesgParse(argv[0], argv[0]);
+	ptr = MesgParse(argv[0], varname);
 	CHECKRETURN(ptr, "FOLD", "arg 1");
 	v = new_mvar(ptr, tmp);
 	if (v == 1)
@@ -582,7 +586,7 @@ mfn_fold(MFUNARGS)
 	if (v == 2)
 		ABORT_MPI("FOLD", "Too many variables already defined.");
 
-	ptr = MesgParse(argv[1], argv[1]);
+	ptr = MesgParse(argv[1], varname);
 	CHECKRETURN(ptr, "FOLD", "arg 2");
 	v = new_mvar(ptr, tmp2);
 	if (v == 1)
@@ -591,15 +595,17 @@ mfn_fold(MFUNARGS)
 		ABORT_MPI("FOLD", "Too many variables already defined.");
 
 	if (argc > 4) {
-		ptr = MesgParse(sepin, sepin);
+		ptr = MesgParse(sepin, sepinbuf);
 		CHECKRETURN(ptr, "FOLD", "arg 5");
 		if (!*ptr)
 			ABORT_MPI("FOLD", "Can't use Null seperator string");
+		sepin = sepinbuf;
 	} else {
+		sepin = sepinbuf;
 		strcpy(sepin, "\r");
 	}
 	seplen = strlen(sepin);
-	ptr = MesgParse(argv[2], argv[2]);
+	ptr = MesgParse(argv[2], listbuf);
 	CHECKRETURN(ptr, "FOLD", "arg 3");
 	for (ptr2 = ptr; *ptr2 && strncmp(ptr2, sepin, seplen); ptr2++) ;
 	if (*ptr2) {
@@ -632,11 +638,12 @@ const char *
 mfn_for(MFUNARGS)
 {
 	int iter_limit = MAX_MFUN_LIST_LEN;
+	char scratch[BUFFER_LEN];
 	char tmp[BUFFER_LEN];
 	char *ptr, *dptr;
 	int v, i, start, end, incr;
 
-	ptr = MesgParse(argv[0], argv[0]);
+	ptr = MesgParse(argv[0], scratch);
 	CHECKRETURN(ptr, "FOR", "arg 1 (varname)");
 	v = new_mvar(ptr, tmp);
 	if (v == 1)
@@ -644,15 +651,15 @@ mfn_for(MFUNARGS)
 	if (v == 2)
 		ABORT_MPI("FOR", "Too many variables already defined.");
 
-	dptr = MesgParse(argv[1], argv[1]);
+	dptr = MesgParse(argv[1], scratch);
 	CHECKRETURN(dptr, "FOR", "arg 2 (start num)");
 	start = atoi(dptr);
 
-	dptr = MesgParse(argv[2], argv[2]);
+	dptr = MesgParse(argv[2], scratch);
 	CHECKRETURN(dptr, "FOR", "arg 3 (end num)");
 	end = atoi(dptr);
 
-	dptr = MesgParse(argv[3], argv[3]);
+	dptr = MesgParse(argv[3], scratch);
 	CHECKRETURN(dptr, "FOR", "arg 4 (increment)");
 	incr = atoi(dptr);
 
@@ -673,12 +680,14 @@ const char *
 mfn_foreach(MFUNARGS)
 {
 	int iter_limit = MAX_MFUN_LIST_LEN;
+	char scratch[BUFFER_LEN];
+	char listbuf[BUFFER_LEN];
 	char tmp[BUFFER_LEN];
 	char *ptr, *ptr2, *dptr;
-	char *sepin = argv[3];
+	char *sepin;
 	int seplen, v;
 
-	ptr = MesgParse(argv[0], argv[0]);
+	ptr = MesgParse(argv[0], scratch);
 	CHECKRETURN(ptr, "FOREACH", "arg 1");
 	v = new_mvar(ptr, tmp);
 	if (v == 1)
@@ -686,15 +695,17 @@ mfn_foreach(MFUNARGS)
 	if (v == 2)
 		ABORT_MPI("FOREACH", "Too many variables already defined.");
 
-	dptr = MesgParse(argv[1], argv[1]);
+	dptr = MesgParse(argv[1], listbuf);
 	CHECKRETURN(dptr, "FOREACH", "arg 2");
 
 	if (argc > 3) {
-		ptr = MesgParse(argv[3], argv[3]);
+		ptr = MesgParse(argv[3], scratch);
 		CHECKRETURN(ptr, "FOREACH", "arg 4");
 		if (!*ptr)
 			ABORT_MPI("FOREACH", "Can't use Null seperator string");
+		sepin = ptr;
 	} else {
+		sepin = scratch;
 		strcpy(sepin, "\r");
 	}
 	seplen = strlen(sepin);
@@ -722,6 +733,10 @@ const char *
 mfn_filter(MFUNARGS)
 {
 	int iter_limit = MAX_MFUN_LIST_LEN;
+	char scratch[BUFFER_LEN];
+	char listbuf[BUFFER_LEN];
+	char sepinbuf[BUFFER_LEN];
+	char sepoutbuf[BUFFER_LEN];
 	char buf2[BUFFER_LEN];
 	char tmp[BUFFER_LEN];
 	char *ptr, *ptr2, *dptr;
@@ -730,7 +745,7 @@ mfn_filter(MFUNARGS)
 	int seplen, v;
 	int outcount = 0;
 
-	ptr = MesgParse(argv[0], argv[0]);
+	ptr = MesgParse(argv[0], scratch);
 	CHECKRETURN(ptr, "FILTER", "arg 1");
 	v = new_mvar(ptr, tmp);
 	if (v == 1)
@@ -738,20 +753,24 @@ mfn_filter(MFUNARGS)
 	if (v == 2)
 		ABORT_MPI("FILTER", "Too many variables already defined.");
 
-	dptr = MesgParse(argv[1], argv[1]);
+	dptr = MesgParse(argv[1], listbuf);
 	CHECKRETURN(dptr, "FILTER", "arg 2");
 	if (argc > 3) {
-		ptr = MesgParse(sepin, sepin);
+		ptr = MesgParse(sepin, sepinbuf);
 		CHECKRETURN(ptr, "FILTER", "arg 4");
 		if (!*ptr)
 			ABORT_MPI("FILTER", "Can't use Null seperator string");
+		sepin = sepinbuf;
 	} else {
+		sepin = sepinbuf;
 		strcpy(sepin, "\r");
 	}
 	if (argc > 4) {
-		ptr = MesgParse(sepbuf, sepbuf);
+		ptr = MesgParse(sepbuf, sepoutbuf);
 		CHECKRETURN(ptr, "FILTER", "arg 5");
+		sepbuf = sepoutbuf;
 	} else {
+		sepbuf = sepoutbuf;
 		strcpy(sepbuf, sepin);
 	}
 	seplen = strlen(sepin);
@@ -947,6 +966,8 @@ const char *
 mfn_lsort(MFUNARGS)
 {
 	char *litem[MAX_MFUN_LIST_LEN];
+	char listbuf[BUFFER_LEN];
+	char scratch[BUFFER_LEN];
 	char vbuf[BUFFER_LEN];
 	char vbuf2[BUFFER_LEN];
 	char *ptr, *ptr2, *tmp;
@@ -957,17 +978,17 @@ mfn_lsort(MFUNARGS)
 		ABORT_MPI("LSORT", "Takes 1 or 4 arguments.");
 	for (i = 0; i < MAX_MFUN_LIST_LEN; i++)
 		litem[i] = NULL;
-	ptr = MesgParse(argv[0], argv[0]);
+	ptr = MesgParse(argv[0], listbuf);
 	CHECKRETURN(ptr, "LSORT", "arg 1");
 	if (argc > 1) {
-		ptr2 = MesgParse(argv[1], argv[1]);
+		ptr2 = MesgParse(argv[1], scratch);
 		CHECKRETURN(ptr2, "LSORT", "arg 2");
 		j = new_mvar(ptr2, vbuf);
 		if (j == 1)
 			ABORT_MPI("LSORT", "Variable name too long.");
 		if (j == 2)
 			ABORT_MPI("LSORT", "Too many variables already defined.");
-		ptr2 = MesgParse(argv[2], argv[2]);
+		ptr2 = MesgParse(argv[2], scratch);
 		CHECKRETURN(ptr2, "LSORT", "arg 3");
 		j = new_mvar(ptr2, vbuf2);
 		if (j == 1)
@@ -1065,6 +1086,9 @@ const char *
 mfn_parse(MFUNARGS)
 {
 	int iter_limit = MAX_MFUN_LIST_LEN;
+	char listbuf[BUFFER_LEN];
+	char sepinbuf[BUFFER_LEN];
+	char sepoutbuf[BUFFER_LEN];
 	char buf2[BUFFER_LEN];
 	char tmp[BUFFER_LEN];
 	char *ptr, *ptr2, *dptr;
@@ -1074,7 +1098,7 @@ mfn_parse(MFUNARGS)
 	int seplen, oseplen, v;
 	int outlen, nextlen;
 
-	ptr = MesgParse(argv[0], argv[0]);
+	ptr = MesgParse(argv[0], buf2);
 	CHECKRETURN(ptr, "PARSE", "arg 1");
 	v = new_mvar(ptr, tmp);
 	if (v == 1)
@@ -1082,22 +1106,26 @@ mfn_parse(MFUNARGS)
 	if (v == 2)
 		ABORT_MPI("PARSE", "Too many variables already defined.");
 
-	dptr = MesgParse(argv[1], argv[1]);
+	dptr = MesgParse(argv[1], listbuf);
 	CHECKRETURN(dptr, "PARSE", "arg 2");
 
 	if (argc > 3) {
-		ptr = MesgParse(sepin, sepin);
+		ptr = MesgParse(sepin, sepinbuf);
 		CHECKRETURN(ptr, "PARSE", "arg 4");
 		if (!*ptr)
 			ABORT_MPI("PARSE", "Can't use Null seperator string");
+		sepin = sepinbuf;
 	} else {
+		sepin = sepinbuf;
 		strcpy(sepin, "\r");
 	}
 
 	if (argc > 4) {
 		ptr = MesgParse(sepbuf, sepbuf);
 		CHECKRETURN(ptr, "PARSE", "arg 5");
+		sepbuf = sepoutbuf;
 	} else {
+		sepbuf = sepoutbuf;
 		strcpy(sepbuf, sepin);
 	}
 	seplen = strlen(sepin);
@@ -1622,23 +1650,25 @@ mfn_commas(MFUNARGS)
 {
 	int v, i, count;
 	char *ptr;
+	char listbuf[BUFFER_LEN];
+	char sepbuf[BUFFER_LEN];
 	char buf2[BUFFER_LEN];
 	char tmp[BUFFER_LEN];
 
 	if (argc == 3)
 		ABORT_MPI("COMMAS", "Takes 1, 2, or 4 arguments.");
 
-	ptr = MesgParse(argv[0], argv[0]);
+	ptr = MesgParse(argv[0], listbuf);
 	CHECKRETURN(ptr, "COMMAS", "arg 1");
-	count = countlitems(argv[0], "\r");
+	count = countlitems(listbuf, "\r");
 	if (count == 0)
 		return "";
 
 	if (argc > 1) {
-		ptr = MesgParse(argv[1], argv[1]);
+		ptr = MesgParse(argv[1], sepbuf);
 		CHECKRETURN(ptr, "COMMAS", "arg 2");
 	} else {
-		strcpy(argv[1], " and ");
+		strcpy(sepbuf, " and ");
 	}
 
 	if (argc > 2) {
@@ -1653,7 +1683,7 @@ mfn_commas(MFUNARGS)
 
 	*buf = '\0';
 	for (i = 1; i <= count; i++) {
-		ptr = getlitem(buf2, argv[0], "\r", i);
+		ptr = getlitem(buf2, listbuf, "\r", i);
 		if (argc > 2) {
 			strcpy(tmp, ptr);
 			ptr = MesgParse(argv[3], buf2);
@@ -1667,7 +1697,7 @@ mfn_commas(MFUNARGS)
 			return buf;
 			break;
 		case 1:
-			strcat(buf, argv[1]);
+			strcat(buf, sepbuf);
 			break;
 		default:
 			strcat(buf, ", ");

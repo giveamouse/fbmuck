@@ -12,11 +12,18 @@ Changed {ontime} and {idle} to refer to the least idle of a users connections.
 Changed maximum MUF stacksize to 1024 elements.
 Changed @ps to show the %CPU usage of MUF processes.
 Changed examine to show cumulative runtimes for MUF programs.
+Changed MPI parser to use more minimal amounts of heap space instead of huge
+  amounts of stack space.  This may lead to smaller process sizes.  This will
+  also unfortunately slow down MPI slightly.  The 26 recursion level limit
+  may be raised significantly, though.
 Optimized {select} MPI command to make it fast on very sparse lists.
 Optimized almost all MUF connection primitives to be O(1) instead of O(n),
   by using lookup tables instead of searching a linked list.
 Added {timing} MPI command to show how long a command takes to execute.
 Added @tops, @mpitops, and @muftops commands for showing processor hogs.
+Added CMD_LOG_THRESHOLD_MSEC @tune option.  When a command takes longer than
+  this many milliseconds to execute, it will be logged to the logs/cmd-times
+  log file.
 
 
 
