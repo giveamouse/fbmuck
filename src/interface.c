@@ -224,6 +224,12 @@ extern FILE *delta_outfile;
 short db_conversion_flag = 0;
 short db_decompression_flag = 0;
 short wizonly_mode = 0;
+pid_t global_resolver_pid=0;
+#ifndef DISKBASE
+pid_t global_dumper_pid=0;
+#endif
+short global_dumpdone=0;
+
 
 time_t sel_prof_start_time;
 long sel_prof_idle_sec;
@@ -1015,6 +1021,10 @@ shovechars()
 				shutdownsock(d);
 			}
 		}
+		if(global_dumpdone!=0) {
+			wall_and_flush(tp_dumpdone_mesg);
+			global_dumpdone=0;
+		}
 		purge_free_frames();
 		untouchprops_incremental(1);
 
@@ -1305,7 +1315,7 @@ spawn_resolver()
 {
 	socketpair(AF_UNIX, SOCK_STREAM, 0, resolver_sock);
 	make_nonblocking(resolver_sock[1]);
-	if (!fork()) {
+	if ((global_resolver_pid=fork())==0) {
 		close(0);
 		close(1);
 		dup(resolver_sock[0]);

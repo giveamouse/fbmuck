@@ -40,7 +40,7 @@ void set_signals(void);
 RETSIGTYPE bailout(int);
 RETSIGTYPE sig_dump_status(int i);
 RETSIGTYPE sig_shutdown(int i);
-RETSIGTYPE sig_reap_resolver(int i);
+RETSIGTYPE sig_reap(int i);
 
 #ifdef _POSIX_VERSION
 void our_signal(int signo, void (*sighandler) (int));
@@ -101,7 +101,7 @@ set_sigs_intern(int bail)
 	our_signal(SIGHUP, SET_IGN);
 
 	/* resolver's exited. Better clean up the mess our child leaves */
-	our_signal(SIGCHLD, bail ? SIG_DFL : sig_reap_resolver);
+	our_signal(SIGCHLD, bail ? SIG_DFL : sig_reap);
 
 	/* standard termination signals */
 	our_signal(SIGINT, SET_BAIL);
@@ -199,12 +199,47 @@ RETSIGTYPE sig_shutdown(int i)
 /*
  * Clean out Zombie Resolver Process.
  */
-RETSIGTYPE sig_reap_resolver(int i)
-{
-	int status = 0;
-	(void)waitpid(-1, &status, WNOHANG);
-
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
-	return 0;
+#define RETSIGVAL 0
+#else
+#define RETSIGVAL 
 #endif
+
+RETSIGTYPE sig_reap(int i)
+{
+	/* If DISKBASE is not defined, then there are two types of
+	 * children that can die.  First is the nameservice resolver.
+	 * Second is the database dumper.  If resolver exits, we should
+	 * note it in the log -- at least give the admin the option of
+	 * knowing about it, and dealing with it as necessary. */
+	/* The fix for SSL connections getting closed when databases were
+	 * saved with DISKBASE disabled required closing all sockets 
+	 * when the server fork()ed.  This made it impossible for that
+	 * process to spit out the "save done" message.  However, because
+	 * that process dies as soon as it finishes dumping the database,
+	 * can detect that the child died, and broadcast the "save done"
+	 * message anyway. */
+
+	int status = 0;
+	int reapedpid = 0;
+
+	reapedpid = waitpid(-1, &status, WNOHANG);
+	if(!reapedpid)
+	{
+		log2file(LOG_ERR_FILE,"SIG_CHILD signal handler called with no pid!");
+	} else {
+		if (reapedpid == global_resolver_pid) {
+			log_status("resolver exited with status %d\m", status);
+#ifndef DISKBASE
+		} else if(reapedpid == global_dumper_pid) {
+			log_status("dumper task exited with status %d\n", status);
+			global_dumpdone = 1;
+#endif
+		} else {
+			log_status("unknown child process (pid %d) exited with status %d", reapedpid, status);
+		}
+	}
+	return RETSIGVAL;
 }
+
+

@@ -268,7 +268,7 @@ fork_and_dump(void)
 #ifdef DISKBASE
 	dump_database_internal();
 #else
-	if (!fork()) {
+	if ((global_dumper_pid=fork())==0) {
 		dump_database_internal();
 		_exit(0);
 	}

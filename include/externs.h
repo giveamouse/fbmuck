@@ -3,6 +3,9 @@
 #define _EXTERNS_H
 #include "copyright.h"
 
+/* Definition of pid_t */
+#include <sys/types.h>
+
 /* Definition of 'dbref' */
 #include "db.h"
 /* Definition of 'McpFrame' */
@@ -342,6 +345,9 @@ extern int rwhocli_setup(const char *server, const char *serverpw, const char *m
 extern void update_rwho(void);
 extern void do_armageddon(dbref player, const char *msg);
 extern int pdescrsecure(int c);
+extern pid_t global_dumper_pid;
+extern pid_t global_resolver_pid;
+extern short global_dumpdone;
 
 /* from events.c */
 extern void dump_db_now(void);
