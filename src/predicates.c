@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.5  2001/05/16 22:14:34  wog
+ * Prevented player names with ( or ) in them.
+ *
  * Revision 1.4  2000/11/22 10:01:58  revar
  * Changed MPI from using Wizbit objects to give special permissions, to using
  * 'Blessed' properties.  Blessed props have few permissions restrictions.
@@ -424,6 +427,8 @@ ok_name(const char *name)
 			&& *name != LOOKUP_TOKEN
 			&& *name != REGISTERED_TOKEN
 			&& *name != NUMBER_TOKEN
+			&& !index(name, ')')
+			&& !index(name, '(')
 			&& !index(name, ARG_DELIMITER)
 			&& !index(name, AND_TOKEN)
 			&& !index(name, OR_TOKEN)

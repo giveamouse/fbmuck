@@ -24,6 +24,7 @@ Added PROGRAM_GETLINES ( d -- a ) or ( d i1 -- a ) or ( d i1 i2 -- a )
   Zero-valued arguments will effectively be ignored. Program must be
   controlled by the program's UID, be set VIEWABLE, or the program must
   be running with wizard permissions.
+Prohibited ( and ) in player names.
 
 2.2fb6.00b3
 Fixed a crasher bug with uninitialized watchpid-related variables.
