@@ -2,6 +2,9 @@
 
 /*
  * $Log: boolexp.c,v $
+ * Revision 1.3  2000/07/18 18:15:02  winged
+ * Various fixes to support warning-free compiling under -Wall -Wstrict-prototypes -Wno-format -- not all warnings fixed or found yet
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -100,7 +103,7 @@
 
 
 struct boolexp *
-alloc_boolnode()
+alloc_boolnode(void)
 {
 	return ((struct boolexp *) malloc(sizeof(struct boolexp)));
 }

@@ -2,6 +2,9 @@
 
 /*
  * $Log: db.c,v $
+ * Revision 1.5  2000/07/18 18:15:02  winged
+ * Various fixes to support warning-free compiling under -Wall -Wstrict-prototypes -Wno-format -- not all warnings fixed or found yet
+ *
  * Revision 1.4  2000/07/08 09:36:12  tiger
  * Fixed legacy DB load so loading the minimal.db and creating a program does
  *   not automatically put you into insert mode.
@@ -1014,7 +1017,7 @@ db_free(void)
 
 
 struct line *
-get_new_line()
+get_new_line(void)
 {
 	struct line *new;
 
@@ -1457,7 +1460,7 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 }
 
 void
-autostart_progs()
+autostart_progs(void)
 {
 	dbref i;
 	struct object *o;

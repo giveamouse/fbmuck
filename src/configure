@@ -1979,7 +1979,7 @@ fi
 
 trap 'rm -f $CONFIG_STATUS conftest*; exit 1' 1 2 15
 
-DEFS=-DHAVE_CONFIG_H
+DEFS=
 
 # Without the "./", some shells look in PATH for config.status.
 : ${CONFIG_STATUS=./config.status}

@@ -111,6 +111,7 @@ EOBJ= oldcompress.o diskprop.o property.o propdirs.o props.o stringutil.o \
 
 OBJ= ${COBJ} ${ROBJ} ${LOBJ} ${MOBJ}
 TARGETS= netmuck resolver olddecompress topwords
+OLDTARGETS = netmuck~ resolver~ olddecompress~ topwords~
 
 .c.o:
 	${PRE} ${CC} ${CFLAGS} -c $*.c
@@ -175,7 +176,7 @@ depend:
 #
 
 clean:
-	${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} resolver.o
+	${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} resolver.o ${TARGETS} ${OLDTARGETS}
 
 cleaner: clean
 	${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp

@@ -25,9 +25,12 @@
   Remodified by Revar
 */
 
-
+#ifndef AVL_RT
 #define AVL_RT(x)  (x->right)
+#endif
+#ifndef AVL_LF
 #define AVL_LF(x)  (x->left)
+#endif
 #define AVL_KEY(x) (&(x->key))
 #define AVL_COMPARE(x,y) array_tree_compare(x,y)
 
@@ -447,7 +450,7 @@ array_tree_next_node(array_tree * ptr, array_iter * key)
  *****************************************************************/
 
 stk_array *
-new_array()
+new_array(void)
 {
 	stk_array *new;
 
@@ -487,7 +490,7 @@ new_array_packed(int size)
 
 
 stk_array *
-new_array_dictionary()
+new_array_dictionary(void)
 {
 	stk_array *new;
 

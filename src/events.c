@@ -15,7 +15,7 @@ static long last_dump_time = 0L;
 static int dump_warned = 0;
 
 long
-next_dump_time()
+next_dump_time(void)
 {
 	long currtime = (long) time((time_t *) NULL);
 
@@ -107,7 +107,7 @@ delta_dump_now(void)
 static long last_clean_time = 0L;
 
 long
-next_clean_time()
+next_clean_time(void)
 {
 	long currtime = (long) time((time_t *) NULL);
 
@@ -149,7 +149,7 @@ static long last_rwho_time = 0L;
 static int last_rwho_nogo = 1;
 
 long
-next_rwho_time()
+next_rwho_time(void)
 {
 	long currtime;
 

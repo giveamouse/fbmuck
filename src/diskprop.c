@@ -137,7 +137,7 @@ static int fetchstats[FETCHSTATS_SLOTS];
 static int lastfetchslot = -1;
 
 void
-update_fetchstats()
+update_fetchstats(void)
 {
 	time_t now;
 	int slot, i;

@@ -1111,7 +1111,7 @@ process_special(COMPSTATE * cstat, const char *token)
 
 	if (!string_compare(token, ":")) {
 		const char *proc_name;
-		struct INTERMEDIATE *new2;
+/*FIXME		struct INTERMEDIATE *new2; */
 		int argsflag = 0;
 
 		if (cstat->curr_proc)
@@ -1454,7 +1454,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	} else if (!string_compare(token, "VAR!")) {
 		if (cstat->curr_proc) {
 			struct INTERMEDIATE *new;
-			struct INTERMEDIATE *curr;
+/*FIXME			struct INTERMEDIATE *curr; */
 
 			tok = next_token(cstat);
 			if (!tok)
@@ -2156,7 +2156,7 @@ free_intermediate_chain(struct INTERMEDIATE *wd)
 void
 cleanup(COMPSTATE * cstat)
 {
-	struct INTERMEDIATE *wd, *tempword;
+/*	struct INTERMEDIATE *wd, *tempword; */
 	struct CONTROL_STACK *eef, *tempif;
 	struct PROC_LIST *p, *tempp;
 	int i;
@@ -2273,7 +2273,7 @@ set_start(COMPSTATE * cstat)
 
 /* allocate and initialize data linked structure. */
 struct INTERMEDIATE *
-alloc_inst()
+alloc_inst(void)
 {
 	struct INTERMEDIATE *new;
 
