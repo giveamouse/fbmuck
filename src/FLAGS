@@ -1,6 +1,6 @@
 Flag name   || Room      | Exit       | Player     | Thing      | Program
 ============##===========#============#============#============#=============
-ABODE       ||  X        |  X         |            |   X        | AUTOSTART 
+ABODE       ||  X        | ABATE      |            |   X        | AUTOSTART 
 BUILDER     || BLOCK     |            |  X         |            | BOUND
 CHOWN_OK    || COLOR     |  X         |  X         |   X        |  ?           
 DARK        ||  X        |  X         |  X         |   X        | DEBUG    
