@@ -3,6 +3,7 @@ Added "objtype" field to results of SYSPARM_ARRAY, for when the sysparm is
   of the "dbref" type.  The "objtype" field specifies what type the dbref is
   restricted to.
 Added "label" field to results of SYSPARM_ARRAY, for human readable labels.
+Added }TELL MUF $define as '} array_make me @ 1 array_make array_notify'
 Fixed crasher bug with muf process kill while handling mufevent.
 Fixed bug with GETPIDINFO returning timer event info for a process.
 Fixed hanging bug in fbmuck init script, when fbmuck errors out.

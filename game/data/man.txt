@@ -81,6 +81,7 @@ Property Management:
   
 I/O:
   read   tread   notify   notify_except   notify_exclude   array_notify
+  }tell
   
 Time:
   date   gmtoffset   systime   time   timesplit   timefmt   sleep
@@ -100,7 +101,7 @@ Array Manipulation:
   array_get_reflist  array_put_reflist  array_get_proplist array_put_proplist
   array_get_propvals array_put_propvals array_get_propdirs array_filter_prop
   array_matchkey     array_matchval     array_extract      array_join
-  array_excludeval   array_sort_indexed
+  array_excludeval   array_sort_indexed }join
   
 Connection Management:
   awake?        online         online_array    concount
@@ -375,6 +376,15 @@ returns a single string that is the concatenation of all the items in the
 list array, with the delimiter string in between.  For example:
     { "one" 2 "three" 3.14159 }list "... " array_join
 will result in a single string: "one... 2... three... 3.14159"
+See also: }JOIN
+~
+}JOIN|
+}JOIN  ( marker ?n ... ?1 -- string )
+  Takes all stack items from the top of the stack to the topmost stack
+marker and concatenates them into a string based on the default reresentat-
+ion of each stack item type.  This is actually an inserver macro, defined
+to '} array_make "" array_join'.
+See also: ARRAY_JOIN
 ~
 ARRAY_FILTER_PROP|
 ARRAY_FILTER_PROP ([d] s1 s2 -- [d'])
@@ -444,6 +454,15 @@ ARRAY_NOTIFY|
 array_notify ( a1 a2 -- )
 Notifies all strings in array a1 to all dbrefs in array a2.  Arrays
 must be homogenous of their respective types.
+~
+}TELL|
+}TELL  ( marker strn ... str1 -- )
+  Takes all stack items from the top of the stack to the topmost stack
+marker and notifies them to the 'me @' user.  This will throw an error
+if you try to send a non-string.  Each separate string will be send as a
+separate line to the user.  This is actually an inserver macro, defined to
+'} array_make me @ 1 array_make array_notify'.
+See also: ARRAY_NOTIFY
 ~
 ARRAY_UNION|
 array_union ( a1 a2 -- a )
