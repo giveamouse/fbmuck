@@ -604,7 +604,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 								temp3.data.string = NULL;
 								oper3 = &temp3;
 							}
-							nargs = 3;
+							nargs = 2;
 						} else {
 							abort_interp("Specified format field didn't have an array index.");
 						}

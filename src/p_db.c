@@ -865,6 +865,7 @@ prim_playerp(PRIM_PROTOTYPE)
 		CHECKREMOTE(ref);
 		result = (Typeof(ref) == TYPE_PLAYER);
 	}
+	CLEAR(oper1);
 	PushInt(result);
 }
 
@@ -883,6 +884,7 @@ prim_thingp(PRIM_PROTOTYPE)
 		CHECKREMOTE(ref);
 		result = (Typeof(ref) == TYPE_THING);
 	}
+	CLEAR(oper1);
 	PushInt(result);
 }
 
@@ -901,6 +903,7 @@ prim_roomp(PRIM_PROTOTYPE)
 		CHECKREMOTE(ref);
 		result = (Typeof(ref) == TYPE_ROOM);
 	}
+	CLEAR(oper1);
 	PushInt(result);
 }
 
@@ -919,6 +922,7 @@ prim_programp(PRIM_PROTOTYPE)
 		CHECKREMOTE(ref);
 		result = (Typeof(ref) == TYPE_PROGRAM);
 	}
+	CLEAR(oper1);
 	PushInt(result);
 }
 
@@ -937,6 +941,7 @@ prim_exitp(PRIM_PROTOTYPE)
 		CHECKREMOTE(ref);
 		result = (Typeof(ref) == TYPE_EXIT);
 	}
+	CLEAR(oper1);
 	PushInt(result);
 }
 
@@ -990,6 +995,7 @@ prim_controls(PRIM_PROTOTYPE)
 	CHECKREMOTE(oper1->data.objref);
 	result = controls(oper2->data.objref, oper1->data.objref);
 	CLEAR(oper1);
+	CLEAR(oper2);
 	PushInt(result);
 }
 
@@ -1230,6 +1236,8 @@ prim_setown(PRIM_PROTOTYPE)
 	}
 	OWNER(ref) = OWNER(oper1->data.objref);
 	DBDIRTY(ref);
+	CLEAR(oper1);
+	CLEAR(oper2);
 }
 
 void
@@ -2228,7 +2236,6 @@ prim_getpidinfo(PRIM_PROTOTYPE)
 void
 prim_contents_array(PRIM_PROTOTYPE)
 {
-	struct inst temp1, temp2;
 	stk_array *nw;
 	int count = 0;
 
@@ -2240,27 +2247,23 @@ prim_contents_array(PRIM_PROTOTYPE)
 	if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT))
 		abort_interp("Dbref cannot be a program nor exit (1)");
 	CHECKREMOTE(oper1->data.objref);
-	nw = new_array_packed(0);
-	ref = DBFETCH(ref)->contents;
-	/* WORK: Using this on #0 is probably bad. */
-	while ((ref > 0) && (ref < db_top)) {
-		temp1.type = PROG_INTEGER;
-		temp1.data.number = count++;
-		temp2.type = PROG_OBJECT;
-		temp2.data.objref = ref;
-		array_setitem(&nw, &temp1, &temp2);
-		CLEAR(&temp1);
-		CLEAR(&temp2);
-		ref = DBFETCH(ref)->next;
-	}
+
+	for(ref = DBFETCH(oper1->data.objref)->contents; (ref >= 0) && (ref < db_top); ref = DBFETCH(ref)->next)
+		count++;
+
+	nw = new_array_packed(count);
+
+	for(ref = DBFETCH(oper1->data.objref)->contents, count = 0; (ref >= 0) && (ref < db_top); ref = DBFETCH(ref)->next)
+		array_set_intkey_refval(&nw, count++, ref);
+
 	CLEAR(oper1);
+
 	PushArrayRaw(nw);
 }
 
 void
 prim_exits_array(PRIM_PROTOTYPE)
 {
-	struct inst temp1, temp2;
 	stk_array *nw;
 	int count = 0;
 
@@ -2274,76 +2277,47 @@ prim_exits_array(PRIM_PROTOTYPE)
 		abort_interp("Permission denied.");
 	if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT))
 		abort_interp("Dbref cannot be a program nor exit (1)");
-	nw = new_array_packed(0);
-	ref = DBFETCH(ref)->exits;
-	while ((ref > 0) && (ref < db_top)) {
-		temp1.type = PROG_INTEGER;
-		temp1.data.number = count++;
-		temp2.type = PROG_OBJECT;
-		temp2.data.objref = ref;
-		array_setitem(&nw, &temp1, &temp2);
-		CLEAR(&temp1);
-		CLEAR(&temp2);
-		ref = DBFETCH(ref)->next;
-	}
+
+	for(ref = DBFETCH(oper1->data.objref)->exits; (ref >= 0) && (ref < db_top); ref = DBFETCH(ref)->next)
+		count++;
+
+	nw = new_array_packed(count);
+
+	for(ref = DBFETCH(oper1->data.objref)->exits, count = 0; (ref >= 0) && (ref < db_top); ref = DBFETCH(ref)->next)
+		array_set_intkey_refval(&nw, count++, ref);
+
 	CLEAR(oper1);
+
 	PushArrayRaw(nw);
 }
 
 stk_array *
 array_getlinks(dbref obj)
 {
-	struct inst temp1, temp2;
-	stk_array *nw;
+	stk_array* nw = new_array_packed(0);
 	int count = 0;
 
-	nw = new_array_packed(0);
-	if ((obj >= NOTHING) && (obj < db_top)) {
+	if ((obj >= 0) && (obj < db_top)) {
 		switch (Typeof(obj)) {
-			case TYPE_ROOM: {
-				temp1.type = PROG_INTEGER;
-				temp1.data.number = count++;
-				temp2.type = PROG_OBJECT;
-				temp2.data.objref = DBFETCH(obj)->sp.room.dropto;
-				array_setitem(&nw, &temp1, &temp2);
-				CLEAR(&temp1);
-				CLEAR(&temp2);
-				break;
-			}
-			case TYPE_THING: {
-				temp1.type = PROG_INTEGER;
-				temp1.data.number = count++;
-				temp2.type = PROG_OBJECT;
-				temp2.data.objref = THING_HOME(obj);
-				array_setitem(&nw, &temp1, &temp2);
-				CLEAR(&temp1);
-				CLEAR(&temp2);
-				break;
-			}
-			case TYPE_PLAYER: {
-				temp1.type = PROG_INTEGER;
-				temp1.data.number = count++;
-				temp2.type = PROG_OBJECT;
-				temp2.data.objref = PLAYER_HOME(obj);
-				array_setitem(&nw, &temp1, &temp2);
-				CLEAR(&temp1);
-				CLEAR(&temp2);
-				break;
-			}
-			case TYPE_EXIT: {
-				for (count = 0; count < (DBFETCH(obj)->sp.exit.ndest); count++) {
-					temp1.type = PROG_INTEGER;
-					temp1.data.number = count;
-					temp2.type = PROG_OBJECT;
-					temp2.data.objref = (DBFETCH(obj)->sp.exit.dest)[count];
-					array_setitem(&nw, &temp1, &temp2);
-				}
-				CLEAR(&temp1);
-				CLEAR(&temp2);
-				break;
-			}
+			case TYPE_ROOM:
+				array_set_intkey_refval(&nw, count++, DBFETCH(obj)->sp.room.dropto);
+			break;
+
+			case TYPE_THING:
+				array_set_intkey_refval(&nw, count++, THING_HOME(obj));
+			break;
+
+			case TYPE_PLAYER:
+				array_set_intkey_refval(&nw, count++, PLAYER_HOME(obj));
+			break;
+
+			case TYPE_EXIT:
+				for (count = 0; count < (DBFETCH(obj)->sp.exit.ndest); count++)
+					array_set_intkey_refval(&nw, count++, (DBFETCH(obj)->sp.exit.dest)[count]);
+			break;
 		}
 	}
+
 	return nw;
 }
 

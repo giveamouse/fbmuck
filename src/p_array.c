@@ -108,10 +108,12 @@ prim_array_explode(PRIM_PROTOTYPE)
 	oper1 = POP();
 	if (oper1->type != PROG_ARRAY)
 		abort_interp("Argument not an array.");
+
+	result = array_count(oper1->data.array);
+	CHECKOFLOW(((2 * result) + 1));
+
 	copyinst(oper1, &temp2);
 	arr = temp2.data.array;
-	result = array_count(arr);
-	CHECKOFLOW(((2 * result) + 1));
 	CLEAR(oper1);
 
 	if (array_first(arr, &temp1)) {

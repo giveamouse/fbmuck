@@ -825,7 +825,11 @@ prim_event_send(PRIM_PROTOTYPE)
 	if (oper2->type != PROG_STRING)
 		abort_interp("Expected a string event id. (2)");
 
-	destfr = timequeue_pid_frame(oper1->data.number);
+	if (oper1->data.number == fr->pid)
+		destfr = fr;
+	else
+		destfr = timequeue_pid_frame(oper1->data.number);
+
 	if (destfr) {
 		arr = new_array_dictionary();
 		array_set_strkey(&arr, "data", oper3);
@@ -841,6 +845,7 @@ prim_event_send(PRIM_PROTOTYPE)
 
 		snprintf(buf, sizeof(buf), "USER.%.32s", DoNullInd(oper2->data.string));
 		muf_event_add(destfr, buf, &temp1, 0);
+
 		CLEAR(&temp1);
 	}
 

@@ -34,6 +34,7 @@ prim_awakep(PRIM_PROTOTYPE)
 	if (Typeof(ref) != TYPE_PLAYER)
 		abort_interp("invalid argument.");
 	result = online(ref);
+	CLEAR(oper1);
 	PushInt(result);
 }
 
@@ -631,13 +632,13 @@ prim_firstdescr(PRIM_PROTOTYPE)
 	int  dcount;
 
 	CHECKOP(1);
-	oper2 = POP();
+	oper1 = POP();
 	if (mlev < 3)
 		abort_interp("Requires Mucker Level 3.");
-	if (oper2->type != PROG_OBJECT)
+	if (oper1->type != PROG_OBJECT)
 		abort_interp("Player dbref expected (2)");
-	ref = oper2->data.objref;
-	if (ref != NOTHING && !valid_player(oper2))
+	ref = oper1->data.objref;
+	if (ref != NOTHING && !valid_player(oper1))
 		abort_interp("Player dbref expected (2)");
 	if(ref == NOTHING) {
 		result = pfirstdescr();
@@ -652,7 +653,7 @@ prim_firstdescr(PRIM_PROTOTYPE)
 		}
 	}
 	CHECKOFLOW(1);
-	CLEAR(oper2);
+	CLEAR(oper1);
 	PushInt(result);
 }
 
@@ -664,13 +665,13 @@ prim_lastdescr(PRIM_PROTOTYPE)
 	int  dcount;
 
 	CHECKOP(1);
-	oper2 = POP();
+	oper1 = POP();
 	if (mlev < 3)
 		abort_interp("Requires Mucker Level 3.");
-	if (oper2->type != PROG_OBJECT)
+	if (oper1->type != PROG_OBJECT)
 		abort_interp("Player dbref expected (2)");
-	ref = oper2->data.objref;
-	if (ref != NOTHING && !valid_player(oper2))
+	ref = oper1->data.objref;
+	if (ref != NOTHING && !valid_player(oper1))
 		abort_interp("Player dbref expected (2)");
 	if(ref == NOTHING) {
 		result = plastdescr();
@@ -685,7 +686,7 @@ prim_lastdescr(PRIM_PROTOTYPE)
 		}
 	}
 	CHECKOFLOW(1);
-	CLEAR(oper2);
+	CLEAR(oper1);
 	PushInt(result);
 }
 
