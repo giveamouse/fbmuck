@@ -4,6 +4,7 @@ Fixed problem with loading an older db leaving users in insert mode.
 Fixed bug with ARRAY_GETRANGE returning a non-empty array when given a range
  that starts one beyond the end of the list array's content.
 Fixed bug with ARRAY_VALS CLEAR()ing garbage when passed an empty array.
+Fixed bug with @toad sending the inventory of the toader (not toadee) home.
 Added message to confirm exiting of insert mode in muf editor.
 Added preliminary code to support READ mufevents.  This is incomplete.
 Added EXPLODE_ARRAY (s s -- a) muf prim, as the array version of EXPLODE.
