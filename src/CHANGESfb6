@@ -1,4 +1,5 @@
 2.2fb6.00b5
+Removed #ifdefs for FLUSHCHANGES as that code should not be optional.
 Fixed infinite loop parenting bug.  I think.
 Fixed a lot of uninitialized struct frame variables in child of FORK.
 Fixed two-byte buffer overrun in {listprops}
@@ -8,11 +9,14 @@ Fixed bug #477633: {with:v,{&v},{&v}} displays garbage.
 Fixed bug #478325: Arrays with 0s for values don't serialize properly.
 Fixed bug #479093: smatches, array_filter_prop disagree.
 Fixed bug where FOREGROUND muf progs didn't process MCP messages.
+Fixed a number of missing MUF primitive documentation sections.
 Changed DESCRSECURE? to be ML3, not wizbit.
 Changed input quotas to not count MCP messages.
 Changed command logging to not list null commands.
 Changed READ to _not_ return blank lines unless the process asked for them.
 Changed ANSI code handling to use ^[[0m instead of ^[[m at EOL for resetting.
+Changed dbdump to fork() on DB dump when DISKBASE is not defined.
+Added 'make distclean'.
 Added READ_WANTS_BLANKS ( -- ) muf primitive, to indicate the process wants
   READ to be able to return blank "" lines.
 Added new @tune -- default_room_parent. This is the dbref used to parent

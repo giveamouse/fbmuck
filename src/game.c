@@ -117,26 +117,23 @@ dump_database_internal(void)
 		fclose(f);
 
 #ifdef DISKBASE
-#ifdef FLUSHCHANGED
 		fclose(input_file);
+#endif
 
 #ifdef DELTADUMPS
 		fclose(delta_outfile);
 		fclose(delta_infile);
 #endif
 
-#endif
-#endif
-
 		if (rename(tmpfile, dumpfile) < 0)
 			perror(tmpfile);
 
 #ifdef DISKBASE
-#ifdef FLUSHCHANGED
 		free((void *) in_filename);
 		in_filename = string_dup(dumpfile);
 		if ((input_file = fopen(in_filename, "r")) == NULL)
 			perror(dumpfile);
+#endif
 
 #ifdef DELTADUMPS
 		if ((delta_outfile = fopen(DELTAFILE_NAME, "w")) == NULL)
@@ -144,9 +141,6 @@ dump_database_internal(void)
 
 		if ((delta_infile = fopen(DELTAFILE_NAME, "r")) == NULL)
 			perror(DELTAFILE_NAME);
-#endif
-
-#endif
 #endif
 
 	} else {
@@ -267,7 +261,14 @@ fork_and_dump(void)
 	last_monolithic_time = time(NULL);
 	log_status("CHECKPOINTING: %s.#%d#\n", dumpfile, epoch);
 
+#ifdef DISKBASE
 	dump_database_internal();
+#else
+	if (!fork()) {
+		dump_database_internal();
+		_exit(0);
+	}
+#endif
 }
 
 #ifdef DELTADUMPS

@@ -232,7 +232,6 @@
 #undef LOG_PROPS
 #undef LOG_DISKBASE
 #undef DEBUGDBDIRTY
-#define FLUSHCHANGED			/* outdated, needs to be removed from the source. */
 
 /*
  * Include all the good standard headers here.

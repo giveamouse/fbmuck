@@ -494,17 +494,10 @@ db_write_object(FILE * f, dbref i)
 
 
 #ifdef DISKBASE
-
-# ifdef FLUSHCHANGED
 	tmppos = ftell(f) + 1;
 	putprops_copy(f, i);
 	o->propsfpos = tmppos;
 	undirtyprops(i);
-# else							/* !FLUSHCHANGED */
-	putprops_copy(f, i);
-	disposeprops(i);
-# endif							/* FLUSHCHANGED */
-
 #else							/* !DISKBASE */
 	putproperties(f, i);
 #endif							/* DISKBASE */
@@ -567,14 +560,12 @@ db_write_list(FILE * f, int mode)
 				abort();
 			db_write_object(f, i);
 #ifdef DISKBASE
-#ifdef FLUSHCHANGED
 			if (mode == 1) {
 				FLAGS(i) &= ~SAVED_DELTA;	/* clear delta flag */
 			} else {
 				FLAGS(i) |= SAVED_DELTA;	/* set delta flag */
 				deltas_count++;
 			}
-#endif
 #endif
 			FLAGS(i) &= ~OBJECT_CHANGED;	/* clear changed flag */
 		}
@@ -1242,9 +1233,7 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		tmp &= ~DUMP_MASK;
 	FLAGS(objno) |= tmp;
 
-#ifdef FLUSHCHANGED
 	FLAGS(objno) &= ~SAVED_DELTA;
-#endif
 
 	if (dtype != 3) {
 		/* Foxen and WhiteFire timestamps */
