@@ -14,6 +14,8 @@ Fixed memory leaks in ARRAY_FMTSTRINGS.
 Fixed documentation error with ROUND.
 Fixed issue where user could get charged for @action without action creation.
 Fixed issue with improper CONCOUNT in status log files.
+Fixed minor issue where startup INIT message might not display, if status
+  log is unwritable and DETACH defined.
 
 
 2.2fb6.00rc3

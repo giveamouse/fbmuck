@@ -370,6 +370,8 @@ main(int argc, char **argv)
 
 	if (!sanity_interactive) {
 
+                log_status("INIT: TinyMUCK %s starting.\n", "version");
+
 #ifdef DETACH
 		/* Go into the background unless requested not to */
 		if (!sanity_interactive && !db_conversion_flag) {
@@ -386,8 +388,6 @@ main(int argc, char **argv)
 			fprintf(ffd, "%d\n", getpid());
 			fclose(ffd);
 		}
-
-		log_status("INIT: TinyMUCK %s starting.\n", "version");
 
 #ifdef DETACH
 		if (!sanity_interactive && !db_conversion_flag) {
