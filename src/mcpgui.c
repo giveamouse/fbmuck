@@ -67,6 +67,19 @@ gui_dlog_find(const char *dlogid)
 }
 
 
+void*
+gui_dlog_get_context(const char *dlogid)
+{
+	DlogData *ptr = gui_dlog_find(dlogid);
+
+	if (ptr) {
+		return ptr->context;
+	} else {
+		return NULL;
+	}
+}
+
+
 int
 gui_dlog_get_descr(const char *dlogid)
 {

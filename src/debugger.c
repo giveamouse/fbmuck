@@ -279,7 +279,7 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
 				}
 				bufend += snprintf(bufend, buf2 - bufend - 18, fmt, nam, val);
 			}
-			bufend += snprintf(bufend, buf2 - bufend - 1, "\033[1m)\033[0m", ptr);
+			bufend += snprintf(bufend, buf2 - bufend - 1, "\033[1m)\033[0m");
 			ptr = buf2;
 		}
 		if (pinst != lastinst) {

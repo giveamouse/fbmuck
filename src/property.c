@@ -1014,7 +1014,6 @@ void
 db_putprop(FILE * f, const char *dir, PropPtr p)
 {
 	char buf[BUFFER_LEN * 2];
-	char *ptr;
 	const char *ptr2;
 	char tbuf[50];
 	int outflags = (PropFlagsRaw(p) & ~(PROP_TOUCHED | PROP_ISUNLOADED | PROP_DIRUNLOADED));

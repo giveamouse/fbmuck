@@ -177,7 +177,7 @@ prim_regexp(PRIM_PROTOTYPE)
 			stk_array*	nu;
 
 			if ((cm->rm_so >= 0) && (cm->rm_eo >= 0) && (cm->rm_so < len))
-				snprintf(buf, BUFFER_LEN, "%.*s", cm->rm_eo - cm->rm_so, &text[cm->rm_so]);
+				snprintf(buf, BUFFER_LEN, "%.*s", (int)(cm->rm_eo - cm->rm_so), &text[cm->rm_so]);
 			else
 				buf[0] = '\0';
 
@@ -252,7 +252,7 @@ prim_regsub(PRIM_PROTOTYPE)
 	int			write_left	= BUFFER_LEN - 1;
 	muf_re*		re;
 	char*		text;
-	int			nosubs, err, len, i;
+	int			nosubs, err, len;
 
 	CHECKOP(4);
 

@@ -275,8 +275,6 @@ Base64Decode(void* outbuf, size_t outbuflen, const char* inbuf)
 	unsigned int val = 0;
 	size_t bytcnt = 0;
 	int bitcnt = 0;
-	int bnum = 0;
-	int i;
 
 	while (*in || bitcnt) {
 		if (!*in || *in == '=') {

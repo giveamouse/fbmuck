@@ -87,7 +87,7 @@ prim_getpropval(PRIM_PROTOTYPE)
 
 		strcpy(type, oper1->data.string->data);
 		while (len-- > 0 && type[len] == PROPDIR_DELIMITER) {
-			type[len] == '\0';
+			type[len] = '\0';
 		}
 		result = get_property_value(oper2->data.objref, type);
 
@@ -129,7 +129,7 @@ prim_getpropfval(PRIM_PROTOTYPE)
 
 		strcpy(type, oper1->data.string->data);
 		while (len-- > 0 && type[len] == PROPDIR_DELIMITER) {
-			type[len] == '\0';
+			type[len] = '\0';
 		}
 		fresult = get_property_fvalue(oper2->data.objref, type);
 
@@ -173,7 +173,7 @@ prim_getprop(PRIM_PROTOTYPE)
 
 		strcpy(type, oper1->data.string->data);
 		while (len-- > 0 && type[len] == PROPDIR_DELIMITER) {
-			type[len] == '\0';
+			type[len] = '\0';
 		}
 
 		obj2 = oper2->data.objref;
@@ -252,7 +252,7 @@ prim_getpropstr(PRIM_PROTOTYPE)
 
 		strcpy(type, oper1->data.string->data);
 		while (len-- > 0 && type[len] == PROPDIR_DELIMITER) {
-			type[len] == '\0';
+			type[len] = '\0';
 		}
 
 		ptr = get_property(oper2->data.objref, type);
@@ -370,7 +370,7 @@ prim_envprop(PRIM_PROTOTYPE)
 
 		strcpy(tname, oper1->data.string->data);
 		while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
-			tname[len] == '\0';
+			tname[len] = '\0';
 		}
 
 		what = oper2->data.objref;
@@ -444,7 +444,7 @@ prim_envpropstr(PRIM_PROTOTYPE)
 
 		strcpy(tname, oper1->data.string->data);
 		while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
-			tname[len] == '\0';
+			tname[len] = '\0';
 		}
 
 		what = oper2->data.objref;
@@ -532,7 +532,7 @@ prim_blessprop(PRIM_PROTOTYPE)
 
 		strcpy(tname, oper2->data.string->data);
 		while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
-			tname[len] == '\0';
+			tname[len] = '\0';
 		}
 
 		set_property_flags(oper1->data.objref, tname, PROP_BLESSED);
@@ -579,7 +579,7 @@ prim_unblessprop(PRIM_PROTOTYPE)
 
 		strcpy(tname, oper2->data.string->data);
 		while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
-			tname[len] == '\0';
+			tname[len] = '\0';
 		}
 
 		clear_property_flags(oper1->data.objref, tname, PROP_BLESSED);
@@ -636,7 +636,7 @@ prim_setprop(PRIM_PROTOTYPE)
 
 		strcpy(tname, oper2->data.string->data);
 		while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
-			tname[len] == '\0';
+			tname[len] = '\0';
 		}
 
 		switch (oper1->type) {
@@ -717,7 +717,7 @@ prim_addprop(PRIM_PROTOTYPE)
 
 		strcpy(tname, oper3->data.string->data);
 		while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
-			tname[len] == '\0';
+			tname[len] = '\0';
 		}
 
 		/* if ((temp) || (oper1->data.number)) */
@@ -864,7 +864,6 @@ prim_parseprop(PRIM_PROTOTYPE)
 		abort_interp("Integer of 0 or 1 expected. (4)");
 	CHECKREMOTE(oper3->data.objref);
 	{
-		char *tmpptr;
 		int len = oper1->data.string->length;
 
 		if (!prop_read_perms(ProgUID, oper3->data.objref, oper1->data.string->data, mlev))
@@ -876,7 +875,7 @@ prim_parseprop(PRIM_PROTOTYPE)
 
 		strcpy(type, oper1->data.string->data);
 		while (len-- > 0 && type[len] == PROPDIR_DELIMITER) {
-			type[len] == '\0';
+			type[len] = '\0';
 		}
 
 		temp = get_property_class(oper3->data.objref, type);
@@ -942,7 +941,7 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 	len = oper2->data.string ? oper2->data.string->length : 0;
 	strcpy(tname, DoNullInd(oper2->data.string));
 	while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
-		tname[len] == '\0';
+		tname[len] = '\0';
 	}
 
 	nu = new_array_packed(0);
@@ -1150,7 +1149,7 @@ prim_parsepropex(PRIM_PROTOTYPE)
 	len = oper2->data.string->length;
 	strcpy(tname, oper2->data.string->data);
 	while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
-		tname[len] == '\0';
+		tname[len] = '\0';
 	}
 
 	mpi		= get_uncompress(get_property_class(oper1->data.objref, tname));

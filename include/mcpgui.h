@@ -215,6 +215,7 @@ int gui_dlog_freeall_descr(int descr);
  * This might be useful for callbacks.
  */
 int gui_dlog_get_descr(const char *dlogid);
+void* gui_dlog_get_context(const char *dlogid);
 
 
 /* Testing framework.  WORK: THIS SHOULD BE REMOVED BEFORE RELEASE */

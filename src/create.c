@@ -705,10 +705,6 @@ do_mcpedit(int descr, dbref player, const char *name)
 {
 	dbref prog;
 	struct match_data md;
-	char namestr[BUFFER_LEN];
-	char refstr[BUFFER_LEN];
-	struct line *curr;
-	McpMesg msg;
 	McpFrame *mfr;
 	McpVer supp;
 
@@ -987,11 +983,9 @@ void
 do_clone(int descr, dbref player, char *name)
 {
 	static char buf[BUFFER_LEN];
-	dbref  loc;
 	dbref  thing, clonedthing;
 	int    cost;
 	struct match_data md;
-        char   *newname;
 
 	/* Perform sanity checks */
 

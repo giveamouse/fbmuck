@@ -2104,7 +2104,6 @@ prim_array_nested_get(PRIM_PROTOTYPE)
 	struct inst *idx;
 	struct inst *dat;
 	struct inst temp;
-	stk_array *arr;
 	stk_array *idxarr;
 	int i, idxcnt;
 
@@ -2234,7 +2233,6 @@ prim_array_nested_del(PRIM_PROTOTYPE)
 	struct inst *idx;
 	struct inst *dat;
 	struct inst temp;
-	stk_array *arr;
 	stk_array *idxarr;
 	int i, idxcnt;
 

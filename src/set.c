@@ -660,7 +660,7 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 	dbref dest;
 	dbref good_dest[MAX_LINKS];
 	struct match_data md;
-	int ndest, i;
+	int ndest;
 
 	init_match(descr, player, thing_name, TYPE_EXIT, &md);
 	match_all_exits(&md);
@@ -682,12 +682,12 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 	switch (Typeof(thing)) {
 		case TYPE_EXIT:
 			/* we're ok, check the usual stuff */
-			if (DBFETCH(thing)->sp.exit.ndest != 0)
+			if (DBFETCH(thing)->sp.exit.ndest != 0) {
 				if(!controls(player, thing)) {
 					notify(player, "Permission denied.");
 					return;
 				}
-			else {
+			} else {
 				if(!Wizard(OWNER(player)) && (PLAYER_PENNIES(player) < (tp_link_cost + tp_exit_cost))) {
 					notify_fmt(player, "It costs %d %s to link this exit.",
 							   (tp_link_cost + tp_exit_cost),

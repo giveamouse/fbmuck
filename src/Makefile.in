@@ -160,7 +160,7 @@ all: ${TARGETS}
 fbmuck: ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversion.sh Makefile
 	sh mkversion.sh
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c version.c
-	-${MV} fbmuck fbmuck~
+	if [ -e fbmuck ]; then ${MV} fbmuck fbmuck~ ; fi
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${COBJ} ${MALLOBJ} interface.o version.o \
 	  ${LIBR} ${LOBJ}
 

@@ -24,7 +24,7 @@
 static const char *dumpfile = 0;
 static int epoch = 0;
 time_t last_monolithic_time = 0;
-static forked_dump_process_flag = 0;
+static int forked_dump_process_flag = 0;
 FILE *input_file;
 FILE *delta_infile;
 FILE *delta_outfile;

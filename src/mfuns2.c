@@ -219,8 +219,10 @@ mfn_contents(MFUNARGS)
 			nextlen = strlen(buf2);
 			if ((outlen + nextlen) >= (BUFFER_LEN - 3))
 				break;
-			if (outlen)
-				strcatn((buf + (outlen++)), BUFFER_LEN - outlen, "\r");
+			if (outlen) {
+				strcatn(buf + outlen, BUFFER_LEN - outlen, "\r");
+				outlen++;
+			}
 			strcatn((buf + outlen), BUFFER_LEN - outlen, buf2);
 			outlen += nextlen;
 			list_limit--;
@@ -262,8 +264,10 @@ mfn_exits(MFUNARGS)
 		nextlen = strlen(buf2);
 		if ((outlen + nextlen) >= (BUFFER_LEN - 3))
 			break;
-		if (outlen)
-			strcatn((buf + (outlen++)), BUFFER_LEN - outlen, "\r");
+		if (outlen) {
+			strcatn(buf + outlen, BUFFER_LEN - outlen, "\r");
+			outlen++;
+		}
 		strcatn((buf + outlen), BUFFER_LEN - outlen, buf2);
 		outlen += nextlen;
 		list_limit--;
@@ -929,8 +933,10 @@ mfn_lunion(MFUNARGS)
 			nextlen = strlen(ptr);
 			if (outlen + nextlen > BUFFER_LEN - 3)
 				break;
-			if (outcount++)
-				strcatn((buf + (outlen++)), BUFFER_LEN - outlen, "\r");
+			if (outcount++) {
+				strcatn(buf + outlen, BUFFER_LEN - outlen, "\r");
+				outlen++;
+			}
 			strcatn((buf + outlen), BUFFER_LEN - outlen, ptr);
 			outlen += nextlen;
 		}
@@ -957,8 +963,10 @@ mfn_lunion(MFUNARGS)
 			nextlen = strlen(ptr);
 			if (outlen + nextlen > BUFFER_LEN - 3)
 				break;
-			if (outcount++)
-				strcatn((buf + (outlen++)), BUFFER_LEN - outlen, "\r");
+			if (outcount++) {
+				strcatn(buf + outlen, BUFFER_LEN - outlen, "\r");
+				outlen++;
+			}
 			strcatn((buf + outlen), BUFFER_LEN - outlen, ptr);
 			outlen += nextlen;
 		}
@@ -1077,8 +1085,10 @@ mfn_lunique(MFUNARGS)
 		} while (*p);
 		if (!*p) {
 			nextlen = strlen(ptr);
-			if (outcount++)
-				strcatn((buf + (outlen++)),  BUFFER_LEN - outlen,"\r");
+			if (outcount++) {
+				strcatn(buf + outlen,  BUFFER_LEN - outlen,"\r");
+				outlen++;
+			}
 			strcatn((buf + outlen), BUFFER_LEN - outlen, ptr);
 			outlen += nextlen;
 		}
@@ -1155,7 +1165,7 @@ mfn_parse(MFUNARGS)
 		if (outlen + nextlen + oseplen > BUFFER_LEN - 3)
 			break;
 		if (outcount++) {
-			strcatn((buf + outlen), BUFFER_LEN - outlen, sepbuf);
+			strcatn(buf + outlen, BUFFER_LEN - outlen, sepbuf);
 			outlen += oseplen;
 		}
 		strcatn((buf + outlen), BUFFER_LEN - outlen, buf2);

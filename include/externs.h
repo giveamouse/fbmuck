@@ -374,6 +374,11 @@ extern pid_t global_dumper_pid;
 extern pid_t global_resolver_pid;
 extern short global_dumpdone;
 
+#ifdef SPAWN_HOST_RESOLVER
+extern void spawn_resolver();
+#endif
+
+
 /* from events.c */
 extern void dump_db_now(void);
 extern void delta_dump_now(void);

@@ -250,7 +250,6 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	if (!string_compare(msg->mesgname, "request")) {
 		char *onwhat;
 		char *valtype;
-		const char* file;
 
 		onwhat = mcp_mesg_arg_getline(msg, "topic", 0);
 		valtype = mcp_mesg_arg_getline(msg, "type", 0);
@@ -360,7 +359,6 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 {
 	char buf[256];
 	struct stat st;
-	int dirnamelen = 0;
 
 #ifdef DIR_AVALIBLE
 	DIR *df;
@@ -369,6 +367,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 
 #ifdef WIN32
 	char   *dirname;
+	int dirnamelen = 0;
 	HANDLE  hFind;
 	BOOL    bMore;
 	WIN32_FIND_DATA finddata;
@@ -531,7 +530,6 @@ do_info(dbref player, const char *topic, const char *seg)
 	char *buf;
 	int f;
 	int cols;
-	int dirnamelen = 0;
 	int buflen = 80;
 
 #ifdef DIR_AVALIBLE
@@ -543,6 +541,7 @@ do_info(dbref player, const char *topic, const char *seg)
 	BOOL    bMore;
 	WIN32_FIND_DATA finddata;
 	char    *dirname;
+	int dirnamelen = 0;
 #endif
 
 	if (*topic) {
