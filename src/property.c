@@ -531,25 +531,6 @@ copy_prop(dbref old)
 	return (n);
 }
 
-/* return old gender values for pronoun substitution code */
-int
-genderof(int descr, dbref player)
-{
-	if (has_property_strict(descr, player, player, "sex", "male", 0))
-		return GENDER_MALE;
-	else if (has_property_strict(descr, player, player, "sex", "female", 0))
-		return GENDER_FEMALE;
-	else if (has_property_strict(descr, player, player, "sex", "hermaphrodite", 0))
-		return GENDER_HERM;
-	else if (has_property_strict(descr, player, player, "sex", "herm", 0))
-		return GENDER_HERM;
-	else if (has_property_strict(descr, player, player, "sex", "neuter", 0))
-		return GENDER_NEUTER;
-	else
-		return GENDER_UNASSIGNED;
-}
-
-
 /* Return a pointer to the first property in a propdir and duplicates the
    property name into 'name'.  Returns NULL if the property list is empty
    or does not exist. */

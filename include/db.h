@@ -188,15 +188,6 @@ typedef int dbref;				/* offset into db */
 #define CHOWN_OK          0x400	/* this player can be @chowned to */
 #define JUMP_OK           0x800	/* A room which can be jumped from, or
 								 * a player who can be jumped to */
-
-#define GENDER_MASK      0x3000	/* 2 bits of gender */
-#define GENDER_SHIFT         12	/* 0x1000 is 12 bits over (for shifting) */
-#define GENDER_UNASSIGNED   0x0	/* unassigned - the default */
-#define GENDER_NEUTER       0x1	/* neuter */
-#define GENDER_FEMALE       0x2	/* for women */
-#define GENDER_MALE         0x3	/* for men */
-#define GENDER_HERM         0x4	/* for hermaphrodites */
-
 #define KILL_OK	         0x4000	/* Kill_OK bit.  Means you can be killed. */
 #define HAVEN           0x10000	/* can't kill here */
 #define ABODE           0x20000	/* can set home here */

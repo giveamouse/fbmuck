@@ -19,6 +19,12 @@ dbref recyclable = NOTHING;
 int db_load_format = 0;
 
 #define OBSOLETE_ANTILOCK            0x8	/* negates key (*OBSOLETE*) */
+#define OBSOLETE_GENDER_MASK      0x3000	/* 2 bits of gender */
+#define OBSOLETE_GENDER_SHIFT         12	/* 0x1000 is 12 bits over (for shifting) */
+#define OBSOLETE_GENDER_UNASSIGNED   0x0	/* unassigned - the default */
+#define OBSOLETE_GENDER_NEUTER       0x1	/* neuter */
+#define OBSOLETE_GENDER_FEMALE       0x2	/* for women */
+#define OBSOLETE_GENDER_MALE         0x3	/* for men */
 
 #ifndef DB_INITIAL_SIZE
 #define DB_INITIAL_SIZE 10000
@@ -1051,14 +1057,14 @@ db_read_object_old(FILE * f, struct object *o, dbref objno)
 	}
 	password = getstring(f);
 	/* convert GENDER flag to property */
-	switch ((FLAGS(objno) & GENDER_MASK) >> GENDER_SHIFT) {
-	case GENDER_NEUTER:
+	switch ((FLAGS(objno) & OBSOLETE_GENDER_MASK) >> OBSOLETE_GENDER_SHIFT) {
+	case OBSOLETE_GENDER_NEUTER:
 		add_property(objno, "sex", "neuter", 0);
 		break;
-	case GENDER_FEMALE:
+	case OBSOLETE_GENDER_FEMALE:
 		add_property(objno, "sex", "female", 0);
 		break;
-	case GENDER_MALE:
+	case OBSOLETE_GENDER_MALE:
 		add_property(objno, "sex", "male", 0);
 		break;
 	default:
@@ -1170,14 +1176,14 @@ db_read_object_new(FILE * f, struct object *o, dbref objno)
 		FLAGS(objno) |= ABODE;
 	}
 	/* convert GENDER flag to property */
-	switch ((FLAGS(objno) & GENDER_MASK) >> GENDER_SHIFT) {
-	case GENDER_NEUTER:
+	switch ((FLAGS(objno) & OBSOLETE_GENDER_MASK) >> OBSOLETE_GENDER_SHIFT) {
+	case OBSOLETE_GENDER_NEUTER:
 		add_property(objno, "sex", "neuter", 0);
 		break;
-	case GENDER_FEMALE:
+	case OBSOLETE_GENDER_FEMALE:
 		add_property(objno, "sex", "female", 0);
 		break;
-	case GENDER_MALE:
+	case OBSOLETE_GENDER_MALE:
 		add_property(objno, "sex", "male", 0);
 		break;
 	default:
@@ -1327,14 +1333,14 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		if (dtype < 10) {
 			/* set gender stuff */
 			/* convert GENDER flag to property */
-			switch ((FLAGS(objno) & GENDER_MASK) >> GENDER_SHIFT) {
-			case GENDER_NEUTER:
+			switch ((FLAGS(objno) & OBSOLETE_GENDER_MASK) >> OBSOLETE_GENDER_SHIFT) {
+			case OBSOLETE_GENDER_NEUTER:
 				add_property(objno, "sex", "neuter", 0);
 				break;
-			case GENDER_FEMALE:
+			case OBSOLETE_GENDER_FEMALE:
 				add_property(objno, "sex", "female", 0);
 				break;
-			case GENDER_MALE:
+			case OBSOLETE_GENDER_MALE:
 				add_property(objno, "sex", "male", 0);
 				break;
 			default:

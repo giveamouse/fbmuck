@@ -139,6 +139,12 @@ string_match(register const char *src, register const char *sub)
 	return 0;
 }
 
+#define GENDER_UNASSIGNED   0x0	/* unassigned - the default */
+#define GENDER_NEUTER       0x1	/* neuter */
+#define GENDER_FEMALE       0x2	/* for women */
+#define GENDER_MALE         0x3	/* for men */
+#define GENDER_HERM         0x4	/* for hermaphrodites */
+
 /*
  * pronoun_substitute()
  *
@@ -183,7 +189,17 @@ pronoun_substitute(int descr, dbref player, const char *str)
 	strcpy(orig, str);
 	str = orig;
 
-	sex = genderof(descr, player);
+	sex = GENDER_UNASSIGNED;
+	if (has_property_strict(descr, player, player, "sex", "male", 0))
+		sex = GENDER_MALE;
+	else if (has_property_strict(descr, player, player, "sex", "female", 0))
+		sex = GENDER_FEMALE;
+	else if (has_property_strict(descr, player, player, "sex", "hermaphrodite", 0))
+		sex = GENDER_HERM;
+	else if (has_property_strict(descr, player, player, "sex", "herm", 0))
+		sex = GENDER_HERM;
+	else if (has_property_strict(descr, player, player, "sex", "neuter", 0))
+		sex = GENDER_NEUTER;
 	sexstr = get_property_class(player, "sex");
 	if (sexstr) {
 		sexstr = do_parse_mesg(descr, player, player, sexstr, "(Lock)", sexbuf,
@@ -811,4 +827,3 @@ strcatn(char* buf, size_t bufsize, const char* src)
 	}
 	return buf;
 }
-
