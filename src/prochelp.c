@@ -15,14 +15,16 @@
 #define HTML_SECTLIST_FOOT  "</ul>\n\n"
 
 #define HTML_SECTIDX_BEGIN	"<blockquote><table border=0>\n  <tr>\n"
-#define HTML_SECTIDX_ENTRY	"    <td width=\"%d%%\"><a href=\"#%s\">%s</a>\n"
+#define HTML_SECTIDX_ENTRY	"    <td width=\"%d%%\"> &nbsp; <a href=\"#%s\">%s</a> &nbsp; </td>\n"
 #define HTML_SECTIDX_NEWROW	"  </tr>\n  <tr>\n"
 #define HTML_SECTIDX_END	"  </tr>\n</table></blockquote>\n\n"
 
-#define HTML_INDEX_BEGIN	"<p><hr size=\"6\"><h3><a name=\"AlphaList\">Alphabetical List of Topics</a></h3><blockquote><table border=0>\n  <tr>\n"
-#define HTML_INDEX_ENTRY	"    <td width=\"%d%%\"><a href=\"#%s\">%s</a>\n"
-#define HTML_INDEX_NEWROW	"  </tr>\n  <tr>\n"
-#define HTML_INDEX_END		"  </tr>\n</table></blockquote>\n\n"
+#define HTML_INDEX_BEGIN	"<p><hr size=\"6\"><h3><a name=\"AlphaList\">Alphabetical List of Topics</a></h3>\n"
+#define HTML_IDXGROUP_BEGIN	"<h4>%s</h4><blockquote><table border=0>\n  <tr>\n"
+#define HTML_IDXGROUP_ENTRY	"    <td nowrap> &nbsp; <a href=\"#%s\">%s</a> &nbsp; </td>\n"
+#define HTML_IDXGROUP_NEWROW	"  </tr>\n  <tr>\n"
+#define HTML_IDXGROUP_END		"  </tr>\n</table></blockquote>\n\n"
+#define HTML_INDEX_END		""
 
 #define HTML_TOPICHEAD		"<hr><h4><a name=\"%s\">"
 #define HTML_TOPICHEAD_BREAK	"<br>\n"
@@ -159,7 +161,7 @@ escape_html(const char* in, char* buf)
 }
 
 void
-print_section_topics(FILE * f, FILE * hf, const char *whichsect, int cols)
+print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 {
 	struct topiclist *ptr;
 	struct topiclist *sptr;
@@ -172,8 +174,25 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect, int cols)
 	int cnt;
 	int width;
 	int hcol;
+	int cols;
+	int longest;
 	char *currsect;
 
+	longest = 0;
+	for (sptr = secthead; sptr; sptr = sptr->next) {
+		if (!strncasecmp(whichsect, sptr->section, strlen(whichsect))) {
+			currsect = sptr->section;
+			for (ptr = topichead; ptr; ptr = ptr->next) {
+				if (!strcasecmp(currsect, ptr->section)) {
+					cnt = strlen(ptr->topic);
+					if (cnt > longest) {
+						longest = cnt;
+					}
+				}
+			}
+		}
+	}
+	cols = 78 / (longest + 2);
 	width = 78 / cols;
 	for (sptr = secthead; sptr; sptr = sptr->next) {
 		if (!strncasecmp(whichsect, sptr->section, strlen(whichsect))) {
@@ -234,12 +253,12 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect, int cols)
 }
 
 void
-print_all_section_topics(FILE * f, FILE * hf, int cols)
+print_all_section_topics(FILE * f, FILE * hf)
 {
 	struct topiclist *sptr;
 
 	for (sptr = secthead; sptr; sptr = sptr->next) {
-		print_section_topics(f, hf, sptr->section, cols);
+		print_section_topics(f, hf, sptr->section);
 	}
 }
 
@@ -298,15 +317,20 @@ print_sections(FILE * f, FILE * hf, int cols)
 }
 
 void
-print_topics(FILE * f, FILE * hf, int cols)
+print_topics(FILE * f, FILE * hf)
 {
 	struct topiclist *ptr;
 	char buf[256];
 	char buf2[256];
 	char buf3[256];
+	char alph;
+	char firstletter;
 	int cnt = 0;
 	int width;
 	int hcol = 0;
+	int cols;
+	int len;
+	int longest;
 
 	fprintf(hf, HTML_INDEX_BEGIN);
     fprintf(f, "~\n");
@@ -315,33 +339,68 @@ print_topics(FILE * f, FILE * hf, int cols)
     fprintf(f, "ALPHA|ALPHABETICAL|COMMANDS\n");
     fprintf(f, "                 Alphabetical List of Topics:\n");
     fprintf(f, " \n");
-	fprintf(f, "You can get more help on the following topics:\n\n");
-	width = 78 / cols;
-	buf[0] = '\0';
-	for (ptr = topichead; ptr; ptr = ptr->next) {
-		cnt++;
-		hcol++;
-		if (hcol > cols) {
-			fprintf(hf, HTML_INDEX_NEWROW);
-			hcol = 1;
+	fprintf(f, "You can get more help on the following topics:\n");
+	for (alph = 'A' - 1; alph <= 'Z'; alph++) {
+		cnt = 0;
+		longest = 0;
+		for (ptr = topichead; ptr; ptr = ptr->next) {
+			firstletter = toupper(ptr->topic[0]);
+			if (firstletter == alph || (!isalpha(alph) && !isalpha(firstletter))) {
+				cnt++;
+				len = strlen(ptr->topic);
+				if (len > longest) {
+					longest = len;
+				}
+			}
 		}
-		escape_html(ptr->topic, buf3);
-		fprintf(hf, HTML_INDEX_ENTRY, (100 / cols), buf3, buf3);
-		if (cnt == cols) {
-			snprintf(buf2, sizeof(buf2), "%-0.*s", width - 1, ptr->topic);
-		} else {
-			snprintf(buf2, sizeof(buf2), "%-*.*s", width, width - 1, ptr->topic);
-		}
-		strcat(buf, buf2);
-		if (cnt >= cols) {
-			fprintf(f, "%s\n", buf);
+		cols = 78 / (longest + 2);
+		width = 78 / cols;
+
+		if (cnt > 0) {
+			if (!isalpha(alph)) {
+				strcpy(buf, "Symbols");
+			} else {
+				buf[0] = alph;
+				buf[1] = '\'';
+				buf[2] = 's';
+				buf[3] = '\0';
+			}
+			fprintf(f, "\n%s\n", buf);
+			fprintf(hf, HTML_IDXGROUP_BEGIN, buf);
 			buf[0] = '\0';
 			cnt = 0;
+			hcol = 0;
+			for (ptr = topichead; ptr; ptr = ptr->next) {
+				firstletter = toupper(ptr->topic[0]);
+				if (firstletter == alph || (!isalpha(alph) && !isalpha(firstletter))) {
+					cnt++;
+					hcol++;
+					if (hcol > cols) {
+						fprintf(hf, HTML_IDXGROUP_NEWROW);
+						hcol = 1;
+					}
+					escape_html(ptr->topic, buf3);
+					fprintf(hf, HTML_IDXGROUP_ENTRY, /*(100 / cols),*/ buf3, buf3);
+					if (cnt == cols) {
+						snprintf(buf2, sizeof(buf2), "%-0.*s", width - 1, ptr->topic);
+					} else {
+						snprintf(buf2, sizeof(buf2), "%-*.*s", width, width - 1, ptr->topic);
+					}
+					strcat(buf, buf2);
+					if (cnt >= cols) {
+						fprintf(f, "  %s\n", buf);
+						buf[0] = '\0';
+						cnt = 0;
+					}
+				}
+			}
+			if (cnt) {
+				fprintf(f, "  %s\n", buf);
+			}
+			fprintf(hf, HTML_IDXGROUP_END);
 		}
 	}
 	fprintf(hf, HTML_INDEX_END);
-	if (cnt)
-		fprintf(f, "%s\n", buf);
 	fprintf(f, " \nUse '%s <topicname>' to get more information on a topic.\n", doccmd);
 }
 
@@ -424,11 +483,13 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 	char buf[4096];
 	char buf2[4096];
 	char buf3[4096];
+	char buf4[4096];
 	int nukenext = 0;
 	int topichead = 0;
 	int codeblock = 0;
 	char *ptr;
 	char *ptr2;
+	char *ptr3;
 
 	docsfile = stdout;
 	escape_html(title, buf);
@@ -466,7 +527,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 					fprintf(outfile, "~\n~\n~%s\n", HRULE_TEXT);
 					fprintf(docsfile, "\n\n%s\n", HRULE_TEXT);
 					fprintf(docsfile, "%*s\n", (38 + strlen(buf + 10) / 2), (buf + 10));
-					print_section_topics(outfile, htmlfile, (buf + 10), cols);
+					print_section_topics(outfile, htmlfile, (buf + 10));
 					fprintf(outfile, "~%s\n~\n~\n", HRULE_TEXT);
 					fprintf(docsfile, "%s\n\n\n", HRULE_TEXT);
 				} else if (!strncmp(buf, "~~alsosee ", 10)) {
@@ -494,7 +555,11 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 							}
 						}
 						escape_html(ptr2, buf3);
-						fprintf(htmlfile, HTML_ALSOSEE_ENTRY, buf3, buf3);
+						strcpy(buf4, buf3);
+						for (ptr3 = buf4; *ptr3; ptr3++) {
+							*ptr3 = tolower(*ptr3);
+						}
+						fprintf(htmlfile, HTML_ALSOSEE_ENTRY, buf4, buf3);
 						fprintf(outfile, "%s", ptr2);
 					}
 					fprintf(htmlfile, HTML_ALSOSEE_END);
@@ -508,9 +573,9 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 				} else if (!strcmp(buf, "~~sectlist\n")) {
 					print_sections(outfile, htmlfile, cols);
 				} else if (!strcmp(buf, "~~secttopics\n")) {
-					/* print_all_section_topics(outfile, htmlfile, cols); */
+					/* print_all_section_topics(outfile, htmlfile); */
 				} else if (!strcmp(buf, "~~index\n")) {
-					print_topics(outfile, htmlfile, cols);
+					print_topics(outfile, htmlfile);
 				}
 			} else if (buf[1] == '!') {
 				fprintf(outfile, "%s", buf + 2);

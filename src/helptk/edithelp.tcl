@@ -3,6 +3,7 @@
 package require opt
 
 source ./tree.tcl
+source ./combobox.tcl
 
 global HelpData
 global document_file
@@ -73,6 +74,7 @@ proc mk_main_window {base} {
     button $base.newsect   -text "New Section" -command "new_section $base"
     button $base.newtopic  -text "New Topic"   -command "new_topic $base"
     button $base.edit      -text "Edit"        -command "edit_item $base"
+    button $base.massmove  -text "Mass Move"   -command "launch_massmove $base"
     button $base.upsect    -text "^^"          -command "move_item $base -sect"
     button $base.up        -text "^"           -command "move_item $base -1"
     button $base.dn        -text "v"           -command "move_item $base +1"
@@ -84,11 +86,89 @@ proc mk_main_window {base} {
     pack $base.newsect -side top -fill x -padx 10 -pady 5
     pack $base.newtopic -side top -fill x -padx 10 -pady 5
     pack $base.edit -side top -fill x -padx 10 -pady 5
+    pack $base.massmove -side top -fill x -padx 10 -pady 5
     pack $base.save -side bottom -fill x -padx 10 -pady 5
     pack $base.upsect -side left -fill x -padx 10 -pady 5 -anchor nw
     pack $base.up -side left -fill x -padx 10 -pady 5 -anchor nw
     pack $base.dnsect -side right -fill x -padx 10 -pady 5 -anchor ne
     pack $base.dn -side right -fill x -padx 10 -pady 5 -anchor ne
+}
+
+
+proc massmove:move {mw w fnum snum} {
+	global HelpData
+
+	set targsect [gdm:ComboBox get $w.cb]
+	set targsnum -1
+	foreach filenum $HelpData(files) {
+		foreach sectnum $HelpData(sections,$filenum) {
+			if {$targsect == $HelpData(section,$sectnum)} {
+				set targsnum $sectnum
+				set targfnum $filenum
+				break
+			}
+		}
+	}
+
+	set eorders [$w.lb curselection]
+	set enums {}
+	foreach eorder $eorders {
+		lappend enums [lindex $HelpData(sectionentries,$snum) $eorder]
+	}
+	foreach eorder [lsort -integer -decreasing $eorders] {
+		$w.lb delete $eorder
+	}
+	foreach enum $enums {
+		if {$enum != ""} {
+			set eorder [lsearch -exact $HelpData(sectionentries,$snum) $enum]
+			set HelpData(sectionentries,$snum) [lreplace $HelpData(sectionentries,$snum) $eorder $eorder]
+			set HelpData(sectionentries,$targsnum) [linsert $HelpData(sectionentries,$targsnum) end $enum]
+		}
+	}
+	tree_del_section $mw.treefr.tree $fnum $snum
+	tree_del_section $mw.treefr.tree $targfnum $targsnum
+	tree_add_section $mw.treefr.tree $fnum $snum
+	tree_add_section $mw.treefr.tree $targfnum $targsnum
+}
+
+
+proc massmove_dlog {mainwin filenum sectnum} {
+	global HelpData
+
+	set plainfile $HelpData(file,$filenum)
+	set fileorder [lsearch -exact $HelpData(files) $filenum]
+
+	set section [lindex [split $HelpData(section,$sectnum) "|"] 0]
+	set sectorder [lsearch -exact $HelpData(sections,$filenum) $sectnum]
+
+	set w ".massmovedlog"
+	toplevel $w
+	wm title $w "Mass Move - $section"
+
+	listbox $w.lb -selectmode multiple -yscrollcommand "$w.sb set"
+	scrollbar $w.sb -command "$w.lb yview"
+	gdm:ComboBox new $w.cb -editable 0 -entrywidth 40
+	button $w.move -text "Move" -command "massmove:move $mainwin $w $filenum $sectnum"
+	button $w.done -text "Done" -command "destroy $w"
+
+	pack $w.lb -side left -expand 1 -fill both
+	pack $w.sb -side left -expand 1 -fill y
+	pack $w.cb -side top -expand 1 -fill x -padx 19 -pady 10
+	pack $w.move -side top -expand 1 -fill x -padx 10
+	pack $w.done -side bottom -expand 1 -fill x -padx 10 -pady 10
+
+	foreach entrynum $HelpData(sectionentries,$sectnum) {
+		set topic [lindex [split $HelpData(entrytopics,$entrynum) "|"] 0]
+		$w.lb insert end $topic
+	}
+	foreach fnum $HelpData(files) {
+		foreach snum $HelpData(sections,$fnum) {
+			gdm:ComboBox list $w.cb insert end $HelpData(section,$snum)
+		}
+	}
+	gdm:ComboBox set $w.cb $HelpData(section,$snum)
+
+	tkwait window $w
 }
 
 
@@ -455,6 +535,22 @@ proc move_item {w direction} {
 }
 
 
+proc launch_massmove {w} {
+	global HelpData
+	set item [Tree:getselection $w.treefr.tree]
+	if {[llength $item] >= 2} {
+		set forder [item_num $item 0]
+		set fnum [lindex $HelpData(files) $forder]
+		set sorder [item_num $item 1]
+		set snum [lindex $HelpData(sections,$fnum) $sorder]
+		massmove_dlog $w $fnum $snum
+	} else {
+		bell
+	}
+	return
+}
+
+
 
 #  ~@TEXT                    TEXT in HTMLfile
 #  ~!TEXT                    TEXT in Helpfile
@@ -788,8 +884,8 @@ proc open_helpfile {{file ""}} {
 	global document_file
 	if {$file == ""} {
 		set filetypes {
-			{{All Files}                  *        }
 			{{Raw Document Files}         {.raw}   TEXT}
+			{{All Files}                  *        }
 		}
 		if {$document_file == ""} {
 			set initfile ""
@@ -815,8 +911,8 @@ proc save_helpfile {{file ""}} {
 	global document_file
 	if {$file == {}} {
 		set filetypes {
-			{{All Files}                  *        }
 			{{Raw Document Files}         {.raw}   TEXT}
+			{{All Files}                  *        }
 		}
 		if {$document_file == ""} {
 			set initfile "Unknown.raw"
