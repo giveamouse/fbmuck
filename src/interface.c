@@ -2287,33 +2287,51 @@ dump_users(struct descriptor_data *e, char *user)
 						NAME(d->player), (int) d->player);
 #ifdef GOD_PRIV
 				if (!God(e->player))
+#ifdef USE_SSL
 					sprintf(buf, "%-*s [%6d] %10s %4s%c%c %s\r\n",
+#else
+					sprintf(buf, "%-*s [%6d] %10s%4s%c  %s\r\n",
+#endif
 							PLAYER_NAME_LIMIT + 10, pbuf,
 							(int) DBFETCH(d->player)->location,
 							time_format_1(now - d->connected_at),
 							time_format_2(now - d->last_time),
 							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
+#ifdef USE_SSL	
 							(d->ssl_session ? '@' : ' '),
+#endif
 							d->hostname);
 				else
 #endif
+#ifdef USE_SSL
 					sprintf(buf, "%-*s [%6d] %10s %4s%c%c %s(%s)\r\n",
+#else
+					sprintf(buf, "%-*s [%6d] %10s %4s%c  %s(%s)\r\n",
+#endif
 							PLAYER_NAME_LIMIT + 10, pbuf,
 							(int) DBFETCH(d->player)->location,
 							time_format_1(now - d->connected_at),
 							time_format_2(now - d->last_time),
 							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
+#ifdef USE_SSL
 							(d->ssl_session ? '@' : ' '),
+#endif
 							d->hostname, d->username);
 			} else {
 				if (tp_who_doing) {
+#ifdef USE_SSL
 					sprintf(buf, "%-*s %10s %4s%c%c %-0.44s\r\n",
+#else
+					sprintf(buf, "%-*s %10s %4s%c  %-0.44s\r\n",
+#endif
 							PLAYER_NAME_LIMIT + 1,
 							NAME(d->player),
 							time_format_1(now - d->connected_at),
 							time_format_2(now - d->last_time),
 							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
+#ifdef USE_SSL
 							(d->ssl_session ? '@' : ' '),
+#endif		
 							GETDOING(d->player) ?
 #ifdef COMPRESS
 							uncompress(GETDOING(d->player))
@@ -2322,13 +2340,20 @@ dump_users(struct descriptor_data *e, char *user)
 #endif
 							: "");
 				} else {
+#ifdef USE_SSL
 					sprintf(buf, "%-*s %10s %4s%c%c\r\n",
+#else
+					sprintf(buf, "%-*s %10s %4s%c\r\n",
+#endif
 							PLAYER_NAME_LIMIT + 1,
 							NAME(d->player),
 							time_format_1(now - d->connected_at),
 							time_format_2(now - d->last_time),
-							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
-							(d->ssl_session ? '@' : ' '));
+							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' ')
+#ifdef USE_SSL
+							,(d->ssl_session ? '@' : ' ')
+#endif
+							);
 				}
 			}
 			queue_ansi(e, buf);
