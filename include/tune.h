@@ -67,9 +67,9 @@ extern int tp_instr_slice;
 extern int tp_mpi_max_commands;
 extern int tp_pause_min;
 extern int tp_free_frames_pool;
-
 extern int tp_listen_mlev;
 extern int tp_playermax_limit;
+extern int tp_process_timer_limit;
 
 
 

@@ -57,7 +57,7 @@ muf_event_register(dbref player, dbref prog, struct frame *fr)
 
 
 /* int muf_event_dequeue_pid(int pid)
- * removes the MUF program with teh given PID from the EVENT_WAIT queue.
+ * removes the MUF program with the given PID from the EVENT_WAIT queue.
  */
 int
 muf_event_dequeue_pid(int pid)
@@ -187,6 +187,22 @@ muf_event_list(dbref player, char *pat)
 		count++;
 		proc = proc->next;
 	}
+	return count;
+}
+
+
+/* int muf_event_count(struct frame* fr)
+ * Returns how many events are waiting to be processed.
+ */
+int
+muf_event_count(struct frame* fr)
+{
+	struct mufevent *ptr;
+	int count = 0;
+
+	for (ptr = fr->events; ptr; ptr = ptr->next)
+		count++;
+
 	return count;
 }
 

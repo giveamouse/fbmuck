@@ -20,19 +20,23 @@ extern void prim_testlock(PRIM_PROTOTYPE);
 extern void prim_sysparm(PRIM_PROTOTYPE);
 extern void prim_cancallp(PRIM_PROTOTYPE);
 extern void prim_setsysparm(PRIM_PROTOTYPE);
+extern void prim_timer_start(PRIM_PROTOTYPE);
+extern void prim_timer_stop(PRIM_PROTOTYPE);
+extern void prim_event_count(PRIM_PROTOTYPE);
 
 #define PRIMS_MISC_FUNCS prim_time, prim_date, prim_gmtoffset,           \
     prim_systime, prim_timesplit, prim_timefmt, prim_queue, prim_kill,   \
     prim_force, prim_timestamps, prim_fork, prim_pid, prim_stats,        \
     prim_abort, prim_ispidp, prim_parselock, prim_unparselock,           \
-    prim_prettylock, prim_testlock, prim_sysparm, prim_cancallp,	 \
-    prim_setsysparm
+    prim_prettylock, prim_testlock, prim_sysparm, prim_cancallp,         \
+    prim_setsysparm, prim_timer_start, prim_timer_stop, prim_event_count
 
-#define PRIMS_MISC_NAMES "TIME", "DATE", "GMTOFFSET",    \
-    "SYSTIME", "TIMESPLIT", "TIMEFMT", "QUEUE", "KILL",  \
-    "FORCE", "TIMESTAMPS", "FORK", "PID", "STATS",       \
-    "ABORT", "ISPID?", "PARSELOCK", "UNPARSELOCK",       \
-    "PRETTYLOCK", "TESTLOCK", "SYSPARM", "CANCALL?",	 \
-    "SETSYSPARM"
+#define PRIMS_MISC_NAMES "TIME", "DATE", "GMTOFFSET",        \
+    "SYSTIME", "TIMESPLIT", "TIMEFMT", "QUEUE", "KILL",      \
+    "FORCE", "TIMESTAMPS", "FORK", "PID", "STATS",           \
+    "ABORT", "ISPID?", "PARSELOCK", "UNPARSELOCK",           \
+    "PRETTYLOCK", "TESTLOCK", "SYSPARM", "CANCALL?",	     \
+    "SETSYSPARM", "TIMER_START", "TIMER_STOP", "EVENT_COUNT"
 
-#define PRIMS_MISC_CNT 22
+#define PRIMS_MISC_CNT 25
+

@@ -649,3 +649,51 @@ prim_setsysparm(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
+
+
+
+void
+prim_timer_start(PRIM_PROTOTYPE)
+{
+	CHECKOP(2);
+	oper2 = POP();				/* string: timer id */
+	oper1 = POP();				/* int: delay length in seconds */
+
+	if (fr->timercount > tp_process_timer_limit)
+		abort_interp("Too many timers!");
+	if (oper1->type != PROG_INTEGER)
+		abort_interp("Expected an integer delay time. (1)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Expected a string timer id. (2)");
+
+    dequeue_timers(fr->pid, DoNullInd(oper2->data.string));
+	add_muf_timer_event(fr->descr, player, program, fr, oper1->data.number, DoNullInd(oper2->data.string));
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+}
+
+
+void
+prim_timer_stop(PRIM_PROTOTYPE)
+{
+	CHECKOP(1);
+	oper1 = POP();				/* string: timer id */
+
+	if (oper1->type != PROG_STRING)
+		abort_interp("Expected a string timer id. (2)");
+
+    dequeue_timers(fr->pid, DoNullInd(oper1->data.string));
+
+	CLEAR(oper1);
+}
+
+
+void
+prim_event_count(PRIM_PROTOTYPE)
+{
+	CHECKOFLOW(1);
+	result = muf_event_count(fr);
+	PushInt(result);
+}
+

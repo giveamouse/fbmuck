@@ -279,3 +279,7 @@
 
 /* Define to 1 to cause muf debug tracing to display expanded arrays. */
 #define EXPANDED_DEBUG_TRACE 1
+
+/* Specifies the maximum number of timers allowed per process. */
+#define PROCESS_TIMER_LIMIT 4
+

@@ -10,6 +10,9 @@ Added MAX_VARIABLE_COUNT $define to let MUF programs know what the highest
   variable number can be for Vars, Local Vars, and Scoped Vars.
 Added an EXPANDED_DEBUG_TRACE @tune option to allow display of expanded
   array contents in MUF debug trace output.
+Added an PROCESS_TIMER_LIMIT @tune option to specify the maximum number
+  of timers allowed to any one process.  This defaults to 4.  See the
+  description of timers in TIMER_START.
 Added an ARRAY_DIFF      convenience macro define for '2 array_ndiff'.
 Added an ARRAY_UNION     convenience macro define for '2 array_nunion'.
 Added an ARRAY_INTERSECT convenience macro define for '2 array_nintersect'.
@@ -21,6 +24,24 @@ Added an ERR_IBOUNDS?    convenience macro define for '4 is_set?'
 Added a D_SIMPLE inserver define for specifying "simple" dialogs.
 Added a D_TABBED inserver define for specifying "tabbed" dialogs.
 Added a D_HELPER inserver define for specifying "helper" dialogs.
+Added TIMER_START ( i s -- ) MUF prim.  Requests that a timer event
+  be sent to this program in i seconds, with an event name of "TIMER."
+  with the given string appended.  ie: '5 "one" timer_start' will
+  cause a "TIMER.one" event to be sent to the program in 5 seconds.
+  This is used with EVENT_WAIT.  If a timer with the given timerid
+  already exists, it will be rescheduled to occur after the new delay.
+  Timer ids will be truncated to 32 characters.  Each MUF process can
+  only have a limited number of timers, specified by the @tunee setting
+  'process_timer_limit'.  Timers are listed on the @ps timequeue with
+  the PID of the timer's process in parentheses.
+Added TIMER_STOP ( s -- ) MUF prim.  Stops the timer with the given
+  timerid, if it exists.  If there is already a timer event on the
+  event queue, it will STAY on the queue until processed.  As with
+  the timer_start primitive, the "TIMER." part of the event name is
+  assumed.  '"first" timer_stop' will stop the timer created by
+  '5 "first" timer_start'.  Timer ids ARE case sensitive.
+Added EVENT_COUNT ( -- i) MUF prim.  Returns the number of pending
+  events waiting to be processed with EVENT_WAIT.
 Added ANSI_STRLEN ( s -- i ) MUF prim.  Returns the length of string s
   ignoring ansi escape within the string.
 Added ANSI_STRCUT ( s i -- s1 s2 ) MUF prim.  Like STRCUT, but ignores ansi

@@ -124,9 +124,9 @@ int tp_instr_slice = INSTR_SLICE;
 int tp_mpi_max_commands = MPI_MAX_COMMANDS;
 int tp_pause_min = PAUSE_MIN;
 int tp_free_frames_pool = FREE_FRAMES_POOL;
-
 int tp_listen_mlev = LISTEN_MLEV;
 int tp_playermax_limit = PLAYERMAX_LIMIT;
+int tp_process_timer_limit = PROCESS_TIMER_LIMIT;
 
 
 struct tune_val_entry {
@@ -166,6 +166,7 @@ struct tune_val_entry tune_val_list[] = {
 
 	{"listen_mlev", &tp_listen_mlev, 0},
 	{"playermax_limit", &tp_playermax_limit, 0},
+	{"process_timer_limit", &tp_process_timer_limit, 0},
 
 	{NULL, NULL, 0}
 };

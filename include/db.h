@@ -1,6 +1,12 @@
 /* $Header$
  *
  * $Log: db.h,v $
+ * Revision 1.3  2000/04/29 04:16:04  revar
+ * Added PROCESS_TIMER_LIMIT @tune.
+ * Added TIMER_START muf prim.
+ * Added TIMER_STOP muf prim.
+ * Added EVENT_COUNT muf prim.
+ *
  * Revision 1.2  2000/03/29 12:21:01  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -467,6 +473,7 @@ struct frame {
 	dbref trig;					/* triggering object */
 	long started;				/* When this program started. */
 	int instcnt;				/* How many instructions have run. */
+	int timercount;				/* How many timers currently exist. */
 	int pid;					/* what is the process id? */
 	int descr;					/* what is the descriptor that started this? */
 	void *rndbuf;				/* buffer for seedable random */

@@ -1,6 +1,12 @@
 /* $Header$
  * 
  * $Log: externs.h,v $
+ * Revision 1.3  2000/04/29 04:16:04  revar
+ * Added PROCESS_TIMER_LIMIT @tune.
+ * Added TIMER_START muf prim.
+ * Added TIMER_STOP muf prim.
+ * Added EVENT_COUNT muf prim.
+ *
  * Revision 1.2  2000/03/29 12:21:01  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -94,6 +100,7 @@ extern long next_event_time();
 extern void list_events(dbref program);
 extern int dequeue_prog(dbref program, int sleeponly);
 extern int dequeue_process(int procnum);
+extern int dequeue_timers(int procnum, char* timerid);
 extern int control_process(dbref player, int procnum);
 extern void do_dequeue(int descr, dbref player, const char *arg1);
 extern void propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
