@@ -974,7 +974,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 		case PROG_SVAR_BANG:
 			{
-				/* FIXME: This fails to check if the stack is locked. */
 				struct inst *the_var;
 				if (atop < 1)
 					abort_loop("Stack Underflow.", NULL, NULL);
