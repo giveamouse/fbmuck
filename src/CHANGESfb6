@@ -1,6 +1,8 @@
 2.2fb6.00rc7
 Fixed bug with non-DISKBASE mucks where @dump would drop SSL users.
 Fixed bug with reporting of incorrect line numbers in muf backtraces.
+Fixed bug with DEBUGGER_BREAK having one too many initial breakpoints.
+Fixed bug with muf errors getting stored in .debug/lasterr with ANSI codes.
 
 
 

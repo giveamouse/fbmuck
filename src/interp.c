@@ -1676,6 +1676,7 @@ interp_err(dbref player, dbref program, struct inst *pc,
 		   struct inst *arg, int atop, dbref origprog, const char *msg1, const char *msg2)
 {
 	char buf[BUFFER_LEN];
+	char buf2[BUFFER_LEN];
 	char tbuf[40];
 	int errcount;
 	time_t lt;
@@ -1696,10 +1697,11 @@ interp_err(dbref player, dbref program, struct inst *pc,
 	lt = time(NULL);
 	format_time(tbuf, 32, "%c", localtime(&lt));
 
+	strip_ansi(buf2, buf);
 	errcount = get_property_value(origprog, ".debug/errcount");
 	errcount++;
 	add_property(origprog, ".debug/errcount", NULL, errcount);
-	add_property(origprog, ".debug/lasterr", buf, 0);
+	add_property(origprog, ".debug/lasterr", buf2, 0);
 	add_property(origprog, ".debug/lastcrash", NULL, (int)lt);
 	add_property(origprog, ".debug/lastcrashtime", tbuf, 0);
 
@@ -1707,7 +1709,7 @@ interp_err(dbref player, dbref program, struct inst *pc,
 		errcount = get_property_value(program, ".debug/errcount");
 		errcount++;
 		add_property(program, ".debug/errcount", NULL, errcount);
-		add_property(program, ".debug/lasterr", buf, 0);
+		add_property(program, ".debug/lasterr", buf2, 0);
 		add_property(program, ".debug/lastcrash", NULL, (int)lt);
 		add_property(program, ".debug/lastcrashtime", tbuf, 0);
 	}

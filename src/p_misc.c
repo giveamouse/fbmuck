@@ -927,14 +927,25 @@ prim_debugger_break(PRIM_PROTOTYPE)
 		abort_interp("Too many breakpoints set.");
 
 	fr->brkpt.force_debugging = 1;
-	i = fr->brkpt.count++;
-	fr->brkpt.temp[i] = 1;
-	fr->brkpt.level[i] = -1;
-	fr->brkpt.line[i] = -1;
-	fr->brkpt.linecount[i] = -2;
-	fr->brkpt.pc[i] = NULL;
-	fr->brkpt.pccount[i] = 1;
-	fr->brkpt.prog[i] = NOTHING;
+	if (fr->brkpt.count        !=  1   ||
+		fr->brkpt.temp[0]      !=  1   ||
+		fr->brkpt.level[0]     != -1   ||
+		fr->brkpt.line[0]      != -1   ||
+		fr->brkpt.linecount[0] != -2   ||
+		fr->brkpt.pc[0]        != NULL ||
+		fr->brkpt.pccount[0]   != -2   ||
+		fr->brkpt.prog[0]      != program
+	) {
+		/* No initial breakpoint.  Lets make one. */
+		i = fr->brkpt.count++;
+		fr->brkpt.temp[i] = 1;
+		fr->brkpt.level[i] = -1;
+		fr->brkpt.line[i] = -1;
+		fr->brkpt.linecount[i] = -2;
+		fr->brkpt.pc[i] = NULL;
+		fr->brkpt.pccount[i] = 0;
+		fr->brkpt.prog[i] = NOTHING;
+	}
 }
 
 
