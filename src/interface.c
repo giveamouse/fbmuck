@@ -1226,7 +1226,6 @@ shovechars()
 			for (cnt = 0, d = descriptor_list; d; d = dnext) {
 				dnext = d->next;
 				if (FD_ISSET(d->descriptor, &input_set)) {
-					d->last_time = now;
 					if (!process_input(d)) {
 						d->booted = 1;
 					}
@@ -1999,6 +1998,7 @@ process_input(struct descriptor_data *d)
 	pend = d->raw_input + MAX_COMMAND_LEN - 1;
 	for (q = buf, qend = buf + got; q < qend; q++) {
 		if (*q == '\n') {
+			d->last_time = time(NULL);
 			*p = '\0';
 			if (p >= d->raw_input)
 				save_command(d, d->raw_input);
