@@ -640,6 +640,10 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		snprintf(buf, sizeof(buf), "Pecho: %s", GETPECHO(thing));
 		notify(player, buf);
 	}
+	if (GETIDESC(thing)) {
+		snprintf(buf, sizeof(buf), "Idesc: %s", GETIDESC(thing));
+		notify(player, buf);
+	}
 
 	/* Timestamps */
 	/* ex: time_tm = localtime((time_t *)(&(DBFETCH(thing)->ts.created))); */
