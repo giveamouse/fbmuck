@@ -55,6 +55,7 @@ Fixed do_{describe,idescribe,doing,fail,success,drop_message,osuccess,ofail,
 Fixed do_restrict to display current status when no arguments are given.
 Fixed examine to display @idesc, as per feature request #587474.
 Fixed bug #593023: @register bugfix/feature-in-one.
+Fixed @lock without keystring to unlock objects (similar to @flock etc.)
 Added workaround for bug #555198: Compile warning on Mac OS X.
 Added internal MUF primitives for pinning/unpinning arrays.  These are for the
   future planned MUV to MUF-bytecode compiler, and are not available from MUF.

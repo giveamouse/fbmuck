@@ -489,15 +489,19 @@ do_lock(int descr, dbref player, const char *name, const char *keyname)
 		break;
 	}
 
-	key = parse_boolexp(descr, player, keyname, 0);
-	if (key == TRUE_BOOLEXP) {
-		notify(player, "I don't understand that key.");
-	} else {
-		/* everything ok, do it */
-		SETLOCK(thing, key);
-		ts_modifyobject(thing);
-		notify(player, "Locked.");
-	}
+	if(keyname && *keyname) {
+		key = parse_boolexp(descr, player, keyname, 0);
+		if (key == TRUE_BOOLEXP) {
+			notify(player, "I don't understand that key.");
+		} else {
+			/* everything ok, do it */
+			SETLOCK(thing, key);
+			ts_modifyobject(thing);
+			notify(player, "Locked.");
+		}
+	} else
+		do_unlock(descr, player, name);
+
 }
 
 void
