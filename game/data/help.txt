@@ -799,7 +799,7 @@ and 'hermaphrodite', with the last two being equivalent, both using the
 sie/hir/hirself/hirs pronoun set.
  
 This set of supported genders can be extended either on an individual
-player, or globally 0 by adding _pronouns/GENDER/%X properties on the
+player, or globally by adding _pronouns/GENDER/%X properties on the
 player, or on #0 respectively.  For example, to add support on yourself
 for a 'stallion' gender, you would add five properties, one for each
 of the %a, %s, %o, %p, and %r pronouns, in the _pronouns/stallion/
