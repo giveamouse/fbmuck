@@ -53,6 +53,7 @@ Added @mcpprogram PROGNAME command, like @mcpedit, except it creates the
   program if it doesn't already exist.
 Added dbdump_warning @tune, to turn on/off the dumpdone messages independantly.
 Added XOR ( i i -- i ) logical eXclusive OR muf primitive.
+Added more correct Telnet protocol negotiation.
 
 
 

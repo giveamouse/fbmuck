@@ -113,6 +113,7 @@ struct descriptor_data {
 	struct text_queue input;
 	char *raw_input;
 	char *raw_input_at;
+	int inIAC;
 	long last_time;
 	long connected_at;
 	const char *hostname;
@@ -1684,6 +1685,7 @@ initializesock(int s, const char *hostname)
 	d->input.tail = &d->input.head;
 	d->raw_input = 0;
 	d->raw_input_at = 0;
+	d->inIAC = 0;
 	d->quota = tp_command_burst_size;
 	d->last_time = 0;
 	mcp_frame_init(&d->mcpframe, d);
@@ -2005,6 +2007,74 @@ process_input(struct descriptor_data *d)
 			if (p >= d->raw_input)
 				save_command(d, d->raw_input);
 			p = d->raw_input;
+		} else if (d->inIAC == 1) {
+			switch (*q) {
+				case '\361': /* NOP */
+					d->inIAC = 0;
+					break;
+				case '\363': /* Break */
+				case '\364': /* Interrupt Process */
+					save_command(d, BREAK_COMMAND);
+					d->inIAC = 0;
+					break;
+				case '\365': /* Abort Output */
+					/* could be handy, but for now leave unimplemented */
+					d->inIAC = 0;
+					break;
+				case '\367': /* Erase character */
+					if (p > d->raw_input)
+						p--;
+					d->inIAC = 0;
+					break;
+				case '\370': /* Erase line */
+					p = d->raw_input;
+					d->inIAC = 0;
+					break;
+				case '\372': /* Go Ahead */
+					/* treat as a NOP (?) */
+					d->inIAC = 0;
+					break;
+				case '\373': /* WILL (option offer) */
+				case '\374': /* WONT (option offer) */
+					d->inIAC = 2;
+					break;
+				case '\375': /* DO (option request) */
+				case '\376': /* DONT (option request) */
+					d->inIAC = 3;
+					break;
+				case '\377': /* IAC a second time */
+#if 0
+					/* If we were 8 bit clean, we'd pass this along */
+					*p++ = *q;
+#endif
+					d->inIAC = 0;
+					break;
+				default:
+					/* just ignore */
+					d->inIAC = 0;
+					break;
+			}
+		} else if (d->inIAC == 2) {
+			/* We don't negotiate: send back DONT option */
+			char sendbuf[4];
+			sendbuf[0] = '\377';
+			sendbuf[1] = '\376';
+			sendbuf[2] = *q;
+			sendbuf[3] = '\0';
+			socket_write(d, sendbuf, 3);
+			d->inIAC = 0;
+		} else if (d->inIAC == 3) {
+			/* We don't negotiate: send back WONT option */
+			char sendbuf[4];
+			sendbuf[0] = '\377';
+			sendbuf[1] = '\374';
+			sendbuf[2] = *q;
+			sendbuf[3] = '\0';
+			socket_write(d, sendbuf, 3);
+			d->inIAC = 0;
+		} else if (*q == '\377') {
+			/* Got TELNET IAC, store for next byte */	
+			d->inIAC = 1;
 		} else if (p < pend && isascii(*q)) {
 			if (isprint(*q)) {
 				*p++ = *q;
@@ -2015,6 +2085,7 @@ process_input(struct descriptor_data *d)
 				if (p > d->raw_input)
 					p--;
 			}
+			d->inIAC = 0;
 		}
 	}
 	if (p > d->raw_input) {
