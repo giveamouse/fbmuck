@@ -498,6 +498,7 @@ init_defs(COMPSTATE * cstat)
 	insert_def(cstat, "d_helper", "\"helper\"");
 
 	/* GUI control types */
+	insert_def(cstat, "c_menu", "\"menu\"");
 	insert_def(cstat, "c_datum", "\"datum\"");
 	insert_def(cstat, "c_label", "\"text\"");
 	insert_def(cstat, "c_hrule", "\"hrule\"");
