@@ -6,6 +6,7 @@ Fixed a bug with zombies not echoing text.  Bug was introduced in O(1) code.
 Fixed a misleading error message with muf compiling 'begin if repeat'.
 Fixed a bug with STRNCMP giving bad results with null string arguments.
 Fixed a bug with PARSEPROP not being re-entrant.
+Fixed a bug with STOD parsing #-3 as #-1.
 Changed the build scripts to do 'configure' from the directory above src.
 Changed the restart script to look for netmuck in /usr/local/fbmuck/bin/
 Changed 'make install' to install the binaries to /usr/local/fbmuck/bin/
