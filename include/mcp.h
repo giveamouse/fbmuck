@@ -2,78 +2,75 @@
 #define MCP_H
 
 /* the type used to specify the connection */
-typedef void* connection_t;
+typedef void *connection_t;
 
 
-#define EMCP_SUCCESS		 0   /* successful result */
-#define EMCP_NOMCP		-1   /* MCP isn't supported on this connection. */
-#define EMCP_NOPACKAGE		-2   /* Package isn't supported for this connection. */
+#define EMCP_SUCCESS		 0	/* successful result */
+#define EMCP_NOMCP		-1		/* MCP isn't supported on this connection. */
+#define EMCP_NOPACKAGE		-2	/* Package isn't supported for this connection. */
 
 /* This is a convenient struct for dealing with MCP versions. */
 typedef struct McpVersion_T {
-    unsigned short	vermajor;	/* major version number */
-    unsigned short	verminor;	/* minor version number */
+	unsigned short vermajor;	/* major version number */
+	unsigned short verminor;	/* minor version number */
 } McpVer;
 
 
 
 /* This is one line of a multi-line argument value. */
 typedef struct McpArgPart_T {
-    struct McpArgPart_T* next;
-    char*	value;
+	struct McpArgPart_T *next;
+	char *value;
 } McpArgPart;
 
 
 /* This is one argument of a message. */
 typedef struct McpArg_T {
-    struct McpArg_T*	next;
-    char*	name;
-    McpArgPart*	value;
-    int         was_shown;
+	struct McpArg_T *next;
+	char *name;
+	McpArgPart *value;
+	int was_shown;
 } McpArg;
 
 
 /* This is an MCP message. */
 typedef struct McpMesg_T {
-    struct McpMesg_T* next;
-    char*	package;
-    char*	mesgname;
-    char*       datatag;
-    McpArg*	args;
-    int		incomplete;
+	struct McpMesg_T *next;
+	char *package;
+	char *mesgname;
+	char *datatag;
+	McpArg *args;
+	int incomplete;
 } McpMesg;
 
 
 struct McpFrame_T;
-typedef void (*McpPkg_CB)(
-    struct McpFrame_T*	mfr,
-    McpMesg*		mesg,
-    McpVer		version,
-    void*               context
-);
+typedef void (*McpPkg_CB) (struct McpFrame_T * mfr,
+
+						   McpMesg * mesg, McpVer version, void *context);
 
 
 
 /* This is used to keep track of registered packages. */
 typedef struct McpPkg_T {
-    char*		pkgname;	/* Name of the package */
-    McpVer		minver;		/* min supported version number */
-    McpVer		maxver;		/* max supported version number */
-    McpPkg_CB		callback;       /* function to call with mesgs */
-    void*		context;        /* user defined callback context */
-    struct McpPkg_T*		next;
+	char *pkgname;				/* Name of the package */
+	McpVer minver;				/* min supported version number */
+	McpVer maxver;				/* max supported version number */
+	McpPkg_CB callback;			/* function to call with mesgs */
+	void *context;				/* user defined callback context */
+	struct McpPkg_T *next;
 } McpPkg;
 
 
 
 /* This keeps connection specific data for MCP. */
 typedef struct McpFrame_T {
-    void*          descriptor;    /* The descriptor to send output to */
-    unsigned int   enabled;       /* Flag denoting if MCP is enabled. */
-    char*          authkey;       /* Authorization key. */
-    McpVer         version;       /* Supported MCP version number. */
-    McpPkg*        packages;      /* Pkgs supported on this connection. */
-    McpMesg*       messages;	  /* Partial messages, under construction. */
+	void *descriptor;			/* The descriptor to send output to */
+	unsigned int enabled;		/* Flag denoting if MCP is enabled. */
+	char *authkey;				/* Authorization key. */
+	McpVer version;				/* Supported MCP version number. */
+	McpPkg *packages;			/* Pkgs supported on this connection. */
+	McpMesg *messages;			/* Partial messages, under construction. */
 } McpFrame;
 
 
@@ -294,31 +291,31 @@ typedef struct McpFrame_T {
 
 void mcp_initialize();
 
-void mcp_package_register(const char* pkgname, McpVer minver, McpVer maxver, McpPkg_CB callback, void* context);
-void mcp_package_deregister(const char* pkgname);
+void mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver,
+						  McpPkg_CB callback, void *context);
+void mcp_package_deregister(const char *pkgname);
 
-void mcp_frame_init(McpFrame* mfr, connection_t con);
-void mcp_frame_clear(McpFrame* mfr);
+void mcp_frame_init(McpFrame * mfr, connection_t con);
+void mcp_frame_clear(McpFrame * mfr);
 
-int mcp_frame_package_add(McpFrame* mfr, const char* package, McpVer minver, McpVer maxver);
-void mcp_frame_package_remove(McpFrame* mfr, const char* package);
-McpVer mcp_frame_package_supported(McpFrame* mfr, const char* package);
-int mcp_frame_package_docallback(McpFrame* mfr, McpMesg* msg);
+int mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer maxver);
+void mcp_frame_package_remove(McpFrame * mfr, const char *package);
+McpVer mcp_frame_package_supported(McpFrame * mfr, const char *package);
+int mcp_frame_package_docallback(McpFrame * mfr, McpMesg * msg);
 
-int mcp_frame_process_input(McpFrame* mfr, const char* linein, char *outbuf, int bufsize);
-void mcp_frame_output_inband(McpFrame* mfr, const char* lineout);
-int mcp_frame_output_mesg(McpFrame* mfr, McpMesg* msg);
+int mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf, int bufsize);
+void mcp_frame_output_inband(McpFrame * mfr, const char *lineout);
+int mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg);
 
-void mcp_mesg_init(McpMesg* msg, const char* package, const char* mesgname);
-void mcp_mesg_clear(McpMesg* msg);
+void mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname);
+void mcp_mesg_clear(McpMesg * msg);
 
-int mcp_mesg_arg_linecount(McpMesg* msg, const char* name);
-char* mcp_mesg_arg_getline(McpMesg* msg, const char* argname, int linenum);
-void mcp_mesg_arg_append(McpMesg* msg, const char* argname, const char* argval);
-void mcp_mesg_arg_remove(McpMesg* msg, const char* argname);
+int mcp_mesg_arg_linecount(McpMesg * msg, const char *name);
+char *mcp_mesg_arg_getline(McpMesg * msg, const char *argname, int linenum);
+void mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval);
+void mcp_mesg_arg_remove(McpMesg * msg, const char *argname);
 
 int mcp_version_compare(McpVer v1, McpVer v2);
 McpVer mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2);
 
-#endif /* MCP_H */
-
+#endif							/* MCP_H */

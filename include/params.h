@@ -1,5 +1,13 @@
 /* $Header$
  * $Log: params.h,v $
+ * Revision 1.3  2000/03/29 12:21:02  revar
+ * Reformatted all code into consistent format.
+ * 	Tabs are 4 spaces.
+ * 	Indents are one tab.
+ * 	Braces are generally K&R style.
+ * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+ * Rewrote restart script as a bourne shell script.
+ *
  * Revision 1.2  2000/03/10 06:33:31  revar
  * Added ARRAY_GET_PROPDIRS muf prim.
  * Added ARRAY_GET_PROPVALS muf prim.
@@ -59,14 +67,14 @@
 
 
 /* timing stuff */
-#define TIME_MINUTE(x)  (60 * (x))                /* 60 seconds */
-#define TIME_HOUR(x)    ((x) * (TIME_MINUTE(60))) /* 60 minutes */
-#define TIME_DAY(x)     ((x) * (TIME_HOUR(24)))   /* 24 hours   */
+#define TIME_MINUTE(x)  (60 * (x))	/* 60 seconds */
+#define TIME_HOUR(x)    ((x) * (TIME_MINUTE(60)))	/* 60 minutes */
+#define TIME_DAY(x)     ((x) * (TIME_HOUR(24)))	/* 24 hours   */
 
 
-#define MAX_OUTPUT 131071    /* maximum amount of queued output in bytes */
+#define MAX_OUTPUT 131071		/* maximum amount of queued output in bytes */
 
-#define DB_INITIAL_SIZE 100  /* initial malloc() size for the db */
+#define DB_INITIAL_SIZE 100		/* initial malloc() size for the db */
 
 
 /* User interface low level commands */
@@ -81,14 +89,14 @@
 /* Used for breaking out of muf READs or for stopping foreground programs. */
 #define BREAK_COMMAND "@Q"
 
-#define EXIT_DELIMITER ';'      /* delimiter for lists of exit aliases  */
-#define MAX_LINKS 50    /* maximum number of destinations for an exit */
+#define EXIT_DELIMITER ';'		/* delimiter for lists of exit aliases  */
+#define MAX_LINKS 50			/* maximum number of destinations for an exit */
 
 
 
-#define PCREATE_FLAGS (BUILDER)   /* default flag bits for created players */
+#define PCREATE_FLAGS (BUILDER)	/* default flag bits for created players */
 
-#define GLOBAL_ENVIRONMENT ((dbref) 0)  /* parent of all rooms.  Always #0 */
+#define GLOBAL_ENVIRONMENT ((dbref) 0)	/* parent of all rooms.  Always #0 */
 
 /* magic cookies (not chocolate chip) :) */
 
@@ -117,7 +125,7 @@
 
 /* @edit'or stuff */
 
-#define EXIT_INSERT "."         /* character to exit from insert mode    */
+#define EXIT_INSERT "."			/* character to exit from insert mode    */
 #define INSERT_COMMAND 'i'
 #define DELETE_COMMAND 'd'
 #define QUIT_EDIT_COMMAND   'q'
@@ -171,4 +179,3 @@
 #define ANSI_BG_BLUE	"\033[44m"
 #define ANSI_BG_MAGENTA	"\033[45m"
 #define ANSI_BG_WHITE	"\033[47m"
-

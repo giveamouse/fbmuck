@@ -29,33 +29,33 @@ static char buf[BUFFER_LEN];
 void
 prim_array_make(PRIM_PROTOTYPE)
 {
-    stk_array* new;
-    int i;
+	stk_array *new;
+	int i;
 
-    CHECKOP(1);
-    oper1 = POP();
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Invalid item count.");
-    result = oper1->data.number;
-    if (result < 0)
-        abort_interp("Item count must be non-negative.");
-    CLEAR(oper1);
-    nargs = 0;
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_INTEGER)
+		abort_interp("Invalid item count.");
+	result = oper1->data.number;
+	if (result < 0)
+		abort_interp("Item count must be non-negative.");
+	CLEAR(oper1);
+	nargs = 0;
 
-    if (*top < result)
-        abort_interp("Stack underflow.");
+	if (*top < result)
+		abort_interp("Stack underflow.");
 
-    temp1.type = PROG_INTEGER;
-    temp1.line = 0;
-    new = new_array_packed(result);
-    for (i = result; i-->0; ) {
-        temp1.data.number = i;
-        oper1 = POP();
-        array_setitem(&new, &temp1, oper1);
-        CLEAR(oper1);
-    }
+	temp1.type = PROG_INTEGER;
+	temp1.line = 0;
+	new = new_array_packed(result);
+	for (i = result; i-- > 0;) {
+		temp1.data.number = i;
+		oper1 = POP();
+		array_setitem(&new, &temp1, oper1);
+		CLEAR(oper1);
+	}
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
 }
 
 
@@ -63,37 +63,37 @@ prim_array_make(PRIM_PROTOTYPE)
 void
 prim_array_make_dict(PRIM_PROTOTYPE)
 {
-    stk_array* new;
-    int i;
+	stk_array *new;
+	int i;
 
-    CHECKOP(1);
-    oper1 = POP();
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Invalid item count.");
-    result = oper1->data.number;
-    if (result < 0)
-        abort_interp("Item count must be positive.");
-    CLEAR(oper1);
-    nargs = 0;
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_INTEGER)
+		abort_interp("Invalid item count.");
+	result = oper1->data.number;
+	if (result < 0)
+		abort_interp("Item count must be positive.");
+	CLEAR(oper1);
+	nargs = 0;
 
-    if (*top < (2 * result))
-        abort_interp("Stack underflow.");
-    nargs = 2;
+	if (*top < (2 * result))
+		abort_interp("Stack underflow.");
+	nargs = 2;
 
-    new = new_array_dictionary();
-    for (i = result; i-->0; ) {
-        oper1 = POP(); /* val */
-        oper2 = POP(); /* key */
-        if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING) {
-            array_free(new);
-            abort_interp("Keys must be integers or strings.");
-        }
-        array_setitem(&new, oper2, oper1);
-        CLEAR(oper1);
-        CLEAR(oper2);
-    }
+	new = new_array_dictionary();
+	for (i = result; i-- > 0;) {
+		oper1 = POP();			/* val */
+		oper2 = POP();			/* key */
+		if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING) {
+			array_free(new);
+			abort_interp("Keys must be integers or strings.");
+		}
+		array_setitem(&new, oper2, oper1);
+		CLEAR(oper1);
+		CLEAR(oper2);
+	}
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
 }
 
 
@@ -101,30 +101,30 @@ prim_array_make_dict(PRIM_PROTOTYPE)
 void
 prim_array_explode(PRIM_PROTOTYPE)
 {
-    stk_array* arr;
+	stk_array *arr;
 
-    CHECKOP(1);
-    oper1 = POP();
-    if (oper1->type != PROG_ARRAY)
-        abort_interp("Argument not an array.");
-    copyinst(oper1, &temp2);
-    arr = temp2.data.array;
-    result = array_count(arr);
-    CHECKOFLOW(((2 * result) + 1));
-    CLEAR(oper1);
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array.");
+	copyinst(oper1, &temp2);
+	arr = temp2.data.array;
+	result = array_count(arr);
+	CHECKOFLOW(((2 * result) + 1));
+	CLEAR(oper1);
 
-    if (array_first(arr, &temp1)) {
-        do {
-            copyinst(&temp1, &arg[((*top)++)]);
-            oper2 = array_getitem(arr, &temp1);
-            copyinst(oper2, &arg[((*top)++)]);
-            oper2 = NULL;
-        } while (array_next(arr, &temp1));
-    }
+	if (array_first(arr, &temp1)) {
+		do {
+			copyinst(&temp1, &arg[((*top)++)]);
+			oper2 = array_getitem(arr, &temp1);
+			copyinst(oper2, &arg[((*top)++)]);
+			oper2 = NULL;
+		} while (array_next(arr, &temp1));
+	}
 
-    CLEAR(&temp1);
-    CLEAR(&temp2);
-    PushInt(result);
+	CLEAR(&temp1);
+	CLEAR(&temp2);
+	PushInt(result);
 }
 
 
@@ -132,29 +132,29 @@ prim_array_explode(PRIM_PROTOTYPE)
 void
 prim_array_vals(PRIM_PROTOTYPE)
 {
-    stk_array* arr;
+	stk_array *arr;
 
-    CHECKOP(1);
-    oper1 = POP();
-    if (oper1->type != PROG_ARRAY)
-        abort_interp("Argument not an array.");
-    copyinst(oper1, &temp2);
-    arr = temp2.data.array;
-    result = array_count(arr);
-    CHECKOFLOW((result + 1));
-    CLEAR(oper1);
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array.");
+	copyinst(oper1, &temp2);
+	arr = temp2.data.array;
+	result = array_count(arr);
+	CHECKOFLOW((result + 1));
+	CLEAR(oper1);
 
-    if (array_first(arr, &temp1)) {
-        do {
-            oper2 = array_getitem(arr, &temp1);
-            copyinst(oper2, &arg[((*top)++)]);
-            oper2 = NULL;
-        } while (array_next(arr, &temp1));
-    }
+	if (array_first(arr, &temp1)) {
+		do {
+			oper2 = array_getitem(arr, &temp1);
+			copyinst(oper2, &arg[((*top)++)]);
+			oper2 = NULL;
+		} while (array_next(arr, &temp1));
+	}
 
-    CLEAR(&temp1);
-    CLEAR(&temp2);
-    PushInt(result);
+	CLEAR(&temp1);
+	CLEAR(&temp2);
+	PushInt(result);
 }
 
 
@@ -162,27 +162,27 @@ prim_array_vals(PRIM_PROTOTYPE)
 void
 prim_array_keys(PRIM_PROTOTYPE)
 {
-    stk_array* arr;
+	stk_array *arr;
 
-    CHECKOP(1);
-    oper1 = POP();
-    if (oper1->type != PROG_ARRAY)
-        abort_interp("Argument not an array.");
-    copyinst(oper1, &temp2);
-    arr = temp2.data.array;
-    result = array_count(arr);
-    CHECKOFLOW((result + 1));
-    CLEAR(oper1);
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array.");
+	copyinst(oper1, &temp2);
+	arr = temp2.data.array;
+	result = array_count(arr);
+	CHECKOFLOW((result + 1));
+	CLEAR(oper1);
 
-    if (array_first(arr, &temp1)) {
-        do {
-            copyinst(&temp1, &arg[((*top)++)]);
-        } while (array_next(arr, &temp1));
-    }
+	if (array_first(arr, &temp1)) {
+		do {
+			copyinst(&temp1, &arg[((*top)++)]);
+		} while (array_next(arr, &temp1));
+	}
 
-    CLEAR(&temp1);
-    CLEAR(&temp2);
-    PushInt(result);
+	CLEAR(&temp1);
+	CLEAR(&temp2);
+	PushInt(result);
 }
 
 
@@ -190,14 +190,14 @@ prim_array_keys(PRIM_PROTOTYPE)
 void
 prim_array_count(PRIM_PROTOTYPE)
 {
-    CHECKOP(1);
-    oper1 = POP();
-    if (oper1->type != PROG_ARRAY)
-        abort_interp("Argument not an array.");
-    result = array_count(oper1->data.array);
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array.");
+	result = array_count(oper1->data.array);
 
-    CLEAR(oper1);
-    PushInt(result);
+	CLEAR(oper1);
+	PushInt(result);
 }
 
 
@@ -205,23 +205,23 @@ prim_array_count(PRIM_PROTOTYPE)
 void
 prim_array_first(PRIM_PROTOTYPE)
 {
-    CHECKOP(1);
-    oper1 = POP();  /* arr  Array */
-    if (oper1->type != PROG_ARRAY)
-        abort_interp("Argument not an array.");
+	CHECKOP(1);
+	oper1 = POP();				/* arr  Array */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array.");
 
-    temp1.type = PROG_INTEGER;
-    temp1.data.number = 0;
-    result = array_first(oper1->data.array, &temp1);
+	temp1.type = PROG_INTEGER;
+	temp1.data.number = 0;
+	result = array_first(oper1->data.array, &temp1);
 
-    CLEAR(oper1);
-    if (result) {
-        copyinst(&temp1, &arg[((*top)++)]);
-    } else {
-        result = 0;
-        PushInt(result);
-    }
-    PushInt(result);
+	CLEAR(oper1);
+	if (result) {
+		copyinst(&temp1, &arg[((*top)++)]);
+	} else {
+		result = 0;
+		PushInt(result);
+	}
+	PushInt(result);
 }
 
 
@@ -229,23 +229,23 @@ prim_array_first(PRIM_PROTOTYPE)
 void
 prim_array_last(PRIM_PROTOTYPE)
 {
-    CHECKOP(1);
-    oper1 = POP();  /* arr  Array */
-    if (oper1->type != PROG_ARRAY)
-        abort_interp("Argument not an array.");
+	CHECKOP(1);
+	oper1 = POP();				/* arr  Array */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array.");
 
-    temp1.type = PROG_INTEGER;
-    temp1.data.number = 0;
-    result = array_last(oper1->data.array, &temp1);
+	temp1.type = PROG_INTEGER;
+	temp1.data.number = 0;
+	result = array_last(oper1->data.array, &temp1);
 
-    CLEAR(oper1);
-    if (result) {
-        copyinst(&temp1, &arg[((*top)++)]);
-    } else {
-        result = 0;
-        PushInt(result);
-    }
-    PushInt(result);
+	CLEAR(oper1);
+	if (result) {
+		copyinst(&temp1, &arg[((*top)++)]);
+	} else {
+		result = 0;
+		PushInt(result);
+	}
+	PushInt(result);
 }
 
 
@@ -253,28 +253,28 @@ prim_array_last(PRIM_PROTOTYPE)
 void
 prim_array_prev(PRIM_PROTOTYPE)
 {
-    CHECKOP(2);
-    oper1 = POP();  /* ???  previous index */
-    oper2 = POP();  /* arr  Array */
-    if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-        abort_interp("Argument not an integer or string. (2)");
-    if (oper2->type != PROG_ARRAY)
-        abort_interp("Argument not an array.(1)");
+	CHECKOP(2);
+	oper1 = POP();				/* ???  previous index */
+	oper2 = POP();				/* arr  Array */
+	if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
+		abort_interp("Argument not an integer or string. (2)");
+	if (oper2->type != PROG_ARRAY)
+		abort_interp("Argument not an array.(1)");
 
-    copyinst(oper1, &temp1);
-    result = array_prev(oper2->data.array, &temp1);
+	copyinst(oper1, &temp1);
+	result = array_prev(oper2->data.array, &temp1);
 
-    CLEAR(oper1);
-    CLEAR(oper2);
+	CLEAR(oper1);
+	CLEAR(oper2);
 
-    if (result) {
-        copyinst(&temp1, &arg[((*top)++)]);
-    } else {
-        result = 0;
-        PushInt(result);
-    }
-    CLEAR(&temp1);
-    PushInt(result);
+	if (result) {
+		copyinst(&temp1, &arg[((*top)++)]);
+	} else {
+		result = 0;
+		PushInt(result);
+	}
+	CLEAR(&temp1);
+	PushInt(result);
 }
 
 
@@ -283,28 +283,28 @@ void
 prim_array_next(PRIM_PROTOTYPE)
 {
 
-    CHECKOP(2);
-    oper1 = POP();  /* ???  previous index */
-    oper2 = POP();  /* arr  Array */
-    if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-        abort_interp("Argument not an integer or string. (2)");
-    if (oper2->type != PROG_ARRAY)
-        abort_interp("Argument not an array.(1)");
+	CHECKOP(2);
+	oper1 = POP();				/* ???  previous index */
+	oper2 = POP();				/* arr  Array */
+	if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
+		abort_interp("Argument not an integer or string. (2)");
+	if (oper2->type != PROG_ARRAY)
+		abort_interp("Argument not an array.(1)");
 
-    copyinst(oper1, &temp1);
-    result = array_next(oper2->data.array, &temp1);
+	copyinst(oper1, &temp1);
+	result = array_next(oper2->data.array, &temp1);
 
-    CLEAR(oper1);
-    CLEAR(oper2);
+	CLEAR(oper1);
+	CLEAR(oper2);
 
-    if (result) {
-        copyinst(&temp1, &arg[((*top)++)]);
-    } else {
-        result = 0;
-        PushInt(result);
-    }
-    CLEAR(&temp1);
-    PushInt(result);
+	if (result) {
+		copyinst(&temp1, &arg[((*top)++)]);
+	} else {
+		result = 0;
+		PushInt(result);
+	}
+	CLEAR(&temp1);
+	PushInt(result);
 }
 
 
@@ -312,17 +312,17 @@ prim_array_next(PRIM_PROTOTYPE)
 void
 prim_array_getitem(PRIM_PROTOTYPE)
 {
-    struct inst *in;
+	struct inst *in;
 	struct inst temp;
 
-    CHECKOP(2);
-    oper1 = POP();  /* ???  index */
-    oper2 = POP();  /* arr  Array */
-    if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-        abort_interp("Argument not an integer or string. (2)");
-    if (oper2->type != PROG_ARRAY)
-        abort_interp("Argument not an array. (1)");
-    in = array_getitem(oper2->data.array, oper1);
+	CHECKOP(2);
+	oper1 = POP();				/* ???  index */
+	oper2 = POP();				/* arr  Array */
+	if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
+		abort_interp("Argument not an integer or string. (2)");
+	if (oper2->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
+	in = array_getitem(oper2->data.array, oper1);
 
 	/* copy data to a temp inst before clearing the containing array */
 	if (in) {
@@ -332,8 +332,8 @@ prim_array_getitem(PRIM_PROTOTYPE)
 		temp.data.number = 0;
 	}
 
-    CLEAR(oper1);
-    CLEAR(oper2);
+	CLEAR(oper1);
+	CLEAR(oper2);
 
 	/* copy data to stack, then clear temp inst */
 	copyinst(&temp, &arg[(*top)++]);
@@ -345,58 +345,85 @@ prim_array_getitem(PRIM_PROTOTYPE)
 void
 prim_array_setitem(PRIM_PROTOTYPE)
 {
-    stk_array* new;
+	stk_array *new;
 
-    CHECKOP(3);
-    oper1 = POP();  /* ???  index to store at */
-    oper2 = POP();  /* arr  Array to store in */
-    oper3 = POP();  /* ???  item to store     */
+	CHECKOP(3);
+	oper1 = POP();				/* ???  index to store at */
+	oper2 = POP();				/* arr  Array to store in */
+	oper3 = POP();				/* ???  item to store     */
 
-    if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-        abort_interp("Argument not an integer or string. (2)");
-    if (oper2->type != PROG_ARRAY)
-        abort_interp("Argument not an array. (1)");
+	if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
+		abort_interp("Argument not an integer or string. (2)");
+	if (oper2->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
 
-    result = array_setitem(&oper2->data.array, oper1, oper3);
-    if (result < 0)
-        abort_interp("Index out of array bounds. (3)");
+	result = array_setitem(&oper2->data.array, oper1, oper3);
+	if (result < 0)
+		abort_interp("Index out of array bounds. (3)");
 
-    new = oper2->data.array;
-    oper2->data.array = NULL;
+	new = oper2->data.array;
+	oper2->data.array = NULL;
 
-    CLEAR(oper1);
-    CLEAR(oper2);
-    CLEAR(oper3);
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
+}
+
+void
+prim_array_appenditem(PRIM_PROTOTYPE)
+{
+	stk_array *new;
+
+	CHECKOP(3);
+	oper2 = POP();				/* arr  Array to store in */
+	oper1 = POP();				/* ???  item to store     */
+
+	if (oper2->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (2)");
+	if (oper2->data.array && oper1->data.array->type != ARRAY_PACKED)
+		abort_interp("Argument must be a list type array. (2)");
+
+	result = array_appenditem(&oper2->data.array, oper1);
+	if (result == -1)
+		abort_interp("Internal Error!");
+
+	new = oper2->data.array;
+	oper2->data.array = NULL;
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+
+	PushArrayRaw(new);
 }
 
 void
 prim_array_insertitem(PRIM_PROTOTYPE)
 {
-    stk_array* new;
+	stk_array *new;
 
-    CHECKOP(3);
-    oper1 = POP();  /* ???  index to store at */
-    oper2 = POP();  /* arr  Array to store in */
-    oper3 = POP();  /* ???  item to store     */
-    if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-        abort_interp("Argument not an integer or string. (2)");
-    if (oper2->type != PROG_ARRAY)
-        abort_interp("Argument not an array. (1)");
+	CHECKOP(3);
+	oper1 = POP();				/* ???  index to store at */
+	oper2 = POP();				/* arr  Array to store in */
+	oper3 = POP();				/* ???  item to store     */
+	if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
+		abort_interp("Argument not an integer or string. (2)");
+	if (oper2->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
 
-    result = array_insertitem(&oper2->data.array, oper1, oper3);
-    if (result < 0)
-        abort_interp("Index out of array bounds. (3)");
+	result = array_insertitem(&oper2->data.array, oper1, oper3);
+	if (result < 0)
+		abort_interp("Index out of array bounds. (3)");
 
-    new = oper2->data.array;
-    oper2->data.array = NULL;
+	new = oper2->data.array;
+	oper2->data.array = NULL;
 
-    CLEAR(oper1);
-    CLEAR(oper2);
-    CLEAR(oper3);
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
 }
 
 
@@ -404,28 +431,28 @@ prim_array_insertitem(PRIM_PROTOTYPE)
 void
 prim_array_getrange(PRIM_PROTOTYPE)
 {
-    stk_array* new;
+	stk_array *new;
 
-    CHECKOP(3);
-    oper1 = POP();  /* int  range end item */
-    oper2 = POP();  /* int  range start item */
-    oper3 = POP();  /* arr  Array   */
-    if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-        abort_interp("Argument not an integer or string. (3)");
-    if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
-        abort_interp("Argument not an integer or string. (2)");
-    if (oper3->type != PROG_ARRAY)
-        abort_interp("Argument not an array. (1)");
+	CHECKOP(3);
+	oper1 = POP();				/* int  range end item */
+	oper2 = POP();				/* int  range start item */
+	oper3 = POP();				/* arr  Array   */
+	if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
+		abort_interp("Argument not an integer or string. (3)");
+	if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
+		abort_interp("Argument not an integer or string. (2)");
+	if (oper3->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
 
-    new = array_getrange(oper3->data.array, oper2, oper1);
-    if (!new)
+	new = array_getrange(oper3->data.array, oper2, oper1);
+	if (!new)
 		new = new_array_packed(0);
 
-    CLEAR(oper1);
-    CLEAR(oper2);
-    CLEAR(oper3);
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
 }
 
 
@@ -433,62 +460,62 @@ prim_array_getrange(PRIM_PROTOTYPE)
 void
 prim_array_setrange(PRIM_PROTOTYPE)
 {
-    stk_array* new;
+	stk_array *new;
 
-    CHECKOP(3);
-    oper1 = POP();  /* arr  array to insert */
-    oper2 = POP();  /* ???  starting pos for lists */
-    oper3 = POP();  /* arr  Array   */
-    if (oper1->type != PROG_ARRAY)
-        abort_interp("Argument not an array. (3)");
-    if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
-        abort_interp("Argument not an integer or string. (2)");
-    if (oper3->type != PROG_ARRAY)
-        abort_interp("Argument not an array. (1)");
+	CHECKOP(3);
+	oper1 = POP();				/* arr  array to insert */
+	oper2 = POP();				/* ???  starting pos for lists */
+	oper3 = POP();				/* arr  Array   */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (3)");
+	if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
+		abort_interp("Argument not an integer or string. (2)");
+	if (oper3->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
 
-    result = array_setrange(&oper3->data.array, oper2, oper1->data.array);
-    if (result < 0)
-        abort_interp("Index out of array bounds. (2)");
+	result = array_setrange(&oper3->data.array, oper2, oper1->data.array);
+	if (result < 0)
+		abort_interp("Index out of array bounds. (2)");
 
-    new = oper3->data.array;
-    oper3->data.array = NULL;;
+	new = oper3->data.array;
+	oper3->data.array = NULL;;
 
-    CLEAR(oper1);
-    CLEAR(oper2);
-    CLEAR(oper3);
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
 }
 
 
 void
 prim_array_insertrange(PRIM_PROTOTYPE)
 {
-    stk_array* new;
+	stk_array *new;
 
-    CHECKOP(3);
-    oper1 = POP();  /* arr  array to insert */
-    oper2 = POP();  /* ???  starting pos for lists */
-    oper3 = POP();  /* arr  Array   */
-    if (oper1->type != PROG_ARRAY)
-        abort_interp("Argument not an array. (3)");
-    if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
-        abort_interp("Argument not an integer or string. (2)");
-    if (oper3->type != PROG_ARRAY)
-        abort_interp("Argument not an array. (1)");
+	CHECKOP(3);
+	oper1 = POP();				/* arr  array to insert */
+	oper2 = POP();				/* ???  starting pos for lists */
+	oper3 = POP();				/* arr  Array   */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (3)");
+	if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
+		abort_interp("Argument not an integer or string. (2)");
+	if (oper3->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
 
-    result = array_insertrange(&oper3->data.array, oper2, oper1->data.array);
-    if (result < 0)
-        abort_interp("Index out of array bounds. (2)");
+	result = array_insertrange(&oper3->data.array, oper2, oper1->data.array);
+	if (result < 0)
+		abort_interp("Index out of array bounds. (2)");
 
-    new = oper3->data.array;
-    oper3->data.array = NULL;
+	new = oper3->data.array;
+	oper3->data.array = NULL;
 
-    CLEAR(oper1);
-    CLEAR(oper2);
-    CLEAR(oper3);
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
 }
 
 
@@ -496,27 +523,27 @@ prim_array_insertrange(PRIM_PROTOTYPE)
 void
 prim_array_delitem(PRIM_PROTOTYPE)
 {
-    stk_array* new;
+	stk_array *new;
 
-    CHECKOP(2);
-    oper1 = POP();  /* int  item to delete */
-    oper2 = POP();  /* arr  Array   */
-    if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-        abort_interp("Argument not an integer or string. (2)");
-    if (oper2->type != PROG_ARRAY)
-        abort_interp("Argument not an array. (1)");
+	CHECKOP(2);
+	oper1 = POP();				/* int  item to delete */
+	oper2 = POP();				/* arr  Array   */
+	if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
+		abort_interp("Argument not an integer or string. (2)");
+	if (oper2->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
 
-    result = array_delitem(&oper2->data.array, oper1);
-    if (result < 0)
-        abort_interp("Bad array index specified.");
+	result = array_delitem(&oper2->data.array, oper1);
+	if (result < 0)
+		abort_interp("Bad array index specified.");
 
-    new = oper2->data.array;
-    oper2->data.array = NULL;
+	new = oper2->data.array;
+	oper2->data.array = NULL;
 
-    CLEAR(oper1);
-    CLEAR(oper2);
+	CLEAR(oper1);
+	CLEAR(oper2);
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
 }
 
 
@@ -524,31 +551,31 @@ prim_array_delitem(PRIM_PROTOTYPE)
 void
 prim_array_delrange(PRIM_PROTOTYPE)
 {
-    stk_array* new;
+	stk_array *new;
 
-    CHECKOP(3);
-    oper1 = POP();  /* int  range end item */
-    oper2 = POP();  /* int  range start item */
-    oper3 = POP();  /* arr  Array   */
-    if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-        abort_interp("Argument not an integer or string. (3)");
-    if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
-        abort_interp("Argument not an integer or string. (2)");
-    if (oper3->type != PROG_ARRAY)
-        abort_interp("Argument not an array. (1)");
+	CHECKOP(3);
+	oper1 = POP();				/* int  range end item */
+	oper2 = POP();				/* int  range start item */
+	oper3 = POP();				/* arr  Array   */
+	if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
+		abort_interp("Argument not an integer or string. (3)");
+	if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
+		abort_interp("Argument not an integer or string. (2)");
+	if (oper3->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
 
-    result = array_delrange(&oper3->data.array, oper2, oper1);
-    if (result < 0)
-        abort_interp("Bad array range specified.");
+	result = array_delrange(&oper3->data.array, oper2, oper1);
+	if (result < 0)
+		abort_interp("Bad array range specified.");
 
-    new = oper3->data.array;
-    oper3->data.array = NULL;
+	new = oper3->data.array;
+	oper3->data.array = NULL;
 
-    CLEAR(oper1);
-    CLEAR(oper2);
-    CLEAR(oper3);
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
 }
 
 
@@ -560,114 +587,114 @@ prim_array_delrange(PRIM_PROTOTYPE)
 void
 prim_array_n_union(PRIM_PROTOTYPE)
 {
-    stk_array* new_union;
-    stk_array* new_mash;
-    int num_arrays;
+	stk_array *new_union;
+	stk_array *new_mash;
+	int num_arrays;
 
-    CHECKOP(1);
-    oper1 = POP();
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Invalid item count.");
-    result = oper1->data.number;
-    if (result < 0)
-        abort_interp("Item count must be positive.");
-    CLEAR(oper1);
-    nargs = 0;
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_INTEGER)
+		abort_interp("Invalid item count.");
+	result = oper1->data.number;
+	if (result < 0)
+		abort_interp("Item count must be positive.");
+	CLEAR(oper1);
+	nargs = 0;
 
-    if (*top < result)
-        abort_interp("Stack underflow.");
+	if (*top < result)
+		abort_interp("Stack underflow.");
 
-    if (result>0) {
-      new_mash = new_array_dictionary(0);
-      for ( num_arrays = 0; num_arrays < result; num_arrays++ ) {
-        oper1 = POP();
-        array_mash(oper1->data.array, &new_mash, 1 );
-        CLEAR(oper1);
-      }
-      new_union = array_demote_only( new_mash, 1 );
-      array_free ( new_mash );
-    } else {
-      new_union = new_array_packed(0);
-    }
+	if (result > 0) {
+		new_mash = new_array_dictionary(0);
+		for (num_arrays = 0; num_arrays < result; num_arrays++) {
+			oper1 = POP();
+			array_mash(oper1->data.array, &new_mash, 1);
+			CLEAR(oper1);
+		}
+		new_union = array_demote_only(new_mash, 1);
+		array_free(new_mash);
+	} else {
+		new_union = new_array_packed(0);
+	}
 
-    PushArrayRaw(new_union);
+	PushArrayRaw(new_union);
 }
 
 void
 prim_array_n_intersection(PRIM_PROTOTYPE)
 {
-    stk_array* new_union;
-    stk_array* new_mash;
-    int num_arrays;
+	stk_array *new_union;
+	stk_array *new_mash;
+	int num_arrays;
 
-    CHECKOP(1);
-    oper1 = POP();
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Invalid item count.");
-    result = oper1->data.number;
-    if (result < 0)
-        abort_interp("Item count must be positive.");
-    CLEAR(oper1);
-    nargs = 0;
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_INTEGER)
+		abort_interp("Invalid item count.");
+	result = oper1->data.number;
+	if (result < 0)
+		abort_interp("Item count must be positive.");
+	CLEAR(oper1);
+	nargs = 0;
 
-    if (*top < result)
-        abort_interp("Stack underflow.");
+	if (*top < result)
+		abort_interp("Stack underflow.");
 
-    if (result>0) {
-      new_mash = new_array_dictionary(0);
-      for ( num_arrays = 0; num_arrays < result; num_arrays++ ) {
-        oper1 = POP();
-        array_mash(oper1->data.array, &new_mash, 1 );
-        CLEAR(oper1);
-      }
-      new_union = array_demote_only( new_mash, result );
-      array_free ( new_mash );
-    } else {
-      new_union = new_array_packed(0);
-    }
+	if (result > 0) {
+		new_mash = new_array_dictionary(0);
+		for (num_arrays = 0; num_arrays < result; num_arrays++) {
+			oper1 = POP();
+			array_mash(oper1->data.array, &new_mash, 1);
+			CLEAR(oper1);
+		}
+		new_union = array_demote_only(new_mash, result);
+		array_free(new_mash);
+	} else {
+		new_union = new_array_packed(0);
+	}
 
-    PushArrayRaw(new_union);
+	PushArrayRaw(new_union);
 }
 
 void
 prim_array_n_difference(PRIM_PROTOTYPE)
 {
-    stk_array* new_union;
-    stk_array* new_mash;
-    int num_arrays;
+	stk_array *new_union;
+	stk_array *new_mash;
+	int num_arrays;
 
-    CHECKOP(1);
-    oper1 = POP();
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Invalid item count.");
-    result = oper1->data.number;
-    if (result < 0)
-        abort_interp("Item count must be positive.");
-    CLEAR(oper1);
-    nargs = 0;
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_INTEGER)
+		abort_interp("Invalid item count.");
+	result = oper1->data.number;
+	if (result < 0)
+		abort_interp("Item count must be positive.");
+	CLEAR(oper1);
+	nargs = 0;
 
-    if (*top < result)
-        abort_interp("Stack underflow.");
+	if (*top < result)
+		abort_interp("Stack underflow.");
 
-    if (result>0) {
-      new_mash = new_array_dictionary(0);
+	if (result > 0) {
+		new_mash = new_array_dictionary(0);
 
-      oper1 = POP();
-      array_mash(oper1->data.array, &new_mash, 1 );
-      CLEAR(oper1);
+		oper1 = POP();
+		array_mash(oper1->data.array, &new_mash, 1);
+		CLEAR(oper1);
 
-      for ( num_arrays = 1; num_arrays < result; num_arrays++ ) {
-        oper1 = POP();
-        array_mash(oper1->data.array, &new_mash, -1 );
-        CLEAR(oper1);
-      }
-      new_union = array_demote_only( new_mash, 1 );
-      array_free ( new_mash );
-    } else {
-      new_union = new_array_packed(0);
-    }
+		for (num_arrays = 1; num_arrays < result; num_arrays++) {
+			oper1 = POP();
+			array_mash(oper1->data.array, &new_mash, -1);
+			CLEAR(oper1);
+		}
+		new_union = array_demote_only(new_mash, 1);
+		array_free(new_mash);
+	} else {
+		new_union = new_array_packed(0);
+	}
 
-    PushArrayRaw(new_union);
+	PushArrayRaw(new_union);
 }
 
 
@@ -675,55 +702,55 @@ prim_array_n_difference(PRIM_PROTOTYPE)
 void
 prim_array_notify(PRIM_PROTOTYPE)
 {
-    stk_array* strarr;
-    stk_array* refarr;
-    struct inst *oper1, *oper2, *oper3, *oper4;
-    struct inst temp1, temp2;
-    char buf2[BUFFER_LEN*2];
+	stk_array *strarr;
+	stk_array *refarr;
+	struct inst *oper1, *oper2, *oper3, *oper4;
+	struct inst temp1, temp2;
+	char buf2[BUFFER_LEN * 2];
 
-    CHECKOP(2);
-    oper2 = POP();
-    oper1 = POP();
-    if (oper1->type != PROG_ARRAY)
-        abort_interp("Argument not an array of strings. (1)");
-    if (!array_is_homogenous(oper1->data.array, PROG_STRING))
-        abort_interp("Argument not an array of strings. (1)");
-    if (oper2->type != PROG_ARRAY)
-        abort_interp("Argument not an array of dbrefs. (2)");
-    if (!array_is_homogenous(oper2->data.array, PROG_OBJECT))
-        abort_interp("Argument not an array of dbrefs. (2)");
-    strarr = oper1->data.array;
-    refarr = oper2->data.array;
+	CHECKOP(2);
+	oper2 = POP();
+	oper1 = POP();
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array of strings. (1)");
+	if (!array_is_homogenous(oper1->data.array, PROG_STRING))
+		abort_interp("Argument not an array of strings. (1)");
+	if (oper2->type != PROG_ARRAY)
+		abort_interp("Argument not an array of dbrefs. (2)");
+	if (!array_is_homogenous(oper2->data.array, PROG_OBJECT))
+		abort_interp("Argument not an array of dbrefs. (2)");
+	strarr = oper1->data.array;
+	refarr = oper2->data.array;
 
-    if (array_first(strarr, &temp2)) {
-        do {
-            oper4 = array_getitem(strarr, &temp2);
-            strcpy(buf, DoNullInd(oper4->data.string));
-            if (tp_force_mlev1_name_notify && mlev < 2) {
-                strcpy(buf2, PNAME(player));
-                strcat(buf2, " ");
-                if (!string_prefix(buf, buf2)) {
-                    strcat(buf2, buf);
-                    buf2[BUFFER_LEN-1] = '\0';
-                    strcpy(buf, buf2);
-                }
-            }
-            if (array_first(refarr, &temp1)) {
-                do {
-                    oper3 = array_getitem(refarr, &temp1);
+	if (array_first(strarr, &temp2)) {
+		do {
+			oper4 = array_getitem(strarr, &temp2);
+			strcpy(buf, DoNullInd(oper4->data.string));
+			if (tp_force_mlev1_name_notify && mlev < 2) {
+				strcpy(buf2, PNAME(player));
+				strcat(buf2, " ");
+				if (!string_prefix(buf, buf2)) {
+					strcat(buf2, buf);
+					buf2[BUFFER_LEN - 1] = '\0';
+					strcpy(buf, buf2);
+				}
+			}
+			if (array_first(refarr, &temp1)) {
+				do {
+					oper3 = array_getitem(refarr, &temp1);
 
-                    notify_listeners(player, program, oper3->data.objref,
-                                     getloc(oper3->data.objref), buf, 1);
+					notify_listeners(player, program, oper3->data.objref,
+									 getloc(oper3->data.objref), buf, 1);
 
-                    oper3 = NULL;
-                } while (array_next(refarr, &temp1));
-            }
-            oper4 = NULL;
-        } while (array_next(strarr, &temp2));
-    }
+					oper3 = NULL;
+				} while (array_next(refarr, &temp1));
+			}
+			oper4 = NULL;
+		} while (array_next(strarr, &temp2));
+	}
 
-    CLEAR(oper1);
-    CLEAR(oper2);
+	CLEAR(oper1);
+	CLEAR(oper2);
 }
 
 
@@ -731,67 +758,67 @@ prim_array_notify(PRIM_PROTOTYPE)
 void
 prim_array_reverse(PRIM_PROTOTYPE)
 {
-    stk_array* arr;
-    stk_array* new;
-    int i;
+	stk_array *arr;
+	stk_array *new;
+	int i;
 
-    CHECKOP(1);
-    oper1 = POP();  /* arr  Array   */
-    if (oper1->type != PROG_ARRAY)
-        abort_interp("Argument not an array.");
-    arr = oper1->data.array;
-    if (arr->type != ARRAY_PACKED)
-        abort_interp("Argument must be a list type array.");
+	CHECKOP(1);
+	oper1 = POP();				/* arr  Array   */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array.");
+	arr = oper1->data.array;
+	if (arr->type != ARRAY_PACKED)
+		abort_interp("Argument must be a list type array.");
 
-    result = array_count(arr);
-    new = new_array_packed(result);
+	result = array_count(arr);
+	new = new_array_packed(result);
 
-    temp1.type = PROG_INTEGER;
-    temp2.type = PROG_INTEGER;
-    for (i = 0; i < result; i++) {
-        temp1.data.number = i;
-        temp2.data.number = (result - i) - 1;
-        array_setitem(&new, &temp1, array_getitem(arr, &temp2));
-    }
+	temp1.type = PROG_INTEGER;
+	temp2.type = PROG_INTEGER;
+	for (i = 0; i < result; i++) {
+		temp1.data.number = i;
+		temp2.data.number = (result - i) - 1;
+		array_setitem(&new, &temp1, array_getitem(arr, &temp2));
+	}
 
-    CLEAR(oper1);
-    PushArrayRaw(new);
+	CLEAR(oper1);
+	PushArrayRaw(new);
 }
 
 
 void
 prim_array_get_propdirs(PRIM_PROTOTYPE)
 {
-    stk_array* new;
-	char*      tmpname;
-    char*      pname;
-    char       propname[BUFFER_LEN];
-    char       dir[BUFFER_LEN];
-    PropPtr    propadr, pptr;
-    PropPtr    prptr;
+	stk_array *new;
+	char *tmpname;
+	char *pname;
+	char propname[BUFFER_LEN];
+	char dir[BUFFER_LEN];
+	PropPtr propadr, pptr;
+	PropPtr prptr;
 	int count = 0;
 
 	/* dbref strPropDir -- array */
-    CHECKOP(2);
-    oper2 = POP();
-    oper1 = POP();
-    if (mlev < 3)
+	CHECKOP(2);
+	oper2 = POP();
+	oper1 = POP();
+	if (mlev < 3)
 		abort_interp("Permission denied.");
-    if (oper1->type != PROG_OBJECT)
+	if (oper1->type != PROG_OBJECT)
 		abort_interp("Dbref required. (1)");
-    if (!valid_object(oper1))
+	if (!valid_object(oper1))
 		abort_interp("Invalid dbref. (1)");
-    if (oper2->type != PROG_STRING)
+	if (oper2->type != PROG_STRING)
 		abort_interp("String required. (2)");
 
-    ref = oper1->data.objref;
+	ref = oper1->data.objref;
 	strcpy(dir, DoNullInd(oper2->data.string));
 	if (!*dir)
-	    strcpy(dir, "/");
+		strcpy(dir, "/");
 
-    new = new_array_packed(0);
-    propadr = first_prop(ref, dir, &pptr, propname);
-    while (propadr) {
+	new = new_array_packed(0);
+	propadr = first_prop(ref, dir, &pptr, propname);
+	while (propadr) {
 		sprintf(buf, "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 		if (prop_read_perms(ProgUID, ref, buf, mlev)) {
 			prptr = get_property(ref, propname);
@@ -799,7 +826,7 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 #ifdef DISKBASE
 				propfetch(ref, prptr);
 #endif
-				if(PropDir(prptr)) {
+				if (PropDir(prptr)) {
 					if (count >= 511) {
 						array_free(new);
 						abort_interp("Too many propdirs to put in an array!");
@@ -817,60 +844,61 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 				}
 			}
 		}
-        propadr = next_prop(pptr, propadr, propname);
-    }
+		propadr = next_prop(pptr, propadr, propname);
+	}
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
 }
 
 
 void
 prim_array_get_propvals(PRIM_PROTOTYPE)
 {
-    stk_array* new;
-	char*      tmpname;
-    char*      pname;
-    char       propname[BUFFER_LEN];
-    char       dir[BUFFER_LEN];
-    PropPtr    propadr, pptr;
-    PropPtr    prptr;
+	stk_array *new;
+	char *tmpname;
+	char *pname;
+	char propname[BUFFER_LEN];
+	char dir[BUFFER_LEN];
+	PropPtr propadr, pptr;
+	PropPtr prptr;
 	int count = 0;
 
 	/* dbref strPropDir -- array */
-    CHECKOP(2);
-    oper2 = POP();
-    oper1 = POP();
-    if (mlev < 3)
+	CHECKOP(2);
+	oper2 = POP();
+	oper1 = POP();
+	if (mlev < 3)
 		abort_interp("Permission denied.");
-    if (oper1->type != PROG_OBJECT)
+	if (oper1->type != PROG_OBJECT)
 		abort_interp("Dbref required. (1)");
-    if (!valid_object(oper1))
+	if (!valid_object(oper1))
 		abort_interp("Invalid dbref. (1)");
-    if (oper2->type != PROG_STRING)
+	if (oper2->type != PROG_STRING)
 		abort_interp("String required. (2)");
 
-    ref = oper1->data.objref;
+	ref = oper1->data.objref;
 	strcpy(dir, DoNullInd(oper2->data.string));
 	if (!*dir)
-	    strcpy(dir, "/");
+		strcpy(dir, "/");
 
-    new = new_array_dictionary();
-    propadr = first_prop(ref, dir, &pptr, propname);
-    while (propadr) {
+	new = new_array_dictionary();
+	propadr = first_prop(ref, dir, &pptr, propname);
+	while (propadr) {
 		sprintf(buf, "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 		if (prop_read_perms(ProgUID, ref, buf, mlev)) {
 			prptr = get_property(ref, buf);
 			if (prptr) {
 				int goodflag = 1;
+
 #ifdef DISKBASE
 				propfetch(ref, prptr);
 #endif
-				switch(PropType(prptr)) {
-				  case PROP_STRTYP:
+				switch (PropType(prptr)) {
+				case PROP_STRTYP:
 					temp2.type = PROG_STRING;
 					temp2.data.string = alloc_prog_string(get_uncompress(PropDataStr(prptr)));
 					break;
-				  case PROP_LOKTYP:
+				case PROP_LOKTYP:
 					temp2.type = PROG_LOCK;
 					if (PropFlags(prptr) & PROP_ISUNLOADED) {
 						temp2.data.lock = TRUE_BOOLEXP;
@@ -878,19 +906,19 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 						temp2.data.lock = PropDataLok(prptr);
 					}
 					break;
-				  case PROP_REFTYP:
+				case PROP_REFTYP:
 					temp2.type = PROG_OBJECT;
 					temp2.data.number = PropDataRef(prptr);
 					break;
-				  case PROP_INTTYP:
+				case PROP_INTTYP:
 					temp2.type = PROG_INTEGER;
 					temp2.data.number = PropDataVal(prptr);
 					break;
-				  case PROP_FLTTYP:
+				case PROP_FLTTYP:
 					temp2.type = PROG_FLOAT;
 					temp2.data.fnumber = PropDataFVal(prptr);
 					break;
-				  default:
+				default:
 					goodflag = 0;
 					break;
 				}
@@ -908,49 +936,49 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 				}
 			}
 		}
-        propadr = next_prop(pptr, propadr, propname);
-    }
+		propadr = next_prop(pptr, propadr, propname);
+	}
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
 }
 
 
 void
 prim_array_get_proplist(PRIM_PROTOTYPE)
 {
-    stk_array* new;
-	char*      tmpname;
-    char*      pname;
-    const char* strval;
-    char       propname[BUFFER_LEN];
-    char       dir[BUFFER_LEN];
-    PropPtr    propadr, pptr;
-    PropPtr    prptr;
-	int        count = 1;
-	int        maxcount;
+	stk_array *new;
+	char *tmpname;
+	char *pname;
+	const char *strval;
+	char propname[BUFFER_LEN];
+	char dir[BUFFER_LEN];
+	PropPtr propadr, pptr;
+	PropPtr prptr;
+	int count = 1;
+	int maxcount;
 
 	/* dbref strPropDir -- array */
-    CHECKOP(2);
-    oper2 = POP();
-    oper1 = POP();
-    if (oper1->type != PROG_OBJECT)
+	CHECKOP(2);
+	oper2 = POP();
+	oper1 = POP();
+	if (oper1->type != PROG_OBJECT)
 		abort_interp("Dbref required. (1)");
-    if (!valid_object(oper1))
+	if (!valid_object(oper1))
 		abort_interp("Invalid dbref. (1)");
-    if (oper2->type != PROG_STRING)
+	if (oper2->type != PROG_STRING)
 		abort_interp("String required. (2)");
 
-    ref = oper1->data.objref;
+	ref = oper1->data.objref;
 	strcpy(dir, DoNullInd(oper2->data.string));
 	if (!*dir)
-	    strcpy(dir, "/");
+		strcpy(dir, "/");
 
 	sprintf(propname, "%s#", dir);
 	maxcount = get_property_value(ref, propname);
 	if (!maxcount) {
 		strval = get_property_class(ref, propname);
 		if (strval) {
-		    maxcount = atoi(strval);
+			maxcount = atoi(strval);
 		}
 		if (!maxcount) {
 			sprintf(propname, "%s%c#", dir, PROPDIR_DELIMITER);
@@ -967,7 +995,7 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 		maxcount = 511;
 	}
 
-    new = new_array_dictionary();
+	new = new_array_dictionary();
 	while (1) {
 		sprintf(propname, "%s#%c%d", dir, PROPDIR_DELIMITER, count);
 		prptr = get_property(ref, propname);
@@ -980,18 +1008,18 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 			}
 		}
 		if (!prptr || count > maxcount) {
-		    break;
+			break;
 		}
 		if (prop_read_perms(ProgUID, ref, propname, mlev)) {
 #ifdef DISKBASE
 			propfetch(ref, prptr);
 #endif
-			switch(PropType(prptr)) {
-			  case PROP_STRTYP:
+			switch (PropType(prptr)) {
+			case PROP_STRTYP:
 				temp2.type = PROG_STRING;
 				temp2.data.string = alloc_prog_string(get_uncompress(PropDataStr(prptr)));
 				break;
-			  case PROP_LOKTYP:
+			case PROP_LOKTYP:
 				temp2.type = PROG_LOCK;
 				if (PropFlags(prptr) & PROP_ISUNLOADED) {
 					temp2.data.lock = TRUE_BOOLEXP;
@@ -999,19 +1027,19 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 					temp2.data.lock = PropDataLok(prptr);
 				}
 				break;
-			  case PROP_REFTYP:
+			case PROP_REFTYP:
 				temp2.type = PROG_OBJECT;
 				temp2.data.number = PropDataRef(prptr);
 				break;
-			  case PROP_INTTYP:
+			case PROP_INTTYP:
 				temp2.type = PROG_INTEGER;
 				temp2.data.number = PropDataVal(prptr);
 				break;
-			  case PROP_FLTTYP:
+			case PROP_FLTTYP:
 				temp2.type = PROG_FLOAT;
 				temp2.data.fnumber = PropDataFVal(prptr);
 				break;
-			  default:
+			default:
 				temp2.type = PROG_INTEGER;
 				temp2.data.number = 0;
 				break;
@@ -1027,123 +1055,124 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 			break;
 		}
 		count++;
-    }
+	}
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
 }
 
 
 void
 prim_array_put_propvals(PRIM_PROTOTYPE)
 {
-    stk_array* arr;
-    char       propname[BUFFER_LEN];
-    char       dir[BUFFER_LEN];
-	PData      propdat;
+	stk_array *arr;
+	char propname[BUFFER_LEN];
+	char dir[BUFFER_LEN];
+	PData propdat;
 
 	/* dbref strPropDir array -- */
-    CHECKOP(3);
-    oper3 = POP();
-    oper2 = POP();
-    oper1 = POP();
-    if (oper1->type != PROG_OBJECT)
+	CHECKOP(3);
+	oper3 = POP();
+	oper2 = POP();
+	oper1 = POP();
+	if (oper1->type != PROG_OBJECT)
 		abort_interp("Dbref required. (1)");
-    if (!valid_object(oper1))
+	if (!valid_object(oper1))
 		abort_interp("Invalid dbref. (1)");
-    if (oper2->type != PROG_STRING)
+	if (oper2->type != PROG_STRING)
 		abort_interp("String required. (2)");
-    if (oper3->type != PROG_ARRAY)
+	if (oper3->type != PROG_ARRAY)
 		abort_interp("Array required. (3)");
 
-    ref = oper1->data.objref;
+	ref = oper1->data.objref;
 	strcpy(dir, DoNullInd(oper2->data.string));
 	arr = oper3->data.array;
 
-    if (array_first(arr, &temp1)) {
-        do {
-            oper4 = array_getitem(arr, &temp1);
+	if (array_first(arr, &temp1)) {
+		do {
+			oper4 = array_getitem(arr, &temp1);
 			switch (temp1.type) {
-				case PROG_STRING:
-					sprintf(propname, "%s%c%s", dir, PROPDIR_DELIMITER, DoNullInd(temp1.data.string));
-					break;
-				case PROG_INTEGER:
-					sprintf(propname, "%s%c%d", dir, PROPDIR_DELIMITER, temp1.data.number);
-					break;
-				case PROG_FLOAT:
-					sprintf(propname, "%s%c%g", dir, PROPDIR_DELIMITER, temp1.data.fnumber);
-					break;
-				default:
-				    *propname = '\0';
+			case PROG_STRING:
+				sprintf(propname, "%s%c%s", dir, PROPDIR_DELIMITER,
+						DoNullInd(temp1.data.string));
+				break;
+			case PROG_INTEGER:
+				sprintf(propname, "%s%c%d", dir, PROPDIR_DELIMITER, temp1.data.number);
+				break;
+			case PROG_FLOAT:
+				sprintf(propname, "%s%c%g", dir, PROPDIR_DELIMITER, temp1.data.fnumber);
+				break;
+			default:
+				*propname = '\0';
 			}
 
 			if (!prop_write_perms(ProgUID, ref, propname, mlev))
 				abort_interp("Permission denied while trying to set protected property.");
 
 			switch (oper4->type) {
-				case PROG_STRING:
-					propdat.flags = PROP_STRTYP;
-					propdat.data.str = oper4->data.string ? oper4->data.string->data : 0;
-					break;
-                case PROG_INTEGER:
-                    propdat.flags = PROP_INTTYP;
-                    propdat.data.val = oper4->data.number;
-                    break;
-                case PROG_FLOAT:
-                    propdat.flags = PROP_FLTTYP;
-                    propdat.data.fval = oper4->data.fnumber;
-                    break;
-                case PROG_OBJECT:
-                    propdat.flags = PROP_REFTYP;
-                    propdat.data.ref = oper4->data.objref;
-                    break;
-                case PROG_LOCK:
-                    propdat.flags = PROP_LOKTYP;
-                    propdat.data.lok = copy_bool(oper4->data.lock);
-                    break;
-				default:
-				    *propname = '\0';
-            }
-            if (*propname) {
-                set_property(ref, propname, &propdat);
-            }
-        } while (array_next(arr, &temp1));
-    }
+			case PROG_STRING:
+				propdat.flags = PROP_STRTYP;
+				propdat.data.str = oper4->data.string ? oper4->data.string->data : 0;
+				break;
+			case PROG_INTEGER:
+				propdat.flags = PROP_INTTYP;
+				propdat.data.val = oper4->data.number;
+				break;
+			case PROG_FLOAT:
+				propdat.flags = PROP_FLTTYP;
+				propdat.data.fval = oper4->data.fnumber;
+				break;
+			case PROG_OBJECT:
+				propdat.flags = PROP_REFTYP;
+				propdat.data.ref = oper4->data.objref;
+				break;
+			case PROG_LOCK:
+				propdat.flags = PROP_LOKTYP;
+				propdat.data.lok = copy_bool(oper4->data.lock);
+				break;
+			default:
+				*propname = '\0';
+			}
+			if (*propname) {
+				set_property(ref, propname, &propdat);
+			}
+		} while (array_next(arr, &temp1));
+	}
 
-    CLEAR(oper1);
-    CLEAR(oper2);
-    CLEAR(oper3);
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
 }
 
 
 void
 prim_array_put_proplist(PRIM_PROTOTYPE)
 {
-    stk_array* arr;
-    char       propname[BUFFER_LEN];
-    char       dir[BUFFER_LEN];
-	PData      propdat;
-	const char* fmtin;
-	char*      fmtout;
+	stk_array *arr;
+	char propname[BUFFER_LEN];
+	char dir[BUFFER_LEN];
+	PData propdat;
+	const char *fmtin;
+	char *fmtout;
 	int dirlen;
 	int count;
 
 	/* dbref strPropDir array -- */
-    CHECKOP(3);
-    oper3 = POP();
-    oper2 = POP();
-    oper1 = POP();
-    if (oper1->type != PROG_OBJECT)
+	CHECKOP(3);
+	oper3 = POP();
+	oper2 = POP();
+	oper1 = POP();
+	if (oper1->type != PROG_OBJECT)
 		abort_interp("Dbref required. (1)");
-    if (!valid_object(oper1))
+	if (!valid_object(oper1))
 		abort_interp("Invalid dbref. (1)");
-    if (oper2->type != PROG_STRING)
+	if (oper2->type != PROG_STRING)
 		abort_interp("String required. (2)");
-    if (oper3->type != PROG_ARRAY)
+	if (oper3->type != PROG_ARRAY)
 		abort_interp("Array required. (3)");
-    if (oper3->data.array && oper3->data.array->type != ARRAY_PACKED)
-        abort_interp("Argument must be a list type array. (3)");
+	if (oper3->data.array && oper3->data.array->type != ARRAY_PACKED)
+		abort_interp("Argument must be a list type array. (3)");
 
-    ref = oper1->data.objref;
+	ref = oper1->data.objref;
 	strcpy(dir, DoNullInd(oper2->data.string));
 	arr = oper3->data.array;
 
@@ -1176,9 +1205,9 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 	}
 	set_property(ref, propname, &propdat);
 
-    if (array_first(arr, &temp1)) {
-        do {
-            oper4 = array_getitem(arr, &temp1);
+	if (array_first(arr, &temp1)) {
+		do {
+			oper4 = array_getitem(arr, &temp1);
 
 			fmtout = propname;
 			fmtin = tp_proplist_entry_fmt;
@@ -1204,33 +1233,33 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 				abort_interp("Permission denied while trying to set protected property.");
 
 			switch (oper4->type) {
-				case PROG_STRING:
-					propdat.flags = PROP_STRTYP;
-					propdat.data.str = oper4->data.string ? oper4->data.string->data : 0;
-					break;
-                case PROG_INTEGER:
-                    propdat.flags = PROP_INTTYP;
-                    propdat.data.val = oper4->data.number;
-                    break;
-                case PROG_FLOAT:
-                    propdat.flags = PROP_FLTTYP;
-                    propdat.data.fval = oper4->data.fnumber;
-                    break;
-                case PROG_OBJECT:
-                    propdat.flags = PROP_REFTYP;
-                    propdat.data.ref = oper4->data.objref;
-                    break;
-                case PROG_LOCK:
-                    propdat.flags = PROP_LOKTYP;
-                    propdat.data.lok = copy_bool(oper4->data.lock);
-                    break;
-				default:
-                    propdat.flags = PROP_INTTYP;
-                    propdat.data.val = 0;
-            }
+			case PROG_STRING:
+				propdat.flags = PROP_STRTYP;
+				propdat.data.str = oper4->data.string ? oper4->data.string->data : 0;
+				break;
+			case PROG_INTEGER:
+				propdat.flags = PROP_INTTYP;
+				propdat.data.val = oper4->data.number;
+				break;
+			case PROG_FLOAT:
+				propdat.flags = PROP_FLTTYP;
+				propdat.data.fval = oper4->data.fnumber;
+				break;
+			case PROG_OBJECT:
+				propdat.flags = PROP_REFTYP;
+				propdat.data.ref = oper4->data.objref;
+				break;
+			case PROG_LOCK:
+				propdat.flags = PROP_LOKTYP;
+				propdat.data.lok = copy_bool(oper4->data.lock);
+				break;
+			default:
+				propdat.flags = PROP_INTTYP;
+				propdat.data.val = 0;
+			}
 			set_property(ref, propname, &propdat);
-        } while (array_next(arr, &temp1));
-    }
+		} while (array_next(arr, &temp1));
+	}
 
 	count = temp1.data.number;
 	for (;;) {
@@ -1261,52 +1290,55 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 		}
 	}
 
-    CLEAR(oper1);
-    CLEAR(oper2);
-    CLEAR(oper3);
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
 }
 
 
 void
 prim_array_get_reflist(PRIM_PROTOTYPE)
 {
-    stk_array* new;
-    const char* rawstr;
-    char       dir[BUFFER_LEN];
+	stk_array *new;
+	const char *rawstr;
+	char dir[BUFFER_LEN];
 	int count = 0;
 	int val = 0;
 
 	/* dbref strPropDir -- array */
-    CHECKOP(2);
-    oper2 = POP();
-    oper1 = POP();
-    if (oper1->type != PROG_OBJECT)
+	CHECKOP(2);
+	oper2 = POP();
+	oper1 = POP();
+	if (oper1->type != PROG_OBJECT)
 		abort_interp("Dbref required. (1)");
-    if (!valid_object(oper1))
+	if (!valid_object(oper1))
 		abort_interp("Invalid dbref. (1)");
-    if (oper2->type != PROG_STRING)
+	if (oper2->type != PROG_STRING)
 		abort_interp("String required. (2)");
-    if (!oper2->data.string)
+	if (!oper2->data.string)
 		abort_interp("Non-null string required. (2)");
 
-    ref = oper1->data.objref;
+	ref = oper1->data.objref;
 	strcpy(dir, oper2->data.string->data);
 
 	if (!prop_read_perms(ProgUID, ref, dir, mlev))
 		abort_interp("Permission denied.");
 
-    new = new_array_packed(0);
+	new = new_array_packed(0);
 	rawstr = get_property_class(ref, dir);
 
-	while (isspace(*rawstr)) rawstr++;
+	while (isspace(*rawstr))
+		rawstr++;
 	while (*rawstr) {
 		if (*rawstr == '#')
-		    rawstr++;
+			rawstr++;
 		if (!isdigit(*rawstr))
 			break;
 		result = atoi(rawstr);
-		while (*rawstr && !isspace(*rawstr)) rawstr++;
-		while (isspace(*rawstr)) rawstr++;
+		while (*rawstr && !isspace(*rawstr))
+			rawstr++;
+		while (isspace(*rawstr))
+			rawstr++;
 
 		temp1.type = PROG_INTEGER;
 		temp1.data.number = count;
@@ -1319,49 +1351,49 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 
 		CLEAR(&temp1);
 		CLEAR(&temp2);
-    }
+	}
 
-    PushArrayRaw(new);
+	PushArrayRaw(new);
 }
 
 
 void
 prim_array_put_reflist(PRIM_PROTOTYPE)
 {
-    stk_array* arr;
-    char       buf2[BUFFER_LEN];
-    char       dir[BUFFER_LEN];
-	char*      out;
-	PData      propdat;
+	stk_array *arr;
+	char buf2[BUFFER_LEN];
+	char dir[BUFFER_LEN];
+	char *out;
+	PData propdat;
 	int len;
 
 	/* dbref strPropDir array -- */
-    CHECKOP(3);
-    oper3 = POP();
-    oper2 = POP();
-    oper1 = POP();
-    if (oper1->type != PROG_OBJECT)
+	CHECKOP(3);
+	oper3 = POP();
+	oper2 = POP();
+	oper1 = POP();
+	if (oper1->type != PROG_OBJECT)
 		abort_interp("Dbref required. (1)");
-    if (!valid_object(oper1))
+	if (!valid_object(oper1))
 		abort_interp("Invalid dbref. (1)");
-    if (oper2->type != PROG_STRING)
+	if (oper2->type != PROG_STRING)
 		abort_interp("String required. (2)");
-    if (oper3->type != PROG_ARRAY)
-        abort_interp("Argument must be a list array of dbrefs. (3)");
-    if (oper3->data.array && oper3->data.array->type != ARRAY_PACKED)
-        abort_interp("Argument must be a list array of dbrefs. (3)");
-    if (!array_is_homogenous(oper3->data.array, PROG_OBJECT))
-        abort_interp("Argument must be a list array of dbrefs. (3)");
+	if (oper3->type != PROG_ARRAY)
+		abort_interp("Argument must be a list array of dbrefs. (3)");
+	if (oper3->data.array && oper3->data.array->type != ARRAY_PACKED)
+		abort_interp("Argument must be a list array of dbrefs. (3)");
+	if (!array_is_homogenous(oper3->data.array, PROG_OBJECT))
+		abort_interp("Argument must be a list array of dbrefs. (3)");
 
-    ref = oper1->data.objref;
+	ref = oper1->data.objref;
 	strcpy(dir, DoNullInd(oper2->data.string));
 	arr = oper3->data.array;
 	buf[0] = '\0';
 
 	out = buf;
-    if (array_first(arr, &temp1)) {
-        do {
-            oper4 = array_getitem(arr, &temp1);
+	if (array_first(arr, &temp1)) {
+		do {
+			oper4 = array_getitem(arr, &temp1);
 			len = sprintf(buf2, "#%d", oper4->data.objref);
 
 			if (out + len - buf >= BUFFER_LEN - 3)
@@ -1371,8 +1403,8 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 				*out++ = ' ';
 			strcat(out, buf2);
 			out += len;
-        } while (array_next(arr, &temp1));
-    }
+		} while (array_next(arr, &temp1));
+	}
 
 	if (!prop_write_perms(ProgUID, ref, dir, mlev))
 		abort_interp("Permission denied while trying to set protected property.");
@@ -1381,10 +1413,73 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 	propdat.data.str = buf;
 	set_property(ref, dir, &propdat);
 
-    CLEAR(oper1);
-    CLEAR(oper2);
-    CLEAR(oper3);
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
 }
 
 
 
+void
+prim_array_findval(PRIM_PROTOTYPE)
+{
+	struct inst *in;
+	struct inst temp;
+	stk_array *arr;
+	stk_array *new;
+	int found = 0;
+
+	CHECKOP(2);
+	oper2 = POP();				/* ???  index */
+	oper1 = POP();				/* arr  Array */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
+
+	new = new_array_packed(0);
+	arr = oper1->data.array;
+	if (array_first(arr, &temp1)) {
+		do {
+			in = array_getitem(arr, &temp1);
+			if (!array_idxcmp(in, oper2)) {
+				array_appenditem(&new, &temp1);
+			}
+		} while (!found && array_next(arr, &temp1));
+	}
+
+	CLEAR(oper2);
+	CLEAR(oper1);
+
+	PushArrayRaw(new);
+}
+
+void
+prim_array_excludeval(PRIM_PROTOTYPE)
+{
+	struct inst *in;
+	struct inst temp;
+	stk_array *arr;
+	stk_array *new;
+	int found = 0;
+
+	CHECKOP(2);
+	oper2 = POP();				/* ???  index */
+	oper1 = POP();				/* arr  Array */
+	if (oper1->type != PROG_ARRAY)
+		abort_interp("Argument not an array. (1)");
+
+	new = new_array_packed(0);
+	arr = oper1->data.array;
+	if (array_first(arr, &temp1)) {
+		do {
+			in = array_getitem(arr, &temp1);
+			if (array_idxcmp(in, oper2)) {
+				array_appenditem(&new, &temp1);
+			}
+		} while (!found && array_next(arr, &temp1));
+	}
+
+	CLEAR(oper2);
+	CLEAR(oper1);
+
+	PushArrayRaw(new);
+}

@@ -1,8 +1,16 @@
 /* $Header$
  * 
  * $Log: externs.h,v $
- * Revision 1.1  1999/12/12 07:28:12  revar
- * Initial revision
+ * Revision 1.2  2000/03/29 12:21:01  revar
+ * Reformatted all code into consistent format.
+ * 	Tabs are 4 spaces.
+ * 	Indents are one tab.
+ * 	Braces are generally K&R style.
+ * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+ * Rewrote restart script as a bourne shell script.
+ *
+ * Revision 1.1.1.1  1999/12/12 07:28:12  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:28:12  foxen
  * Initial FB6 CVS checkin.
@@ -76,38 +84,40 @@ extern void next_muckevent();
 extern void handle_read_event(int descr, dbref player, const char *command);
 extern int add_muf_read_event(int descr, dbref player, dbref prog, struct frame *fr);
 extern add_muf_queue_event(int descr, dbref player, dbref loc, dbref trig, dbref prog,
-                    const char *argstr, const char *cmdstr, int listen_p);
+						   const char *argstr, const char *cmdstr, int listen_p);
 extern int add_event(int event_type, int subtyp, int dtime, int descr, dbref player,
-		    dbref loc, dbref trig, dbref program, struct frame * fr,
-		    const char *strdata, const char *strcmd, const char *str3);
+					 dbref loc, dbref trig, dbref program, struct frame *fr,
+					 const char *strdata, const char *strcmd, const char *str3);
 extern void next_timequeue_event();
-extern int  in_timequeue(int pid);
+extern int in_timequeue(int pid);
 extern long next_event_time();
 extern void list_events(dbref program);
-extern int  dequeue_prog(dbref program, int sleeponly);
-extern int  dequeue_process(int procnum);
-extern int  control_process(dbref player, int procnum);
+extern int dequeue_prog(dbref program, int sleeponly);
+extern int dequeue_process(int procnum);
+extern int control_process(dbref player, int procnum);
 extern void do_dequeue(int descr, dbref player, const char *arg1);
 extern void propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
-	    dbref xclude, const char *propname, const char *toparg,
-	    int mlev, int mt);
+					  dbref xclude, const char *propname, const char *toparg,
+
+					  int mlev, int mt);
 extern void envpropqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
-	    dbref xclude, const char *propname, const char *toparg,
-	    int mlev, int mt);
+						 dbref xclude, const char *propname, const char *toparg,
+
+						 int mlev, int mt);
 
 /* from db.c */
-extern int  number(const char *s);
-extern int  ifloat(const char *s);
-extern void putproperties(FILE *f, int obj);
-extern void getproperties(FILE *f, int obj, const char *pdir);
+extern int number(const char *s);
+extern int ifloat(const char *s);
+extern void putproperties(FILE * f, int obj);
+extern void getproperties(FILE * f, int obj, const char *pdir);
 extern void free_line(struct line *l);
 extern void db_free_object(dbref i);
 extern void db_clear_object(dbref i);
-extern void macrodump(struct macrotable *node, FILE *f);
+extern void macrodump(struct macrotable *node, FILE * f);
 extern void macroload();
-extern void free_prog_text(struct line * l);
+extern void free_prog_text(struct line *l);
 extern struct line *read_program(dbref i);
-extern void write_program(struct line * first, dbref i);
+extern void write_program(struct line *first, dbref i);
 
 /* From create.c */
 extern void do_open(int descr, dbref player, const char *direction, const char *linkto);
@@ -120,7 +130,7 @@ extern int link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref
 
 /* from edit.c */
 extern struct macrotable
-    *new_macro(const char *name, const char *definition, dbref player);
+*new_macro(const char *name, const char *definition, dbref player);
 extern char *macro_expansion(struct macrotable *node, const char *match);
 extern void match_and_list(int descr, dbref player, const char *name, char *linespec);
 extern void do_list(dbref player, dbref program, int oarg[], int argc);
@@ -130,11 +140,10 @@ extern void do_dump(dbref player, const char *newfile);
 extern void do_shutdown(dbref player);
 
 /* From hashtab.c */
-extern hash_data *find_hash(const char *s, hash_tab *table, unsigned size);
-extern hash_entry *add_hash(const char *name, hash_data data, hash_tab *table,
-                            unsigned size);
-extern int free_hash(const char *name, hash_tab *table, unsigned size);
-extern void kill_hash(hash_tab *table, unsigned size, int freeptrs);
+extern hash_data *find_hash(const char *s, hash_tab * table, unsigned size);
+extern hash_entry *add_hash(const char *name, hash_data data, hash_tab * table, unsigned size);
+extern int free_hash(const char *name, hash_tab * table, unsigned size);
+extern void kill_hash(hash_tab * table, unsigned size, int freeptrs);
 
 /* From help.c */
 extern void spit_file(dbref player, const char *filename);
@@ -147,6 +156,7 @@ extern void do_info(dbref player, const char *topic, const char *seg);
 
 /* From look.c */
 extern void look_room(int descr, dbref player, dbref room, int verbose);
+
 /* extern void look_room_simple(dbref player, dbref room); */
 extern void do_look_around(int descr, dbref player);
 extern void do_look_at(int descr, dbref player, const char *name, const char *detail);
@@ -158,7 +168,8 @@ extern void do_trace(int descr, dbref player, const char *name, int depth);
 extern void do_entrances(int descr, dbref player, const char *name, const char *flags);
 extern void do_contents(int descr, dbref player, const char *name, const char *flags);
 extern void exec_or_notify(int descr, dbref player, dbref thing,
-                           const char *message, const char *whatcalled);
+
+						   const char *message, const char *whatcalled);
 
 /* From move.c */
 extern void moveto(dbref what, dbref where);
@@ -219,7 +230,9 @@ extern void do_wall(dbref player, const char *message);
 extern void do_gripe(dbref player, const char *message);
 extern void do_say(dbref player, const char *message);
 extern void do_page(dbref player, const char *arg1, const char *arg2);
-extern void notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg, int isprivate);
+extern void notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
+
+							 int isprivate);
 extern void notify_except(dbref first, dbref exception, const char *msg, dbref who);
 
 /* From stringutil.c */
@@ -252,7 +265,7 @@ extern void do_usage(dbref player);
 extern int eval_boolexp(int descr, dbref player, struct boolexp *b, dbref thing);
 extern struct boolexp *parse_boolexp(int descr, dbref player, const char *string, int dbloadp);
 extern struct boolexp *copy_bool(struct boolexp *old);
-extern struct boolexp *getboolexp(FILE *f);
+extern struct boolexp *getboolexp(FILE * f);
 extern struct boolexp *negate_boolexp(struct boolexp *b);
 extern void free_boolexp(struct boolexp *b);
 
@@ -262,12 +275,12 @@ extern const char *unparse_boolexp(dbref player, struct boolexp *b, int fullname
 
 /* From compress.c */
 #ifdef COMPRESS
-extern void save_compress_words_to_file(FILE *f);
-extern void init_compress_from_file(FILE *dicto);
+extern void save_compress_words_to_file(FILE * f);
+extern void init_compress_from_file(FILE * dicto);
 extern const char *compress(const char *);
 extern const char *uncompress(const char *);
 extern void init_compress(void);
-#endif /* COMPRESS */
+#endif							/* COMPRESS */
 
 /* From edit.c */
 extern void interactive(int descr, dbref player, const char *command);
@@ -282,10 +295,9 @@ extern void clear_primitives(void);
 extern void init_primitives(void);
 
 /* From interp.c */
-extern struct inst *interp_loop(dbref player, dbref program,
-				struct frame *fr, int rettyp);
+extern struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);
 extern struct frame *interp(int descr, dbref player, dbref location, dbref program,
-			    dbref source, int nosleeping, int whichperms);
+							dbref source, int nosleeping, int whichperms);
 
 /* declared in log.c */
 extern void log2file(char *myfilename, char *format, ...);
@@ -296,7 +308,7 @@ extern void log_conc(char *format, ...);
 extern void log_status(char *format, ...);
 extern void log_other(char *format, ...);
 extern void notify_fmt(dbref player, char *format, ...);
-extern void log_program_text(struct line * first, dbref player, dbref i);
+extern void log_program_text(struct line *first, dbref player, dbref i);
 
 /* From timestamp.c */
 extern void ts_newobject(struct object *thing);
@@ -305,9 +317,9 @@ extern void ts_lastuseobject(dbref thing);
 extern void ts_modifyobject(dbref thing);
 
 /* From smatch.c */
-extern int  equalstr(char *s, char *t);
+extern int equalstr(char *s, char *t);
 
-extern void CrT_summarize( dbref player );
+extern void CrT_summarize(dbref player);
 
 extern long get_tz_offset();
 
@@ -318,7 +330,6 @@ extern void do_credits(dbref player);
 extern void disassemble(dbref player, dbref program);
 
 /* from random.c */
-void *init_seed( char *seed );
-void delete_seed( void *buffer );
+void *init_seed(char *seed);
+void delete_seed(void *buffer);
 unsigned long rnd(void *buffer);
-

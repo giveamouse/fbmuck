@@ -1,7 +1,15 @@
 /* $Header$
  * $Log: copyright.h,v $
- * Revision 1.1  1999/12/12 07:28:12  revar
- * Initial revision
+ * Revision 1.2  2000/03/29 12:21:01  revar
+ * Reformatted all code into consistent format.
+ * 	Tabs are 4 spaces.
+ * 	Indents are one tab.
+ * 	Braces are generally K&R style.
+ * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+ * Rewrote restart script as a bourne shell script.
+ *
+ * Revision 1.1.1.1  1999/12/12 07:28:12  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:28:12  foxen
  * Initial FB6 CVS checkin.
@@ -53,4 +61,3 @@ University, nor of any adaptation thereof in any advertising,
 promotional, or sales literature without prior written consent from
 the authors, Carnegie-Mellon University and Bell Communications Research
 in each case. */
-

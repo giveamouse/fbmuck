@@ -10,7 +10,7 @@
 
 #ifdef SOLARIS
 #  ifndef _POSIX_SOURCE
-#    define _POSIX_SOURCE  		/* Solaris needs this */
+#    define _POSIX_SOURCE		/* Solaris needs this */
 #  endif
 #endif
 
@@ -33,13 +33,13 @@
 /*
  * Function prototypes
  */
-void    set_signals(void);
+void set_signals(void);
 RETSIGTYPE bailout(int);
 RETSIGTYPE sig_dump_status(int i);
 RETSIGTYPE sig_reap_resolver(int i);
 
 #ifdef _POSIX_VERSION
-void our_signal(int signo, void (*sighandler)());
+void our_signal(int signo, void (*sighandler) ());
 #else
 # define our_signal(s,f) signal((s),(f))
 #endif
@@ -53,23 +53,25 @@ void our_signal(int signo, void (*sighandler)());
  * Calls sigaction() to set a signal, if we are posix.
  */
 #ifdef _POSIX_VERSION
-void our_signal(int signo, void (*sighandler)())
+void
+our_signal(int signo, void (*sighandler) ())
 {
-    struct sigaction	act, oact;
-    
-    act.sa_handler = sighandler;
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = 0;
+	struct sigaction act, oact;
 
-    /* Restart long system calls if a signal is caught. */
+	act.sa_handler = sighandler;
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = 0;
+
+	/* Restart long system calls if a signal is caught. */
 #ifdef SA_RESTART
-    act.sa_flags |= SA_RESTART;
+	act.sa_flags |= SA_RESTART;
 #endif
 
-    /* Make it so */
-    sigaction(signo, &act, &oact);
+	/* Make it so */
+	sigaction(signo, &act, &oact);
 }
-#endif /* _POSIX_VERSION */
+
+#endif							/* _POSIX_VERSION */
 
 /*
  * set_signals()
@@ -85,59 +87,61 @@ void our_signal(int signo, void (*sighandler)())
 #define SET_BAIL (bail ? SIG_DFL : bailout)
 #define SET_IGN  (bail ? SIG_DFL : SIG_IGN)
 
-static void set_sigs_intern(int bail)
+static void
+set_sigs_intern(int bail)
 {
-    /* we don't care about SIGPIPE, we notice it in select() and write() */
-    our_signal(SIGPIPE, SET_IGN);
+	/* we don't care about SIGPIPE, we notice it in select() and write() */
+	our_signal(SIGPIPE, SET_IGN);
 
-    /* didn't manage to lose that control tty, did we? Ignore it anyway. */
-    our_signal(SIGHUP, SET_IGN);
+	/* didn't manage to lose that control tty, did we? Ignore it anyway. */
+	our_signal(SIGHUP, SET_IGN);
 
-    /* resolver's exited. Better clean up the mess our child leaves */
-    our_signal(SIGCHLD, bail ? SIG_DFL : sig_reap_resolver);
+	/* resolver's exited. Better clean up the mess our child leaves */
+	our_signal(SIGCHLD, bail ? SIG_DFL : sig_reap_resolver);
 
-    /* standard termination signals */
-    our_signal(SIGINT, SET_BAIL);
-    our_signal(SIGTERM, SET_BAIL);
+	/* standard termination signals */
+	our_signal(SIGINT, SET_BAIL);
+	our_signal(SIGTERM, SET_BAIL);
 
-    /* catch these because we might as well */
+	/* catch these because we might as well */
 /*  our_signal(SIGQUIT, SET_BAIL);  */
 #ifdef SIGTRAP
-    our_signal(SIGTRAP, SET_BAIL);
+	our_signal(SIGTRAP, SET_BAIL);
 #endif
 #ifdef SIGIOT
-    our_signal(SIGIOT, SET_BAIL);
+	our_signal(SIGIOT, SET_BAIL);
 #endif
 #ifdef SIGEMT
-    our_signal(SIGEMT, SET_BAIL);
+	our_signal(SIGEMT, SET_BAIL);
 #endif
 #ifdef SIGBUS
-    our_signal(SIGBUS, SET_BAIL);
+	our_signal(SIGBUS, SET_BAIL);
 #endif
 #ifdef SIGSYS
-    our_signal(SIGSYS, SET_BAIL);
+	our_signal(SIGSYS, SET_BAIL);
 #endif
-    our_signal(SIGFPE, SET_BAIL);
-    our_signal(SIGSEGV, SET_BAIL);
-    our_signal(SIGTERM, SET_BAIL);
+	our_signal(SIGFPE, SET_BAIL);
+	our_signal(SIGSEGV, SET_BAIL);
+	our_signal(SIGTERM, SET_BAIL);
 #ifdef SIGXCPU
-    our_signal(SIGXCPU, SET_BAIL);
+	our_signal(SIGXCPU, SET_BAIL);
 #endif
 #ifdef SIGXFSZ
-    our_signal(SIGXFSZ, SET_BAIL);
+	our_signal(SIGXFSZ, SET_BAIL);
 #endif
 #ifdef SIGVTALRM
-    our_signal(SIGVTALRM, SET_BAIL);
+	our_signal(SIGVTALRM, SET_BAIL);
 #endif
-    our_signal(SIGUSR2, SET_BAIL);
+	our_signal(SIGUSR2, SET_BAIL);
 
-    /* status dumper (predates "WHO" command) */
-    our_signal(SIGUSR1, bail ? SIG_DFL : sig_dump_status);
+	/* status dumper (predates "WHO" command) */
+	our_signal(SIGUSR1, bail ? SIG_DFL : sig_dump_status);
 }
 
-void set_signals(void)
+void
+set_signals(void)
 {
-    set_sigs_intern(FALSE);
+	set_sigs_intern(FALSE);
 }
 
 /*
@@ -149,19 +153,19 @@ void set_signals(void)
  */
 RETSIGTYPE bailout(int sig)
 {
-    char    message[1024];
-    int	    i;
+	char message[1024];
+	int i;
 
-    /* turn off signals */
-    set_sigs_intern(TRUE);
-    
-    sprintf(message, "BAILOUT: caught signal %d", sig);
+	/* turn off signals */
+	set_sigs_intern(TRUE);
 
-    panic(message);
-    _exit(7);
+	sprintf(message, "BAILOUT: caught signal %d", sig);
+
+	panic(message);
+	_exit(7);
 
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
-    return 0;
+	return 0;
 #endif
 }
 
@@ -170,9 +174,9 @@ RETSIGTYPE bailout(int sig)
  */
 RETSIGTYPE sig_dump_status(int i)
 {
-    dump_status();
+	dump_status();
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
-    return 0;
+	return 0;
 #endif
 }
 
@@ -182,10 +186,10 @@ RETSIGTYPE sig_dump_status(int i)
 RETSIGTYPE sig_reap_resolver(int i)
 {
 #ifdef SPAWN_HOST_RESOLVER
-    kill_resolver();
+	kill_resolver();
 #endif
 
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
-    return 0;
+	return 0;
 #endif
 }

@@ -55,7 +55,7 @@
  * TinyMUD Classic ran on that port.  It was the office number of James
  * Aspnes, who wrote TinyMUD from which TinyMUCK eventually was derived.
  */
-#define TINYPORT 4201           /* Port that players connect to */
+#define TINYPORT 4201			/* Port that players connect to */
 
 /*
  * Some systems can hang for up to 30 seconds while trying to resolve
@@ -115,44 +115,44 @@
  
    Where the system looks for its datafiles.
  ************************************************************************/
-#define WELC_FILE "data/welcome.txt" /* For the opening screen      */
-#define MOTD_FILE "data/motd.txt"    /* For the message of the day  */
+#define WELC_FILE "data/welcome.txt"	/* For the opening screen      */
+#define MOTD_FILE "data/motd.txt"	/* For the message of the day  */
 
-#define HELP_FILE "data/help.txt"    /* For the 'help' command      */
-#define HELP_DIR  "data/help"        /* For 'help' subtopic files   */
-#define NEWS_FILE "data/news.txt"    /* For the 'news' command      */
-#define NEWS_DIR  "data/news"        /* For 'news' subtopic files   */
-#define MAN_FILE  "data/man.txt"     /* For the 'man' command       */
-#define MAN_DIR   "data/man"         /* For 'man' subtopic files    */
-#define MPI_FILE  "data/mpihelp.txt" /* For the 'mpi' command       */
-#define MPI_DIR   "data/mpihelp"     /* For 'mpi' subtopic files    */
+#define HELP_FILE "data/help.txt"	/* For the 'help' command      */
+#define HELP_DIR  "data/help"	/* For 'help' subtopic files   */
+#define NEWS_FILE "data/news.txt"	/* For the 'news' command      */
+#define NEWS_DIR  "data/news"	/* For 'news' subtopic files   */
+#define MAN_FILE  "data/man.txt"	/* For the 'man' command       */
+#define MAN_DIR   "data/man"	/* For 'man' subtopic files    */
+#define MPI_FILE  "data/mpihelp.txt"	/* For the 'mpi' command       */
+#define MPI_DIR   "data/mpihelp"	/* For 'mpi' subtopic files    */
 #define INFO_DIR  "data/info/"
-#define EDITOR_HELP_FILE "data/edit-help.txt" /* editor help file   */
+#define EDITOR_HELP_FILE "data/edit-help.txt"	/* editor help file   */
 
-#define DELTAFILE_NAME "data/deltas-file"  /* The file for deltas */
-#define PARMFILE_NAME "data/parmfile.cfg"  /* The file for config parms */
-#define WORDLIST_FILE "data/wordlist.txt"  /* File for compression dict. */
+#define DELTAFILE_NAME "data/deltas-file"	/* The file for deltas */
+#define PARMFILE_NAME "data/parmfile.cfg"	/* The file for config parms */
+#define WORDLIST_FILE "data/wordlist.txt"	/* File for compression dict. */
 
-#define LOG_GRIPE   "logs/gripes"       /* Gripes Log */
-#define LOG_STATUS  "logs/status"       /* System errors and stats */
-#define LOG_CONC    "logs/concentrator" /* Concentrator errors and stats */
-#define LOG_MUF     "logs/muf-errors"   /* Muf compiler errors and warnings. */
-#define COMMAND_LOG "logs/commands"     /* Player commands */
-#define PROGRAM_LOG "logs/programs"     /* text of changed programs */
+#define LOG_GRIPE   "logs/gripes"	/* Gripes Log */
+#define LOG_STATUS  "logs/status"	/* System errors and stats */
+#define LOG_CONC    "logs/concentrator"	/* Concentrator errors and stats */
+#define LOG_MUF     "logs/muf-errors"	/* Muf compiler errors and warnings. */
+#define COMMAND_LOG "logs/commands"	/* Player commands */
+#define PROGRAM_LOG "logs/programs"	/* text of changed programs */
 
 #define MACRO_FILE  "muf/macros"
-#define PID_FILE    "netmuck.pid"       /* Write the server pid to ... */
+#define PID_FILE    "netmuck.pid"	/* Write the server pid to ... */
 
-#define RESOLVER_PID_FILE "hostfind.pid"   /* Write the resolver pid to ... */
+#define RESOLVER_PID_FILE "hostfind.pid"	/* Write the resolver pid to ... */
 
 #ifdef LOCKOUT
 # define LOCKOUT_FILE "data/lockout.txt"
-#endif /* LOCKOUT */
+#endif							/* LOCKOUT */
 
 #ifdef DETACH
-# define LOG_FILE "logs/netmuck"           /* Log stdout to ... */      
-# define LOG_ERR_FILE "logs/netmuck.err"   /* Log stderr to ... */      
-#endif /* DETACH */
+# define LOG_FILE "logs/netmuck"	/* Log stdout to ... */
+# define LOG_ERR_FILE "logs/netmuck.err"	/* Log stderr to ... */
+#endif							/* DETACH */
 
 /************************************************************************
   System Dependency Defines. 
@@ -204,7 +204,7 @@
 #undef LOG_PROPS
 #undef LOG_DISKBASE
 #undef DEBUGDBDIRTY
-#define FLUSHCHANGED /* outdated, needs to be removed from the source. */
+#define FLUSHCHANGED			/* outdated, needs to be removed from the source. */
 
 /*
  * Include all the good standard headers here.
@@ -230,14 +230,14 @@
 /* An ANSI string.h and pre-ANSI memory.h might conflict.  */
 # if !defined(STDC_HEADERS) && defined(HAVE_MEMORY_H)
 #  include <memory.h>
-# endif /* not STDC_HEADERS and HAVE_MEMORY_H */
+# endif							/* not STDC_HEADERS and HAVE_MEMORY_H */
 /* Map BSD funcs to ANSI ones. */
 # define index		strchr
 # define rindex		strrchr
 # define bcopy(s, d, n) memcpy ((d), (s), (n))
 # define bcmp(s1, s2, n) memcmp ((s1), (s2), (n))
 # define bzero(s, n) memset ((s), 0, (n))
-#else /* not STDC_HEADERS and not HAVE_STRING_H */
+#else							/* not STDC_HEADERS and not HAVE_STRING_H */
 # include <strings.h>
 /* Map ANSI funcs to BSD ones. */
 # define strchr		index
@@ -245,7 +245,7 @@
 # define memcpy(d, s, n) bcopy((s), (d), (n))
 # define memcmp(s1, s2, n) bcmp((s1), (s2), (n))
 /* no real way to map memset to bzero, unfortunatly. */
-#endif /* not STDC_HEADERS and not HAVE_STRING_H */
+#endif							/* not STDC_HEADERS and not HAVE_STRING_H */
 
 #ifdef HAVE_RANDOM
 # define SRANDOM(seed)	srandom((seed))
@@ -325,7 +325,7 @@
 # endif
 #endif
 
-#if defined(SVR3) 
+#if defined(SVR3)
 # ifndef SYS_TYPE
 #  define SYS_TYPE "SVR3"
 # endif
@@ -343,6 +343,5 @@
 
 /******************************************************************/
 /* Final line of defense for self configuration, systems we know  */
-/* need special treatment.                                        */ 
+/* need special treatment.                                        */
 /******************************************************************/
-

@@ -60,6 +60,7 @@ Array Manipulation:
   array_make_dict array_make
   array_explode   array_keys      array_vals         array_count
   array_notify    array_nunion    array_nintersect   array_ndiff
+  array_union     array_intersect array_diff
   array_first     array_last      array_next         array_getitem
   array_delitem   array_setitem   array_insertitem   array_getrange
   array_delrange  array_setrange  array_insertrange
@@ -251,34 +252,63 @@ array_make_dict ( {@ ?} -- a )
 Creates a dictionary type array from a stackrange of index/value
 pairs.
 ~
+ARRAY_DIFF|
+array_diff ( a1 a2 -- a )
+Return an array containing the difference of the two given arrays.
+ie: This returns all values of a2 that weren't found in a1.  Duplicate
+values will appear only once in the returned list.  Keys will be discarded.
+Ordering is not preserved.
+~
 ARRAY_NDIFF|
 array_ndiff ( {a} -- a )
-Return an array containing the difference of all the given
-arrays in the stackrange.  Multiple arrays are consecutively
-processed against the results of the previous difference, from
-the top of the stack down.
+Return an array containing the difference of all the given arrays
+in the stackrange.  ie: This returns all values from the topmost array
+that weren't found in any of the remaining arrays.  Multiple arrays are
+consecutively processed against the results of the previous difference,
+from the top of the stack down.  Duplicate values will appear only once
+in the returned list.  Keys will be discarded.  Ordering is not preserved.
 ~
 ARRAY_NEXT|
 array_next ( a @ -- @ i )
 Returns the next index in the array, and a boolean which
 is false if there are no items left.
 ~
+ARRAY_INTERSECT|
+array_intersect ( a1 a2 -- a )
+Returns an array containing the intersection of the two arrays.
+ie: Only values contained in BOTH the given arrays will be returned.
+Duplicate values will appear only once in the returned list.  Keys will
+be discarded.  Ordering is not preserved.  This is actually an inserver
+macro to '2 array_nintersect'
+~
 ARRAY_NINTERSECT|
 array_nintersect ( {a} -- a )
-Returns an array containing the intersection of all the given
-arrays in the stackrange.  Multiple arrays are consecutively
-processed against the results of the previous intersection, from
-the top of the stack down.
+Returns an array containing the intersection of all the given arrays
+in the stackrange.  ie: Only values contained in ALL the given arrays
+will be returned.  Multiple arrays are consecutively processed against
+the results of the previous intersection, from the top of the stack down.
+Duplicate values will appear only once in the returned list.  Keys will
+be discarded.  Ordering is not preserved.
 ~
 ARRAY_NOTIFY|
 array_notify ( a1 a2 -- )
 Notifies all strings in array a1 to all dbrefs in array a2.  Arrays
 must be homogenous of their respective types.
 ~
+ARRAY_UNION|
+array_union ( a1 a2 -- a )
+Returns a list array containing the union of values of both the given
+arrays.  ie: If a value is found in either of the given arrays, then it
+will be returned in the result list.  Duplicate values will appear only
+once in the returned list.  Keys are discarded.  Ordering is not preserved.
+~
 ARRAY_NUNION|
 array_nunion ( {a} -- a )
-Returns an array containing the union of values of all the given
-arrays in the stackrange.
+Returns a list array containing the union of values of all the given
+arrays in the stackrange.  ie: if a value is found in any of the given
+arrays, then it will be returned in the resultant list.  Duplicate values
+will appear only once in the returned list.  Keys are discarded.  Ordering
+is not preserved.
 ~
 ARRAY_PREV|
 array_prev ( a @ -- @ i )
@@ -517,6 +547,10 @@ multi-lined (with embedded new-lines) strings.  These strings can consist
 entirely of user-specified text, formatted variable entries (as values taken
 from the stack) or a combination of both.
 
+The first format substitution in the format string will use the topmost
+stack value.  The next format substitution will use the next item down
+the stack, and so on.
+
 The start of a format substitution in the string is noted by a '%'.  If a
 literal '%' is needed in the string, a '%%' may be used.  The format of a
 substitution is as follows: '%[-,|][+, ][0][number][.number]type'
@@ -534,6 +568,14 @@ identifiers:
         ~ - default representation of any stack type
         ? - unknown type argument, will print a string stating what the
             variable type is
+
+A '-' at the start of a format substitution indicates the field will be left
+justified.  A '|' at the start indicated the field will be centered.  A '+'
+forces the + sign to appear for positive numbers.  A space forces a blank
+in front of positive numbers.  (This is the default.)  A leading 0 will
+force the field to be padded on the left with 0's instead of spaces.  If you
+use a '*' in place of either the width or precision format fields, then
+that integer number will be obtained from the stack.
 ~
 FRAND|
 frand ( -- f )

@@ -5,41 +5,43 @@
 
 
 typedef struct DlogValue_t {
-	struct DlogValue_t* next;
-	char*  name;
-	int	lines;
-	char** value;
+	struct DlogValue_t *next;
+	char *name;
+	int lines;
+	char **value;
 } DlogValue;
 
 typedef struct DlogData_t {
-	struct DlogData_t* next;
-	struct DlogData_t** prev;
-	char*	  id;
-	int		descr;
-	DlogValue* values;
-	Gui_CB	 callback;
-	void*	  context;
+	struct DlogData_t *next;
+	struct DlogData_t **prev;
+	char *id;
+	int descr;
+	DlogValue *values;
+	Gui_CB callback;
+	void *context;
 } DlogData;
 
-DlogData* dialog_list = NULL;
-DlogData* dialog_last_accessed = NULL;
+DlogData *dialog_list = NULL;
+DlogData *dialog_last_accessed = NULL;
 
 
-void gui_pkg_callback(McpFrame* mfr, McpMesg* msg, McpVer ver, void *context);
+void gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context);
 
 
 void
 gui_initialize()
 {
-	McpVer oneoh = {1,0};
+	McpVer oneoh = { 1, 0 };
+
 	mcp_package_register(GUI_PACKAGE, oneoh, oneoh, gui_pkg_callback, NULL);
 }
 
 
-DlogData*
-gui_dlog_find(char* dlogid)
+DlogData *
+gui_dlog_find(char *dlogid)
 {
-	DlogData* ptr;
+	DlogData *ptr;
+
 	ptr = dialog_last_accessed;
 	if (ptr && !strcmp(ptr->id, dlogid)) {
 		return ptr;
@@ -57,9 +59,10 @@ gui_dlog_find(char* dlogid)
 
 
 int
-gui_dlog_get_descr(char* dlogid)
+gui_dlog_get_descr(char *dlogid)
 {
-	DlogData* ptr = gui_dlog_find(dlogid);
+	DlogData *ptr = gui_dlog_find(dlogid);
+
 	if (ptr) {
 		return ptr->descr;
 	} else {
@@ -69,10 +72,10 @@ gui_dlog_get_descr(char* dlogid)
 
 
 int
-gui_value_linecount(char* dlogid, char* id)
+gui_value_linecount(char *dlogid, char *id)
 {
-	DlogValue* ptr;
-	DlogData* ddata = gui_dlog_find(dlogid);
+	DlogValue *ptr;
+	DlogData *ddata = gui_dlog_find(dlogid);
 
 	if (!ddata) {
 		return EGUINODLOG;
@@ -89,10 +92,10 @@ gui_value_linecount(char* dlogid, char* id)
 
 
 
-char*
-GuiValueFirst(char* dlogid)
+char *
+GuiValueFirst(char *dlogid)
 {
-	DlogData* ddata = gui_dlog_find(dlogid);
+	DlogData *ddata = gui_dlog_find(dlogid);
 
 	if (!ddata || !ddata->values) {
 		return NULL;
@@ -101,11 +104,11 @@ GuiValueFirst(char* dlogid)
 }
 
 
-char*
-GuiValueNext(char* dlogid, char* id)
+char *
+GuiValueNext(char *dlogid, char *id)
 {
-	DlogValue* ptr;
-	DlogData* ddata = gui_dlog_find(dlogid);
+	DlogValue *ptr;
+	DlogData *ddata = gui_dlog_find(dlogid);
 
 	if (!ddata) {
 		return NULL;
@@ -121,11 +124,11 @@ GuiValueNext(char* dlogid, char* id)
 }
 
 
-char*
-gui_value_get(char* dlogid, char* id, int line)
+char *
+gui_value_get(char *dlogid, char *id, int line)
 {
-	DlogValue* ptr;
-	DlogData* ddata = gui_dlog_find(dlogid);
+	DlogValue *ptr;
+	DlogData *ddata = gui_dlog_find(dlogid);
 
 	if (!ddata) {
 		return NULL;
@@ -142,10 +145,10 @@ gui_value_get(char* dlogid, char* id, int line)
 
 
 void
-gui_value_set_local(char* dlogid, char* id, int lines, char** value)
+gui_value_set_local(char *dlogid, char *id, int lines, char **value)
 {
-	DlogValue* ptr;
-	DlogData* ddata = gui_dlog_find(dlogid);
+	DlogValue *ptr;
+	DlogData *ddata = gui_dlog_find(dlogid);
 	int i;
 
 	if (!ddata) {
@@ -161,23 +164,24 @@ gui_value_set_local(char* dlogid, char* id, int lines, char** value)
 		}
 		free(ptr->value);
 	} else {
-		ptr = (DlogValue*)malloc(sizeof(DlogValue));
-		ptr->name = (char*)malloc(strlen(id) + 1);
+		ptr = (DlogValue *) malloc(sizeof(DlogValue));
+		ptr->name = (char *) malloc(strlen(id) + 1);
 		strcpy(ptr->name, id);
 		ptr->next = ddata->values;
 		ddata->values = ptr;
 	}
 	ptr->lines = lines;
-	ptr->value = (char**)malloc(sizeof(char*) * lines);
+	ptr->value = (char **) malloc(sizeof(char *) * lines);
+
 	for (i = 0; i < lines; i++) {
-		ptr->value[i] = (char*)malloc(strlen(value[i]) + 1);
+		ptr->value[i] = (char *) malloc(strlen(value[i]) + 1);
 		strcpy(ptr->value[i], value[i]);
 	}
 }
 
 
 void
-gui_value_free(DlogValue* ptr)
+gui_value_free(DlogValue * ptr)
 {
 	int i;
 
@@ -190,11 +194,11 @@ gui_value_free(DlogValue* ptr)
 
 
 void
-gui_pkg_callback(McpFrame* mfr, McpMesg* msg, McpVer ver, void *context)
+gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 {
-	DlogData* dat;
-	char* dlogid = mcp_mesg_arg_getline(msg, "dlogid", 0);
-	char* id = mcp_mesg_arg_getline(msg, "id", 0);
+	DlogData *dat;
+	char *dlogid = mcp_mesg_arg_getline(msg, "dlogid", 0);
+	char *id = mcp_mesg_arg_getline(msg, "id", 0);
 
 	if (!dlogid || !*dlogid) {
 		show_mcp_error(mfr, msg->mesgname, "Missing dialog ID.");
@@ -210,9 +214,9 @@ gui_pkg_callback(McpFrame* mfr, McpMesg* msg, McpVer ver, void *context)
 		return;
 	}
 	if (!string_compare(msg->mesgname, "ctrl-value")) {
-		int   valcount = mcp_mesg_arg_linecount(msg, "value");
-		int   i;
-		char** value = (char**)malloc(sizeof(char*)*valcount);
+		int valcount = mcp_mesg_arg_linecount(msg, "value");
+		int i;
+		char **value = (char **) malloc(sizeof(char *) * valcount);
 
 		for (i = 0; i < valcount; i++) {
 			value[i] = mcp_mesg_arg_getline(msg, "value", i);
@@ -221,9 +225,9 @@ gui_pkg_callback(McpFrame* mfr, McpMesg* msg, McpVer ver, void *context)
 		free(value);
 
 	} else if (!string_compare(msg->mesgname, "ctrl-event")) {
-		char* evt = mcp_mesg_arg_getline(msg, "event", 0);
-		char* dismissed = mcp_mesg_arg_getline(msg, "dismissed", 0);
-		int did_dismiss  = 1;
+		char *evt = mcp_mesg_arg_getline(msg, "event", 0);
+		char *dismissed = mcp_mesg_arg_getline(msg, "dismissed", 0);
+		int did_dismiss = 1;
 
 		if (!evt || !*evt) {
 			evt = "buttonpress";
@@ -242,20 +246,20 @@ gui_pkg_callback(McpFrame* mfr, McpMesg* msg, McpVer ver, void *context)
 }
 
 
-char*
-gui_dlog_alloc(int descr, Gui_CB callback, void* context)
+char *
+gui_dlog_alloc(int descr, Gui_CB callback, void *context)
 {
 	char tmpid[32];
-	DlogData* ptr;
+	DlogData *ptr;
 
 	while (1) {
 		sprintf(tmpid, "%08X", random());
 		if (!gui_dlog_find(tmpid)) {
-		   break;
+			break;
 		}
 	}
-	ptr = (DlogData*)malloc(sizeof(DlogData));
-	ptr->id = (char*)malloc(strlen(tmpid) + 1);
+	ptr = (DlogData *) malloc(sizeof(DlogData));
+	ptr->id = (char *) malloc(strlen(tmpid) + 1);
 	strcpy(ptr->id, tmpid);
 	ptr->descr = descr;
 	ptr->callback = callback;
@@ -273,11 +277,11 @@ gui_dlog_alloc(int descr, Gui_CB callback, void* context)
 
 
 int
-GuiFree(char* id)
+GuiFree(char *id)
 {
-	DlogData* ptr;
-	DlogValue* valptr;
-	DlogValue* nextval;
+	DlogData *ptr;
+	DlogValue *valptr;
+	DlogValue *nextval;
 
 	ptr = gui_dlog_find(id);
 	if (!ptr) {
@@ -310,9 +314,9 @@ GuiFree(char* id)
 int
 gui_dlog_freeall_descr(int descr)
 {
-	DlogData* ptr;
-	DlogData* next;
-	DlogValue* valptr;
+	DlogData *ptr;
+	DlogData *next;
+	DlogValue *valptr;
 
 	ptr = dialog_list;
 	while (ptr) {
@@ -355,8 +359,8 @@ gui_dlog_freeall_descr(int descr)
 McpVer
 GuiVersion(int descr)
 {
-	McpVer supp = {0, 0};
-	McpFrame* mfr;
+	McpVer supp = { 0, 0 };
+	McpFrame *mfr;
 
 	mfr = descr_mcpframe(descr);
 	if (mfr) {
@@ -370,7 +374,7 @@ int
 GuiSupported(int descr)
 {
 	McpVer supp;
-	McpFrame* mfr;
+	McpFrame *mfr;
 
 	mfr = descr_mcpframe(descr);
 	if (mfr) {
@@ -383,12 +387,12 @@ GuiSupported(int descr)
 }
 
 
-char*
-GuiSimple(int descr, char *title, Gui_CB callback, void* context)
+char *
+GuiSimple(int descr, char *title, Gui_CB callback, void *context)
 {
 	McpMesg msg;
-	McpFrame* mfr = descr_mcpframe(descr);
-	char* id;
+	McpFrame *mfr = descr_mcpframe(descr);
+	char *id;
 
 	if (!mfr) {
 		return NULL;
@@ -408,20 +412,14 @@ GuiSimple(int descr, char *title, Gui_CB callback, void* context)
 }
 
 
-char*
-GuiTabbed(
-	int descr,
-	char *title,
-	int pagecount,
-	char** pagenames,
-	char** pageids,
-	Gui_CB callback,
-	void* context
-	)
+char *
+GuiTabbed(int descr,
+		  char *title,
+		  int pagecount, char **pagenames, char **pageids, Gui_CB callback, void *context)
 {
 	McpMesg msg;
-	McpFrame* mfr = descr_mcpframe(descr);
-	char* id;
+	McpFrame *mfr = descr_mcpframe(descr);
+	char *id;
 	int i;
 
 	if (!mfr) {
@@ -446,20 +444,14 @@ GuiTabbed(
 }
 
 
-char*
-GuiHelper(
-	int descr,
-	char *title,
-	int pagecount,
-	char** pagenames,
-	char** pageids,
-	Gui_CB callback,
-	void* context
-	)
+char *
+GuiHelper(int descr,
+		  char *title,
+		  int pagecount, char **pagenames, char **pageids, Gui_CB callback, void *context)
 {
 	McpMesg msg;
-	McpFrame* mfr = descr_mcpframe(descr);
-	char* id;
+	McpFrame *mfr = descr_mcpframe(descr);
+	char *id;
 	int i;
 
 	if (!mfr) {
@@ -485,10 +477,10 @@ GuiHelper(
 
 
 int
-GuiShow(char* id)
+GuiShow(char *id)
 {
 	McpMesg msg;
-	McpFrame* mfr;
+	McpFrame *mfr;
 	int descr = gui_dlog_get_descr(id);
 
 	mfr = descr_mcpframe(descr);
@@ -508,10 +500,10 @@ GuiShow(char* id)
 
 
 int
-GuiClose(char* id)
+GuiClose(char *id)
 {
 	McpMesg msg;
-	McpFrame* mfr;
+	McpFrame *mfr;
 	int descr = gui_dlog_get_descr(id);
 
 	mfr = descr_mcpframe(descr);
@@ -531,10 +523,10 @@ GuiClose(char* id)
 
 
 int
-GuiSetVal(char* dlogid, char* id, int lines, char** value)
+GuiSetVal(char *dlogid, char *id, int lines, char **value)
 {
 	McpMesg msg;
-	McpFrame* mfr;
+	McpFrame *mfr;
 	int i;
 	int descr = gui_dlog_get_descr(dlogid);
 
@@ -560,10 +552,10 @@ GuiSetVal(char* dlogid, char* id, int lines, char** value)
 
 
 int
-GuiListInsert(char* dlogid, char* id, int after, int lines, char** value)
+GuiListInsert(char *dlogid, char *id, int after, int lines, char **value)
 {
 	McpMesg msg;
-	McpFrame* mfr;
+	McpFrame *mfr;
 	char numbuf[32];
 	int i;
 	int descr = gui_dlog_get_descr(dlogid);
@@ -593,10 +585,10 @@ GuiListInsert(char* dlogid, char* id, int after, int lines, char** value)
 
 
 int
-GuiListDel(char* dlogid, char* id, int from, int to)
+GuiListDel(char *dlogid, char *id, int from, int to)
 {
 	McpMesg msg;
-	McpFrame* mfr;
+	McpFrame *mfr;
 	char numbuf[32];
 	int i;
 	int descr = gui_dlog_get_descr(dlogid);
@@ -631,10 +623,10 @@ GuiListDel(char* dlogid, char* id, int from, int to)
 
 
 int
-GuiMenuItem(char* dlogid, char* id, char* type, char* name, char** args)
+GuiMenuItem(char *dlogid, char *id, char *type, char *name, char **args)
 {
 	McpMesg msg;
-	McpFrame* mfr;
+	McpFrame *mfr;
 	int i;
 	int descr = gui_dlog_get_descr(dlogid);
 
@@ -651,9 +643,10 @@ GuiMenuItem(char* dlogid, char* id, char* type, char* name, char** args)
 		i = 0;
 		while (args && args[i]) {
 			char *arg = args[i];
-			char *val = args[i+1];
+			char *val = args[i + 1];
+
 			mcp_mesg_arg_append(&msg, arg, val);
-			i+=2;
+			i += 2;
 		}
 		mcp_frame_output_mesg(mfr, &msg);
 		mcp_mesg_clear(&msg);
@@ -665,7 +658,7 @@ GuiMenuItem(char* dlogid, char* id, char* type, char* name, char** args)
 
 
 int
-GuiMenuCmd(char* dlogid, char* id, char* name)
+GuiMenuCmd(char *dlogid, char *id, char *name)
 {
 	GuiMenuItem(dlogid, id, "command", name, NULL);
 }
@@ -673,7 +666,7 @@ GuiMenuCmd(char* dlogid, char* id, char* name)
 
 
 int
-GuiMenuCheckBtn(char* dlogid, char* id, char* name, char** args)
+GuiMenuCheckBtn(char *dlogid, char *id, char *name, char **args)
 {
 	GuiMenuItem(dlogid, id, "checkbutton", name, args);
 }
@@ -681,7 +674,7 @@ GuiMenuCheckBtn(char* dlogid, char* id, char* name, char** args)
 
 
 void
-gui_ctrl_process_layout(McpMesg* msg, int layout)
+gui_ctrl_process_layout(McpMesg * msg, int layout)
 {
 	char buf[32];
 
@@ -746,10 +739,11 @@ gui_ctrl_process_layout(McpMesg* msg, int layout)
 
 
 int
-gui_ctrl_make_v(char* dlogid, char* type, char* pane, char* id, char* text, char* value, int layout, char** args)
+gui_ctrl_make_v(char *dlogid, char *type, char *pane, char *id, char *text, char *value,
+				int layout, char **args)
 {
 	McpMesg msg;
-	McpFrame* mfr;
+	McpFrame *mfr;
 	int descr;
 	int i;
 
@@ -778,13 +772,14 @@ gui_ctrl_make_v(char* dlogid, char* type, char* pane, char* id, char* text, char
 			mcp_mesg_arg_append(&msg, "pane", pane);
 		i = 0;
 		while (args && args[i]) {
-			char* arg = args[i];
-			char* val = args[i+1];
+			char *arg = args[i];
+			char *val = args[i + 1];
+
 			if (id && !string_compare(arg, "value")) {
 				gui_value_set_local(dlogid, id, 1, &val);
 			}
 			mcp_mesg_arg_append(&msg, arg, val);
-			i+=2;
+			i += 2;
 		}
 		mcp_frame_output_mesg(mfr, &msg);
 		mcp_mesg_clear(&msg);
@@ -796,11 +791,12 @@ gui_ctrl_make_v(char* dlogid, char* type, char* pane, char* id, char* text, char
 
 
 int
-gui_ctrl_make_l(char* dlogid, char* type, char* pane, char* id, char* text, char* value, int layout, ...)
+gui_ctrl_make_l(char *dlogid, char *type, char *pane, char *id, char *text, char *value,
+				int layout, ...)
 {
 	va_list ap;
 	McpMesg msg;
-	McpFrame* mfr;
+	McpFrame *mfr;
 	int descr;
 
 	va_start(ap, layout);
@@ -830,12 +826,15 @@ gui_ctrl_make_l(char* dlogid, char* type, char* pane, char* id, char* text, char
 		if (pane)
 			mcp_mesg_arg_append(&msg, "pane", pane);
 		while (1) {
-			char* val;
-			char* arg;
+			char *val;
+			char *arg;
 
 			arg = va_arg(ap, char *);
-			if (!arg) break;
+
+			if (!arg)
+				break;
 			val = va_arg(ap, char *);
+
 			mcp_mesg_arg_append(&msg, arg, val);
 		}
 		mcp_frame_output_mesg(mfr, &msg);
@@ -850,33 +849,28 @@ gui_ctrl_make_l(char* dlogid, char* type, char* pane, char* id, char* text, char
 
 
 int
-GuiEdit(char* dlogid, char* pane, char* id, char* text, char* value, int width, int layout)
+GuiEdit(char *dlogid, char *pane, char *id, char *text, char *value, int width, int layout)
 {
 	char buf[32];
 
 	sprintf(buf, "%d", width);
-	gui_ctrl_make_l(dlogid, "edit", pane, id, text, value, layout,
-		"width", buf,
-		NULL
-		);
+	gui_ctrl_make_l(dlogid, "edit", pane, id, text, value, layout, "width", buf, NULL);
 }
 
 
 int
-GuiText(char* dlogid, char* pane, char* id, char* value, int width, int layout)
+GuiText(char *dlogid, char *pane, char *id, char *value, int width, int layout)
 {
 	char widthbuf[32];
 
 	sprintf(widthbuf, "%d", width);
-	gui_ctrl_make_l(dlogid, "text", pane, id, NULL, value, layout,
-		"width", widthbuf,
-		NULL
-		);
+	gui_ctrl_make_l(dlogid, "text", pane, id, NULL, value, layout, "width", widthbuf, NULL);
 }
 
 
 int
-GuiSpinner(char* dlogid, char* pane, char* id, char* text, int value, int width, int min, int max, int layout)
+GuiSpinner(char *dlogid, char *pane, char *id, char *text, int value, int width, int min,
+		   int max, int layout)
 {
 	char widthbuf[32];
 	char valbuf[32];
@@ -888,98 +882,83 @@ GuiSpinner(char* dlogid, char* pane, char* id, char* text, int value, int width,
 	sprintf(minbuf, "%d", min);
 	sprintf(maxbuf, "%d", max);
 	gui_ctrl_make_l(dlogid, "spinner", pane, id, text, valbuf, layout,
-		"width", widthbuf,
-		"min", minbuf,
-		"max", maxbuf,
-		NULL
-		);
+					"width", widthbuf, "min", minbuf, "max", maxbuf, NULL);
 }
 
 
 int
-GuiCombo(char* dlogid, char* pane, char* id, char* text, char* value, int width, int editable, int layout)
+GuiCombo(char *dlogid, char *pane, char *id, char *text, char *value, int width, int editable,
+		 int layout)
 {
 	char buf[32];
+
 	sprintf(buf, "%d", width);
 	gui_ctrl_make_l(dlogid, "combobox", pane, id, text, value, layout,
-		"width", buf,
-		"editable", editable? "1" : "0",
-		NULL
-		);
+					"width", buf, "editable", editable ? "1" : "0", NULL);
 }
 
 
 int
-GuiMulti(char* dlogid, char* pane, char* id, char* value, int width, int height, int fixed, int layout)
+GuiMulti(char *dlogid, char *pane, char *id, char *value, int width, int height, int fixed,
+		 int layout)
 {
 	char widthbuf[32];
 	char heightbuf[32];
+
 	sprintf(widthbuf, "%d", width);
 	sprintf(heightbuf, "%d", height);
 	gui_ctrl_make_l(dlogid, "multiedit", pane, id, NULL, value, layout,
-		"width", widthbuf,
-		"height", heightbuf,
-		"font", (fixed? "fixed" : "variable"),
-		NULL
-		);
+					"width", widthbuf,
+					"height", heightbuf, "font", (fixed ? "fixed" : "variable"), NULL);
 }
 
 
 int
-GuiHRule(char* dlogid, char* pane, char* id, int height, int layout)
+GuiHRule(char *dlogid, char *pane, char *id, int height, int layout)
 {
 	char heightbuf[32];
+
 	sprintf(heightbuf, "%d", height);
-	gui_ctrl_make_l(dlogid, "hrule", pane, id, NULL, NULL, layout,
-		"height", heightbuf,
-		NULL
-		);
+	gui_ctrl_make_l(dlogid, "hrule", pane, id, NULL, NULL, layout, "height", heightbuf, NULL);
 }
 
 
 int
-GuiVRule(char* dlogid, char* pane, char* id, int thickness, int layout)
+GuiVRule(char *dlogid, char *pane, char *id, int thickness, int layout)
 {
 	char widthbuf[32];
+
 	sprintf(widthbuf, "%d", thickness);
-	gui_ctrl_make_l(dlogid, "vrule", pane, id, NULL, NULL, layout,
-		"width", widthbuf,
-		NULL
-		);
+	gui_ctrl_make_l(dlogid, "vrule", pane, id, NULL, NULL, layout, "width", widthbuf, NULL);
 }
 
 
 int
-GuiFrame(char* dlogid, char* pane, char* id, int layout)
+GuiFrame(char *dlogid, char *pane, char *id, int layout)
 {
-	gui_ctrl_make_l(dlogid, "frame", pane, id, NULL, NULL, layout,
-		NULL
-		);
+	gui_ctrl_make_l(dlogid, "frame", pane, id, NULL, NULL, layout, NULL);
 }
 
 
 int
-GuiGroupBox(char* dlogid, char* pane, char* id, char* text, int collapsible, int collapsed, int layout)
+GuiGroupBox(char *dlogid, char *pane, char *id, char *text, int collapsible, int collapsed,
+			int layout)
 {
 	gui_ctrl_make_l(dlogid, "frame", pane, id, text, NULL, layout,
-		"visible", "1",
-		"collapsible", collapsible? "1" : "0",
-		"collapsed", collapsed? "1" : "0",
-		NULL
-		);
+					"visible", "1",
+					"collapsible", collapsible ? "1" : "0",
+					"collapsed", collapsed ? "1" : "0", NULL);
 }
 
 
 int
-GuiButton(char* dlogid, char* pane, char* id, char* text, int width, int dismiss, int layout)
+GuiButton(char *dlogid, char *pane, char *id, char *text, int width, int dismiss, int layout)
 {
 	char widthbuf[32];
+
 	sprintf(widthbuf, "%d", width);
 	gui_ctrl_make_l(dlogid, "button", pane, id, text, NULL, layout,
-		"width", widthbuf,
-		"dismiss", dismiss? "1" : "0",
-		NULL
-		);
+					"width", widthbuf, "dismiss", dismiss ? "1" : "0", NULL);
 }
 
 
@@ -993,10 +972,10 @@ GuiButton(char* dlogid, char* pane, char* id, char* text, int width, int dismiss
 
 
 void
-muf_dlog_add(struct frame*fr, char* dlogid)
+muf_dlog_add(struct frame *fr, char *dlogid)
 {
-	struct dlogidlist* item
-			= (struct dlogidlist*) malloc(sizeof(struct dlogidlist));
+	struct dlogidlist *item = (struct dlogidlist *) malloc(sizeof(struct dlogidlist));
+
 	strcpy(item->dlogid, dlogid);
 	item->next = fr->dlogids;
 	fr->dlogids = item;
@@ -1004,12 +983,14 @@ muf_dlog_add(struct frame*fr, char* dlogid)
 
 
 void
-muf_dlog_remove(struct frame*fr, char* dlogid)
+muf_dlog_remove(struct frame *fr, char *dlogid)
 {
-	struct dlogidlist** prev = &fr->dlogids;
+	struct dlogidlist **prev = &fr->dlogids;
+
 	while (*prev) {
 		if (!string_compare(dlogid, (*prev)->dlogid)) {
-			struct dlogidlist* tmp = *prev;
+			struct dlogidlist *tmp = *prev;
+
 			*prev = (*prev)->next;
 			free(tmp);
 		} else {
@@ -1023,7 +1004,8 @@ void
 muf_dlog_purge(struct frame *fr)
 {
 	while (fr->dlogids) {
-		struct dlogidlist* tmp = fr->dlogids;
+		struct dlogidlist *tmp = fr->dlogids;
+
 		GuiClose(fr->dlogids->dlogid);
 		fr->dlogids = fr->dlogids->next;
 		free(tmp);
@@ -1041,8 +1023,8 @@ post_dlog_cb(GUI_EVENT_CB_ARGS)
 {
 	if (!string_compare(id, "post")) {
 		char buf[BUFFER_LEN];
-		char* subject = gui_value_get(dlogid, "subj", 0);
-		char* keywords = gui_value_get(dlogid, "keywd", 0);
+		char *subject = gui_value_get(dlogid, "subj", 0);
+		char *keywords = gui_value_get(dlogid, "keywd", 0);
 		int bodycnt = gui_value_linecount(dlogid, "body");
 
 		sprintf(buf, "Subject: %s", subject);
@@ -1061,24 +1043,22 @@ post_dlog_cb(GUI_EVENT_CB_ARGS)
 
 
 void
-do_post_dlog(int descr, char* text)
+do_post_dlog(int descr, char *text)
 {
-	char* keywords[] = {"Misc.", "Wedding", "Party", "Toading", "New MUCK"};
-	char* dlg = GuiSimple(descr, "A demonstration dialog", post_dlog_cb, NULL);
+	char *keywords[] = { "Misc.", "Wedding", "Party", "Toading", "New MUCK" };
+	char *dlg = GuiSimple(descr, "A demonstration dialog", post_dlog_cb, NULL);
 
-	GuiEdit   (dlg, NULL,  "subj",  "Subject", text, 60, GUI_EW);
-	GuiCombo  (dlg, NULL,  "keywd", "Keywords", "Misc.", 60, 1,  GUI_EW | GUI_HEXP);
+	GuiEdit(dlg, NULL, "subj", "Subject", text, 60, GUI_EW);
+	GuiCombo(dlg, NULL, "keywd", "Keywords", "Misc.", 60, 1, GUI_EW | GUI_HEXP);
 	GuiListInsert(dlg, "keywd", GUI_LIST_END, 5, keywords);
 
-	GuiMulti  (dlg, NULL,  "body",  NULL, 80, 12, 1, GUI_NSEW | GUI_VEXP | COLSPAN(2));
-	GuiHRule  (dlg, NULL,  NULL,	2, COLSPAN(2));
-	GuiFrame  (dlg, NULL,  "bfr",   GUI_EW | COLSPAN(2) | TOPPAD(0));
-	GuiFrame  (dlg, "bfr", NULL,	GUI_EW | GUI_HEXP | GUI_NONL);
-	GuiVRule  (dlg, NULL,  NULL,	2, GUI_NONL);
-	GuiButton (dlg, NULL,  "post",  "Post", 8, 1, GUI_E | GUI_NONL);
-	GuiButton (dlg, NULL,  "cancel","Cancel", 8, 1, GUI_E | TOPPAD(0));
+	GuiMulti(dlg, NULL, "body", NULL, 80, 12, 1, GUI_NSEW | GUI_VEXP | COLSPAN(2));
+	GuiHRule(dlg, NULL, NULL, 2, COLSPAN(2));
+	GuiFrame(dlg, NULL, "bfr", GUI_EW | COLSPAN(2) | TOPPAD(0));
+	GuiFrame(dlg, "bfr", NULL, GUI_EW | GUI_HEXP | GUI_NONL);
+	GuiVRule(dlg, NULL, NULL, 2, GUI_NONL);
+	GuiButton(dlg, NULL, "post", "Post", 8, 1, GUI_E | GUI_NONL);
+	GuiButton(dlg, NULL, "cancel", "Cancel", 8, 1, GUI_E | TOPPAD(0));
 
 	GuiShow(dlg);
 }
-
-

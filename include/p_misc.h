@@ -36,4 +36,3 @@ extern void prim_setsysparm(PRIM_PROTOTYPE);
     "SETSYSPARM"
 
 #define PRIMS_MISC_CNT 22
-

@@ -3,8 +3,16 @@
 /*
  *
  * $Log: hashtab.c,v $
- * Revision 1.1  1999/12/16 03:23:29  revar
- * Initial revision
+ * Revision 1.2  2000/03/29 12:21:02  revar
+ * Reformatted all code into consistent format.
+ * 	Tabs are 4 spaces.
+ * 	Indents are one tab.
+ * 	Braces are generally K&R style.
+ * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+ * Rewrote restart script as a bourne shell script.
+ *
+ * Revision 1.1.1.1  1999/12/16 03:23:29  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:27:43  foxen
  * Initial FB6 CVS checkin.
@@ -52,15 +60,15 @@
  * same value.
  */
 
-unsigned 
+unsigned
 hash(register const char *s, unsigned hash_size)
 {
-    unsigned hashval;
+	unsigned hashval;
 
-    for (hashval = 0; *s != '\0'; s++) {
-	hashval = (*s | 0x20) + 31 * hashval;
-    }
-    return hashval % hash_size;
+	for (hashval = 0; *s != '\0'; s++) {
+		hashval = (*s | 0x20) + 31 * hashval;
+	}
+	return hashval % hash_size;
 }
 
 /* find_hash:  lookup a name in a hash table
@@ -70,14 +78,14 @@ hash(register const char *s, unsigned hash_size)
 hash_data *
 find_hash(register const char *s, hash_tab * table, unsigned size)
 {
-    register hash_entry *hp;
+	register hash_entry *hp;
 
-    for (hp = table[hash(s, size)]; hp != NULL; hp = hp->next) {
-	if (string_compare(s, hp->name) == 0) {
-	    return &(hp->dat);	/* found */
+	for (hp = table[hash(s, size)]; hp != NULL; hp = hp->next) {
+		if (string_compare(s, hp->name) == 0) {
+			return &(hp->dat);	/* found */
+		}
 	}
-    }
-    return NULL;		/* not found */
+	return NULL;				/* not found */
 }
 
 /* add_hash:  add a string to a hash table
@@ -90,39 +98,38 @@ find_hash(register const char *s, hash_tab * table, unsigned size)
  * make a static copy of the name before adding it to the table.
  */
 hash_entry *
-add_hash(register const char *name, hash_data data,
-	 hash_tab * table, unsigned size)
+add_hash(register const char *name, hash_data data, hash_tab * table, unsigned size)
 {
-    register hash_entry *hp;
-    unsigned hashval;
+	register hash_entry *hp;
+	unsigned hashval;
 
-    hashval = hash(name, size);
+	hashval = hash(name, size);
 
-    /* an inline find_hash */
-    for (hp = table[hashval]; hp != NULL; hp = hp->next) {
-	if (string_compare(name, hp->name) == 0) {
-	    break;
-        }
-    }
-
-    /* If not found, set up a new entry */
-    if (hp == NULL) {
-	hp = (hash_entry *) malloc(sizeof(hash_entry));
-        if (hp == NULL) {
-            perror("add_hash: out of memory!");
-            abort(); /* can't allocate new entry -- die */
+	/* an inline find_hash */
+	for (hp = table[hashval]; hp != NULL; hp = hp->next) {
+		if (string_compare(name, hp->name) == 0) {
+			break;
+		}
 	}
-	hp->next = table[hashval];
-	table[hashval] = hp;
-	hp->name = (char *) string_dup(name);  /* This might be wasteful. */
-        if (hp->name == NULL) {
-            perror("add_hash: out of memory!");
-            abort(); /* can't allocate new entry -- die */
+
+	/* If not found, set up a new entry */
+	if (hp == NULL) {
+		hp = (hash_entry *) malloc(sizeof(hash_entry));
+		if (hp == NULL) {
+			perror("add_hash: out of memory!");
+			abort();			/* can't allocate new entry -- die */
+		}
+		hp->next = table[hashval];
+		table[hashval] = hp;
+		hp->name = (char *) string_dup(name);	/* This might be wasteful. */
+		if (hp->name == NULL) {
+			perror("add_hash: out of memory!");
+			abort();			/* can't allocate new entry -- die */
+		}
 	}
-    }
-    /* One way or another, the pointer is now valid */
-    hp->dat = data;
-    return hp;
+	/* One way or another, the pointer is now valid */
+	hp->dat = data;
+	return hp;
 }
 
 /* free_hash:  free a hash table entry
@@ -130,40 +137,39 @@ add_hash(register const char *name, hash_data data,
  * frees the dynamically allocated hash table entry associated with
  * a name.  Returns 0 on success, or -1 if the name cannot be found.
  */
-int 
+int
 free_hash(register const char *name, hash_tab * table, unsigned size)
 {
-    register hash_entry **lp, *hp;
+	register hash_entry **lp, *hp;
 
-    lp = &table[hash(name, size)];
-    for (hp = *lp; hp != NULL; lp = &(hp->next), hp = hp->next) {
-	if (string_compare(name, hp->name) == 0) {
-	    *lp = hp->next;	/* got it.  fix the pointers */
-	    free((void *) hp->name);
-	    free((void *) hp);
-	    return 0;
+	lp = &table[hash(name, size)];
+	for (hp = *lp; hp != NULL; lp = &(hp->next), hp = hp->next) {
+		if (string_compare(name, hp->name) == 0) {
+			*lp = hp->next;		/* got it.  fix the pointers */
+			free((void *) hp->name);
+			free((void *) hp);
+			return 0;
+		}
 	}
-    }
-    return -1;			/* not found */
+	return -1;					/* not found */
 }
 
 /* kill_hash:  kill an entire hash table, by freeing every entry */
-void 
+void
 kill_hash(hash_tab * table, unsigned size, int freeptrs)
 {
-    register hash_entry *hp, *np;
-    int     i;
+	register hash_entry *hp, *np;
+	int i;
 
-    for (i = 0; i < size; i++) {
-	for (hp = table[i]; hp != NULL; hp = np) {
-	    np = hp->next;	/* Don't dereference the pointer after */
-	    free((void *) hp->name);
-	    if (freeptrs) {
-		free((void *) hp->dat.pval);
-            }
-	    free((void *) hp);	/* we've freed it! */
+	for (i = 0; i < size; i++) {
+		for (hp = table[i]; hp != NULL; hp = np) {
+			np = hp->next;		/* Don't dereference the pointer after */
+			free((void *) hp->name);
+			if (freeptrs) {
+				free((void *) hp->dat.pval);
+			}
+			free((void *) hp);	/* we've freed it! */
+		}
+		table[i] = NULL;
 	}
-	table[i] = NULL;
-    }
 }
-

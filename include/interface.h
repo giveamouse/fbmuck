@@ -1,7 +1,16 @@
+
 /* $Header$
  * $Log: interface.h,v $
- * Revision 1.1  1999/12/12 07:28:12  revar
- * Initial revision
+ * Revision 1.2  2000/03/29 12:21:01  revar
+ * Reformatted all code into consistent format.
+ * 	Tabs are 4 spaces.
+ * 	Indents are one tab.
+ * 	Braces are generally K&R style.
+ * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+ * Rewrote restart script as a bourne shell script.
+ *
+ * Revision 1.1.1.1  1999/12/12 07:28:12  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:28:12  foxen
  * Initial FB6 CVS checkin.
@@ -31,8 +40,8 @@ extern int notify_nolisten(dbref player, const char *msg, int ispriv);
 extern void wall_and_flush(const char *msg);
 extern void flush_user_output(dbref player);
 extern void wall_wizards(const char *msg);
-extern int shutdown_flag; /* if non-zero, interface should shut down */
-extern int restart_flag; /* if non-zero, should restart after shut down */
+extern int shutdown_flag;		/* if non-zero, interface should shut down */
+extern int restart_flag;		/* if non-zero, should restart after shut down */
 extern void emergency_shutdown(void);
 extern int boot_off(dbref player);
 extern void boot_player_off(dbref player);
@@ -49,7 +58,7 @@ extern void pnotify(int c, char *outstr);
 extern int dbref_first_descr(dbref c);
 extern int pdescr(int c);
 extern int pdescrcon(int c);
-extern McpFrame* descr_mcpframe(int c);
+extern McpFrame *descr_mcpframe(int c);
 extern int pnextdescr(int c);
 extern int pdescrflush(int c);
 extern dbref partial_pmatch(const char *name);

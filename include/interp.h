@@ -1,10 +1,13 @@
+
 /* Stuff the interpreter needs. */
 /* Some icky machine/compiler #defines. --jim */
 #ifdef MIPS
-typedef char * voidptr;
+typedef char *voidptr;
+
 #define MIPSCAST (char *)
 #else
-typedef void * voidptr;
+typedef void *voidptr;
+
 #define MIPSCAST
 #endif
 
@@ -14,58 +17,61 @@ typedef void * voidptr;
 #ifdef COMPRESS
 extern const char *uncompress(const char *);
 extern const char *compress(const char *);
+
 #define alloc_compressed(x) alloc_string(compress(x))
 #define get_compress(x) compress(x)
 #define get_uncompress(x) uncompress(x)
-#else /* COMPRESS */
+#else							/* COMPRESS */
 #define alloc_compressed(x) alloc_string(x)
 #define get_compress(x) (x)
 #define get_uncompress(x) (x)
-#endif /* COMPRESS */
+#endif							/* COMPRESS */
 #define DoNullInd(x) ((x) ? (x) -> data : "")
-  
+
 extern void RCLEAR(struct inst *oper, char *file, int line);
+
 #define CLEAR(oper) RCLEAR(oper, __FILE__, __LINE__)
-extern void push (struct inst *stack, int *top, int type, voidptr res);
+extern void push(struct inst *stack, int *top, int type, voidptr res);
 extern int valid_object(struct inst *oper);
-  
+
 extern struct inst *scopedvar_get(struct frame *fr, int varnum);
 extern void scopedvar_dupall(struct frame *fr, struct frame *oldfr);
-extern int false (struct inst *p);
-  
+extern int false(struct inst *p);
+
 extern void copyinst(struct inst *from, struct inst *to);
-  
+
 #define abort_loop(S, C1, C2) \
 { \
   do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
   return 0; \
 }
-  
+
 extern void do_abort_loop(dbref player, dbref program, const char *msg,
-                          struct frame *fr, struct inst *pc,
-                          int atop, int stop, struct inst *clinst1,
-                          struct inst *clinst2);
-  
+						  struct frame *fr, struct inst *pc,
+
+						  int atop, int stop, struct inst *clinst1, struct inst *clinst2);
+
 extern void interp_err(dbref player, dbref program, struct inst *pc,
-                       struct inst *arg, int atop, dbref origprog,
-                       const char *msg1, const char *msg2);
-  
-extern void push (struct inst *stack, int *top, int type, voidptr res);
-  
+					   struct inst *arg, int atop, dbref origprog,
+
+					   const char *msg1, const char *msg2);
+
+extern void push(struct inst *stack, int *top, int type, voidptr res);
+
 extern int valid_player(struct inst *oper);
-  
+
 extern int valid_object(struct inst *oper);
-  
+
 extern int is_home(struct inst *oper);
-  
+
 extern int permissions(dbref player, dbref thing);
-  
+
 extern int arith_type(struct inst *op1, struct inst *op2);
-  
+
 #define CHECKOP(N) { if ((*top) < (N)) { char* errbuf = (char*)malloc(128); interp_err(player, program, pc, arg, *top, fr->caller.st[1], insttotext(pc, errbuf, 128, 30, program), "Stack underflow."); free(errbuf); return; } nargs = (N); }
 
 #define POP() (arg + --(*top))
-  
+
 #define abort_interp(C) \
 { \
   do_abort_interp(player, (C), pc, arg, *top, fr, oper1, oper2, oper3, oper4, \
@@ -73,10 +79,12 @@ extern int arith_type(struct inst *op1, struct inst *op2);
   return; \
 }
 extern void do_abort_interp(dbref player, const char *msg, struct inst *pc,
-     struct inst *arg, int atop, struct frame *fr,
-     struct inst *oper1, struct inst *oper2, struct inst *oper3,
-     struct inst *oper4, int nargs, dbref program, char *file, int line);
-  
+							struct inst *arg, int atop, struct frame *fr,
+							struct inst *oper1, struct inst *oper2, struct inst *oper3,
+							struct inst *oper4, int nargs, dbref program, char *file,
+
+							int line);
+
 
 #define CurrVar (*(fr->varset.st[fr->varset.top]))
 
@@ -114,7 +122,7 @@ extern dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
                        struct inst *pc, struct inst *arg, int *top, \
                        struct frame *fr
 
-extern int    nargs; /* DO NOT TOUCH THIS VARIABLE */
+extern int nargs;				/* DO NOT TOUCH THIS VARIABLE */
 
 #include "p_array.h"
 #include "p_connects.h"
@@ -127,5 +135,3 @@ extern int    nargs; /* DO NOT TOUCH THIS VARIABLE */
 #include "p_stack.h"
 #include "p_mcp.h"
 #include "p_strings.h"
-
-

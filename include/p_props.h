@@ -20,4 +20,3 @@ extern void prim_setprop(PRIM_PROTOTYPE);
     "PARSEPROP", "GETPROP", "SETPROP", "GETPROPFVAL"
 
 #define PRIMS_PROPS_CNT 12
-

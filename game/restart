@@ -1,4 +1,4 @@
-#!/bin/csh -f
+#!/bin/sh
 #
 # Sole argument is a port number, if desired,
 # if none is given defaults to 4321.
@@ -6,10 +6,9 @@
 
 #
 # You'll want to edit this to match the base directory of your muck's files.
-# This should be the directory containing the 'data' amd 'muf' directories.
+# This should be the directory containing the 'data' and 'muf' directories.
 #
-#set GAMEDIR = $HOME/muck
-set GAMEDIR = $HOME/CR/FB/game
+GAMEDIR="$HOME/muck"
 
 
 #
@@ -21,16 +20,16 @@ set GAMEDIR = $HOME/CR/FB/game
 # On a successful restart, DBIN is moved to DBOLD, and DBOUT is moved to DBIN,
 # then the server is started.  The server will save it's db to DBOUT.
 #
-set DBOLD = data/std-db.old
-set DBIN = data/std-db.db
-set DBOUT = data/std-db.new
+DBOLD="$GAMEDIR/data/std-db.old"
+DBIN="$GAMEDIR/data/std-db.db"
+DBOUT="$GAMEDIR/data/std-db.new"
 
 
 #
 # The port that the MUCK server should listen to.  This will be overridden if
 # this script is called with a port number argument.
 #
-set PORT = 4201
+PORT=4201
 
 
 #
@@ -39,7 +38,7 @@ set PORT = 4201
 # saved to.  After a successful restart, these deltas will be appended to the
 # end of the DBIN file.
 #
-set DELTAS = data/deltas-file
+DELTAS="$GAMEDIR/data/deltas-file"
 
 
 #
@@ -47,7 +46,19 @@ set DELTAS = data/deltas-file
 # change this unless you renamed the server program to something other than
 # netmuck.
 #
-set SERVER = ./netmuck
+SERVER="$GAMEDIR/netmuck"
+
+
+#
+# This is the name of the file to log server restarts to.
+#
+RESTARTS_LOGFILE="$GAMEDIR/logs/restarts"
+
+
+#
+# This is the name of the file to log server stderr/stdout messages to.
+#
+STDOUTERR_LOGFILE="$GAMEDIR/logs/stdouterr.log"
 
 
 #
@@ -56,7 +67,7 @@ set SERVER = ./netmuck
 # You probably don't want to change this unless you change the PID_FILE
 # #define in include/config.h
 #
-set PIDFILE = ./netmuck.pid
+PIDFILE="$GAMEDIR/netmuck.pid"
 
 
 #
@@ -66,99 +77,105 @@ set PIDFILE = ./netmuck.pid
 #############################################################################
 
 
+cd $GAMEDIR
 echo "Restarting at: `date`"
 
 umask 077
-unlimit
+ulimit -n unlimited   ;# Max open files/descriptors
+ulimit -t unlimited   ;# Max amount of cpu time in seconds
 
-touch $PIDFILE
-set muckpid = `cat $PIDFILE`
-if ("$muckpid" != "") then
-    set muck = `ps x | grep '^ *'${muckpid}' ' | wc -l`
-    set datestamp = `date +%m%d%y%H%M`
-    if ($muck > 0) then
-	echo "This server is already running.  Restart aborted."
-	exit 0
-    endif
-endif
+if [ -r $PIDFILE ]; then
+	muckpid=`cat $PIDFILE`
+	if [ "$muckpid" ]; then
+		muck=`ps x | awk '{print $1}' | egrep "\\<${muckpid}\\>" | wc -l`
+		if [ $muck -gt 0 ]; then
+			echo "This server is already running.  Restart aborted."
+			exit 0
+		fi
+	fi
+fi
 
+datestamp=`date +%m%d%y%H%M`
 
-cd $GAMEDIR
-
-touch logs/restarts
-echo "`date` - `who am i`" >> logs/restarts
-
-if (-r $DBOUT.PANIC) then
-    set end = "`tail -1 $DBOUT.PANIC`"
-    if ("$end" == "***END OF DUMP***" ) then
-	mv $DBOUT.PANIC $DBOUT
-	rm -f $DELTAS
+PANICDB="${DBOUT}.PANIC"
+if [ -r $PANICDB ]; then
+    end=`tail -1 $PANICDB`
+    if [ "$end" = "***END OF DUMP***" ]; then
+		mv $PANICDB $DBOUT
+		rm -f $DELTAS
     else
-	rm $DBOUT.PANIC
-	echo "Warning: PANIC dump failed on "`date` | mail `whoami`
-    endif
-endif
+		echo "Warning: PANIC dump failed on "`date` | mail `whoami`
+    fi
+fi
 
-# rm -f $DBOLD $DBOLD.gz
-if (-r $DBOUT) then
+if [ -r $DBOUT ]; then
     # mv $DBOLD $DBOLD.$datestamp
     mv -f $DBIN $DBOLD
     mv $DBOUT $DBIN
-endif
+fi
 
-if (! -r $DBIN) then
+if [ ! -e $DBIN ]; then
 	echo "Hey\!  You gotta have a "$DBIN" file to restart the server\!"
 	echo "Restart attempt aborted."
 	exit
-endif
+fi
 
-set end = "`tail -1 $DBIN`"
-if ("$end" != '***END OF DUMP***' ) then
+if [ ! -r $DBIN ]; then
+	echo "Hey\!  The "$DBIN" file has to be readable to restart the server\!"
+	echo "Restart attempt aborted."
+	exit
+fi
+
+end=`tail -1 $DBIN`
+if [ "$end" != '***END OF DUMP***' ]; then
 	echo "WARNING\!  The "$DBIN" file is incomplete and therefore corrupt\!"
 	echo "Restart attempt aborted."
 	exit
-endif
+fi
 
 
 # nice -20 gzip -9 $DBOLD.$datestamp &
 
-if (-r $DELTAS) then
-        echo "Restoring from delta."
-        set end = "`tail -1 $DELTAS`"
-        if ("$end" == "***END OF DUMP***" ) then
-                cat $DELTAS >> $DBIN
-        else
-                echo "Last delta is incomplete.  Truncating to previous dump."
-                grep -n '^***END OF DUMP***' $DELTAS|tail -1 >! .ftmp$$
-                set llinum = "`cut -d: -f1 < .ftmp$$`"
-                set llcnt = "`wc -l < .ftmp$$`"
-                if ($llcnt > 0) then
-                        head -$llinum $DELTAS >> $DBIN
+if [ -r $DELTAS ]; then
+	echo "Restoring from delta."
+	end=`tail -1 $DELTAS`
+	if [ "$end" = "***END OF DUMP***" ]; then
+		cat $DELTAS >> $DBIN
+	else
+		echo "Last delta is incomplete.  Truncating to previous dump."
+		grep -n '^***END OF DUMP***' $DELTAS | tail -1 > .ftmp$$
+		llinum=`cut -d: -f1 < .ftmp$$`
+		llcnt=`wc -l < .ftmp$$`
+		if [ $llcnt -gt 0 ]; then
+			head -$llinum $DELTAS >> $DBIN
 		else
 			echo "Hmm.  No previous delta dump."
-                endif
+		fi
 		rm .ftmp$$
-        endif
+	fi
 	rm -f $DELTAS
-endif
+fi
 
-set dbsiz=`ls -1s $DBIN | awk '{print $1}'`
-set diskfree=`df -k . | tail -1 | awk '{print $4}'`
+dbsiz=`ls -1s $DBIN | awk '{print $1}'`
+diskfree=`df -k . | tail -1 | awk '{print $4}'`
 
-@ diskneeded = $dbsiz * 3
-@ spacediff = $diskneeded - $diskfree
+diskneeded=$(($dbsiz * 3))
+spacediff=$(($diskneeded - $diskfree))
 
-if ($diskfree < $diskneeded) then
+if [ $diskfree -lt $diskneeded ]; then
     echo "WARNING: you have insufficient disk space."
-    echo "The server is starting anyways, but you should immediately clear out old log"
-    echo "files, etc. to free up approximately $spacediff more K of disk space."
-endif
+    echo "The server is starting anyways, but you should immediately remove"
+    echo "old log files, etc. to free up about ${spacediff}K more disk space."
+fi
 
-if ($1"x" != "x") then
-    set PORT = $1
-endif
+if [ "$1" ]; then
+    PORT=$1
+fi
+
+touch $RESTARTS_LOGFILE
+echo "`date` - `who am i`" >> $RESTARTS_LOGFILE
 
 # echo "Server started at: `date`"
-$SERVER $DBIN $DBOUT $PORT >& logs/stdouterr.log &
+$SERVER $DBIN $DBOUT $PORT > $STDOUTERR_LOGFILE 2>&1 &
 # echo "Server stopped at: `date`"
 

@@ -2,8 +2,16 @@
 
 /*
  * $Log: unparse.c,v $
- * Revision 1.1  1999/12/16 03:23:29  revar
- * Initial revision
+ * Revision 1.2  2000/03/29 12:21:02  revar
+ * Reformatted all code into consistent format.
+ * 	Tabs are 4 spaces.
+ * 	Indents are one tab.
+ * 	Braces are generally K&R style.
+ * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+ * Rewrote restart script as a bourne shell script.
+ *
+ * Revision 1.1.1.1  1999/12/16 03:23:29  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:27:44  foxen
  * Initial FB6 CVS checkin.
@@ -63,167 +71,163 @@
 const char *
 unparse_flags(dbref thing)
 {
-    static char buf[BUFFER_LEN];
-    char   *p;
-    const char *type_codes = "R-EPFG";
+	static char buf[BUFFER_LEN];
+	char *p;
+	const char *type_codes = "R-EPFG";
 
-    p = buf;
-    if (Typeof(thing) != TYPE_THING)
-	*p++ = type_codes[Typeof(thing)];
-    if (FLAGS(thing) & ~TYPE_MASK) {
-	/* print flags */
-	if (FLAGS(thing) & WIZARD)
-	    *p++ = 'W';
-	if (FLAGS(thing) & LINK_OK)
-	    *p++ = 'L';
+	p = buf;
+	if (Typeof(thing) != TYPE_THING)
+		*p++ = type_codes[Typeof(thing)];
+	if (FLAGS(thing) & ~TYPE_MASK) {
+		/* print flags */
+		if (FLAGS(thing) & WIZARD)
+			*p++ = 'W';
+		if (FLAGS(thing) & LINK_OK)
+			*p++ = 'L';
 
-	if (FLAGS(thing) & KILL_OK)
-	    *p++ = 'K';
+		if (FLAGS(thing) & KILL_OK)
+			*p++ = 'K';
 
-	if (FLAGS(thing) & DARK)
-	    *p++ = 'D';
-	if (FLAGS(thing) & STICKY)
-	    *p++ = 'S';
-	if (FLAGS(thing) & QUELL)
-	    *p++ = 'Q';
-	if (FLAGS(thing) & BUILDER)
-	    *p++ = 'B';
-	if (FLAGS(thing) & CHOWN_OK)
-	    *p++ = 'C';
-	if (FLAGS(thing) & JUMP_OK)
-	    *p++ = 'J';
-	if (FLAGS(thing) & HAVEN)
-	    *p++ = 'H';
-	if (FLAGS(thing) & ABODE)
-	    *p++ = 'A';
-	if (FLAGS(thing) & VEHICLE)
-	    *p++ = 'V';
-	if (FLAGS(thing) & XFORCIBLE)
-	    *p++ = 'X';
-	if (FLAGS(thing) & ZOMBIE)
-	    *p++ = 'Z';
-	if (MLevRaw(thing)) {
-	    *p++ = 'M';
-	    switch (MLevRaw(thing)) {
-		case 1:
-		    *p++ = '1';
-		    break;
-		case 2:
-		    *p++ = '2';
-		    break;
-		case 3:
-		    *p++ = '3';
-		    break;
-	    }
+		if (FLAGS(thing) & DARK)
+			*p++ = 'D';
+		if (FLAGS(thing) & STICKY)
+			*p++ = 'S';
+		if (FLAGS(thing) & QUELL)
+			*p++ = 'Q';
+		if (FLAGS(thing) & BUILDER)
+			*p++ = 'B';
+		if (FLAGS(thing) & CHOWN_OK)
+			*p++ = 'C';
+		if (FLAGS(thing) & JUMP_OK)
+			*p++ = 'J';
+		if (FLAGS(thing) & HAVEN)
+			*p++ = 'H';
+		if (FLAGS(thing) & ABODE)
+			*p++ = 'A';
+		if (FLAGS(thing) & VEHICLE)
+			*p++ = 'V';
+		if (FLAGS(thing) & XFORCIBLE)
+			*p++ = 'X';
+		if (FLAGS(thing) & ZOMBIE)
+			*p++ = 'Z';
+		if (MLevRaw(thing)) {
+			*p++ = 'M';
+			switch (MLevRaw(thing)) {
+			case 1:
+				*p++ = '1';
+				break;
+			case 2:
+				*p++ = '2';
+				break;
+			case 3:
+				*p++ = '3';
+				break;
+			}
+		}
 	}
-    }
-    *p = '\0';
-    return buf;
+	*p = '\0';
+	return buf;
 }
 
 const char *
 unparse_object(dbref player, dbref loc)
 {
-    static char buf[BUFFER_LEN];
+	static char buf[BUFFER_LEN];
 
-    if (Typeof(player) != TYPE_PLAYER)
-	player = OWNER(player);
-    switch (loc) {
-      case NOTHING:
-	return "*NOTHING*";
-      case AMBIGUOUS:
-	return "*AMBIGUOUS*";
-      case HOME:
-	return "*HOME*";
-      default:
-	if (loc < 0 || loc > db_top)
-	    return "*INVALID*";
+	if (Typeof(player) != TYPE_PLAYER)
+		player = OWNER(player);
+	switch (loc) {
+	case NOTHING:
+		return "*NOTHING*";
+	case AMBIGUOUS:
+		return "*AMBIGUOUS*";
+	case HOME:
+		return "*HOME*";
+	default:
+		if (loc < 0 || loc > db_top)
+			return "*INVALID*";
 
-	if (!(FLAGS(player) & STICKY) &&
-		(can_link_to(player, NOTYPE, loc) ||
-		 ((Typeof(loc) != TYPE_PLAYER) &&
-		  (controls_link(player, loc) ||
-		   (FLAGS(loc) & CHOWN_OK)))
-		)
-	) {
-	    /* show everything */
-	    sprintf(buf, "%s(#%d%s)", PNAME(loc), loc, unparse_flags(loc));
-	    return buf;
-	} else {
-	    /* show only the name */
-	    return PNAME(loc);
+		if (!(FLAGS(player) & STICKY) &&
+			(can_link_to(player, NOTYPE, loc) ||
+			 ((Typeof(loc) != TYPE_PLAYER) &&
+			  (controls_link(player, loc) || (FLAGS(loc) & CHOWN_OK))))) {
+			/* show everything */
+			sprintf(buf, "%s(#%d%s)", PNAME(loc), loc, unparse_flags(loc));
+			return buf;
+		} else {
+			/* show only the name */
+			return PNAME(loc);
+		}
 	}
-    }
 }
 
 static char boolexp_buf[BUFFER_LEN];
 static char *buftop;
 
-static void 
-unparse_boolexp1(dbref player, struct boolexp * b,
-		 boolexp_type outer_type, int fullname)
+static void
+unparse_boolexp1(dbref player, struct boolexp *b, boolexp_type outer_type, int fullname)
 {
-    if ((buftop - boolexp_buf) > (BUFFER_LEN / 2))
-	return;
-    if (b == TRUE_BOOLEXP) {
-	strcpy(buftop, "*UNLOCKED*");
-	buftop += strlen(buftop);
-    } else {
-	switch (b->type) {
-	    case BOOLEXP_AND:
-		if (outer_type == BOOLEXP_NOT) {
-		    *buftop++ = '(';
-		}
-		unparse_boolexp1(player, b->sub1, b->type, fullname);
-		*buftop++ = AND_TOKEN;
-		unparse_boolexp1(player, b->sub2, b->type, fullname);
-		if (outer_type == BOOLEXP_NOT) {
-		    *buftop++ = ')';
-		}
-		break;
-	    case BOOLEXP_OR:
-		if (outer_type == BOOLEXP_NOT || outer_type == BOOLEXP_AND) {
-		    *buftop++ = '(';
-		}
-		unparse_boolexp1(player, b->sub1, b->type, fullname);
-		*buftop++ = OR_TOKEN;
-		unparse_boolexp1(player, b->sub2, b->type, fullname);
-		if (outer_type == BOOLEXP_NOT || outer_type == BOOLEXP_AND) {
-		    *buftop++ = ')';
-		}
-		break;
-	    case BOOLEXP_NOT:
-		*buftop++ = '!';
-		unparse_boolexp1(player, b->sub1, b->type, fullname);
-		break;
-	    case BOOLEXP_CONST:
-		if (fullname) {
-		    strcpy(buftop, unparse_object(player, b->thing));
-		} else {
-		    sprintf(buftop, "#%d", b->thing);
-		}
+	if ((buftop - boolexp_buf) > (BUFFER_LEN / 2))
+		return;
+	if (b == TRUE_BOOLEXP) {
+		strcpy(buftop, "*UNLOCKED*");
 		buftop += strlen(buftop);
-		break;
-	    case BOOLEXP_PROP:
-		strcpy(buftop, PropName(b->prop_check));
-		strcat(buftop, ":");
-		if (PropType(b->prop_check) == PROP_STRTYP)
-		    strcat(buftop, PropDataStr(b->prop_check));
-		buftop += strlen(buftop);
-		break;
-	    default:
-		abort();	/* bad type */
-		break;
+	} else {
+		switch (b->type) {
+		case BOOLEXP_AND:
+			if (outer_type == BOOLEXP_NOT) {
+				*buftop++ = '(';
+			}
+			unparse_boolexp1(player, b->sub1, b->type, fullname);
+			*buftop++ = AND_TOKEN;
+			unparse_boolexp1(player, b->sub2, b->type, fullname);
+			if (outer_type == BOOLEXP_NOT) {
+				*buftop++ = ')';
+			}
+			break;
+		case BOOLEXP_OR:
+			if (outer_type == BOOLEXP_NOT || outer_type == BOOLEXP_AND) {
+				*buftop++ = '(';
+			}
+			unparse_boolexp1(player, b->sub1, b->type, fullname);
+			*buftop++ = OR_TOKEN;
+			unparse_boolexp1(player, b->sub2, b->type, fullname);
+			if (outer_type == BOOLEXP_NOT || outer_type == BOOLEXP_AND) {
+				*buftop++ = ')';
+			}
+			break;
+		case BOOLEXP_NOT:
+			*buftop++ = '!';
+			unparse_boolexp1(player, b->sub1, b->type, fullname);
+			break;
+		case BOOLEXP_CONST:
+			if (fullname) {
+				strcpy(buftop, unparse_object(player, b->thing));
+			} else {
+				sprintf(buftop, "#%d", b->thing);
+			}
+			buftop += strlen(buftop);
+			break;
+		case BOOLEXP_PROP:
+			strcpy(buftop, PropName(b->prop_check));
+			strcat(buftop, ":");
+			if (PropType(b->prop_check) == PROP_STRTYP)
+				strcat(buftop, PropDataStr(b->prop_check));
+			buftop += strlen(buftop);
+			break;
+		default:
+			abort();			/* bad type */
+			break;
+		}
 	}
-    }
 }
 
 const char *
-unparse_boolexp(dbref player, struct boolexp * b, int fullname)
+unparse_boolexp(dbref player, struct boolexp *b, int fullname)
 {
-    buftop = boolexp_buf;
-    unparse_boolexp1(player, b, BOOLEXP_CONST, fullname);  /* no outer type */
-    *buftop++ = '\0';
+	buftop = boolexp_buf;
+	unparse_boolexp1(player, b, BOOLEXP_CONST, fullname);	/* no outer type */
+	*buftop++ = '\0';
 
-    return boolexp_buf;
+	return boolexp_buf;
 }

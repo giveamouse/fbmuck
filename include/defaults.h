@@ -52,26 +52,26 @@
 #define AUTOLOOK_CMD "look"
 
 /* Format of standardized property lists. */
-#define PROPLIST_INT_COUNTER 1       /* Specifies that the proplist counter
-                                        property should be stored as an integer
-                                        property instead of as a string. */
+#define PROPLIST_INT_COUNTER 1	/* Specifies that the proplist counter
+								   property should be stored as an integer
+								   property instead of as a string. */
 
-#define PROPLIST_COUNTER_FORMAT "P#" /* The prop that has the count of lines. */
-                                     /* Define as empty string for no counter. */
-                                     /* P substitutes the proplist name */
-                                     /* All other chars are literal. */
+#define PROPLIST_COUNTER_FORMAT "P#"	/* The prop that has the count of lines. */
+									 /* Define as empty string for no counter. */
+									 /* P substitutes the proplist name */
+									 /* All other chars are literal. */
 
-#define PROPLIST_ENTRY_FORMAT "P#/N" /* The props that contain the list data. */
-                                     /* P substitutes the proplist name */
-                                     /* N substitutes the item number */
-                                     /* All other chars are literal. */
+#define PROPLIST_ENTRY_FORMAT "P#/N"	/* The props that contain the list data. */
+									 /* P substitutes the proplist name */
+									 /* N substitutes the item number */
+									 /* All other chars are literal. */
 
 /* various times */
-#define AGING_TIME TIME_DAY(90) /* Unused time before obj shows as old. */
-#define DUMP_INTERVAL TIME_HOUR(4) /* time between dumps (or deltas) */
-#define DUMP_WARNTIME TIME_MINUTE(2) /* warning time before a dump */
-#define MONOLITHIC_INTERVAL TIME_DAY(1) /* max time between full dumps */
-#define CLEAN_INTERVAL TIME_MINUTE(15) /* time between unused obj purges */
+#define AGING_TIME TIME_DAY(90)	/* Unused time before obj shows as old. */
+#define DUMP_INTERVAL TIME_HOUR(4)	/* time between dumps (or deltas) */
+#define DUMP_WARNTIME TIME_MINUTE(2)	/* warning time before a dump */
+#define MONOLITHIC_INTERVAL TIME_DAY(1)	/* max time between full dumps */
+#define CLEAN_INTERVAL TIME_MINUTE(15)	/* time between unused obj purges */
 
 
 /* Enables sending of updates to an RWHO server. */
@@ -86,27 +86,27 @@
 #define MAX_OBJECT_ENDOWMENT 100
 
 /* minimum costs for various things */
-#define OBJECT_COST 10          /* Amount it costs to make an object    */
-#define EXIT_COST 1             /* Amount it costs to make an exit      */
-#define LINK_COST 1             /* Amount it costs to make a link       */
-#define ROOM_COST 10            /* Amount it costs to dig a room        */
-#define LOOKUP_COST 0           /* cost to do a scan                    */
-#define MAX_PENNIES 10000       /* amount at which temple gets cheap    */
-#define PENNY_RATE 8            /* 1/chance of getting a penny per room */
-#define START_PENNIES 50        /* # of pennies a player's created with */
+#define OBJECT_COST 10			/* Amount it costs to make an object    */
+#define EXIT_COST 1				/* Amount it costs to make an exit      */
+#define LINK_COST 1				/* Amount it costs to make a link       */
+#define ROOM_COST 10			/* Amount it costs to dig a room        */
+#define LOOKUP_COST 0			/* cost to do a scan                    */
+#define MAX_PENNIES 10000		/* amount at which temple gets cheap    */
+#define PENNY_RATE 8			/* 1/chance of getting a penny per room */
+#define START_PENNIES 50		/* # of pennies a player's created with */
 
 /* costs of kill command */
-#define KILL_BASE_COST 100      /* prob = expenditure/KILL_BASE_COST    */
-#define KILL_MIN_COST 10        /* minimum amount needed to kill        */
-#define KILL_BONUS 50           /* amount of "insurance" paid to victim */
+#define KILL_BASE_COST 100		/* prob = expenditure/KILL_BASE_COST    */
+#define KILL_MIN_COST 10		/* minimum amount needed to kill        */
+#define KILL_BONUS 50			/* amount of "insurance" paid to victim */
 
 
-#define MAX_DELTA_OBJS 20  /* max %age of objs changed before a full dump */
+#define MAX_DELTA_OBJS 20		/* max %age of objs changed before a full dump */
 
 /* player spam input limiters */
-#define COMMAND_BURST_SIZE 500  /* commands allowed per user in a burst */
-#define COMMANDS_PER_TIME 2     /* commands per time slice after burst  */
-#define COMMAND_TIME_MSEC 1000  /* time slice length in milliseconds    */
+#define COMMAND_BURST_SIZE 500	/* commands allowed per user in a burst */
+#define COMMANDS_PER_TIME 2		/* commands per time slice after burst  */
+#define COMMAND_TIME_MSEC 1000	/* time slice length in milliseconds    */
 
 
 /* Max %of db in unchanged objects allowed to be loaded.  Generally 5% */
@@ -149,7 +149,7 @@
 
 
 
-#define PLAYER_START ((dbref) 0)  /* room number of player start location */
+#define PLAYER_START ((dbref) 0)	/* room number of player start location */
 
 
 
@@ -279,4 +279,3 @@
 
 /* Define to 1 to cause muf debug tracing to display expanded arrays. */
 #define EXPANDED_DEBUG_TRACE 1
-

@@ -2,8 +2,16 @@
 
 /*
  * $Log: utils.c,v $
- * Revision 1.1  1999/12/16 03:23:29  revar
- * Initial revision
+ * Revision 1.2  2000/03/29 12:21:02  revar
+ * Reformatted all code into consistent format.
+ * 	Tabs are 4 spaces.
+ * 	Indents are one tab.
+ * 	Braces are generally K&R style.
+ * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+ * Rewrote restart script as a bourne shell script.
+ *
+ * Revision 1.1.1.1  1999/12/16 03:23:29  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:27:44  foxen
  * Initial FB6 CVS checkin.
@@ -39,53 +47,53 @@
 #include "tune.h"
 
 /* remove the first occurence of what in list headed by first */
-dbref 
+dbref
 remove_first(dbref first, dbref what)
 {
-    dbref   prev;
+	dbref prev;
 
-    /* special case if it's the first one */
-    if (first == what) {
-	return DBFETCH(first)->next;
-    } else {
-	/* have to find it */
-	DOLIST(prev, first) {
-	    if (DBFETCH(prev)->next == what) {
-		DBSTORE(prev, next, DBFETCH(what)->next);
+	/* special case if it's the first one */
+	if (first == what) {
+		return DBFETCH(first)->next;
+	} else {
+		/* have to find it */
+		DOLIST(prev, first) {
+			if (DBFETCH(prev)->next == what) {
+				DBSTORE(prev, next, DBFETCH(what)->next);
+				return first;
+			}
+		}
 		return first;
-	    }
 	}
-	return first;
-    }
 }
 
-int 
+int
 member(dbref thing, dbref list)
 {
-    DOLIST(list, list) {
-	if (list == thing)
-	    return 1;
-	if ((DBFETCH(list)->contents)
-		&& (member(thing, DBFETCH(list)->contents))) {
-	    return 1;
+	DOLIST(list, list) {
+		if (list == thing)
+			return 1;
+		if ((DBFETCH(list)->contents)
+			&& (member(thing, DBFETCH(list)->contents))) {
+			return 1;
+		}
 	}
-    }
 
-    return 0;
+	return 0;
 }
 
-dbref 
+dbref
 reverse(dbref list)
 {
-    dbref   newlist;
-    dbref   rest;
+	dbref newlist;
+	dbref rest;
 
-    newlist = NOTHING;
-    while (list != NOTHING) {
-	rest = DBFETCH(list)->next;
-	PUSH(list, newlist);
-	DBDIRTY(newlist);
-	list = rest;
-    }
-    return newlist;
+	newlist = NOTHING;
+	while (list != NOTHING) {
+		rest = DBFETCH(list)->next;
+		PUSH(list, newlist);
+		DBDIRTY(newlist);
+		list = rest;
+	}
+	return newlist;
 }

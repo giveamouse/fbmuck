@@ -36,8 +36,7 @@ char	*index();
 char	*rindex();
 */
 
-const char*	name_mangle();
-const char*	unmangle();
-const char*	strencrypt(const char *, const char *);
-const char*	strdecrypt(const char *, const char *);
-
+const char *name_mangle();
+const char *unmangle();
+const char *strencrypt(const char *, const char *);
+const char *strdecrypt(const char *, const char *);

@@ -11,8 +11,8 @@
 /*
  * Error results.
  */
-#define EGUINOSUPPORT -1                    /* This connection doesn't support the GUI MCP package. */
-#define EGUINODLOG    -2                    /* No dialog exists with the given ID. */
+#define EGUINOSUPPORT -1		/* This connection doesn't support the GUI MCP package. */
+#define EGUINODLOG    -2		/* No dialog exists with the given ID. */
 
 
 /* The MCP package name. */
@@ -99,96 +99,107 @@ int GuiSupported(int descr);
 /*
  * Second, create a dialog window.
  */
-char* GuiSimple(int descr, char *title, Gui_CB callback, void* context);
-char* GuiTabbed(int descr, char *title, int pagecount, char** pagenames, char** pageids, Gui_CB callback, void* context);
-char* GuiHelper(int descr, char *title, int pagecount, char** pagenames, char** pageids, Gui_CB callback, void* context);
+char *GuiSimple(int descr, char *title, Gui_CB callback, void *context);
+char *GuiTabbed(int descr, char *title, int pagecount, char **pagenames, char **pageids,
+				Gui_CB callback, void *context);
+char *GuiHelper(int descr, char *title, int pagecount, char **pagenames, char **pageids,
+				Gui_CB callback, void *context);
 
 /*
  * Once you have a dialog, you can add menu items with these functions.
  */
-int gui_menu_item(char* dlogid, char* id, char* type, char* name, char** args);
-int GuiMenuCmd(char* dlogid, char* id, char* name);
-int GuiMenuCheckBtn(char* dlogid, char* id, char* name, char** args);
+int gui_menu_item(char *dlogid, char *id, char *type, char *name, char **args);
+int GuiMenuCmd(char *dlogid, char *id, char *name);
+int GuiMenuCheckBtn(char *dlogid, char *id, char *name, char **args);
 
 
 /*
  * You use these commands to add controls to a dialog.
  */
-int gui_ctrl_make_v(char* dlogid, char* type, char* pane, char* id, char* text, char* value, int layout, char** args);
-int gui_ctrl_make_l(char* dlogid, char* type, char* pane, char* id, char* text, char* value, int layout, ...);
+int gui_ctrl_make_v(char *dlogid, char *type, char *pane, char *id, char *text, char *value,
+					int layout, char **args);
+int gui_ctrl_make_l(char *dlogid, char *type, char *pane, char *id, char *text, char *value,
+					int layout, ...);
 
 
 /*
  * You can use these as shortcuts for creating controls.
  */
-int GuiHRule(char* dlogid, char* pane, char* id, int height, int layout);
-int GuiVRule(char* dlogid, char* pane, char* id, int thickness, int layout);
-int GuiText(char* dlogid, char* pane, char* id, char* value, int width, int layout);
-int GuiButton(char* dlogid, char* pane, char* id, char* text, int width, int dismiss, int layout);
-int GuiEdit(char* dlogid, char* pane, char* id, char* text, char* value, int width, int layout);
-int GuiMulti(char* dlogid, char* pane, char* id, char* value, int width, int height, int fixed, int layout);
+int GuiHRule(char *dlogid, char *pane, char *id, int height, int layout);
+int GuiVRule(char *dlogid, char *pane, char *id, int thickness, int layout);
+int GuiText(char *dlogid, char *pane, char *id, char *value, int width, int layout);
+int GuiButton(char *dlogid, char *pane, char *id, char *text, int width, int dismiss,
+
+			  int layout);
+int GuiEdit(char *dlogid, char *pane, char *id, char *text, char *value, int width,
+
+			int layout);
+int GuiMulti(char *dlogid, char *pane, char *id, char *value, int width, int height, int fixed,
+
+			 int layout);
 
 /* CHECKBOX */
 /* SCALE */
 
-int GuiSpinner(char* dlogid, char* pane, char* id, char* text, int value, int width, int min, int max, int layout);
-int GuiCombo(char* dlogid, char* pane, char* id, char* text, char* value, int width, int editable, int layout);
+int GuiSpinner(char *dlogid, char *pane, char *id, char *text, int value, int width, int min,
+			   int max, int layout);
+int GuiCombo(char *dlogid, char *pane, char *id, char *text, char *value, int width,
+			 int editable, int layout);
 
 /* LISTBOX */
 
-int GuiFrame(char* dlogid, char* pane, char* id, int layout);
-int GuiGroupBox(char* dlogid, char* pane, char* id, char* text, int collapsible, int collapsed, int layout);
+int GuiFrame(char *dlogid, char *pane, char *id, int layout);
+int GuiGroupBox(char *dlogid, char *pane, char *id, char *text, int collapsible, int collapsed,
+
+				int layout);
 
 
 /*
  * You can set or retrieve the values of various widgets with these calls.
  */
-char* GuiValueFirst(char* dlogid);
-char* GuiValueNext(char* dlogid, char* prev);
-int gui_value_linecount(char* dlogid, char* id);
-char* gui_value_get(char* dlogid, char* id, int line);
-int GuiSetVal(char* dlogid, char* id, int lines, char** value);
+char *GuiValueFirst(char *dlogid);
+char *GuiValueNext(char *dlogid, char *prev);
+int gui_value_linecount(char *dlogid, char *id);
+char *gui_value_get(char *dlogid, char *id, int line);
+int GuiSetVal(char *dlogid, char *id, int lines, char **value);
 
 
 /*
  * Listbox and combobox widgets also have lists associated with them.
  * You can use these calls to get or set items in these lists.
  */
-int GuiListInsert(char* dlogid, char* id, int after, int lines, char** value);
-int GuiListDelete(char* dlogid, char* id, int from, int to);
+int GuiListInsert(char *dlogid, char *id, int after, int lines, char **value);
+int GuiListDelete(char *dlogid, char *id, int from, int to);
 
 
 /*
  *  When you are done laying out the dialog, you display it to the user.
  */
-int GuiShow(char* id);
+int GuiShow(char *id);
 
 
 /*
  * When you are done with the dialog, you can force it to close.
  * You should make sure to free up the dialog resources when you are done.
  */
-int GuiClose(char* id);
-int GuiFree(char* id);
+int GuiClose(char *id);
+int GuiFree(char *id);
 int gui_dlog_freeall_descr(int descr);
 
 
 /*
  * This might be useful for callbacks.
  */
-int gui_dlog_get_descr(char* dlogid);
+int gui_dlog_get_descr(char *dlogid);
 
 
 /* Testing framework.  WORK: THIS SHOULD BE REMOVED BEFORE RELEASE */
-void do_post_dlog(int descr, char* text);
+void do_post_dlog(int descr, char *text);
 
 
 /* internal support for MUF */
-void muf_dlog_add(struct frame*fr, char* dlogid);
-void muf_dlog_remove(struct frame*fr, char* dlogid);
+void muf_dlog_add(struct frame *fr, char *dlogid);
+void muf_dlog_remove(struct frame *fr, char *dlogid);
 void muf_dlog_purge(struct frame *fr);
 
-#endif /* MCPGUI_H */
-
-
-
+#endif							/* MCPGUI_H */

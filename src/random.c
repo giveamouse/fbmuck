@@ -44,13 +44,12 @@ void xMD5Transform(word32 buf[4], word32 const in[16]);
  * MD5 spec.  Note: this code works regardless of the byte order.
  */
 void
-byteSwap(word32 *buf, unsigned words)
+byteSwap(word32 * buf, unsigned words)
 {
-	byte *p = (byte *)buf;
+	byte *p = (byte *) buf;
 
 	do {
-		*buf++ = (word32)((unsigned)p[3] << 8 | p[2]) << 16 |
-			((unsigned)p[1] << 8 | p[0]);
+		*buf++ = (word32) ((unsigned) p[3] << 8 | p[2]) << 16 | ((unsigned) p[1] << 8 | p[0]);
 		p += 4;
 	} while (--words);
 }
@@ -84,19 +83,19 @@ xMD5Update(struct xMD5Context *ctx, byte const *buf, int len)
 
 	t = ctx->bytes[0];
 	if ((ctx->bytes[0] = t + len) < t)
-		ctx->bytes[1]++;	/* Carry from low to high */
+		ctx->bytes[1]++;		/* Carry from low to high */
 
-	t = 64 - (t & 0x3f);	/* Space available in ctx->in (at least 1) */
-	if ((unsigned)t > len) {
-		bcopy(buf, (byte *)ctx->in + 64 - (unsigned)t, len);
+	t = 64 - (t & 0x3f);		/* Space available in ctx->in (at least 1) */
+	if ((unsigned) t > len) {
+		bcopy(buf, (byte *) ctx->in + 64 - (unsigned) t, len);
 		return;
 	}
 	/* First chunk is an odd size */
-	bcopy(buf,(byte *)ctx->in + 64 - (unsigned)t, (unsigned)t);
+	bcopy(buf, (byte *) ctx->in + 64 - (unsigned) t, (unsigned) t);
 	byteSwap(ctx->in, 16);
 	xMD5Transform(ctx->buf, ctx->in);
-	buf += (unsigned)t;
-	len -= (unsigned)t;
+	buf += (unsigned) t;
+	len -= (unsigned) t;
 
 	/* Process data in 64-byte chunks */
 	while (len >= 64) {
@@ -118,8 +117,8 @@ xMD5Update(struct xMD5Context *ctx, byte const *buf, int len)
 void
 xMD5Final(byte digest[16], struct xMD5Context *ctx)
 {
-	int count = (int)(ctx->bytes[0] & 0x3f); /* Bytes in ctx->in */
-	byte *p = (byte *)ctx->in + count;	/* First unused byte */
+	int count = (int) (ctx->bytes[0] & 0x3f);	/* Bytes in ctx->in */
+	byte *p = (byte *) ctx->in + count;	/* First unused byte */
 
 	/* Set the first char of padding to 0x80.  There is always room. */
 	*p++ = 0x80;
@@ -127,14 +126,14 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
 	/* Bytes of padding needed to make 56 bytes (-8..55) */
 	count = 56 - 1 - count;
 
-	if (count < 0) {	/* Padding forces an extra block */
-		bzero(p, count+8);
+	if (count < 0) {			/* Padding forces an extra block */
+		bzero(p, count + 8);
 		byteSwap(ctx->in, 16);
 		xMD5Transform(ctx->buf, ctx->in);
-		p = (byte *)ctx->in;
+		p = (byte *) ctx->in;
 		count = 56;
 	}
-	bzero(p, count+8);
+	bzero(p, count + 8);
 	byteSwap(ctx->in, 14);
 
 	/* Append length in bits and transform */
@@ -144,7 +143,7 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
 
 	byteSwap(ctx->buf, 4);
 	bcopy(ctx->buf, digest, 16);
-	bzero(ctx,sizeof(ctx));
+	bzero(ctx, sizeof(ctx));
 }
 
 
@@ -250,7 +249,8 @@ xMD5Transform(word32 buf[4], word32 const in[16])
 }
 
 
-void MD5(void *dest, void *orig, int len)
+void
+MD5(void *dest, void *orig, int len)
 {
 	struct xMD5Context context;
 
@@ -267,38 +267,44 @@ static unsigned long digest[4];
 
 /* Create the initial buffer for the given connection and dump some semi-
    random string into it to start.  If seed is zero, seed off the clock. */
-void *init_seed( char *seed ) {
-  unsigned long *digest;
-  int loop;
-  int tbuf[8];
+void *
+init_seed(char *seed)
+{
+	unsigned long *digest;
+	int loop;
+	int tbuf[8];
 
-  if (!(digest=(unsigned long *)malloc(sizeof(unsigned long)*4))) {
-    return(NULL);
-  }
-  if (!seed) {
-    /* No fixed seed given... make something up */
-    srand((unsigned int)time(NULL));
-    for (loop = 0; loop < 8; loop++)
-      tbuf[loop]=rand();
-    memcpy(digest,tbuf,16);
-  } else {
-    memcpy(digest,seed,16);
-  }
-  return((void *)digest);
+	if (!(digest = (unsigned long *) malloc(sizeof(unsigned long) * 4))) {
+		return (NULL);
+	}
+	if (!seed) {
+		/* No fixed seed given... make something up */
+		srand((unsigned int) time(NULL));
+		for (loop = 0; loop < 8; loop++)
+			tbuf[loop] = rand();
+		memcpy(digest, tbuf, 16);
+	} else {
+		memcpy(digest, seed, 16);
+	}
+	return ((void *) digest);
 }
 
 /* Deletes a buffer. */
-void delete_seed( void *buffer ) {
-  free(buffer);
+void
+delete_seed(void *buffer)
+{
+	free(buffer);
 }
 
-unsigned long rnd(void *buffer)
+unsigned long
+rnd(void *buffer)
 {
-  unsigned long *digest = (unsigned long *)buffer;
+	unsigned long *digest = (unsigned long *) buffer;
 
-  if (!digest) return(0);
-  MD5(digest, digest, sizeof(digest));
-  return(digest[0]);
+	if (!digest)
+		return (0);
+	MD5(digest, digest, sizeof(digest));
+	return (digest[0]);
 }
 
 /* Test code, ignore

@@ -1,3 +1,4 @@
+
 #define MAX_MFUN_NAME_LEN 16
 #define MAX_MFUN_LIST_LEN 512
 #define MPI_MAX_VARIABLES 32
@@ -22,12 +23,17 @@ const char *safegetprop(dbref player, dbref what, dbref perms, const char *inbuf
 const char *safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf);
 
 char *stripspaces(char *buf, char *in);
-char *string_substitute(const char *str, const char *oldstr, const char *newstr, char *buf, int maxlen);
+char *string_substitute(const char *str, const char *oldstr, const char *newstr, char *buf,
+
+						int maxlen);
 char *cr2slash(char *buf, const char *in);
 
 int get_list_count(dbref trig, dbref what, dbref perms, const char *listname);
-const char *get_list_item(dbref trig, dbref what, dbref perms, const char *listname, int itemnum);
-char *get_concat_list(dbref player, dbref what, dbref perms, dbref obj, const char *listname, char *buf, int maxchars, int mode);
+const char *get_list_item(dbref trig, dbref what, dbref perms, const char *listname,
+
+						  int itemnum);
+char *get_concat_list(dbref player, dbref what, dbref perms, dbref obj, const char *listname,
+					  char *buf, int maxchars, int mode);
 
 int isneighbor(dbref d1, dbref d2);
 int mesg_read_perms(dbref player, dbref perms, dbref obj);
@@ -61,4 +67,3 @@ int free_mfuncs(int downto);
 typedef char argv_typ[10][BUFFER_LEN];
 
 #define MesgParse(in,out) mesg_parse(descr, player, what, perms, (in), (out), BUFFER_LEN, mesgtyp)
-

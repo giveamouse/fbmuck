@@ -2,8 +2,16 @@
 
 /*
  * $Log: db.c,v $
- * Revision 1.1  2000/01/14 22:56:06  revar
- * Initial revision
+ * Revision 1.2  2000/03/29 12:21:02  revar
+ * Reformatted all code into consistent format.
+ * 	Tabs are 4 spaces.
+ * 	Indents are one tab.
+ * 	Braces are generally K&R style.
+ * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+ * Rewrote restart script as a bourne shell script.
+ *
+ * Revision 1.1.1.1  2000/01/14 22:56:06  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.2  2000/01/14 22:53:00  foxen
  * Added Points' SECURE_THING_MOVING @tune support.
@@ -104,19 +112,19 @@
 #include "externs.h"
 
 struct object *db = 0;
-dbref   db_top = 0;
-dbref   recyclable = NOTHING;
-int		db_load_format = 0;
+dbref db_top = 0;
+dbref recyclable = NOTHING;
+int db_load_format = 0;
 
 #ifndef DB_INITIAL_SIZE
 #define DB_INITIAL_SIZE 10000
-#endif								/* DB_INITIAL_SIZE */
+#endif							/* DB_INITIAL_SIZE */
 
 #ifdef DB_DOUBLING
 
-dbref   db_size = DB_INITIAL_SIZE;
+dbref db_size = DB_INITIAL_SIZE;
 
-#endif								/* DB_DOUBLING */
+#endif							/* DB_DOUBLING */
 
 struct macrotable *macrotop;
 
@@ -127,33 +135,34 @@ extern char *alloc_string(const char *);
 extern short db_conversion_flag;
 extern short db_decompression_flag;
 
-int	 number(const char *s);
-int	 ifloat(const char *s);
-void	putproperties(FILE * f, int obj);
-void	getproperties(FILE * f, int obj, const char *pdir);
+int number(const char *s);
+int ifloat(const char *s);
+void putproperties(FILE * f, int obj);
+void getproperties(FILE * f, int obj, const char *pdir);
 
 
 dbref
 getparent(dbref obj)
 {
 	int limit = 88;
-    if (tp_thing_movement) {
-     obj = getloc(obj);
-    } else {
-     do {
-		if (Typeof(obj)==TYPE_THING && (FLAGS(obj) & VEHICLE) && limit-->0) {
-			obj = THING_HOME(obj);
-		} else {
-			obj = getloc(obj);
-		}
-     } while (obj != NOTHING && Typeof(obj) == TYPE_THING);
-    }
+
+	if (tp_thing_movement) {
+		obj = getloc(obj);
+	} else {
+		do {
+			if (Typeof(obj) == TYPE_THING && (FLAGS(obj) & VEHICLE) && limit-- > 0) {
+				obj = THING_HOME(obj);
+			} else {
+				obj = getloc(obj);
+			}
+		} while (obj != NOTHING && Typeof(obj) == TYPE_THING);
+	}
 	return obj;
 }
 
 
 void
-free_line(struct line * l)
+free_line(struct line *l)
 {
 	if (l->this_line)
 		free((void *) l->this_line);
@@ -161,7 +170,7 @@ free_line(struct line * l)
 }
 
 void
-free_prog_text(struct line * l)
+free_prog_text(struct line *l)
 {
 	struct line *next;
 
@@ -174,7 +183,7 @@ free_prog_text(struct line * l)
 
 #ifdef DB_DOUBLING
 
-static void 
+static void
 db_grow(dbref newtop)
 {
 	struct object *newdb;
@@ -184,17 +193,19 @@ db_grow(dbref newtop)
 		if (!db) {
 			/* make the initial one */
 			db_size = DB_INITIAL_SIZE;
-			while (db_top > db_size) db_size += 1000;
-			if ((db = (struct object *)malloc(db_size * sizeof(struct object))) == 0) {
+			while (db_top > db_size)
+				db_size += 1000;
+			if ((db = (struct object *) malloc(db_size * sizeof(struct object))) == 0) {
 				abort();
 			}
 		}
 		/* maybe grow it */
 		if (db_top > db_size) {
 			/* make sure it's big enough */
-			while (db_top > db_size) db_size += 1000;
+			while (db_top > db_size)
+				db_size += 1000;
 			if ((newdb = (struct object *) realloc((void *) db,
-						 db_size * sizeof(struct object))) == 0) {
+												   db_size * sizeof(struct object))) == 0) {
 				abort();
 			}
 			db = newdb;
@@ -202,9 +213,9 @@ db_grow(dbref newtop)
 	}
 }
 
-#else								/* DB_DOUBLING */
+#else							/* DB_DOUBLING */
 
-static void 
+static void
 db_grow(dbref newtop)
 {
 	struct object *newdb;
@@ -213,31 +224,31 @@ db_grow(dbref newtop)
 		db_top = newtop;
 		if (db) {
 			if ((newdb = (struct object *)
-				 realloc((void *) db,
-						 db_top * sizeof(struct object))) == 0) {
+				 realloc((void *) db, db_top * sizeof(struct object))) == 0) {
 				abort();
 			}
 			db = newdb;
 		} else {
 			/* make the initial one */
-			int startsize = (newtop >= DB_INITIAL_SIZE) ?
-							 newtop : DB_INITIAL_SIZE;
+			int startsize = (newtop >= DB_INITIAL_SIZE) ? newtop : DB_INITIAL_SIZE;
+
 			if ((db = (struct object *)
-				  malloc(startsize * sizeof(struct object))) == 0) {
+				 malloc(startsize * sizeof(struct object))) == 0) {
 				abort();
 			}
 		}
 	}
 }
 
-#endif								/* DB_DOUBLING */
+#endif							/* DB_DOUBLING */
 
-void 
+void
 db_clear_object(dbref i)
 {
 	struct object *o = DBFETCH(i);
 
 	bzero(o, sizeof(struct object));
+
 	NAME(i) = 0;
 	ts_newobject(o);
 	o->location = NOTHING;
@@ -259,10 +270,10 @@ db_clear_object(dbref i)
 	/* type-specific fields you must also initialize */
 }
 
-dbref 
+dbref
 new_object(void)
 {
-	dbref   newobj;
+	dbref newobj;
 
 	if (recyclable != NOTHING) {
 		newobj = recyclable;
@@ -279,7 +290,7 @@ new_object(void)
 	return newobj;
 }
 
-void 
+void
 putref(FILE * f, dbref ref)
 {
 	if (fprintf(f, "%d\n", ref) < 0) {
@@ -287,7 +298,7 @@ putref(FILE * f, dbref ref)
 	}
 }
 
-static void 
+static void
 putstring(FILE * f, const char *s)
 {
 	if (s) {
@@ -305,8 +316,8 @@ putproperties_rec(FILE * f, const char *dir, dbref obj)
 {
 	PropPtr pref;
 	PropPtr p, pptr;
-	char	buf[BUFFER_LEN];
-	char	name[BUFFER_LEN];
+	char buf[BUFFER_LEN];
+	char name[BUFFER_LEN];
 
 	pref = first_prop_nofetch(obj, dir, &pptr, name);
 	while (pref) {
@@ -343,9 +354,9 @@ int
 fetch_propvals(dbref obj, const char *dir)
 {
 	PropPtr p, pptr;
-	int	 cnt = 0;
-	char	buf[BUFFER_LEN];
-	char	name[BUFFER_LEN];
+	int cnt = 0;
+	char buf[BUFFER_LEN];
+	char name[BUFFER_LEN];
 
 	p = first_prop_nofetch(obj, dir, &pptr, name);
 	while (p) {
@@ -371,7 +382,7 @@ fetch_propvals(dbref obj, const char *dir)
 
 
 void
-putprops_copy(FILE *f, dbref obj)
+putprops_copy(FILE * f, dbref obj)
 {
 	char buf[BUFFER_LEN * 3];
 	char *ptr;
@@ -385,8 +396,7 @@ putprops_copy(FILE *f, dbref obj)
 		return;
 	}
 	if (db_load_format < 7 || db_conversion_flag) {
-		if (fetchprops_priority(obj, 1, NULL) ||
-				fetch_propvals(obj, "/")) {
+		if (fetchprops_priority(obj, 1, NULL) || fetch_propvals(obj, "/")) {
 			fseek(f, 0L, 2);
 		}
 		putproperties(f, obj);
@@ -401,22 +411,25 @@ putprops_copy(FILE *f, dbref obj)
 	if (DBFETCH(obj)->propsfpos) {
 		fseek(g, DBFETCH(obj)->propsfpos, 0);
 		ptr = fgets(buf, sizeof(buf), g);
-		if (!ptr) abort();
+		if (!ptr)
+			abort();
 		for (;;) {
 			ptr = fgets(buf, sizeof(buf), g);
-			if (!ptr) abort();
-			if (!string_compare(ptr, "*End*\n")) break;
+			if (!ptr)
+				abort();
+			if (!string_compare(ptr, "*End*\n"))
+				break;
 			fputs(buf, f);
 		}
 	}
 	putstring(f, "*End*");
 }
 
-#endif /* DISKBASE */
+#endif							/* DISKBASE */
 
 
 void
-macrodump(struct macrotable * node, FILE * f)
+macrodump(struct macrotable *node, FILE * f)
 {
 	if (!node)
 		return;
@@ -427,10 +440,10 @@ macrodump(struct macrotable * node, FILE * f)
 	macrodump(node->right, f);
 }
 
-char   *
+char *
 file_line(FILE * f)
 {
-	char	buf[BUFFER_LEN];
+	char buf[BUFFER_LEN];
 
 	if (!fgets(buf, BUFFER_LEN, f))
 		return NULL;
@@ -439,15 +452,15 @@ file_line(FILE * f)
 }
 
 void
-foldtree(struct macrotable * center)
+foldtree(struct macrotable *center)
 {
-	int	 count = 0;
+	int count = 0;
 	struct macrotable *nextcent = center;
 
 	for (; nextcent; nextcent = nextcent->left)
 		count++;
 	if (count > 1) {
-		for (nextcent = center, count /= 2; count--; nextcent = nextcent->left);
+		for (nextcent = center, count /= 2; count--; nextcent = nextcent->left) ;
 		if (center->left)
 			center->left->right = NULL;
 		center->left = nextcent;
@@ -456,7 +469,7 @@ foldtree(struct macrotable * center)
 	for (count = 0, nextcent = center; nextcent; nextcent = nextcent->right)
 		count++;
 	if (count > 1) {
-		for (nextcent = center, count /= 2; count--; nextcent = nextcent->right);
+		for (nextcent = center, count /= 2; count--; nextcent = nextcent->right) ;
 		if (center->right)
 			center->right->left = NULL;
 		foldtree(center->right);
@@ -464,9 +477,9 @@ foldtree(struct macrotable * center)
 }
 
 int
-macrochain(struct macrotable * lastnode, FILE * f)
+macrochain(struct macrotable *lastnode, FILE * f)
 {
-	char   *line, *line2;
+	char *line, *line2;
 	struct macrotable *newmacro;
 
 	if (!(line = file_line(f)))
@@ -486,24 +499,24 @@ macrochain(struct macrotable * lastnode, FILE * f)
 	return (1 + macrochain(newmacro, f));
 }
 
-void 
+void
 macroload(FILE * f)
 {
-	int	 count = 0;
+	int count = 0;
 
 	macrotop = NULL;
 	count = macrochain(macrotop, f);
-	for (count /= 2; count--; macrotop = macrotop->right);
+	for (count /= 2; count--; macrotop = macrotop->right) ;
 	foldtree(macrotop);
 	return;
 }
 
 void
-log_program_text(struct line * first, dbref player, dbref i)
+log_program_text(struct line *first, dbref player, dbref i)
 {
-	FILE   *f;
-	char	fname[BUFFER_LEN];
-	time_t  lt = time(NULL);
+	FILE *f;
+	char fname[BUFFER_LEN];
+	time_t lt = time(NULL);
 
 	strcpy(fname, PROGRAM_LOG);
 	f = fopen(fname, "a");
@@ -512,13 +525,12 @@ log_program_text(struct line * first, dbref player, dbref i)
 		return;
 	}
 
-	fputs("#######################################",f);
-	fputs("#######################################\n",f);
+	fputs("#######################################", f);
+	fputs("#######################################\n", f);
 	fprintf(f, "PROGRAM %s, SAVED AT %s BY %s(%d)\n",
-				unparse_object(player, i), ctime(&lt),
-				NAME(player), player);
-	fputs("#######################################",f);
-	fputs("#######################################\n\n",f);
+			unparse_object(player, i), ctime(&lt), NAME(player), player);
+	fputs("#######################################", f);
+	fputs("#######################################\n\n", f);
 
 	while (first) {
 		if (!first->this_line)
@@ -532,10 +544,10 @@ log_program_text(struct line * first, dbref player, dbref i)
 }
 
 void
-write_program(struct line * first, dbref i)
+write_program(struct line *first, dbref i)
 {
-	FILE   *f;
-	char	fname[BUFFER_LEN];
+	FILE *f;
+	char fname[BUFFER_LEN];
 
 	sprintf(fname, "muf/%d.m", (int) i);
 	f = fopen(fname, "w");
@@ -557,18 +569,18 @@ write_program(struct line * first, dbref i)
 	fclose(f);
 }
 
-int 
+int
 db_write_object(FILE * f, dbref i)
 {
 	struct object *o = DBFETCH(i);
-	int	 j;
+	int j;
 	long tmppos;
 
 	putstring(f, NAME(i));
 	putref(f, o->location);
 	putref(f, o->contents);
 	putref(f, o->next);
-	putref(f, (FLAGS(i) & ~DUMP_MASK));  /* write non-internal flags */
+	putref(f, (FLAGS(i) & ~DUMP_MASK));	/* write non-internal flags */
 
 	putref(f, o->ts.created);
 	putref(f, o->ts.lastused);
@@ -583,48 +595,48 @@ db_write_object(FILE * f, dbref i)
 	putprops_copy(f, i);
 	o->propsfpos = tmppos;
 	undirtyprops(i);
-# else				/* !FLUSHCHANGED */
+# else							/* !FLUSHCHANGED */
 	putprops_copy(f, i);
 	disposeprops(i);
-# endif				/* FLUSHCHANGED */
+# endif							/* FLUSHCHANGED */
 
-#else				/* !DISKBASE */
+#else							/* !DISKBASE */
 	putproperties(f, i);
-#endif				/* DISKBASE */
+#endif							/* DISKBASE */
 
 
 	switch (Typeof(i)) {
-		case TYPE_THING:
-			putref(f, THING_HOME(i));
-			putref(f, o->exits);
-			putref(f, OWNER(i));
-			putref(f, THING_VALUE(i));
-			break;
+	case TYPE_THING:
+		putref(f, THING_HOME(i));
+		putref(f, o->exits);
+		putref(f, OWNER(i));
+		putref(f, THING_VALUE(i));
+		break;
 
-		case TYPE_ROOM:
-			putref(f, o->sp.room.dropto);
-			putref(f, o->exits);
-			putref(f, OWNER(i));
-			break;
+	case TYPE_ROOM:
+		putref(f, o->sp.room.dropto);
+		putref(f, o->exits);
+		putref(f, OWNER(i));
+		break;
 
-		case TYPE_EXIT:
-			putref(f, o->sp.exit.ndest);
-			for (j = 0; j < o->sp.exit.ndest; j++) {
-				putref(f, (o->sp.exit.dest)[j]);
-			}
-			putref(f, OWNER(i));
-			break;
+	case TYPE_EXIT:
+		putref(f, o->sp.exit.ndest);
+		for (j = 0; j < o->sp.exit.ndest; j++) {
+			putref(f, (o->sp.exit.dest)[j]);
+		}
+		putref(f, OWNER(i));
+		break;
 
-		case TYPE_PLAYER:
-			putref(f, PLAYER_HOME(i));
-			putref(f, o->exits);
-			putref(f, PLAYER_PENNIES(i));
-			putstring(f, PLAYER_PASSWORD(i));
-			break;
+	case TYPE_PLAYER:
+		putref(f, PLAYER_HOME(i));
+		putref(f, o->exits);
+		putref(f, PLAYER_PENNIES(i));
+		putstring(f, PLAYER_PASSWORD(i));
+		break;
 
-		case TYPE_PROGRAM:
-			putref(f, OWNER(i));
-			break;
+	case TYPE_PROGRAM:
+		putref(f, OWNER(i));
+		break;
 	}
 
 	return 0;
@@ -640,11 +652,11 @@ int deltas_count = 0;
 /* mode == 1 for dumping all objects.  mode == 0 for deltas only.  */
 
 void
-db_write_list(FILE *f, int mode)
+db_write_list(FILE * f, int mode)
 {
 	dbref i;
 
-	for (i = db_top; i-->0; ) {
+	for (i = db_top; i-- > 0;) {
 		if (mode == 1 || (FLAGS(i) & OBJECT_CHANGED)) {
 			if (fprintf(f, "#%d\n", i) < 0)
 				abort();
@@ -652,20 +664,20 @@ db_write_list(FILE *f, int mode)
 #ifdef DISKBASE
 #ifdef FLUSHCHANGED
 			if (mode == 1) {
-				FLAGS(i) &= ~SAVED_DELTA;  /* clear delta flag */
+				FLAGS(i) &= ~SAVED_DELTA;	/* clear delta flag */
 			} else {
-				FLAGS(i) |= SAVED_DELTA;  /* set delta flag */
+				FLAGS(i) |= SAVED_DELTA;	/* set delta flag */
 				deltas_count++;
 			}
 #endif
 #endif
-			FLAGS(i) &= ~OBJECT_CHANGED;  /* clear changed flag */
+			FLAGS(i) &= ~OBJECT_CHANGED;	/* clear changed flag */
 		}
 	}
 }
 
 
-dbref 
+dbref
 db_write(FILE * f)
 {
 	putstring(f, "***Foxen5 TinyMUCK DUMP Format***");
@@ -673,9 +685,9 @@ db_write(FILE * f)
 	putref(f, db_top);
 	putref(f, DB_PARMSINFO
 #ifdef COMPRESS
-		+ (db_decompression_flag? 0 : DB_COMPRESSED)
+		   + (db_decompression_flag ? 0 : DB_COMPRESSED)
 #endif
-	);
+			);
 	putref(f, tune_count_parms());
 	tune_save_parms_to_file(f);
 
@@ -698,9 +710,9 @@ db_write(FILE * f)
 
 
 dbref
-db_write_deltas(FILE *f)
+db_write_deltas(FILE * f)
 {
-	fseek(f, 0L, 2);  /* seek end of file */
+	fseek(f, 0L, 2);			/* seek end of file */
 	putstring(f, "***Foxen5 Deltas Dump Extention***");
 	db_write_list(f, 0);
 
@@ -712,11 +724,11 @@ db_write_deltas(FILE *f)
 
 
 
-dbref 
+dbref
 parse_dbref(const char *s)
 {
 	const char *p;
-	long	x;
+	long x;
 
 	x = atol(s);
 	if (x > 0) {
@@ -734,21 +746,21 @@ parse_dbref(const char *s)
 	return NOTHING;
 }
 
-static int 
+static int
 do_peek(FILE * f)
 {
-	int	 peekch;
+	int peekch;
 
 	ungetc((peekch = getc(f)), f);
 
 	return (peekch);
 }
 
-dbref 
+dbref
 getref(FILE * f)
 {
 	static char buf[BUFFER_LEN];
-	int	 peekch;
+	int peekch;
 
 	/*
 	 * Compiled in with or without timestamps, Sep 1, 1990 by Fuzzy, added to
@@ -766,8 +778,8 @@ static char xyzzybuf[BUFFER_LEN];
 static const char *
 getstring_noalloc(FILE * f)
 {
-	char   *p;
-	char	c;
+	char *p;
+	char c;
 
 	if (fgets(xyzzybuf, sizeof(xyzzybuf), f) == NULL) {
 		xyzzybuf[0] = '\0';
@@ -777,7 +789,7 @@ getstring_noalloc(FILE * f)
 	if (strlen(xyzzybuf) == BUFFER_LEN - 1) {
 		/* ignore whatever comes after */
 		if (xyzzybuf[BUFFER_LEN - 2] != '\n')
-			while ((c = fgetc(f)) != '\n');
+			while ((c = fgetc(f)) != '\n') ;
 	}
 	for (p = xyzzybuf; *p; p++) {
 		if (*p == '\n') {
@@ -798,7 +810,7 @@ extern const char *old_uncompress(const char *);
 #define alloc_compressed(x) alloc_string(compress(x))
 #else
 #define alloc_compressed(x) alloc_string(x)
-#endif								/* COMPRESS */
+#endif							/* COMPRESS */
 
 /* returns true for numbers of form [ + | - ] <series of digits> */
 int
@@ -820,38 +832,52 @@ number(const char *s)
 int
 ifloat(const char *s)
 {
- const char *hold;
+	const char *hold;
 
- if (!s) return 0;
- while (isspace(*s)) s++;
- if (*s == '+' || *s == '-') s++;
- hold = s;
- while ((*s) && (*s>='0' && *s<='9')) s++;
- if ((!*s)||(s==hold)) return 0;
- if (*s!='.') return 0;
- s++;
- hold = s;
- while ((*s) && (*s>='0' && *s<='9')) s++;
- if (hold==s) return 0;
- if (!*s) return 1;
- if ((*s!='e')&&(*s!='E')) return 0;
- s++;
- if (*s == '+' || *s == '-') s++;
- hold = s;
- while ((*s) && (*s>='0' && *s<='9')) s++;
- if (s==hold) return 0;
- if (*s) return 0;
- return 1;
+	if (!s)
+		return 0;
+	while (isspace(*s))
+		s++;
+	if (*s == '+' || *s == '-')
+		s++;
+	hold = s;
+	while ((*s) && (*s >= '0' && *s <= '9'))
+		s++;
+	if ((!*s) || (s == hold))
+		return 0;
+	if (*s != '.')
+		return 0;
+	s++;
+	hold = s;
+	while ((*s) && (*s >= '0' && *s <= '9'))
+		s++;
+	if (hold == s)
+		return 0;
+	if (!*s)
+		return 1;
+	if ((*s != 'e') && (*s != 'E'))
+		return 0;
+	s++;
+	if (*s == '+' || *s == '-')
+		s++;
+	hold = s;
+	while ((*s) && (*s >= '0' && *s <= '9'))
+		s++;
+	if (s == hold)
+		return 0;
+	if (*s)
+		return 0;
+	return 1;
 }
 
 /*** CHANGED:
 was: PropPtr getproperties(FILE *f)
 now: void getproperties(FILE *f, dbref obj, const char *pdir)
 ***/
-void 
+void
 getproperties(FILE * f, dbref obj, const char *pdir)
 {
-	char	buf[BUFFER_LEN * 3], *p;
+	char buf[BUFFER_LEN * 3], *p;
 	int datalen;
 
 #ifdef DISKBASE
@@ -871,16 +897,17 @@ getproperties(FILE * f, dbref obj, const char *pdir)
 		fgets(buf, sizeof(buf), f);
 		while (1) {
 			/* fgets reads in \n too! */
-			if (!strcmp(buf, "***Property list end ***\n") ||
-					!strcmp(buf, "*End*\n"))
+			if (!strcmp(buf, "***Property list end ***\n") || !strcmp(buf, "*End*\n"))
 				break;
 			p = index(buf, PROP_DELIMITER);
-			*(p++) = '\0';				/* Purrrrrrrrrr... */
+			*(p++) = '\0';		/* Purrrrrrrrrr... */
 			datalen = strlen(p);
 			p[datalen - 1] = '\0';
 
-			if ((p - buf) >= BUFFER_LEN) buf[BUFFER_LEN-1] = '\0';
-			if (datalen >= BUFFER_LEN) p[BUFFER_LEN-1] = '\0';
+			if ((p - buf) >= BUFFER_LEN)
+				buf[BUFFER_LEN - 1] = '\0';
+			if (datalen >= BUFFER_LEN)
+				p[BUFFER_LEN - 1] = '\0';
 
 			if ((*p == '^') && (number(p + 1))) {
 				add_prop_nofetch(obj, buf, NULL, atol(p + 1));
@@ -897,21 +924,24 @@ getproperties(FILE * f, dbref obj, const char *pdir)
 }
 
 #ifdef DISKBASE
-void 
+void
 skipproperties(FILE * f, dbref obj)
 {
-	char	buf[BUFFER_LEN * 3];
+	char buf[BUFFER_LEN * 3];
 	int islisten = 0;
 
 	/* get rid of first line */
 	fgets(buf, sizeof(buf), f);
 
 	fgets(buf, sizeof(buf), f);
-	while (strcmp(buf,"***Property list end ***\n") && strcmp(buf,"*End*\n")){
+	while (strcmp(buf, "***Property list end ***\n") && strcmp(buf, "*End*\n")) {
 		if (!islisten) {
-			if (string_prefix(buf, "_listen")) islisten = 1;
-			if (string_prefix(buf, "~listen")) islisten = 1;
-			if (string_prefix(buf, "~olisten")) islisten = 1;
+			if (string_prefix(buf, "_listen"))
+				islisten = 1;
+			if (string_prefix(buf, "~listen"))
+				islisten = 1;
+			if (string_prefix(buf, "~olisten"))
+				islisten = 1;
 		}
 		fgets(buf, sizeof(buf), f);
 	}
@@ -926,7 +956,7 @@ skipproperties(FILE * f, dbref obj)
 
 
 
-void 
+void
 db_free_object(dbref i)
 {
 	struct object *o;
@@ -956,10 +986,10 @@ db_free_object(dbref i)
 	}
 }
 
-void 
+void
 db_free(void)
 {
-	dbref   i;
+	dbref i;
 
 	if (db) {
 		for (i = 0; i < db_top; i++)
@@ -980,6 +1010,7 @@ get_new_line()
 	struct line *new;
 
 	new = (struct line *) malloc(sizeof(struct line));
+
 	if (!new) {
 		fprintf(stderr, "get_new_line(): Out of memory!\n");
 		abort();
@@ -993,11 +1024,11 @@ get_new_line()
 struct line *
 read_program(dbref i)
 {
-	char	buf[BUFFER_LEN];
+	char buf[BUFFER_LEN];
 	struct line *first;
 	struct line *prev = NULL;
 	struct line *new;
-	FILE   *f;
+	FILE *f;
 	int len;
 
 	first = NULL;
@@ -1012,7 +1043,8 @@ read_program(dbref i)
 		if (len > 0 && buf[len - 1] == '\n') {
 			buf[len - 1] = '\0';
 		}
-		if (!*buf) strcpy(buf, " ");
+		if (!*buf)
+			strcpy(buf, " ");
 		new->this_line = alloc_string(buf);
 		if (!first) {
 			prev = new;
@@ -1034,11 +1066,11 @@ read_program(dbref i)
 # define getstring_oldcomp_noalloc(foo) getstring_noalloc(foo)
 #endif
 
-void 
-db_read_object_old(FILE * f, struct object * o, dbref objno)
+void
+db_read_object_old(FILE * f, struct object *o, dbref objno)
 {
-	dbref   exits;
-	int	 pennies;
+	dbref exits;
+	int pennies;
 	const char *password;
 
 	db_clear_object(objno);
@@ -1080,74 +1112,74 @@ db_read_object_old(FILE * f, struct object * o, dbref objno)
 	password = getstring(f);
 	/* convert GENDER flag to property */
 	switch ((FLAGS(objno) & GENDER_MASK) >> GENDER_SHIFT) {
-		case GENDER_NEUTER:
-			add_property(objno, "sex", "neuter", 0);
-			break;
-		case GENDER_FEMALE:
-			add_property(objno, "sex", "female", 0);
-			break;
-		case GENDER_MALE:
-			add_property(objno, "sex", "male", 0);
-			break;
-		default:
-			break;
+	case GENDER_NEUTER:
+		add_property(objno, "sex", "neuter", 0);
+		break;
+	case GENDER_FEMALE:
+		add_property(objno, "sex", "female", 0);
+		break;
+	case GENDER_MALE:
+		add_property(objno, "sex", "male", 0);
+		break;
+	default:
+		break;
 	}
 	/* For downward compatibility with databases using the */
 	/* obsolete ANTILOCK flag. */
 	if (FLAGS(objno) & ANTILOCK) {
 		LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
-		FLAGS(objno) &= ~ANTILOCK;
+				FLAGS(objno) &= ~ANTILOCK;
 	}
 	switch (FLAGS(objno) & TYPE_MASK) {
-		case TYPE_THING:
-			ALLOC_THING_SP(objno);
-			THING_SET_HOME(objno, exits);
-			THING_SET_VALUE(objno, pennies);
-			o->exits = NOTHING;
-			break;
-		case TYPE_ROOM:
-			o->sp.room.dropto = o->location;
-			o->location = NOTHING;
-			o->exits = exits;
-			break;
-		case TYPE_EXIT:
-			if (o->location == NOTHING) {
-				o->sp.exit.ndest = 0;
-				o->sp.exit.dest = NULL;
-			} else {
-				o->sp.exit.ndest = 1;
-				o->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
-				(o->sp.exit.dest)[0] = o->location;
-			}
-			o->location = NOTHING;
-			break;
-		case TYPE_PLAYER:
-			ALLOC_PLAYER_SP(objno);
-			PLAYER_SET_HOME(objno, exits);
-			o->exits = NOTHING;
-			PLAYER_SET_PENNIES(objno, pennies);
-			PLAYER_SET_PASSWORD(objno, password);
-			break;
-		case TYPE_GARBAGE:
-			OWNER(objno) = NOTHING;
-			o->next = recyclable;
-			recyclable = objno;
+	case TYPE_THING:
+		ALLOC_THING_SP(objno);
+		THING_SET_HOME(objno, exits);
+		THING_SET_VALUE(objno, pennies);
+		o->exits = NOTHING;
+		break;
+	case TYPE_ROOM:
+		o->sp.room.dropto = o->location;
+		o->location = NOTHING;
+		o->exits = exits;
+		break;
+	case TYPE_EXIT:
+		if (o->location == NOTHING) {
+			o->sp.exit.ndest = 0;
+			o->sp.exit.dest = NULL;
+		} else {
+			o->sp.exit.ndest = 1;
+			o->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
+			(o->sp.exit.dest)[0] = o->location;
+		}
+		o->location = NOTHING;
+		break;
+	case TYPE_PLAYER:
+		ALLOC_PLAYER_SP(objno);
+		PLAYER_SET_HOME(objno, exits);
+		o->exits = NOTHING;
+		PLAYER_SET_PENNIES(objno, pennies);
+		PLAYER_SET_PASSWORD(objno, password);
+		break;
+	case TYPE_GARBAGE:
+		OWNER(objno) = NOTHING;
+		o->next = recyclable;
+		recyclable = objno;
 
 #ifdef DISKBASE
-			dirtyprops(objno);
+		dirtyprops(objno);
 #endif
 
-			free((void *) NAME(objno));
-			NAME(objno) = "<garbage>";
-			SETDESC(objno, "<recyclable>");
-			break;
+		free((void *) NAME(objno));
+		NAME(objno) = "<garbage>";
+		SETDESC(objno, "<recyclable>");
+		break;
 	}
 }
 
-void 
-db_read_object_new(FILE * f, struct object * o, dbref objno)
+void
+db_read_object_new(FILE * f, struct object *o, dbref objno)
 {
-	int	 j;
+	int j;
 
 	db_clear_object(objno);
 	FLAGS(objno) = 0;
@@ -1188,17 +1220,17 @@ db_read_object_new(FILE * f, struct object * o, dbref objno)
 	}
 	/* convert GENDER flag to property */
 	switch ((FLAGS(objno) & GENDER_MASK) >> GENDER_SHIFT) {
-		case GENDER_NEUTER:
-			add_property(objno, "sex", "neuter", 0);
-			break;
-		case GENDER_FEMALE:
-			add_property(objno, "sex", "female", 0);
-			break;
-		case GENDER_MALE:
-			add_property(objno, "sex", "male", 0);
-			break;
-		default:
-			break;
+	case GENDER_NEUTER:
+		add_property(objno, "sex", "neuter", 0);
+		break;
+	case GENDER_FEMALE:
+		add_property(objno, "sex", "female", 0);
+		break;
+	case GENDER_MALE:
+		add_property(objno, "sex", "male", 0);
+		break;
+	default:
+		break;
 	}
 
 	/* o->password = getstring(f); */
@@ -1206,46 +1238,45 @@ db_read_object_new(FILE * f, struct object * o, dbref objno)
 	/* obsolete ANTILOCK flag. */
 	if (FLAGS(objno) & ANTILOCK) {
 		LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
-		FLAGS(objno) &= ~ANTILOCK;
+				FLAGS(objno) &= ~ANTILOCK;
 	}
 	switch (FLAGS(objno) & TYPE_MASK) {
-		case TYPE_THING:
-			ALLOC_THING_SP(objno);
-			THING_SET_HOME(objno, getref(f));
-			o->exits = getref(f);
-			OWNER(objno) = getref(f);
-			THING_SET_VALUE(objno, getref(f));
-			break;
-		case TYPE_ROOM:
-			o->sp.room.dropto = getref(f);
-			o->exits = getref(f);
-			OWNER(objno) = getref(f);
-			break;
-		case TYPE_EXIT:
-			o->sp.exit.ndest = getref(f);
-			o->sp.exit.dest = (dbref *) malloc(sizeof(dbref)
-											   * o->sp.exit.ndest);
-			for (j = 0; j < o->sp.exit.ndest; j++) {
-				(o->sp.exit.dest)[j] = getref(f);
-			}
-			OWNER(objno) = getref(f);
-			break;
-		case TYPE_PLAYER:
-			ALLOC_PLAYER_SP(objno);
-			PLAYER_SET_HOME(objno, getref(f));
-			o->exits = getref(f);
-			PLAYER_SET_PENNIES(objno, getref(f));
-			PLAYER_SET_PASSWORD(objno, getstring(f));
-			break;
+	case TYPE_THING:
+		ALLOC_THING_SP(objno);
+		THING_SET_HOME(objno, getref(f));
+		o->exits = getref(f);
+		OWNER(objno) = getref(f);
+		THING_SET_VALUE(objno, getref(f));
+		break;
+	case TYPE_ROOM:
+		o->sp.room.dropto = getref(f);
+		o->exits = getref(f);
+		OWNER(objno) = getref(f);
+		break;
+	case TYPE_EXIT:
+		o->sp.exit.ndest = getref(f);
+		o->sp.exit.dest = (dbref *) malloc(sizeof(dbref)
+										   * o->sp.exit.ndest);
+		for (j = 0; j < o->sp.exit.ndest; j++) {
+			(o->sp.exit.dest)[j] = getref(f);
+		}
+		OWNER(objno) = getref(f);
+		break;
+	case TYPE_PLAYER:
+		ALLOC_PLAYER_SP(objno);
+		PLAYER_SET_HOME(objno, getref(f));
+		o->exits = getref(f);
+		PLAYER_SET_PENNIES(objno, getref(f));
+		PLAYER_SET_PASSWORD(objno, getstring(f));
+		break;
 	}
 }
 
 /* Reads in Foxen, Foxen[234], WhiteFire, Mage or Lachesis DB Formats */
-void 
-db_read_object_foxen(FILE * f, struct object * o, dbref objno,
-					 int dtype, int read_before)
+void
+db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int read_before)
 {
-	int	 tmp, c, prop_flag = 0;
+	int tmp, c, prop_flag = 0;
 	int j = 0;
 
 	if (read_before) {
@@ -1280,7 +1311,7 @@ db_read_object_foxen(FILE * f, struct object * o, dbref objno,
 		LOADOSUCC(objno, getstring_oldcomp_noalloc(f));
 		LOADODROP(objno, getstring_oldcomp_noalloc(f));
 	}
-	tmp = getref(f);  /* flags list */
+	tmp = getref(f);			/* flags list */
 	if (dtype >= 4)
 		tmp &= ~DUMP_MASK;
 	FLAGS(objno) |= tmp;
@@ -1313,9 +1344,9 @@ db_read_object_foxen(FILE * f, struct object * o, dbref objno,
 		prop_flag++;
 	} else {
 		/* do our own getref */
-		int	 sign = 0;
-		char	buf[BUFFER_LEN];
-		int	 i = 0;
+		int sign = 0;
+		char buf[BUFFER_LEN];
+		int i = 0;
 
 		if (c == '-')
 			sign = 1;
@@ -1335,17 +1366,17 @@ db_read_object_foxen(FILE * f, struct object * o, dbref objno,
 		/* set gender stuff */
 		/* convert GENDER flag to property */
 		switch ((FLAGS(objno) & GENDER_MASK) >> GENDER_SHIFT) {
-			case GENDER_NEUTER:
-				add_property(objno, "sex", "neuter", 0);
-				break;
-			case GENDER_FEMALE:
-				add_property(objno, "sex", "female", 0);
-				break;
-			case GENDER_MALE:
-				add_property(objno, "sex", "male", 0);
-				break;
-			default:
-				break;
+		case GENDER_NEUTER:
+			add_property(objno, "sex", "neuter", 0);
+			break;
+		case GENDER_FEMALE:
+			add_property(objno, "sex", "female", 0);
+			break;
+		case GENDER_MALE:
+			add_property(objno, "sex", "male", 0);
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -1354,11 +1385,12 @@ db_read_object_foxen(FILE * f, struct object * o, dbref objno,
 	/* obsolete ANTILOCK flag. */
 	if (FLAGS(objno) & ANTILOCK) {
 		LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
-		FLAGS(objno) &= ~ANTILOCK;
+				FLAGS(objno) &= ~ANTILOCK;
 	}
 	switch (FLAGS(objno) & TYPE_MASK) {
-		case TYPE_THING: {
+	case TYPE_THING:{
 			dbref home;
+
 			ALLOC_THING_SP(objno);
 			home = prop_flag ? getref(f) : j;
 			THING_SET_HOME(objno, home);
@@ -1367,47 +1399,47 @@ db_read_object_foxen(FILE * f, struct object * o, dbref objno,
 			THING_SET_VALUE(objno, getref(f));
 			break;
 		}
-		case TYPE_ROOM:
-			o->sp.room.dropto = prop_flag ? getref(f) : j;
-			o->exits = getref(f);
-			OWNER(objno) = getref(f);
-			break;
-		case TYPE_EXIT:
-			o->sp.exit.ndest = prop_flag ? getref(f) : j;
-			if (o->sp.exit.ndest) /* only allocate space for linked exits */
-				o->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * (o->sp.exit.ndest));
-			for (j = 0; j < o->sp.exit.ndest; j++) {
-				(o->sp.exit.dest)[j] = getref(f);
-			}
-			OWNER(objno) = getref(f);
-			break;
-		case TYPE_PLAYER:
-			ALLOC_PLAYER_SP(objno);
-			PLAYER_SET_HOME(objno, (prop_flag ? getref(f) : j));
-			o->exits = getref(f);
-			PLAYER_SET_PENNIES(objno, getref(f));
-			PLAYER_SET_PASSWORD(objno, getstring(f));
-			PLAYER_SET_CURR_PROG(objno, NOTHING);
-			PLAYER_SET_INSERT_MODE(objno, 0);
-			break;
-		case TYPE_PROGRAM:
-			ALLOC_PROGRAM_SP(objno);
-			OWNER(objno) = getref(f);
-			FLAGS(objno) &= ~INTERNAL;
-			PROGRAM_SET_CURR_LINE(objno, 0);
-			PROGRAM_SET_FIRST(objno, 0);
-			PROGRAM_SET_CODE(objno, 0);
-			PROGRAM_SET_SIZ(objno, 0);
-			PROGRAM_SET_START(objno, 0);
-			PROGRAM_SET_PUBS(objno, 0);
-			PROGRAM_SET_MCPBINDS(objno, 0);
+	case TYPE_ROOM:
+		o->sp.room.dropto = prop_flag ? getref(f) : j;
+		o->exits = getref(f);
+		OWNER(objno) = getref(f);
+		break;
+	case TYPE_EXIT:
+		o->sp.exit.ndest = prop_flag ? getref(f) : j;
+		if (o->sp.exit.ndest)	/* only allocate space for linked exits */
+			o->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * (o->sp.exit.ndest));
+		for (j = 0; j < o->sp.exit.ndest; j++) {
+			(o->sp.exit.dest)[j] = getref(f);
+		}
+		OWNER(objno) = getref(f);
+		break;
+	case TYPE_PLAYER:
+		ALLOC_PLAYER_SP(objno);
+		PLAYER_SET_HOME(objno, (prop_flag ? getref(f) : j));
+		o->exits = getref(f);
+		PLAYER_SET_PENNIES(objno, getref(f));
+		PLAYER_SET_PASSWORD(objno, getstring(f));
+		PLAYER_SET_CURR_PROG(objno, NOTHING);
+		PLAYER_SET_INSERT_MODE(objno, 0);
+		break;
+	case TYPE_PROGRAM:
+		ALLOC_PROGRAM_SP(objno);
+		OWNER(objno) = getref(f);
+		FLAGS(objno) &= ~INTERNAL;
+		PROGRAM_SET_CURR_LINE(objno, 0);
+		PROGRAM_SET_FIRST(objno, 0);
+		PROGRAM_SET_CODE(objno, 0);
+		PROGRAM_SET_SIZ(objno, 0);
+		PROGRAM_SET_START(objno, 0);
+		PROGRAM_SET_PUBS(objno, 0);
+		PROGRAM_SET_MCPBINDS(objno, 0);
 
-			if (dtype < 5 && MLevel(objno) == 0)
-				SetMLevel(objno, 2);
+		if (dtype < 5 && MLevel(objno) == 0)
+			SetMLevel(objno, 2);
 
-			break;
-		case TYPE_GARBAGE:
-			break;
+		break;
+	case TYPE_GARBAGE:
+		break;
 	}
 }
 
@@ -1422,8 +1454,8 @@ autostart_progs()
 		return;
 	}
 
-	for(i = 0;  i < db_top;  i++) {
-		if(Typeof(i) == TYPE_PROGRAM) {
+	for (i = 0; i < db_top; i++) {
+		if (Typeof(i) == TYPE_PROGRAM) {
 			if ((FLAGS(i) & ABODE) && TrueWizard(OWNER(i))) {
 				/* pre-compile AUTOSTART programs. */
 				/* They queue up when they finish compiling. */
@@ -1439,17 +1471,17 @@ autostart_progs()
 }
 
 
-dbref 
+dbref
 db_read(FILE * f)
 {
-	dbref   i, thisref;
+	dbref i, thisref;
 	struct object *o;
 	const char *special;
-	int	 doing_deltas;
-	int	 main_db_format = 0;
-	int	 parmcnt;
-	int	 dbflags = 0;
-	char	c;
+	int doing_deltas;
+	int main_db_format = 0;
+	int parmcnt;
+	int dbflags = 0;
+	char c;
 
 	db_load_format = 0;
 	doing_deltas = 0;
@@ -1508,111 +1540,105 @@ db_read(FILE * f)
 			return -1;
 		}
 		free((void *) special);
-	   if (!doing_deltas)
-		   main_db_format = db_load_format;
-		c = getc(f);				/* get next char */
+		if (!doing_deltas)
+			main_db_format = db_load_format;
+		c = getc(f);			/* get next char */
 	}
 	for (i = 0;; i++) {
 		switch (c) {
-			case '#':
-				/* another entry, yawn */
-				thisref = getref(f);
+		case '#':
+			/* another entry, yawn */
+			thisref = getref(f);
 
-				if (thisref < db_top) {
-					if (doing_deltas && Typeof(thisref) == TYPE_PLAYER) {
-						delete_player(thisref);
-					}
+			if (thisref < db_top) {
+				if (doing_deltas && Typeof(thisref) == TYPE_PLAYER) {
+					delete_player(thisref);
 				}
+			}
 
-				/* make space */
-				db_grow(thisref + 1);
+			/* make space */
+			db_grow(thisref + 1);
 
-				/* read it in */
-				o = DBFETCH(thisref);
-				switch (db_load_format) {
-					case 0:
-						db_read_object_old(f, o, thisref);
-						break;
-					case 1:
-						db_read_object_new(f, o, thisref);
-						break;
-					case 2:
-					case 3:
-					case 4:
-					case 5:
-					case 6:
-					case 7:
-						db_read_object_foxen(f, o, thisref,
-											 db_load_format, doing_deltas);
-						break;
-				}
-				if (Typeof(thisref) == TYPE_PLAYER) {
-					OWNER(thisref) = thisref;
-					add_player(thisref);
-				}
+			/* read it in */
+			o = DBFETCH(thisref);
+			switch (db_load_format) {
+			case 0:
+				db_read_object_old(f, o, thisref);
 				break;
-			case '*':
+			case 1:
+				db_read_object_new(f, o, thisref);
+				break;
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+				db_read_object_foxen(f, o, thisref, db_load_format, doing_deltas);
+				break;
+			}
+			if (Typeof(thisref) == TYPE_PLAYER) {
+				OWNER(thisref) = thisref;
+				add_player(thisref);
+			}
+			break;
+		case '*':
+			special = getstring(f);
+			if (strcmp(special, "**END OF DUMP***")) {
+				free((void *) special);
+				return -1;
+			} else {
+				free((void *) special);
 				special = getstring(f);
-				if (strcmp(special, "**END OF DUMP***")) {
-					free((void *) special);
-					return -1;
-				} else {
-					free((void *) special);
-					special = getstring(f);
-					if (!special || strcmp(special,
-							"***Foxen Deltas Dump Extention***")) {
-						if (!special || strcmp(special,
-								"***Foxen2 Deltas Dump Extention***")) {
+				if (!special || strcmp(special, "***Foxen Deltas Dump Extention***")) {
+					if (!special || strcmp(special, "***Foxen2 Deltas Dump Extention***")) {
+						if (!special || strcmp(special, "***Foxen4 Deltas Dump Extention***")) {
 							if (!special || strcmp(special,
-									"***Foxen4 Deltas Dump Extention***")) {
-								if (!special || strcmp(special,
-										"***Foxen5 Deltas Dump Extention***")) {
-									if (special)
-										free((void *) special);
-								   if (main_db_format == 7 && (dbflags & DB_PARMSINFO))
-								   {
-									   rewind(f);
-									   free((void *)getstring(f));
-									   getref(f);
-									   getref(f);
-									   parmcnt = getref(f);
-									   tune_load_parms_from_file(f, NOTHING, parmcnt);
-								   }
-									for (i = 0; i < db_top; i++) {
-										if (Typeof(i) == TYPE_GARBAGE) {
-											DBFETCH(i)->next = recyclable;
-											recyclable = i;
-										}
-									}
-									autostart_progs();
-									return db_top;
-								} else {
+												   "***Foxen5 Deltas Dump Extention***")) {
+								if (special)
 									free((void *) special);
-									db_load_format = 7;
-									doing_deltas = 1;
+								if (main_db_format == 7 && (dbflags & DB_PARMSINFO)) {
+									rewind(f);
+									free((void *) getstring(f));
+									getref(f);
+									getref(f);
+									parmcnt = getref(f);
+									tune_load_parms_from_file(f, NOTHING, parmcnt);
 								}
+								for (i = 0; i < db_top; i++) {
+									if (Typeof(i) == TYPE_GARBAGE) {
+										DBFETCH(i)->next = recyclable;
+										recyclable = i;
+									}
+								}
+								autostart_progs();
+								return db_top;
 							} else {
 								free((void *) special);
-								db_load_format = 6;
+								db_load_format = 7;
 								doing_deltas = 1;
 							}
 						} else {
 							free((void *) special);
-							db_load_format = 5;
+							db_load_format = 6;
 							doing_deltas = 1;
 						}
 					} else {
 						free((void *) special);
-						db_load_format = 4;
+						db_load_format = 5;
 						doing_deltas = 1;
 					}
+				} else {
+					free((void *) special);
+					db_load_format = 4;
+					doing_deltas = 1;
 				}
-				break;
-			default:
-				return -1;
-				/* break; */
+			}
+			break;
+		default:
+			return -1;
+			/* break; */
 		}
 		c = getc(f);
-	}								/* for */
+	}							/* for */
 }								/* db_read */
-

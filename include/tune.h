@@ -1,3 +1,4 @@
+
 /* strings */
 extern const char *tp_dumpwarn_mesg;
 extern const char *tp_deltawarn_mesg;
@@ -10,7 +11,7 @@ extern const char *tp_pennies;
 extern const char *tp_cpenny;
 extern const char *tp_cpennies;
 
-extern const char *tp_muckname ;
+extern const char *tp_muckname;
 extern const char *tp_rwho_passwd;
 extern const char *tp_rwho_server;
 
@@ -118,6 +119,5 @@ extern int tp_expanded_debug;
 extern int tp_proplist_int_counter;
 
 extern int tune_count_parms();
-extern void tune_load_parms_from_file(FILE *f, dbref player, int cnt);
-extern void tune_save_parms_to_file(FILE *f);
-
+extern void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
+extern void tune_save_parms_to_file(FILE * f);

@@ -9,7 +9,7 @@ extern void prim_numberp(PRIM_PROTOTYPE);
 extern void prim_stringcmp(PRIM_PROTOTYPE);
 extern void prim_strcmp(PRIM_PROTOTYPE);
 extern void prim_strncmp(PRIM_PROTOTYPE);
-extern void prim_strcut (PRIM_PROTOTYPE);
+extern void prim_strcut(PRIM_PROTOTYPE);
 extern void prim_strlen(PRIM_PROTOTYPE);
 extern void prim_strcat(PRIM_PROTOTYPE);
 extern void prim_atoi(PRIM_PROTOTYPE);
@@ -52,4 +52,3 @@ extern void prim_tokensplit(PRIM_PROTOTYPE);
     "RSPLIT", "FMTSTRING", "TOKENSPLIT"
 
 #define PRIMS_STRINGS_CNT 34
-

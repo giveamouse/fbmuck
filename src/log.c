@@ -1,9 +1,18 @@
+
 /* $Header$ */
 
 /*
  * $Log: log.c,v $
- * Revision 1.1  1999/12/16 03:23:29  revar
- * Initial revision
+ * Revision 1.2  2000/03/29 12:21:02  revar
+ * Reformatted all code into consistent format.
+ * 	Tabs are 4 spaces.
+ * 	Indents are one tab.
+ * 	Braces are generally K&R style.
+ * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+ * Rewrote restart script as a bourne shell script.
+ *
+ * Revision 1.1.1.1  1999/12/16 03:23:29  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:27:44  foxen
  * Initial FB6 CVS checkin.
@@ -61,141 +70,141 @@
 /* cks: these are varargs routines. We are assuming ANSI C. We could at least
    USE ANSI C varargs features, no? Sigh. */
 
-void 
-log2file(char *myfilename, char *format,...)
+void
+log2file(char *myfilename, char *format, ...)
 {
-    va_list args;
-    FILE   *fp;
+	va_list args;
+	FILE *fp;
 
-    va_start(args, format);
+	va_start(args, format);
 
-    if ((fp = fopen(myfilename, "a")) == NULL) {
-	fprintf(stderr, "Unable to open %s!\n", myfilename);
-	vfprintf(stderr, format, args);
-    } else {
-	vfprintf(fp, format, args);
-	fprintf(fp, "\n");
-	fclose(fp);
-    }
-    va_end(args);
+	if ((fp = fopen(myfilename, "a")) == NULL) {
+		fprintf(stderr, "Unable to open %s!\n", myfilename);
+		vfprintf(stderr, format, args);
+	} else {
+		vfprintf(fp, format, args);
+		fprintf(fp, "\n");
+		fclose(fp);
+	}
+	va_end(args);
 }
 
-void 
-log_status(char *format,...)
+void
+log_status(char *format, ...)
 {
-    va_list args;
-    FILE   *fp;
-    time_t  lt;
-    char buf[40];
+	va_list args;
+	FILE *fp;
+	time_t lt;
+	char buf[40];
 
-    va_start(args, format);
-    lt = time(NULL);
+	va_start(args, format);
+	lt = time(NULL);
 
-    *buf = '\0';
-    if ((fp = fopen(LOG_STATUS, "a")) == NULL) {
-	fprintf(stderr, "Unable to open %s!\n", LOG_STATUS);
-	fprintf(stderr, "%.16s: ", ctime(&lt));
-	vfprintf(stderr, format, args);
-    } else {
-        format_time(buf, 32, "%c", localtime(&lt));
-	fprintf(fp, "%.32s: ", buf);
-	vfprintf(fp, format, args);
-	fclose(fp);
-    }
-    va_end(args);
+	*buf = '\0';
+	if ((fp = fopen(LOG_STATUS, "a")) == NULL) {
+		fprintf(stderr, "Unable to open %s!\n", LOG_STATUS);
+		fprintf(stderr, "%.16s: ", ctime(&lt));
+		vfprintf(stderr, format, args);
+	} else {
+		format_time(buf, 32, "%c", localtime(&lt));
+		fprintf(fp, "%.32s: ", buf);
+		vfprintf(fp, format, args);
+		fclose(fp);
+	}
+	va_end(args);
 }
 
-void 
-log_conc(char *format,...)
+void
+log_conc(char *format, ...)
 {
-    va_list args;
-    FILE   *conclog;
+	va_list args;
+	FILE *conclog;
 
-    va_start(args, format);
-    if ((conclog = fopen(LOG_CONC, "a")) == NULL) {
-	fprintf(stderr, "Unable to open %s!\n", LOG_CONC);
-	vfprintf(stderr, format, args);
-    } else {
-	vfprintf(conclog, format, args);
-	fclose(conclog);
-    }
-    va_end(args);
+	va_start(args, format);
+	if ((conclog = fopen(LOG_CONC, "a")) == NULL) {
+		fprintf(stderr, "Unable to open %s!\n", LOG_CONC);
+		vfprintf(stderr, format, args);
+	} else {
+		vfprintf(conclog, format, args);
+		fclose(conclog);
+	}
+	va_end(args);
 }
 
-void 
-log_muf(char *format,...)
+void
+log_muf(char *format, ...)
 {
-    va_list args;
-    FILE   *muflog;
+	va_list args;
+	FILE *muflog;
 
-    va_start(args, format);
-    if ((muflog = fopen(LOG_MUF, "a")) == NULL) {
-	fprintf(stderr, "Unable to open %s!\n", LOG_MUF);
-	vfprintf(stderr, format, args);
-    } else {
-	vfprintf(muflog, format, args);
-	fclose(muflog);
-    }
-    va_end(args);
+	va_start(args, format);
+	if ((muflog = fopen(LOG_MUF, "a")) == NULL) {
+		fprintf(stderr, "Unable to open %s!\n", LOG_MUF);
+		vfprintf(stderr, format, args);
+	} else {
+		vfprintf(muflog, format, args);
+		fclose(muflog);
+	}
+	va_end(args);
 }
 
-void 
-log_gripe(char *format,...)
+void
+log_gripe(char *format, ...)
 {
-    va_list args;
-    FILE   *fp;
-    time_t  lt;
-    char buf[40];
+	va_list args;
+	FILE *fp;
+	time_t lt;
+	char buf[40];
 
-    va_start(args, format);
-    lt = time(NULL);
+	va_start(args, format);
+	lt = time(NULL);
 
-    *buf = '\0';
-    if ((fp = fopen(LOG_GRIPE, "a")) == NULL) {
-	fprintf(stderr, "Unable to open %s!\n", LOG_GRIPE);
-	fprintf(stderr, "%.16s: ", ctime(&lt));
-	vfprintf(stderr, format, args);
-    } else {
-        format_time(buf, 32, "%c", localtime(&lt));
-	fprintf(fp, "%.32s: ", buf);
-	vfprintf(fp, format, args);
-	fclose(fp);
-    }
-    va_end(args);
+	*buf = '\0';
+	if ((fp = fopen(LOG_GRIPE, "a")) == NULL) {
+		fprintf(stderr, "Unable to open %s!\n", LOG_GRIPE);
+		fprintf(stderr, "%.16s: ", ctime(&lt));
+		vfprintf(stderr, format, args);
+	} else {
+		format_time(buf, 32, "%c", localtime(&lt));
+		fprintf(fp, "%.32s: ", buf);
+		vfprintf(fp, format, args);
+		fclose(fp);
+	}
+	va_end(args);
 }
 
-void 
-log_command(char *format,...)
+void
+log_command(char *format, ...)
 {
-    va_list args;
-    char buf[40];
-    FILE   *fp;
-    time_t  lt;
+	va_list args;
+	char buf[40];
+	FILE *fp;
+	time_t lt;
 
-    va_start(args, format);
-    lt = time(NULL);
+	va_start(args, format);
+	lt = time(NULL);
 
-    *buf = '\0';
-    if ((fp = fopen(COMMAND_LOG, "a")) == NULL) {
-	fprintf(stderr, "Unable to open %s!\n", COMMAND_LOG);
-	vfprintf(stderr, format, args);
-    } else {
-        format_time(buf, 32, "%c", localtime(&lt));
-	fprintf(fp, "%.32s: ", buf);
-	vfprintf(fp, format, args);
-	fclose(fp);
-    }
-    va_end(args);
+	*buf = '\0';
+	if ((fp = fopen(COMMAND_LOG, "a")) == NULL) {
+		fprintf(stderr, "Unable to open %s!\n", COMMAND_LOG);
+		vfprintf(stderr, format, args);
+	} else {
+		format_time(buf, 32, "%c", localtime(&lt));
+		fprintf(fp, "%.32s: ", buf);
+		vfprintf(fp, format, args);
+		fclose(fp);
+	}
+	va_end(args);
 }
 
-void 
-notify_fmt(dbref player, char *format,...)
+void
+notify_fmt(dbref player, char *format, ...)
 {
-    va_list args;
-    char    bufr[BUFFER_LEN];
+	va_list args;
+	char bufr[BUFFER_LEN];
 
-    va_start(args, format);
-    vsprintf(bufr, format, args);
-    notify(player, bufr);
-    va_end(args);
+	va_start(args, format);
+	vsprintf(bufr, format, args);
+	notify(player, bufr);
+	va_end(args);
 }

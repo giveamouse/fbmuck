@@ -41,4 +41,3 @@ extern void prim_dist3d(PRIM_PROTOTYPE);
 	"POLAR_TO_XYZ"
 
 #define PRIMS_FLOAT_CNT 27
-

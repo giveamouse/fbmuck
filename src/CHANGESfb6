@@ -1,4 +1,5 @@
 2.2fb6.00a30
+Reformatted all code to a uniform code style based off of K&R.
 Added MAX_VARIABLE_COUNT $define to let MUF programs know what the highest
   variable number can be for Vars, Local Vars, and Scoped Vars.
 Added an EXPANDED_DEBUG_TRACE @tune option to allow display of expanded
@@ -13,6 +14,9 @@ Added an ERR_FBOUNDS?    convenience macro define for '3 is_set?'
 Added an ERR_IBOUNDS?    convenience macro define for '4 is_set?'
 Added SETSYSPARM ( s1 s2 -- ) MUF prim.  Assigns the @tunable parameter s1
   a value given by s2.  s2 must contain a legal value for s1. (wizbit only)
+Added ARRAY_FINDVAL (a1 ? -- a2) MUF prim.  Returns a list array containing
+  the keys of every element in the array a1 whose values match the given
+  value.
 Added ARRAY_GET_PROPDIRS( d s -- a ) MUF prim.  Returns a list array
   containing the names of all the sub-propdirs contained within the given
   propdir.  Any propdirs the program wouldn't be able to read, are left out.
@@ -64,6 +68,8 @@ Added PROPLIST_ENTRY_FMT @tune, to specify the system standard naming
   will be replaced by the item's number.  All other characters will be
   taken literally.  The default is: "P#/N" which will make for proplists
   which store their items in props like  _list#/1:First
+Added ARRAY_REVERSE (a -- a') MUF prim many versions ago, but forgot to
+  note it here before.  Takes a list array and reverses its order.
 Fixed crasher bug with MCP-GUI and players logging out and back in.
 Fixed a nasty bug where ARRAY_GETITEM was retrieving CLEARed values.
 Fixed a minor bug in fmtstring to handle arrays for %? formats.

@@ -64,4 +64,3 @@ extern void prim_movepennies(PRIM_PROTOTYPE);
     "PMATCH", "MOVEPENNIES"
 
 #define PRIMS_DB_CNT 42
-

@@ -1,7 +1,15 @@
 /* $Header$
  * $Log: match.h,v $
- * Revision 1.1  1999/12/12 07:28:13  revar
- * Initial revision
+ * Revision 1.2  2000/03/29 12:21:01  revar
+ * Reformatted all code into consistent format.
+ * 	Tabs are 4 spaces.
+ * 	Indents are one tab.
+ * 	Braces are generally K&R style.
+ * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+ * Rewrote restart script as a bourne shell script.
+ *
+ * Revision 1.1.1.1  1999/12/12 07:28:13  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:28:13  foxen
  * Initial FB6 CVS checkin.
@@ -31,18 +39,18 @@
 #include "db.h"
 
 struct match_data {
-    dbref exact_match;		/* holds result of exact match */
-    int check_keys;	        /* if non-zero, check for keys */
-    dbref last_match;		/* holds result of last match */
-    int match_count;		/* holds total number of inexact matches */
-    dbref match_who;		/* player used for me, here, and messages */
-    dbref match_from;		/* object which is being matched around */
-    int match_descr;		/* descriptor initiating the match */
-    const char *match_name;	/* name to match */
-    int preferred_type;		/* preferred type */
-    int longest_match;		/* longest matched string */
-    int match_level;		/* the highest priority level so far */
-    int block_equals;		/* block matching of same name exits */
+	dbref exact_match;			/* holds result of exact match */
+	int check_keys;				/* if non-zero, check for keys */
+	dbref last_match;			/* holds result of last match */
+	int match_count;			/* holds total number of inexact matches */
+	dbref match_who;			/* player used for me, here, and messages */
+	dbref match_from;			/* object which is being matched around */
+	int match_descr;			/* descriptor initiating the match */
+	const char *match_name;		/* name to match */
+	int preferred_type;			/* preferred type */
+	int longest_match;			/* longest matched string */
+	int match_level;			/* the highest priority level so far */
+	int block_equals;			/* block matching of same name exits */
 };
 
 /* match functions */
@@ -51,9 +59,11 @@ struct match_data {
 
 /* initialize matcher */
 extern void init_match(int descr, dbref player, const char *name, int type,
-		       struct match_data *md);
+
+					   struct match_data *md);
 extern void init_match_check_keys(int descr, dbref player, const char *name, int type,
-				  struct match_data *md);
+
+								  struct match_data *md);
 
 /* match (LOOKUP_TOKEN)player */
 extern void match_player(struct match_data *md);
@@ -99,15 +109,18 @@ extern void match_rmatch(dbref, struct match_data *md);
 extern void match_everything(struct match_data *md);
 
 /* return match results */
-extern dbref match_result(struct match_data *md); /* returns AMBIGUOUS for
-						     multiple inexacts */
-extern dbref last_match_result(struct match_data *md); /* returns last
-							  result */
+extern dbref match_result(struct match_data *md);	/* returns AMBIGUOUS for
+
+													   multiple inexacts */
+extern dbref last_match_result(struct match_data *md);	/* returns last
+
+														   result */
 
 #define NOMATCH_MESSAGE "I don't see that here."
 #define AMBIGUOUS_MESSAGE "I don't know which one you mean!"
 
 extern dbref noisy_match_result(struct match_data *md);
+
 				/* wrapper for match_result */
 				/* noisily notifies player */
 				/* returns matched object or NOTHING */

@@ -20,10 +20,10 @@
 
 
 struct mufevent_process {
-    struct mufevent_process* next;
-    dbref       player;
-    dbref       prog;
-    struct frame* fr;
+	struct mufevent_process *next;
+	dbref player;
+	dbref prog;
+	struct frame *fr;
 } *mufevent_processes;
 
 
@@ -32,26 +32,27 @@ struct mufevent_process {
  * the program is ready to process MUF events.
  */
 void
-muf_event_register(dbref player, dbref prog, struct frame* fr)
+muf_event_register(dbref player, dbref prog, struct frame *fr)
 {
-    struct mufevent_process* newproc;
-    struct mufevent_process* ptr;
+	struct mufevent_process *newproc;
+	struct mufevent_process *ptr;
 
-    newproc = (struct mufevent_process*)malloc(sizeof(struct mufevent_process));
-    newproc->player = player;
-    newproc->prog = prog;
-    newproc->fr = fr;
-    newproc->next = NULL;
+	newproc = (struct mufevent_process *) malloc(sizeof(struct mufevent_process));
 
-    ptr = mufevent_processes;
-    while (ptr && ptr->next) {
-        ptr = ptr->next;
-    }
-    if (!ptr) {
+	newproc->player = player;
+	newproc->prog = prog;
+	newproc->fr = fr;
+	newproc->next = NULL;
+
+	ptr = mufevent_processes;
+	while (ptr && ptr->next) {
+		ptr = ptr->next;
+	}
+	if (!ptr) {
 		mufevent_processes = newproc;
-    } else {
-        ptr->next = newproc;
-    }
+	} else {
+		ptr->next = newproc;
+	}
 }
 
 
@@ -61,13 +62,13 @@ muf_event_register(dbref player, dbref prog, struct frame* fr)
 int
 muf_event_dequeue_pid(int pid)
 {
-    struct mufevent_process** prev;
-    struct mufevent_process* next;
+	struct mufevent_process **prev;
+	struct mufevent_process *next;
 	int count = 0;
 
 	prev = &mufevent_processes;
-    while (*prev) {
-	    if ((*prev)->fr->pid == pid) {
+	while (*prev) {
+		if ((*prev)->fr->pid == pid) {
 			next = (*prev)->next;
 			muf_event_purge((*prev)->fr);
 			prog_clean((*prev)->fr);
@@ -77,7 +78,7 @@ muf_event_dequeue_pid(int pid)
 		} else {
 			prev = &((*prev)->next);
 		}
-    }
+	}
 	return count;
 }
 
@@ -87,24 +88,24 @@ muf_event_dequeue_pid(int pid)
  * dbref references on the callstack
  */
 static int
-event_has_refs(dbref program, struct frame* fr)
+event_has_refs(dbref program, struct frame *fr)
 {
-    int loop;
-    for (loop = 1; loop < fr->caller.top; loop++) {
-        if (fr->caller.st[loop] == program) {
-            return 1;
-		}
-    }
+	int loop;
 
-    for (loop = 0; loop < fr->argument.top; loop++) {
-        if (fr->argument.st[loop].type == PROG_ADD &&
-			fr->argument.st[loop].data.addr->progref == program)
-		{
-            return 1;
+	for (loop = 1; loop < fr->caller.top; loop++) {
+		if (fr->caller.st[loop] == program) {
+			return 1;
 		}
-    }
+	}
 
-    return 0;
+	for (loop = 0; loop < fr->argument.top; loop++) {
+		if (fr->argument.st[loop].type == PROG_ADD &&
+			fr->argument.st[loop].data.addr->progref == program) {
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 
@@ -114,13 +115,14 @@ event_has_refs(dbref program, struct frame* fr)
 int
 muf_event_dequeue(dbref prog)
 {
-    struct mufevent_process** prev;
-    struct mufevent_process* tmp;
+	struct mufevent_process **prev;
+	struct mufevent_process *tmp;
 	int count = 0;
 
 	prev = &mufevent_processes;
-    while (*prev) {
-	    if (prog == NOTHING || (*prev)->player == prog || (*prev)->prog == prog || event_has_refs(prog, (*prev)->fr)) {
+	while (*prev) {
+		if (prog == NOTHING || (*prev)->player == prog || (*prev)->prog == prog ||
+			event_has_refs(prog, (*prev)->fr)) {
 			tmp = *prev;
 			*prev = tmp->next;
 			muf_event_purge(tmp->fr);
@@ -142,23 +144,23 @@ muf_event_dequeue(dbref prog)
 int
 muf_event_controls(dbref player, int pid)
 {
-    struct mufevent_process* tmp;
-    struct mufevent_process* ptr = mufevent_processes;
+	struct mufevent_process *tmp;
+	struct mufevent_process *ptr = mufevent_processes;
 
-    tmp = ptr;
-    while ((ptr) && (pid != ptr->fr->pid)) {
-        tmp = ptr;
-        ptr = ptr->next;
-    }
-
-    if (!ptr) {
-        return 0;
+	tmp = ptr;
+	while ((ptr) && (pid != ptr->fr->pid)) {
+		tmp = ptr;
+		ptr = ptr->next;
 	}
 
-    if (!controls(player, ptr->prog) && player != ptr->player) {
-        return 0;
-    }
-    return 1;
+	if (!ptr) {
+		return 0;
+	}
+
+	if (!controls(player, ptr->prog) && player != ptr->player) {
+		return 0;
+	}
+	return 1;
 }
 
 
@@ -167,23 +169,21 @@ muf_event_controls(dbref player, int pid)
  * This is used by the @ps command.
  */
 int
-muf_event_list(dbref player, char* pat)
+muf_event_list(dbref player, char *pat)
 {
 	char buf[BUFFER_LEN];
 	int count = 0;
-    time_t  rtime = time((time_t *) NULL);
-    struct mufevent_process* proc = mufevent_processes;
+	time_t rtime = time((time_t *) NULL);
+	struct mufevent_process *proc = mufevent_processes;
 
 	while (proc) {
 		sprintf(buf, pat,
 				proc->fr->pid, "--",
-				time_format_2((long)(rtime - proc->fr->started)),
-				(proc->fr->instcnt / 1000),
-				proc->prog, NAME(proc->player),
-				"EVENT_WAIT");
-        if (Wizard(OWNER(player)) || (OWNER(proc->prog) == OWNER(player))
-                || (proc->player == player))
-            notify_nolisten(player, buf, 1);
+				time_format_2((long) (rtime - proc->fr->started)),
+				(proc->fr->instcnt / 1000), proc->prog, NAME(proc->player), "EVENT_WAIT");
+		if (Wizard(OWNER(player)) || (OWNER(proc->prog) == OWNER(player))
+			|| (proc->player == player))
+			notify_nolisten(player, buf, 1);
 		count++;
 		proc = proc->next;
 	}
@@ -195,25 +195,26 @@ muf_event_list(dbref player, char* pat)
  * Adds a MUF event to the event queue for the given program instance.
  */
 void
-muf_event_add(struct frame* fr, char* event, struct inst* val)
+muf_event_add(struct frame *fr, char *event, struct inst *val)
 {
-    struct mufevent* newevent;
-    struct mufevent* ptr;
+	struct mufevent *newevent;
+	struct mufevent *ptr;
 
-    newevent = (struct mufevent*)malloc(sizeof(struct mufevent));
-    newevent->event = string_dup(event);
-    copyinst(val, &newevent->data);
-    newevent->next = NULL;
+	newevent = (struct mufevent *) malloc(sizeof(struct mufevent));
 
-    ptr = fr->events;
-    while (ptr && ptr->next) {
-        ptr = ptr->next;
-    }
-    if (!ptr) {
-        fr->events = newevent;
-    } else {
-        ptr->next = newevent;
-    }
+	newevent->event = string_dup(event);
+	copyinst(val, &newevent->data);
+	newevent->next = NULL;
+
+	ptr = fr->events;
+	while (ptr && ptr->next) {
+		ptr = ptr->next;
+	}
+	if (!ptr) {
+		fr->events = newevent;
+	} else {
+		ptr->next = newevent;
+	}
 }
 
 
@@ -223,13 +224,13 @@ muf_event_add(struct frame* fr, char* event, struct inst* val)
  * outside this module.
  */
 static void
-muf_event_free(struct mufevent* ptr)
+muf_event_free(struct mufevent *ptr)
 {
-    CLEAR(&ptr->data);
-    free(ptr->event);
-    ptr->event = NULL;
-    ptr->next = NULL;
-    free(ptr);
+	CLEAR(&ptr->data);
+	free(ptr->event);
+	ptr->event = NULL;
+	ptr->next = NULL;
+	free(ptr);
 }
 
 
@@ -237,15 +238,16 @@ muf_event_free(struct mufevent* ptr)
  * This pops the top muf event off of the given program instance's
  * event queue, and returns it to the caller.
  */
-static struct mufevent*
-muf_event_pop(struct frame* fr)
+static struct mufevent *
+muf_event_pop(struct frame *fr)
 {
-    struct mufevent* ptr = NULL;
-    if (fr->events) {
-        ptr = fr->events;
-        fr->events = fr->events->next;
-    }
-    return ptr;
+	struct mufevent *ptr = NULL;
+
+	if (fr->events) {
+		ptr = fr->events;
+		fr->events = fr->events->next;
+	}
+	return ptr;
 }
 
 
@@ -254,11 +256,11 @@ muf_event_pop(struct frame* fr)
  * purges all muf events from the given program instance's event queue.
  */
 void
-muf_event_purge(struct frame* fr)
+muf_event_purge(struct frame *fr)
 {
-    while (fr->events) {
-        muf_event_free(muf_event_pop(fr));
-    }
+	while (fr->events) {
+		muf_event_free(muf_event_pop(fr));
+	}
 }
 
 
@@ -272,65 +274,61 @@ muf_event_purge(struct frame* fr)
 void
 muf_event_process()
 {
-    int limit = 10;
-    struct mufevent_process* proc;
-    struct mufevent_process* next;
-    struct mufevent_process** prev;
-    struct mufevent_process** nextprev;
-    struct mufevent* ev;
-    dbref tmpcp;
-    int tmpbl;
-    int tmpfg;
+	int limit = 10;
+	struct mufevent_process *proc;
+	struct mufevent_process *next;
+	struct mufevent_process **prev;
+	struct mufevent_process **nextprev;
+	struct mufevent *ev;
+	dbref tmpcp;
+	int tmpbl;
+	int tmpfg;
 
-    proc = mufevent_processes;
+	proc = mufevent_processes;
 	prev = &mufevent_processes;
-    while (proc && limit > 0) {
+	while (proc && limit > 0) {
 		nextprev = &((*prev)->next);
-        next = proc->next;
-        if (proc->fr) {
-            ev = muf_event_pop(proc->fr);
-            if (ev) {
-                limit--;
+		next = proc->next;
+		if (proc->fr) {
+			ev = muf_event_pop(proc->fr);
+			if (ev) {
+				limit--;
 
 				nextprev = prev;
 				*prev = proc->next;
 
-                if (proc->fr->argument.top+1 >= STACK_SIZE) {
-                    /*
-                     * Uh oh! That MUF program's stack is full!
-                     * Print an error, free the frame, and exit.
-                     */
-                    notify_nolisten(proc->player, "Program stack overflow.", 1);
-                    prog_clean(proc->fr);
-                } else {
-                    tmpcp = PLAYER_CURR_PROG(proc->player);
-                    tmpbl = PLAYER_BLOCK(proc->player);
-                    tmpfg = (proc->fr->multitask != BACKGROUND);
+				if (proc->fr->argument.top + 1 >= STACK_SIZE) {
+					/*
+					 * Uh oh! That MUF program's stack is full!
+					 * Print an error, free the frame, and exit.
+					 */
+					notify_nolisten(proc->player, "Program stack overflow.", 1);
+					prog_clean(proc->fr);
+				} else {
+					tmpcp = PLAYER_CURR_PROG(proc->player);
+					tmpbl = PLAYER_BLOCK(proc->player);
+					tmpfg = (proc->fr->multitask != BACKGROUND);
 
-                    copyinst(&ev->data,
-                        &(proc->fr->argument.st[proc->fr->argument.top]));
-                    proc->fr->argument.top++;
-                    push(proc->fr->argument.st, &(proc->fr->argument.top),
-                        PROG_STRING, MIPSCAST alloc_prog_string(ev->event));
+					copyinst(&ev->data, &(proc->fr->argument.st[proc->fr->argument.top]));
+					proc->fr->argument.top++;
+					push(proc->fr->argument.st, &(proc->fr->argument.top),
+						 PROG_STRING, MIPSCAST alloc_prog_string(ev->event));
 
-                    interp_loop(proc->player, proc->prog, proc->fr, 0);
+					interp_loop(proc->player, proc->prog, proc->fr, 0);
 
-                    if (!tmpfg) {
-                        PLAYER_SET_BLOCK(proc->player, tmpbl);
-                        PLAYER_SET_CURR_PROG(proc->player, tmpcp);
-                    }
-                }
-                muf_event_free(ev);
+					if (!tmpfg) {
+						PLAYER_SET_BLOCK(proc->player, tmpbl);
+						PLAYER_SET_CURR_PROG(proc->player, tmpcp);
+					}
+				}
+				muf_event_free(ev);
 
 				proc->fr = NULL;
 				proc->next = NULL;
 				free(proc);
-            }
-        }
-        prev = nextprev;
-        proc = next;
-    }
+			}
+		}
+		prev = nextprev;
+		proc = next;
+	}
 }
-
-
-

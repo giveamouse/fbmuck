@@ -31,4 +31,3 @@ extern void prim_descr(PRIM_PROTOTYPE);
     "DESCR", "ONLINE_ARRAY", "DESCR_ARRAY"
 
 #define PRIMS_CONNECTS_CNT 19
-

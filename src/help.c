@@ -1,9 +1,18 @@
+
 /* $Header$ */
 
 /*
  * $Log: help.c,v $
- * Revision 1.1  1999/12/16 03:23:29  revar
- * Initial revision
+ * Revision 1.2  2000/03/29 12:21:02  revar
+ * Reformatted all code into consistent format.
+ * 	Tabs are 4 spaces.
+ * 	Indents are one tab.
+ * 	Braces are generally K&R style.
+ * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+ * Rewrote restart script as a bourne shell script.
+ *
+ * Revision 1.1.1.1  1999/12/16 03:23:29  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:27:44  foxen
  * Initial FB6 CVS checkin.
@@ -67,342 +76,338 @@
 #if defined(HAVE_DIRENT_H) || defined(_POSIX_VERSION)
 # include <dirent.h>
 # define NLENGTH(dirent) (strlen((dirent)->d_name))
-#else /* not (HAVE_DIRENT_H or _POSIX_VERSION) */
+#else							/* not (HAVE_DIRENT_H or _POSIX_VERSION) */
 # define dirent direct
 # define NLENGTH(dirent) ((dirent)->d_namlen)
 # ifdef HAVE_SYS_NDIR_H
 #  include <sys/ndir.h>
-# endif /* HAVE_SYS_NDIR_H */
+# endif							/* HAVE_SYS_NDIR_H */
 # ifdef HAVE_SYS_DIR_H
 #  include <sys/dir.h>
-# endif /* HAVE_SYS_DIR_H */
+# endif							/* HAVE_SYS_DIR_H */
 # ifdef HAVE_NDIR_H
 #  include <ndir.h>
-# endif /* HAVE_NDIR_H */
-#endif /* not (HAVE_DIRENT_H or _POSIX_VERSION) */
+# endif							/* HAVE_NDIR_H */
+#endif							/* not (HAVE_DIRENT_H or _POSIX_VERSION) */
 
 #if defined(HAVE_DIRENT_H) || defined(_POSIX_VERSION) || defined(HAVE_SYS_NDIR_H) || defined(HAVE_SYS_DIR_H) || defined(HAVE_NDIR_H)
 # define DIR_AVALIBLE
 #endif
 
-void 
+void
 spit_file_segment(dbref player, const char *filename, const char *seg)
 {
-    FILE   *f;
-    char    buf[BUFFER_LEN];
-    char    segbuf[BUFFER_LEN];
-    char   *p;
-    int     startline, endline, currline;
+	FILE *f;
+	char buf[BUFFER_LEN];
+	char segbuf[BUFFER_LEN];
+	char *p;
+	int startline, endline, currline;
 
-    startline = endline = currline = 0;
-    if (seg && *seg) {
-	strcpy(segbuf, seg);
-	for (p = segbuf; isdigit(*p); p++);
-	if (*p) {
-	    *p++ = '\0';
-	    startline = atoi(segbuf);
-	    while (*p && !isdigit(*p)) p++;
-	    if (*p) endline = atoi(p);
-	} else {
-	    endline = startline = atoi(segbuf);
-	}
-    }
-    if ((f = fopen(filename, "r")) == NULL) {
-	sprintf(buf, "Sorry, %s is missing.  Management has been notified.",
-		filename);
-	notify(player, buf);
-	fputs("spit_file:", stderr);
-	perror(filename);
-    } else {
-	while (fgets(buf, sizeof buf, f)) {
-	    for (p = buf; *p; p++)
-		if (*p == '\n') {
-		    *p = '\0';
-		    break;
-		}
-	    currline++;
-	    if ((!startline || (currline >= startline)) &&
-		    (!endline || (currline <= endline))) {
-		if (*buf) {
-		    notify(player, buf);
+	startline = endline = currline = 0;
+	if (seg && *seg) {
+		strcpy(segbuf, seg);
+		for (p = segbuf; isdigit(*p); p++) ;
+		if (*p) {
+			*p++ = '\0';
+			startline = atoi(segbuf);
+			while (*p && !isdigit(*p))
+				p++;
+			if (*p)
+				endline = atoi(p);
 		} else {
-		    notify(player, "  ");
-	        }
-	    }
+			endline = startline = atoi(segbuf);
+		}
 	}
-	fclose(f);
-    }
+	if ((f = fopen(filename, "r")) == NULL) {
+		sprintf(buf, "Sorry, %s is missing.  Management has been notified.", filename);
+		notify(player, buf);
+		fputs("spit_file:", stderr);
+		perror(filename);
+	} else {
+		while (fgets(buf, sizeof buf, f)) {
+			for (p = buf; *p; p++)
+				if (*p == '\n') {
+					*p = '\0';
+					break;
+				}
+			currline++;
+			if ((!startline || (currline >= startline)) && (!endline || (currline <= endline))) {
+				if (*buf) {
+					notify(player, buf);
+				} else {
+					notify(player, "  ");
+				}
+			}
+		}
+		fclose(f);
+	}
 }
 
-void 
+void
 spit_file(dbref player, const char *filename)
 {
-    spit_file_segment(player, filename, "");
+	spit_file_segment(player, filename, "");
 }
 
 
-void 
+void
 index_file(dbref player, const char *onwhat, const char *file)
 {
-    FILE   *f;
-    char    buf[BUFFER_LEN];
-    char    topic[BUFFER_LEN];
-    char   *p;
-    int     arglen, found;
+	FILE *f;
+	char buf[BUFFER_LEN];
+	char topic[BUFFER_LEN];
+	char *p;
+	int arglen, found;
 
-    *topic = '\0';
-    strcpy(topic, onwhat);
-    if (*onwhat) {
-	strcat(topic, "|");
-    }
-
-    if ((f = fopen(file, "r")) == NULL) {
-	sprintf(buf,
-		"Sorry, %s is missing.  Management has been notified.", file);
-	notify(player, buf);
-	fprintf(stderr, "help: No file %s!\n", file);
-    } else {
-	if (*topic) {
-	    arglen = strlen(topic);
-	    do {
-		do {
-		    if (!(fgets(buf, sizeof buf, f))) {
-			sprintf(buf, "Sorry, no help available on topic \"%s\"",
-				onwhat);
-			notify(player, buf);
-			fclose(f);
-			return;
-		    }
-		} while (*buf != '~');
-		do {
-		    if (!(fgets(buf, sizeof buf, f))) {
-			sprintf(buf, "Sorry, no help available on topic \"%s\"",
-				onwhat);
-			notify(player, buf);
-			fclose(f);
-			return;
-		    }
-		} while (*buf == '~');
-		p = buf;
-		found = 0;
-		buf[strlen(buf) - 1] = '|';
-		while (*p && !found) {
-		    if (strncasecmp(p, topic, arglen)) {
-			while (*p && (*p != '|')) p++;
-			if (*p) p++;
-		    } else {
-			found = 1;
-		    }
-		}
-	    } while (!found);
+	*topic = '\0';
+	strcpy(topic, onwhat);
+	if (*onwhat) {
+		strcat(topic, "|");
 	}
-	while (fgets(buf, sizeof buf, f)) {
-	    if (*buf == '~')
-		break;
-	    for (p = buf; *p; p++)
-		if (*p == '\n') {
-		    *p = '\0';
-		    break;
-		}
-	    if (*buf) {
+
+	if ((f = fopen(file, "r")) == NULL) {
+		sprintf(buf, "Sorry, %s is missing.  Management has been notified.", file);
 		notify(player, buf);
-	    } else {
-		notify(player, "  ");
-	    }
+		fprintf(stderr, "help: No file %s!\n", file);
+	} else {
+		if (*topic) {
+			arglen = strlen(topic);
+			do {
+				do {
+					if (!(fgets(buf, sizeof buf, f))) {
+						sprintf(buf, "Sorry, no help available on topic \"%s\"", onwhat);
+						notify(player, buf);
+						fclose(f);
+						return;
+					}
+				} while (*buf != '~');
+				do {
+					if (!(fgets(buf, sizeof buf, f))) {
+						sprintf(buf, "Sorry, no help available on topic \"%s\"", onwhat);
+						notify(player, buf);
+						fclose(f);
+						return;
+					}
+				} while (*buf == '~');
+				p = buf;
+				found = 0;
+				buf[strlen(buf) - 1] = '|';
+				while (*p && !found) {
+					if (strncasecmp(p, topic, arglen)) {
+						while (*p && (*p != '|'))
+							p++;
+						if (*p)
+							p++;
+					} else {
+						found = 1;
+					}
+				}
+			} while (!found);
+		}
+		while (fgets(buf, sizeof buf, f)) {
+			if (*buf == '~')
+				break;
+			for (p = buf; *p; p++)
+				if (*p == '\n') {
+					*p = '\0';
+					break;
+				}
+			if (*buf) {
+				notify(player, buf);
+			} else {
+				notify(player, "  ");
+			}
+		}
+		fclose(f);
 	}
-	fclose(f);
-    }
 }
 
 
-int 
-show_subfile(dbref player, const char *dir, const char *topic, const char *seg,
-	     int partial)
+int
+show_subfile(dbref player, const char *dir, const char *topic, const char *seg, int partial)
 {
-    char   buf[256];
-    struct stat st;
-#ifdef DIR_AVALIBLE
-    DIR		*df;
-    struct dirent *dp;
-#endif 
-
-    if (!topic || !*topic) return 0;
-
-    if ((*topic == '.') || (*topic == '~') || (index(topic, '/'))) {
-	return 0;
-    }
-    if (strlen(topic) > 63) return 0;
-
+	char buf[256];
+	struct stat st;
 
 #ifdef DIR_AVALIBLE
-    /* TO DO: (1) exact match, or (2) partial match, but unique */
-    *buf = 0;
+	DIR *df;
+	struct dirent *dp;
+#endif
 
-    if ((df = (DIR *) opendir(dir)))
-    {
-        while ((dp = readdir(df)))
-        {
-            if ((partial  && string_prefix(dp->d_name, topic)) ||
-                (!partial && !string_compare(dp->d_name, topic))
-                )
-            {
-                sprintf(buf, "%s/%s", dir, dp->d_name);
-                break;
-            }
-        }
-        closedir(df);
-    }
-    
-    if (!*buf)
-    {
-	return 0; /* no such file or directory */
-    }
-#else /* !DIR_AVALIBLE */
-    sprintf(buf, "%s/%s", dir, topic);
-#endif /* !DIR_AVALIBLE */
+	if (!topic || !*topic)
+		return 0;
 
-    if (stat(buf, &st)) {
-	return 0;
-    } else {
-	spit_file_segment(player, buf, seg);
-	return 1;
-    }
+	if ((*topic == '.') || (*topic == '~') || (index(topic, '/'))) {
+		return 0;
+	}
+	if (strlen(topic) > 63)
+		return 0;
+
+
+#ifdef DIR_AVALIBLE
+	/* TO DO: (1) exact match, or (2) partial match, but unique */
+	*buf = 0;
+
+	if ((df = (DIR *) opendir(dir))) {
+		while ((dp = readdir(df))) {
+			if ((partial && string_prefix(dp->d_name, topic)) ||
+				(!partial && !string_compare(dp->d_name, topic))
+					) {
+				sprintf(buf, "%s/%s", dir, dp->d_name);
+				break;
+			}
+		}
+		closedir(df);
+	}
+
+	if (!*buf) {
+		return 0;				/* no such file or directory */
+	}
+#else							/* !DIR_AVALIBLE */
+	sprintf(buf, "%s/%s", dir, topic);
+#endif							/* !DIR_AVALIBLE */
+
+	if (stat(buf, &st)) {
+		return 0;
+	} else {
+		spit_file_segment(player, buf, seg);
+		return 1;
+	}
 }
 
 
-void 
+void
 do_man(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, MAN_DIR, topic, seg, FALSE)) return;
-    index_file(player, topic, MAN_FILE);
+	if (show_subfile(player, MAN_DIR, topic, seg, FALSE))
+		return;
+	index_file(player, topic, MAN_FILE);
 }
 
 
-void 
+void
 do_mpihelp(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, MPI_DIR, topic, seg, FALSE)) return;
-    index_file(player, topic, MPI_FILE);
+	if (show_subfile(player, MPI_DIR, topic, seg, FALSE))
+		return;
+	index_file(player, topic, MPI_FILE);
 }
 
 
-void 
+void
 do_help(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, HELP_DIR, topic, seg, FALSE)) return;
-    index_file(player, topic, HELP_FILE);
+	if (show_subfile(player, HELP_DIR, topic, seg, FALSE))
+		return;
+	index_file(player, topic, HELP_FILE);
 }
 
 
-void 
+void
 do_news(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, NEWS_DIR, topic, seg, FALSE)) return;
-    index_file(player, topic, NEWS_FILE);
+	if (show_subfile(player, NEWS_DIR, topic, seg, FALSE))
+		return;
+	index_file(player, topic, NEWS_FILE);
 }
 
 
-void 
+void
 add_motd_text_fmt(const char *text)
 {
-    char    buf[80];
-    const char *p = text;
-    int     count = 4;
+	char buf[80];
+	const char *p = text;
+	int count = 4;
 
-    buf[0] = buf[1] = buf[2] = buf[3] = ' ';
-    while (*p) {
-	while (*p && (count < 68))
-	    buf[count++] = *p++;
-	while (*p && !isspace(*p) && (count < 76))
-	    buf[count++] = *p++;
-	buf[count] = '\0';
-	log2file(MOTD_FILE, "%s", buf);
-	while (*p && isspace(*p))
-	    p++;
-	count = 0;
-    }
+	buf[0] = buf[1] = buf[2] = buf[3] = ' ';
+	while (*p) {
+		while (*p && (count < 68))
+			buf[count++] = *p++;
+		while (*p && !isspace(*p) && (count < 76))
+			buf[count++] = *p++;
+		buf[count] = '\0';
+		log2file(MOTD_FILE, "%s", buf);
+		while (*p && isspace(*p))
+			p++;
+		count = 0;
+	}
 }
 
 
-void 
+void
 do_motd(dbref player, char *text)
 {
-    time_t  lt;
+	time_t lt;
 
-    if (!*text || !Wizard(OWNER(player))) {
-	spit_file(player, MOTD_FILE);
-	return;
-    }
-    if (!string_compare(text, "clear")) {
-	unlink(MOTD_FILE);
+	if (!*text || !Wizard(OWNER(player))) {
+		spit_file(player, MOTD_FILE);
+		return;
+	}
+	if (!string_compare(text, "clear")) {
+		unlink(MOTD_FILE);
+		log2file(MOTD_FILE, "%s %s", "- - - - - - - - - - - - - - - - - - -",
+				 "- - - - - - - - - - - - - - - - - - -");
+		notify(player, "MOTD cleared.");
+		return;
+	}
+	lt = time(NULL);
+	log2file(MOTD_FILE, "%.16s", ctime(&lt));
+	add_motd_text_fmt(text);
 	log2file(MOTD_FILE, "%s %s", "- - - - - - - - - - - - - - - - - - -",
-		 "- - - - - - - - - - - - - - - - - - -");
-	notify(player, "MOTD cleared.");
-	return;
-    }
-    lt = time(NULL);
-    log2file(MOTD_FILE, "%.16s", ctime(&lt));
-    add_motd_text_fmt(text);
-    log2file(MOTD_FILE, "%s %s", "- - - - - - - - - - - - - - - - - - -",
-	     "- - - - - - - - - - - - - - - - - - -");
-    notify(player, "MOTD updated.");
+			 "- - - - - - - - - - - - - - - - - - -");
+	notify(player, "MOTD updated.");
 }
 
 
-void 
+void
 do_info(dbref player, const char *topic, const char *seg)
 {
-    char	*buf;
-#ifdef DIR_AVALIBLE
-    DIR		*df;
-    struct dirent *dp;
-#endif
-    int		f;
-    int		cols;
+	char *buf;
 
-    if (*topic) {
-        if (!show_subfile(player, INFO_DIR, topic, seg, TRUE))
-	{
-	    notify(player, NO_INFO_MSG);
-	}
-    } else {
 #ifdef DIR_AVALIBLE
-	buf = (char *) calloc(1, 80);
-	(void) strcpy(buf, "    ");
-	f = 0;
-	cols = 0;
-	if ((df = (DIR *) opendir(INFO_DIR))) 
-	{
-	    while ((dp = readdir(df)))
-	    {
-		
-		if (*(dp->d_name) != '.') 
-		{
-		    if (!f)
-			notify(player, "Available information files are:");
-		    if ((cols++ > 2) || 
-			((strlen(buf) + strlen(dp->d_name)) > 63)) 
-		    {
-			notify(player, buf);
-			(void) strcpy(buf, "    ");
-			cols = 0;
-		    }
-		    (void) strcat(strcat(buf, dp->d_name), " ");
-		    f = strlen(buf);
-		    while ((f % 20) != 4)
-			buf[f++] = ' ';
-		    buf[f] = '\0';
+	DIR *df;
+	struct dirent *dp;
+#endif
+	int f;
+	int cols;
+
+	if (*topic) {
+		if (!show_subfile(player, INFO_DIR, topic, seg, TRUE)) {
+			notify(player, NO_INFO_MSG);
 		}
-	    }
-	    closedir(df);
+	} else {
+#ifdef DIR_AVALIBLE
+		buf = (char *) calloc(1, 80);
+		(void) strcpy(buf, "    ");
+		f = 0;
+		cols = 0;
+		if ((df = (DIR *) opendir(INFO_DIR))) {
+			while ((dp = readdir(df))) {
+
+				if (*(dp->d_name) != '.') {
+					if (!f)
+						notify(player, "Available information files are:");
+					if ((cols++ > 2) || ((strlen(buf) + strlen(dp->d_name)) > 63)) {
+						notify(player, buf);
+						(void) strcpy(buf, "    ");
+						cols = 0;
+					}
+					(void) strcat(strcat(buf, dp->d_name), " ");
+					f = strlen(buf);
+					while ((f % 20) != 4)
+						buf[f++] = ' ';
+					buf[f] = '\0';
+				}
+			}
+			closedir(df);
+		}
+		if (f)
+			notify(player, buf);
+		else
+			notify(player, "No information files are available.");
+		free(buf);
+#else							/* !DIR_AVALIBLE */
+		notify(player, "Index not available on this system.");
+#endif							/* !DIR_AVALIBLE */
 	}
-	if (f)
-	    notify(player, buf);
-	else
-	    notify(player, "No information files are available.");
-	free(buf);
-#else /* !DIR_AVALIBLE */
-	notify(player, "Index not available on this system.");
-#endif /* !DIR_AVALIBLE */
-    }
 }

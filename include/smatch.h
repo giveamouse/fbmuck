@@ -1,3 +1,4 @@
+
 /*
 #ifndef BSD43
 # include <string.h>
@@ -13,4 +14,3 @@ extern char *strchr(), *strrchr();
 # endif
 #endif
 */
-

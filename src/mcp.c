@@ -31,7 +31,7 @@
 
 
 /* Defined elsewhere.  Used to send text to a connection */
-void SendText(McpFrame* mfr, const char *mesg);
+void SendText(McpFrame * mfr, const char *mesg);
 
 
 McpPkg *mcp_PackageList = NULL;
@@ -39,26 +39,28 @@ McpPkg *mcp_PackageList = NULL;
 
 
 int
-strcmp_nocase(const char* s1, const char* s2)
+strcmp_nocase(const char *s1, const char *s2)
 {
-    while (*s1 && tolower(*s1) == tolower(*s2)) s1++, s2++;
-    return (tolower(*s1) - tolower(*s2));
+	while (*s1 && tolower(*s1) == tolower(*s2))
+		s1++, s2++;
+	return (tolower(*s1) - tolower(*s2));
 }
 
 
 
 int
-strncmp_nocase(const char* s1, const char* s2, int cnt)
+strncmp_nocase(const char *s1, const char *s2, int cnt)
 {
-    while (cnt && *s1 && tolower(*s1) == tolower(*s2)) s1++, s2++, cnt--;
-    if (!cnt) {
-        return 0;
-    } else {
-	return (tolower(*s1) - tolower(*s2));
-    }
+	while (cnt && *s1 && tolower(*s1) == tolower(*s2))
+		s1++, s2++, cnt--;
+	if (!cnt) {
+		return 0;
+	} else {
+		return (tolower(*s1) - tolower(*s2));
+	}
 }
 
-int mcp_internal_parse(McpFrame* mfr, const char* in);
+int mcp_internal_parse(McpFrame * mfr, const char *in);
 
 
 
@@ -84,19 +86,21 @@ int mcp_internal_parse(McpFrame* mfr, const char* in);
  *****************************************************************/
 
 void
-mcp_package_register(const char* pkgname, McpVer minver, McpVer maxver, McpPkg_CB callback, void* context)
+mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_CB callback,
+					 void *context)
 {
-    McpPkg* new = (McpPkg*)malloc(sizeof(McpPkg));
-    new->pkgname = (char*)malloc(strlen(pkgname) + 1);
-    strcpy(new->pkgname, pkgname);
-    new->minver = minver;
-    new->maxver = maxver;
-    new->callback = callback;
-    new->context = context;
+	McpPkg *new = (McpPkg *) malloc(sizeof(McpPkg));
 
-    mcp_package_deregister(pkgname);
-    new->next = mcp_PackageList;
-    mcp_PackageList = new;
+	new->pkgname = (char *) malloc(strlen(pkgname) + 1);
+	strcpy(new->pkgname, pkgname);
+	new->minver = minver;
+	new->maxver = maxver;
+	new->callback = callback;
+	new->context = context;
+
+	mcp_package_deregister(pkgname);
+	new->next = mcp_PackageList;
+	mcp_PackageList = new;
 }
 
 
@@ -114,35 +118,35 @@ mcp_package_register(const char* pkgname, McpVer minver, McpVer maxver, McpPkg_C
  *****************************************************************/
 
 void
-mcp_package_deregister(const char* pkgname)
+mcp_package_deregister(const char *pkgname)
 {
-    McpPkg* ptr = mcp_PackageList;
-    McpPkg* prev = NULL;
+	McpPkg *ptr = mcp_PackageList;
+	McpPkg *prev = NULL;
 
-    while (ptr && !strcmp_nocase(ptr->pkgname, pkgname)) {
-	mcp_PackageList = ptr->next;
-	if (ptr->pkgname)
-	    free(ptr->pkgname);
-	free(ptr);
-	ptr = mcp_PackageList;
-    }
-
-    prev = mcp_PackageList;
-    if (ptr)
-	ptr = ptr->next;
-
-    while (ptr) {
-	if (!strcmp_nocase(pkgname, ptr->pkgname)) {
-	    prev->next = ptr->next;
-	    if (ptr->pkgname)
-		free(ptr->pkgname);
-	    free(ptr);
-	    ptr = prev->next;
-	} else {
-	    prev = ptr;
-	    ptr = ptr->next;
+	while (ptr && !strcmp_nocase(ptr->pkgname, pkgname)) {
+		mcp_PackageList = ptr->next;
+		if (ptr->pkgname)
+			free(ptr->pkgname);
+		free(ptr);
+		ptr = mcp_PackageList;
 	}
-    }
+
+	prev = mcp_PackageList;
+	if (ptr)
+		ptr = ptr->next;
+
+	while (ptr) {
+		if (!strcmp_nocase(pkgname, ptr->pkgname)) {
+			prev->next = ptr->next;
+			if (ptr->pkgname)
+				free(ptr->pkgname);
+			free(ptr);
+			ptr = prev->next;
+		} else {
+			prev = ptr;
+			ptr = ptr->next;
+		}
+	}
 }
 
 
@@ -159,9 +163,9 @@ mcp_package_deregister(const char* pkgname)
 /*****************************************************************/
 
 
-void mcp_basic_handler(McpFrame* mfr, McpMesg* mesg, void *dummy);
-void mcp_negotiate_handler(McpFrame* mfr, McpMesg* mesg, McpVer version, void *dummy);
-void mcppkg_simpleedit(McpFrame* mfr, McpMesg* mesg, McpVer ver, void *context);
+void mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy);
+void mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *dummy);
+void mcppkg_simpleedit(McpFrame * mfr, McpMesg * mesg, McpVer ver, void *context);
 
 
 /*****************************************************************
@@ -175,14 +179,15 @@ void mcppkg_simpleedit(McpFrame* mfr, McpMesg* mesg, McpVer ver, void *context);
 void
 mcp_initialize()
 {
-    McpVer oneoh = {1,0};
-    McpVer twooh = {2,0};
-    /* McpVer twoone = {2,1}; */
+	McpVer oneoh = { 1, 0 };
+	McpVer twooh = { 2, 0 };
 
-    mcp_package_register(MCP_NEGOTIATE_PKG, oneoh, twooh, mcp_negotiate_handler, NULL);
-    mcp_package_register("org-fuzzball-notify", oneoh, oneoh, mcppkg_simpleedit, NULL);
-    mcp_package_register("org-fuzzball-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL);
-    mcp_package_register("dns-org-mud-moo-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL);
+	/* McpVer twoone = {2,1}; */
+
+	mcp_package_register(MCP_NEGOTIATE_PKG, oneoh, twooh, mcp_negotiate_handler, NULL);
+	mcp_package_register("org-fuzzball-notify", oneoh, oneoh, mcppkg_simpleedit, NULL);
+	mcp_package_register("org-fuzzball-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL);
+	mcp_package_register("dns-org-mud-moo-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL);
 }
 
 
@@ -211,26 +216,27 @@ mcp_initialize()
  *****************************************************************/
 
 void
-mcp_frame_init(McpFrame* mfr, connection_t con)
+mcp_frame_init(McpFrame * mfr, connection_t con)
 {
-    McpMesg reply;
-    /* McpVer twoone = {2,1}; */
+	McpMesg reply;
 
-    mfr->descriptor = con;
-    mfr->enabled = 1;
-    mfr->version.verminor = 0;
-    mfr->version.vermajor = 0;
-    mfr->authkey = NULL;
-    mfr->packages = NULL;
-    mfr->messages = NULL;
+	/* McpVer twoone = {2,1}; */
 
-    mcp_mesg_init(&reply, MCP_INIT_PKG, "");
-    mcp_mesg_arg_append(&reply, "version", "2.1");
-    mcp_mesg_arg_append(&reply, "to", "2.1");
-    mcp_frame_output_mesg(mfr, &reply);
-    mcp_mesg_clear(&reply);
+	mfr->descriptor = con;
+	mfr->enabled = 1;
+	mfr->version.verminor = 0;
+	mfr->version.vermajor = 0;
+	mfr->authkey = NULL;
+	mfr->packages = NULL;
+	mfr->messages = NULL;
 
-    mfr->enabled = 0;
+	mcp_mesg_init(&reply, MCP_INIT_PKG, "");
+	mcp_mesg_arg_append(&reply, "version", "2.1");
+	mcp_mesg_arg_append(&reply, "to", "2.1");
+	mcp_frame_output_mesg(mfr, &reply);
+	mcp_mesg_clear(&reply);
+
+	mfr->enabled = 0;
 }
 
 
@@ -247,24 +253,24 @@ mcp_frame_init(McpFrame* mfr, connection_t con)
  *****************************************************************/
 
 void
-mcp_frame_clear(McpFrame* mfr)
+mcp_frame_clear(McpFrame * mfr)
 {
-    McpPkg* tmp = mfr->packages;
-    McpMesg* tmp2 = mfr->messages;
+	McpPkg *tmp = mfr->packages;
+	McpMesg *tmp2 = mfr->messages;
 
-    while (tmp) {
-	mfr->packages = tmp->next;
-	if (tmp->pkgname)
-	    free(tmp->pkgname);
-	free(tmp);
-	tmp = mfr->packages;
-    }
-    while (tmp2) {
-	mfr->messages = tmp2->next;
-	mcp_mesg_clear(tmp2);
-	free(tmp2);
-	tmp2 = mfr->messages;
-    }
+	while (tmp) {
+		mfr->packages = tmp->next;
+		if (tmp->pkgname)
+			free(tmp->pkgname);
+		free(tmp);
+		tmp = mfr->packages;
+	}
+	while (tmp2) {
+		mfr->messages = tmp2->next;
+		mcp_mesg_clear(tmp2);
+		free(tmp2);
+		tmp2 = mfr->messages;
+	}
 }
 
 
@@ -288,45 +294,47 @@ mcp_frame_clear(McpFrame* mfr)
  *****************************************************************/
 
 int
-mcp_frame_package_add(McpFrame* mfr, const char* package, McpVer minver, McpVer maxver)
+mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer maxver)
 {
-    McpPkg* nu;
-    McpPkg* ptr;
-    McpVer selver;
+	McpPkg *nu;
+	McpPkg *ptr;
+	McpVer selver;
 
-    if (!mfr->enabled) {
-        return EMCP_NOMCP;
-    }
-
-    for (ptr = mcp_PackageList; ptr; ptr = ptr->next) {
-        if (!strcmp_nocase(ptr->pkgname, package)) {
-	    break;
+	if (!mfr->enabled) {
+		return EMCP_NOMCP;
 	}
-    }
-    if (!ptr) {
-        return EMCP_NOPACKAGE;
-    }
 
-    mcp_frame_package_remove(mfr, package);
+	for (ptr = mcp_PackageList; ptr; ptr = ptr->next) {
+		if (!strcmp_nocase(ptr->pkgname, package)) {
+			break;
+		}
+	}
+	if (!ptr) {
+		return EMCP_NOPACKAGE;
+	}
 
-    selver = mcp_version_select(ptr->minver, ptr->maxver, minver, maxver);
-    nu = (McpPkg*)malloc(sizeof(McpPkg));
-    nu->pkgname = (char*)malloc(strlen(ptr->pkgname)+1);
-    strcpy(nu->pkgname, ptr->pkgname);
-    nu->minver = selver;
-    nu->maxver = selver;
-    nu->callback = ptr->callback;
-    nu->context = ptr->context;
-    nu->next = NULL;
+	mcp_frame_package_remove(mfr, package);
 
-    if (!mfr->packages) {
-	mfr->packages = nu;
-    } else {
-        McpPkg* lastpkg = mfr->packages;
-	while (lastpkg->next) lastpkg = lastpkg->next;
-	lastpkg->next = nu;
-    }
-    return EMCP_SUCCESS;
+	selver = mcp_version_select(ptr->minver, ptr->maxver, minver, maxver);
+	nu = (McpPkg *) malloc(sizeof(McpPkg));
+	nu->pkgname = (char *) malloc(strlen(ptr->pkgname) + 1);
+	strcpy(nu->pkgname, ptr->pkgname);
+	nu->minver = selver;
+	nu->maxver = selver;
+	nu->callback = ptr->callback;
+	nu->context = ptr->context;
+	nu->next = NULL;
+
+	if (!mfr->packages) {
+		mfr->packages = nu;
+	} else {
+		McpPkg *lastpkg = mfr->packages;
+
+		while (lastpkg->next)
+			lastpkg = lastpkg->next;
+		lastpkg->next = nu;
+	}
+	return EMCP_SUCCESS;
 }
 
 
@@ -348,27 +356,27 @@ mcp_frame_package_add(McpFrame* mfr, const char* package, McpVer minver, McpVer 
  *****************************************************************/
 
 void
-mcp_frame_package_remove(McpFrame* mfr, const char* package)
+mcp_frame_package_remove(McpFrame * mfr, const char *package)
 {
-    McpPkg* tmp;
-    McpPkg* prev;
+	McpPkg *tmp;
+	McpPkg *prev;
 
-    while (mfr->packages && !strcmp_nocase(mfr->packages->pkgname, package)) {
-        tmp = mfr->packages;
-	mfr->packages = tmp->next;
-	if (tmp->pkgname)
-	    free(tmp->pkgname);
-	free(tmp);
-    }
-    
-    prev = mfr->packages;
-    while (prev && prev->next && !strcmp_nocase(prev->next->pkgname, package)) {
-        tmp = prev->next;
-	prev->next = tmp->next;
-	if (tmp->pkgname)
-	    free(tmp->pkgname);
-	free(tmp);
-    }
+	while (mfr->packages && !strcmp_nocase(mfr->packages->pkgname, package)) {
+		tmp = mfr->packages;
+		mfr->packages = tmp->next;
+		if (tmp->pkgname)
+			free(tmp->pkgname);
+		free(tmp);
+	}
+
+	prev = mfr->packages;
+	while (prev && prev->next && !strcmp_nocase(prev->next->pkgname, package)) {
+		tmp = prev->next;
+		prev->next = tmp->next;
+		if (tmp->pkgname)
+			free(tmp->pkgname);
+		free(tmp);
+	}
 }
 
 
@@ -388,25 +396,25 @@ mcp_frame_package_remove(McpFrame* mfr, const char* package)
  *****************************************************************/
 
 McpVer
-mcp_frame_package_supported(McpFrame* mfr, const char* package)
+mcp_frame_package_supported(McpFrame * mfr, const char *package)
 {
-    McpPkg* ptr;
-    McpVer errver = {0,0};
+	McpPkg *ptr;
+	McpVer errver = { 0, 0 };
 
-    if (!mfr->enabled) {
-        return errver;
-    }
-
-    for (ptr = mfr->packages; ptr; ptr = ptr->next) {
-        if (!strcmp_nocase(ptr->pkgname, package)) {
-	    break;
+	if (!mfr->enabled) {
+		return errver;
 	}
-    }
-    if (!ptr) {
-        return errver;
-    }
 
-    return (ptr->minver);
+	for (ptr = mfr->packages; ptr; ptr = ptr->next) {
+		if (!strcmp_nocase(ptr->pkgname, package)) {
+			break;
+		}
+	}
+	if (!ptr) {
+		return errver;
+	}
+
+	return (ptr->minver);
 }
 
 
@@ -428,34 +436,35 @@ mcp_frame_package_supported(McpFrame* mfr, const char* package)
  *****************************************************************/
 
 int
-mcp_frame_package_docallback(McpFrame* mfr, McpMesg* msg)
+mcp_frame_package_docallback(McpFrame * mfr, McpMesg * msg)
 {
-    McpPkg* ptr = NULL;
+	McpPkg *ptr = NULL;
 
-    if (!strcmp_nocase(msg->package, MCP_INIT_PKG)) {
-	mcp_basic_handler(mfr, msg, NULL);
-    } else {
-	if (!mfr->enabled) {
-	    return EMCP_NOMCP;
-	}
-
-	for (ptr = mfr->packages; ptr; ptr = ptr->next) {
-	    if (!strcmp_nocase(ptr->pkgname, msg->package)) {
-		break;
-	    }
-	}
-	if (!ptr) {
-	    if (!strcmp_nocase(msg->package, MCP_NEGOTIATE_PKG)) {
-		McpVer twooh = {2, 0};
-		mcp_negotiate_handler(mfr, msg, twooh, NULL);
-	    } else {
-		return EMCP_NOPACKAGE;
-	    }
+	if (!strcmp_nocase(msg->package, MCP_INIT_PKG)) {
+		mcp_basic_handler(mfr, msg, NULL);
 	} else {
-	    ptr->callback(mfr, msg, ptr->maxver, ptr->context);
+		if (!mfr->enabled) {
+			return EMCP_NOMCP;
+		}
+
+		for (ptr = mfr->packages; ptr; ptr = ptr->next) {
+			if (!strcmp_nocase(ptr->pkgname, msg->package)) {
+				break;
+			}
+		}
+		if (!ptr) {
+			if (!strcmp_nocase(msg->package, MCP_NEGOTIATE_PKG)) {
+				McpVer twooh = { 2, 0 };
+
+				mcp_negotiate_handler(mfr, msg, twooh, NULL);
+			} else {
+				return EMCP_NOPACKAGE;
+			}
+		} else {
+			ptr->callback(mfr, msg, ptr->maxver, ptr->context);
+		}
 	}
-    }
-    return EMCP_SUCCESS;
+	return EMCP_SUCCESS;
 }
 
 
@@ -479,32 +488,31 @@ mcp_frame_package_docallback(McpFrame* mfr, McpMesg* msg)
  *****************************************************************/
 
 int
-mcp_frame_process_input(McpFrame* mfr, const char* linein,
-                        char *outbuf, int bufsize)
+mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf, int bufsize)
 {
-    if (!strncmp_nocase(linein, MCP_MESG_PREFIX, 3)) {
-        /* treat it as an out-of-band message, and parse it. */
-	if (mfr->enabled || !strncmp_nocase(MCP_INIT_MESG, linein+3, 4)) {
-	    if (!mcp_internal_parse(mfr, linein + 3)) {
-		strncpy(outbuf, linein, bufsize);
-		outbuf[bufsize - 1] = '\0';
-		return 1;
-	    }
-	    return 0;
+	if (!strncmp_nocase(linein, MCP_MESG_PREFIX, 3)) {
+		/* treat it as an out-of-band message, and parse it. */
+		if (mfr->enabled || !strncmp_nocase(MCP_INIT_MESG, linein + 3, 4)) {
+			if (!mcp_internal_parse(mfr, linein + 3)) {
+				strncpy(outbuf, linein, bufsize);
+				outbuf[bufsize - 1] = '\0';
+				return 1;
+			}
+			return 0;
+		} else {
+			strncpy(outbuf, linein, bufsize);
+			outbuf[bufsize - 1] = '\0';
+			return 1;
+		}
+	} else if (mfr->enabled && !strncmp_nocase(linein, MCP_QUOTE_PREFIX, 3)) {
+		/* It's quoted in-band data.  Strip the quoting. */
+		strncpy(outbuf, linein + 3, bufsize);
 	} else {
-	    strncpy(outbuf, linein, bufsize);
-	    outbuf[bufsize - 1] = '\0';
-	    return 1;
+		/* It's in-band data.  Return it raw. */
+		strncpy(outbuf, linein, bufsize);
 	}
-    } else if (mfr->enabled && !strncmp_nocase(linein, MCP_QUOTE_PREFIX, 3)) {
-        /* It's quoted in-band data.  Strip the quoting. */
-        strncpy(outbuf, linein + 3, bufsize);
-    } else {
-        /* It's in-band data.  Return it raw. */
-	strncpy(outbuf, linein, bufsize);
-    }
-    outbuf[bufsize - 1] = '\0';
-    return 1;
+	outbuf[bufsize - 1] = '\0';
+	return 1;
 }
 
 
@@ -524,18 +532,17 @@ mcp_frame_process_input(McpFrame* mfr, const char* linein,
  *****************************************************************/
 
 void
-mcp_frame_output_inband(McpFrame* mfr, const char* lineout)
+mcp_frame_output_inband(McpFrame * mfr, const char *lineout)
 {
-    if (!mfr->enabled || 
-        (strncmp(lineout, MCP_MESG_PREFIX, 3) &&
-	 strncmp(lineout, MCP_QUOTE_PREFIX, 3))
-    ) {
-        SendText(mfr, lineout);
-    } else {
-	SendText(mfr, MCP_QUOTE_PREFIX);
-        SendText(mfr, lineout);
-    }
-    /* SendText(mfr, "\r\n"); */
+	if (!mfr->enabled ||
+		(strncmp(lineout, MCP_MESG_PREFIX, 3) && strncmp(lineout, MCP_QUOTE_PREFIX, 3))
+			) {
+		SendText(mfr, lineout);
+	} else {
+		SendText(mfr, MCP_QUOTE_PREFIX);
+		SendText(mfr, lineout);
+	}
+	/* SendText(mfr, "\r\n"); */
 }
 
 
@@ -558,157 +565,163 @@ mcp_frame_output_inband(McpFrame* mfr, const char* lineout)
  *****************************************************************/
 
 int
-mcp_frame_output_mesg(McpFrame* mfr, McpMesg* msg)
+mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 {
-    char outbuf[BUFFER_LEN*2];
-    char mesgname[128];
-    char datatag[32];
-    McpArg* anarg = NULL;
-    int mlineflag = 0;
-    char *p;
-    char *out;
+	char outbuf[BUFFER_LEN * 2];
+	char mesgname[128];
+	char datatag[32];
+	McpArg *anarg = NULL;
+	int mlineflag = 0;
+	char *p;
+	char *out;
 
-    if (!mfr->enabled && strcmp_nocase(msg->package, MCP_INIT_PKG)) {
-        return EMCP_NOMCP;
-    }
-    
-    /* Create the message name from the package and message subnames */
-    strncpy(mesgname, msg->package, sizeof(mesgname));
-    mesgname[sizeof(mesgname)] = '\0';
-    if (msg->mesgname && *msg->mesgname) {
-        strcat(mesgname, MCP_MESG_DELIMITER);
-	strncat(mesgname, msg->mesgname, sizeof(mesgname) - strlen(mesgname));
+	if (!mfr->enabled && strcmp_nocase(msg->package, MCP_INIT_PKG)) {
+		return EMCP_NOMCP;
+	}
+
+	/* Create the message name from the package and message subnames */
+	strncpy(mesgname, msg->package, sizeof(mesgname));
 	mesgname[sizeof(mesgname)] = '\0';
-    }
-
-    strcpy(outbuf, MCP_MESG_PREFIX);
-    strcat(outbuf, mesgname);
-    if (strcmp_nocase(mesgname, MCP_INIT_PKG)) {
-        McpVer nullver = {0,0};
-        strcat(outbuf, " ");
-        strcat(outbuf, mfr->authkey);
-	if (strcmp_nocase(msg->package, MCP_NEGOTIATE_PKG)) {
-	    McpVer ver = mcp_frame_package_supported(mfr, msg->package);
-	    if (!mcp_version_compare(ver, nullver)) {
-	        return EMCP_NOPACKAGE;
-	    }
+	if (msg->mesgname && *msg->mesgname) {
+		strcat(mesgname, MCP_MESG_DELIMITER);
+		strncat(mesgname, msg->mesgname, sizeof(mesgname) - strlen(mesgname));
+		mesgname[sizeof(mesgname)] = '\0';
 	}
-    }
-    
-    /* If the argument lines contain newlines, split them into separate lines. */
-    for (anarg = msg->args; anarg; anarg = anarg->next) {
-	if (anarg->value) {
-	    McpArgPart* ap = anarg->value;
-	    while (ap) {
-		p = ap->value;
-		while (*p) {
-		    if (*p == MCP_ARGLINE_DELIMCHAR1 || *p == MCP_ARGLINE_DELIMCHAR2) {
-			McpArgPart* nu=(McpArgPart*)malloc(sizeof(McpArgPart));
-			nu->next = ap->next;
-			ap->next = nu;
-			*p++ = '\0';
-			nu->value = (char*)malloc(strlen(p) + 1);
-			strcpy(nu->value, p);
-			ap->value = (char*)realloc(ap->value, strlen(ap->value) + 1);
-			ap = nu;
-			p = nu->value;
-		    } else {
-			p++;
-		    }
+
+	strcpy(outbuf, MCP_MESG_PREFIX);
+	strcat(outbuf, mesgname);
+	if (strcmp_nocase(mesgname, MCP_INIT_PKG)) {
+		McpVer nullver = { 0, 0 };
+
+		strcat(outbuf, " ");
+		strcat(outbuf, mfr->authkey);
+		if (strcmp_nocase(msg->package, MCP_NEGOTIATE_PKG)) {
+			McpVer ver = mcp_frame_package_supported(mfr, msg->package);
+
+			if (!mcp_version_compare(ver, nullver)) {
+				return EMCP_NOPACKAGE;
+			}
 		}
-		ap = ap->next;
-	    }
 	}
-    }
 
-    /* Build the initial message string */
-    out = outbuf;
-    for (anarg = msg->args; anarg; anarg = anarg->next) {
-	out += strlen(out);
-	strcat(out, MCP_SEPARATOR);
-	if (!anarg->value) {
-	    anarg->was_shown = 1;
-	    strcat(out, anarg->name);
-	    out += strlen(out);
-	    strcat(out, MCP_ARG_DELIMITER);
-	    strcat(out, MCP_SEPARATOR);
-	    strcat(out, MCP_ARG_EMPTY);
-	} else {
-	    int totlen = strlen(anarg->value->value) + strlen(anarg->name) + 5;
-	    if (anarg->value->next || totlen > ((BUFFER_LEN - (out - outbuf)) / 2)) {
-		/* Value is multi-line or too long.  Send on separate line(s). */
-		mlineflag = 1;
-		anarg->was_shown = 0;
-		strcat(out, anarg->name);
-		strcat(out, MCP_ARG_DEFERRED);
-		strcat(out, MCP_ARG_DELIMITER);
+	/* If the argument lines contain newlines, split them into separate lines. */
+	for (anarg = msg->args; anarg; anarg = anarg->next) {
+		if (anarg->value) {
+			McpArgPart *ap = anarg->value;
+
+			while (ap) {
+				p = ap->value;
+				while (*p) {
+					if (*p == MCP_ARGLINE_DELIMCHAR1 || *p == MCP_ARGLINE_DELIMCHAR2) {
+						McpArgPart *nu = (McpArgPart *) malloc(sizeof(McpArgPart));
+
+						nu->next = ap->next;
+						ap->next = nu;
+						*p++ = '\0';
+						nu->value = (char *) malloc(strlen(p) + 1);
+						strcpy(nu->value, p);
+						ap->value = (char *) realloc(ap->value, strlen(ap->value) + 1);
+						ap = nu;
+						p = nu->value;
+					} else {
+						p++;
+					}
+				}
+				ap = ap->next;
+			}
+		}
+	}
+
+	/* Build the initial message string */
+	out = outbuf;
+	for (anarg = msg->args; anarg; anarg = anarg->next) {
+		out += strlen(out);
 		strcat(out, MCP_SEPARATOR);
-		strcat(out, MCP_ARG_EMPTY);
-	    } else {
-		anarg->was_shown = 1;
-		strcat(out, anarg->name);
+		if (!anarg->value) {
+			anarg->was_shown = 1;
+			strcat(out, anarg->name);
+			out += strlen(out);
+			strcat(out, MCP_ARG_DELIMITER);
+			strcat(out, MCP_SEPARATOR);
+			strcat(out, MCP_ARG_EMPTY);
+		} else {
+			int totlen = strlen(anarg->value->value) + strlen(anarg->name) + 5;
+
+			if (anarg->value->next || totlen > ((BUFFER_LEN - (out - outbuf)) / 2)) {
+				/* Value is multi-line or too long.  Send on separate line(s). */
+				mlineflag = 1;
+				anarg->was_shown = 0;
+				strcat(out, anarg->name);
+				strcat(out, MCP_ARG_DEFERRED);
+				strcat(out, MCP_ARG_DELIMITER);
+				strcat(out, MCP_SEPARATOR);
+				strcat(out, MCP_ARG_EMPTY);
+			} else {
+				anarg->was_shown = 1;
+				strcat(out, anarg->name);
+				strcat(out, MCP_ARG_DELIMITER);
+				strcat(out, MCP_SEPARATOR);
+				out += strlen(out);
+				*out++ = '"';
+				p = anarg->value->value;
+				while (*p) {
+					if (*p == '"' || *p == '\\') {
+						*out++ = '\\';
+					}
+					*out++ = *p++;
+				}
+				*out++ = '"';
+				*out = '\0';
+			}
+		}
+	}
+
+	/* If the message is multi-line, make sure it has a _data-tag field. */
+	if (mlineflag) {
+		strcat(out, MCP_DATATAG);
 		strcat(out, MCP_ARG_DELIMITER);
 		strcat(out, MCP_SEPARATOR);
 		out += strlen(out);
-		*out++ = '"';
-		p = anarg->value->value;
-		while (*p) {
-		    if (*p == '"' || *p == '\\') {
-		        *out++ = '\\';
-		    }
-		    *out++ = *p++;
-		}
-		*out++ = '"';
-		*out = '\0';
-	    }
-	}
-    }
-
-    /* If the message is multi-line, make sure it has a _data-tag field. */
-    if (mlineflag) {
-        strcat(out, MCP_DATATAG);
-	strcat(out, MCP_ARG_DELIMITER);
-	strcat(out, MCP_SEPARATOR);
-	out += strlen(out);
-	sprintf(datatag, "%0.8X%0.8X", random(), random());
-	strcat(out, datatag);
-    }
-
-    /* Send the initial line. */
-    SendText(mfr, outbuf);
-    SendText(mfr, "\r\n");
-
-    if (mlineflag) {
-	/* Start sending arguments whose values weren't already sent. */
-	/* This is usually just multi-line argument values. */
-	for (anarg = msg->args; anarg; anarg = anarg->next) {
-	    if (!anarg->was_shown) {
-		McpArgPart* ap = anarg->value;
-		while (ap) {
-		    *outbuf = '\0';
-		    strcpy(outbuf, MCP_MESG_PREFIX);
-		    strcat(outbuf, "* ");
-		    strcat(outbuf, datatag);
-		    strcat(outbuf, MCP_SEPARATOR);
-		    strcat(outbuf, anarg->name);
-		    strcat(outbuf, MCP_ARG_DELIMITER);
-		    strcat(outbuf, MCP_SEPARATOR);
-		    strcat(outbuf, ap->value);
-		    strcat(outbuf, "\r\n");
-		    SendText(mfr, outbuf);
-		    ap = ap->next;
-		}
-	    }
+		sprintf(datatag, "%0.8X%0.8X", random(), random());
+		strcat(out, datatag);
 	}
 
-	/* Let the other side know we're done sending multi-line arg vals. */
-	strcpy(outbuf, MCP_MESG_PREFIX);
-	strcat(outbuf, ": ");
-	strcat(outbuf, datatag);
-	strcat(outbuf, "\r\n");
+	/* Send the initial line. */
 	SendText(mfr, outbuf);
-    }
-    return EMCP_SUCCESS;
+	SendText(mfr, "\r\n");
+
+	if (mlineflag) {
+		/* Start sending arguments whose values weren't already sent. */
+		/* This is usually just multi-line argument values. */
+		for (anarg = msg->args; anarg; anarg = anarg->next) {
+			if (!anarg->was_shown) {
+				McpArgPart *ap = anarg->value;
+
+				while (ap) {
+					*outbuf = '\0';
+					strcpy(outbuf, MCP_MESG_PREFIX);
+					strcat(outbuf, "* ");
+					strcat(outbuf, datatag);
+					strcat(outbuf, MCP_SEPARATOR);
+					strcat(outbuf, anarg->name);
+					strcat(outbuf, MCP_ARG_DELIMITER);
+					strcat(outbuf, MCP_SEPARATOR);
+					strcat(outbuf, ap->value);
+					strcat(outbuf, "\r\n");
+					SendText(mfr, outbuf);
+					ap = ap->next;
+				}
+			}
+		}
+
+		/* Let the other side know we're done sending multi-line arg vals. */
+		strcpy(outbuf, MCP_MESG_PREFIX);
+		strcat(outbuf, ": ");
+		strcat(outbuf, datatag);
+		strcat(outbuf, "\r\n");
+		SendText(mfr, outbuf);
+	}
+	return EMCP_SUCCESS;
 }
 
 
@@ -742,16 +755,16 @@ mcp_frame_output_mesg(McpFrame* mfr, McpMesg* msg)
  *****************************************************************/
 
 void
-mcp_mesg_init(McpMesg* msg, const char* package, const char* mesgname)
+mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname)
 {
-    msg->package = (char*)malloc(strlen(package) + 1);
-    strcpy(msg->package, package);
-    msg->mesgname = (char*)malloc(strlen(mesgname) + 1);
-    strcpy(msg->mesgname, mesgname);
-    msg->datatag = NULL;
-    msg->args = NULL;
-    msg->incomplete = 0;
-    msg->next = NULL;
+	msg->package = (char *) malloc(strlen(package) + 1);
+	strcpy(msg->package, package);
+	msg->mesgname = (char *) malloc(strlen(mesgname) + 1);
+	strcpy(msg->mesgname, mesgname);
+	msg->datatag = NULL;
+	msg->args = NULL;
+	msg->incomplete = 0;
+	msg->next = NULL;
 }
 
 
@@ -770,29 +783,31 @@ mcp_mesg_init(McpMesg* msg, const char* package, const char* mesgname)
  *****************************************************************/
 
 void
-mcp_mesg_clear(McpMesg* msg)
+mcp_mesg_clear(McpMesg * msg)
 {
-    if (msg->package)
-        free(msg->package);
-    if (msg->mesgname)
-        free(msg->mesgname);
-    if (msg->datatag)
-        free(msg->datatag);
+	if (msg->package)
+		free(msg->package);
+	if (msg->mesgname)
+		free(msg->mesgname);
+	if (msg->datatag)
+		free(msg->datatag);
 
-    while (msg->args) {
-        McpArg *tmp = msg->args;
-	msg->args = tmp->next;
-	if (tmp->name)
-	    free(tmp->name);
-	while (tmp->value) {
-	    McpArgPart* ptr2 = tmp->value;
-	    tmp->value = tmp->value->next;
-	    if (ptr2->value)
-	        free(ptr2->value);
-	    free(ptr2);
+	while (msg->args) {
+		McpArg *tmp = msg->args;
+
+		msg->args = tmp->next;
+		if (tmp->name)
+			free(tmp->name);
+		while (tmp->value) {
+			McpArgPart *ptr2 = tmp->value;
+
+			tmp->value = tmp->value->next;
+			if (ptr2->value)
+				free(ptr2->value);
+			free(ptr2);
+		}
+		free(tmp);
 	}
-	free(tmp);
-    }
 }
 
 
@@ -824,22 +839,23 @@ mcp_mesg_clear(McpMesg* msg)
  *****************************************************************/
 
 int
-mcp_mesg_arg_linecount(McpMesg* msg, const char* name)
+mcp_mesg_arg_linecount(McpMesg * msg, const char *name)
 {
-    McpArg* ptr = msg->args;
-    int cnt = 0;
+	McpArg *ptr = msg->args;
+	int cnt = 0;
 
-    while (ptr && strcmp_nocase(ptr->name, name)) {
-         ptr = ptr->next;
-    }
-    if (ptr) {
-	McpArgPart* ptr2 = ptr->value;
-	while (ptr2) {
-	    ptr2 = ptr2->next;
-	    cnt++;
+	while (ptr && strcmp_nocase(ptr->name, name)) {
+		ptr = ptr->next;
 	}
-    }
-    return cnt;
+	if (ptr) {
+		McpArgPart *ptr2 = ptr->value;
+
+		while (ptr2) {
+			ptr2 = ptr2->next;
+			cnt++;
+		}
+	}
+	return cnt;
 }
 
 
@@ -857,26 +873,27 @@ mcp_mesg_arg_linecount(McpMesg* msg, const char* name)
  *
  *****************************************************************/
 
-char*
-mcp_mesg_arg_getline(McpMesg* msg, const char* argname, int linenum)
+char *
+mcp_mesg_arg_getline(McpMesg * msg, const char *argname, int linenum)
 {
-    McpArg* ptr = msg->args;
+	McpArg *ptr = msg->args;
 
-    while (ptr && strcmp_nocase(ptr->name, argname)) {
-         ptr = ptr->next;
-    }
-    if (ptr) {
-	McpArgPart* ptr2 = ptr->value;
-	while (linenum > 0 && ptr2) {
-	    ptr2 = ptr2->next;
-	    linenum--;
+	while (ptr && strcmp_nocase(ptr->name, argname)) {
+		ptr = ptr->next;
 	}
-	if (ptr2) {
-	    return (ptr2->value);
+	if (ptr) {
+		McpArgPart *ptr2 = ptr->value;
+
+		while (linenum > 0 && ptr2) {
+			ptr2 = ptr2->next;
+			linenum--;
+		}
+		if (ptr2) {
+			return (ptr2->value);
+		}
+		return NULL;
 	}
-        return NULL;
-    }
-    return NULL;
+	return NULL;
 }
 
 
@@ -897,45 +914,48 @@ mcp_mesg_arg_getline(McpMesg* msg, const char* argname, int linenum)
  *****************************************************************/
 
 void
-mcp_mesg_arg_append(McpMesg* msg, const char* argname, const char* argval)
+mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 {
-    McpArg* ptr = msg->args;
+	McpArg *ptr = msg->args;
 
-    while (ptr && strcmp_nocase(ptr->name, argname)) {
-         ptr = ptr->next;
-    }
-    if (!ptr) {
-	ptr = (McpArg*)malloc(sizeof(McpArg));
-        ptr->name = (char *)malloc(strlen(argname) + 1);
-	strcpy(ptr->name, argname);
-        ptr->value = NULL;
-	ptr->next = NULL;
-	if (!msg->args) {
-	    msg->args = ptr;
-	} else {
-	    McpArg* lastarg = msg->args;
-	    while (lastarg->next) lastarg = lastarg->next;
-	    lastarg->next = ptr;
+	while (ptr && strcmp_nocase(ptr->name, argname)) {
+		ptr = ptr->next;
 	}
-    }
+	if (!ptr) {
+		ptr = (McpArg *) malloc(sizeof(McpArg));
+		ptr->name = (char *) malloc(strlen(argname) + 1);
+		strcpy(ptr->name, argname);
+		ptr->value = NULL;
+		ptr->next = NULL;
+		if (!msg->args) {
+			msg->args = ptr;
+		} else {
+			McpArg *lastarg = msg->args;
 
-    if (argval) {
-	McpArgPart* nu = (McpArgPart*)malloc(sizeof(McpArgPart));
-	McpArgPart* ptr2 = ptr->value;
-	nu->value = (char *)malloc(strlen(argval)+1);
-	strcpy(nu->value, argval);
-	nu->next = NULL;
-
-	if (!ptr2) {
-	    ptr->value = nu;
-	} else {
-	    while (ptr2->next) {
-		ptr2 = ptr2->next;
-	    }
-	    ptr2->next = nu;
+			while (lastarg->next)
+				lastarg = lastarg->next;
+			lastarg->next = ptr;
+		}
 	}
-    }
-    ptr->was_shown = 0;
+
+	if (argval) {
+		McpArgPart *nu = (McpArgPart *) malloc(sizeof(McpArgPart));
+		McpArgPart *ptr2 = ptr->value;
+
+		nu->value = (char *) malloc(strlen(argval) + 1);
+		strcpy(nu->value, argval);
+		nu->next = NULL;
+
+		if (!ptr2) {
+			ptr->value = nu;
+		} else {
+			while (ptr2->next) {
+				ptr2 = ptr2->next;
+			}
+			ptr2->next = nu;
+		}
+	}
+	ptr->was_shown = 0;
 }
 
 
@@ -953,49 +973,51 @@ mcp_mesg_arg_append(McpMesg* msg, const char* argname, const char* argval)
  *****************************************************************/
 
 void
-mcp_mesg_arg_remove(McpMesg* msg, const char* argname)
+mcp_mesg_arg_remove(McpMesg * msg, const char *argname)
 {
-    McpArg* ptr = msg->args;
-    McpArg* prev = NULL;
+	McpArg *ptr = msg->args;
+	McpArg *prev = NULL;
 
-    while (ptr && !strcmp_nocase(ptr->name, argname)) {
-	msg->args = ptr->next;
-	if (ptr->name)
-	    free(ptr->name);
-	while (ptr->value) {
-	    McpArgPart* ptr2 = ptr->value;
-	    ptr->value = ptr->value->next;
-	    if (ptr2->value)
-	        free(ptr2->value);
-	    free(ptr2);
+	while (ptr && !strcmp_nocase(ptr->name, argname)) {
+		msg->args = ptr->next;
+		if (ptr->name)
+			free(ptr->name);
+		while (ptr->value) {
+			McpArgPart *ptr2 = ptr->value;
+
+			ptr->value = ptr->value->next;
+			if (ptr2->value)
+				free(ptr2->value);
+			free(ptr2);
+		}
+		free(ptr);
+		ptr = msg->args;
 	}
-	free(ptr);
-	ptr = msg->args;
-    }
 
-    prev = msg->args;
-    if (ptr)
-	ptr = ptr->next;
+	prev = msg->args;
+	if (ptr)
+		ptr = ptr->next;
 
-    while (ptr) {
-	if (!strcmp_nocase(argname, ptr->name)) {
-	    prev->next = ptr->next;
-	    if (ptr->name)
-		free(ptr->name);
-	    while (ptr->value) {
-		McpArgPart* ptr2 = ptr->value;
-		ptr->value = ptr->value->next;
-		if (ptr2->value)
-		    free(ptr2->value);
-		free(ptr2);
-	    }
-	    free(ptr);
-	    ptr = prev->next;
-	} else {
-	    prev = ptr;
-	    ptr = ptr->next;
+	while (ptr) {
+		if (!strcmp_nocase(argname, ptr->name)) {
+			prev->next = ptr->next;
+			if (ptr->name)
+				free(ptr->name);
+			while (ptr->value) {
+				McpArgPart *ptr2 = ptr->value;
+
+				ptr->value = ptr->value->next;
+				if (ptr2->value)
+					free(ptr2->value);
+				free(ptr2);
+			}
+			free(ptr);
+			ptr = prev->next;
+		} else {
+			prev = ptr;
+			ptr = ptr->next;
+		}
 	}
-    }
 }
 
 
@@ -1025,10 +1047,10 @@ mcp_mesg_arg_remove(McpMesg* msg, const char* argname)
 int
 mcp_version_compare(McpVer v1, McpVer v2)
 {
-    if (v1.vermajor != v2.vermajor) {
-        return (v1.vermajor - v2.vermajor);
-    }
-    return (v1.verminor - v2.verminor);
+	if (v1.vermajor != v2.vermajor) {
+		return (v1.vermajor - v2.vermajor);
+	}
+	return (v1.verminor - v2.verminor);
 }
 
 
@@ -1053,25 +1075,25 @@ mcp_version_compare(McpVer v1, McpVer v2)
 McpVer
 mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2)
 {
-    McpVer result = {0, 0};
+	McpVer result = { 0, 0 };
 
-    if (mcp_version_compare(min1, max1) > 0) {
-        return result;
-    }
-    if (mcp_version_compare(min2, max2) > 0) {
-        return result;
-    }
-    if (mcp_version_compare(min1, max2) > 0) {
-        return result;
-    }
-    if (mcp_version_compare(min2, max1) > 0) {
-        return result;
-    }
-    if (mcp_version_compare(max1, max2) > 0) {
-        return max2;
-    } else {
-        return max1;
-    }
+	if (mcp_version_compare(min1, max1) > 0) {
+		return result;
+	}
+	if (mcp_version_compare(min2, max2) > 0) {
+		return result;
+	}
+	if (mcp_version_compare(min1, max2) > 0) {
+		return result;
+	}
+	if (mcp_version_compare(min2, max1) > 0) {
+		return result;
+	}
+	if (mcp_version_compare(max1, max2) > 0) {
+		return max2;
+	} else {
+		return max1;
+	}
 }
 
 
@@ -1086,76 +1108,83 @@ mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2)
 /*****************************************************************/
 
 void
-mcp_basic_handler(McpFrame* mfr, McpMesg* mesg, void* dummy)
+mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 {
-    McpVer myminver = {2,1};
-    McpVer mymaxver = {2,1};
-    McpVer minver = {0,0};
-    McpVer maxver = {0,0};
-    McpVer nullver = {0,0};
-    const char* ptr;
-    const char* auth;
+	McpVer myminver = { 2, 1 };
+	McpVer mymaxver = { 2, 1 };
+	McpVer minver = { 0, 0 };
+	McpVer maxver = { 0, 0 };
+	McpVer nullver = { 0, 0 };
+	const char *ptr;
+	const char *auth;
 
-    if (!*mesg->mesgname) {
-        auth = mcp_mesg_arg_getline(mesg, "authentication-key", 0);
-	if (auth) {
-	    mfr->authkey = (char*)malloc(strlen(auth)+1);
-	    strcpy(mfr->authkey, auth);
-	} else {
-	    McpMesg reply;
-	    char authval[128];
+	if (!*mesg->mesgname) {
+		auth = mcp_mesg_arg_getline(mesg, "authentication-key", 0);
+		if (auth) {
+			mfr->authkey = (char *) malloc(strlen(auth) + 1);
+			strcpy(mfr->authkey, auth);
+		} else {
+			McpMesg reply;
+			char authval[128];
 
-	    mcp_mesg_init(&reply, MCP_INIT_PKG, "");
-	    mcp_mesg_arg_append(&reply, "version", "2.1");
-	    mcp_mesg_arg_append(&reply, "to", "2.1");
-	    sprintf(authval, "%0.8X%0.8X", random(), random());
-	    mcp_mesg_arg_append(&reply, "authentication-key", authval);
-	    mfr->authkey = (char*)malloc(strlen(auth)+1);
-	    strcpy(mfr->authkey, auth);
-	    mcp_frame_output_mesg(mfr, &reply);
-	    mcp_mesg_clear(&reply);
-	}
-
-        ptr = mcp_mesg_arg_getline(mesg, "version", 0);
-	if (!ptr) return;
-	while(isdigit(*ptr)) minver.vermajor = (minver.vermajor * 10) + (*ptr++ - '0');
-	if (*ptr++ != '.') return;
-	while(isdigit(*ptr)) minver.verminor = (minver.verminor * 10) + (*ptr++ - '0');
-
-        ptr = mcp_mesg_arg_getline(mesg, "to", 0);
-	if (!ptr) {
-	    maxver = minver;
-	} else {
-	    while(isdigit(*ptr)) maxver.vermajor = (maxver.vermajor * 10) + (*ptr++ - '0');
-	    if (*ptr++ != '.') return;
-	    while(isdigit(*ptr)) maxver.verminor = (maxver.verminor * 10) + (*ptr++ - '0');
-	}
-
-	mfr->version = mcp_version_select(myminver, mymaxver, minver, maxver);
-	if (mcp_version_compare(mfr->version, nullver)) {
-	    McpMesg cando;
-	    char verbuf[32];
-	    McpPkg *p = mcp_PackageList;
-
-	    mfr->enabled = 1;
-	    while (p) {
-		if (strcmp_nocase(p->pkgname, MCP_INIT_PKG)) {
-		    mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
-		    mcp_mesg_arg_append(&cando, "package", p->pkgname);
-		    sprintf(verbuf, "%d.%d", p->minver.vermajor, p->minver.verminor);
-		    mcp_mesg_arg_append(&cando, "min-version", verbuf);
-		    sprintf(verbuf, "%d.%d", p->maxver.vermajor, p->maxver.verminor);
-		    mcp_mesg_arg_append(&cando, "max-version", verbuf);
-		    mcp_frame_output_mesg(mfr, &cando);
-		    mcp_mesg_clear(&cando);
+			mcp_mesg_init(&reply, MCP_INIT_PKG, "");
+			mcp_mesg_arg_append(&reply, "version", "2.1");
+			mcp_mesg_arg_append(&reply, "to", "2.1");
+			sprintf(authval, "%0.8X%0.8X", random(), random());
+			mcp_mesg_arg_append(&reply, "authentication-key", authval);
+			mfr->authkey = (char *) malloc(strlen(auth) + 1);
+			strcpy(mfr->authkey, auth);
+			mcp_frame_output_mesg(mfr, &reply);
+			mcp_mesg_clear(&reply);
 		}
-		p = p->next;
-	    }
-	    mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
-	    mcp_frame_output_mesg(mfr, &cando);
-	    mcp_mesg_clear(&cando);
+
+		ptr = mcp_mesg_arg_getline(mesg, "version", 0);
+		if (!ptr)
+			return;
+		while (isdigit(*ptr))
+			minver.vermajor = (minver.vermajor * 10) + (*ptr++ - '0');
+		if (*ptr++ != '.')
+			return;
+		while (isdigit(*ptr))
+			minver.verminor = (minver.verminor * 10) + (*ptr++ - '0');
+
+		ptr = mcp_mesg_arg_getline(mesg, "to", 0);
+		if (!ptr) {
+			maxver = minver;
+		} else {
+			while (isdigit(*ptr))
+				maxver.vermajor = (maxver.vermajor * 10) + (*ptr++ - '0');
+			if (*ptr++ != '.')
+				return;
+			while (isdigit(*ptr))
+				maxver.verminor = (maxver.verminor * 10) + (*ptr++ - '0');
+		}
+
+		mfr->version = mcp_version_select(myminver, mymaxver, minver, maxver);
+		if (mcp_version_compare(mfr->version, nullver)) {
+			McpMesg cando;
+			char verbuf[32];
+			McpPkg *p = mcp_PackageList;
+
+			mfr->enabled = 1;
+			while (p) {
+				if (strcmp_nocase(p->pkgname, MCP_INIT_PKG)) {
+					mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
+					mcp_mesg_arg_append(&cando, "package", p->pkgname);
+					sprintf(verbuf, "%d.%d", p->minver.vermajor, p->minver.verminor);
+					mcp_mesg_arg_append(&cando, "min-version", verbuf);
+					sprintf(verbuf, "%d.%d", p->maxver.vermajor, p->maxver.verminor);
+					mcp_mesg_arg_append(&cando, "max-version", verbuf);
+					mcp_frame_output_mesg(mfr, &cando);
+					mcp_mesg_clear(&cando);
+				}
+				p = p->next;
+			}
+			mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
+			mcp_frame_output_mesg(mfr, &cando);
+			mcp_mesg_clear(&cando);
+		}
 	}
-    }
 }
 
 
@@ -1169,35 +1198,43 @@ mcp_basic_handler(McpFrame* mfr, McpMesg* mesg, void* dummy)
 /*****************************************************************/
 
 void
-mcp_negotiate_handler(McpFrame* mfr, McpMesg* mesg, McpVer version, void* dummy)
+mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *dummy)
 {
-    McpVer minver = {0,0};
-    McpVer maxver = {0,0};
-    const char* ptr;
-    const char* pkg;
+	McpVer minver = { 0, 0 };
+	McpVer maxver = { 0, 0 };
+	const char *ptr;
+	const char *pkg;
 
-    if (!strcmp(mesg->mesgname, "can")) {
-        pkg = mcp_mesg_arg_getline(mesg, "package", 0);
-	if (!pkg) return;
-        ptr = mcp_mesg_arg_getline(mesg, "min-version", 0);
-	if (!ptr) return;
-	while(isdigit(*ptr)) minver.vermajor = (minver.vermajor * 10) + (*ptr++ - '0');
-	if (*ptr++ != '.') return;
-	while(isdigit(*ptr)) minver.verminor = (minver.verminor * 10) + (*ptr++ - '0');
+	if (!strcmp(mesg->mesgname, "can")) {
+		pkg = mcp_mesg_arg_getline(mesg, "package", 0);
+		if (!pkg)
+			return;
+		ptr = mcp_mesg_arg_getline(mesg, "min-version", 0);
+		if (!ptr)
+			return;
+		while (isdigit(*ptr))
+			minver.vermajor = (minver.vermajor * 10) + (*ptr++ - '0');
+		if (*ptr++ != '.')
+			return;
+		while (isdigit(*ptr))
+			minver.verminor = (minver.verminor * 10) + (*ptr++ - '0');
 
-        ptr = mcp_mesg_arg_getline(mesg, "max-version", 0);
-	if (!ptr) {
-	    maxver = minver;
-	} else {
-	    while(isdigit(*ptr)) maxver.vermajor = (maxver.vermajor * 10) + (*ptr++ - '0');
-	    if (*ptr++ != '.') return;
-	    while(isdigit(*ptr)) maxver.verminor = (maxver.verminor * 10) + (*ptr++ - '0');
+		ptr = mcp_mesg_arg_getline(mesg, "max-version", 0);
+		if (!ptr) {
+			maxver = minver;
+		} else {
+			while (isdigit(*ptr))
+				maxver.vermajor = (maxver.vermajor * 10) + (*ptr++ - '0');
+			if (*ptr++ != '.')
+				return;
+			while (isdigit(*ptr))
+				maxver.verminor = (maxver.verminor * 10) + (*ptr++ - '0');
+		}
+
+		mcp_frame_package_add(mfr, pkg, minver, maxver);
+	} else if (!strcmp(mesg->mesgname, "end")) {
+		/* nothing to do for end of package negotiations. */
 	}
-
-	mcp_frame_package_add(mfr, pkg, minver, maxver);
-    } else if (!strcmp(mesg->mesgname, "end")) {
-        /* nothing to do for end of package negotiations. */
-    }
 }
 
 
@@ -1211,283 +1248,324 @@ mcp_negotiate_handler(McpFrame* mfr, McpMesg* mesg, McpVer version, void* dummy)
 /*****************************************************************/
 
 int
-mcp_intern_is_ident(const char** in, char* buf, int buflen)
+mcp_intern_is_ident(const char **in, char *buf, int buflen)
 {
-    int origbuflen = buflen;
-    if (!isalpha(**in) && **in != '_') return 0;
-    while (isalpha(**in) || **in == '_' || isdigit(**in) || **in == '-') {
-	if (--buflen > 0) {
-	    *buf++ = **in;
+	int origbuflen = buflen;
+
+	if (!isalpha(**in) && **in != '_')
+		return 0;
+	while (isalpha(**in) || **in == '_' || isdigit(**in) || **in == '-') {
+		if (--buflen > 0) {
+			*buf++ = **in;
+		}
+		(*in)++;
 	}
-	(*in)++;
-    }
-    if (origbuflen > 0)
-	*buf = '\0';
-    return 1;
+	if (origbuflen > 0)
+		*buf = '\0';
+	return 1;
 }
 
 
 int
 mcp_intern_is_simplechar(char in)
 {
-    if (in == '*' || in == ':' || in == '\\' || in == '"') return 0;
-    if (!isprint(in) || in == ' ') return 0;
-    return 1;
+	if (in == '*' || in == ':' || in == '\\' || in == '"')
+		return 0;
+	if (!isprint(in) || in == ' ')
+		return 0;
+	return 1;
 }
 
 
 int
-mcp_intern_is_unquoted(const char** in, char* buf, int buflen)
+mcp_intern_is_unquoted(const char **in, char *buf, int buflen)
 {
-    int origbuflen = buflen;
-    if (!mcp_intern_is_simplechar(**in)) return 0;
-    while (mcp_intern_is_simplechar(**in)) {
-	if (--buflen > 0) {
-	    *buf++ = **in;
-	}
-	(*in)++;
-    }
-    if (origbuflen > 0)
-	*buf = '\0';
-    return 1;
-}
+	int origbuflen = buflen;
 
-
-int
-mcp_intern_is_quoted(const char** in, char* buf, int buflen)
-{
-    int origbuflen = buflen;
-    const char *old = *in;
-
-    if (**in != '"') return 0;
-    (*in)++;
-    while (**in) {
-	if (**in == '\\') {
-	    (*in)++;
-	    if (**in && --buflen > 0) {
-		*buf++ = **in;
-	    }
-	} else if (**in == '"') {
-	    break;
-	} else {
-	    if (--buflen > 0) {
-		*buf++ = **in;
-	    }
-	}
-        (*in)++;
-    }
-    if (**in != '"') {
-        *in = old;
-	return 0;
-    }
-    (*in)++;
-    if (origbuflen > 0) {
-	*buf = '\0';
-    }
-    return 1;
-}
-
-
-int
-mcp_intern_is_keyval(McpMesg* msg, const char** in)
-{
-    char keyname[128];
-    char value[BUFFER_LEN];
-    const char *old = *in;
-    int deferred = 0;
-
-    if (!isspace(**in)) return 0;
-    while (isspace(**in)) (*in)++;
-    if (!mcp_intern_is_ident(in, keyname, sizeof(keyname))) {
-	*in = old;
-        return 0;
-    }
-    if (**in == '*') {
-        msg->incomplete = 1;
-	deferred = 1;
-	(*in)++;
-    }
-    if (**in != ':') {
-	*in = old;
-        return 0;
-    }
-    (*in)++;
-    if (!isspace(**in)) {
-	*in = old;
-        return 0;
-    }
-    while (isspace(**in)) (*in)++;
-    if (!mcp_intern_is_unquoted(in, value, sizeof(value)) &&
-        !mcp_intern_is_quoted(in, value, sizeof(value))
-    ) {
-	*in = old;
-        return 0;
-    }
-
-    if (deferred) {
-	mcp_mesg_arg_append(msg, keyname, NULL);
-    } else {
-	mcp_mesg_arg_append(msg, keyname, value);
-    }
-    return 1;
-}
-
-
-
-int
-mcp_intern_is_mesg_start(McpFrame* mfr, const char* in)
-{
-    char mesgname[128];
-    char authkey[128];
-    char* subname = NULL;
-    McpMesg* newmsg = NULL;
-    McpPkg* pkg = NULL;
-    int longlen = 0;
-
-    if (!mcp_intern_is_ident(&in, mesgname, sizeof(mesgname))) return 0;
-    if (strcmp_nocase(mesgname, MCP_INIT_PKG)) {
-	if (!isspace(*in)) return 0;
-	while (isspace(*in)) in++;
-	if (!mcp_intern_is_unquoted(&in, authkey, sizeof(authkey))) return 0;
-	if (strcmp(authkey, mfr->authkey)) return 0;
-    }
-
-    if (strncmp_nocase(mesgname, MCP_INIT_PKG, 3)) {
-	for (pkg = mfr->packages; pkg; pkg = pkg->next) {
-	    int pkgnamelen = strlen(pkg->pkgname);
-	    if (!strncmp_nocase(pkg->pkgname, mesgname, pkgnamelen)) {
-		if (mesgname[pkgnamelen] == '\0' || mesgname[pkgnamelen] == '-') {
-		    if (pkgnamelen > longlen) {
-			longlen = pkgnamelen;
-		    }
+	if (!mcp_intern_is_simplechar(**in))
+		return 0;
+	while (mcp_intern_is_simplechar(**in)) {
+		if (--buflen > 0) {
+			*buf++ = **in;
 		}
-	    }
+		(*in)++;
 	}
-    }
-    if (!longlen) {
-        int neglen = strlen(MCP_NEGOTIATE_PKG);
-        if (!strncmp_nocase(mesgname, MCP_NEGOTIATE_PKG, neglen)) {
-	    longlen = neglen;
-        } else if (!strcmp_nocase(mesgname, MCP_INIT_PKG)) {
-	    longlen = strlen(mesgname);
+	if (origbuflen > 0)
+		*buf = '\0';
+	return 1;
+}
+
+
+int
+mcp_intern_is_quoted(const char **in, char *buf, int buflen)
+{
+	int origbuflen = buflen;
+	const char *old = *in;
+
+	if (**in != '"')
+		return 0;
+	(*in)++;
+	while (**in) {
+		if (**in == '\\') {
+			(*in)++;
+			if (**in && --buflen > 0) {
+				*buf++ = **in;
+			}
+		} else if (**in == '"') {
+			break;
+		} else {
+			if (--buflen > 0) {
+				*buf++ = **in;
+			}
+		}
+		(*in)++;
+	}
+	if (**in != '"') {
+		*in = old;
+		return 0;
+	}
+	(*in)++;
+	if (origbuflen > 0) {
+		*buf = '\0';
+	}
+	return 1;
+}
+
+
+int
+mcp_intern_is_keyval(McpMesg * msg, const char **in)
+{
+	char keyname[128];
+	char value[BUFFER_LEN];
+	const char *old = *in;
+	int deferred = 0;
+
+	if (!isspace(**in))
+		return 0;
+	while (isspace(**in))
+		(*in)++;
+	if (!mcp_intern_is_ident(in, keyname, sizeof(keyname))) {
+		*in = old;
+		return 0;
+	}
+	if (**in == '*') {
+		msg->incomplete = 1;
+		deferred = 1;
+		(*in)++;
+	}
+	if (**in != ':') {
+		*in = old;
+		return 0;
+	}
+	(*in)++;
+	if (!isspace(**in)) {
+		*in = old;
+		return 0;
+	}
+	while (isspace(**in))
+		(*in)++;
+	if (!mcp_intern_is_unquoted(in, value, sizeof(value)) &&
+		!mcp_intern_is_quoted(in, value, sizeof(value))
+			) {
+		*in = old;
+		return 0;
+	}
+
+	if (deferred) {
+		mcp_mesg_arg_append(msg, keyname, NULL);
 	} else {
-	    return 0;
+		mcp_mesg_arg_append(msg, keyname, value);
 	}
-    }
-    subname = mesgname + longlen;
-    if (*subname) {
-	*subname++ = '\0';
-    }
+	return 1;
+}
 
-    newmsg = (McpMesg*)malloc(sizeof(McpMesg));
-    mcp_mesg_init(newmsg, mesgname, subname);
-    while (*in) {
-	if (!mcp_intern_is_keyval(newmsg, &in)) {
-	    mcp_mesg_clear(newmsg);
-	    free(newmsg);
-	    return 0;
+
+
+int
+mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
+{
+	char mesgname[128];
+	char authkey[128];
+	char *subname = NULL;
+	McpMesg *newmsg = NULL;
+	McpPkg *pkg = NULL;
+	int longlen = 0;
+
+	if (!mcp_intern_is_ident(&in, mesgname, sizeof(mesgname)))
+		return 0;
+	if (strcmp_nocase(mesgname, MCP_INIT_PKG)) {
+		if (!isspace(*in))
+			return 0;
+		while (isspace(*in))
+			in++;
+		if (!mcp_intern_is_unquoted(&in, authkey, sizeof(authkey)))
+			return 0;
+		if (strcmp(authkey, mfr->authkey))
+			return 0;
 	}
-    }
 
-    /* Okay, we've recieved a valid message. */
-    if (newmsg->incomplete) {
-	/* It's incomplete.  Remember it to finish later. */
-	const char* msgdt = mcp_mesg_arg_getline(newmsg, MCP_DATATAG, 0);
-	newmsg->datatag = (char*)malloc(strlen(msgdt)+1);
-	strcpy(newmsg->datatag, msgdt);
-	mcp_mesg_arg_remove(newmsg, MCP_DATATAG);
-        newmsg->next = mfr->messages;
-        mfr->messages = newmsg;
-    } else {
-	/* It's complete.  Execute the callback function for this package. */
-	mcp_frame_package_docallback(mfr, newmsg);
-	mcp_mesg_clear(newmsg);
-	free(newmsg);
-    }
-    return 1;
+	if (strncmp_nocase(mesgname, MCP_INIT_PKG, 3)) {
+		for (pkg = mfr->packages; pkg; pkg = pkg->next) {
+			int pkgnamelen = strlen(pkg->pkgname);
+
+			if (!strncmp_nocase(pkg->pkgname, mesgname, pkgnamelen)) {
+				if (mesgname[pkgnamelen] == '\0' || mesgname[pkgnamelen] == '-') {
+					if (pkgnamelen > longlen) {
+						longlen = pkgnamelen;
+					}
+				}
+			}
+		}
+	}
+	if (!longlen) {
+		int neglen = strlen(MCP_NEGOTIATE_PKG);
+
+		if (!strncmp_nocase(mesgname, MCP_NEGOTIATE_PKG, neglen)) {
+			longlen = neglen;
+		} else if (!strcmp_nocase(mesgname, MCP_INIT_PKG)) {
+			longlen = strlen(mesgname);
+		} else {
+			return 0;
+		}
+	}
+	subname = mesgname + longlen;
+	if (*subname) {
+		*subname++ = '\0';
+	}
+
+	newmsg = (McpMesg *) malloc(sizeof(McpMesg));
+	mcp_mesg_init(newmsg, mesgname, subname);
+	while (*in) {
+		if (!mcp_intern_is_keyval(newmsg, &in)) {
+			mcp_mesg_clear(newmsg);
+			free(newmsg);
+			return 0;
+		}
+	}
+
+	/* Okay, we've recieved a valid message. */
+	if (newmsg->incomplete) {
+		/* It's incomplete.  Remember it to finish later. */
+		const char *msgdt = mcp_mesg_arg_getline(newmsg, MCP_DATATAG, 0);
+
+		newmsg->datatag = (char *) malloc(strlen(msgdt) + 1);
+		strcpy(newmsg->datatag, msgdt);
+		mcp_mesg_arg_remove(newmsg, MCP_DATATAG);
+		newmsg->next = mfr->messages;
+		mfr->messages = newmsg;
+	} else {
+		/* It's complete.  Execute the callback function for this package. */
+		mcp_frame_package_docallback(mfr, newmsg);
+		mcp_mesg_clear(newmsg);
+		free(newmsg);
+	}
+	return 1;
 }
 
 
 int
-mcp_intern_is_mesg_cont(McpFrame* mfr, const char* in)
+mcp_intern_is_mesg_cont(McpFrame * mfr, const char *in)
 {
-    char datatag[128];
-    char keyname[128];
-    McpMesg* ptr;
+	char datatag[128];
+	char keyname[128];
+	McpMesg *ptr;
 
-    if (*in != '*') {
-        return 0;
-    }
-    in++;
-    if (!isspace(*in)) return 0;
-    while (isspace(*in)) in++;
-    if (!mcp_intern_is_unquoted(&in, datatag, sizeof(datatag))) return 0;
-    if (!isspace(*in)) return 0;
-    while (isspace(*in)) in++;
-    if (!mcp_intern_is_ident(&in, keyname, sizeof(keyname))) return 0;
-    if (*in != ':') return 0;
-    in++;
-    if (!isspace(*in)) return 0;
-    in++;
-
-    for (ptr = mfr->messages; ptr; ptr = ptr->next) {
-	if (!strcmp(datatag, ptr->datatag)) {
-	    mcp_mesg_arg_append(ptr, keyname, in);
-	    break;
+	if (*in != '*') {
+		return 0;
 	}
-    }
-    if (!ptr) {
-        return 0;
-    }
-    return 1;
+	in++;
+	if (!isspace(*in))
+		return 0;
+	while (isspace(*in))
+		in++;
+	if (!mcp_intern_is_unquoted(&in, datatag, sizeof(datatag)))
+		return 0;
+	if (!isspace(*in))
+		return 0;
+	while (isspace(*in))
+		in++;
+	if (!mcp_intern_is_ident(&in, keyname, sizeof(keyname)))
+		return 0;
+	if (*in != ':')
+		return 0;
+	in++;
+	if (!isspace(*in))
+		return 0;
+	in++;
+
+	for (ptr = mfr->messages; ptr; ptr = ptr->next) {
+		if (!strcmp(datatag, ptr->datatag)) {
+			mcp_mesg_arg_append(ptr, keyname, in);
+			break;
+		}
+	}
+	if (!ptr) {
+		return 0;
+	}
+	return 1;
 }
 
 
 int
-mcp_intern_is_mesg_end(McpFrame* mfr, const char* in)
+mcp_intern_is_mesg_end(McpFrame * mfr, const char *in)
 {
-    char datatag[128];
-    McpMesg* ptr, **prev;
+	char datatag[128];
+	McpMesg *ptr, **prev;
 
-    if (*in != ':') {
-        return 0;
-    }
-    in++;
-    if (!isspace(*in)) return 0;
-    while (isspace(*in)) in++;
-    if (!mcp_intern_is_unquoted(&in, datatag, sizeof(datatag))) return 0;
-    if (*in) return 0;
-    prev = &mfr->messages;
-    for (ptr = mfr->messages; ptr; ptr = ptr->next, prev = &ptr->next) {
-	if (!strcmp(datatag, ptr->datatag)) {
-	    *prev = ptr->next;
-	    break;
+	if (*in != ':') {
+		return 0;
 	}
-    }
-    if (!ptr) {
-        return 0;
-    }
-    ptr->incomplete = 0;
-    mcp_frame_package_docallback(mfr, ptr);
-    mcp_mesg_clear(ptr);
-    free(ptr);
+	in++;
+	if (!isspace(*in))
+		return 0;
+	while (isspace(*in))
+		in++;
+	if (!mcp_intern_is_unquoted(&in, datatag, sizeof(datatag)))
+		return 0;
+	if (*in)
+		return 0;
+	prev = &mfr->messages;
+	for (ptr = mfr->messages; ptr; ptr = ptr->next, prev = &ptr->next) {
+		if (!strcmp(datatag, ptr->datatag)) {
+			*prev = ptr->next;
+			break;
+		}
+	}
+	if (!ptr) {
+		return 0;
+	}
+	ptr->incomplete = 0;
+	mcp_frame_package_docallback(mfr, ptr);
+	mcp_mesg_clear(ptr);
+	free(ptr);
 
-    return 1;
+	return 1;
 }
 
 
 int
-mcp_internal_parse(McpFrame* mfr, const char* in)
+mcp_internal_parse(McpFrame * mfr, const char *in)
 {
-    if (mcp_intern_is_mesg_cont(mfr, in)) return 1;
-    if (mcp_intern_is_mesg_end(mfr, in)) return 1;
-    if (mcp_intern_is_mesg_start(mfr, in)) return 1;
-    return 0;
+	if (mcp_intern_is_mesg_cont(mfr, in))
+		return 1;
+	if (mcp_intern_is_mesg_end(mfr, in))
+		return 1;
+	if (mcp_intern_is_mesg_start(mfr, in))
+		return 1;
+	return 0;
 }
 
 
 /*
 * $Log: mcp.c,v $
+* Revision 1.3  2000/03/29 12:21:02  revar
+* Reformatted all code into consistent format.
+* 	Tabs are 4 spaces.
+* 	Indents are one tab.
+* 	Braces are generally K&R style.
+* Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+* Rewrote restart script as a bourne shell script.
+*
 * Revision 1.2  2000/02/10 06:11:55  winged
 * Added log to bottom and comment to top
 *

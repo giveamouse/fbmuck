@@ -1,3 +1,4 @@
+
 #include "copyright.h"
 
 #define IN_JMP        1
@@ -18,7 +19,7 @@
 /* now refer to tables to map instruction number to name */
 extern const char *base_inst[];
 
-extern char *insttotext(struct inst*, char*, int, int, dbref);
-/* and declare debug instruction diagnostic routine */
-extern char *debug_inst(struct inst*, struct inst*, char*, int, int, dbref);
+extern char *insttotext(struct inst *, char *, int, int, dbref);
 
+/* and declare debug instruction diagnostic routine */
+extern char *debug_inst(struct inst *, struct inst *, char *, int, int, dbref);

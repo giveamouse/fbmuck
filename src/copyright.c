@@ -1,7 +1,15 @@
 /* $Header$
  * $Log: copyright.c,v $
- * Revision 1.1  1999/12/16 03:23:29  revar
- * Initial revision
+ * Revision 1.2  2000/03/29 12:21:02  revar
+ * Reformatted all code into consistent format.
+ * 	Tabs are 4 spaces.
+ * 	Indents are one tab.
+ * 	Braces are generally K&R style.
+ * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
+ * Rewrote restart script as a bourne shell script.
+ *
+ * Revision 1.1.1.1  1999/12/16 03:23:29  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:27:44  foxen
  * Initial FB6 CVS checkin.
@@ -69,4 +77,3 @@ in each case. */
   are copyright by Dr. Cat, 1995, and are NOT covered by the above copyright
   statement.  Dr. Cat has given permission for the code to be used in the
   FB distribution of the TinyMUCK server. */
-

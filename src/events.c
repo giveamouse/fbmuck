@@ -17,81 +17,85 @@ static int dump_warned = 0;
 long
 next_dump_time()
 {
-    long currtime = (long)time((time_t *) NULL);
+	long currtime = (long) time((time_t *) NULL);
 
-    if (!last_dump_time)
-	last_dump_time = (long)time((time_t *)NULL);
+	if (!last_dump_time)
+		last_dump_time = (long) time((time_t *) NULL);
 
-    if (tp_dbdump_warning && !dump_warned) {
-	if (((last_dump_time + tp_dump_interval) - tp_dump_warntime)
-		< currtime) {
-	    return (0L);
-	} else {
-	    return (last_dump_time+tp_dump_interval-tp_dump_warntime-currtime);
+	if (tp_dbdump_warning && !dump_warned) {
+		if (((last_dump_time + tp_dump_interval) - tp_dump_warntime)
+			< currtime) {
+			return (0L);
+		} else {
+			return (last_dump_time + tp_dump_interval - tp_dump_warntime - currtime);
+		}
 	}
-    }
 
-    if ((last_dump_time + tp_dump_interval) < currtime)
-	return (0L);
-    
-    return (last_dump_time + tp_dump_interval - currtime);
+	if ((last_dump_time + tp_dump_interval) < currtime)
+		return (0L);
+
+	return (last_dump_time + tp_dump_interval - currtime);
 }
 
-    
+
 void
-check_dump_time (void)
+check_dump_time(void)
 {
-    long currtime = (long)time((time_t *) NULL);
-    if (!last_dump_time)
-	last_dump_time = (long)time((time_t *)NULL);
+	long currtime = (long) time((time_t *) NULL);
 
-    if (!dump_warned) {
-	if (((last_dump_time + tp_dump_interval) - tp_dump_warntime)
-		< currtime) {
-	    dump_warning();
-	    dump_warned = 1;
+	if (!last_dump_time)
+		last_dump_time = (long) time((time_t *) NULL);
+
+	if (!dump_warned) {
+		if (((last_dump_time + tp_dump_interval) - tp_dump_warntime)
+			< currtime) {
+			dump_warning();
+			dump_warned = 1;
+		}
 	}
-    }
 
-    if ((last_dump_time + tp_dump_interval) < currtime) {
-	last_dump_time = currtime;
-	add_property((dbref)0, "_sys/lastdumptime", NULL, (int)currtime);
+	if ((last_dump_time + tp_dump_interval) < currtime) {
+		last_dump_time = currtime;
+		add_property((dbref) 0, "_sys/lastdumptime", NULL, (int) currtime);
 
-	if (tp_periodic_program_purge)
-	    free_unused_programs();
-        purge_for_pool();
+		if (tp_periodic_program_purge)
+			free_unused_programs();
+		purge_for_pool();
 
 #ifdef DELTADUMPS
-	dump_deltas();
+		dump_deltas();
 #else
-	fork_and_dump();
+		fork_and_dump();
 #endif
 
-	dump_warned = 0;
-    }
+		dump_warned = 0;
+	}
 }
 
 
 void
 dump_db_now(void)
 {
-    long currtime = (long)time((time_t *) NULL);
-    add_property((dbref)0, "_sys/lastdumptime", NULL, (int)currtime);
-    fork_and_dump();
-    last_dump_time = currtime;
-    dump_warned = 0;
+	long currtime = (long) time((time_t *) NULL);
+
+	add_property((dbref) 0, "_sys/lastdumptime", NULL, (int) currtime);
+	fork_and_dump();
+	last_dump_time = currtime;
+	dump_warned = 0;
 }
 
 #ifdef DELTADUMPS
 void
 delta_dump_now(void)
 {
-    long currtime = (long)time((time_t *) NULL);
-    add_property((dbref)0, "_sys/lastdumptime", NULL, (int)currtime);
-    dump_deltas();
-    last_dump_time = currtime;
-    dump_warned = 0;
+	long currtime = (long) time((time_t *) NULL);
+
+	add_property((dbref) 0, "_sys/lastdumptime", NULL, (int) currtime);
+	dump_deltas();
+	last_dump_time = currtime;
+	dump_warned = 0;
 }
+
 #endif
 
 
@@ -105,35 +109,35 @@ static long last_clean_time = 0L;
 long
 next_clean_time()
 {
-    long currtime = (long)time((time_t *) NULL);
+	long currtime = (long) time((time_t *) NULL);
 
-    if (!last_clean_time)
-	last_clean_time = (long)time((time_t *)NULL);
+	if (!last_clean_time)
+		last_clean_time = (long) time((time_t *) NULL);
 
-    if ((last_clean_time + tp_clean_interval) < currtime)
-	return (0L);
-    
-    return (last_clean_time + tp_clean_interval - currtime);
+	if ((last_clean_time + tp_clean_interval) < currtime)
+		return (0L);
+
+	return (last_clean_time + tp_clean_interval - currtime);
 }
 
 
 void
-check_clean_time (void)
+check_clean_time(void)
 {
-    long currtime = (long)time((time_t *) NULL);
+	long currtime = (long) time((time_t *) NULL);
 
-    if (!last_clean_time)
-	last_clean_time = (long)time((time_t *)NULL);
+	if (!last_clean_time)
+		last_clean_time = (long) time((time_t *) NULL);
 
-    if ((last_clean_time + tp_clean_interval) < currtime) {
-	last_clean_time = currtime;
-	purge_for_pool();
-	if (tp_periodic_program_purge)
-	    free_unused_programs();
+	if ((last_clean_time + tp_clean_interval) < currtime) {
+		last_clean_time = currtime;
+		purge_for_pool();
+		if (tp_periodic_program_purge)
+			free_unused_programs();
 #ifdef DISKBASE
-	dispose_all_oldprops();
+		dispose_all_oldprops();
 #endif
-    }
+	}
 }
 
 
@@ -147,51 +151,52 @@ static int last_rwho_nogo = 1;
 long
 next_rwho_time()
 {
-    long currtime;
+	long currtime;
 
-    if (!tp_rwho) {
-	if (!last_rwho_nogo)
-	    rwhocli_shutdown();
-	last_rwho_nogo = 1;
-	return(3600L);
-    }
+	if (!tp_rwho) {
+		if (!last_rwho_nogo)
+			rwhocli_shutdown();
+		last_rwho_nogo = 1;
+		return (3600L);
+	}
 
-    currtime = (long)time((time_t *) NULL);
+	currtime = (long) time((time_t *) NULL);
 
-    if (last_rwho_nogo) {
-	rwhocli_setup(tp_rwho_server, tp_rwho_passwd, tp_muckname, VERSION);
-	last_rwho_time = currtime;
-	update_rwho();
-    }
-    last_rwho_nogo = 0;
+	if (last_rwho_nogo) {
+		rwhocli_setup(tp_rwho_server, tp_rwho_passwd, tp_muckname, VERSION);
+		last_rwho_time = currtime;
+		update_rwho();
+	}
+	last_rwho_nogo = 0;
 
-    if (!last_rwho_time)
-	last_rwho_time = currtime;
+	if (!last_rwho_time)
+		last_rwho_time = currtime;
 
-    if ((last_rwho_time + tp_rwho_interval) < currtime)
-	return (0L);
-    
-    return (last_rwho_time + tp_rwho_interval - currtime);
+	if ((last_rwho_time + tp_rwho_interval) < currtime)
+		return (0L);
+
+	return (last_rwho_time + tp_rwho_interval - currtime);
 }
 
 
 
 void
-check_rwho_time (void)
+check_rwho_time(void)
 {
-    long currtime;
+	long currtime;
 
-    if (!tp_rwho) return;
+	if (!tp_rwho)
+		return;
 
-    currtime = (long)time((time_t *) NULL);
+	currtime = (long) time((time_t *) NULL);
 
-    if (!last_rwho_time)
-	last_rwho_time = currtime;
+	if (!last_rwho_time)
+		last_rwho_time = currtime;
 
-    if ((last_rwho_time + tp_rwho_interval) < currtime) {
-	last_rwho_time = currtime;
-	update_rwho();
-    }
+	if ((last_rwho_time + tp_rwho_interval) < currtime) {
+		last_rwho_time = currtime;
+		update_rwho();
+	}
 }
 
 
@@ -200,31 +205,30 @@ check_rwho_time (void)
  **********************************************************************/
 
 long
-mintime (long a, long b)
+mintime(long a, long b)
 {
-  return ((a>b)?b:a);
+	return ((a > b) ? b : a);
 }
 
 
 long
 next_muckevent_time(void)
 {
-    long nexttime = 1000L;
+	long nexttime = 1000L;
 
-    nexttime = mintime(next_event_time(), nexttime);
-    nexttime = mintime(next_dump_time(), nexttime);
-    nexttime = mintime(next_clean_time(), nexttime);
-    nexttime = mintime(next_rwho_time(), nexttime);
+	nexttime = mintime(next_event_time(), nexttime);
+	nexttime = mintime(next_dump_time(), nexttime);
+	nexttime = mintime(next_clean_time(), nexttime);
+	nexttime = mintime(next_rwho_time(), nexttime);
 
-    return (nexttime);
+	return (nexttime);
 }
 
 void
-next_muckevent (void)
+next_muckevent(void)
 {
-    next_timequeue_event();
-    check_dump_time();
-    check_clean_time();
-    check_rwho_time();
+	next_timequeue_event();
+	check_dump_time();
+	check_clean_time();
+	check_rwho_time();
 }
-
