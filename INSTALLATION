@@ -1,13 +1,12 @@
 Installation is fairly simple:
 
-modify include/config.h to fit your preferences and your system.
-modify include/params.h also.
-modify game/restart
+edit include/config.h to fit your preferences and your system.
+edit include/params.h also.
+edit game/restart to refer to the apropriate paths and database files.
 
-cd src
-configure
-make
-make install              # This puts the binaries in ../game/
+./configure          # This configures the source for your system.
+make                 # This compiles the binaries.
+make install         # This puts the binaries in /usr/local/fbmuck/bin
 cd ../game
-restart                   # This starts the server.
+./restart            # This starts the server.
 
