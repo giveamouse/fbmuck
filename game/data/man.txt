@@ -192,6 +192,14 @@ returns the result.  If given a variable containing an integer, float,
 or dbref, this subtracts 1 from the value stored in the variable, and
 returns nothing.
 ~
+ABS|
+ABS ( i -- i )
+Given an integer, returns its absolute value.
+~
+SIGN|
+SIGN ( i -- i )
+Given an integer, returns 1 if positive, -1 if negative, and 0 if 0.
+~
 LOGICAL OPERATORS|<|>|<=|>=|=|LESS THAN|GREATER THAN|EQUALS|
 < > = <= >= ( x1 x2 -- i )
 Performs relational operations on x1 and x2. These return i

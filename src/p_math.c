@@ -744,4 +744,35 @@ prim_minusminus(PRIM_PROTOTYPE)
 }
 
 
+void
+prim_abs(PRIM_PROTOTYPE)
+{
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_INTEGER)
+		abort_interp("Non-integer argument.");
+	result = oper1->data.number;
+	if (result < 0)
+		result = -result;
+	CLEAR(oper1);
+	PushInt(result);
+}
+
+void
+prim_sign(PRIM_PROTOTYPE)
+{
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_INTEGER)
+		abort_interp("Non-integer argument.");
+	if (oper1->data.number > 0) {
+		result = 1;
+	} else if (oper1->data.number < 0) {
+		result = -1;
+	} else {
+		result = 0;
+	}
+	CLEAR(oper1);
+	PushInt(result);
+}
 
