@@ -965,6 +965,10 @@ process_command(int descr, dbref player, char *command)
 						Matched("@program");
 						do_prog(descr, player, arg1);
 						break;
+					} else if (string_prefix("@proginfo", command)) {
+						Matched("@proginfo");
+						do_proginfo(player, arg1);
+						break;
 					} else {
 						Matched("@propset");
 						do_propset(descr, player, arg1, arg2);

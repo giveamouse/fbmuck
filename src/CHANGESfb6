@@ -91,6 +91,7 @@ Added reserved_names @tune which when set to a smatch pattern will refuse any
 Added reserved_player_names @tune which when set to a smatch pattern will refuse
   any player creations or renames which match said pattern.  Defaults to "".
 Added @delta alias for @dlt command (a la glowmuck).
+Added @proginfo command (backported from glowmuck).
 Removed dead concentrater log code.
 Removed dead LOCKOUT code from include/config.h.
 
