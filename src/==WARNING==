@@ -11,3 +11,9 @@ I can't say it enough... BACK UP YOUR DB.
 
 	- Foxen
 
+Additional note: Don't just back up your db file (the one that is usually
+passed as the parameter to -out to fbmuck) -- you must also back up the muf/
+directory, usually game/muf/*.  Otherwise, your database will be incomplete,
+because the actual MUF program text is stored outside of the normal database.
+
+	- Winged
