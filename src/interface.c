@@ -2693,7 +2693,7 @@ time_format_1(long dt)
 	register struct tm *delta;
 	static char buf[64];
 
-	delta = gmtime(&dt);
+	delta = gmtime((time_t *) &dt);
 	if (delta->tm_yday > 0)
 		snprintf(buf, sizeof(buf), "%dd %02d:%02d", delta->tm_yday, delta->tm_hour, delta->tm_min);
 	else
@@ -2707,7 +2707,7 @@ time_format_2(long dt)
 	register struct tm *delta;
 	static char buf[64];
 
-	delta = gmtime(&dt);
+	delta = gmtime((time_t *) &dt);
 	if (delta->tm_yday > 0)
 		snprintf(buf, sizeof(buf), "%dd", delta->tm_yday);
 	else if (delta->tm_hour > 0)

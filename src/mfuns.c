@@ -1491,7 +1491,7 @@ mfn_time(MFUNARGS)
 	time_t lt;
 	struct tm *tm;
 
-	lt = time((long *) 0);
+	lt = time((time_t) NULL);
 	if (argc == 1) {
 		lt += (3600 * atoi(argv[0]));
 		lt += get_tz_offset();
@@ -1508,7 +1508,7 @@ mfn_date(MFUNARGS)
 	time_t lt;
 	struct tm *tm;
 
-	lt = time((long *) 0);
+	lt = time((time_t) NULL);
 	if (argc == 1) {
 		lt += (3600 * atoi(argv[0]));
 		lt += get_tz_offset();

@@ -66,7 +66,7 @@ main(int argc, char *argv[])
 	char *host, *inet_ntoa();
 #endif
 	char tmp[32768];
-	long ct;
+	time_t ct;
 
 	Name = argv[0];				/* save name of program for error messages  */
 
@@ -137,7 +137,7 @@ main(int argc, char *argv[])
 		host = inet_ntoa(sin.sin_addr);
 #endif
 
-		ct = time(0L);
+		ct = time((time_t *) NULL);
 		fprintf(stderr, "CONNECTION made from %s at %s", host, ctime(&ct));
 		write(ns, msg, strlen(msg));
 		sleep(5);
