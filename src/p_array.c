@@ -16,10 +16,12 @@
 #include "params.h"
 #include "strings.h"
 #include "interp.h"
+#include "props.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static struct inst temp1, temp2;
 static int result;
+static dbref ref;
 static char buf[BUFFER_LEN];
 
 
@@ -754,6 +756,508 @@ prim_array_reverse(PRIM_PROTOTYPE)
 
     CLEAR(oper1);
     PushArrayRaw(new);
+}
+
+
+void
+prim_array_get_propdirs(PRIM_PROTOTYPE)
+{
+    stk_array* new;
+	char*      tmpname;
+    char*      pname;
+    char       propname[BUFFER_LEN];
+    char       dir[BUFFER_LEN];
+    PropPtr    propadr, pptr;
+    PropPtr    prptr;
+	int count = 0;
+
+	/* dbref strPropDir -- array */
+    CHECKOP(2);
+    oper2 = POP();
+    oper1 = POP();
+    if (mlev < 3)
+		abort_interp("Permission denied.");
+    if (oper1->type != PROG_OBJECT)
+		abort_interp("Dbref required. (1)");
+    if (!valid_object(oper1))
+		abort_interp("Invalid dbref. (1)");
+    if (oper2->type != PROG_STRING)
+		abort_interp("String required. (2)");
+
+    ref = oper1->data.objref;
+	strcpy(dir, DoNullInd(oper2->data.string));
+	if (!*dir)
+	    strcpy(dir, "/");
+
+    new = new_array_packed(0);
+    propadr = first_prop(ref, dir, &pptr, propname);
+    while (propadr) {
+		sprintf(buf, "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+		if (prop_read_perms(ProgUID, ref, buf, mlev)) {
+			prptr = get_property(ref, propname);
+			if (prptr) {
+#ifdef DISKBASE
+				propfetch(ref, prptr);
+#endif
+				if(PropDir(prptr)) {
+					if (count >= 511) {
+						array_free(new);
+						abort_interp("Too many propdirs to put in an array!");
+					}
+
+					temp2.type = PROG_STRING;
+					temp2.data.string = alloc_prog_string(propname);
+
+					temp1.type = PROG_INTEGER;
+					temp1.data.number = count++;
+
+					array_setitem(&new, &temp1, &temp2);
+					CLEAR(&temp1);
+					CLEAR(&temp2);
+				}
+			}
+		}
+        propadr = next_prop(pptr, propadr, propname);
+    }
+
+    PushArrayRaw(new);
+}
+
+
+void
+prim_array_get_propvals(PRIM_PROTOTYPE)
+{
+    stk_array* new;
+	char*      tmpname;
+    char*      pname;
+    char       propname[BUFFER_LEN];
+    char       dir[BUFFER_LEN];
+    PropPtr    propadr, pptr;
+    PropPtr    prptr;
+	int count = 0;
+
+	/* dbref strPropDir -- array */
+    CHECKOP(2);
+    oper2 = POP();
+    oper1 = POP();
+    if (mlev < 3)
+		abort_interp("Permission denied.");
+    if (oper1->type != PROG_OBJECT)
+		abort_interp("Dbref required. (1)");
+    if (!valid_object(oper1))
+		abort_interp("Invalid dbref. (1)");
+    if (oper2->type != PROG_STRING)
+		abort_interp("String required. (2)");
+
+    ref = oper1->data.objref;
+	strcpy(dir, DoNullInd(oper2->data.string));
+	if (!*dir)
+	    strcpy(dir, "/");
+
+    new = new_array_dictionary();
+    propadr = first_prop(ref, dir, &pptr, propname);
+    while (propadr) {
+		sprintf(buf, "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+		if (prop_read_perms(ProgUID, ref, buf, mlev)) {
+			prptr = get_property(ref, buf);
+			if (prptr) {
+				int goodflag = 1;
+#ifdef DISKBASE
+				propfetch(ref, prptr);
+#endif
+				switch(PropType(prptr)) {
+				  case PROP_STRTYP:
+					temp2.type = PROG_STRING;
+					temp2.data.string = alloc_prog_string(get_uncompress(PropDataStr(prptr)));
+					break;
+				  case PROP_LOKTYP:
+					temp2.type = PROG_LOCK;
+					if (PropFlags(prptr) & PROP_ISUNLOADED) {
+						temp2.data.lock = TRUE_BOOLEXP;
+					} else {
+						temp2.data.lock = PropDataLok(prptr);
+					}
+					break;
+				  case PROP_REFTYP:
+					temp2.type = PROG_OBJECT;
+					temp2.data.number = PropDataRef(prptr);
+					break;
+				  case PROP_INTTYP:
+					temp2.type = PROG_INTEGER;
+					temp2.data.number = PropDataVal(prptr);
+					break;
+				  case PROP_FLTTYP:
+					temp2.type = PROG_FLOAT;
+					temp2.data.fnumber = PropDataFVal(prptr);
+					break;
+				  default:
+					goodflag = 0;
+					break;
+				}
+
+				if (goodflag) {
+					if (count++ >= 511) {
+						array_free(new);
+						abort_interp("Too many properties to put in an array!");
+					}
+					temp1.type = PROG_STRING;
+					temp1.data.string = alloc_prog_string(propname);
+					array_setitem(&new, &temp1, &temp2);
+					CLEAR(&temp1);
+					CLEAR(&temp2);
+				}
+			}
+		}
+        propadr = next_prop(pptr, propadr, propname);
+    }
+
+    PushArrayRaw(new);
+}
+
+
+void
+prim_array_get_proplist(PRIM_PROTOTYPE)
+{
+    stk_array* new;
+	char*      tmpname;
+    char*      pname;
+    const char* strval;
+    char       propname[BUFFER_LEN];
+    char       dir[BUFFER_LEN];
+    PropPtr    propadr, pptr;
+    PropPtr    prptr;
+	int        count = 1;
+	int        maxcount;
+
+	/* dbref strPropDir -- array */
+    CHECKOP(2);
+    oper2 = POP();
+    oper1 = POP();
+    if (oper1->type != PROG_OBJECT)
+		abort_interp("Dbref required. (1)");
+    if (!valid_object(oper1))
+		abort_interp("Invalid dbref. (1)");
+    if (oper2->type != PROG_STRING)
+		abort_interp("String required. (2)");
+
+    ref = oper1->data.objref;
+	strcpy(dir, DoNullInd(oper2->data.string));
+	if (!*dir)
+	    strcpy(dir, "/");
+
+	sprintf(propname, "%s#", dir);
+	maxcount = get_property_value(ref, propname);
+	if (!maxcount) {
+		strval = get_property_class(ref, propname);
+		if (strval) {
+		    maxcount = atoi(strval);
+		}
+		if (!maxcount) {
+			sprintf(propname, "%s%c#", dir, PROPDIR_DELIMITER);
+			maxcount = get_property_value(ref, propname);
+			if (!maxcount) {
+				strval = get_property_class(ref, propname);
+				if (strval) {
+					maxcount = atoi(strval);
+				}
+			}
+		}
+	}
+	if (!maxcount) {
+		maxcount = 511;
+	}
+
+    new = new_array_dictionary();
+	while (1) {
+		sprintf(propname, "%s#%c%d", dir, PROPDIR_DELIMITER, count);
+		prptr = get_property(ref, propname);
+		if (!prptr) {
+			sprintf(propname, "%s%c%d", dir, PROPDIR_DELIMITER, count);
+			prptr = get_property(ref, propname);
+			if (!prptr) {
+				sprintf(propname, "%s%d", dir, count);
+				prptr = get_property(ref, propname);
+			}
+		}
+		if (!prptr || count > maxcount) {
+		    break;
+		}
+		if (prop_read_perms(ProgUID, ref, propname, mlev)) {
+#ifdef DISKBASE
+			propfetch(ref, prptr);
+#endif
+			switch(PropType(prptr)) {
+			  case PROP_STRTYP:
+				temp2.type = PROG_STRING;
+				temp2.data.string = alloc_prog_string(get_uncompress(PropDataStr(prptr)));
+				break;
+			  case PROP_LOKTYP:
+				temp2.type = PROG_LOCK;
+				if (PropFlags(prptr) & PROP_ISUNLOADED) {
+					temp2.data.lock = TRUE_BOOLEXP;
+				} else {
+					temp2.data.lock = PropDataLok(prptr);
+				}
+				break;
+			  case PROP_REFTYP:
+				temp2.type = PROG_OBJECT;
+				temp2.data.number = PropDataRef(prptr);
+				break;
+			  case PROP_INTTYP:
+				temp2.type = PROG_INTEGER;
+				temp2.data.number = PropDataVal(prptr);
+				break;
+			  case PROP_FLTTYP:
+				temp2.type = PROG_FLOAT;
+				temp2.data.fnumber = PropDataFVal(prptr);
+				break;
+			  default:
+				temp2.type = PROG_INTEGER;
+				temp2.data.number = 0;
+				break;
+			}
+
+			temp1.type = PROG_INTEGER;
+			temp1.data.number = count;
+			array_setitem(&new, &temp1, &temp2);
+
+			CLEAR(&temp1);
+			CLEAR(&temp2);
+		} else {
+			break;
+		}
+		count++;
+    }
+
+    PushArrayRaw(new);
+}
+
+
+void
+prim_array_put_propvals(PRIM_PROTOTYPE)
+{
+    stk_array* arr;
+    char       propname[BUFFER_LEN];
+    char       dir[BUFFER_LEN];
+	PData      propdat;
+
+	/* dbref strPropDir array -- */
+    CHECKOP(3);
+    oper3 = POP();
+    oper2 = POP();
+    oper1 = POP();
+    if (oper1->type != PROG_OBJECT)
+		abort_interp("Dbref required. (1)");
+    if (!valid_object(oper1))
+		abort_interp("Invalid dbref. (1)");
+    if (oper2->type != PROG_STRING)
+		abort_interp("String required. (2)");
+    if (oper3->type != PROG_ARRAY)
+		abort_interp("Array required. (2)");
+
+    ref = oper1->data.objref;
+	strcpy(dir, DoNullInd(oper2->data.string));
+	arr = oper3->data.array;
+
+    if (array_first(arr, &temp1)) {
+        do {
+            oper4 = array_getitem(arr, &temp1);
+			switch (temp1.type) {
+				case PROG_STRING:
+					sprintf(propname, "%s%c%s", dir, PROPDIR_DELIMITER, DoNullInd(temp1.data.string));
+					break;
+				case PROG_INTEGER:
+					sprintf(propname, "%s%c%d", dir, PROPDIR_DELIMITER, temp1.data.number);
+					break;
+				case PROG_FLOAT:
+					sprintf(propname, "%s%c%g", dir, PROPDIR_DELIMITER, temp1.data.fnumber);
+					break;
+				default:
+				    *propname = '\0';
+			}
+
+			if (!prop_write_perms(ProgUID, ref, propname, mlev))
+				abort_interp("Permission denied while trying to set protected property.");
+
+			switch (oper4->type) {
+				case PROG_STRING:
+					propdat.flags = PROP_STRTYP;
+					propdat.data.str = oper4->data.string ? oper4->data.string->data : 0;
+					break;
+                case PROG_INTEGER:
+                    propdat.flags = PROP_INTTYP;
+                    propdat.data.val = oper4->data.number;
+                    break;
+                case PROG_FLOAT:
+                    propdat.flags = PROP_FLTTYP;
+                    propdat.data.fval = oper4->data.fnumber;
+                    break;
+                case PROG_OBJECT:
+                    propdat.flags = PROP_REFTYP;
+                    propdat.data.ref = oper4->data.objref;
+                    break;
+                case PROG_LOCK:
+                    propdat.flags = PROP_LOKTYP;
+                    propdat.data.lok = copy_bool(oper4->data.lock);
+                    break;
+				default:
+				    *propname = '\0';
+            }
+            if (*propname) {
+                set_property(ref, propname, &propdat);
+            }
+        } while (array_next(arr, &temp1));
+    }
+
+    CLEAR(oper1);
+    CLEAR(oper2);
+    CLEAR(oper3);
+}
+
+
+void
+prim_array_put_proplist(PRIM_PROTOTYPE)
+{
+    stk_array* arr;
+    char       propname[BUFFER_LEN];
+    char       dir[BUFFER_LEN];
+	PData      propdat;
+	const char* fmtin;
+	char*      fmtout;
+	int dirlen;
+	int count;
+
+	/* dbref strPropDir array -- */
+    CHECKOP(3);
+    oper3 = POP();
+    oper2 = POP();
+    oper1 = POP();
+    if (oper1->type != PROG_OBJECT)
+		abort_interp("Dbref required. (1)");
+    if (!valid_object(oper1))
+		abort_interp("Invalid dbref. (1)");
+    if (oper2->type != PROG_STRING)
+		abort_interp("String required. (2)");
+    if (oper3->type != PROG_ARRAY)
+		abort_interp("Array required. (2)");
+    if (oper3->data.array && oper3->data.array->type != ARRAY_PACKED)
+        abort_interp("Argument must be a list type array. (3)");
+
+    ref = oper1->data.objref;
+	strcpy(dir, DoNullInd(oper2->data.string));
+	arr = oper3->data.array;
+
+	dirlen = strlen(dir);
+	fmtout = propname;
+	fmtin = tp_proplist_counter_fmt;
+	while (*fmtin) {
+		if (*fmtin == 'P') {
+			if ((fmtout + dirlen) - propname > sizeof(propname))
+				break;
+			strcpy(fmtout, dir);
+			fmtout = &fmtout[strlen(fmtout)];
+		} else {
+			*fmtout++ = *fmtin;
+		}
+		fmtin++;
+	}
+	*fmtout++ = '\0';
+
+	if (!prop_write_perms(ProgUID, ref, propname, mlev))
+		abort_interp("Permission denied while trying to set protected property.");
+
+	propdat.flags = PROP_INTTYP;
+	propdat.data.val = array_count(arr);
+	set_property(ref, propname, &propdat);
+
+    if (array_first(arr, &temp1)) {
+        do {
+            oper4 = array_getitem(arr, &temp1);
+
+			fmtout = propname;
+			fmtin = tp_proplist_entry_fmt;
+			while (*fmtin) {
+				if (*fmtin == 'N') {
+					if ((fmtout + 18) - propname > sizeof(propname))
+						break;
+					sprintf(fmtout, "%d", temp1.data.number + 1);
+					fmtout = &fmtout[strlen(fmtout)];
+				} else if (*fmtin == 'P') {
+					if ((fmtout + dirlen) - propname > sizeof(propname))
+						break;
+					strcpy(fmtout, dir);
+					fmtout = &fmtout[strlen(fmtout)];
+				} else {
+					*fmtout++ = *fmtin;
+				}
+				fmtin++;
+			}
+			*fmtout++ = '\0';
+
+			if (!prop_write_perms(ProgUID, ref, propname, mlev))
+				abort_interp("Permission denied while trying to set protected property.");
+
+			switch (oper4->type) {
+				case PROG_STRING:
+					propdat.flags = PROP_STRTYP;
+					propdat.data.str = oper4->data.string ? oper4->data.string->data : 0;
+					break;
+                case PROG_INTEGER:
+                    propdat.flags = PROP_INTTYP;
+                    propdat.data.val = oper4->data.number;
+                    break;
+                case PROG_FLOAT:
+                    propdat.flags = PROP_FLTTYP;
+                    propdat.data.fval = oper4->data.fnumber;
+                    break;
+                case PROG_OBJECT:
+                    propdat.flags = PROP_REFTYP;
+                    propdat.data.ref = oper4->data.objref;
+                    break;
+                case PROG_LOCK:
+                    propdat.flags = PROP_LOKTYP;
+                    propdat.data.lok = copy_bool(oper4->data.lock);
+                    break;
+				default:
+                    propdat.flags = PROP_INTTYP;
+                    propdat.data.val = 0;
+            }
+			set_property(ref, propname, &propdat);
+        } while (array_next(arr, &temp1));
+    }
+
+	count = temp1.data.number;
+	for (;;) {
+		count++;
+		fmtout = propname;
+		fmtin = tp_proplist_entry_fmt;
+		while (*fmtin) {
+			if (*fmtin == 'N') {
+				if ((fmtout + 18) - propname > sizeof(propname))
+					break;
+				sprintf(fmtout, "%d", count + 1);
+				fmtout = &fmtout[strlen(fmtout)];
+			} else if (*fmtin == 'P') {
+				if ((fmtout + dirlen) - propname > sizeof(propname))
+					break;
+				strcpy(fmtout, dir);
+				fmtout = &fmtout[strlen(fmtout)];
+			} else {
+				*fmtout++ = *fmtin;
+			}
+			fmtin++;
+		}
+		*fmtout++ = '\0';
+		if (get_property(ref, propname)) {
+			remove_property(ref, propname);
+		} else {
+			break;
+		}
+	}
+
+    CLEAR(oper1);
+    CLEAR(oper2);
+    CLEAR(oper3);
 }
 
 

@@ -24,6 +24,12 @@ extern void prim_array_n_difference(PRIM_PROTOTYPE);
 extern void prim_array_notify(PRIM_PROTOTYPE);
 extern void prim_array_reverse(PRIM_PROTOTYPE);
 
+extern void prim_array_get_propdirs(PRIM_PROTOTYPE);
+extern void prim_array_get_propvals(PRIM_PROTOTYPE);
+extern void prim_array_get_proplist(PRIM_PROTOTYPE);
+extern void prim_array_put_propvals(PRIM_PROTOTYPE);
+extern void prim_array_put_proplist(PRIM_PROTOTYPE);
+
 #define PRIMS_ARRAY_FUNCS prim_array_make, prim_array_make_dict, \
         prim_array_explode, prim_array_vals, prim_array_keys, \
         prim_array_first, prim_array_last, prim_array_next, prim_array_prev, \
@@ -31,7 +37,10 @@ extern void prim_array_reverse(PRIM_PROTOTYPE);
         prim_array_insertitem, prim_array_getrange, prim_array_setrange, \
         prim_array_insertrange, prim_array_delitem, prim_array_delrange, \
         prim_array_n_union, prim_array_n_intersection, \
-        prim_array_n_difference, prim_array_notify, prim_array_reverse
+        prim_array_n_difference, prim_array_notify, prim_array_reverse, \
+		prim_array_get_propvals, prim_array_get_propdirs, \
+		prim_array_get_proplist, prim_array_put_propvals, \
+		prim_array_put_proplist
 
 #define PRIMS_ARRAY_NAMES "ARRAY_MAKE", "ARRAY_MAKE_DICT", \
         "ARRAY_EXPLODE", "ARRAY_VALS", "ARRAY_KEYS", \
@@ -40,7 +49,10 @@ extern void prim_array_reverse(PRIM_PROTOTYPE);
         "ARRAY_INSERTITEM", "ARRAY_GETRANGE", "ARRAY_SETRANGE", \
         "ARRAY_INSERTRANGE", "ARRAY_DELITEM", "ARRAY_DELRANGE", \
         "ARRAY_NUNION", "ARRAY_NINTERSECT", \
-        "ARRAY_NDIFF", "ARRAY_NOTIFY", "ARRAY_REVERSE"
+        "ARRAY_NDIFF", "ARRAY_NOTIFY", "ARRAY_REVERSE", \
+		"ARRAY_GET_PROPVALS", "ARRAY_GET_PROPDIRS", \
+		"ARRAY_GET_PROPLIST", "ARRAY_PUT_PROPVALS", \
+		"ARRAY_PUT_PROPLIST"
 
-#define PRIMS_ARRAY_CNT 23
+#define PRIMS_ARRAY_CNT 28
 

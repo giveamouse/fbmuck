@@ -22,6 +22,9 @@ extern const char *tp_playermax_warnmesg;
 extern const char *tp_playermax_bootmesg;
 extern const char *tp_autolook_cmd;
 
+extern const char *tp_proplist_counter_fmt;
+extern const char *tp_proplist_entry_fmt;
+
 
 
 /* times */

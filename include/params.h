@@ -1,7 +1,17 @@
 /* $Header$
  * $Log: params.h,v $
- * Revision 1.1  1999/12/12 07:28:13  revar
- * Initial revision
+ * Revision 1.2  2000/03/10 06:33:31  revar
+ * Added ARRAY_GET_PROPDIRS muf prim.
+ * Added ARRAY_GET_PROPVALS muf prim.
+ * Added ARRAY_GET_PROPLIST muf prim.
+ * Added ARRAY_PUT_PROPVALS muf prim.
+ * Added ARRAY_PUT_PROPLIST muf prim.
+ * Added PROPLIST_ENTRY_FMT @tune option.
+ * Added PROPLIST_COUNTER_FMT @tune option.
+ * Reserved IF_TRY and IF_CATCH compiletime structs.
+ *
+ * Revision 1.1.1.1  1999/12/12 07:28:13  revar
+ * Initial Sourceforge checkin, fb6.00a29
  *
  * Revision 1.1.1.1  1999/12/12 07:28:13  foxen
  * Initial FB6 CVS checkin.
@@ -54,7 +64,7 @@
 #define TIME_DAY(x)     ((x) * (TIME_HOUR(24)))   /* 24 hours   */
 
 
-#define MAX_OUTPUT 65535        /* maximum amount of queued output */
+#define MAX_OUTPUT 131071    /* maximum amount of queued output in bytes */
 
 #define DB_INITIAL_SIZE 100  /* initial malloc() size for the db */
 

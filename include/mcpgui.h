@@ -179,7 +179,7 @@ int gui_dlog_freeall_descr(int descr);
 int gui_dlog_get_descr(char* dlogid);
 
 
-/* Testing framework.  WORK: THIS SHOULD BE REMOVED ONCE RELEASE */
+/* Testing framework.  WORK: THIS SHOULD BE REMOVED BEFORE RELEASE */
 void do_post_dlog(int descr, char* text);
 
 

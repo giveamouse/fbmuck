@@ -32,6 +32,8 @@
 #define CTYPE_FOR   4 /* Get it?  CTYPE_FOUR!!  HAHAHAHAHA  -Fre'ta */
                       /* C-4?  *BOOM!*  -Revar */
 #define CTYPE_WHILE 5
+#define CTYPE_TRY   6 /* reserved for exception handling */
+#define CTYPE_CATCH 7 /* reserved for exception handling */
 
 
 /* These would be constants, but their value isn't known until runtime. */
@@ -78,7 +80,8 @@ struct INTERMEDIATE {
 
 /* The state structure for a compile. */
 typedef struct COMPILE_STATE_T {
-    struct IF_STACK *if_stack, *loop_stack;
+    struct IF_STACK *if_stack;
+	struct IF_STACK *loop_stack;  /* WORK: Need to merge if_stack and loop_stack. */
     struct PROC_LIST *procs;
 
     int nowords;                      /* number of words compiled */
