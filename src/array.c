@@ -214,6 +214,7 @@ array_tree_rotate_right_double(array_tree * a)
 	return c;
 }
 
+/*@-branchstate@*/
 static array_tree *
 array_tree_balance_node(array_tree * a)
 {
@@ -237,7 +238,7 @@ array_tree_balance_node(array_tree * a)
 	return a;
 }
 
-/*@-nullret -mustfreeonly@*/
+/*@-nullret -mustfreeonly =branchstate@*/
 /*@null@*/
 array_tree *
 array_tree_alloc_node(array_iter * key)
@@ -259,6 +260,7 @@ array_tree_alloc_node(array_iter * key)
 	new_node->data.data.number = 0;
 	return new_node;
 }
+/*@=nullret =mustfreeonly@*/
 
 void
 array_tree_free_node(array_tree * p)
@@ -270,7 +272,7 @@ array_tree_free_node(array_tree * p)
 	free(p);
 }
 
-
+/*@-usereleased@*/
 static array_tree *
 array_tree_insert(array_tree ** avl, array_iter * key)
 {
@@ -299,6 +301,7 @@ array_tree_insert(array_tree ** avl, array_iter * key)
 		return (p);
 	}
 }
+/*@=usereleased@*/
 
 static array_tree *
 array_tree_getmax(array_tree * avl)
@@ -1639,6 +1642,9 @@ array_get_intkey_strval(stk_array * arr, int key)
 
 /*
  * $Log: array.c,v $
+ * Revision 1.23  2002/02/17 02:14:01  winged
+ * And even MORE changes for splint.  Eesh.
+ *
  * Revision 1.22  2002/02/17 01:54:00  revar
  * Changed array_tree_free_node() to assert() that subnodes must be NULL.
  *
