@@ -361,6 +361,9 @@ init_defs(COMPSTATE *cstat)
     insert_def(cstat, "}dict", "}  2 / array_make_dict");
     insert_def(cstat, "[]", "array_getitem");
     insert_def(cstat, "[..]", "array_getrange");
+    insert_def(cstat, "array_diff", "2 array_ndiff");
+    insert_def(cstat, "array_union", "2 array_nunion");
+    insert_def(cstat, "array_intersect", "2 array_nintersect");
 
     /* GUI control types */
     insert_def(cstat, "c_datum",     "\"datum\"");

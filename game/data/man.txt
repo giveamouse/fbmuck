@@ -658,8 +658,11 @@ nothing is found, d = #-1. If ambiguous, d = #-2. If HOME, d = #-3.
 ~
 MIDSTR|
 midstr ( s i1 i2 -- s )
-Returns the substring of i2 characters, starting with the first
-character after i1.  i1 and i2 must both be positive.
+Returns the substring of i2 characters, starting with character i1.
+i1 and i2 must both be positive.  The first character of the string
+is considered position 1.  ie:
+    "testing" 2 3 midstr
+will return the value "est".
 ~
 MODF 
 modf ( f1 -- f1' f2' )|

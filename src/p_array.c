@@ -36,7 +36,7 @@ prim_array_make(PRIM_PROTOTYPE)
         abort_interp("Invalid item count.");
     result = oper1->data.number;
     if (result < 0)
-        abort_interp("Item count must be positive.");
+        abort_interp("Item count must be non-negative.");
     CLEAR(oper1);
     nargs = 0;
 
@@ -417,7 +417,7 @@ prim_array_getrange(PRIM_PROTOTYPE)
 
     new = array_getrange(oper3->data.array, oper2, oper1);
     if (!new)
-        abort_interp("Bad array range specified.");
+		new = new_array_packed(0);
 
     CLEAR(oper1);
     CLEAR(oper2);
