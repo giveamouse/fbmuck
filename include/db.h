@@ -164,8 +164,8 @@ typedef int dbref;				/* offset into db */
 #define CLEARCHLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_CHLOCK, &mydat); DBDIRTY(x);}
 
 #define GETVALUE(x)	(get_property_value(x, MESGPROP_VALUE))
-#define SETVALUE(x,y)	{add_property(x, MESGPROP_VALUE, NULL, y);}
-#define LOADVALUE(x,y)	{add_prop_nofetch(x, MESGPROP_VALUE, NULL, y); DBDIRTY(x);}
+#define SETVALUE(x,y)	add_property(x, MESGPROP_VALUE, NULL, y)
+#define LOADVALUE(x,y)	(add_prop_nofetch(x, MESGPROP_VALUE, NULL, y), DBDIRTY(x))
 
 #define DB_PARMSINFO     0x0001
 #define DB_COMPRESSED    0x0002
