@@ -1784,29 +1784,26 @@ prim_ansi_midstr(PRIM_PROTOTYPE)
 	op = buf;
 	loc = 0;
 
-	if (start == 0)
-		goto after_locating_loop;
-	
-	/* First, loop till the beginning of the section to copy... */
-	while (*ptr && loc < start) {
-		if ((*ptr++) == ESCAPE_CHAR) {
-			if (*ptr == '\0') {
-				break;
-			} else if (*ptr != '[') {
-				*ptr++;
+	if (start != 0) {
+		/* First, loop till the beginning of the section to copy... */
+		while (*ptr && loc < start) {
+			if ((*ptr++) == ESCAPE_CHAR) {
+				if (*ptr == '\0') {
+					break;
+				} else if (*ptr != '[') {
+					*ptr++;
+				} else {
+					*ptr++;
+					while (isdigit(*ptr) || *ptr == ';')
+						*ptr++;
+					if (*ptr == 'm')
+						*ptr++;
+				}
 			} else {
-				*ptr++;
-				while (isdigit(*ptr) || *ptr == ';')
-					*ptr++;
-				if (*ptr == 'm')
-					*ptr++;
+				loc++;
 			}
-		} else {
-			loc++;
 		}
 	}
-after_locating_loop:;
-
 	
 	loc = 0;				
 	/* Then, start copying, and counting while we do... */
