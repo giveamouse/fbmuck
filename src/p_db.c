@@ -1483,9 +1483,17 @@ prim_checkpassword(PRIM_PROTOTYPE)
 	if (oper2->type != PROG_STRING)
 		abort_interp("Password string expected. (2)");
 	ptr = oper2->data.string ? oper2->data.string->data : "";
-	if (ref != NOTHING && !strcmp(ptr, PLAYER_PASSWORD(ref)))
+	if (ref != NOTHING) {
+		const char *passwd = PLAYER_PASSWORD(ref);
 		result = 1;
-	else
+		if (!passwd) {
+			if (*ptr)
+				result = 0;
+		} else {
+			if (strcmp(ptr, PLAYER_PASSWORD(ref)))
+				result = 0;
+		}
+	} else
 		result = 0;
 
 	CLEAR(oper1);

@@ -404,9 +404,17 @@ prim_descr_setuser(PRIM_PROTOTYPE)
 		abort_interp("Player dbref expected. (2)");
 	if (oper3->type != PROG_STRING)
 		abort_interp("Password string expected.");
-	ptr = oper3->data.string ? oper3->data.string->data : "";
-	if (ref != NOTHING && strcmp(ptr, PLAYER_PASSWORD(ref)))
-		abort_interp("Incorrect password.");
+	ptr = oper3->data.string ? oper3->data.string->data : NULL;
+	if (ref != NOTHING) {
+		const char *passwd = PLAYER_PASSWORD(ref);
+		if (!passwd) {
+			if (ptr && *ptr)
+				abort_interp("Incorrect password.");
+		} else {
+			if (!ptr || strcmp(ptr, passwd))
+				abort_interp("Incorrect password.");
+		}
+	}
 
 	if (ref != NOTHING) {
 		log_status("DESCR_SETUSER: %s(%d) to %s(%d) on descriptor %d\n",

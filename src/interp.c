@@ -45,8 +45,10 @@ p_null(PRIM_PROTOTYPE)
 
 /* void    (*prim_func[]) (PRIM_PROTOTYPE) = */
 void (*prim_func[]) (PRIM_PROTOTYPE) = {
-	p_null, p_null, p_null, p_null, p_null, p_null, p_null, p_null,
-	/* JMP, READ,   TREAD,  SLEEP,  CALL,   EXECUTE, RETURN, EVENT_WAIT, */
+	p_null, p_null, p_null, p_null, p_null,  p_null,
+	/* JMP, READ,   SLEEP,  CALL,   EXECUTE, RETURN, */
+	p_null,
+	/* EVENT_WAITFOR, */
 	PRIMS_CONNECTS_FUNCS,
 	PRIMS_DB_FUNCS,
 	PRIMS_MATH_FUNCS,
@@ -1043,11 +1045,45 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				pc = sys[--stop].offset;
 				break;
 
-			case IN_EVENT_WAIT:
+			case IN_EVENT_WAITFOR:
+				if (atop < 1)
+					abort_loop("Stack Underflow. Missing eventID list array argument.", NULL, NULL);
+				temp1 = arg + --atop;
+				if (temp1->type != PROG_ARRAY)
+					abort_loop("EventID string list array expected.", temp1, NULL);
+				if (temp1->data.array && temp1->data.array->type != ARRAY_PACKED)
+					abort_loop("Argument must be a list array of eventid strings.", temp1, NULL);
+				if (!array_is_homogenous(temp1->data.array, PROG_STRING))
+					abort_loop("Argument must be a list array of eventid strings.", temp1, NULL);
 				fr->pc = pc + 1;
 				reload(fr, atop, stop);
-				muf_event_register(player, program, fr);
+
+				{
+					int i, outcount;
+					int count = array_count(temp1->data.array);
+					char** events = (char**)malloc(count * sizeof(char**));
+					for (outcount = i = 0; i < count; i++) {
+						char *val = array_get_intkey_strval(temp1->data.array, i);
+						if (val != NULL) {
+							int found = 0;
+							int j;
+							for (j = 0; j < outcount; j++) {
+								if (!strcmp(events[j], val)) {
+									found = 1;
+									break;
+								}
+							}
+							if (!found) {
+								events[outcount++] = val;
+							}
+						}
+					}
+					muf_event_register_specific(player, program, fr, outcount, events);
+					free(events);
+				}
+
 				PLAYER_SET_BLOCK(player, (!fr->been_background));
+				CLEAR(temp1);
 				interp_depth--;
 				calc_profile_timing(program,fr);
 				return NULL;
@@ -1065,32 +1101,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				PLAYER_SET_CURR_PROG(player, program);
 				PLAYER_SET_BLOCK(player, 0);
 				add_muf_read_event(fr->descr, player, program, fr);
-				interp_depth--;
-				calc_profile_timing(program,fr);
-				return NULL;
-				/* NOTREACHED */
-				break;
-
-			case IN_TREAD:
-				if (atop < 1)
-					abort_loop("Stack Underflow.", NULL, NULL);
-				temp1 = arg + --atop;
-				if (temp1->type != PROG_INTEGER)
-					abort_loop("Invalid argument type.", temp1, NULL);
-				fr->pc = pc + 1;
-				reload(fr, atop, stop);
-				if (temp1->data.number < 0)
-					abort_loop("Timetravel beyond scope of muf.", temp1, NULL);
-				if (writeonly)
-					abort_loop("Program is write-only.", temp1, NULL);
-				if (fr->multitask == BACKGROUND)
-					abort_loop("BACKGROUND programs are write only.", temp1, NULL);
-				reload(fr, atop, stop);
-				fr->brkpt.isread = 1;
-				fr->pc = pc + 1;
-				PLAYER_SET_CURR_PROG(player, program);
-				PLAYER_SET_BLOCK(player, 0);
-				add_muf_tread_event(fr->descr, player, program, fr, temp1->data.number);
 				interp_depth--;
 				calc_profile_timing(program,fr);
 				return NULL;

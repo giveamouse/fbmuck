@@ -146,11 +146,8 @@ muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *con
 		argarr = new_array_dictionary();
 		for (arg = mesg->args; arg; arg = arg->next) {
 			if (!arg->value) {
-				argval.type = PROG_STRING;
-				argval.data.string = NULL;
-			} else if (!arg->value->next) {
-				argval.type = PROG_STRING;
-				argval.data.string = alloc_prog_string(arg->value->value);
+				argval.type = PROG_ARRAY;
+				argval.data.array = NULL;
 			} else {
 				McpArgPart *partptr;
 				int count = 0;

@@ -15,7 +15,7 @@
 
 /* these arrays MUST agree with what's in inst.h */
 const char *base_inst[] = {
-	"JMP", "READ", "TREAD", "SLEEP", "CALL", "EXECUTE", "EXIT", "EVENT_WAIT",
+	"JMP", "READ", "SLEEP", "CALL", "EXECUTE", "EXIT", "EVENT_WAITFOR",
 	PRIMS_CONNECTS_NAMES,
 	PRIMS_DB_NAMES,
 	PRIMS_MATH_NAMES,

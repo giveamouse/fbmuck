@@ -323,6 +323,33 @@ add_muf_delay_event(int delay, int descr, dbref player, dbref loc, dbref trig, d
 
 
 void
+read_event_notify(int descr, dbref player)
+{
+	struct frame *fr;
+	timequeue ptr;
+
+	if (muf_event_read_notify(descr, player)) {
+		return;
+	}
+
+	ptr = tqhead;
+	while (ptr) {
+		if (ptr->uid == player) {
+			if (ptr->fr && ptr->fr->multitask != BACKGROUND) {
+				struct inst temp;
+
+				temp.type = PROG_INTEGER;
+				temp.data.number = descr;
+				muf_event_add(ptr->fr, "READ", &temp, 1);
+				return;
+			}
+		}
+		ptr = ptr->next;
+	}
+}
+
+
+void
 handle_read_event(int descr, dbref player, const char *command)
 {
 	struct frame *fr;

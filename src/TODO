@@ -14,3 +14,7 @@ ARRAY_FILTER_PROP ([d] s1 s2 -- [d']) Takes a homogenous list array of dbrefs,
 ARRAY_EXTRACT ([?] [@] -- [?]} Takes an array, and returns every element whose
     name is in the index array. (The @ means an index item.  String or int.)
 
+CORD_OPEN  (          intDescr strType -- strCordID)
+CORD_SEND  (strCordID strName dictData -- )
+CORD_CLOSE (                 strCordID -- )
+

@@ -1,8 +1,9 @@
 2.2fb6.00a33
-Added MUD_GID support, to change group affiliation (like MUD_ID).
 Fixed a crasher bug with closing a the input db file before we are done with
   it, when DISKBASE is #undefed and DELTADUMPS is #defined.
 Fixed a crasher bug where ARRAY_APPENTITEM checked the wrong argument's type.
+Fixed a crasher bug with DESCR_SETUSER for players with null passwords.
+Fixed a crasher bug with CHECKPASSWORD for players with null passwords.
 Fixed a string termination bug in ARRAY_PUT_REFLIST.
 Fixed a bug with ARRAY_GET_REFLIST not decompressing before parsing strings.
 Fixed a bug with zombies not echoing text.  Bug was introduced in O(1) code.
@@ -10,6 +11,29 @@ Fixed a misleading error message with muf compiling 'begin if repeat'.
 Fixed a bug with STRNCMP giving bad results with null string arguments.
 Fixed a bug with PARSEPROP not being re-entrant.
 Fixed a bug with STOD parsing #-3 as #-1.
+Added MUD_GID support, to change group affiliation (like MUD_ID).
+Added {timing} MPI command to show how long a command takes to execute.
+Added @tops, @mpitops, and @muftops commands for showing processor hogs.
+Added CMD_LOG_THRESHOLD_MSEC @tune option.  When a command takes longer than
+  this many milliseconds to execute, it will be logged to the logs/cmd-times
+  log file.
+Added EVENT_WAITFOR (listEventIDs -- context strEventID) MUF prim.  This will
+  wait for an event to occur that matches one of the eventid strings in the
+  given string list array.  The first event in the event queue that matches
+  will be removed from the event queue, and will be returned, with the
+  apropriate context data.  If there is no matching event, then this process
+  will pause until a matching event becomes available.  The eventIDs are
+  case sensitive.
+Added EVENT_EXISTS (strEventID -- intCount) MUF prim.  Returns the number
+  of pending events that have the given eventID type.
+Added sending of "READ" MUF events to foreground/preempt processes to let
+  them know there is text to be READ from the user.  Only one process will
+  get a "READ" event, in the extremely unusual case that there are two
+  foreground/preempt processes at once.  The context for the "READ" event
+  is the descriptor that the text was sent from.  Note that there will only
+  be one READ event in the queue, even if the user sends multiple lines.
+  The descriptor reported by this event will be the one that sent the first
+  line.
 Changed the build scripts to do 'configure' from the directory above src.
 Changed the restart script to look for netmuck in /usr/local/fbmuck/bin/
 Changed 'make install' to install the binaries to /usr/local/fbmuck/bin/
@@ -22,14 +46,13 @@ Changed MPI parser to use more minimal amounts of heap space instead of huge
   amounts of stack space.  This may lead to smaller process sizes.  This will
   also unfortunately slow down MPI slightly.  The 26 recursion level limit
   may be raised significantly, though.
+Changed EVENT_WAIT into an inserver macro that resolves to the commands
+  "0 array_make event_waitfor"
+Changed TREAD into an inserver macro that that uses MUF event timers and
+  EVENT_WAITFOR to do the same thing.
 Optimized {select} MPI command to make it fast on very sparse lists.
 Optimized almost all MUF connection primitives to be O(1) instead of O(n),
   by using lookup tables instead of searching a linked list.
-Added {timing} MPI command to show how long a command takes to execute.
-Added @tops, @mpitops, and @muftops commands for showing processor hogs.
-Added CMD_LOG_THRESHOLD_MSEC @tune option.  When a command takes longer than
-  this many milliseconds to execute, it will be logged to the logs/cmd-times
-  log file.
 
 
 

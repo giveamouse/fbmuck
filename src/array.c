@@ -1555,3 +1555,26 @@ array_set_strkey_refval(stk_array ** harr, const char *key, dbref val)
 }
 
 
+char*
+array_get_intkey_strval(stk_array * arr, int key)
+{
+	struct inst ikey;
+	array_data *value;
+
+	ikey.type = PROG_INTEGER;
+	ikey.data.number = key;
+
+	value = array_getitem(arr, &ikey);
+
+	CLEAR(&ikey);
+
+	if (!value || value->type != PROG_STRING) {
+		return NULL;
+	} else if (!value->data.string) {
+		return "";
+	} else {
+		return value->data.string->data;
+	}
+}
+
+

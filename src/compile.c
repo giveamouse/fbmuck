@@ -468,6 +468,8 @@ init_defs(COMPSTATE * cstat)
 	insert_def(cstat, "background", "bg_mode setmode");
 	insert_def(cstat, "foreground", "fg_mode setmode");
 	insert_def(cstat, "notify_except", "1 swap notify_exclude");
+	insert_def(cstat, "event_wait", "0 array_make event_waitfor");
+	insert_def(cstat, "tread", "\"__tread\" timer_start { \"TIMER.__tread\" \"READ\" }list event_waitfor swap pop \"READ\" strcmp if \"\" 0 else read 1 \"__tread\" timer_stop then");
 
 	/* MUF Error defines */
 	insert_def(cstat, "err_divzero?", "0 is_set?");
