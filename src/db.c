@@ -22,12 +22,6 @@ int db_load_format = 0;
 #  define DB_INITIAL_SIZE 10000
 #endif							/* DB_INITIAL_SIZE */
 
-#ifdef DB_DOUBLING
-
-dbref db_size = DB_INITIAL_SIZE;
-
-#endif							/* DB_DOUBLING */
-
 struct macrotable *macrotop;
 
 #ifndef MALLOC_PROFILING
@@ -98,41 +92,6 @@ free_prog_text(struct line *l)
 	}
 }
 
-#ifdef DB_DOUBLING
-
-static void
-db_grow(dbref newtop)
-{
-	struct object *newdb;
-
-	if (newtop > db_top) {
-		db_top = newtop;
-		if (!db) {
-			/* make the initial one */
-			db_size = DB_INITIAL_SIZE;
-			while (db_top > db_size)
-				db_size += 1000;
-			if ((db = (struct object *) malloc(db_size * sizeof(struct object))) == 0) {
-				abort();
-			}
-		}
-		/* maybe grow it */
-		if (db_top > db_size) {
-			/* make sure it's big enough */
-			while (db_top > db_size)
-				db_size += 1000;
-			if ((newdb =
-				 (struct object *) realloc((void *) db,
-										   db_size * sizeof(struct object))) == 0) {
-				abort();
-			}
-			db = newdb;
-		}
-	}
-}
-
-#else							/* DB_DOUBLING */
-
 static void
 db_grow(dbref newtop)
 {
@@ -157,8 +116,6 @@ db_grow(dbref newtop)
 		}
 	}
 }
-
-#endif							/* DB_DOUBLING */
 
 void
 db_clear_object(dbref i)
