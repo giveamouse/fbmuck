@@ -376,7 +376,7 @@ prim_array_appenditem(PRIM_PROTOTYPE)
 {
 	stk_array *new;
 
-	CHECKOP(3);
+	CHECKOP(2);
 	oper2 = POP();				/* arr  Array to store in */
 	oper1 = POP();				/* ???  item to store     */
 
