@@ -1,6 +1,8 @@
 2.2fb6.00rc9
 Fixed crasher in prochelp when given too-long topic titles.
 Changed help.txt into a muckhelp.raw file that is processed by prochelp.
+Fixed infloop problem in vehicles calling envprop when secure_thing_movement
+  not set.  Bug #621067.
 
 
 
