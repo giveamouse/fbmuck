@@ -119,7 +119,7 @@ CSRC= array.c boolexp.c compile.c compress.c create.c db.c debugger.c \
 	p_misc.c p_props.c predicates.c propdirs.c property.c props.c \
 	p_stack.c p_strings.c random.c rob.c rwho.c sanity.c set.c signal.c \
 	smatch.c snprintf.c speech.c strftime.c stringutil.c timequeue.c \
-	timestamp.c tune.c unparse.c utils.c wiz.c
+	timestamp.c tune.c unparse.c utils.c wiz.c p_regex.c
 
 LSRC= copyright.c
 MSRC= olddecomp.c reconst.c interface.c
@@ -135,7 +135,7 @@ COBJ= array.o boolexp.o compile.o compress.o create.o db.o debugger.o \
 	p_misc.o p_props.o predicates.o propdirs.o property.o props.o \
 	p_stack.o p_strings.o random.o rob.o rwho.o sanity.o set.o signal.o \
 	smatch.o snprintf.o speech.o strftime.o stringutil.o timequeue.o \
-	timestamp.o tune.o unparse.o utils.o wiz.o
+	timestamp.o tune.o unparse.o utils.o wiz.o p_regex.o
 
 LOBJ= copyright.o
 MOBJ= olddecomp.o sanity.o reconst.o interface.o resolver.o topwords.o

@@ -34,6 +34,7 @@
 #include "p_props.h"
 #include "p_stack.h"
 #include "p_strings.h"
+#include "p_regex.h"
 #include "params.h"
 #include "patchlevel.h"
 #include "props.h"

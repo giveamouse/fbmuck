@@ -180,5 +180,6 @@ extern int nargs;				/* DO NOT TOUCH THIS VARIABLE */
 #include "p_stack.h"
 #include "p_mcp.h"
 #include "p_strings.h"
+#include "p_regex.h"
 
 #endif /* _INTERP_H */

@@ -101,6 +101,10 @@ Added verbose_clone @tune to control whether @clone is verbose about its
   operations. Defaults to 0.
 Added @force_lock and @chown_lock aliases for @flock and @chlock.
 Added @relink command to complement @link and @unlink.
+Added REGEXP ( str:Text str:Pattern int:Flags -- list:Match list:Indices )
+  Performs a regex match using the pattern given on the text. 
+Added REGSUB ( str:Text str:Pattern str:Replace int:Flags -- str:Result )
+  Performs a regex substitution on text using pattern and replace.
 Removed dead concentrater log code.
 Removed dead LOCKOUT code from include/config.h.
 

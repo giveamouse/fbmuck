@@ -523,6 +523,11 @@ include_internal_defs(COMPSTATE * cstat)
 	insert_def(cstat, "gui_dlog_simple", "d_simple 0 array_make_dict gui_dlog_create");
     insert_def(cstat, "gui_dlog_tabbed", "d_tabbed swap \"panes\" over array_keys array_make \"names\" 4 rotate array_vals array_make 2 array_make_dict gui_dlog_create");
     insert_def(cstat, "gui_dlog_helper", "d_helper swap \"panes\" over array_keys array_make \"names\" 4 rotate array_vals array_make 2 array_make_dict gui_dlog_create");
+
+	/* Regex */
+	insert_def(cstat, "reg_icase",		MUF_RE_ICASE_STR);
+	insert_def(cstat, "reg_newline",	MUF_RE_NEWLINE_STR);
+	insert_def(cstat, "reg_all",		MUF_RE_ALL_STR);
 }
 
 
