@@ -576,10 +576,10 @@ prim_frand(PRIM_PROTOTYPE)
 	result = rand();
 	tresult = rand();
 	if ((result < tresult) && (result != tresult)) {
-		fresult = result / tresult;
+		fresult = (float)result / (float)tresult;
 	} else {
 		if (result != 0) {
-			fresult = tresult / result;
+			fresult = (float)tresult / (float)result;
 		} else {
 			fresult = 0.0;
 			/* 0 is what we want here, no error.error */

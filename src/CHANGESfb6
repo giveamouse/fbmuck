@@ -5,6 +5,7 @@ Fixed bug #734827: descrsecure? crashes on invalid descr.
 Fixed bug #734813: exits_array is entirely M1.
 Fixed bug #710290: Blank pass in DB causes SegFault.
 Fixed bug #740711: Request, Add DB# matching to @chown
+Fixed bug #749298: FRAND does not return a random number.
 Fixed several bugs with MPI functions misreporting their names on errors.
 Fixed some minor memory leakage with errors in ARRAY_N_DIFF/INTERSECT/UNION.
 Fixed a crasher in ARRAY_N_DIFF.
