@@ -43,6 +43,31 @@ log2file(char *myfilename, char *format, ...)
 }
 
 void
+log_sanity(char *format, ...)
+{
+	va_list args;
+	FILE *fp;
+	time_t lt;
+	char buf[40];
+
+	va_start(args, format);
+	lt = time(NULL);
+
+	*buf = '\0';
+	if ((fp = fopen(LOG_SANITY, "a")) == NULL) {
+		fprintf(stderr, "Unable to open %s!\n", LOG_STATUS);
+		fprintf(stderr, "%.16s: ", ctime(&lt));
+		vfprintf(stderr, format, args);
+	} else {
+		format_time(buf, 32, "%c", localtime(&lt));
+		fprintf(fp, "%.32s: ", buf);
+		vfprintf(fp, format, args);
+		fclose(fp);
+	}
+	va_end(args);
+}
+
+void
 log_status(char *format, ...)
 {
 	va_list args;

@@ -146,6 +146,7 @@
 #define LOG_CMD_TIMES "logs/cmd-times"	/* Command times Log */
 #define LOG_GRIPE   "logs/gripes"	/* Gripes Log */
 #define LOG_STATUS  "logs/status"	/* System errors and stats */
+#define LOG_SANITY  "logs/sanity"	/* Database corruption and errors */
 #define LOG_MUF     "logs/muf-errors"	/* Muf compiler errors and warnings. */
 #define COMMAND_LOG "logs/commands"	/* Player commands */
 #define PROGRAM_LOG "logs/programs"	/* text of changed programs */

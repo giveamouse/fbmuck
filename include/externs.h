@@ -310,6 +310,7 @@ extern void log2file(char *myfilename, char *format, ...);
 extern void log_error(char *format, ...);
 extern void log_gripe(char *format, ...);
 extern void log_muf(char *format, ...);
+extern void log_sanity(char *format, ...);
 extern void log_status(char *format, ...);
 extern void log_other(char *format, ...);
 extern void notify_fmt(dbref player, char *format, ...);

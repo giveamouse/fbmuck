@@ -835,8 +835,13 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 		tpos = ftell(f);
 	}
 	name = fgets(getprop_buf, sizeof(getprop_buf), f);
-	if (!name)
-		abort();
+	if (!name) {
+		wall_wizards("## WARNING! A corrupt property was found while trying to read it from disk.");
+		wall_wizards("##   This property has been skipped and will not be loaded.  See the sanity");
+		wall_wizards("##   logfile for technical details.");
+		log_sanity("Failed to read property from disk: Failed disk read.  obj = #%d, pos = %ld, pdir = %s", obj, pos, pdir);
+		return -1;
+	}
 	if (*name == '*') {
 		if (!strcmp(name, "*End*\n")) {
 			return 0;
@@ -847,21 +852,37 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 	}
 
 	flags = index(name, PROP_DELIMITER);
-	if (!flags)
-		abort();
+	if (!flags) {
+		wall_wizards("## WARNING! A corrupt property was found while trying to read it from disk.");
+		wall_wizards("##   This property has been skipped and will not be loaded.  See the sanity");
+		wall_wizards("##   logfile for technical details.");
+		log_sanity("Failed to read property from disk: Corrupt property, flag delimiter not found.  obj = #%d, pos = %ld, pdir = %s, data = %s", obj, pos, pdir, name);
+		return -1;
+	}
 	*flags++ = '\0';
 
 	value = index(flags, PROP_DELIMITER);
-	if (!value)
-		abort();
+	if (!value) {
+		wall_wizards("## WARNING! A corrupt property was found while trying to read it from disk.");
+		wall_wizards("##   This property has been skipped and will not be loaded.  See the sanity");
+		wall_wizards("##   logfile for technical details.");
+		log_sanity("Failed to read property from disk: Corrupt property, value delimiter not found.  obj = #%d, pos = %ld, pdir = %s, data = %s:%s", obj, pos, pdir, name, flags);
+		return -1;
+	}
 	*value++ = '\0';
 
 	p = index(value, '\n');
-	if (p)
+	if (p) {
 		*p = '\0';
+	}
 
-	if (!number(flags))
-		abort();
+	if (!number(flags)) {
+		wall_wizards("## WARNING! A corrupt property was found while trying to read it from disk.");
+		wall_wizards("##   This property has been skipped and will not be loaded.  See the sanity");
+		wall_wizards("##   logfile for technical details.");
+		log_sanity("Failed to read property from disk: Corrupt property flags.  obj = #%d, pos = %ld, pdir = %s, data = %s:%s:%s", obj, pos, pdir, name, flags, value);
+		return -1;
+	}
 	flg = atoi(flags);
 
 	switch (flg & PROP_TYPMASK) {
@@ -911,8 +932,13 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 		}
 		break;
 	case PROP_INTTYP:
-		if (!number(value))
-			abort();
+		if (!number(value)) {
+			wall_wizards("## WARNING! A corrupt property was found while trying to read it from disk.");
+			wall_wizards("##   This property has been skipped and will not be loaded.  See the sanity");
+			wall_wizards("##   logfile for technical details.");
+			log_sanity("Failed to read property from disk: Corrupt integer value.  obj = #%d, pos = %ld, pdir = %s, data = %s:%s:%s", obj, pos, pdir, name, flags, value);
+			return -1;
+		}
 		mydat.flags = flg;
 		mydat.data.val = atoi(value);
 		set_property_nofetch(obj, name, &mydat);
@@ -952,8 +978,13 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 		set_property_nofetch(obj, name, &mydat);
 		break;
 	case PROP_REFTYP:
-		if (!number(value))
-			abort();
+		if (!number(value)) {
+			wall_wizards("## WARNING! A corrupt property was found while trying to read it from disk.");
+			wall_wizards("##   This property has been skipped and will not be loaded.  See the sanity");
+			wall_wizards("##   logfile for technical details.");
+			log_sanity("Failed to read property from disk: Corrupt dbref value.  obj = #%d, pos = %ld, pdir = %s, data = %s:%s:%s", obj, pos, pdir, name, flags, value);
+			return -1;
+		}
 		mydat.flags = flg;
 		mydat.data.ref = atoi(value);
 		set_property_nofetch(obj, name, &mydat);
@@ -978,19 +1009,10 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
 	char *ptr;
 	const char *ptr2;
 	char tbuf[50];
+	int outflags = (PropFlagsRaw(p) & ~(PROP_TOUCHED | PROP_ISUNLOADED | PROP_DIRUNLOADED));
 
 	if (PropType(p) == PROP_DIRTYP)
 		return;
-
-	for (ptr = buf, ptr2 = dir + 1; *ptr2;)
-		*ptr++ = *ptr2++;
-	for (ptr2 = PropName(p); *ptr2;)
-		*ptr++ = *ptr2++;
-	*ptr++ = PROP_DELIMITER;
-	ptr2 = intostr(PropFlagsRaw(p) & ~(PROP_TOUCHED | PROP_ISUNLOADED | PROP_DIRUNLOADED));
-	while (*ptr2)
-		*ptr++ = *ptr2++;
-	*ptr++ = PROP_DELIMITER;
 
 	ptr2 = "";
 	switch (PropType(p)) {
@@ -1031,11 +1053,13 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
 		ptr2 = unparse_boolexp((dbref) 1, PropDataLok(p), 0);
 		break;
 	}
-	while (*ptr2)
-		*ptr++ = *ptr2++;
-	*ptr++ = '\n';
-	*ptr++ = '\0';
+
+	snprintf(buf, sizeof(buf), "%s%s%c%d%c%s\n",
+			dir+1, PropName(p), PROP_DELIMITER,
+			outflags, PROP_DELIMITER, ptr2);
+
 	if (fputs(buf, f) == EOF) {
+		log_sanity("Failed to write out property db_putprop(dir = %s)", dir);
 		abort();
 	}
 }

@@ -53,6 +53,11 @@ extern void prim_array_unpin(PRIM_PROTOTYPE);
 
 extern void prim_array_get_ignorelist(PRIM_PROTOTYPE);
 
+extern void prim_array_nested_get(PRIM_PROTOTYPE);
+extern void prim_array_nested_set(PRIM_PROTOTYPE);
+extern void prim_array_nested_del(PRIM_PROTOTYPE);
+
+
 #define PRIMS_ARRAY_FUNCS prim_array_make, prim_array_make_dict, \
         prim_array_explode, prim_array_vals, prim_array_keys, \
         prim_array_first, prim_array_last, prim_array_next, prim_array_prev, \
@@ -68,7 +73,8 @@ extern void prim_array_get_ignorelist(PRIM_PROTOTYPE);
 		prim_array_excludeval, prim_array_sort, prim_array_matchval, \
 		prim_array_matchkey, prim_array_extract, prim_array_join, \
 		prim_array_cut, prim_array_compare, prim_array_sort_indexed, \
-		prim_array_pin, prim_array_unpin, prim_array_get_ignorelist
+		prim_array_pin, prim_array_unpin, prim_array_get_ignorelist, \
+		prim_array_nested_get, prim_array_nested_set, prim_array_nested_del
 
 #define PRIMS_ARRAY_NAMES "ARRAY_MAKE", "ARRAY_MAKE_DICT", \
         "ARRAY_EXPLODE", "ARRAY_VALS", "ARRAY_KEYS", \
@@ -85,9 +91,10 @@ extern void prim_array_get_ignorelist(PRIM_PROTOTYPE);
 		"ARRAY_EXCLUDEVAL", "ARRAY_SORT", "ARRAY_MATCHVAL", \
 		"ARRAY_MATCHKEY", "ARRAY_EXTRACT", "ARRAY_JOIN", \
 		"ARRAY_CUT", "ARRAY_COMPARE", "ARRAY_SORT_INDEXED", \
-		" ARRAY_PIN", " ARRAY_UNPIN", "ARRAY_GET_IGNORELIST"
+		" ARRAY_PIN", " ARRAY_UNPIN", "ARRAY_GET_IGNORELIST", \
+		"ARRAY_NESTED_GET", "ARRAY_NESTED_SET", "ARRAY_NESTED_DEL"
 
-#define PRIMS_ARRAY_CNT 44
+#define PRIMS_ARRAY_CNT 47
 
 #endif /* _P_ARRAY_H */
 

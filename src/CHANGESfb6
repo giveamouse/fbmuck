@@ -1,8 +1,18 @@
 2.2fb6.00rc9
 Fixed crasher in prochelp when given too-long topic titles.
-Changed help.txt into a muckhelp.raw file that is processed by prochelp.
 Fixed infloop problem in vehicles calling envprop when secure_thing_movement
   not set.  Bug #621067.
+Changed help.txt into a muckhelp.raw file that is processed by prochelp.
+Changed property loading routines to not abort(), but to instead log corrupt
+  properties when they are found.
+Changed db_putprop() to use snprintf() instead of manually constructing the
+  property's disk format.
+Added ARRAY_NESTED_GET ( arr idxarr -- ? ) muf prim.  Used to fetch values of
+  nested subvalues of an array.
+Added ARRAY_NESTED_SET ( ? arr idxarr -- arr' ) muf prim.  Used to set values
+  of nested sub-arrays, creating missing subarrays as needed.
+Added ARRAY_NESTED_DEL ( arr idxarr -- arr' ) muf prim.  Used to delete values
+  of nested sub-arrays.
 
 
 

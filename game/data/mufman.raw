@@ -2586,6 +2586,81 @@ ARRAY_DELRANGE ( a @ @ -- a' )
 an array.
 ~
 ~
+ARRAY_NESTED_GET
+ARRAY_NESTED_GET ( a1 a2 -- ? )
+
+  Takes a nested array a1, and a list of array indexes a2, and recursively
+fetches nested sub-array values.  Returns 0 if the item doesn't exist.
+Example:
+~~code
+    arr1 @ { "foo" 2 "bar" }list array_nested_get
+~~endcode
+is roughly equivalent to
+~~code
+    arr1 @ "foo" [] dup if
+        2 [] dup if
+            "bar" []
+        then
+    then
+~~endcode
+~
+~
+ARRAY_NESTED_SET
+ARRAY_NESTED_SET ( ? a a2 -- a' )
+
+  Sets the nested array entry in a, specified by the list of array indexes
+in a2, to the given value, creating new sub-arrays if needed.
+Example:
+~~code
+    { }dict
+    "qux" swap { "foo" "bar" "baz" }list array_nested_set
+    4 swap { "foo" 2 "clam" }list array_nested_set
+~~endcode
+would return the same array as
+~~code
+    {
+        "foo" {
+            "bar" {
+                "baz" "qux"
+            }dict
+            2 {
+                "clam" 4
+            }dict
+        }dict
+    }dict
+~~endcode
+~
+~
+ARRAY_NESTED_DEL
+ARRAY_NESTED_DEL ( a a2 -- a' )
+
+  Deletes the nested array entry in a, specified by the list of array
+indexes in a2.  Example:
+~~code
+    {
+        "foo" {
+            "bar" {
+                "baz" "qux"
+            }dict
+            2 {
+                "clam" 4
+            }dict
+        }dict
+    }dict
+    { "foo" 2 }list array_nested_del
+~~endcode
+would return the same array as
+~~code
+    {
+        "foo" {
+            "bar" {
+                "baz" "qux"
+            }dict
+        }dict
+    }dict
+~~endcode
+~
+~
 ARRAY_EXTRACT
 ARRAY_EXTRACT (array arrIndexes -- array')
 
