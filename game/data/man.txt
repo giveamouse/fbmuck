@@ -3127,11 +3127,6 @@ CANCALL?  (d s -- i)
 Returns true if the given program has a public or wizcall function that the
 current program has permissions to call.  Returns false, otherwise.
 ~
-WIZCALL|
-WIZCALL <funcname>
-Specifies that the given function is a WIZCALL function.  A WIZCALL function
-is like a PUBLIC function, except it can only be called by wizbit programs.
-~
 GUI_AVAILABLE|
 GUI_AVAILABLE (intDescr -- fltVersion)
 Returns the floating point version number of the MCP GUI protocol
@@ -3886,31 +3881,6 @@ UNCOMPILE|
 UNCOMPILE ( d -- )
 Uncompiles the given muf program.  This will throw an error if the program
 has any current instances running.
-~
-GETPIDS|
-GETPIDS ( d -- a )
-Returns a list array containing the pids of all the processes running the
-given program.  If #-1 is passed to this, then the array will contain the
-pids of all active processes.
-~
-GETPIDINFO|
-GETPIDINFO ( i -- a )
-Takes a process ID and returns a dictionary containing a lot of information
-about the given process.  The dictionary has the following keys:
-    PID           Integer process ID of the given process.
-    CALLED_PROG   Dbref of the called program.
-    TRIG          Dbref of the trigger that initiated the process.
-    PLAYER        Dbref of the player who started the process.
-    CALLED_DATA   String data passed to the program.
-    INSTCNT       Int count of muf instructions that the process has run so far.
-    DESCR         Integer connection descriptor that initiated this program.
-    CPU           Float percent of CPU this process has used since starting.
-    NEXTRUN       Integer systime of when this process will next resume.
-    STARTED       Integer systime of when this process was started.
-    TYPE          String process type.  "MUF", "MPI" or "UNK".
-    SUBTYPE       String process subtype.  For MUF type, it can be "READ",
-                    "TREAD", "TIMER", "LISTEN", "QUEUE" or "DELAY" For MPI type,
-                    it can be "QUEUE" or "DELAY"
 ~
 TOADPLAYER|
 TOADPLAYER ( d1 d2 -- )
