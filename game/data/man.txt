@@ -827,7 +827,9 @@ forces the + sign to appear for positive numbers.  A space forces a blank
 in front of positive numbers.  (This is the default.)  A leading 0 will
 force the field to be padded on the left with 0's instead of spaces.  If you
 use a '*' in place of either the width or precision format fields, then
-that integer number will be obtained from the stack.
+that integer number will be obtained from the stack.  You may specify a
+negative fieldwidth to obtain left justification of that field.  You may
+not specify a negative precision.
 ~
 FRAND|
 frand ( -- f )

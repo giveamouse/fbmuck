@@ -97,7 +97,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 						slen1 = oper2->data.number;
 						CLEAR(oper2);
 					} else {
-						slen1 = -1;
+						slen1 = 0;
 					}
 				}
 				if (sstr[scnt] == '.') {
@@ -113,6 +113,8 @@ prim_fmtstring(PRIM_PROTOTYPE)
 							oper2 = POP();
 							if (oper2->type != PROG_INTEGER)
 								abort_interp("Format specified integer argument not found.");
+							if (oper2->data.number < 0)
+								abort_interp("Dynamic precision value must be a positive integer.");
 							slen2 = oper2->data.number;
 							CLEAR(oper2);
 						} else {
@@ -136,7 +138,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				}
 				if (spad2)
 					strcat(sfmt, "0");
-				if (slen1 != -1) {
+				if (slen1 != 0) {
 					sprintf(tbuf, "%d", slen1);
 					strcat(sfmt, tbuf);
 				}
