@@ -359,12 +359,14 @@ handle_read_event(int descr, dbref player, const char *command)
 	struct frame *fr;
 	timequeue ptr, lastevent;
 	int flag, typ, nothing_flag;
+	int oldflags;
 	dbref prog;
 
 	nothing_flag = 0;
 	if (command == NULL) {
 		nothing_flag = 1;
 	}
+	oldflags = FLAGS(player);
 	FLAGS(player) &= ~(INTERACTIVE | READMODE);
 
 	ptr = tqhead;
@@ -388,6 +390,7 @@ handle_read_event(int descr, dbref player, const char *command)
 		fr = ptr->fr;
 		if (!fr->brkpt.debugging || fr->brkpt.isread) {
 			if (!fr->wantsblanks && command && !*command) {
+				FLAGS(player) = oldflags;
 				return;
 			}
 		}
