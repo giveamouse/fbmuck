@@ -1,4 +1,6 @@
 2.2fb6.00b4
+Modified 'resolver' spawning behavior to first try to spawn from the
+  installation's bin/ directory, then from the standard locations.
 Fixed bug #424057 -- MATCH and PMATCH primitives now strip ansi sequences
   before processing.
 Fixed _msgmacs searching to allow blessed environment room msgmacs.
