@@ -1,4 +1,22 @@
+2.2fb6.00a34
+Added GUI_CTRL_COMMAND (strDlogID strCtrlID strCommand dictArgs -- ) muf prim.
+  This is the generic primitive for executing a GUI control specific command.
+  The dictionary contains the arguments for the given command.
+Added GUI_VALUE_GET (strDlogID strCtrlID -- arrValue) muf primitive.  This
+  gets the current value of the given GUI control, and returns it as a string
+  list array.
+Added ARRAY_SORT (arrData intSortType -- arrSortedData) muf primitive.  This
+  sorts all the items in the list array given, based on the given sort type.
+  The valid sort types are 0 - 3, which have the following inserver muf macro
+  $defines:
+    SORTTYPE_CASE_ASCEND     Case sensitive and ascending order.
+    SORTTYPE_NOCASE_ASCEND   Case insensitive and ascending order.
+    SORTTYPE_CASE_DESCEND    Case sensitive and descending order.
+    SORTTYPE_NOCASE_DESCEND  Case insensitive and descending order.
+
+
 2.2fb6.00a33
+Fixed 'make package' script to correct location of configure script.
 Fixed a crasher bug with closing a the input db file before we are done with
   it, when DISKBASE is #undefed and DELTADUMPS is #defined.
 Fixed a crasher bug where ARRAY_APPENTITEM checked the wrong argument's type.

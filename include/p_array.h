@@ -23,6 +23,7 @@ extern void prim_array_delitem(PRIM_PROTOTYPE);
 extern void prim_array_delrange(PRIM_PROTOTYPE);
 extern void prim_array_findval(PRIM_PROTOTYPE);
 extern void prim_array_excludeval(PRIM_PROTOTYPE);
+extern void prim_array_sort(PRIM_PROTOTYPE);
 
 extern void prim_array_n_union(PRIM_PROTOTYPE);
 extern void prim_array_n_intersection(PRIM_PROTOTYPE);
@@ -52,7 +53,7 @@ extern void prim_array_put_reflist(PRIM_PROTOTYPE);
 		prim_array_get_proplist, prim_array_put_propvals, \
 		prim_array_put_proplist, prim_array_get_reflist, \
 		prim_array_put_reflist, prim_array_appenditem, prim_array_findval, \
-		prim_array_excludeval
+		prim_array_excludeval, prim_array_sort
 
 #define PRIMS_ARRAY_NAMES "ARRAY_MAKE", "ARRAY_MAKE_DICT", \
         "ARRAY_EXPLODE", "ARRAY_VALS", "ARRAY_KEYS", \
@@ -66,8 +67,8 @@ extern void prim_array_put_reflist(PRIM_PROTOTYPE);
 		"ARRAY_GET_PROPLIST", "ARRAY_PUT_PROPVALS", \
 		"ARRAY_PUT_PROPLIST", "ARRAY_GET_REFLIST", \
 		"ARRAY_PUT_REFLIST", "ARRAY_APPENDITEM", "ARRAY_FINDVAL", \
-		"ARRAY_EXCLUDEVAL"
+		"ARRAY_EXCLUDEVAL", "ARRAY_SORT"
 
-#define PRIMS_ARRAY_CNT 41
+#define PRIMS_ARRAY_CNT 42
 
 #endif /* _P_ARRAY_H */

@@ -32,10 +32,10 @@
 #define AVL_LF(x)  (x->left)
 #endif
 #define AVL_KEY(x) (&(x->key))
-#define AVL_COMPARE(x,y) array_tree_compare(x,y)
+#define AVL_COMPARE(x,y) array_tree_compare(x,y,0)
 
 static int
-array_tree_compare(array_iter * a, array_iter * b)
+array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 {
 	if (a->type != b->type) {
 		if (a->type == PROG_INTEGER && b->type == PROG_FLOAT) {
@@ -70,7 +70,11 @@ array_tree_compare(array_iter * a, array_iter * b)
 		char *astr = (a->data.string) ? a->data.string->data : "";
 		char *bstr = (b->data.string) ? b->data.string->data : "";
 
-		return string_compare(astr, bstr);
+		if (case_sens) {
+			return strcmp(astr, bstr);
+		} else {
+			return string_compare(astr, bstr);
+		}
 	} else if (a->type == PROG_ARRAY) {
 		/* Sort arrays by memory address. */
 		/* This is a bug, really. */
@@ -619,7 +623,14 @@ array_count(stk_array * arr)
 int
 array_idxcmp(array_iter * a, array_iter * b)
 {
-	return array_tree_compare(a, b);
+	return array_tree_compare(a, b, 0);
+}
+
+
+int
+array_idxcmp_case(array_iter * a, array_iter * b, int case_sens)
+{
+	return array_tree_compare(a, b, case_sens);
 }
 
 
@@ -665,7 +676,7 @@ array_contains_value(stk_array * arr, array_data * item)
 			int i;
 
 			for (i = arr->items; i-- > 0;) {
-				if (!array_tree_compare(&arr->data.packed[i], item)) {
+				if (!array_tree_compare(&arr->data.packed[i], item, 0)) {
 					return 1;
 				}
 			}
@@ -679,7 +690,7 @@ array_contains_value(stk_array * arr, array_data * item)
 			if (!p)
 				return 0;
 			while (p) {
-				if (!array_tree_compare(&p->data, item)) {
+				if (!array_tree_compare(&p->data, item, 0)) {
 					return 1;
 				}
 				p = array_tree_next_node(arr->data.dict, &p->data);
@@ -1102,7 +1113,7 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 					return new;
 				}
 			}
-			if (array_tree_compare(&s->key, &e->key) > 0) {
+			if (array_tree_compare(&s->key, &e->key, 0) > 0) {
 				return new;
 			}
 			while (s) {
@@ -1334,7 +1345,7 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 					return arr->items;
 				}
 			}
-			if (array_tree_compare(&s->key, &e->key) > 0) {
+			if (array_tree_compare(&s->key, &e->key, 0) > 0) {
 				return arr->items;
 			}
 			if (arr->links > 1) {
@@ -1342,7 +1353,7 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 				arr = *harr = array_clone(arr);
 			}
 			copyinst(&s->key, &idx);
-			while (s && array_tree_compare(&s->key, &e->key) <= 0) {
+			while (s && array_tree_compare(&s->key, &e->key, 0) <= 0) {
 				arr->data.dict = array_tree_delete(&s->key, arr->data.dict);
 				arr->items--;
 				s = array_tree_next_node(arr->data.dict, &idx);

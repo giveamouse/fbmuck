@@ -49,11 +49,10 @@ TMPREV=/tmp/tmp_fbmuck_rev
 package:
 	rm -rf ${TMPPKGDIR}
 	mkdir ${TMPPKGDIR}
-	cd src && ./configure
 	cd src && make prochelp
 	mv -f src/prochelp ${TMPPKGDIR}
 	cd src && make cleaner
-	cp -fp INSTALLATION README ${TMPPKGDIR}
+	cp -fp configure Makefile.in INSTALLATION README ${TMPPKGDIR}
 	ln -s src/CHANGESfb  ${TMPPKGDIR}/CHANGESfb
 	ln -s src/CHANGESfb2 ${TMPPKGDIR}/CHANGESfb2
 	ln -s src/CHANGESfb3 ${TMPPKGDIR}/CHANGESfb3
@@ -67,12 +66,11 @@ package:
 	cp -fp include/*.h include/*.in ${TMPPKGDIR}/include
 	chmod +rw ${TMPPKGDIR}/include/*.h ${TMPPKGDIR}/include/*.in
 	mkdir ${TMPPKGDIR}/src
-	cp -fp src/configure src/*.in src/*.sh src/*.c ${TMPPKGDIR}/src
+	cp -fp src/*.in src/*.sh src/*.c ${TMPPKGDIR}/src
 	cp -fp src/CHANGES* src/*WARN* src/*WOSSM* ${TMPPKGDIR}/src
-	cp -fp src/COMPILING src/BUG_FORM src/Makefile.cfg ${TMPPKGDIR}/src
-	cp -fp src/Makefile.cfg ${TMPPKGDIR}/src/Makefile
+	cp -fp src/COMPILING src/BUG_FORM ${TMPPKGDIR}/src
 	chmod +rw ${TMPPKGDIR}/src/*
-	chmod +x ${TMPPKGDIR}/src/configure
+	chmod +x ${TMPPKGDIR}/configure
 	mkdir ${TMPPKGDIR}/game
 	cp -fp game/restart game/optimdb ${TMPPKGDIR}/game
 	mkdir ${TMPPKGDIR}/game/logs
