@@ -3735,6 +3735,9 @@ static int Ignore_IsIgnoringSub(dbref Player, dbref Who)
 	if ((Player == Who) || (Wizard(Player)) || (Wizard(Who))) 
 		return 0;
 
+	if (PLAYER_IGNORE_LAST(Player) == AMBIGUOUS)
+		return 0;
+
 	/* Ignore the last player ignored without bothering to look them up */
 	if (PLAYER_IGNORE_LAST(Player) == Who)
 		return 1;
@@ -3792,13 +3795,19 @@ int Ignore_PrimeCache(dbref Player)
 		return 0;
 
 	if ((Txt = get_uncompress(get_property_class(Player, tp_ignore_prop))) == NULL)
+	{
+		PLAYER_SET_IGNORE_LAST(Player, AMBIGUOUS);
 		return 0;
+	}
 
 	while(*Txt && isspace(*Txt))
 		Txt++;
 
 	if (*Txt == '\0')
+	{
+		PLAYER_SET_IGNORE_LAST(Player, AMBIGUOUS);
 		return 0;
+	}
 
 	for(Ptr = Txt; *Ptr; )
 	{
@@ -3917,4 +3926,6 @@ void Ignore_RemoveFromAllPlayers(dbref Player)
 	for(i = 0; i < db_top; i++)
 		if (Typeof(i) == TYPE_PLAYER)
 			reflist_del(i, tp_ignore_prop, Player);
+
+	Ignore_FlushAllCache();
 }
