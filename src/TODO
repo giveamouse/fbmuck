@@ -45,3 +45,11 @@ These items may be considered to be a wishlist:
   Matrix math.
   3D manipulation primitives.
 
+SYSPARM_NAMES ( -- list:parmnames ) returns a simple list of sysparm names.
+SYSPARM_INFO ( str:name -- dict:info ) returns the infor (type, etc) for a
+  single named sysparm.
+SYSPARMS_ARRAY ( -- dict:parms ) to return a dictionary of just parmname-
+  parmval entries.  This would not return any sysparms that your program
+  hasn't the permissions for.
+SETSYSPARMS_ARRAY ( dict:parms -- ) sets all the sysparms in the given array.
+
