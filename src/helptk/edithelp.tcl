@@ -340,10 +340,10 @@ proc new_topic {w} {
 		set data [lindex $reqres 2]
 		set xref [lindex $reqres 3]
 		set enum [incr HelpData(entrycount)]
-		set HelpData(entrytopics,$entrynum) $topics
-		set HelpData(entrytype,$entrynum) "data"
-		set HelpData(entrydata,$entrynum) $data
-		set HelpData(entryxref,$entrynum) $xref
+		set HelpData(entrytopics,$enum) $topics
+		set HelpData(entrytype,$enum) "data"
+		set HelpData(entrydata,$enum) $data
+		set HelpData(entryxref,$enum) $xref
 		lappend HelpData(sectionentries,$snum) $enum
 		tree_add_entry $w.treefr.tree $fnum $snum $enum
 		tree_sel_entry $w.treefr.tree $fnum $snum $enum
