@@ -212,6 +212,9 @@
 /* Searches up the room environments for listeners */
 #define LISTENERS_ENV 1
 
+/* Minimum mucker level to write to the userlog. 4 = wiz */
+#define USERLOG_MLEV 3
+
 /* Allow mortal players to @force around objects that are set ZOMBIE. */
 #define ZOMBIES 1
 

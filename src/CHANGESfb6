@@ -1,4 +1,15 @@
 2.2fb6.00rc7
+Made fmtstring and array_fmtstrings ANSI-aware.
+Fixed crasher bug with prim_moveto where dest was #-3.
+Added USERLOG MUF primitive, to log arbitrary strings to "logs/user" for
+  ease of wizard searching for specific program actions and times they
+  occurred.
+  USERLOG ( s -- )
+  Uses: @tune userlog_mlev (minimum mucker level to write to log)
+  Writes an arbitrary string to "logs/user" (#defined USER_LOG) in the format:
+  Winged(#4023) [newaction.muf(#666)] 06/11/02 03:09:31: <string>
+  The program must be running at a mucker level at least equal to the
+  @tune 'userlog_mlev' (defaults to 3) to write this log entry.
 Fixed bug with non-DISKBASE mucks where @dump would drop SSL users.
 Fixed bug with reporting of incorrect line numbers in muf backtraces.
 Fixed bug with DEBUGGER_BREAK having one too many initial breakpoints.
@@ -8,8 +19,6 @@ Fixed fbmuck.spec to do an additional 'make install-inits'.
 Fixed configure script to auto-find ssl.h location.
 Fixed crasher bug with @killing invalid pids.
 Added workaround for bug #555198: Compile warning on Mac OS X.
-
-
 
 2.2fb6.00rc6
 Added "objtype" field to results of SYSPARM_ARRAY, for when the sysparm is

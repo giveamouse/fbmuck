@@ -140,6 +140,7 @@ int tp_listen_mlev = LISTEN_MLEV;
 int tp_playermax_limit = PLAYERMAX_LIMIT;
 int tp_process_timer_limit = PROCESS_TIMER_LIMIT;
 int tp_cmd_log_threshold_msec = CMD_LOG_THRESHOLD_MSEC;
+int tp_userlog_mlev = USERLOG_MLEV;
 
 int tp_mcp_muf_mlev = MCP_MUF_MLEV;
 
@@ -172,6 +173,7 @@ struct tune_val_entry tune_val_list[] = {
 	{"MUF",         "instr_slice", &tp_instr_slice, 0, "Instructions run per timeslice"},
 	{"MUF",         "process_timer_limit", &tp_process_timer_limit, 0, "Max timers per process"},
 	{"MUF",         "mcp_muf_mlev", &tp_mcp_muf_mlev, 0, "Mucker Level required to use MCP"},
+	{"MUF",		"userlog_mlev", &tp_userlog_mlev, 0, "Mucker Level required to write to userlog"},
 	{"MPI",         "mpi_max_commands", &tp_mpi_max_commands, 0, "Max MPI instruction run length"},
 	{"Player Max",  "playermax_limit", &tp_playermax_limit, 0, "Max player connections allowed"},
 	{"Spam Limits", "command_burst_size", &tp_command_burst_size, 0, "Commands before limiter engages"},

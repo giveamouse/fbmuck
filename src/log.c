@@ -151,6 +151,28 @@ log_command(char *format, ...)
 }
 
 void
+log_user(dbref player, dbref program, char *logmessage)
+{
+	char logformat[BUFFER_LEN];
+	char buf[40];
+	time_t lt=0;
+	int len=0,i=0;
+	char buf2[BUFFER_LEN];
+
+	*buf='\0';
+	*logformat='\0';
+
+	lt=time(NULL);	
+	format_time(buf, 32, "%c", localtime(&lt));
+
+	sprintf(logformat,"%s(#%d) [%s(#%d)] at %.32s: ", NAME(player), player, NAME(program), program, buf);
+	len = BUFFER_LEN - strlen(logformat);
+	strncat (logformat, logmessage, BUFFER_LEN-strlen(logformat)-1);
+	
+	log2file(USER_LOG,"%s",logformat);
+}
+
+void
 notify_fmt(dbref player, char *format, ...)
 {
 	va_list args;

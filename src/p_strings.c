@@ -33,6 +33,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 	int slen, scnt, tstop, tlen, tnum, i;
 	int slrj, spad1, spad2, slen1, slen2, temp;
 	char sstr[BUFFER_LEN], sfmt[255], hold[256], tbuf[BUFFER_LEN];
+	char *ptr, *begptr;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -124,6 +125,34 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				} else {
 					slen2 = -1;
 				}
+
+				/* If s is the format and oper2 is really a string, repair the lengths to account for ansi codes. */
+				CHECKOP(1);
+				oper2 = POP();
+				if(('s' == sstr[scnt]) && (PROG_STRING == oper2->type) && (oper2->data.string)) {
+					ptr = oper2->data.string->data;
+
+					i = 0;
+					while ((-1 == slen2 || i < slen2) && *ptr) {  /* adapted from prim_ansi_strlen */
+						begptr = ptr;
+						if (*ptr++ == ESCAPE_CHAR) {
+							if (*ptr == '\0') {;
+							} else if (*ptr != '[') {
+								ptr++;
+							} else {
+								ptr++;
+								while (isdigit(*ptr) || *ptr == ';')
+									ptr++;
+								if (*ptr == 'm')
+									ptr++;
+							}
+							i += (int) (ptr - begptr);
+							slen1 += (int) (ptr - begptr);
+							if(-1 != slen2) slen2 += (int) (ptr - begptr);
+						} else { i++; };
+					}
+				}
+
 				if (slen1 && ((abs(slen1) + result) > BUFFER_LEN))
 					abort_interp("Specified format field width too large.");
 				sfmt[0] = '%';
@@ -146,8 +175,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					sprintf(tbuf, ".%d", slen2);
 					strcat(sfmt, tbuf);
 				}
-				CHECKOP(1);
-				oper2 = POP();
+
 				if (sstr[scnt] == '~') {
 					switch (oper2->type) {
 					case PROG_OBJECT:
@@ -196,6 +224,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					result += tlen;
 					CLEAR(oper2);
 					break;
+				case 'S':
 				case 's':
 					strcat(sfmt, "s");
 					if (oper2->type != PROG_STRING)
@@ -461,6 +490,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 	int slen, scnt, tstop, tlen, tnum, i;
 	int slrj, spad1, spad2, slen1, slen2, temp;
 	char sstr[BUFFER_LEN], sfmt[255], hold[256], tbuf[BUFFER_LEN];
+	char *ptr, *begptr;
 	char fieldbuf[BUFFER_LEN];
 	char *fieldname = fieldbuf;
 	char *fmtstr = NULL;
@@ -542,8 +572,6 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 						} else {
 							slen2 = -1;
 						}
-						if ((slen1 > 0) && ((slen1 + result) > BUFFER_LEN))
-							abort_interp("Specified format field width too large.");
 
 						if (sstr[scnt] == '[') {
 							scnt++;
@@ -580,6 +608,34 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 						} else {
 							abort_interp("Specified format field didn't have an array index.");
 						}
+
+						/* If s is the format and oper3 is really a string, repair the lengths to account for ansi codes. */
+						if(('s' == sstr[scnt]) && (PROG_STRING == oper3->type) && (oper3->data.string)) {
+							ptr = oper3->data.string->data;
+
+							i = 0;
+							while ((-1 == slen2 || i < slen2) && *ptr) {  /* adapted from prim_ansi_strlen */
+								begptr = ptr;
+								if (*ptr++ == ESCAPE_CHAR) {
+									if (*ptr == '\0') {;
+									} else if (*ptr != '[') {
+										ptr++;
+									} else {
+										ptr++;
+										while (isdigit(*ptr) || *ptr == ';')
+											ptr++;
+										if (*ptr == 'm')
+											ptr++;
+									}
+									i += (int) (ptr - begptr);
+									slen1 += (int) (ptr - begptr);
+									if(-1 != slen2) slen2 += (int) (ptr - begptr);
+								} else { i++; };
+							}
+						}
+						if ((slen1 > 0) && ((slen1 + result) > BUFFER_LEN))
+							abort_interp("Specified format field width too large.");
+
 						sfmt[0] = '%';
 						sfmt[1] = '\0';
 						if (slrj == 1)
@@ -647,6 +703,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							strcat(buf, tbuf);
 							result += tlen;
 							break;
+						case 'S':
 						case 's':
 							strcat(sfmt, "s");
 							if (oper3->type != PROG_STRING)
@@ -1539,32 +1596,32 @@ prim_explode(PRIM_PROTOTYPE)
 
 
 void
-prim_explode_array(PRIM_PROTOTYPE) 
-{ 
-	stk_array *nu; 
-	char *tempPtr; 
-	char *lastPtr; 
-	CHECKOP(2); 
-	temp1 = *(oper1 = POP()); 
-	temp2 = *(oper2 = POP()); 
-	oper1 = &temp1; 
-	oper2 = &temp2; 
-	if (temp1.type != PROG_STRING) 
-		abort_interp("Non-string argument (2)"); 
-	if (temp2.type != PROG_STRING) 
-		abort_interp("Non-string argument (1)"); 
-	if (!temp1.data.string) 
-		abort_interp("Empty string argument (2)"); 
-	CHECKOFLOW(1); 
+prim_explode_array(PRIM_PROTOTYPE)
+{
+	stk_array *nu;
+	char *tempPtr;
+	char *lastPtr;
+	CHECKOP(2);
+	temp1 = *(oper1 = POP());
+	temp2 = *(oper2 = POP());
+	oper1 = &temp1;
+	oper2 = &temp2;
+	if (temp1.type != PROG_STRING)
+		abort_interp("Non-string argument (2)");
+	if (temp2.type != PROG_STRING)
+		abort_interp("Non-string argument (1)");
+	if (!temp1.data.string)
+		abort_interp("Empty string argument (2)");
+	CHECKOFLOW(1);
 
-	{ 
-		const char *delimit = temp1.data.string->data; 
+	{
+		const char *delimit = temp1.data.string->data;
 		int delimlen = temp1.data.string->length;
 
-		nu = new_array_packed(0); 
-		if (!temp2.data.string) { 
+		nu = new_array_packed(0);
+		if (!temp2.data.string) {
 			lastPtr = "";
-		} else { 
+		} else {
 			strcpy(buf, temp2.data.string->data);
 			tempPtr = lastPtr = buf;
 			while (*tempPtr) {
@@ -1582,18 +1639,18 @@ prim_explode_array(PRIM_PROTOTYPE)
 					tempPtr++;
 				}
 			}
-		} 
-	} 
+		}
+	}
 
-	temp3.type = PROG_STRING; 
-	temp3.data.string = alloc_prog_string(lastPtr); 
-	array_appenditem(&nu, &temp3); 
+	temp3.type = PROG_STRING;
+	temp3.data.string = alloc_prog_string(lastPtr);
+	array_appenditem(&nu, &temp3);
 
-	CLEAR(&temp1); 
-	CLEAR(&temp2); 
-	CLEAR(&temp3); 
+	CLEAR(&temp1);
+	CLEAR(&temp2);
+	CLEAR(&temp3);
 
-	PushArrayRaw(nu); 
+	PushArrayRaw(nu);
 }
 
 
@@ -2265,12 +2322,12 @@ prim_ansi_midstr(PRIM_PROTOTYPE)
 	int loc, start, range;
 	const char* ptr;
 	char* op;
-	
+
 	CHECKOP(3);
 	oper1 = POP(); /* length */
 	oper2 = POP(); /* begin */
 	oper3 = POP(); /* string */
-	
+
 	if (oper3->type != PROG_STRING)
 		abort_interp("Non-string argument! (3)");
 	if (oper2->type != PROG_INTEGER)
@@ -2284,7 +2341,7 @@ prim_ansi_midstr(PRIM_PROTOTYPE)
 
 	start = oper2->data.number - 1;
 	range = oper1->data.number;
-	
+
 	if (!oper3->data.string || start > oper3->data.string->length ||
 			range == 0) {
 		CLEAR(oper1);
@@ -2293,7 +2350,7 @@ prim_ansi_midstr(PRIM_PROTOTYPE)
 		PushNullStr;
 		return;
 	}
-	
+
 	ptr = oper3->data.string->data;
 	op = buf;
 	loc = 0;
@@ -2318,8 +2375,8 @@ prim_ansi_midstr(PRIM_PROTOTYPE)
 			}
 		}
 	}
-	
-	loc = 0;				
+
+	loc = 0;
 	/* Then, start copying, and counting while we do... */
 	while (*ptr) {
 		if ((*op++ = *ptr++) == ESCAPE_CHAR) {

@@ -5,7 +5,7 @@
 # If none are given, defaults to 4201.
 #
 
-prefix=/usr/local
+prefix=/home/winged
 exec_prefix=${prefix}
 
 #

@@ -139,6 +139,24 @@ prim_timefmt(PRIM_PROTOTYPE)
 	PushString(buf);
 }
 
+void
+prim_userlog(PRIM_PROTOTYPE)
+{
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_STRING)
+		abort_interp("Non-string argument.");
+	if (mlev < tp_userlog_mlev)
+		abort_interp("Permission Denied (mlev < tp_userlog_mlev)");
+	if(oper1->data.string) {
+		strcpy(buf,oper1->data.string->data);
+	} else {
+		*buf='\0';
+	}
+	log_user(player, program, buf);
+	CLEAR(oper1);
+	return;
+}
 
 void
 prim_queue(PRIM_PROTOTYPE)

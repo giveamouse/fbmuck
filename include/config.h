@@ -42,7 +42,9 @@
 #define COMPRESS
 
 /* To use a simple disk basing scheme where properties aren't loaded
- * from the input file until they are needed, define this. 
+ * from the input file until they are needed, define this. (Note: if
+ * this is not defined, the MUCK will fork into the background to dump
+ * the database, eliminating save delays.)
  */
 #define DISKBASE
 
@@ -159,6 +161,7 @@
 #define LOG_MUF     "logs/muf-errors"	/* Muf compiler errors and warnings. */
 #define COMMAND_LOG "logs/commands"	/* Player commands */
 #define PROGRAM_LOG "logs/programs"	/* text of changed programs */
+#define USER_LOG    "logs/user"		/* log of player/program-init msgs. */
 
 #define MACRO_FILE  "muf/macros"
 

@@ -79,6 +79,7 @@ extern int tp_playermax_limit;
 extern int tp_process_timer_limit;
 extern int tp_cmd_log_threshold_msec;
 extern int tp_mcp_muf_mlev;
+extern int tp_userlog_mlev;
 
 
 
