@@ -285,7 +285,7 @@ show_program_usage(char *prog)
 	fprintf(stderr, "        -help            display this message.\n");
 #ifdef WIN32
       fprintf(stderr, "        -freeconsole     free the console window and run in the background\n");
-#endif WIN32
+#endif
 	exit(1);
 }
 
