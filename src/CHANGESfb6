@@ -4,6 +4,7 @@ Added ARRAY_FMTSTRINGS ( arr:dicts str:fmt -- list:strs ) MUF prim.  Creates
   formatted strings.
 Fixed a crasher bug with loading lock props with ARRAY_GET_PROPVALS.
 Fixed a crasher bug with loading lock props with ARRAY_GET_PROPLIST.
+Fixed a crasher bug with debug traces of programs with large nested arrays.
 
 
 

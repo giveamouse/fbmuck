@@ -124,13 +124,13 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 					firstflag = 0;
 					oper2 = array_getitem(theinst->data.array, &temp1);
 
-					if (length == 1) { /* no space left, let's not pass a buflen of 0 */
+					if (length <= 1) { /* no space left, let's not pass a buflen of 0 */
 					    strcat(buffer, "_");
 					    break;
 					}
 
-					/* length - 1 so we have room for the ":" */
-					inststr = insttotext(&temp1, buf2, length - 1, strmax, program);
+					/* length - 2 so we have room for the ":_" */
+					inststr = insttotext(&temp1, buf2, length - 2, strmax, program);
 					if (!*inststr) {
 					    /* overflow problem. */
 					    strcat(buffer,"_");
@@ -139,6 +139,11 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 					length -= strlen(inststr) + 1;
 					strcat(buffer, inststr);
 					strcat(buffer, ":");
+
+					if (length <= 2) { /* no space left, let's not pass a buflen of 0 */
+					    strcat(buffer,"_");
+					    break;
+					}
 
 					inststr = insttotext(oper2, buf2, length, strmax, program);
 					if (!*inststr) {
