@@ -573,6 +573,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 								temp3.data.string = NULL;
 								oper3 = &temp3;
 							}
+							nargs = 3;
 						} else {
 							abort_interp("Specified format field didn't have an array index.");
 						}
@@ -647,8 +648,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							strcat(sfmt, "s");
 							if (oper3->type != PROG_STRING)
 								abort_interp("Format specified string argument not found.");
-							sprintf(tbuf, sfmt,
-									((oper3->data.string) ? oper3->data.string->data : ""));
+							sprintf(tbuf, sfmt, DoNullInd(oper3->data.string));
 							tlen = strlen(tbuf);
 							if (slrj == 2) {
 								tnum = 0;
@@ -763,7 +763,6 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							buf[result] = '\0';
 							strcat(buf, tbuf);
 							result += strlen(tbuf);
-							CLEAR(oper3);
 							break;
 						case 'D':
 							strcat(sfmt, "s");
@@ -797,7 +796,6 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							buf[result] = '\0';
 							strcat(buf, tbuf);
 							result += strlen(tbuf);
-							CLEAR(oper3);
 							break;
 						case 'l':
 							strcat(sfmt, "s");
@@ -856,6 +854,8 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							abort_interp("Invalid format string.");
 							break;
 						}
+						CLEAR(oper3);
+						nargs = 2;
 						scnt++;
 						tstop += strlen(tbuf);
 					}
@@ -892,9 +892,12 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 			temp2.type = PROG_STRING;
 			temp2.data.string = alloc_prog_string(buf);
 			array_appenditem(&nu, &temp2);
+			CLEAR(&temp2);
 		} while (array_next(arr, &temp1));
 	}
 
+	CLEAR(oper1);
+	CLEAR(oper2);
 	PushArrayRaw(nu);
 }
 

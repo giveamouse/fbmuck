@@ -6,6 +6,7 @@ Added .debug/lastcrashtime human-readable timestamp property for muf crashes.
 Fixed bug in MCP where _datatag wasn't being preceeded by a separator space.
 Fixed bad error messages argument numbers in several array_* primitives.
 Fixed bug where COMPILE state left some values uninitialized.
+Fixed memory leaks in ARRAY_FMTSTRINGS.
 
 
 
