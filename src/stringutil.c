@@ -192,9 +192,11 @@ pronoun_substitute(int descr, dbref player, const char *str)
 
 	sex = genderof(descr, player);
 	sexstr = get_property_class(player, "sex");
-	sexstr = do_parse_mesg(descr, player, player, sexstr, "(Lock)", sexbuf,
+	if (sexstr) {
+		sexstr = do_parse_mesg(descr, player, player, sexstr, "(Lock)", sexbuf,
 						(MPI_ISPRIVATE | MPI_ISLOCK |
 							(Prop_Blessed(player, "sex")? MPI_ISBLESSED : 0)));
+	}
 	while (sexstr && isspace(*sexstr)) sexstr++;
 	if (!sexstr || !*sexstr) {
 		sexstr = "_default";
