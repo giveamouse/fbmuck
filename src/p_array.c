@@ -1134,6 +1134,9 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 						temp2.data.lock = TRUE_BOOLEXP;
 					} else {
 						temp2.data.lock = PropDataLok(prptr);
+						if (temp2.data.lock != TRUE_BOOLEXP) {
+							temp2.data.lock = copy_bool(temp2.data.lock);
+						}
 					}
 					break;
 				case PROP_REFTYP:
@@ -1259,6 +1262,9 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 						temp2.data.lock = TRUE_BOOLEXP;
 					} else {
 						temp2.data.lock = PropDataLok(prptr);
+						if (temp2.data.lock != TRUE_BOOLEXP) {
+							temp2.data.lock = copy_bool(temp2.data.lock);
+						}
 					}
 					break;
 				  case PROP_REFTYP:

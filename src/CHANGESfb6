@@ -1,3 +1,12 @@
+2.2fb6.01
+Added ARRAY_FMTSTRINGS ( arr:dicts str:fmt -- list:strs ) MUF prim.  Creates
+  a formatted string for each dictionary in a list, returning a list of the
+  formatted strings.
+Fixed a crasher bug with loading lock props with ARRAY_GET_PROPVALS.
+Fixed a crasher bug with loading lock props with ARRAY_GET_PROPLIST.
+
+
+
 2.2fb6.00rc2
 Fixed crasher bug in new pronoun code.
 Fixed profiling time and debugging initialization in the FORK muf prim.
