@@ -120,7 +120,7 @@ Process Management:
   
 MUF Event Support:
   event_wait   event_waitfor   event_count    timer_start    timer_stop
-  event_exists
+  event_exists watchpid
   
 MCP Mud Client Protocol commands:
   mcp_register  mcp_bind  mcp_supports  mcp_send
@@ -3789,23 +3789,23 @@ The control options specific to this type of control are:
 See Also: GUI_CTRL_CREATE, GUI_DLOG_CREATE, GUI_OPTIONS
 ~
 FORCE_LEVEL
-force_level ( -- i)
+FORCE_LEVEL ( -- i)
 Returns non-zero if the code we are running was triggered by an @force.
 ~
 NAME-OK?|
-name-ok? (s -- i)
+NAME-OK? (s -- i)
 Returns true if the given string would be okay as a general object's name.
 ~
 PNAME-OK?|
-pname-ok? (s -- i)
+PNAME-OK? (s -- i)
 Returns true if the given string would be okay as a player name.
 ~
 WATCHPID
-watchpid (d -- )
+WATCHPID (d -- )
 Sends a "PROC.EXIT." event to the current process when the process referred
 to by the given pid exits.  If the process process does not exist, the event
 will be sent immediately.  The exit event can be retrieved by a call to
-EVENT_WAIT.  The event type will be "PROC.EXIT." wit the pid of the process
+EVENT_WAIT.  The event type will be "PROC.EXIT." with the pid of the process
 appended to it.  The pid will also be returned as the data value from the
 event.  This primitive requires at least Mucker Level 3.
 ~
