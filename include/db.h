@@ -416,6 +416,11 @@ struct dlogidlist {
 	char dlogid[32];
 };
 
+struct mufwatchpidlist {
+	struct mufwatchpidlist *next;
+	int pid;
+};
+
 #define STD_REGUID 0
 #define STD_SETUID 1
 #define STD_HARDUID 2
@@ -452,6 +457,8 @@ struct frame {
     struct timeval totaltime;   /* profiling timing code */
 	struct mufevent *events;	/* MUF event list. */
 	struct dlogidlist *dlogids;	/* List of dlogids this frame uses. */
+	struct mufwatchpidlist *waiters;
+	struct mufwatchpidlist *waitees;
 	union {
 		struct {
 			unsigned int div_zero:1;	/* Divide by zero */

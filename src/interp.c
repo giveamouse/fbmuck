@@ -510,6 +510,60 @@ pop_try(struct tryvars *trystack)
 }
 
 
+/* clean up lists from watchpid and sends event */
+void
+watchpid_process(struct frame *fr)
+{
+	struct frame *frame;
+	struct mufwatchpidlist *cur;
+	struct mufwatchpidlist **curptr;
+	struct inst temp1;
+	temp1.type = PROG_INTEGER;
+	temp1.data.number = fr->pid;
+
+	while (fr->waitees) {
+		cur = fr->waitees;
+		fr->waitees = cur->next;
+
+		frame = timequeue_pid_frame (cur->pid);
+		free (cur);
+		if (frame) {
+			for (curptr = &frame->waiters; *curptr; curptr = &(*curptr)->next) {
+				if ((*curptr)->pid == fr->pid) {
+					cur = *curptr;
+					*curptr = (*curptr)->next;
+					free (cur);
+					break;
+				}
+			}
+		}
+	}
+
+	while (fr->waiters) {
+		char buf[64];
+
+		sprintf (buf, "PROC.EXIT.%d", fr->pid);
+
+		cur = fr->waiters;
+		fr->waiters = cur->next;
+
+		frame = timequeue_pid_frame (cur->pid);
+		free (cur);
+		if (frame) {
+			muf_event_add(frame, buf, &temp1, 0);
+			for (curptr = &frame->waitees; *curptr; curptr = &(*curptr)->next) {
+				if ((*curptr)->pid == fr->pid) {
+					cur = *curptr;
+					*curptr = (*curptr)->next;
+					free (cur);
+					break;
+				}
+			}
+		}
+	}
+}
+
+
 /* clean up the stack. */
 void
 prog_clean(struct frame *fr)
@@ -523,6 +577,8 @@ prog_clean(struct frame *fr)
 			abort();
 		}
 	}
+
+	watchpid_process (fr);
 
 	fr->system.top = 0;
 	for (i = 0; i < fr->argument.top; i++)

@@ -786,4 +786,60 @@ prim_force_level(PRIM_PROTOTYPE)
 	PushInt(force_level);
 }
 
+void
+prim_watchpid(PRIM_PROTOTYPE)
+{
+	struct frame *frame;
 
+	CHECKOP(1);
+	oper1 = POP();
+
+	if (mlev < 3) {
+		abort_interp("Mucker level 3 required.");
+	}
+
+	if (oper1->type != PROG_INTEGER) {
+		abort_interp("Process PID expected.");
+	}
+
+/* Lets see if the batbat catches this one. */
+	if (oper1->data.number == fr->pid) {
+		abort_interp("Narcissistic processes not allowed.");
+	}
+
+	frame = timequeue_pid_frame (oper1->data.number);
+	if (frame) {
+		struct mufwatchpidlist **cur;
+		struct mufwatchpidlist *waitee;
+
+		for (cur = &frame->waiters; *cur; cur = &(*cur)->next) {
+			if ((*cur)->pid == oper1->data.number) {
+				break;
+			}
+		}
+
+		if (!*cur) {
+			*cur = malloc (sizeof (**cur));
+			if (!*cur) {
+				abort_interp ("Internal memory error.\n");
+			}
+			(*cur)->next = 0;
+			(*cur)->pid = fr->pid;
+
+			waitee = malloc (sizeof (*waitee));
+			if (!waitee) {
+				abort_interp ("Internal memory error.\n");
+			}
+			waitee->next = fr->waitees;
+			waitee->pid = oper1->data.number;
+			fr->waitees = waitee;
+		}
+	} else {
+		char buf[64];
+
+		sprintf (buf, "PROC.EXIT.%d", oper1->data.number);
+		muf_event_add(fr, buf, oper1, 0);
+	}
+
+	CLEAR (oper1);
+}
