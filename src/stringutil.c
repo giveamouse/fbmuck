@@ -761,3 +761,61 @@ prepend_string(char** before, char* start, const char* what)
    *before = ptr;
    return len;
 }
+
+int IsValidPoseSeparator(char ch)
+{
+	return (ch == '\'') || (ch == ' ') || (ch == ',') || (ch == '-');
+}
+
+void PrefixMessage(char* Dest, const char* Src, const char* Prefix, int BufferLength, int SuppressIfPresent)
+{
+	int PrefixLength			= strlen(Prefix);
+	int CheckForHangingEnter	= 0;
+
+	while((BufferLength > PrefixLength) && (*Src != '\0'))
+	{
+		if (*Src == '\r')
+		{
+			Src++;
+			continue;
+		}
+
+		if (!SuppressIfPresent || strncmp(Src, Prefix, PrefixLength) || (
+				!IsValidPoseSeparator(Src[PrefixLength]) &&	
+				(Src[PrefixLength] != '\r') &&
+				(Src[PrefixLength] != '\0')
+			))
+		{
+			strcpy(Dest, Prefix);
+
+			Dest			+= PrefixLength;
+			BufferLength	-= PrefixLength;
+
+			if (BufferLength > 1)
+			{
+				if (!IsValidPoseSeparator(*Src))
+				{
+					*Dest++ = ' ';
+					BufferLength--;
+				}
+			}
+		}
+
+		while((BufferLength > 1) && (*Src != '\0'))
+		{
+				*Dest++ = *Src;
+				BufferLength--;
+
+				if (*Src++ == '\r')
+				{
+					CheckForHangingEnter = 1;
+					break;
+				}
+		}
+	}
+
+	if (CheckForHangingEnter && (Dest[-1] == '\r'))
+		Dest--;
+
+	*Dest = '\0';
+}

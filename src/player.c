@@ -123,6 +123,9 @@ create_player(const char *name, const char *password)
 	set_password(player, password);
 	PLAYER_SET_CURR_PROG(player, NOTHING);
 	PLAYER_SET_INSERT_MODE(player, 0);
+	PLAYER_SET_IGNORE_CACHE(player, NULL);
+	PLAYER_SET_IGNORE_COUNT(player, 0);
+	PLAYER_SET_IGNORE_LAST(player, NOTHING);
 
 	/* link him to tp_player_start */
 	PUSH(player, DBFETCH(tp_player_start)->contents);

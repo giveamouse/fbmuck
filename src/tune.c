@@ -37,6 +37,10 @@ const char *tp_proplist_entry_fmt = PROPLIST_ENTRY_FORMAT;
 
 const char *tp_ssl_keyfile_passwd = SSL_KEYFILE_PASSWD;
 const char *tp_pcreate_flags = PCREATE_FLAGS;
+const char *tp_reserved_names = RESERVED_NAMES;
+const char *tp_reserved_player_names = RESERVED_PLAYER_NAMES;
+
+const char *tp_ignore_prop = IGNORE_PROP;
 
 struct tune_str_entry {
 	const char *group;
@@ -71,6 +75,9 @@ struct tune_str_entry tune_str_list[] = {
 	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, 1, "Command unrecognized warning"},
 	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, 4, 1, "Password for SSL keyfile"},
 	{"Database",   "pcreate_flags", &tp_pcreate_flags, 0, 1, "Initial Player Flags"},
+	{"Database",   "reserved_names", &tp_reserved_names, 0, 1, "Reserved names smatch"},
+	{"Database",   "reserved_player_names", &tp_reserved_player_names, 0, 1, "Reserved player names smatch"},
+	{"Database",   "ignore_prop", &tp_ignore_prop, 4, 1, "Property containing ignored players reflist"},
 
 	{NULL, NULL, NULL, 0, 0}
 };
@@ -134,6 +141,7 @@ int tp_max_loaded_objs = MAX_LOADED_OBJS;
 int tp_max_process_limit = MAX_PROCESS_LIMIT;
 int tp_max_plyr_processes = MAX_PLYR_PROCESSES;
 int tp_max_instr_count = MAX_INSTR_COUNT;
+int tp_max_ml4_preempt_count = MAX_ML4_PREEMPT_COUNT;
 int tp_instr_slice = INSTR_SLICE;
 int tp_mpi_max_commands = MPI_MAX_COMMANDS;
 int tp_pause_min = PAUSE_MIN;
@@ -172,6 +180,7 @@ struct tune_val_entry tune_val_list[] = {
 	{"MUF",         "max_process_limit", &tp_max_process_limit, 0, "Max concurrent processes on system"},
 	{"MUF",         "max_plyr_processes", &tp_max_plyr_processes, 0, "Max concurrent processes per player"},
 	{"MUF",         "max_instr_count", &tp_max_instr_count, 0, "Max MUF instruction run length for ML1"},
+	{"MUF",         "max_ml4_preempt_count", &tp_max_ml4_preempt_count, 0, "Max MUF preempt instruction run length for ML4, (0 = no limit)"},
 	{"MUF",         "instr_slice", &tp_instr_slice, 0, "Instructions run per timeslice"},
 	{"MUF",         "process_timer_limit", &tp_process_timer_limit, 0, "Max timers per process"},
 	{"MUF",         "mcp_muf_mlev", &tp_mcp_muf_mlev, 0, "Mucker Level required to use MCP"},
@@ -731,6 +740,10 @@ tune_setparm(const char *parmname, const char *val)
 				parmval++;
 			*tstr->str = string_dup(parmval);
 			tstr->isdefault = 0;
+
+			if (tstr->str == &tp_ignore_prop)
+				Ignore_FlushAllCache();
+
 			return 0;
 		}
 		tstr++;

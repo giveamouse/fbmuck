@@ -65,6 +65,7 @@
 #include "mcp.h"
 #include "mufevent.h"
 #include "externs.h"
+#include "interp.h"
 
 #ifdef __APPLE__
     typedef unsigned int socklen_t;
@@ -761,6 +762,14 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 }
 
 int
+notify_filtered(dbref from, dbref player, const char *msg, int isprivate)
+{
+	if ((msg == 0) || Ignore_IsIgnoring(player, from))
+		return 0;
+	return notify_nolisten(player, msg, isprivate);
+}
+
+int
 notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 {
 	const char *ptr;
@@ -813,14 +822,14 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 				snprintf(buf, sizeof(buf), "%s %.*s", prefix, (int)(BUFFER_LEN - (strlen(prefix) + 2)), msg);
 				ref = DBFETCH(player)->contents;
 				while (ref != NOTHING) {
-					notify_nolisten(ref, buf, isprivate);
+					notify_filtered(from, ref, buf, isprivate);
 					ref = DBFETCH(ref)->next;
 				}
 			}
 		}
 	}
 
-	return notify_nolisten(player, msg, isprivate);
+	return notify_filtered(from, player, msg, isprivate);
 }
 
 int
@@ -3700,3 +3709,211 @@ ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count) {
 	}
 }
 #endif
+
+/* Ignore support -- Could do with moving into its own file */
+
+static int Ignore_IsIgnoringSub(dbref Player, dbref Who)
+{
+	int Top, Bottom;
+	dbref* List;
+
+	if (!*tp_ignore_prop)
+		return 0;
+
+	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) == TYPE_GARBAGE))
+		return 0;
+
+	if ((Who < 0) || (Who >= db_top) || (Typeof(Who) == TYPE_GARBAGE))
+		return 0;
+
+	Player	= OWNER(Player);
+	Who		= OWNER(Who);
+
+	/* You can't ignore yourself, or an unquelled wizard, */
+	/* and unquelled wizards can ignore no one. */
+	if ((Player == Who) || (Wizard(Player)) || (Wizard(Who))) 
+		return 0;
+
+	/* Ignore the last player ignored without bothering to look them up */
+	if (PLAYER_IGNORE_LAST(Player) == Who)
+		return 1;
+
+	if ((PLAYER_IGNORE_CACHE(Player) == NULL) && !Ignore_PrimeCache(Player))
+		return 0;
+
+	Top		= 0;
+	Bottom	= PLAYER_IGNORE_COUNT(Player);
+	List	= PLAYER_IGNORE_CACHE(Player);
+
+	while(Top < Bottom)
+	{
+		int Middle = Top + (Bottom - Top) / 2;
+
+		if (List[Middle] == Who)
+			break;
+
+		if (List[Middle] < Who)
+			Top		= Middle + 1;
+		else
+			Bottom	= Middle;
+	}
+
+	if (Top >= Bottom)
+		return 0;
+
+	PLAYER_SET_IGNORE_LAST(Player, Who);
+	
+	return 1;
+}
+
+int Ignore_IsIgnoring(dbref Player, dbref Who)
+{
+	return Ignore_IsIgnoringSub(Player, Who) || Ignore_IsIgnoringSub(Who, Player);
+}
+
+static int IgnoreDbrefCompare(const void* Lhs, const void* Rhs)
+{
+	return *(dbref*)Lhs - *(dbref*)Rhs;
+}
+
+int Ignore_PrimeCache(dbref Player)
+{
+	const char* Txt = 0;
+	const char* Ptr = 0;
+	dbref* List = 0;
+	int Count = 0;
+	int i;
+
+	if (!*tp_ignore_prop)
+		return 0;
+
+	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) != TYPE_PLAYER))
+		return 0;
+
+	if ((Txt = get_uncompress(get_property_class(Player, tp_ignore_prop))) == NULL)
+		return 0;
+
+	while(*Txt && isspace(*Txt))
+		Txt++;
+
+	if (*Txt == '\0')
+		return 0;
+
+	for(Ptr = Txt; *Ptr; )
+	{
+		Count++;
+
+		if (*Ptr == '#')
+			Ptr++;
+
+		while(*Ptr && !isspace(*Ptr))
+			Ptr++;
+
+		while(*Ptr && isspace(*Ptr))
+			Ptr++;
+	}
+
+	if ((List = (dbref*)malloc(sizeof(dbref) * Count)) == 0)
+		return 0;
+
+	for(Ptr = Txt, i = 0; *Ptr; )
+	{
+		if (*Ptr == '#')
+			Ptr++;
+
+		if (isdigit(*Ptr))
+			List[i++] = atoi(Ptr);
+		else
+			List[i++] = NOTHING;
+
+		while(*Ptr && !isspace(*Ptr))
+			Ptr++;
+
+		while(*Ptr && isspace(*Ptr))
+			Ptr++;
+	}
+
+	qsort(List, Count, sizeof(dbref), IgnoreDbrefCompare);
+
+	PLAYER_SET_IGNORE_CACHE(Player, List);
+	PLAYER_SET_IGNORE_COUNT(Player, Count);
+
+	return 1;
+}
+
+void Ignore_FlushCache(dbref Player)
+{
+	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) != TYPE_PLAYER))
+		return;
+
+	if (PLAYER_IGNORE_CACHE(Player))
+	{
+		free(PLAYER_IGNORE_CACHE(Player));
+		PLAYER_SET_IGNORE_CACHE(Player, NULL);
+		PLAYER_SET_IGNORE_COUNT(Player, 0);
+		PLAYER_SET_IGNORE_LAST(Player, NOTHING);
+	}
+}
+
+void Ignore_FlushAllCache()
+{
+	int i;
+
+	/* Don't touch the database if it's not been loaded yet... */
+	if (db == 0)
+		return;
+	
+	for(i = 0; i < db_top; i++)
+	{
+		if (Typeof(i) == TYPE_PLAYER)
+		{
+			if (PLAYER_IGNORE_CACHE(i))
+			{
+				free(PLAYER_IGNORE_CACHE(i));
+				PLAYER_SET_IGNORE_CACHE(i, NULL);
+				PLAYER_SET_IGNORE_COUNT(i, 0);
+				PLAYER_SET_IGNORE_LAST(i, NOTHING);
+			}
+		}
+	}
+}
+
+void Ignore_AddPlayer(dbref Player, dbref Who)
+{
+	if (!*tp_ignore_prop)
+		return;
+
+	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) == TYPE_GARBAGE))
+		return;
+
+	if ((Who < 0) || (Who >= db_top) || (Typeof(Who) == TYPE_GARBAGE))
+		return;
+
+	reflist_add(OWNER(Player), tp_ignore_prop, OWNER(Who));
+}
+
+void Ignore_RemovePlayer(dbref Player, dbref Who)
+{
+	if (!*tp_ignore_prop)
+		return;
+
+	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) == TYPE_GARBAGE))
+		return;
+
+	if ((Who < 0) || (Who >= db_top) || (Typeof(Who) == TYPE_GARBAGE))
+		return;
+
+	reflist_del(OWNER(Player), tp_ignore_prop, OWNER(Who));
+}
+
+void Ignore_RemoveFromAllPlayers(dbref Player)
+{
+	int i;
+
+	if (!*tp_ignore_prop)
+		return;
+
+	for(i = 0; i < db_top; i++)
+		if (Typeof(i) == TYPE_PLAYER)
+			reflist_del(i, tp_ignore_prop, Player);
+}

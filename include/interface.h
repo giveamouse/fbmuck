@@ -1,6 +1,28 @@
 
 /* $Header$
  * $Log: interface.h,v $
+ * Revision 1.7  2002/09/08 23:07:18  sombre
+ * Fixed memory leak when toading online players.
+ * Fixed remove_prop bug so it will remove props ending in /. (bug #537744)
+ * Fixed potential buffer overrun with the CHECKRETURN and ABORT_MPI macros.
+ * Fixed @omessage bug where player names would not be prefixed on additional
+ *   newlines. (bug #562370)
+ * Added IGNORING? ( d1 d2 -- i ) returns true if d1 is ignoring d2.
+ * Added IGNORE_ADD ( d1 d2 -- ) adds d2 to d1's ignore list.
+ * Added IGNORE_DEL ( d1 d2 -- ) removes d2 from d1's ignore list.
+ * Added ARRAY_GET_IGNORELIST ( d -- a ) returns an array of d's ignores.
+ * Added support for ignoring (gagging) players, ignores are mutual in that if
+ *   player A ignores player B, A will not hear B, and B will not hear A.
+ * Added ignore_prop @tune to specify the directory the ignore list is held under,
+ *   if set blank ignore support is disabled, defaults to "@ignore/def".
+ * Added max_ml4_preempt_count @tune to specify the maximum number of instructions
+ *   an mlevel4 (wizbitted) program may run before it is aborted, if set to 0
+ *   no limit is imposed.  Defaults to 0.
+ * Added reserved_names @tune which when set to a smatch pattern will refuse any
+ *   object creations or renames which match said pattern.  Defaults to "".
+ * Added reserved_player_names @tune which when set to a smatch pattern will refuse
+ *   any player creations or renames which match said pattern.  Defaults to "".
+ *
  * Revision 1.6  2002/06/12 04:14:11  revar
  * Added internal MUF primitives for pinning/unpinning arrays.  These are for the
  *   future planned MUV to MUF-bytecode compiler, and are not available from MUF.
@@ -62,6 +84,7 @@
 /* these symbols must be defined by the interface */
 extern int notify(dbref player, const char *msg);
 extern int notify_nolisten(dbref player, const char *msg, int ispriv);
+extern int notify_filtered(dbref from, dbref player, const char *msg, int ispriv);
 extern void wall_and_flush(const char *msg);
 extern void flush_user_output(dbref player);
 extern void wall_wizards(const char *msg);
@@ -101,6 +124,14 @@ extern int pnextdescr(int c);
 extern int pdescrflush(int c);
 extern int pdescrbufsize(int c);
 extern dbref partial_pmatch(const char *name);
+
+extern int Ignore_IsIgnoring(dbref Player, dbref Who);
+extern int Ignore_PrimeCache(dbref Player);
+extern void Ignore_FlushCache(dbref Player);
+extern void Ignore_FlushAllCache();
+extern void Ignore_AddPlayer(dbref Player, dbref Who);
+extern void Ignore_RemovePlayer(dbref Player, dbref Who);
+extern void Ignore_RemoveFromAllPlayers(dbref Player);
 
 /* the following symbols are provided by game.c */
 

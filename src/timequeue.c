@@ -567,7 +567,7 @@ next_timequeue_event(void)
 			}
 			if (*cbuf) {
 				if (!(event->subtyp & TQ_MPI_OMESG)) {
-					notify_nolisten(event->uid, cbuf, 1);
+					notify_filtered(event->uid, event->uid, cbuf, 1);
 				} else {
 					char bbuf[BUFFER_LEN];
 					dbref plyr;
@@ -579,7 +579,7 @@ next_timequeue_event(void)
 					plyr = DBFETCH(event->loc)->contents;
 					for (; plyr != NOTHING; plyr = DBFETCH(plyr)->next) {
 						if (Typeof(plyr) == TYPE_PLAYER && plyr != event->uid)
-							notify_nolisten(plyr, bbuf, 0);
+							notify_filtered(event->uid, plyr, bbuf, 0);
 					}
 				}
 			}
@@ -1269,7 +1269,7 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 					do_parse_mesg(descr, player, what, tmpchar + 1, "(MPIqueue)", cbuf, ival);
 					if (*cbuf) {
 						if (mt) {
-							notify_nolisten(player, cbuf, 1);
+							notify_filtered(player, player, cbuf, 1);
 						} else {
 							char bbuf[BUFFER_LEN];
 							dbref plyr;
@@ -1279,7 +1279,7 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 							plyr = DBFETCH(where)->contents;
 							while (plyr != NOTHING) {
 								if (Typeof(plyr) == TYPE_PLAYER && plyr != player)
-									notify_nolisten(plyr, bbuf, 0);
+									notify_filtered(player, plyr, bbuf, 0);
 								plyr = DBFETCH(plyr)->next;
 							}
 						}

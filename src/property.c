@@ -58,6 +58,9 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 		FLAGS(player) |= LISTENER;
 	}
 
+	if ((Typeof(player) == TYPE_PLAYER) && !string_compare(pname, tp_ignore_prop))
+		Ignore_FlushCache(player);
+
 	w = strcpy(buf, pname);
 
 	/* truncate propnames with a ':' in them at the ':' */

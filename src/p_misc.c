@@ -967,4 +967,55 @@ prim_debugger_break(PRIM_PROTOTYPE)
 	}
 }
 
+void
+prim_ignoringp(PRIM_PROTOTYPE)
+{
+	CHECKOP(2);
+	oper1 = POP();
+	oper2 = POP();
+	if (mlev < 3)
+		abort_interp("Permission Denied.");
+	if (!valid_object(oper1))
+		abort_interp("Invalid object. (2)");
+	if (!valid_object(oper2))
+		abort_interp("Invalid object. (1)");
+	result = Ignore_IsIgnoring(oper2->data.objref, oper1->data.objref);
+	CLEAR(oper1);
+	CLEAR(oper2);
+	PushInt(result);
+}
+
+void
+prim_ignore_add(PRIM_PROTOTYPE)
+{
+	CHECKOP(2);
+	oper1 = POP();
+	oper2 = POP();
+	if (mlev < 3)
+		abort_interp("Permission Denied.");
+	if (!valid_object(oper1))
+		abort_interp("Invalid object. (2)");
+	if (!valid_object(oper2))
+		abort_interp("Invalid object. (1)");
+	Ignore_AddPlayer(oper2->data.objref, oper1->data.objref);
+	CLEAR(oper1);
+	CLEAR(oper2);
+}
+
+void
+prim_ignore_del(PRIM_PROTOTYPE)
+{
+	CHECKOP(2);
+	oper1 = POP();
+	oper2 = POP();
+	if (mlev < 3)
+		abort_interp("Permission Denied.");
+	if (!valid_object(oper1))
+		abort_interp("Invalid object. (2)");
+	if (!valid_object(oper2))
+		abort_interp("Invalid object. (1)");
+	Ignore_RemovePlayer(oper2->data.objref, oper1->data.objref);
+	CLEAR(oper1);
+	CLEAR(oper2);
+}
 

@@ -1023,7 +1023,13 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		instr_count++;
 		if ((fr->multitask == PREEMPT) || (FLAGS(program) & BUILDER)) {
 			if (mlev == 4) {
-				instr_count = 0;	/* if program is wizbit, then clear count */
+				if (tp_max_ml4_preempt_count)
+				{
+					if (instr_count >= tp_max_ml4_preempt_count)
+						abort_loop_hard("Maximum preempt instruction count exceeded", NULL, NULL);
+				}
+				else
+					instr_count = 0;
 			} else {
 				/* else make sure that the program doesn't run too long */
 				if (instr_count >= tp_max_instr_count)

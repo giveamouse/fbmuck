@@ -2,6 +2,28 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.7  2002/09/08 23:07:19  sombre
+ * Fixed memory leak when toading online players.
+ * Fixed remove_prop bug so it will remove props ending in /. (bug #537744)
+ * Fixed potential buffer overrun with the CHECKRETURN and ABORT_MPI macros.
+ * Fixed @omessage bug where player names would not be prefixed on additional
+ *   newlines. (bug #562370)
+ * Added IGNORING? ( d1 d2 -- i ) returns true if d1 is ignoring d2.
+ * Added IGNORE_ADD ( d1 d2 -- ) adds d2 to d1's ignore list.
+ * Added IGNORE_DEL ( d1 d2 -- ) removes d2 from d1's ignore list.
+ * Added ARRAY_GET_IGNORELIST ( d -- a ) returns an array of d's ignores.
+ * Added support for ignoring (gagging) players, ignores are mutual in that if
+ *   player A ignores player B, A will not hear B, and B will not hear A.
+ * Added ignore_prop @tune to specify the directory the ignore list is held under,
+ *   if set blank ignore support is disabled, defaults to "@ignore/def".
+ * Added max_ml4_preempt_count @tune to specify the maximum number of instructions
+ *   an mlevel4 (wizbitted) program may run before it is aborted, if set to 0
+ *   no limit is imposed.  Defaults to 0.
+ * Added reserved_names @tune which when set to a smatch pattern will refuse any
+ *   object creations or renames which match said pattern.  Defaults to "".
+ * Added reserved_player_names @tune which when set to a smatch pattern will refuse
+ *   any player creations or renames which match said pattern.  Defaults to "".
+ *
  * Revision 1.6  2001/05/16 22:23:11  wog
  * Made ( and ) restricted to only player names.
  *
@@ -438,7 +460,11 @@ ok_name(const char *name)
 			&& !word_start(name, NOT_TOKEN)
 			&& string_compare(name, "me")
 			&& string_compare(name, "home")
-			&& string_compare(name, "here"));
+			&& string_compare(name, "here")
+			&& (
+				!*tp_reserved_names ||
+				!equalstr((char*)tp_reserved_names, (char*)name)
+			));
 }
 
 int
@@ -456,6 +482,10 @@ ok_player_name(const char *name)
 			return 0;
 		}
 	}
+
+	/* Check the name isn't reserved */
+	if (*tp_reserved_player_names && equalstr((char*)tp_reserved_player_names, (char*)name))
+		return 0;
 
 	/* lookup name to avoid conflicts */
 	return (lookup_player(name) == NOTHING);

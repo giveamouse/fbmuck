@@ -889,6 +889,7 @@ db_free_object(dbref i)
 			PLAYER_SET_DESCRS(i, NULL);
 			PLAYER_SET_DESCRCOUNT(i, 0);
         }
+		Ignore_FlushCache(i);
     }
 	if (Typeof(i) == TYPE_THING) {
 		FREE_THING_SP(i);
@@ -1086,6 +1087,9 @@ db_read_object_old(FILE * f, struct object *o, dbref objno)
 		PLAYER_SET_INSERT_MODE(objno, 0);
 		PLAYER_SET_DESCRS(objno, NULL);
 		PLAYER_SET_DESCRCOUNT(objno, 0);
+		PLAYER_SET_IGNORE_CACHE(objno, NULL);
+		PLAYER_SET_IGNORE_COUNT(objno, 0);
+		PLAYER_SET_IGNORE_LAST(objno, NOTHING);
 		break;
 	case TYPE_GARBAGE:
 		OWNER(objno) = NOTHING;
@@ -1203,6 +1207,9 @@ db_read_object_new(FILE * f, struct object *o, dbref objno)
 		PLAYER_SET_INSERT_MODE(objno, 0);
 		PLAYER_SET_DESCRS(objno, NULL);
 		PLAYER_SET_DESCRCOUNT(objno, 0);
+		PLAYER_SET_IGNORE_CACHE(objno, NULL);
+		PLAYER_SET_IGNORE_COUNT(objno, 0);
+		PLAYER_SET_IGNORE_LAST(objno, NOTHING);
 		break;
 	}
 }
@@ -1364,6 +1371,9 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 		PLAYER_SET_INSERT_MODE(objno, 0);
 		PLAYER_SET_DESCRS(objno, NULL);
 		PLAYER_SET_DESCRCOUNT(objno, 0);
+		PLAYER_SET_IGNORE_CACHE(objno, NULL);
+		PLAYER_SET_IGNORE_COUNT(objno, 0);
+		PLAYER_SET_IGNORE_LAST(objno, NOTHING);
 		break;
 	case TYPE_PROGRAM:
 		ALLOC_PROGRAM_SP(objno);

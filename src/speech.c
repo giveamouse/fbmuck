@@ -188,7 +188,7 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
 				snprintf(buf, sizeof(buf), "%s %.*s", prefix, (int)(BUFFER_LEN - 2 - strlen(prefix)), msg);
 				ref = DBFETCH(obj)->contents;
 				while (ref != NOTHING) {
-					notify_nolisten(ref, buf, isprivate);
+					notify_filtered(who, ref, buf, isprivate);
 					ref = DBFETCH(ref)->next;
 				}
 			}
@@ -196,7 +196,7 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
 	}
 
 	if (Typeof(obj) == TYPE_PLAYER || Typeof(obj) == TYPE_THING)
-		notify_nolisten(obj, msg, isprivate);
+		notify_filtered(who, obj, msg, isprivate);
 }
 
 void
@@ -247,6 +247,7 @@ void
 parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
 			   const char *prefix, const char *whatcalled, int mpiflags)
 {
+	/* TODO: Remove the * 2 if do_parse_mesg doesn't need it */
 	char buf[BUFFER_LEN * 2];
 	char *ptr;
 
@@ -254,12 +255,15 @@ parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
 	ptr = pronoun_substitute(descr, player, buf);
 	if (!*ptr)
 		return;
-	strcpy(buf, NAME(player));
-	if (*ptr != '\'' && *ptr != ' ' && *ptr != ',' && *ptr != '-') {
-		strcat(buf, " ");
-	}
-	strcat(buf, ptr);
-	buf[BUFFER_LEN - 1] = '\0';
+
+	/*
+		TODO: Find out if this should be prefixing with NAME(player), or if
+		it should use the prefix argument...  The original code just ignored
+		the prefix argument...
+	*/
+
+	PrefixMessage(buf, ptr, prefix, BUFFER_LEN, 1);
+
 	notify_except(DBFETCH(dest)->contents, player, buf, player);
 }
 

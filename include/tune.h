@@ -33,6 +33,10 @@ extern const char *tp_proplist_entry_fmt;
 extern const char *tp_ssl_keyfile_passwd;
 
 extern const char *tp_pcreate_flags;
+extern const char *tp_reserved_names;
+extern const char *tp_reserved_player_names;
+
+extern const char *tp_ignore_prop;
 
 
 
@@ -72,6 +76,7 @@ extern int tp_max_loaded_objs;
 extern int tp_max_process_limit;
 extern int tp_max_plyr_processes;
 extern int tp_max_instr_count;
+extern int tp_max_ml4_preempt_count;
 extern int tp_instr_slice;
 extern int tp_mpi_max_commands;
 extern int tp_pause_min;

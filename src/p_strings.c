@@ -1397,8 +1397,6 @@ prim_notify(PRIM_PROTOTYPE)
 {
 	struct inst *oper1, *oper2; /* declared local to prevent re-entrancy issues! */
 
-	char buf2[BUFFER_LEN * 2];
-
 	CHECKOP(2);
 	oper1 = POP();
 	oper2 = POP();
@@ -1409,16 +1407,15 @@ prim_notify(PRIM_PROTOTYPE)
 	CHECKREMOTE(oper2->data.objref);
 
 	if (oper1->data.string) {
-		strcpy(buf, oper1->data.string->data);
 		if (tp_force_mlev1_name_notify && mlev < 2 && player != oper2->data.objref) {
-			strcpy(buf2, PNAME(player));
-			strcat(buf2, " ");
-			if (!string_prefix(buf, buf2)) {
-				strcat(buf2, buf);
-				buf2[BUFFER_LEN - 1] = '\0';
-				strcpy(buf, buf2);
-			}
+			PrefixMessage(buf, oper1->data.string->data, PNAME(player), BUFFER_LEN, 1);
 		}
+		else
+		{
+			/* TODO: The original code made this copy, is it really necessary? */
+			strcpy(buf, oper1->data.string->data);
+		}
+
 		notify_listeners(player, program, oper2->data.objref,
 						 getloc(oper2->data.objref), buf, 1);
 	}
@@ -1433,8 +1430,6 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 	/* roomD excludeDn ... excludeD1 nI messageS  -- */
 	struct inst *oper1, *oper2; /* declared local to prevent re-entrancy issues! */
 
-	char buf2[BUFFER_LEN * 2];
-
 	CHECKOP(2);
 	oper1 = POP();
 	oper2 = POP();
@@ -1442,17 +1437,12 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 		abort_interp("non-integer count argument (top-1)");
 	if (oper1->type != PROG_STRING)
 		abort_interp("Non-string message argument (top)");
-	strcpy(buf, DoNullInd(oper1->data.string));
 
 	if (tp_force_mlev1_name_notify && mlev < 2) {
-		strcpy(buf2, PNAME(player));
-		strcat(buf2, " ");
-		if (!string_prefix(buf, buf2)) {
-			strcat(buf2, buf);
-			buf2[BUFFER_LEN - 1] = '\0';
-			strcpy(buf, buf2);
-		}
+		PrefixMessage(buf, DoNullInd(oper1->data.string), PNAME(player), BUFFER_LEN, 1);
 	}
+	else
+		strcpy(buf, DoNullInd(oper1->data.string));
 
 	result = oper2->data.number;
 	CLEAR(oper1);

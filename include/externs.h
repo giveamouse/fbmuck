@@ -216,6 +216,7 @@ extern const char *string_match(const char *src, const char *sub);
 extern char *pronoun_substitute(int descr, dbref player, const char *str);
 extern char *intostr(int i);
 extern int prepend_string(char** before, char* start, const char* what);
+extern void PrefixMessage(char* Dest, const char* Src, const char* Prefix, int BufferLength, int SuppressIfPresent);
 
 #if !defined(MALLOC_PROFILING)
 extern char *string_dup(const char *s);

@@ -128,6 +128,8 @@
 /* Max # of instrs in uninterruptable muf programs before timeout. */
 #define MAX_INSTR_COUNT 20000
 
+/* Max # of instrs in uninterruptable muf programs before timeout at ML4. */
+#define MAX_ML4_PREEMPT_COUNT 0
 
 /* INSTR_SLICE is the number of instructions to run before forcing a
  * context switch to the next waiting muf program.  This is for the
@@ -311,5 +313,14 @@
 
 /* Flags that new players will be created with. */
 #define PCREATE_FLAGS "B"
+
+/* Smatch pattern of names that cannot be used. */
+#define RESERVED_NAMES ""
+
+/* Smatch pattern of player names that cannot be used. */
+#define RESERVED_PLAYER_NAMES ""
+
+/* Property containing reflist of ignored players */
+#define IGNORE_PROP "@ignore/def"
 
 #endif /* _DEFAULTS_H */

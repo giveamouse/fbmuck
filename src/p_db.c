@@ -1925,6 +1925,15 @@ prim_toadplayer(PRIM_PROTOTYPE)
 	DBDIRTY(victim);
 	boot_player_off(victim);
 
+	if (PLAYER_DESCRS(victim)) {
+		free(PLAYER_DESCRS(victim));
+		PLAYER_SET_DESCRS(victim, NULL);
+		PLAYER_SET_DESCRCOUNT(victim, 0);
+	}
+
+	Ignore_RemoveFromAllPlayers(victim);
+	Ignore_FlushCache(victim);
+
 	FREE_PLAYER_SP(victim);
 	ALLOC_THING_SP(victim);
 	THING_SET_HOME(victim, PLAYER_HOME(recipient));

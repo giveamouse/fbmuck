@@ -36,6 +36,9 @@ extern void prim_force_level(PRIM_PROTOTYPE);
 extern void prim_watchpid(PRIM_PROTOTYPE);
 extern void prim_read_wants_blanks(PRIM_PROTOTYPE);
 extern void prim_debugger_break(PRIM_PROTOTYPE);
+extern void prim_ignoringp(PRIM_PROTOTYPE);
+extern void prim_ignore_add(PRIM_PROTOTYPE);
+extern void prim_ignore_del(PRIM_PROTOTYPE);
 
 #define PRIMS_MISC_FUNCS prim_time, prim_date, prim_gmtoffset, \
     prim_systime, prim_timesplit, prim_timefmt, prim_userlog, \
@@ -45,7 +48,8 @@ extern void prim_debugger_break(PRIM_PROTOTYPE);
     prim_cancallp, prim_setsysparm, prim_timer_start, prim_timer_stop, \
     prim_event_count, prim_event_exists, prim_event_send, prim_pname_okp, \
     prim_name_okp, prim_force_level, prim_watchpid, prim_read_wants_blanks, \
-    prim_sysparm_array, prim_debugger_break
+    prim_sysparm_array, prim_debugger_break, prim_ignoringp, prim_ignore_add, \
+	prim_ignore_del
 
 #define PRIMS_MISC_NAMES "TIME", "DATE", "GMTOFFSET",         \
     "SYSTIME", "TIMESPLIT", "TIMEFMT", "USERLOG", "QUEUE", "KILL", \
@@ -55,9 +59,10 @@ extern void prim_debugger_break(PRIM_PROTOTYPE);
     "SETSYSPARM", "TIMER_START", "TIMER_STOP", "EVENT_COUNT", \
 	"EVENT_EXISTS", "EVENT_SEND", "PNAME-OK?", "NAME-OK?",    \
 	"FORCE_LEVEL", "WATCHPID", "READ_WANTS_BLANKS",           \
-	"SYSPARM_ARRAY", "DEBUGGER_BREAK"
+	"SYSPARM_ARRAY", "DEBUGGER_BREAK", "IGNORING?", "IGNORE_ADD", \
+	"IGNORE_DEL"
 
-#define PRIMS_MISC_CNT 35
+#define PRIMS_MISC_CNT 38
 
 
 #endif /* _P_MISC_H */

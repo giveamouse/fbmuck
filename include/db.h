@@ -557,6 +557,9 @@ struct player_specific {
 	const char *password;
 	int *descrs;
 	int descr_count;
+	dbref* ignore_cache;
+	int ignore_count;
+	dbref ignore_last;
 };
 
 #define THING_SP(x)		(DBFETCH(x)->sp.player.sp)
@@ -582,6 +585,9 @@ struct player_specific {
 #define PLAYER_PASSWORD(x)	(PLAYER_SP(x)->password)
 #define PLAYER_DESCRS(x)    (PLAYER_SP(x)->descrs)
 #define PLAYER_DESCRCOUNT(x)    (PLAYER_SP(x)->descr_count)
+#define PLAYER_IGNORE_CACHE(x)  (PLAYER_SP(x)->ignore_cache)
+#define PLAYER_IGNORE_COUNT(x)  (PLAYER_SP(x)->ignore_count)
+#define PLAYER_IGNORE_LAST(x)   (PLAYER_SP(x)->ignore_last)
 
 #define PLAYER_SET_HOME(x,y)		(PLAYER_SP(x)->home = y)
 #define PLAYER_SET_PENNIES(x,y)		(PLAYER_SP(x)->pennies = y)
@@ -592,6 +598,9 @@ struct player_specific {
 #define PLAYER_SET_PASSWORD(x,y)	(PLAYER_SP(x)->password = y)
 #define PLAYER_SET_DESCRS(x,y)		(PLAYER_SP(x)->descrs = y)
 #define PLAYER_SET_DESCRCOUNT(x,y)	(PLAYER_SP(x)->descr_count = y)
+#define PLAYER_SET_IGNORE_CACHE(x,y)	(PLAYER_SP(x)->ignore_cache = y)
+#define PLAYER_SET_IGNORE_COUNT(x,y)	(PLAYER_SP(x)->ignore_count = y)
+#define PLAYER_SET_IGNORE_LAST(x,y)		(PLAYER_SP(x)->ignore_last = y)
 
 /* union of type-specific fields */
 

@@ -762,7 +762,6 @@ prim_array_notify(PRIM_PROTOTYPE)
 	stk_array *refarr;
 	struct inst *oper1=NULL, *oper2=NULL, *oper3=NULL, *oper4=NULL;
 	struct inst temp1, temp2;
-	char buf2[BUFFER_LEN * 2];
 
 	CHECKOP(2);
 	oper2 = POP();
@@ -781,16 +780,15 @@ prim_array_notify(PRIM_PROTOTYPE)
 	if (array_first(strarr, &temp2)) {
 		do {
 			oper4 = array_getitem(strarr, &temp2);
-			strcpy(buf, DoNullInd(oper4->data.string));
 			if (tp_force_mlev1_name_notify && mlev < 2) {
-				strcpy(buf2, PNAME(player));
-				strcat(buf2, " ");
-				if (!string_prefix(buf, buf2)) {
-					strcat(buf2, buf);
-					buf2[BUFFER_LEN - 1] = '\0';
-					strcpy(buf, buf2);
-				}
+				PrefixMessage(buf, DoNullInd(oper4->data.string), PNAME(player), BUFFER_LEN, 1);
 			}
+			else
+			{
+				/* TODO: Is there really a reason to make a copy? */
+				strcpy(buf, DoNullInd(oper4->data.string));
+			}
+
 			if (array_first(refarr, &temp1)) {
 				do {
 					oper3 = array_getitem(refarr, &temp1);
@@ -2020,3 +2018,63 @@ prim_array_unpin(PRIM_PROTOTYPE)
 }
 
 
+void
+prim_array_get_ignorelist(PRIM_PROTOTYPE)
+{
+	stk_array *nu;
+	const char *rawstr;
+	int count = 0;
+
+	CHECKOP(1);
+	oper1 = POP();
+
+	if (oper1->type != PROG_OBJECT)
+		abort_interp("Dbref required.");
+	if (!valid_object(oper1))
+		abort_interp("Invalid dbref.");
+	if (mlev < 3)
+		abort_interp("Permission denied.");
+
+	ref = OWNER(oper1->data.objref);
+
+	CLEAR(oper1);
+
+	nu = new_array_packed(0);
+
+	if (*tp_ignore_prop)
+	{
+
+		rawstr = get_property_class(ref, tp_ignore_prop);
+		rawstr = get_uncompress(rawstr);
+
+		if (rawstr) {
+			while (isspace(*rawstr))
+				rawstr++;
+			while (*rawstr) {
+				if (*rawstr == '#')
+					rawstr++;
+				if (!isdigit(*rawstr))
+					break;
+				result = atoi(rawstr);
+				while (*rawstr && !isspace(*rawstr))
+					rawstr++;
+				while (isspace(*rawstr))
+					rawstr++;
+
+				temp1.type = PROG_INTEGER;
+				temp1.data.number = count;
+
+				temp2.type = PROG_OBJECT;
+				temp2.data.number = result;
+
+				array_setitem(&nu, &temp1, &temp2);
+				count++;
+
+				CLEAR(&temp1);
+				CLEAR(&temp2);
+			}
+		}
+	}
+
+	PushArrayRaw(nu);
+}

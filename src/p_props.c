@@ -315,36 +315,37 @@ prim_remove_prop(PRIM_PROTOTYPE)
 	oper2 = POP();
 	if (oper1->type != PROG_STRING)
 		abort_interp("Non-string argument (2)");
-	if (!oper1->data.string)
-		abort_interp("Empty string argument (2)");
 	if (!valid_object(oper2))
 		abort_interp("Non-object argument (1)");
-	CHECKREMOTE(oper2->data.objref);
-	{
-		char *type;
 
-		type = oper1->data.string->data;
-		while ((type = index(type, PROPDIR_DELIMITER)))
-			if (!(*(++type)))
-				abort_interp("Cannot access a propdir directly.");
+	CHECKREMOTE(oper2->data.objref);
+
+	strncpy(buf, DoNullInd(oper1->data.string), BUFFER_LEN);
+	buf[BUFFER_LEN - 1] = '\0';
+
+	{
+		int	len = strlen(buf);
+		char*	ptr = buf + len;
+
+		while((--len >= 0) && (*--ptr == PROPDIR_DELIMITER))
+			*ptr = '\0';
 	}
 
-	if (!prop_write_perms(ProgUID, oper2->data.objref, oper1->data.string->data, mlev))
+	if (!*buf)
+		abort_interp("Can't remove root propdir (2)");
+
+	if (!prop_write_perms(ProgUID, oper2->data.objref, buf, mlev))
 		abort_interp("Permission denied.");
 
-	{
-		char type[BUFFER_LEN];
-
-		strcpy(type, oper1->data.string->data);
-		remove_property(oper2->data.objref, type);
+	remove_property(oper2->data.objref, buf);
 
 #ifdef LOG_PROPS
-		log2file("props.log", "#%d (%d) REMOVEPROP: o=%d n=\"%s\"",
-				 program, pc->line, oper1->data.objref, type);
+	log2file("props.log", "#%d (%d) REMOVEPROP: o=%d n=\"%s\"",
+		program, pc->line, oper2->data.objref, buf);
 #endif
 
-		ts_modifyobject(oper2->data.objref);
-	}
+	ts_modifyobject(oper2->data.objref);
+
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
