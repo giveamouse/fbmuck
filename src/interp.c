@@ -143,26 +143,34 @@ scopedvar_get(struct frame *fr, int varnum)
 void
 RCLEAR(struct inst *oper, char *file, int line)
 {
-	if (oper->type == PROG_CLEARED) {
+	switch (oper->type) {
+	case PROG_CLEARED:
 		fprintf(stderr, "Attempt to re-CLEAR() instruction from %s:%hd "
 				"previously CLEAR()ed at %s:%d\n", file, line, (char *) oper->data.addr,
 				oper->line);
 		return;
-	}
-	if (oper->type == PROG_ADD) {
+	case PROG_ADD:
 		PROGRAM_DEC_INSTANCES(oper->data.addr->progref);
 		oper->data.addr->links--;
-	}
-	if (oper->type == PROG_STRING || oper->type == PROG_FUNCTION) {
-		if (oper->data.string && --oper->data.string->links == 0) {
+		break;
+	case PROG_STRING:
+		if (oper->data.string && --oper->data.string->links == 0)
 			free((void *) oper->data.string);
+		break;
+	case PROG_FUNCTION:
+		if (oper->data.mufproc) {
+			free((void*) oper->data.mufproc->procname);
+			free((void*) oper->data.mufproc);
 		}
-	}
-	if (oper->type == PROG_ARRAY) {
+		break;
+	case PROG_ARRAY:
 		array_free(oper->data.array);
+		break;
+	case PROG_LOCK:
+		if (oper->data.lock != TRUE_BOOLEXP)
+			free_boolexp(oper->data.lock);
+		break;
 	}
-	if (oper->type == PROG_LOCK && oper->data.lock != TRUE_BOOLEXP)
-		free_boolexp(oper->data.lock);
 	oper->line = line;
 	oper->data.addr = (void *) file;
 	oper->type = PROG_CLEARED;
@@ -255,6 +263,7 @@ interp(int descr, dbref player, dbref location, dbref program,
 	fr->timercount = 0;
 	fr->started = time(NULL);
 	fr->instcnt = 0;
+	fr->skip_declare = 0;
 	fr->caller.top = 1;
 	fr->caller.st[0] = source;
 	fr->caller.st[1] = program;
@@ -459,18 +468,34 @@ void
 copyinst(struct inst *from, struct inst *to)
 {
 	*to = *from;
-	if (from->type == PROG_STRING && from->data.string) {
-		from->data.string->links++;
-	}
-	if (from->type == PROG_ARRAY && from->data.array) {
-		from->data.array->links++;
-	}
-	if (from->type == PROG_ADD) {
+	switch(from->type) {
+	case PROG_FUNCTION:
+	    if (from->data.mufproc) {
+			to->data.mufproc = (struct muf_proc_data*)malloc(sizeof(struct muf_proc_data));
+			to->data.mufproc->procname = string_dup(from->data.mufproc->procname);
+			to->data.mufproc->vars = from->data.mufproc->vars;
+			to->data.mufproc->args = from->data.mufproc->args;
+		}
+		break;
+	case PROG_STRING:
+	    if (from->data.string) {
+			from->data.string->links++;
+		}
+		break;
+	case PROG_ARRAY:
+	    if (from->data.array) {
+			from->data.array->links++;
+		}
+		break;
+	case PROG_ADD:
 		from->data.addr->links++;
 		PROGRAM_INC_INSTANCES(from->data.addr->progref);
-	}
-	if (from->type == PROG_LOCK && from->data.lock != TRUE_BOOLEXP) {
-		to->data.lock = copy_bool(from->data.lock);
+		break;
+	case PROG_LOCK:
+	    if (from->data.lock != TRUE_BOOLEXP) {
+			to->data.lock = copy_bool(from->data.lock);
+		}
+		break;
 	}
 }
 
@@ -680,7 +705,27 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			break;
 
 		case PROG_FUNCTION:
-			pc++;
+			{
+				int i = pc->data.mufproc->args;
+				if (atop < i)
+					abort_loop("Stack Underflow.", NULL, NULL);
+				if (fr->skip_declare)
+					fr->skip_declare = 0;
+				else
+					scopedvar_addlevel(fr, pc->data.mufproc->vars);
+				while (i-->0)
+				{
+					struct inst *tmp;
+					temp1 = arg + --atop;
+					tmp = scopedvar_get(fr, i);
+					if (!tmp)
+						abort_loop("Internal error: Scoped variable number out of range in FUNCTION init.", temp1, NULL);
+					CLEAR(tmp);
+					copyinst(temp1, tmp);
+					CLEAR(temp1);
+				}
+				pc++;
+			}
 			break;
 
 		case PROG_IF:
@@ -694,38 +739,18 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			CLEAR(temp1);
 			break;
 
-		case PROG_INITVARS:
-			{
-				int i = pc->data.number;
-				if (atop < i)
-					abort_loop("Stack Underflow.", NULL, NULL);
-				while (i-->0)
-				{
-					struct inst *tmp;
-					temp1 = arg + --atop;
-					tmp = scopedvar_get(fr, i);
-					if (!tmp)
-						abort_loop("Internal error: Scoped variable number out of range in INITVARS.", temp1, NULL);
-					CLEAR(tmp);
-					copyinst(temp1, tmp);
-					CLEAR(temp1);
-				}
-				pc++;
-			}
-			break;
-
-		case PROG_DECLVAR:
-			scopedvar_addlevel(fr, pc->data.number);
-			pc++;
-			break;
-
 		case PROG_EXEC:
 			if (stop >= STACK_SIZE)
 				abort_loop("System Stack Overflow", NULL, NULL);
 			sys[stop].progref = program;
 			sys[stop++].offset = pc + 1;
+			pc = pc->data.call;
+			fr->skip_declare = 0;  /* Make sure we DON'T skip var decls */
+			break;
 
 		case PROG_JMP:
+			/* Don't need to worry about skipping scoped var decls here. */
+			/* JMP to a function header can only happen in IN_JMP */
 			pc = pc->data.call;
 			break;
 
@@ -747,6 +772,9 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 							abort_loop("Internal error.  Invalid address.", temp1, NULL);
 				if (program != temp1->data.addr->progref) {
 					abort_loop("Destination outside current program.", temp1, NULL);
+				}
+				if (temp1->data.addr->data->type == PROG_FUNCTION) {
+					fr->skip_declare = 1;
 				}
 				pc = temp1->data.addr->data;
 				CLEAR(temp1);

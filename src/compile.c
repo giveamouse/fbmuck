@@ -90,7 +90,6 @@ typedef struct COMPILE_STATE_T {
 	struct INTERMEDIATE *curr_word;	/* word being compiled */
 	struct INTERMEDIATE *first_word;	/* first word of the list */
 	struct INTERMEDIATE *curr_proc;	/* first word of curr. proc. */
-	struct INTERMEDIATE *curr_decl;	/* DECLVAR for curr proc. */
 	struct publics *currpubs;
 	int nested_fors;
 
@@ -484,7 +483,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	cstat.procs = 0;
 	cstat.nowords = 0;
 	cstat.curr_word = cstat.first_word = NULL;
-	cstat.curr_proc = cstat.curr_decl = NULL;
+	cstat.curr_proc = NULL;
 	cstat.currpubs = NULL;
 	cstat.nested_fors = 0;
 	for (i = 0; i < MAX_VAR; i++) {
@@ -995,7 +994,6 @@ process_special(COMPSTATE * cstat, const char *token)
 		const char *proc_name;
 		struct INTERMEDIATE *new2;
 		int argsflag = 0;
-		int initvarcount = 0;
 
 		if (cstat->curr_proc)
 			abort_compile(cstat, "Definition within definition.");
@@ -1019,16 +1017,12 @@ process_special(COMPSTATE * cstat, const char *token)
 		new->no = cstat->nowords++;
 		new->in.type = PROG_FUNCTION;
 		new->in.line = cstat->lineno;
-		new->in.data.string = alloc_prog_string(proc_name);
-
-		new2 = (new->next = new_inst(cstat));
-		new2->no = cstat->nowords++;
-		new2->in.type = PROG_DECLVAR;
-		new2->in.line = cstat->lineno;
-		new2->in.data.number = 0;
+		new->in.data.mufproc = (struct muf_proc_data*)malloc(sizeof(struct muf_proc_data));
+		new->in.data.mufproc->procname = string_dup(proc_name);
+		new->in.data.mufproc->vars = 0;
+		new->in.data.mufproc->args = 0;
 
 		cstat->curr_proc = new;
-		cstat->curr_decl = new2;
 
 		if (argsflag) {
 			const char* varspec;
@@ -1055,22 +1049,14 @@ process_special(COMPSTATE * cstat, const char *token)
 					if (add_scopedvar(cstat, varname) < 0)
 						abort_compile(cstat, "Variable limit exceeded.");
 
-					new2->in.data.number++;
-					initvarcount++;
+					new->in.data.mufproc->vars++;
+					new->in.data.mufproc->args++;
 					if (varspec)
 						free((void *) varspec);
 				}
 			} while(!argsdone);
 		}
 
-		if (initvarcount > 0) {
-			struct INTERMEDIATE *new3;
-			new3 = (new2->next = new_inst(cstat));
-			new3->no = cstat->nowords++;
-			new3->in.type = PROG_INITVARS;
-			new3->in.line = cstat->lineno;
-			new3->in.data.number = initvarcount;
-		}
 		add_proc(cstat, proc_name, new);
 
 		return new;
@@ -1336,7 +1322,7 @@ process_special(COMPSTATE * cstat, const char *token)
 				abort_compile(cstat, "Variable limit exceeded.");
 			if (tok)
 				free((void *) tok);
-			cstat->curr_decl->in.data.number++;
+			cstat->curr_proc->in.data.mufproc->args++;
 		} else {
 			tok = next_token(cstat);
 			if (!tok)
@@ -1364,7 +1350,7 @@ process_special(COMPSTATE * cstat, const char *token)
 			new->no = cstat->nowords++;
 			new->in.type = PROG_SVAR;
 			new->in.line = cstat->lineno;
-			new->in.data.number = cstat->curr_decl->in.data.number++;
+			new->in.data.number = cstat->curr_proc->in.data.mufproc->args++;
 
 			curr = (new->next = new_inst(cstat));
 			curr->no = cstat->nowords++;
@@ -2024,9 +2010,14 @@ cleanup(COMPSTATE * cstat)
 
 	for (wd = cstat->first_word; wd; wd = tempword) {
 		tempword = wd->next;
-		if (wd->in.type == PROG_STRING || wd->in.type == PROG_FUNCTION)
+		if (wd->in.type == PROG_STRING) {
 			if (wd->in.data.string)
 				free((void *) wd->in.data.string);
+		}
+		if (wd->in.type == PROG_FUNCTION) {
+			free((void*)wd->in.data.mufproc->procname);
+			free((void*)wd->in.data.mufproc);
+		}
 		free((void *) wd);
 	}
 	cstat->first_word = 0;
@@ -2093,8 +2084,6 @@ copy_program(COMPSTATE * cstat)
 		switch (code[i].type) {
 		case PROG_PRIMITIVE:
 		case PROG_INTEGER:
-		case PROG_DECLVAR:
-		case PROG_INITVARS:
 		case PROG_SVAR:
 		case PROG_LVAR:
 		case PROG_VAR:
@@ -2104,9 +2093,14 @@ copy_program(COMPSTATE * cstat)
 			code[i].data.fnumber = curr->in.data.fnumber;
 			break;
 		case PROG_STRING:
-		case PROG_FUNCTION:
 			code[i].data.string = curr->in.data.string ?
 					alloc_prog_string(curr->in.data.string->data) : 0;
+			break;
+		case PROG_FUNCTION:
+			code[i].data.mufproc = (struct muf_proc_data*)malloc(sizeof(struct muf_proc_data));
+			code[i].data.mufproc->procname = string_dup(curr->in.data.mufproc->procname);
+			code[i].data.mufproc->vars = curr->in.data.mufproc->vars;
+			code[i].data.mufproc->args = curr->in.data.mufproc->args;
 			break;
 		case PROG_OBJECT:
 			code[i].data.objref = curr->in.data.objref;
@@ -2198,14 +2192,16 @@ free_prog(dbref prog)
 					unparse_object(GOD, prog), i);
 		}
 		for (i = 0; i < siz; i++) {
-			if (c[i].type == PROG_STRING || c[i].type == PROG_FUNCTION)
-				CLEAR(c + i);
 			if (c[i].type == PROG_ADD) {
 				if (c[i].data.addr->links != 1) {
 					fprintf(stderr, "Freeing address in %s with link count %d\n",
 							unparse_object(GOD, prog), c[i].data.addr->links);
 				}
 				free(c[i].data.addr);
+			}
+			else
+			{
+				CLEAR(c + i);
 			}
 		}
 		free((void *) c);
@@ -2227,9 +2223,13 @@ size_prog(dbref prog)
 	siz = PROGRAM_SIZ(prog);
 	for (i = 0L; i < siz; i++) {
 		byts += sizeof(*c);
-		if ((c[i].type == PROG_STRING || c[i].type == PROG_FUNCTION) && c[i].data.string)
+		if (c[i].type == PROG_FUNCTION) {
+			byts += strlen(c[i].data.mufproc->procname) + 1;
+			byts += sizeof(struct muf_proc_data);
+		} else if (c[i].type == PROG_STRING && c[i].data.string) {
 			byts += strlen(c[i].data.string->data) + 1;
-		if ((c[i].type == PROG_ADD))
+			byts += sizeof(struct shared_string);
+		} else if ((c[i].type == PROG_ADD))
 			byts += sizeof(struct prog_addr);
 	}
 	byts += size_pubs(PROGRAM_PUBS(prog));

@@ -1,6 +1,11 @@
 /* $Header$
  *
  * $Log: db.h,v $
+ * Revision 1.5  2000/05/12 03:22:12  revar
+ * Optimized CLEAR() and RCLEAR()
+ * Optimized copyinst()
+ * Optimized muf function header trilogy into one inst.
+ *
  * Revision 1.4  2000/05/08 08:21:17  revar
  * Added VAR! directive to the muf compiler.
  * Added procedural argument variable declaration.  ie: : myfunc[ foo bar baz ]
@@ -340,10 +345,8 @@ struct line {
 #define PROG_IF          13		/* A low level IF statement */
 #define PROG_EXEC        14		/* EXECUTE shortcut */
 #define PROG_JMP         15		/* JMP shortcut */
-#define PROG_DECLVAR     16		/* DECLare scoped VARiables */
-#define PROG_ARRAY       17		/* Array of other stack items. */
-#define PROG_MARK        18		/* Stack marker for [ and ] */
-#define PROG_INITVARS    19		/* Initializer for scoped vars */
+#define PROG_ARRAY       16		/* Array of other stack items. */
+#define PROG_MARK        17		/* Stack marker for [ and ] */
 
 #define MAX_VAR         54		/* maximum number of variables including the
 								   * basic ME, LOC, TRIGGER, and COMMAND vars */
@@ -357,7 +360,7 @@ struct shared_string {			/* for sharing strings in programs */
 	char data[1];				/* shared string data */
 };
 
-struct prog_addr {				/* for 'addres references */
+struct prog_addr {				/* for 'address references */
 	int links;					/* number of pointers */
 	dbref progref;				/* program dbref */
 	struct inst *data;			/* pointer to the code */
@@ -369,6 +372,12 @@ struct stack_addr {				/* for the system callstack */
 };
 
 struct stk_array_t;
+
+struct muf_proc_data {
+    char *procname;
+	int vars;
+	int args;
+};
 
 struct inst {					/* instruction */
 	short type;
@@ -382,6 +391,7 @@ struct inst {					/* instruction */
 		struct stk_array_t *array;	/* pointer to muf array */
 		struct inst *call;		/* use in IF and JMPs */
 		struct prog_addr *addr;	/* the result of 'funcname */
+		struct muf_proc_data *mufproc;	/* Data specific to each procedure */
 	} data;
 };
 
@@ -478,6 +488,7 @@ struct frame {
 	int level;					/* prevent interp call loops */
 	short already_created;		/* this prog already created an object */
 	short been_background;		/* this prog has run in the background */
+	short skip_declare;         /* tells interp to skip next scoped var decl */
 	dbref trig;					/* triggering object */
 	long started;				/* When this program started. */
 	int instcnt;				/* How many instructions have run. */

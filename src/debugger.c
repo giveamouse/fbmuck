@@ -126,7 +126,7 @@ funcname_to_pc(dbref program, const char *name)
 	siz = PROGRAM_SIZ(program);
 	for (i = 0; i < siz; i++) {
 		if ((code[i].type == PROG_FUNCTION) &&
-			!string_compare(name, code[i].data.string->data)) {
+			!string_compare(name, code[i].data.mufproc->procname)) {
 			return (code + i);
 		}
 	}
@@ -165,7 +165,7 @@ unparse_sysreturn(dbref * program, struct inst *pc)
 		}
 	}
 	if (ptr->type == PROG_FUNCTION) {
-		fname = ptr->data.string->data;
+		fname = ptr->data.mufproc->procname;
 	} else {
 		fname = "???";
 	}
@@ -268,9 +268,9 @@ list_program_functions(dbref player, dbref program, char *arg)
 	notify_nolisten(player, "*function words*", 1);
 	while (count-- > 0) {
 		if (ptr->type == PROG_FUNCTION) {
-			if (ptr->data.string) {
-				if (!*arg || equalstr(arg, ptr->data.string->data)) {
-					notify_nolisten(player, ptr->data.string->data, 1);
+			if (ptr->data.mufproc) {
+				if (!*arg || equalstr(arg, ptr->data.mufproc->procname)) {
+					notify_nolisten(player, ptr->data.mufproc->procname, 1);
 				}
 			}
 		}
@@ -409,7 +409,11 @@ push_arg(dbref player, struct frame *fr, const char *arg)
 extern int primitive(const char *token);
 
 struct inst primset[5];
-struct shared_string shstr;
+static struct muf_proc_data temp_muf_proc_data = {
+    "__Temp_Debugger_Proc",
+	0,
+	0
+};
 
 int
 muf_debugger(int descr, dbref player, dbref program, const char *text, struct frame *fr)
@@ -605,21 +609,17 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 			return 0;
 		}
 
-		shstr.data[0] = '\0';
-		shstr.links = 1;
-		shstr.length = strlen(shstr.data);
 		primset[0].type = PROG_FUNCTION;
 		primset[0].line = 0;
-		primset[0].data.string = &shstr;
-		primset[1].type = PROG_DECLVAR;
+		primset[0].data.mufproc = &temp_muf_proc_data;
+		primset[0].data.mufproc->vars = 0;
+		primset[0].data.mufproc->args = 0;
+		primset[1].type = PROG_PRIMITIVE;
 		primset[1].line = 0;
-		primset[1].data.number = 0;
+		primset[1].data.number = get_primitive(arg);
 		primset[2].type = PROG_PRIMITIVE;
 		primset[2].line = 0;
-		primset[2].data.number = get_primitive(arg);
-		primset[3].type = PROG_PRIMITIVE;
-		primset[3].line = 0;
-		primset[3].data.number = IN_RET;
+		primset[2].data.number = IN_RET;
 		/* primset[3].data.number = primitive("EXIT"); */
 
 		fr->system.st[fr->system.top].progref = program;

@@ -2,6 +2,11 @@
 
 /*
  * $Log: disassem.c,v $
+ * Revision 1.4  2000/05/12 03:22:12  revar
+ * Optimized CLEAR() and RCLEAR()
+ * Optimized copyinst()
+ * Optimized muf function header trilogy into one inst.
+ *
  * Revision 1.3  2000/05/08 08:21:17  revar
  * Added VAR! directive to the muf compiler.
  * Added procedural argument variable declaration.  ie: : myfunc[ foo bar baz ]
@@ -96,17 +101,10 @@ disassemble(dbref player, dbref program)
 			sprintf(buf, "%d: (line %d) ARRAY: %d items", i, curr->line,
 					curr->data.array ? curr->data.array->items : 0);
 			break;
-		case PROG_INITVARS:
-			sprintf(buf, "%d: (line %d) INITIALIZE SCOPED VARS: %d", i,
-					curr->line, curr->data.number);
-			break;
-		case PROG_DECLVAR:
-			sprintf(buf, "%d: (line %d) DECLARE SCOPED VARS: %d", i,
-					curr->line, curr->data.number);
-			break;
 		case PROG_FUNCTION:
-			sprintf(buf, "%d: (line %d) FUNCTION HEADER: %s", i, curr->line,
-					curr->data.string ? curr->data.string->data : "");
+			sprintf(buf, "%d: (line %d) FUNCTION: %s, VARS: %d, ARGS: %d", i, curr->line,
+					curr->data.mufproc->procname ? curr->data.mufproc->procname : "",
+					curr->data.mufproc->vars, curr->data.mufproc->args);
 			break;
 		case PROG_LOCK:
 			sprintf(buf, "%d: (line %d) LOCK: [%s]", i, curr->line,
