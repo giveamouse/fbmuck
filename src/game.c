@@ -275,12 +275,13 @@ dump_database(void)
 }
 
 #ifdef WIN32
-void fork_dump_thread(void *arg) {
+/* TODO: This is not thread safe - disabled for now... */
+/*void fork_dump_thread(void *arg) {
 	forked_dump_process_flag = 1;
 	dump_database_internal();
         global_dumper_pid = 0;
 	_endthread();
-}
+}*/
 #endif
 
 
@@ -316,10 +317,12 @@ fork_and_dump(void)
 		_exit(0);
 	}
 # else /* !WIN32 */
-        global_dumper_pid = (long) _beginthread(fork_dump_thread, 0, 0);
+	dump_database_internal();
+	/* TODO: This is not thread safe - disabled for now... */
+	/*global_dumper_pid = (long) _beginthread(fork_dump_thread, 0, 0);
 	if (global_dumper_pid == -1L) {
-		panic("Could not create thread for database dumping");
-	}
+		wall_wizards("## Could not create thread for database dumping");
+	}*/
 # endif
 #endif
 }
