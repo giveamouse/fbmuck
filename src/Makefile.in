@@ -41,6 +41,7 @@ DEST=${ROOT}/game
 # 		Variables set by the configure script.
 # #######################################################################
 CC=@CC@
+CPP=@CPP@
 DEFS=@DEFS@
 LIBR=@LIBS@
 
@@ -115,6 +116,9 @@ OLDTARGETS = netmuck~ resolver~ olddecompress~ topwords~
 
 .c.o:
 	${PRE} ${CC} ${CFLAGS} -c $*.c
+
+.c.cpp:
+	${PRE} ${CPP} ${CFLAGS} -c $*.c -o $*.cpp
 
 all:    ${TARGETS} 
 
