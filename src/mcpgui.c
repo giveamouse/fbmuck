@@ -1083,6 +1083,7 @@ muf_dlog_remove(struct frame *fr, const char *dlogid)
 			prev = &((*prev)->next);
 		}
 	}
+	GuiFree(dlogid);
 }
 
 
@@ -1093,6 +1094,7 @@ muf_dlog_purge(struct frame *fr)
 		struct dlogidlist *tmp = fr->dlogids;
 
 		GuiClose(fr->dlogids->dlogid);
+		GuiFree(fr->dlogids->dlogid);
 		fr->dlogids = fr->dlogids->next;
 		free(tmp);
 	}

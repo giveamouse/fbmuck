@@ -630,7 +630,6 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 	/*
 	if (did_dismiss) {
 		muf_dlog_remove(fr, dlogid);
-		GuiFree(dlogid);
 	}
 	*/
 
@@ -811,7 +810,6 @@ prim_gui_dlog_close(PRIM_PROTOTYPE)
 		abort_interp("Invalid dialog ID.");
 
 	muf_dlog_remove(fr, oper1->data.string->data);
-	GuiFree(oper1->data.string->data);
 
 	CLEAR(oper1);
 }

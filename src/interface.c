@@ -985,12 +985,12 @@ shovechars()
 			if (d->ssl_session) {
 			/* SSL may want to write even if the output queue is empty */
 				if ( ! SSL_is_init_finished(d->ssl_session) ) {
-					log_status("SSL : Init not finished.\n", "version");
+					/* log_status("SSL : Init not finished.\n", "version"); */
 					FD_CLR(d->descriptor, &output_set);
 					FD_SET(d->descriptor, &input_set);
 				} 
 				if ( SSL_want_write(d->ssl_session) ) {
-					log_status("SSL : Need write.\n", "version");
+					/* log_status("SSL : Need write.\n", "version"); */
 					FD_SET(d->descriptor, &output_set);
 				}
 			}
@@ -1069,7 +1069,7 @@ shovechars()
 						newd->ssl_session  = SSL_new (ssl_ctx);
 						SSL_set_fd(newd->ssl_session, newd->descriptor);
 						cnt = SSL_accept(newd->ssl_session);
-						log_status("SSL accept1: %i\n", cnt );
+						/* log_status("SSL accept1: %i\n", cnt ); */
 					}
 				}
 			}
@@ -3320,11 +3320,11 @@ ssize_t socket_read(struct descriptor_data *d, void *buf, size_t count) {
 		if ( i < 0 ) {
 			i = SSL_get_error(d->ssl_session, i);
 			if ( (i == SSL_ERROR_WANT_READ) || (i == SSL_ERROR_WANT_WRITE) ) {
-				log_status("SSL read: Return wouldblock.\n", "version");
+				/* log_status("SSL read: Return wouldblock.\n", "version"); */
 				errno = EWOULDBLOCK;
 				return -1;
 			} else {
-				log_status("SSL read: Return EBADF.\n", "version");
+				/* log_status("SSL read: Return EBADF.\n", "version"); */
 				errno = EBADF;
 				return -1;
 			}
@@ -3343,11 +3343,11 @@ ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count) {
 		if ( i < 0 ) {
 			i = SSL_get_error(d->ssl_session, i);
 			if ( (i == SSL_ERROR_WANT_READ) || (i == SSL_ERROR_WANT_WRITE) ) {
-				log_status("SSL write: Return wouldblock.\n", "version");
+				/* log_status("SSL write: Return wouldblock.\n", "version"); */
 				errno = EWOULDBLOCK;
 				return -1;
 			} else { 
-				log_status("SSL write: Return EBADF.\n", "version");
+				/* log_status("SSL write: Return EBADF.\n", "version"); */
 				errno = EBADF;
 				return -1;
 			}

@@ -3,6 +3,7 @@ Fixed infinite loop parenting bug.  I think.
 Fixed a lot of uninitialized struct frame variables in child of FORK.
 Fixed two-byte buffer overrun in {listprops}
 Fixed uninitialized program instance count in @prog.
+Fixed an MCP-GUI crasher bug with programs exiting with live dialogs.
 Changed DESCRSECURE? to be ML3, not wizbit.
 Changed input quotas to not count MCP messages.
 Changed command logging to not list null commands.
