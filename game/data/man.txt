@@ -3734,4 +3734,9 @@ last line.  If i2 and i2 are the same, and non-zero, then only that line
 will be returned, as a list array with a single string element.  The target
 program must be controlled by the current program's UID, be set VIEWABLE,
 or the current program must be running with wizard permissions.
+~
+DIFF3|
+DIFF3 ( fx1 fy1 fz1 fx2 fy2 fz2 -- fx' fy' fz' )
+Returns three floats, being the differences of fx1 - fx2, fy1 - fy2, and
+fz1 - fz2, respectively.
 
