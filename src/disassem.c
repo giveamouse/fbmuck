@@ -82,25 +82,25 @@ disassemble(dbref player, dbref program)
 			sprintf(buf, "%d: (line %d) VARIABLE: %d", i, curr->line, curr->data.number);
 			break;
 		case PROG_SVAR:
-			sprintf(buf, "%d: (line %d) SCOPEDVAR: %d", i, curr->line, curr->data.number);
+			sprintf(buf, "%d: (line %d) SCOPEDVAR: %d (%s)", i, curr->line, curr->data.number, scopedvar_getname_byinst(curr, curr->data.number));
 			break;
 		case PROG_SVAR_AT:
-			sprintf(buf, "%d: (line %d) GET SCOPEDVAR: %d", i, curr->line, curr->data.number);
+			sprintf(buf, "%d: (line %d) FETCH SCOPEDVAR: %d (%s)", i, curr->line, curr->data.number, scopedvar_getname_byinst(curr, curr->data.number));
 			break;
 		case PROG_SVAR_AT_CLEAR:
-			sprintf(buf, "%d: (line %d) GET SCOPEDVAR (clear optim): %d", i, curr->line, curr->data.number);
+			sprintf(buf, "%d: (line %d) FETCH SCOPEDVAR (clear optim): %d (%s)", i, curr->line, curr->data.number, scopedvar_getname_byinst(curr, curr->data.number));
 			break;
 		case PROG_SVAR_BANG:
-			sprintf(buf, "%d: (line %d) SET SCOPEDVAR: %d", i, curr->line, curr->data.number);
+			sprintf(buf, "%d: (line %d) SET SCOPEDVAR: %d (%s)", i, curr->line, curr->data.number, scopedvar_getname_byinst(curr, curr->data.number));
 			break;
 		case PROG_LVAR:
 			sprintf(buf, "%d: (line %d) LOCALVAR: %d", i, curr->line, curr->data.number);
 			break;
 		case PROG_LVAR_AT:
-			sprintf(buf, "%d: (line %d) GET LOCALVAR: %d", i, curr->line, curr->data.number);
+			sprintf(buf, "%d: (line %d) FETCH LOCALVAR: %d", i, curr->line, curr->data.number);
 			break;
 		case PROG_LVAR_AT_CLEAR:
-			sprintf(buf, "%d: (line %d) GET LOCALVAR (clear optim): %d", i, curr->line, curr->data.number);
+			sprintf(buf, "%d: (line %d) FETCH LOCALVAR (clear optim): %d", i, curr->line, curr->data.number);
 			break;
 		case PROG_LVAR_BANG:
 			sprintf(buf, "%d: (line %d) SET LOCALVAR: %d", i, curr->line, curr->data.number);

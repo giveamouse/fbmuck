@@ -38,7 +38,7 @@ const char *base_inst[] = {
    would have occured.
  */
 char *
-insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref program, int expandarrs)
+insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int buflen, int strmax, dbref program, int expandarrs)
 {
 	const char* ptr;
 	char buf2[BUFFER_LEN];
@@ -137,7 +137,7 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 					}
 
 					/* length - 2 so we have room for the ":_" */
-					inststr = insttotext(&temp1, buf2, length - 2, strmax, program, 0);
+					inststr = insttotext(fr, lev, &temp1, buf2, length - 2, strmax, program, 0);
 					if (!*inststr) {
 					    /* overflow problem. */
 					    strcat(buffer,"_");
@@ -152,7 +152,7 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 					    break;
 					}
 
-					inststr = insttotext(oper2, buf2, length, strmax, program, 0);
+					inststr = insttotext(fr, lev, oper2, buf2, length, strmax, program, 0);
 					if (!*inststr) {
 					    /* we'd overflow if we did that */
 					    /* as before add a "_" and let it be. */
@@ -234,14 +234,26 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 		length = snprintf(buffer, buflen, "V%d", theinst->data.number);
 		break;
 	case PROG_SVAR:
-		length = snprintf(buffer, buflen, "SV%d", theinst->data.number);
+		if (fr) {
+			length = snprintf(buffer, buflen, "SV%d:%s", theinst->data.number, scopedvar_getname(fr, lev, theinst->data.number));
+		} else {
+			length = snprintf(buffer, buflen, "SV%d", theinst->data.number);
+		}
 		break;
 	case PROG_SVAR_AT:
 	case PROG_SVAR_AT_CLEAR:
-		length = snprintf(buffer, buflen, "SV%d @", theinst->data.number);
+		if (fr) {
+			length = snprintf(buffer, buflen, "SV%d:%s @", theinst->data.number, scopedvar_getname(fr, lev, theinst->data.number));
+		} else {
+			length = snprintf(buffer, buflen, "SV%d @", theinst->data.number);
+		}
 		break;
 	case PROG_SVAR_BANG:
-		length = snprintf(buffer, buflen, "SV%d !", theinst->data.number);
+		if (fr) {
+			length = snprintf(buffer, buflen, "SV%d:%s !", theinst->data.number, scopedvar_getname(fr, lev, theinst->data.number));
+		} else {
+			length = snprintf(buffer, buflen, "SV%d !", theinst->data.number);
+		}
 		break;
 	case PROG_LVAR:
 		length = snprintf(buffer, buflen, "LV%d", theinst->data.number);
@@ -263,7 +275,7 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 		break;
 	case PROG_LOCK:
 		if (theinst->data.lock == TRUE_BOOLEXP) {
-			/*              12345678901234 */
+			/*                  12345678901234 */
 			/* 14 */
 			if (buflen > 14)
 				strcpy(buffer, "[TRUE_BOOLEXP]");
@@ -298,7 +310,7 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 #define DEBUG_DEPTH 8 /* how far to give a stack list, at most */
 
 char *
-debug_inst(struct inst *pc, int pid, struct inst *stack,
+debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *stack,
 		   char *buffer, int buflen, int sp, dbref program)
 {
 	char* bend;
@@ -335,7 +347,7 @@ debug_inst(struct inst *pc, int pid, struct inst *stack,
 	/* We use this if-else structure to handle errors and such nicely. */
 	/* We use length - 7 so we KNOW we'll have room for " ... ) " */
 	/*													 1234567890 */
-	ptr = insttotext(pc, buf2, length - 7, 30, program, 1);
+	ptr = insttotext(fr, lev, pc, buf2, length - 7, 30, program, 1);
 	if (*ptr) {
 	    length -= prepend_string(&bend, bstart, ptr);
 	} else {
@@ -355,7 +367,7 @@ debug_inst(struct inst *pc, int pid, struct inst *stack,
 			}
 			/* we use length - 5 to leave room for "..., "
 			* ... except if we're outputing the last item (count == 0) */
-			ptr = insttotext(stack + count, buf2, (count) ? length - 5 : length, 30, program, 1);
+			ptr = insttotext(fr, lev, stack + count, buf2, (count) ? length - 5 : length, 30, program, 1);
 			if (*ptr) {
 				length -= prepend_string(&bend, bstart, ptr);
 			} else {

@@ -40,7 +40,10 @@ extern int valid_object(struct inst *oper);
 
 extern struct localvars *localvars_get(struct frame *fr, dbref prog);
 extern void localvar_dupall(struct frame *fr, struct frame *oldfr);
-extern struct inst *scopedvar_get(struct frame *fr, int varnum);
+extern struct inst *scopedvar_get(struct frame *fr, int level, int varnum);
+extern const char* scopedvar_getname(struct frame *fr, int level, int varnum);
+extern const char* scopedvar_getname_byinst(struct inst *pc, int varnum);
+extern int scopedvar_getnum(struct frame *fr, int level, const char* varname);
 extern void scopedvar_dupall(struct frame *fr, struct frame *oldfr);
 extern int false(struct inst *p);
 

@@ -578,7 +578,7 @@ prim_plusplus(PRIM_PROTOTYPE)
 			copyinst(&(fr->variables[temp1.data.number]), &temp2);
 			break;
 		case PROG_SVAR:
-			tmp = scopedvar_get(fr, temp1.data.number);
+			tmp = scopedvar_get(fr, 0, temp1.data.number);
 			copyinst(tmp, &temp2);
 			break;
 		case PROG_LVAR: {
@@ -632,7 +632,7 @@ prim_plusplus(PRIM_PROTOTYPE)
 		}
 		case PROG_SVAR: {
 			struct inst *tmp2;
-			tmp2 = scopedvar_get(fr, vnum);
+			tmp2 = scopedvar_get(fr, 0, vnum);
 			if (!tmp2)
 				abort_interp("Scoped variable number out of range.");
 			CLEAR(tmp2);
@@ -672,7 +672,7 @@ prim_minusminus(PRIM_PROTOTYPE)
 			copyinst(&(fr->variables[temp1.data.number]), &temp2);
 			break;
 		case PROG_SVAR:
-			tmp = scopedvar_get(fr, temp1.data.number);
+			tmp = scopedvar_get(fr, 0, temp1.data.number);
 			copyinst(tmp, &temp2);
 			break;
 		case PROG_LVAR: {
@@ -726,7 +726,7 @@ prim_minusminus(PRIM_PROTOTYPE)
 		}
 		case PROG_SVAR: {
 			struct inst *tmp2;
-			tmp2 = scopedvar_get(fr, vnum);
+			tmp2 = scopedvar_get(fr, 0, vnum);
 			if (!tmp2)
 				abort_interp("Scoped variable number out of range.");
 			CLEAR(tmp2);

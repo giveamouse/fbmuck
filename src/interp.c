@@ -149,7 +149,7 @@ localvar_freeall(struct frame *fr)
 }
 
 void
-scopedvar_addlevel(struct frame *fr, int count)
+scopedvar_addlevel(struct frame *fr, struct inst *pc, int count)
 {
 	struct scopedvar_t *tmp;
 	int siz;
@@ -157,6 +157,7 @@ scopedvar_addlevel(struct frame *fr, int count)
 
 	tmp = (struct scopedvar_t *) malloc(siz);
 	tmp->count = count;
+	tmp->varnames = pc->data.mufproc->varnames;
 	tmp->next = fr->svars;
 	fr->svars = tmp;
 	while (count-- > 0) {
@@ -181,6 +182,7 @@ scopedvar_dupall(struct frame *fr, struct frame *oldfr)
 
 		newsv = (struct scopedvar_t *) malloc(siz);
 		newsv->count = count;
+		newsv->varnames = cur->varnames;
 		newsv->next = NULL;
 		while (count-- > 0) {
 			copyinst(&cur->vars[count], &newsv->vars[count]);
@@ -214,20 +216,83 @@ scopedvar_poplevel(struct frame *fr)
 }
 
 struct inst *
-scopedvar_get(struct frame *fr, int varnum)
+scopedvar_get(struct frame *fr, int level, int varnum)
 {
-	if (!fr->svars) {
+	struct scopedvar_t *svinfo = fr->svars;
+	while (svinfo && level-->0)
+		svinfo = svinfo->next;
+	if (!svinfo) {
 		return NULL;
 	}
-	if (varnum < 0 || varnum >= fr->svars->count) {
+	if (varnum < 0 || varnum >= svinfo->count) {
 		return NULL;
 	}
-	return (&fr->svars->vars[varnum]);
+	return (&svinfo->vars[varnum]);
+}
+
+const char*
+scopedvar_getname_byinst(struct inst *pc, int varnum)
+{
+	while (pc->type != PROG_FUNCTION)
+		pc--;
+	if (!pc->data.mufproc) {
+		return NULL;
+	}
+	if (varnum < 0 || varnum >= pc->data.mufproc->vars) {
+		return NULL;
+	}
+	if (!pc->data.mufproc->varnames) {
+		return NULL;
+	}
+	return pc->data.mufproc->varnames[varnum];
+}
+
+const char*
+scopedvar_getname(struct frame *fr, int level, int varnum)
+{
+	struct scopedvar_t *svinfo = fr->svars;
+
+	while (svinfo && level-->0)
+		svinfo = svinfo->next;
+	if (!svinfo) {
+		return NULL;
+	}
+	if (varnum < 0 || varnum >= svinfo->count) {
+		return NULL;
+	}
+	if (!svinfo->varnames) {
+		return NULL;
+	}
+	return svinfo->varnames[varnum];
+}
+
+int
+scopedvar_getnum(struct frame *fr, int level, const char* varname)
+{
+	struct scopedvar_t *svinfo = fr->svars;
+	int varnum;
+
+	while (svinfo && level-->0)
+		svinfo = svinfo->next;
+	if (!svinfo) {
+		return -1;
+	}
+	if (!svinfo->varnames) {
+		return -1;
+	}
+	for (varnum = 0; varnum < svinfo->count; varnum++) {
+		if (!string_compare(svinfo->varnames[varnum], varname)) {
+			return varnum;
+		}
+	}
+	return -1;
 }
 
 void
 RCLEAR(struct inst *oper, char *file, int line)
 {
+	int varcnt, j;
+
 	switch (oper->type) {
 	case PROG_CLEARED:
 		fprintf(stderr, "Attempt to re-CLEAR() instruction from %s:%hd "
@@ -245,6 +310,11 @@ RCLEAR(struct inst *oper, char *file, int line)
 	case PROG_FUNCTION:
 		if (oper->data.mufproc) {
 			free((void*) oper->data.mufproc->procname);
+			varcnt = oper->data.mufproc->vars;
+			for (j = 0; j < varcnt; j++) {
+				free((void*)oper->data.mufproc->varnames[j]);
+			}
+			free((void*) oper->data.mufproc->varnames);
 			free((void*) oper->data.mufproc);
 		}
 		break;
@@ -414,6 +484,7 @@ interp(int descr, dbref player, dbref location, dbref program,
 	fr->brkpt.bypass = 0;
 	fr->brkpt.isread = 0;
 	fr->brkpt.showstack = 0;
+	fr->brkpt.dosyspop = 0;
 	fr->brkpt.lastline = 0;
 	fr->brkpt.lastpc = 0;
 	fr->brkpt.lastlisted = 0;
@@ -761,14 +832,19 @@ false(struct inst *p)
 void
 copyinst(struct inst *from, struct inst *to)
 {
+	int j, varcnt;
 	*to = *from;
 	switch(from->type) {
 	case PROG_FUNCTION:
 	    if (from->data.mufproc) {
 			to->data.mufproc = (struct muf_proc_data*)malloc(sizeof(struct muf_proc_data));
 			to->data.mufproc->procname = string_dup(from->data.mufproc->procname);
-			to->data.mufproc->vars = from->data.mufproc->vars;
+			to->data.mufproc->vars = varcnt = from->data.mufproc->vars;
 			to->data.mufproc->args = from->data.mufproc->args;
+			to->data.mufproc->varnames = (const char**)calloc(varcnt, sizeof(const char*));
+			for (j = 0; j < varcnt; j++) {
+				to->data.mufproc->varnames[j] = string_dup(from->data.mufproc->varnames[j]);
+			}
 		}
 		break;
 	case PROG_STRING:
@@ -862,7 +938,7 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 	if (!fr->trys.top) {
 		if (pc) {
 			interp_err(player, program, pc, fr->argument.st, fr->argument.top,
-					fr->caller.st[1], insttotext(pc, buffer, sizeof(buffer), 30, program, 1), msg);
+					fr->caller.st[1], insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1), msg);
 			if (controls(player, program))
 				muf_backtrace(player, program, STACK_SIZE, fr);
 		} else {
@@ -958,7 +1034,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		}
 		if (FLAGS(program) & DARK ||
 			(fr->brkpt.debugging && fr->brkpt.showstack && !fr->brkpt.bypass)) {
-			char *m = debug_inst(pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
+			char *m = debug_inst(fr, 0, pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
 
 			notify_nolisten(player, m, 1);
 		}
@@ -1011,6 +1087,10 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				char *m;
 				char buf[BUFFER_LEN];
 
+				if (fr->brkpt.dosyspop) {
+					program = sys[--stop].progref;
+					pc = sys[stop].offset;
+				}
 				add_muf_read_event(fr->descr, player, program, fr);
 				reload(fr, atop, stop);
 				fr->pc = pc;
@@ -1018,17 +1098,18 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				fr->brkpt.breaknum = i;
 				fr->brkpt.lastlisted = 0;
 				fr->brkpt.bypass = 0;
+				fr->brkpt.dosyspop = 0;
 				PLAYER_SET_CURR_PROG(player, program);
 				PLAYER_SET_BLOCK(player, 0);
 				interp_depth--;
 				if (!fr->brkpt.showstack) {
-					m = debug_inst(pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
+					m = debug_inst(fr, 0, pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
 					notify_nolisten(player, m, 1);
 				}
 				if (pc <= PROGRAM_CODE(program) || (pc - 1)->line != pc->line) {
 					list_proglines(player, program, fr, pc->line, 0);
 				} else {
-					m = show_line_prims(program, pc, 15, 1);
+					m = show_line_prims(fr, program, pc, 15, 1);
 					sprintf(buf, "     %s", m);
 					notify_nolisten(player, buf, 1);
 				}
@@ -1120,7 +1201,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				if (atop >= STACK_SIZE)
 					abort_loop("Stack overflow.", NULL, NULL);
 
-				tmp = scopedvar_get(fr, pc->data.number);
+				tmp = scopedvar_get(fr, 0, pc->data.number);
 				if (!tmp)
 					abort_loop("Scoped variable number out of range.", NULL, NULL);
 
@@ -1146,7 +1227,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				if (fr->trys.top && atop - fr->trys.st->depth < 1)
 					abort_loop("Stack protection fault.", NULL, NULL);
 
-				the_var = scopedvar_get(fr, pc->data.number);
+				the_var = scopedvar_get(fr, 0, pc->data.number);
 				if (!the_var)
 					abort_loop("Scoped variable number out of range.", NULL, NULL);
 
@@ -1167,12 +1248,12 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				if (fr->skip_declare)
 					fr->skip_declare = 0;
 				else
-					scopedvar_addlevel(fr, pc->data.mufproc->vars);
+					scopedvar_addlevel(fr, pc, pc->data.mufproc->vars);
 				while (i-->0)
 				{
 					struct inst *tmp;
 					temp1 = arg + --atop;
-					tmp = scopedvar_get(fr, i);
+					tmp = scopedvar_get(fr, 0, i);
 					if (!tmp)
 						abort_loop_hard("Internal error: Scoped variable number out of range in FUNCTION init.", temp1, NULL);
 					CLEAR(tmp);
@@ -1598,14 +1679,14 @@ interp_err(dbref player, dbref program, struct inst *pc,
 	err++;
 
 	if (OWNER(origprog) == OWNER(player)) {
-		strcpy(buf, "Program Error.  Your program just got the following error.");
+		strcpy(buf, "\033[1;31;40mProgram Error.  Your program just got the following error.\033[0m");
 	} else {
-		sprintf(buf, "Programmer Error.  Please tell %s what you typed, and the following message.",
+		sprintf(buf, "\033[1;31;40mProgrammer Error.  Please tell %s what you typed, and the following message.\033[0m",
 				NAME(OWNER(origprog)));
 	}
 	notify_nolisten(player, buf, 1);
 
-	sprintf(buf, "%s(#%d), line %d; %s: %s", NAME(program), program, pc->line, msg1, msg2);
+	sprintf(buf, "\033[1m%s(#%d), line %d; %s: %s\033[0m", NAME(program), program, pc->line, msg1, msg2);
 	notify_nolisten(player, buf, 1);
 
 	lt = time(NULL);
@@ -1740,7 +1821,7 @@ do_abort_interp(dbref player, const char *msg, struct inst *pc,
 		fr->pc = pc;
 		calc_profile_timing(program,fr);
 		interp_err(player, program, pc, arg, atop, fr->caller.st[1],
-				insttotext(pc, buffer, sizeof(buffer), 30, program, 1), msg);
+				insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1), msg);
 		if (controls(player, program))
 			muf_backtrace(player, program, STACK_SIZE, fr);
 	}

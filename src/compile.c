@@ -2056,6 +2056,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		nu->in.data.mufproc->procname = string_dup(proc_name);
 		nu->in.data.mufproc->vars = 0;
 		nu->in.data.mufproc->args = 0;
+		nu->in.data.mufproc->varnames = NULL;
 
 		cstat->curr_proc = nu;
 
@@ -2097,22 +2098,27 @@ process_special(COMPSTATE * cstat, const char *token)
 
 		return nu;
 	} else if (!string_compare(token, ";")) {
-		int i;
+		int i, varcnt;
 
 		if (cstat->control_stack)
 			abort_compile(cstat, "Unexpected end of procedure definition.");
 		if (!cstat->curr_proc)
 			abort_compile(cstat, "Procedure end without body.");
-		cstat->curr_proc = 0;
+
 		nu = new_inst(cstat);
 		nu->no = cstat->nowords++;
 		nu->in.type = PROG_PRIMITIVE;
 		nu->in.line = cstat->lineno;
 		nu->in.data.number = IN_RET;
-		for (i = 0; i < MAX_VAR && cstat->scopedvars[i]; i++) {
-			free((void *) cstat->scopedvars[i]);
+
+		varcnt = cstat->curr_proc->in.data.mufproc->vars;
+		cstat->curr_proc->in.data.mufproc->varnames =
+				(const char**)calloc(varcnt, sizeof(char*));
+		for (i = 0; i < varcnt; i++) {
+			cstat->curr_proc->in.data.mufproc->varnames[i] = cstat->scopedvars[i];
 			cstat->scopedvars[i] = 0;
 		}
+		cstat->curr_proc = 0;
 		return nu;
 	} else if (!string_compare(token, "IF")) {
 		nu = new_inst(cstat);
@@ -3236,12 +3242,19 @@ append_intermediate_chain(struct INTERMEDIATE *chain, struct INTERMEDIATE *add)
 void
 free_intermediate_node(struct INTERMEDIATE *wd)
 {
+	int varcnt, j;
+
 	if (wd->in.type == PROG_STRING) {
 		if (wd->in.data.string)
 			free((void *) wd->in.data.string);
 	}
 	if (wd->in.type == PROG_FUNCTION) {
 		free((void*)wd->in.data.mufproc->procname);
+		varcnt = wd->in.data.mufproc->vars;
+		for (j = 0; j < varcnt; j++) {
+			free((void*)wd->in.data.mufproc->varnames[j]);
+		}
+		free((void*)wd->in.data.mufproc->varnames);
 		free((void*)wd->in.data.mufproc);
 	}
 	free((void *) wd);
@@ -3312,7 +3325,7 @@ copy_program(COMPSTATE * cstat)
 	 */
 	struct INTERMEDIATE *curr;
 	struct inst *code;
-	int i;
+	int i, j, varcnt;
 
 	if (!cstat->first_word)
 		v_abort_compile(cstat, "Nothing to compile.");
@@ -3347,8 +3360,12 @@ copy_program(COMPSTATE * cstat)
 		case PROG_FUNCTION:
 			code[i].data.mufproc = (struct muf_proc_data*)malloc(sizeof(struct muf_proc_data));
 			code[i].data.mufproc->procname = string_dup(curr->in.data.mufproc->procname);
-			code[i].data.mufproc->vars = curr->in.data.mufproc->vars;
+			code[i].data.mufproc->vars = varcnt = curr->in.data.mufproc->vars;
 			code[i].data.mufproc->args = curr->in.data.mufproc->args;
+			code[i].data.mufproc->varnames = (const char**)calloc(varcnt, sizeof(char*));
+			for (j = 0; j < varcnt; j++) {
+				code[i].data.mufproc->varnames[j] = string_dup(curr->in.data.mufproc->varnames[j]);
+			}
 			break;
 		case PROG_OBJECT:
 			code[i].data.objref = curr->in.data.objref;
@@ -3491,7 +3508,7 @@ long
 size_prog(dbref prog)
 {
 	struct inst *c;
-	long i, siz, byts = 0;
+	long i, j, varcnt, siz, byts = 0;
 
 	c = PROGRAM_CODE(prog);
 	if (!c)
@@ -3501,6 +3518,11 @@ size_prog(dbref prog)
 		byts += sizeof(*c);
 		if (c[i].type == PROG_FUNCTION) {
 			byts += strlen(c[i].data.mufproc->procname) + 1;
+			varcnt = c[i].data.mufproc->vars;
+			for (j = 0; j < varcnt; j++) {
+				byts += strlen(c[i].data.mufproc->varnames[j]) + 1;
+			}
+			byts += sizeof(char**) * varcnt;
 			byts += sizeof(struct muf_proc_data);
 		} else if (c[i].type == PROG_STRING && c[i].data.string) {
 			byts += strlen(c[i].data.string->data) + 1;

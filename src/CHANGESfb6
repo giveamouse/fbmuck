@@ -3,6 +3,10 @@ Changed MUF debugger so it breakpoints just before the program would exit.
 Added MUF bytecode optimizer.
 Added optimize_muf boolean @tune parameter.
 Added .debug/lastcrashtime human-readable timestamp property for muf crashes.
+Added color/bold hilighting of muf crashes and backtraces to make them a bit
+  more readable.
+Added support for showing original scopevar names in debugging output.
+Added support for using original scopevar names in debugger.
 Fixed bug in MCP where _datatag wasn't being preceeded by a separator space.
 Fixed bad error messages argument numbers in several array_* primitives.
 Fixed bug where COMPILE state left some values uninitialized.

@@ -128,7 +128,7 @@ prim_at(PRIM_PROTOTYPE)
 		/* SCOPEDVAR */
 		struct inst *tmp;
 
-		tmp = scopedvar_get(fr, temp1.data.number);
+		tmp = scopedvar_get(fr, 0, temp1.data.number);
 		if (!tmp)
 			abort_interp("Scoped variable number out of range.");
 		copyinst(tmp, &arg[(*top)++]);
@@ -159,7 +159,7 @@ prim_bang(PRIM_PROTOTYPE)
 		/* SCOPEDVAR */
 		struct inst *tmp;
 
-		tmp = scopedvar_get(fr, oper1->data.number);
+		tmp = scopedvar_get(fr, 0, oper1->data.number);
 		if (!tmp)
 			abort_interp("Scoped variable number out of range.");
 		CLEAR(tmp);
