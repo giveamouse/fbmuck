@@ -34,6 +34,27 @@ Added ARRAY_SORT (arrData intSortType -- arrSortedData) muf primitive.  This
     SORTTYPE_NOCASE_ASCEND   Case insensitive and ascending order.
     SORTTYPE_CASE_DESCEND    Case sensitive and descending order.
     SORTTYPE_NOCASE_DESCEND  Case insensitive and descending order.
+Added TRY-CATCH-ENDCATCH exception handling.
+  TRY ( i -- ) locks all but the top i stack items, so that any attempt to pop
+    or change them will throw an error.  Any errors thrown inside a TRY-CATCH
+	block will jump execution immediately to the CATCH.
+  CATCH ( -- s ) denotes the start of exception handling code.  If an error is
+    thrown in the TRY-CATCH block, then execution will jump immediately to this
+	primitive.  If no error was thrown in the TRY-CATCH block, then the code in
+	the CATCH-ENDCATCH block will not be executed.  This primitive will pop off
+	all stack items not locked by the TRY, and then unlocks the stack.  The
+	string error message that was thrown will be pushed onto the stack.
+  ENDCATCH ( -- ) denotes the end of the CATCH block.
+  The ABORT ( s -- ) primitive can be used to throw arbitrary errors.
+  An example of using the TRY-CATCH-ENDCATCH structure is:
+    : get_a_prop ( dbref string -- )
+	    2 TRY
+		    getpropstr
+		catch
+		    pop (We got an error trying to read the prop.  Ignore it.)
+			""
+		endcatch
+	;
 Changed MPI to not use the trigger's wizbit for permissions.  Instead, if the
   property is itself Blessed, then it gets the permissions that wizbit mpi
   used to have.

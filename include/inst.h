@@ -10,9 +10,10 @@
 #define IN_EXECUTE    5
 #define IN_RET        6
 #define IN_EVENT_WAITFOR 7
+#define IN_CATCH      8
 
 #define BASE_MIN 1
-#define BASE_MAX (7 + PRIMS_CONNECTS_CNT + PRIMS_DB_CNT + PRIMS_MATH_CNT + \
+#define BASE_MAX (8 + PRIMS_CONNECTS_CNT + PRIMS_DB_CNT + PRIMS_MATH_CNT + \
     PRIMS_MISC_CNT + PRIMS_PROPS_CNT + PRIMS_STACK_CNT + PRIMS_STRINGS_CNT + \
     PRIMS_ARRAY_CNT + PRIMS_FLOAT_CNT + PRIMS_ERROR_CNT + PRIMS_MCP_CNT + \
     PRIMS_INTERNAL_CNT)
@@ -26,3 +27,4 @@ extern char *insttotext(struct inst *, char *, int, int, dbref);
 extern char *debug_inst(struct inst *, struct inst *, char *, int, int, dbref);
 
 #endif /* _INST_H */
+

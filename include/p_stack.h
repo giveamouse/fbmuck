@@ -44,6 +44,7 @@ extern void prim_foriter(PRIM_PROTOTYPE);	/*       -- i  or  @ ?   */
 extern void prim_forpop(PRIM_PROTOTYPE);	/*       --              */
 extern void prim_mark(PRIM_PROTOTYPE);	/*       -- m            */
 extern void prim_findmark(PRIM_PROTOTYPE);	/* m ?n ... ?1 -- ?n ... ?1 i    */
+extern void prim_trypop(PRIM_PROTOTYPE);	/* -- */
 
 
 #define PRIMS_STACK_FUNCS prim_pop, prim_dup, prim_at, prim_bang, prim_var,  \
@@ -66,10 +67,10 @@ extern void prim_findmark(PRIM_PROTOTYPE);	/* m ?n ... ?1 -- ?n ... ?1 i    */
 
 #define PRIMS_STACK_CNT 39
 
-#define PRIMS_INTERNAL_FUNCS prim_foriter, prim_forpop
+#define PRIMS_INTERNAL_FUNCS prim_foriter, prim_forpop, prim_trypop
 
-#define PRIMS_INTERNAL_NAMES " FORITER", " FORPOP"
+#define PRIMS_INTERNAL_NAMES " FORITER", " FORPOP", " TRYPOP"
 
-#define PRIMS_INTERNAL_CNT 2
+#define PRIMS_INTERNAL_CNT 3
 
 #endif /* _P_STACK_H */

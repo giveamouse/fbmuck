@@ -2,6 +2,9 @@
 
 /*
  * $Log: disassem.c,v $
+ * Revision 1.8  2000/12/03 12:31:14  revar
+ * Added TRY-CATCH-ENDCATCH exception handling.  (Major changes.)
+ *
  * Revision 1.7  2000/07/18 23:44:13  winged
  * Removed ptrdiff_t cast from disassemble()'s sprintf()s
  *
@@ -131,6 +134,9 @@ disassemble(dbref player, dbref program)
 		case PROG_ADD:
 			sprintf(buf, "%d: (line %d) ADDRESS: %d", i,
 					curr->line, (curr->data.addr->data - codestart));
+			break;
+		case PROG_TRY:
+			sprintf(buf, "%d: (line %d) TRY: %d", i, curr->line, (curr->data.call - codestart));
 			break;
 		case PROG_IF:
 			sprintf(buf, "%d: (line %d) IF: %d", i, curr->line, (curr->data.call - codestart));

@@ -15,7 +15,7 @@
 
 /* these arrays MUST agree with what's in inst.h */
 const char *base_inst[] = {
-	"JMP", "READ", "SLEEP", "CALL", "EXECUTE", "EXIT", "EVENT_WAITFOR",
+	"JMP", "READ", "SLEEP", "CALL", "EXECUTE", "EXIT", "EVENT_WAITFOR", "CATCH",
 	PRIMS_CONNECTS_NAMES,
 	PRIMS_DB_NAMES,
 	PRIMS_MATH_NAMES,
@@ -129,6 +129,9 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 			else
 				sprintf(buffer, "'line%d?", theinst->data.addr->data->line);
 		}
+		break;
+	case PROG_TRY:
+		sprintf(buffer, "TRY->line%d", theinst->data.call->line);
 		break;
 	case PROG_IF:
 		sprintf(buffer, "IF->line%d", theinst->data.call->line);

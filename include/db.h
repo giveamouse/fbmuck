@@ -279,6 +279,7 @@ struct line {
 #define PROG_MARK        17		/* Stack marker for [ and ] */
 #define PROG_SVAR_AT     18		/* @ shortcut for scoped vars */
 #define PROG_SVAR_BANG   19		/* ! shortcut for scoped vars */
+#define PROG_TRY         20		/* TRY shortcut */
 
 #define MAX_VAR         54		/* maximum number of variables including the
 								   * basic ME, LOC, TRIGGER, and COMMAND vars */
@@ -339,6 +340,14 @@ struct forvars {
 	struct forvars *next;
 };
 
+struct tryvars {
+	int depth;
+	int call_level;
+	int for_count;
+	struct inst *addr;
+	struct tryvars *next;
+};
+
 struct stack {
 	int top;
 	struct inst st[STACK_SIZE];
@@ -364,6 +373,11 @@ struct localvars {
 struct forstack {
 	int top;
 	struct forvars *st;
+};
+
+struct trystack {
+	int top;
+	struct tryvars *st;
 };
 
 #define MAX_BREAKS 16
@@ -413,6 +427,7 @@ struct frame {
 	struct stack argument;		/* argument stack */
 	struct callstack caller;	/* caller prog stack */
 	struct forstack fors;		/* for loop stack */
+	struct trystack trys;		/* try block stack */
 	struct localvars* lvars;	/* local variables */
 	vars variables;				/* global variables */
 	struct inst *pc;			/* next executing instruction */
@@ -428,6 +443,7 @@ struct frame {
 	int instcnt;				/* How many instructions have run. */
 	int timercount;				/* How many timers currently exist. */
 	int pid;					/* what is the process id? */
+	char* errorstr;             /* the error string thrown */
 	int descr;					/* what is the descriptor that started this? */
 	void *rndbuf;				/* buffer for seedable random */
 	struct scopedvar_t *svars;	/* Variables with function scoping. */

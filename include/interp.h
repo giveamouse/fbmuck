@@ -46,8 +46,20 @@ extern void copyinst(struct inst *from, struct inst *to);
 
 #define abort_loop(S, C1, C2) \
 { \
-  do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
-  return 0; \
+	do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
+	if (fr && fr->trys.top) \
+		break; \
+	else \
+		return 0; \
+}
+
+#define abort_loop_hard(S, C1, C2) \
+{ \
+	int tmp = 0; \
+	if (fr) { tmp = fr->trys.top; fr->trys.top = 0; } \
+	do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
+	if (fr) fr->trys.top = tmp; \
+	return 0; \
 }
 
 extern void do_abort_loop(dbref player, dbref program, const char *msg,
@@ -72,8 +84,6 @@ extern int permissions(dbref player, dbref thing);
 
 extern int arith_type(struct inst *op1, struct inst *op2);
 
-#define CHECKOP(N) { if ((*top) < (N)) { char* errbuf = (char*)malloc(128); interp_err(player, program, pc, arg, *top, fr->caller.st[1], insttotext(pc, errbuf, 128, 30, program), "Stack underflow."); free(errbuf); return; } nargs = (N); }
-
 #define POP() (arg + --(*top))
 
 #define abort_interp(C) \
@@ -82,6 +92,21 @@ extern int arith_type(struct inst *op1, struct inst *op2);
                   nargs, program, __FILE__, __LINE__); \
   return; \
 }
+
+#define CHECKOP_READONLY(N) \
+{ \
+    nargs = (N); \
+    if (*top < nargs) \
+        abort_interp("Stack underflow."); \
+}
+
+#define CHECKOP(N) \
+{ \
+	CHECKOP_READONLY(N); \
+    if (fr->trys.top && *top - fr->trys.st->depth < nargs) \
+        abort_interp("Stack protection fault."); \
+}
+
 extern void do_abort_interp(dbref player, const char *msg, struct inst *pc,
 							struct inst *arg, int atop, struct frame *fr,
 							struct inst *oper1, struct inst *oper2, struct inst *oper3,

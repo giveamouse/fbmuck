@@ -33,7 +33,7 @@ prim_pop(PRIM_PROTOTYPE)
 void
 prim_dup(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
+	CHECKOP_READONLY(1);
 	nargs = 0;
 	CHECKOFLOW(1);
 	copyinst(&arg[*top - 1], &arg[*top]);
@@ -207,8 +207,8 @@ prim_swap(PRIM_PROTOTYPE)
 void
 prim_over(PRIM_PROTOTYPE)
 {
+	CHECKOP_READONLY(2);
 	CHECKOFLOW(1);
-	CHECKOP(2);
 	copyinst(&arg[*top - 2], &arg[*top]);
 	(*top)++;
 }
@@ -220,7 +220,7 @@ prim_pick(PRIM_PROTOTYPE)
 	temp1 = *(oper1 = POP());
 	if (temp1.type != PROG_INTEGER || temp1.data.number <= 0)
 		abort_interp("Operand not a positive integer.");
-	CHECKOP(temp1.data.number);
+	CHECKOP_READONLY(temp1.data.number);
 	copyinst(&arg[*top - temp1.data.number], &arg[*top]);
 	(*top)++;
 }
@@ -806,6 +806,9 @@ prim_for(PRIM_PROTOTYPE)
 	fr->fors.st->step = oper3->data.number;
 	fr->fors.st->didfirst = 0;
 
+	if (fr->trys.st)
+		fr->trys.st->for_count++;
+
 	CLEAR(oper1);
 	CLEAR(oper2);
 	CLEAR(oper3);
@@ -831,6 +834,9 @@ prim_foreach(PRIM_PROTOTYPE)
 	fr->fors.st->cur.type = PROG_INTEGER;
 	fr->fors.st->cur.line = 0;
 	fr->fors.st->cur.data.number = 0;
+
+	if (fr->trys.st)
+		fr->trys.st->for_count++;
 
 	copyinst(oper1, &fr->fors.st->end);
 	fr->fors.st->step = 0;
@@ -903,8 +909,26 @@ prim_forpop(PRIM_PROTOTYPE)
 	CLEAR(&fr->fors.st->cur);
 	CLEAR(&fr->fors.st->end);
 
+	if (fr->trys.st)
+		fr->trys.st->for_count--;
 	fr->fors.top--;
 	fr->fors.st = pop_for(fr->fors.st);
+}
+
+
+struct tryvars *push_try(struct tryvars *);
+struct tryvars *pop_try(struct tryvars *);
+
+void
+prim_trypop(PRIM_PROTOTYPE)
+{
+	CHECKOP(0);
+
+	if (!(fr->trys.top))
+		abort_interp("Internal error; TRY stack underflow.");
+
+	fr->trys.top--;
+	fr->trys.st = pop_try(fr->trys.st);
 }
 
 
