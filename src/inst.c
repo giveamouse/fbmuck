@@ -124,6 +124,11 @@ insttotext(struct inst *theinst, char *buffer, int buflen, int strmax, dbref pro
 					firstflag = 0;
 					oper2 = array_getitem(theinst->data.array, &temp1);
 
+					if (length == 1) { /* no space left, let's not pass a buflen of 0 */
+					    strcat(buffer, "_");
+					    break;
+					}
+
 					/* length - 1 so we have room for the ":" */
 					inststr = insttotext(&temp1, buf2, length - 1, strmax, program);
 					if (!*inststr) {
