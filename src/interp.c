@@ -1039,8 +1039,21 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 	/* This is the 'natural' way to exit a function */
 	while (stop) {
+
+		/* Abort program if player/thing running it is recycled */
+		if ((player < 0) || (player >= db_top) || ((Typeof(player) != TYPE_PLAYER) && (Typeof(player) != TYPE_THING)))
+		{
+			reload(fr, atop, stop);
+			prog_clean(fr);
+			interp_depth--;
+			calc_profile_timing(program,fr);
+
+			return;
+		}
+
 		fr->instcnt++;
 		instr_count++;
+
 		if ((fr->multitask == PREEMPT) || (FLAGS(program) & BUILDER)) {
 			if (mlev == 4) {
 				if (tp_max_ml4_preempt_count)
