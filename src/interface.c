@@ -377,16 +377,23 @@ main(int argc, char **argv)
 #endif
 
 	}
-#ifdef MUD_ID
-	if (!sanity_interactive) {
-		do_setuid(MUD_ID);
-	}
-#endif							/* MUD_ID */
+
+/*
+ * You have to change gid first, since setgid() relies on root permissions
+ * if you don't call initgroups() -- and since initgroups() isn't standard,
+ * I'd rather assume the user knows what he's doing.
+*/
+
 #ifdef MUD_GID
 	if (!sanity_interactive) {
 		do_setgid(MUD_GID);
 	}
 #endif							/* MUD_GID */
+#ifdef MUD_ID
+	if (!sanity_interactive) {
+		do_setuid(MUD_ID);
+	}
+#endif							/* MUD_ID */
 
 	/* Initialize MCP and some packages. */
 	mcp_initialize();
