@@ -5,7 +5,7 @@
 *GUI_DLOG_SHOW    (strDlogID -- )
 *GUI_DLOG_CLOSE   (strDlogID -- )
 *GUI_CTRL_CREATE  (strDlogID strType strCtrlID dictArgs -- )
- GUI_MENU_ITEM    (strDlogID strMenu strType strCtrlID dictArgs -- )
+-GUI_MENU_ITEM    (strDlogID strMenu strType strCtrlID dictArgs -- )
 *GUI_VALUES_GET   (strDlogID -- dictValues)
 *GUI_VALUE_SET    (strDlogID strCtrlID strValue -- )
  GUI_LIST_ADD     (strDlogID strCtrlID arrItems intPos -- )

@@ -32,23 +32,29 @@ extern void prim_strencrypt(PRIM_PROTOTYPE);
 extern void prim_strdecrypt(PRIM_PROTOTYPE);
 extern void prim_textattr(PRIM_PROTOTYPE);
 extern void prim_tokensplit(PRIM_PROTOTYPE);
+extern void prim_ansi_strlen(PRIM_PROTOTYPE);
+extern void prim_ansi_strcut(PRIM_PROTOTYPE);
+extern void prim_ansi_strip(PRIM_PROTOTYPE);
 
 #define PRIMS_STRINGS_FUNCS prim_numberp, prim_stringcmp, prim_strcmp,        \
     prim_strncmp, prim_strcut, prim_strlen, prim_strcat, prim_atoi,           \
-    prim_notify, prim_notify_exclude, prim_intostr,                           \
-    prim_explode, prim_subst, prim_instr, prim_rinstr, prim_pronoun_sub,      \
-    prim_toupper, prim_tolower, prim_unparseobj, prim_smatch, prim_striplead, \
-    prim_striptail, prim_stringpfx, prim_strencrypt, prim_strdecrypt,         \
-    prim_textattr, prim_midstr, prim_ctoi, prim_itoc, prim_stod, prim_split,  \
-    prim_rsplit, prim_fmtstring, prim_tokensplit
+    prim_notify, prim_notify_exclude, prim_intostr, prim_explode, prim_subst, \
+	prim_instr, prim_rinstr, prim_pronoun_sub, prim_toupper, prim_tolower,    \
+	prim_unparseobj, prim_smatch, prim_striplead, prim_striptail,             \
+	prim_stringpfx, prim_strencrypt, prim_strdecrypt, prim_textattr,          \
+	prim_midstr, prim_ctoi, prim_itoc, prim_stod, prim_split, prim_rsplit,    \
+	prim_fmtstring, prim_tokensplit, prim_ansi_strlen, prim_ansi_strcut,      \
+	prim_ansi_strip
 
 #define PRIMS_STRINGS_NAMES "NUMBER?", "STRINGCMP", "STRCMP",  \
     "STRNCMP", "STRCUT", "STRLEN", "STRCAT", "ATOI",           \
-    "NOTIFY", "NOTIFY_EXCLUDE", "INTOSTR",                     \
-    "EXPLODE", "SUBST", "INSTR", "RINSTR", "PRONOUN_SUB",      \
-    "TOUPPER", "TOLOWER", "UNPARSEOBJ", "SMATCH", "STRIPLEAD", \
-    "STRIPTAIL", "STRINGPFX", "STRENCRYPT", "STRDECRYPT",      \
-    "TEXTATTR", "MIDSTR", "CTOI", "ITOC", "STOD", "SPLIT",     \
-    "RSPLIT", "FMTSTRING", "TOKENSPLIT"
+    "NOTIFY", "NOTIFY_EXCLUDE", "INTOSTR", "EXPLODE", "SUBST", \
+	"INSTR", "RINSTR", "PRONOUN_SUB", "TOUPPER", "TOLOWER",    \
+	"UNPARSEOBJ", "SMATCH", "STRIPLEAD", "STRIPTAIL",          \
+	"STRINGPFX", "STRENCRYPT", "STRDECRYPT", "TEXTATTR",       \
+	"MIDSTR", "CTOI", "ITOC", "STOD", "SPLIT", "RSPLIT",       \
+	"FMTSTRING", "TOKENSPLIT", "ANSI_STRLEN", "ANSI_STRCUT",   \
+	"ANSI_STRIP"
 
-#define PRIMS_STRINGS_CNT 34
+#define PRIMS_STRINGS_CNT 37
+

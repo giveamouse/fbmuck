@@ -1604,3 +1604,143 @@ prim_tokensplit(PRIM_PROTOTYPE)
 		PushNullStr;
 	}
 }
+
+void
+prim_ansi_strlen(PRIM_PROTOTYPE)
+{
+	char *ptr;
+	int i;
+
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_STRING)
+		abort_interp("Not a string argument.");
+
+	if (!oper1->data.string) {
+		CLEAR(oper1);
+		i = 0;
+		PushInt(i);
+		/* Weird PushInt() #define requires that. */
+		return;
+	}
+
+	i = 0;
+
+	ptr = oper1->data.string->data;
+
+	while (*ptr) {
+		if (*ptr++ == ESCAPE_CHAR) {
+			if (*ptr == '\0') {;
+			} else if (*ptr != '[') {
+				ptr++;
+			} else {
+				ptr++;
+				while (isdigit(*ptr) || *ptr == ';')
+					ptr++;
+				if (*ptr == 'm')
+					ptr++;
+			}
+		} else {
+			i++;
+		}
+	}
+	CLEAR(oper1);
+	PushInt(i);
+}
+
+void
+prim_ansi_strcut(PRIM_PROTOTYPE)
+{
+	char *ptr;
+	char *op;
+	char outbuf1[BUFFER_LEN];
+	char outbuf2[BUFFER_LEN];
+	int loc;
+
+	CHECKOP(2);
+	oper2 = POP();
+	oper1 = POP();
+	if (oper1->type != PROG_STRING)
+		abort_interp("Not a string argument. (1)");
+	if (oper2->type != PROG_INTEGER)
+		abort_interp("Not an integer argument. (2)");
+	if (!oper1->data.string) {
+		CLEAR(oper1);
+		CLEAR(oper2);
+		PushNullStr;
+		PushNullStr;
+		return;
+	}
+
+	loc = 0;
+
+	if (oper2->data.number >= oper1->data.string->length) {
+		strcpy(buf, oper1->data.string->data);
+		CLEAR(oper1);
+		CLEAR(oper2);
+		PushString(buf);
+		PushNullStr;
+	} else if (oper2->data.number <= 0) {
+		strcpy(buf, oper1->data.string->data);
+		CLEAR(oper1);
+		CLEAR(oper2);
+		PushNullStr;
+		PushString(buf);
+	}
+
+	ptr = oper1->data.string->data;
+
+	*outbuf2 = '\0';
+	op = outbuf1;
+	while (*ptr) {
+		if ((*op++ = *ptr++) == ESCAPE_CHAR) {
+			if (*ptr == '\0') {
+				*op++ = *ptr++;
+			} else if (*ptr != '[') {
+				*op++ = *ptr++;
+			} else {
+				*op++ = *ptr++;
+				while (isdigit(*ptr) || *ptr == ';')
+					*op++ = *ptr++;
+				if (*ptr == 'm')
+					*op++ = *ptr++;
+			}
+		} else {
+			loc++;
+			if (loc == oper2->data.number) {
+				*op = '\0';
+				break;
+			}
+		}
+	}
+	memcpy((void *) outbuf2, (const void *) ptr,
+		   oper1->data.string->length - (ptr - oper1->data.string->data) + 1);
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+	PushString(outbuf1);
+	if (!*outbuf2) {
+		PushNullStr;
+	} else {
+		PushString(outbuf2);
+	}
+}
+
+void
+prim_ansi_strip(PRIM_PROTOTYPE)
+{
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type != PROG_STRING)
+		abort_interp("Non-string argument.");
+
+	if (!oper1->data.string) {
+		CLEAR(oper1);
+		PushNullStr;
+		return;
+	}
+
+	strip_ansi(buf, oper1->data.string->data);
+	CLEAR(oper1);
+	PushString(buf);
+}
