@@ -40,7 +40,7 @@ AC_CHECK_HEADERS(errno.h sys/errno.h)
 echo "checking for tm_gmtoff"
 AC_EGREP_HEADER([[^_a-zA-Z]]tm_gmtoff;, time.h, AC_DEFINE(HAVE_TM_GMTOFF))
 AC_EGREP_HEADER([[^_a-zA-Z]]tm_gmtoff;, sys/time.h, AC_DEFINE(HAVE_SYS_TM_GMTOFF))
-AC_EGREP_HEADER([[^_a-zA-Z]]_timezone;, time.h, AC_DEFINE(HAVE__TIMEZONE))
+AC_EGREP_HEADER([[^_a-zA-Z]]_timezone\>, time.h, AC_DEFINE(HAVE__TIMEZONE))
 
 dnl
 dnl Libraries and functions.

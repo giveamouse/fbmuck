@@ -100,7 +100,7 @@ xMD5Update(struct xMD5Context *ctx, byte const *buf, int len)
 
 	/* Process data in 64-byte chunks */
 	while (len >= 64) {
-		bcopy(buf, ctx->in, 64);
+		bcopy(buf, (byte*)ctx->in, 64);
 		byteSwap(ctx->in, 16);
 		xMD5Transform(ctx->buf, ctx->in);
 		buf += 64;
@@ -108,7 +108,7 @@ xMD5Update(struct xMD5Context *ctx, byte const *buf, int len)
 	}
 
 	/* Handle any remaining bytes of data. */
-	bcopy(buf, ctx->in, len);
+	bcopy(buf, (byte*)ctx->in, len);
 }
 
 /*
@@ -143,8 +143,8 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
 	xMD5Transform(ctx->buf, ctx->in);
 
 	byteSwap(ctx->buf, 4);
-	bcopy(ctx->buf, digest, 16);
-	bzero(ctx, sizeof(ctx));
+	bcopy((byte*)ctx->buf, digest, 16);
+	bzero((byte*)ctx, sizeof(ctx));
 }
 
 
