@@ -122,7 +122,8 @@ Misc:
   prog   match   random  version    controls  newobject   timestamps
   trig   stats   rmatch  getlink    setown    recycle     part_pmatch
   dbtop  exits   moveto  setlink    owner     copyobj     checkpassword
-  srand  setseed getseed pmatch     getlinks  nextowned   cancall?
+  srand  setseed getseed getlinks   cancall?  nextowned   setsysparm 
+  pmatch
   
 In the documentation some primitives are grouped together as:
   MATH OPERATORS
@@ -699,7 +700,7 @@ Takes object d and returns the next thing in the linked contents/exits
 list of d's location.
 ~
 NEXTOWNED|
-next ( d -- d' )
+nextowned ( d -- d' )
 When called with a player dbref, returns the dbref of the first object they
 own.  Subsequent calls to those object dbrefs returns the next object owned
 by that same player.  When no more objects are left owned by that player,
@@ -2355,6 +2356,11 @@ Parameters available:
 (bool) diskbase_propvals    - Allow diskbasing of property values
 (bool) idleboot             - Enable or disable idlebooting
 (bool) playermax            - Enable or disable connection limit
+~
+SETSYSPARM|
+setsysparm ( s1 s2 -- )
+Assigns the @tunable parameter s1 a value given by s2.  s2 must contain a
+legal value for s1.  (wizbit only)
 ~
 DESCR_SETUSER|
 descr_setuser ( i d s -- i )
