@@ -1,5 +1,6 @@
 2.2fb6.00b3
 Fixed a crasher bug with uninitialized watchpid-related variables.
+Fixed ARRAY_FILTER_PROP muf primitive so it actually works.
 Added NEXTENTRANCE ( d1 d2 -- d3 ) muf primitive.  Searches the database for
   the next object after d2 that is linked to d1.  You can begin a search by
   passing #-1 as d2.  The search currently scans upwards through the database,
