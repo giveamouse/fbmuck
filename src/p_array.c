@@ -383,7 +383,7 @@ prim_array_appenditem(PRIM_PROTOTYPE)
 
 	if (oper2->type != PROG_ARRAY)
 		abort_interp("Argument not an array. (2)");
-	if (oper2->data.array && oper1->data.array->type != ARRAY_PACKED)
+	if (oper2->data.array && oper2->data.array->type != ARRAY_PACKED)
 		abort_interp("Argument must be a list type array. (2)");
 
 	result = array_appenditem(&oper2->data.array, oper1);
