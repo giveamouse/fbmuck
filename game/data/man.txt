@@ -2955,11 +2955,23 @@ strType is the type of the dialog to create.  Currently, the only options
 for strType are D_SIMPLE, D_TABBED, or D_HELPER.  The strTitle argument
 is the title to show in the titlebar of the dialog.  dictArgs is a
 dictionary array that contains extra optional arguments for creating
-the dialog.  In general, dictArgs is only used to specify "panes" and
-"names" for D_TABBED and D_HELPER dialogs.  This primitive returns a
-string containing the dialogid, used by other prims to add controls or
-make various changes.  This dialog will be hidden and not shown to the
-user until it has been displayed with the GUI_DLOG_SHOW command.
+the dialog.
+ 
+This primitive returns a string containing the dialogid, used by other
+prims to add controls or make various changes.  This dialog will be
+hidden and not shown to the user until it has been displayed with the
+GUI_DLOG_SHOW command.
+ 
+Supported optional args are:
+    names      list of user-viewable pane names for D_TABBED & D_HELPER dlogs.
+    panes      list of pane ids for D_TABBED and D_HELPER dialogs.
+    width      requested width of dialog in pixels.
+    height     requested height of dialog in pixels.
+    resizable  allows resizing in "x", "y", or "both" dimensions.
+    minwidth   minimum width of window in pixels.
+    minheight  minimum height of window in pixels.
+    maxwidth   maximum width of window in pixels.
+    maxheight  maximum height of window in pixels.
 ~
 GUI_DLOG_SIMPLE|
 GUI_DLOG_SIMPLE (intDescr strTitle -- strDlogID)
@@ -3255,52 +3267,54 @@ MCP GUI Options
 The MCP GUI package has several common options used when creating controls
 in dialog.  These options are common to almost all control types.  They
 are as follows:
-    value    Holds the value of the control.
-    valname  Specifies the name used with GUI_VALUE_GET/SET, to refer to the
-             value for this control.  Multiple controls can stare the same
-             valname, in the case of radio buttons and the like.
-    report   If set to 1, image, checkbox, and radiobutton controls will send
-             a 'buttonpress' event when the user clicks on them.  All other
-             control types send a 'valchanged' gui event when their value
-             is changed If the value is changed several times within a few
-             seconds, only the final value is guaranteed to have a valchanged
-             event.  It is possible to receive valchanged events even though
-             the value appears to have not changed.
-    pane     The pane in which to place this control.  Some controls, like
-             the notebook or frame controls, create new panes in which you
-             can place controls.
-    newline  If 1, next control will be at the beginning of the next row.
-             If 0, next control will be in the next column to the right,
-             taking into account colspan and colskip.  Defaults to 1.
-    sticky   Which sides of the cell this control sticks to.  This is a
-             string with any or all of the letters 'n', 's', 'e', or 'w',
-             corresponding to north, south, east, and west.
-    row      If specified, forces the control to be placed in the given row.
-    column   If specified, forces the control to be placed in the given column.
-    rowspan  Number of rows this control spans across.  Defaults to 1.
-    colspan  Number of columns this control spans across.  Defaults to 1.
-    colskip  Number of columns to skip before placing this control.
-             Defaults to 0.
-    hweight  How much the starting column of this control should expand.
-             When filling unused space, if there are two columns, one with
-             hweight 2 and the other with hweight 1, then the column with
-             hweight 2 will be expanded twice as much as the other column.
-             The default hweight is 0.  Note that the last control in the
-             given column sets the hweight for the column.  If no hweights
-             are given in a pane, then if the pane is forced to be wider
-             than the contained controls, the empty space will be placed
-             in the right side of the pane.
-    vweight  How much the starting row of this control should expand.
-             When filling unused space, if there are two rows, one with
-             vweight 2 and the other with vweight 1, then the row with
-             vweight 2 will be expanded twice as much as the other row.
-             The default hweight is 0.  Note that the last control in the
-             given row sets the vweight for the row.  If no vweights
-             are given in a pane, then if the pane is forced to be taller
-             than the contained controls, the empty space will be placed
-             in the bottom of the pane.
-    toppad   Number of pixels padding to add above this control.
-    leftpad  Number of pixels padding to add to the left of this control.
+    value     Holds the value of the control.
+    valname   Specifies the name used with GUI_VALUE_GET/SET, to refer to the
+               value for this control.  Multiple controls can share the same
+               valname, in the case of radio buttons and the like.
+    report    If set to 1, image, checkbox, and radiobutton controls will send
+               a 'buttonpress' event when the user clicks on them.  All other
+               control types send a 'valchanged' gui event when their value
+               is changed If the value is changed several times within a few
+               seconds, only the final value is guaranteed to have a valchanged
+               event.  It is possible to receive valchanged events even though
+               the value appears to have not changed.
+    pane      The pane in which to place this control.  Some controls, like
+               the notebook or frame controls, create new panes in which you
+               can place controls.
+    newline   If 1, next control will be at the beginning of the next row.
+               If 0, next control will be in the next column to the right,
+               taking into account colspan and colskip.  Defaults to 1.
+    sticky    Which sides of the cell this control sticks to.  This is a
+               string with any or all of the letters 'n', 's', 'e', or 'w',
+               corresponding to north, south, east, and west.
+    row       If given, forces the control to be placed in the given row.
+    column    If given, forces the control to be placed in the given column.
+    rowspan   Number of rows this control spans across.  Defaults to 1.
+    colspan   Number of columns this control spans across.  Defaults to 1.
+    colskip   Number of columns to skip before placing this control.
+               Defaults to 0.
+    minwidth  Minimum width of control in pixels.
+    minheight Minimum width of control in pixels.
+    hweight   How much the starting column of this control should expand.
+               When filling unused space, if there are two columns, one with
+               hweight 2 and the other with hweight 1, then the column with
+               hweight 2 will be expanded twice as much as the other column.
+               The default hweight is 0.  Note that the last control in the
+               given column sets the hweight for the column.  If no hweights
+               are given in a pane, then if the pane is forced to be wider
+               than the contained controls, the empty space will be placed
+               in the right side of the pane.
+    vweight   How much the starting row of this control should expand.
+               When filling unused space, if there are two rows, one with
+               vweight 2 and the other with vweight 1, then the row with
+               vweight 2 will be expanded twice as much as the other row.
+               The default hweight is 0.  Note that the last control in the
+               given row sets the vweight for the row.  If no vweights
+               are given in a pane, then if the pane is forced to be taller
+               than the contained controls, the empty space will be placed
+               in the bottom of the pane.
+    toppad    Number of pixels padding to add above this control.
+    leftpad   Number of pixels padding to add to the left of this control.
 ~
 C_DATUM|
 C_DATUM ( -- s )
