@@ -6,6 +6,7 @@ Fixed bug #424057 -- MATCH and PMATCH primitives now strip ansi sequences
 Fixed _msgmacs searching to allow blessed environment room msgmacs.
 Fixed bug #233181 -- now DETACH won't if -convert or -insanity is specified
   on the commandline.
+Fixed crasher bug with using undeclared variabled in MPI.
 Fixed crasher #201633 -- Server now does not crash when program FORCEs
   itself to be @recycled.  As a side result of this, there is now another
   statuslog line prefix to be aware of: 'SANITYCHECK:'.  If this prefix shows

@@ -1172,7 +1172,6 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 						if (varflag) {
 							char *zptr;
 
-							argc++;
 							zptr = get_mvar(cmdbuf + 1);
 							if (!zptr) {
 								zptr = get_mvar("how");
@@ -1180,7 +1179,9 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 										zptr, MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
 								notify_nolisten(player, ebuf, 1);
 								for (i = 0; i < argc; i++) {
-									free(argv[i + (varflag? 1 : 0)]);
+									if (argv[i + (varflag? 1 : 0)]) {
+										free(argv[i + (varflag? 1 : 0)]);
+									}
 								}
 								mesg_rec_cnt--;
 								return NULL;
@@ -1191,6 +1192,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 							}
 							argv[0] = (char*)malloc(strlen(zptr) + 1);
 							strcpy(argv[0], zptr);
+							argc++;
 						}
 						if (mesgtyp & MPI_ISDEBUG) {
 							char *zptr = get_mvar("how");
