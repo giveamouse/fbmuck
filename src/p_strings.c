@@ -463,9 +463,11 @@ prim_split(PRIM_PROTOTYPE)
 	if (oper1->type != PROG_STRING)
 		abort_interp("Non-string argument. (2)");
 	if (!oper1->data.string)
-		abort_interp("Null split argument. (2)");
+		abort_interp("Null string split argument. (2)");
 	if (oper2->type != PROG_STRING)
 		abort_interp("Non-string argument. (1)");
+
+	*buf = '\0';
 	if (!oper2->data.string) {
 		result = 0;
 	} else {
@@ -517,6 +519,8 @@ prim_rsplit(PRIM_PROTOTYPE)
 		abort_interp("Null split argument. (2)");
 	if (oper2->type != PROG_STRING)
 		abort_interp("Non-string argument. (1)");
+
+	*buf = '\0';
 	if (!oper2->data.string) {
 		result = 0;
 	} else {
