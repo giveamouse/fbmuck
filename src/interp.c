@@ -370,6 +370,9 @@ interp(int descr, dbref player, dbref location, dbref program,
 	fr->system.st[0].progref = 0;
 	fr->system.st[0].offset = 0;
 
+	fr->waitees = NULL;
+	fr->waiters = NULL;
+
 	fr->fors.top = 0;
 	fr->fors.st = NULL;
 	fr->trys.top = 0;
