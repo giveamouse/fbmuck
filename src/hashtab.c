@@ -3,6 +3,9 @@
 /*
  *
  * $Log: hashtab.c,v $
+ * Revision 1.3  2001/10/15 02:08:49  revar
+ * Minor cleanups for possible Win32 port plans.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -60,10 +63,10 @@
  * same value.
  */
 
-unsigned
-hash(register const char *s, unsigned hash_size)
+unsigned int
+hash(register const char *s, unsigned int hash_size)
 {
-	unsigned hashval;
+	unsigned int hashval;
 
 	for (hashval = 0; *s != '\0'; s++) {
 		hashval = (*s | 0x20) + 31 * hashval;
@@ -76,7 +79,7 @@ hash(register const char *s, unsigned hash_size)
  * returns NULL if not found, otherwise a pointer to the data union.
  */
 hash_data *
-find_hash(register const char *s, hash_tab * table, unsigned size)
+find_hash(register const char *s, hash_tab * table, unsigned int size)
 {
 	register hash_entry *hp;
 
@@ -98,10 +101,10 @@ find_hash(register const char *s, hash_tab * table, unsigned size)
  * make a static copy of the name before adding it to the table.
  */
 hash_entry *
-add_hash(register const char *name, hash_data data, hash_tab * table, unsigned size)
+add_hash(register const char *name, hash_data data, hash_tab * table, unsigned int size)
 {
 	register hash_entry *hp;
-	unsigned hashval;
+	unsigned int hashval;
 
 	hashval = hash(name, size);
 
@@ -138,7 +141,7 @@ add_hash(register const char *name, hash_data data, hash_tab * table, unsigned s
  * a name.  Returns 0 on success, or -1 if the name cannot be found.
  */
 int
-free_hash(register const char *name, hash_tab * table, unsigned size)
+free_hash(register const char *name, hash_tab * table, unsigned int size)
 {
 	register hash_entry **lp, *hp;
 
@@ -156,10 +159,10 @@ free_hash(register const char *name, hash_tab * table, unsigned size)
 
 /* kill_hash:  kill an entire hash table, by freeing every entry */
 void
-kill_hash(hash_tab * table, unsigned size, int freeptrs)
+kill_hash(hash_tab * table, unsigned int size, int freeptrs)
 {
 	register hash_entry *hp, *np;
-	int i;
+	unsigned int i;
 
 	for (i = 0; i < size; i++) {
 		for (hp = table[i]; hp != NULL; hp = np) {
