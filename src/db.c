@@ -44,23 +44,37 @@ void getproperties(FILE * f, int obj, const char *pdir);
 
 
 dbref
+getparent_logic(dbref obj)
+{
+        if (obj == NOTHING) return NOTHING;
+	if (Typeof(obj) == TYPE_THING && (FLAGS(obj) & VEHICLE)) {
+		obj = THING_HOME(obj);
+		if (obj != NOTHING && Typeof(obj) == TYPE_PLAYER) {
+			obj = PLAYER_HOME(obj);
+		}
+	} else {
+		obj = getloc(obj);
+	}
+	return obj;
+}
+
+dbref
 getparent(dbref obj)
 {
-	int limit = 88;
+        dbref ptr, oldptr;
 
 	if (tp_thing_movement) {
 		obj = getloc(obj);
 	} else {
+	        ptr = getparent_logic(obj);
 		do {
-			if (Typeof(obj) == TYPE_THING && (FLAGS(obj) & VEHICLE) && limit-- > 0) {
-				obj = THING_HOME(obj);
-				if (obj != NOTHING && Typeof(obj) == TYPE_PLAYER) {
-					obj = PLAYER_HOME(obj);
-				}
-			} else {
-				obj = getloc(obj);
-			}
-		} while (obj != NOTHING && Typeof(obj) == TYPE_THING);
+		        obj = getparent_logic(obj);
+		} while (obj != (oldptr = ptr = getparent_logic(ptr)) &&
+			 obj != (ptr = getparent_logic(ptr)) &&
+			 obj != NOTHING && Typeof(obj) == TYPE_THING);
+		if (obj != NOTHING && (obj == oldptr || obj == ptr)) {
+		        obj = GLOBAL_ENVIRONMENT;
+		}
 	}
 	return obj;
 }
