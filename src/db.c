@@ -723,14 +723,7 @@ getstring_noalloc(FILE * f)
 
 #define getstring(x) alloc_string(getstring_noalloc(x))
 
-#ifdef COMPRESS
-extern const char *compress(const char *);
-extern const char *old_uncompress(const char *);
-
 #define alloc_compressed(x) alloc_string(compress(x))
-#else
-#define alloc_compressed(x) alloc_string(x)
-#endif							/* COMPRESS */
 
 /* returns true for numbers of form [ + | - ] <series of digits> */
 int

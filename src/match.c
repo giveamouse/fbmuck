@@ -127,9 +127,7 @@ find_registered_obj(dbref player, const char *name)
 	switch (PropType(ptr)) {
 	case PROP_STRTYP:
 		p = PropDataStr(ptr);
-#ifdef COMPRESS
 		p = uncompress(p);
-#endif
 		if (*p == NUMBER_TOKEN)
 			p++;
 		if (number(p)) {

@@ -164,9 +164,7 @@ safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int
 		}
 	}
 
-#ifdef COMPRESS
 	ptr = uncompress(ptr);
-#endif
 
 	if (ptr) {
 		if (Prop_Blessed(what, bbuf)) {
@@ -1237,9 +1235,7 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms, const char *in
 	int tmprec_cnt = mesg_rec_cnt;
 	int tmpinst_cnt = mesg_instr_cnt;
 
-#ifdef COMPRESS
 	abuf = uncompress(abuf);
-#endif							/* COMPRESS */
 
 	*outbuf = '\0';
 
@@ -1275,9 +1271,7 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms, const char *in
 	strcpy(argvar, match_args);
 	strcpy(tmparg, match_args);
 
-#ifdef COMPRESS
 	inbuf = uncompress(inbuf);
-#endif							/* COMPRESS */
 
 	dptr = MesgParse(inbuf, outbuf);
 	if (!dptr) {

@@ -192,7 +192,7 @@ prim_getprop(PRIM_PROTOTYPE)
 #endif
 			switch (PropType(prptr)) {
 			case PROP_STRTYP:
-				temp = get_uncompress(PropDataStr(prptr));
+				temp = uncompress(PropDataStr(prptr));
 				PushString(temp);
 				break;
 			case PROP_LOKTYP:
@@ -264,7 +264,7 @@ prim_getpropstr(PRIM_PROTOTYPE)
 #endif
 			switch (PropType(ptr)) {
 			case PROP_STRTYP:
-				temp = get_uncompress(PropDataStr(ptr));
+				temp = uncompress(PropDataStr(ptr));
 				break;
 				/*
 				 *case PROP_INTTYP:
@@ -392,7 +392,7 @@ prim_envprop(PRIM_PROTOTYPE)
 #endif
 			switch (PropType(ptr)) {
 			case PROP_STRTYP:
-				PushString(get_uncompress(PropDataStr(ptr)));
+				PushString(uncompress(PropDataStr(ptr)));
 				break;
 			case PROP_INTTYP:
 				result = PropDataVal(ptr);
@@ -457,7 +457,7 @@ prim_envpropstr(PRIM_PROTOTYPE)
 #endif
 			switch (PropType(ptr)) {
 			case PROP_STRTYP:
-				temp = get_uncompress(PropDataStr(ptr));
+				temp = uncompress(PropDataStr(ptr));
 				break;
 				/*
 				 *case PROP_INTTYP:
@@ -880,7 +880,7 @@ prim_parseprop(PRIM_PROTOTYPE)
 
 		temp = get_property_class(oper3->data.objref, type);
 		if (temp) {
-			temp = get_uncompress(temp);
+			temp = uncompress(temp);
 		}
 #ifdef LOG_PROPS
 		log2file("props.log", "#%d (%d) GETPROPSTR: o=%d n=\"%s\" s=\"%s\"",
@@ -957,7 +957,7 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 				if (prop_read_perms(ProgUID, ref, prop, mlev)) {
 					ptr = get_property_class(ref, prop);
 					if (ptr) {
-						ptr = get_uncompress(ptr);
+						ptr = uncompress(ptr);
 						strcpy(buf, ptr);
 					} else {
 						strcpy(buf, "");
@@ -1152,7 +1152,7 @@ prim_parsepropex(PRIM_PROTOTYPE)
 		tname[len] = '\0';
 	}
 
-	mpi		= get_uncompress(get_property_class(oper1->data.objref, tname));
+	mpi		= uncompress(get_property_class(oper1->data.objref, tname));
 	vars	= oper3->data.array;
 	novars	= array_count(vars);
 

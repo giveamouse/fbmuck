@@ -20,6 +20,7 @@
 
 #include "config.h"
 
+#ifdef COMPRESS
 
 #define BUFFER_LEN 16384		/* nice big buffer */
 
@@ -573,3 +574,5 @@ compress(const char *s)
 
 	return (char *)buf;
 }
+
+#endif

@@ -13,14 +13,7 @@
 #include <string.h>
 #include <math.h>
 
-#ifdef COMPRESS
-extern const char *compress(const char *);
-extern const char *old_uncompress(const char *);
-
 #define alloc_compressed(x) alloc_string(compress(x))
-#else							/* !COMPRESS */
-#define alloc_compressed(x) alloc_string(x)
-#endif							/* COMPRESS */
 
 /* property.c
    A whole new lachesis mod.
@@ -338,11 +331,7 @@ has_property_strict(int descr, dbref player, dbref what, const char *pname, cons
 		propfetch(what, p);
 #endif
 		if (PropType(p) == PROP_STRTYP) {
-#ifdef COMPRESS
 			str = uncompress(DoNull(PropDataStr(p)));
-#else							/* !COMPRESS */
-			str = DoNull(PropDataStr(p));
-#endif							/* COMPRESS */
 
 			if (has_prop_recursion_limit-->0) {
 				ptr = do_parse_mesg(descr, player, what, str, "(Lock)", buf,
@@ -1043,11 +1032,7 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
 		if (!*PropDataStr(p))
 			return;
 		if (db_decompression_flag) {
-#ifdef COMPRESS
 			ptr2 = uncompress(PropDataStr(p));
-#else
-			ptr2 = PropDataStr(p);
-#endif
 		} else {
 			ptr2 = PropDataStr(p);
 		}

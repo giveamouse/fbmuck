@@ -18,11 +18,6 @@
 
 #define DOWNCASE(x) (tolower(x))
 
-#ifdef COMPRESS
-extern const char *uncompress(const char *);
-
-#endif							/* COMPRESS */
-
 /*
  * routine to be used instead of strcasecmp() in a sorting routine
  * Sorts alphabetically or numerically as appropriate.
@@ -183,9 +178,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
 	prn[0] = '%';
 	prn[2] = '\0';
 
-#ifdef COMPRESS
 	str = uncompress(str);
-#endif							/* COMPRESS */
 
 	strcpy(orig, str);
 	str = orig;
@@ -216,7 +209,6 @@ pronoun_substitute(int descr, dbref player, const char *str)
 				mywhere = player;
 				d = (isupper(c)) ? c : toupper(c);
 
-#ifdef COMPRESS
 				snprintf(globprop, sizeof(globprop), "_pronouns/%.64s/%s", uncompress(sexstr), prn);
 				if (d == 'A' || d == 'S' || d == 'O' || d == 'P' || d == 'R' || d == 'N') {
 					self_sub = uncompress(get_property_class(mywhere, prn));
@@ -235,26 +227,6 @@ pronoun_substitute(int descr, dbref player, const char *str)
 					if (!(self_sub = uncompress(get_property_class(player, globprop))))
 						self_sub = uncompress(get_property_class(0, globprop));
 				}
-#else
-				snprintf(globprop, sizeof(globprop), "_pronouns/%.64s/%s", sexstr, prn);
-				if (d == 'A' || d == 'S' || d == 'O' || d == 'P' || d == 'R' || d == 'N') {
-					self_sub = get_property_class(mywhere, prn);
-				} else {
-					self_sub = envpropstr(&mywhere, prn);
-				}
-				if (!self_sub) {
-					self_sub = get_property_class(player, globprop);
-				}
-				if (!self_sub) {
-					self_sub = get_property_class(0, globprop);
-				}
-				if (!self_sub && (sex == GENDER_UNASSIGNED)) {
-					snprintf(globprop, sizeof(globprop), "_pronouns/_default/%s", prn);
-
-					if (!(self_sub = get_property_class(player, globprop)))
-						self_sub = get_property_class(0, globprop);
-				}
-#endif
 
 				if (self_sub) {
 					temp_sub = NULL;

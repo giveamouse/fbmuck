@@ -18,11 +18,7 @@
 #include "interface.h"
 #include "externs.h"
 
-#ifdef COMPRESS
 #define alloc_compressed(x) alloc_string(compress(x))
-#else							/* COMPRESS */
-#define alloc_compressed(x) alloc_string(x)
-#endif							/* COMPRESS */
 
 
 static dbref

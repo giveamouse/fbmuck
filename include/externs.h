@@ -281,6 +281,12 @@ extern void init_compress_from_file(FILE * dicto);
 extern const char *compress(const char *);
 extern const char *uncompress(const char *);
 extern void init_compress(void);
+#else
+static inline const char *compress(const char *x) { return x; }
+static inline const char *uncompress(const char *x) { return x; }
+static inline void save_compress_words_to_file(FILE *f) { return; }
+static inline void init_compress_from_file(FILE *f) { return; }
+static inline void init_compress(void) { return; }
 #endif							/* COMPRESS */
 
 /* From edit.c */

@@ -701,11 +701,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
     int* darr;
     int dcount;
 
-#ifdef COMPRESS
-	extern const char *uncompress(const char *);
-
 	msg = uncompress(msg);
-#endif							/* COMPRESS */
 
 	ptr2 = msg;
 	while (ptr2 && *ptr2) {
@@ -789,13 +785,7 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 {
 	const char *ptr;
 
-#ifdef COMPRESS
-	extern const char *uncompress(const char *);
-
 	ptr = uncompress(msg);
-#else
-	ptr = msg;
-#endif							/* COMPRESS */
 
 	if (tp_listeners) {
 		if (tp_listeners_obj || Typeof(player) == TYPE_ROOM) {
@@ -1314,11 +1304,7 @@ wall_and_flush(const char *msg)
 	struct descriptor_data *d, *dnext;
 	char buf[BUFFER_LEN + 2];
 
-#ifdef COMPRESS
-	extern const char *uncompress(const char *);
-
 	msg = uncompress(msg);
-#endif							/* COMPRESS */
 
 	if (!msg || !*msg)
 		return;
@@ -1360,11 +1346,7 @@ wall_wizards(const char *msg)
 	struct descriptor_data *d, *dnext;
 	char buf[BUFFER_LEN + 2];
 
-#ifdef COMPRESS
-	extern const char *uncompress(const char *);
-
 	msg = uncompress(msg);
-#endif							/* COMPRESS */
 
 	strcpy(buf, msg);
 	strcatn(buf, sizeof(buf), "\r\n");
@@ -2597,9 +2579,6 @@ dump_users(struct descriptor_data *e, char *user)
 	char buf[2048];
 	char pbuf[64];
 
-#ifdef COMPRESS
-	extern const char *uncompress(const char *);
-#endif
 
 /* #ifdef GOD_PRIV */
 /* -- Wizard should always override tp_who_doing JES
@@ -2707,11 +2686,7 @@ dump_users(struct descriptor_data *e, char *user)
 							 */
 							(int) (79 - (PLAYER_NAME_LIMIT + 20)),
 							GETDOING(d->player) ?
-#ifdef COMPRESS
 							uncompress(GETDOING(d->player))
-#else
-							GETDOING(d->player)
-#endif
 							: "");
 				} else {
 #ifdef USE_SSL
@@ -3879,7 +3854,7 @@ int ignore_prime_cache(dbref Player)
 	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) != TYPE_PLAYER))
 		return 0;
 
-	if ((Txt = get_uncompress(get_property_class(Player, IGNORE_PROP))) == NULL)
+	if ((Txt = uncompress(get_property_class(Player, IGNORE_PROP))) == NULL)
 	{
 		PLAYER_SET_IGNORE_LAST(Player, AMBIGUOUS);
 		return 0;

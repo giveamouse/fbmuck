@@ -1,4 +1,5 @@
 2.2fb6.02
+Cleaned up compression-related #defines, removing redundancy.
 Removed remaining Anonymity code fragments and defines due to non-use and non-function.
 Fixed bug with array_nintersection allowing multiple occurances in a single array to influence final output.
 Fixed a number of off-by-one crasher bugs, due to bad comparisons with db_top.

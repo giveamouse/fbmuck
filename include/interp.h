@@ -19,16 +19,9 @@ typedef void *voidptr;
 void purge_try_pool(void);
 
 #ifdef COMPRESS
-extern const char *uncompress(const char *);
-extern const char *compress(const char *);
-
 #define alloc_compressed(x) alloc_string(compress(x))
-#define get_compress(x) compress(x)
-#define get_uncompress(x) uncompress(x)
 #else							/* COMPRESS */
 #define alloc_compressed(x) alloc_string(x)
-#define get_compress(x) (x)
-#define get_uncompress(x) (x)
 #endif							/* COMPRESS */
 #define DoNullInd(x) ((x) ? (x) -> data : "")
 

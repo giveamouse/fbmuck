@@ -19,10 +19,6 @@
 
 
 
-#ifdef COMPRESS
-extern const char *uncompress(const char *);
-
-#endif							/* COMPRESS */
 
 #define EXEC_SIGNAL '@'			/* Symbol which tells us what we're looking at
 								   * is an execution order and not a message.    */
@@ -73,11 +69,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
 	char tmpcmd[BUFFER_LEN];
 	char tmparg[BUFFER_LEN];
 
-#ifdef COMPRESS
 	p = (char *) uncompress((char *) message);
-#else							/* !COMPRESS */
-	p = (char *) message;
-#endif							/* COMPRESS */
 
 	if (*p == EXEC_SIGNAL) {
 		int i;
