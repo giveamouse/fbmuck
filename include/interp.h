@@ -45,7 +45,7 @@ extern const char* scopedvar_getname(struct frame *fr, int level, int varnum);
 extern const char* scopedvar_getname_byinst(struct inst *pc, int varnum);
 extern int scopedvar_getnum(struct frame *fr, int level, const char* varname);
 extern void scopedvar_dupall(struct frame *fr, struct frame *oldfr);
-extern int false(struct inst *p);
+extern int false_inst(struct inst *p);
 
 extern void copyinst(struct inst *from, struct inst *to);
 

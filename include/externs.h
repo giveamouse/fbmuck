@@ -193,6 +193,7 @@ extern void do_chown(int descr, dbref player, const char *name, const char *newo
 extern void do_set(int descr, dbref player, const char *name, const char *flag);
 extern void do_chlock(int descr, dbref player, const char *name, const char *keyname);
 extern void do_conlock(int descr, dbref player, const char *name, const char *keyname);
+extern void set_flags_from_tunestr(dbref obj, const char* flags);
 
 /* From speech.c */
 extern void do_wall(dbref player, const char *message);
@@ -283,9 +284,16 @@ extern struct inst *interp_loop(dbref player, dbref program, struct frame *fr, i
 extern struct frame *interp(int descr, dbref player, dbref location, dbref program,
 							dbref source, int nosleeping, int whichperms);
 extern void purge_for_pool(void);
+extern void purge_try_pool(void);
 
 /* From mufevent.c */
 extern int muf_event_exists(struct frame* fr, const char* eventid);
+
+#ifdef WIN32
+/* from signal.h */
+extern void set_console(void);
+extern void check_cosole(void);
+#endif
 
 /* declared in log.c */
 extern void log2file(char *myfilename, char *format, ...);

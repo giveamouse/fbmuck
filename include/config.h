@@ -223,6 +223,21 @@
 /************************************************************************/
 /************************************************************************/
 
+/*
+ * Windows compile environment.
+ */
+#ifdef WIN32
+#undef SPAWN_HOST_RESOLVER
+#undef DETACH
+#define NO_MEMORY_COMMAND
+#define NO_USAGE_COMMAND
+#define NOCOREDUMP
+#include "win32.h"
+#endif
+
+/*
+ * When compiling as the sanity program, don't do malloc profiling.
+ */
 #ifdef SANITY
 #undef MALLOC_PROFILING
 #undef CRT_DEBUG_ALSO
