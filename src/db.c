@@ -95,7 +95,7 @@ new_object(void)
 	return newobj;
 }
 
-static void
+void
 putref(FILE * f, dbref ref)
 {
 	if (fprintf(f, "%d\n", ref) < 0) {
@@ -103,7 +103,7 @@ putref(FILE * f, dbref ref)
 	}
 }
 
-static void
+void
 putstring(FILE * f, const char *s)
 {
 	if (s) {
@@ -154,101 +154,6 @@ putproperties(FILE * f, dbref obj)
 extern FILE *input_file;
 extern FILE *delta_infile;
 extern FILE *delta_outfile;
-
-/* FIXME: Never called from db.c, only game.c */
-void
-macrodump(struct macrotable *node, FILE * f)
-{
-	if (!node)
-		return;
-	macrodump(node->left, f);
-	putstring(f, node->name);
-	putstring(f, node->definition);
-	putref(f, node->implementor);
-	macrodump(node->right, f);
-}
-
-/* FIXME: Only called from macroload */
-static char *
-file_line(FILE * f)
-{
-	char buf[BUFFER_LEN];
-	int len;
-
-	if (!fgets(buf, BUFFER_LEN, f))
-		return NULL;
-	len = strlen(buf);
-	if (buf[len - 1] == '\n') {
-		buf[--len] = '\0';
-	}
-	if (buf[len - 1] == '\r') {
-		buf[--len] = '\0';
-	}
-	return alloc_string(buf);
-}
-
-/* FIXME: Only called from macroload */
-static void
-foldtree(struct macrotable *center)
-{
-	int count = 0;
-	struct macrotable *nextcent = center;
-
-	for (; nextcent; nextcent = nextcent->left)
-		count++;
-	if (count > 1) {
-		for (nextcent = center, count /= 2; count--; nextcent = nextcent->left) ;
-		if (center->left)
-			center->left->right = NULL;
-		center->left = nextcent;
-		foldtree(center->left);
-	}
-	for (count = 0, nextcent = center; nextcent; nextcent = nextcent->right)
-		count++;
-	if (count > 1) {
-		for (nextcent = center, count /= 2; count--; nextcent = nextcent->right) ;
-		if (center->right)
-			center->right->left = NULL;
-		foldtree(center->right);
-	}
-}
-
-/* FIXME: Only called from macroload */
-static int
-macrochain(struct macrotable *lastnode, FILE * f)
-{
-	char *line, *line2;
-	struct macrotable *newmacro;
-
-	if (!(line = file_line(f)))
-		return 0;
-	line2 = file_line(f);
-
-	newmacro = (struct macrotable *) new_macro(line, line2, getref(f));
-	free(line);
-	free(line2);
-
-	if (!macrotop)
-		macrotop = (struct macrotable *) newmacro;
-	else {
-		newmacro->left = lastnode;
-		lastnode->right = newmacro;
-	}
-	return (1 + macrochain(newmacro, f));
-}
-
-/* FIXME: Never called from db.c, only game.c */
-void
-macroload(FILE * f)
-{
-	int count = 0;
-
-	macrotop = NULL;
-	count = macrochain(macrotop, f);
-	for (count /= 2; count--; macrotop = macrotop->right) ;
-	foldtree(macrotop);
-	return;
-}
 
 int
 db_write_object(FILE * f, dbref i)
@@ -370,7 +275,7 @@ do_peek(FILE * f)
 	return (peekch);
 }
 
-static dbref
+dbref
 getref(FILE * f)
 {
 	static char buf[BUFFER_LEN];
