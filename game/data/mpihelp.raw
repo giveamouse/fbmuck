@@ -1,45 +1,11 @@
 ~~file info/mpidocs
-~@<html>
-~@<head><title>MPI Manual for FBMuck 6.00</title></head>
-~@<body><div align=center><h1>MPI Manual for FBMuck 6.00</h1>
-~@<h3>Written by <a href="http://www.belfry.com/">Foxen/Revar</a><br>
-~@(email: <a href="mailto:foxen@belfry.com">foxen@belfry.com</a>)</h3></div>
-~@<ul><li><a href="#AlphaList">Alphabetical List of Topics</a>
-~@<li><a href="#SectList">List of Topics by Category</a></ul>
-~<                 MPI Manual for FBMuck 6.00
-~<                 by Foxen/Revar (foxen@belfry.com)
-~<
-~!You may get a listing of topics that you can get help on, either sorted
-~!Alphabetically or sorted by Category.  To get these lists, type:
-~!        mpi alpha         or
-~!        mpi category
-~!~
-~!~----------------------------------------------------------------------------
-~!~
-~@<p><hr size=6><h3 align=center><a name=SectList>List of Topics by Category</a></h3>
-~!CATEGORY|TOPICS|SECTIONS
-~!                   List of Topics by Section:
-~!
+~~title MPI Reference Manual for FBMuck 6.00
+~~author Revar Desmera <revar@belfry.com>
+~~doccmd mpi
 ~~sectlist
-~!
-~!Use 'mpi <topicname>' to get more information on a topic.
 ~~secttopics
-~!~
-~!~----------------------------------------------------------------------------
-~!~
-~@<p><hr size=6><h3 align=center><a name=AlphaList>Alphabetical List of Topics</a></h3>
-~!ALPHA|ALPHABETICAL|COMMANDS
-~!                 Alphabetical List of Topics:
-~!
 ~~index
-~!
-~!Use 'mpi <topicname>' to get more information on a topic.
-~
-~
-~#----------------------------------------------------------------------------
 ~~section Definitions and Details|DefDets
-~#----------------------------------------------------------------------------
-~
 ~
 COMMENTS
 Comments:
@@ -72,13 +38,7 @@ matter.
     For logical constructs, a string value of "0", or a null string ("") are
 both considered false.  Any other value is considered true.
 ~
-~
-~
-~#----------------------------------------------------------------------------
 ~~section Time Functions|TimeFuncs
-~#----------------------------------------------------------------------------
-~
-~
 TZOFFSET
 {tzoffset}
     Returns local time zone offset from GMT in seconds.
@@ -173,13 +133,7 @@ found, this returns 0.  If a process was found, and the permissions were
 okay, then the process is killed, and {kill} returns the number of processes
 killed.  Usually 1.
 ~
-~
-~
-~#----------------------------------------------------------------------------
 ~~section Logical Functions|LogicFuncs
-~#----------------------------------------------------------------------------
-~
-~
 IF
 {if:check,true}
 {if:check,true,false}
@@ -268,13 +222,7 @@ XOR|EXCLUSIVEOR
     Returns true if expr1 or expr2 evaluate as true, but false if both do.
 Otherwise, this returns false.
 ~
-~
-~
-~#----------------------------------------------------------------------------
 ~~section Property Handling|PropFuncs
-~#----------------------------------------------------------------------------
-~
-~
 PROP
 {prop:propname}
 {prop:propname,obj}
@@ -520,13 +468,7 @@ that match are returned in the list.  This comparison is only done on the last
 part of the property name after the last /.
 Also refer to PROPDIR and SMATCH.
 ~
-~
-~
-~#----------------------------------------------------------------------------
 ~~section String Functions|Strings|StringFuncs
-~#----------------------------------------------------------------------------
-~
-~
 ~String functions generally don't strip spaces in their arguments.
 ~
 ~
@@ -747,13 +689,7 @@ won't always show them the same way.  Players who do not have their Color
 flag set will not see the ANSI codes or colors at all.  Nesting {attr}
 commands probably just won't work.
 ~
-~
-~
-~#----------------------------------------------------------------------------
 ~~section Math Functions|Math|MathFuncs
-~#----------------------------------------------------------------------------
-~
-~
 ~All math functions deal with integer numbers.
 ~
 INC|INCREMENT
@@ -864,13 +800,7 @@ distance between a pair of 3D points.
 ~~file info/mpidocs2
 ~
 ~#                  <continued from mpidocs>
-~
-~
-~#----------------------------------------------------------------------------
 ~~section Looping Functions|Loops|Looping
-~#----------------------------------------------------------------------------
-~
-~
 FOR
 {for:varname,start,end,increment,command}
     Acts as a counting loop, like BASIC's for loops.  The varname is the name
@@ -955,13 +885,7 @@ are no more list items left.  This returns the last value returned by expr.
 If a sep argument is given, the input list is assumed to have its individual
 items delimited by that string, otherwise it assumes a carriage return.
 ~
-~
-~
-~#----------------------------------------------------------------------------
 ~~section Database Related Functions|Database|DBFuncs
-~#----------------------------------------------------------------------------
-~
-~
 REF
 {ref:obj}
     Returns the dbref of the given object in the form #xxxx.  The object
@@ -1144,13 +1068,7 @@ within anything they contain.  If obj2 is not given, then it checks to see
 is obj1 is held by the player, or by anything they hold, etc.  Basically,
 this just sees if obj1 is within the locational environment of obj2.
 ~
-~
-~
-~#----------------------------------------------------------------------------
 ~~section Connection Related Functions|Connection|ConnFuncs
-~#----------------------------------------------------------------------------
-~
-~
 ONLINE
 {online}
     Returns a list of players who are online.  This function can only be
@@ -1182,13 +1100,7 @@ connected, or is not a player object at all, then this will return -1.
 This returns the idle time for the most recently connected connection,
 if there are multiple connects.
 ~
-~
-~
-~#----------------------------------------------------------------------------
 ~~section Variable Handling Functions|Variable|Variables|Vars|Var|VarFuncs
-~#----------------------------------------------------------------------------
-~
-~
 V|&|VARIABLE
 {&VAR}
 {v:VAR}
@@ -1264,13 +1176,7 @@ scope of variables inside of {with:} commands:
     }                                        <- {&people} no longer defined.
 ~~endcode
 ~
-~
-~
-~#----------------------------------------------------------------------------
 ~~section List Handling Functions|List Handling|ListFuncs
-~#----------------------------------------------------------------------------
-~
-~
 COUNT
 {count:list}
 {count:list,sep}
@@ -1393,12 +1299,7 @@ will return the name of every object in the room in a comma separated list,
 using ", or " as the final conjunction.  ie:  "Tom, Can of SPAM, Dick, or
 Harry."
 ~
-~
-~#----------------------------------------------------------------------------
 ~~section Miscellaneous Functions|Miscellaneous|Misc|MiscFuncs
-~#----------------------------------------------------------------------------
-~
-~
 ISNUM
 {isnum:number}
     Returns true if the string passed to it is a valid number.
@@ -1452,13 +1353,7 @@ Example:
 to only debug the running of the command {dostuff} when the argument will
 be the player who is running the MPI.
 ~
-~
-~
-~#----------------------------------------------------------------------------
 ~~section Macros and Functions|Functions
-~#----------------------------------------------------------------------------
-~
-~
 MACROS
 Macros:
     If the MPI interpreter comes across a function name that it does not
@@ -1525,5 +1420,4 @@ arguments:
     }
     {names:{contents:here},1,1}
 ~~endcode
-~@</body></html>
 

@@ -25,6 +25,7 @@
 #
 option add *highlightThickness 0
 
+global Tree tcl_platform
 switch $tcl_platform(platform) {
   unix {
     set Tree(font) {Helvetica -14}
@@ -32,6 +33,20 @@ switch $tcl_platform(platform) {
   windows {
     set Tree(font) {Helvetica 9}
   }
+  default {
+    set Tree(font) {Helvetica 9}
+  }
+}
+
+image create photo idir -data {
+    R0lGODdhEAAQAPIAAAAAAHh4eLi4uPj4APj4+P///wAAAAAAACwAAAAAEAAQAAADPVi63P4w
+    LkKCtTTnUsXwQqBtAfh910UU4ugGAEucpgnLNY3Gop7folwNOBOeiEYQ0acDpp6pGAFArVqt
+    hQQAO///
+}
+image create photo ifile -data {
+    R0lGODdhEAAQAPIAAAAAAHh4eLi4uPj4+P///wAAAAAAAAAAACwAAAAAEAAQAAADPkixzPOD
+    yADrWE8qC8WN0+BZAmBq1GMOqwigXFXCrGk/cxjjr27fLtout6n9eMIYMTXsFZsogXRKJf6u
+    P0kCADv/
 }
 
 #
@@ -87,13 +102,46 @@ proc Tree:newchild {w dir v args} {
 }
 
 #
+# Return a list of child elements.
+#
+proc Tree:children {w v} {
+  global Tree
+  if {![info exists Tree($w|$v|open)]} {
+      return {}
+  }
+  return $Tree($w|$v|children)
+}
+
+#
+# Returns true if element $v exists in tree $w.
+#
+proc Tree:itemexists {w v} {
+  global Tree
+  set len [llength $v]
+  if {$len > 1} {
+    set dir [lrange $v 0 [expr {$len - 2}]]
+  } else {
+    set dir {}
+  }
+  set n [lindex $v end]
+  if {![info exists Tree($w|$dir|open)]} {
+    return 0
+  }
+  set i [lsearch -exact $Tree($w|$dir|children) $n]
+  if {$i>=0} {
+    return 1
+  }
+  return 0
+}
+
+#
 # Insert a new element $v into the tree $w.
 #
 proc Tree:newitem {w v args} {
   global Tree
   set len [llength $v]
   if {$len > 1} {
-    set dir [lrange $v 0 [expr $len - 2]]
+    set dir [lrange $v 0 [expr {$len - 2}]]
   } else {
     set dir {}
   }
@@ -130,6 +178,7 @@ proc Tree:delitem {w v} {
     foreach t [array names Tree $w|*] {
       unset Tree($t)
     }
+    return
   }
   foreach c $Tree($w|$v|children) {
     if {$v != {}} {
@@ -143,7 +192,7 @@ proc Tree:delitem {w v} {
   unset Tree($w|$v|icon)
   set len [llength $v]
   if {$len > 1} {
-    set dir [lrange $v 0 [expr $dir - 2]]
+    set dir [lrange $v 0 [expr {$len - 2}]]
     set n [lindex $v end]
   } else {
     set dir {}
@@ -210,7 +259,16 @@ proc Tree:build w {
   catch {unset Tree($w|buildpending)}
   set Tree($w|y) 30
   Tree:buildlayer $w {} 10
-  $w config -scrollregion [$w bbox all]
+  set box [$w bbox all]
+  set x1 [lindex $box 0]
+  set y1 [lindex $box 1]
+  set x2 [lindex $box 2]
+  set y2 [lindex $box 3]
+  incr x1 -4
+  # incr y1 -2
+  incr x2 2
+  incr y2 2
+  $w config -scrollregion [list $x1 $y1 $x2 $y2]
   Tree:drawselection $w
 }
 
@@ -327,24 +385,13 @@ proc Tree:labelat {w x y} {
 # The remainder is code that demonstrates the use of the Tree
 # widget.  
 #
-if {0} {
+if {![info exists treb_root_dir]} {
 . config -bg white
 . config -menu .mb
 menu .mb -tearoff 0
 .mb add cascade -label File -underline 0 -menu .mb.file
 menu .mb.file -tearoff 0
 .mb.file add command -label Quit -command exit
-
-image create photo idir -data {
-    R0lGODdhEAAQAPIAAAAAAHh4eLi4uPj4APj4+P///wAAAAAAACwAAAAAEAAQAAADPVi63P4w
-    LkKCtTTnUsXwQqBtAfh910UU4ugGAEucpgnLNY3Gop7folwNOBOeiEYQ0acDpp6pGAFArVqt
-    hQQAO///
-}
-image create photo ifile -data {
-    R0lGODdhEAAQAPIAAAAAAHh4eLi4uPj4+P///wAAAAAAAAAAACwAAAAAEAAQAAADPkixzPOD
-    yADrWE8qC8WN0+BZAmBq1GMOqwigXFXCrGk/cxjjr27fLtout6n9eMIYMTXsFZsogXRKJf6u
-    P0kCADv/
-}
 
 Tree:create .w -width 150 -height 400 -yscrollcommand {.sb set}
 scrollbar .sb -orient vertical -command {.w yview}
@@ -356,22 +403,27 @@ label .c.l -width 40 -text {} -bg [.c cget -bg]
 pack .c.l -expand 1
 
 proc addrecurse {dir} {
-	foreach file [glob -nocomplain -- [eval "file join $dir {*}"]] {
+	foreach file [glob -nocomplain -- [file join $dir {*}]] {
 	    if {[file isdirectory $file]} {
 			Tree:newitem .w [file split $file] -image idir
-			addrecurse [file split $file]
+			addrecurse $file
 		}
 	}
 }
 
-Tree:newchild .w {} C: -image idir
-Tree:newchild .w {C:} Games -image idir
-addrecurse {C: Games}
+Tree:newchild .w ""  "/"   -image idir
+Tree:newchild .w "/" "etc" -image idir
+addrecurse "/etc"
 
 .w bind x <1> {
   set lbl [Tree:labelat %W %x %y]
   Tree:setselection %W $lbl
-  .c.l config -text [eval "file join $lbl"]
+  if {$lbl == ""} {
+      set lbl "/"
+  } else {
+      set lbl [eval "file join $lbl"]
+  }
+  .c.l config -text $lbl
 }
 .w bind x <Double-1> {
   Tree:open %W [Tree:labelat %W %x %y]

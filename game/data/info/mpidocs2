@@ -1,3 +1,6 @@
+                  MPI Reference Manual for FBMuck 6.00
+                   by Revar Desmera <revar@belfry.com>
+
 
                   <continued from mpidocs>
 
@@ -259,7 +262,9 @@ executed with blessed permissions.
 {awake:player}
     Returns how many times player is connected.  This means that it will
 returns 0 if the player is not connected.  If the given object is NOT a
-player, it will return 0.  In all other cases, it will return a positive
+player, it will return 0.  If the given player is NOT local to the trigger,
+and is not the owner of the trigger, and this is not run with blessed perms,
+then this will return 0.  In all other cases, it will return a positive
 number, being how many times the given player is connected to the server.
 
 
@@ -455,6 +460,7 @@ Example:
 will return the name of every object in the room in a comma separated list,
 using ", or " as the final conjunction.  ie:  "Tom, Can of SPAM, Dick, or
 Harry."
+
 
 
 ----------------------------------------------------------------------------
