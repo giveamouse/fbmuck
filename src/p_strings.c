@@ -1349,10 +1349,8 @@ prim_stringpfx(PRIM_PROTOTYPE)
 		abort_interp("Non-string argument.");
 	if (oper1->data.string == oper2->data.string)
 		result = 0;
-	else if (!(oper2->data.string && oper1->data.string))
-		result = oper1->data.string ? -1 : 1;
 	else {
-		result = string_prefix(oper2->data.string->data, oper1->data.string->data);
+		result = string_prefix(DoNullInd(oper2->data.string), DoNullInd(oper1->data.string));
 	}
 	CLEAR(oper1);
 	CLEAR(oper2);
