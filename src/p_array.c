@@ -350,9 +350,9 @@ prim_array_setitem(PRIM_PROTOTYPE)
 	oper3 = POP();				/* ???  item to store     */
 
 	if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-		abort_interp("Argument not an integer or string. (2)");
+		abort_interp("Argument not an integer or string. (3)");
 	if (oper2->type != PROG_ARRAY)
-		abort_interp("Argument not an array. (1)");
+		abort_interp("Argument not an array. (2)");
 
 	result = array_setitem(&oper2->data.array, oper1, oper3);
 	if (result < 0)
@@ -405,9 +405,9 @@ prim_array_insertitem(PRIM_PROTOTYPE)
 	oper2 = POP();				/* arr  Array to store in */
 	oper3 = POP();				/* ???  item to store     */
 	if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-		abort_interp("Argument not an integer or string. (2)");
+		abort_interp("Argument not an integer or string. (3)");
 	if (oper2->type != PROG_ARRAY)
-		abort_interp("Argument not an array. (1)");
+		abort_interp("Argument not an array. (2)");
 
 	result = array_insertitem(&oper2->data.array, oper1, oper3);
 	if (result < 0)
