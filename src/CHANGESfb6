@@ -19,11 +19,23 @@ Fixed bug #785968: "man =" doesn't work
 Fixed bug #659864: Preempt MPI descloop
 Fixed crasher re unterminated comments in RFE #782388 nested comments patch.
 Fixed "RFE" #670187: recycling a room sends zombies home quietly
+Fixed crasher in for loops with stack overflow.
 Changed DESCRDBREF to return #-1 for an invalid or not-logged-in descriptor.
+Changed MUF stack traces to show floats in short format.
+Changed string translations of floats to show only 15 significant digits.
 Added docs for ARRAY_FMTSTRINGS to muf manual.
 Added ARRAY_FILTER_FLAGS ( list:dbrefs str:flags -- list:dbrefsout ) MUF prim.
   Takes a homogenous list array of dbrefs, and filters them for those objects
   that pass the given flag test.  See 'help @find' for flags test info.
+Added FTOSTRC ( flt:val -- str:val ) MUF prim.  Returns string representation
+  of a floating point value, without trailing zeros.  Like FTOSTR without the
+  trailing zeros. (ProtoMuck prim)
+Added ARRAY_INTERPRET ( list:data -- string:catenated ) MUF prim.  Takes a
+  list of heterogenous data, and catenates it together with best apropriate
+  translations of each type.  Like array_join, except there's no delimiters,
+  and dbrefs are translated to names. (Protomuck prim)
+Added }cat compiler $define to '} array_make array_interpret'. (Proto)
+Added }array compiler $define to '} array_make'. (Proto)
 Added RFE #498330: For "recycle" [success] message, put the #dbref.
 Added RFE #788992: Allow @recycle by dbref
 Added RFE #782388: Nested MUF comments

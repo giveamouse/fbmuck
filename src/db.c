@@ -762,6 +762,14 @@ ifloat(const char *s)
 		s++;
 	if (*s == '+' || *s == '-')
 		s++;
+	/* WORK: for when float parsing is improved.
+	if (!string_compare(s, "inf")) {
+		return 1;
+	}
+	if (!string_compare(s, "nan")) {
+		return 1;
+	}
+	*/
 	hold = s;
 	while ((*s) && (*s >= '0' && *s <= '9'))
 		s++;

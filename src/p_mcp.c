@@ -238,7 +238,7 @@ stuff_dict_in_mesg(stk_array* arr, McpMesg* msg)
 						mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 						break;
 					case PROG_FLOAT:
-						snprintf(buf, sizeof(buf), "%.16lg", subval->data.fnumber);
+						snprintf(buf, sizeof(buf), "%.15lg", subval->data.fnumber);
 						mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 						break;
 					default:
@@ -265,7 +265,7 @@ stuff_dict_in_mesg(stk_array* arr, McpMesg* msg)
 			mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 			break;
 		case PROG_FLOAT:
-			snprintf(buf, sizeof(buf), "%.16lg", argval->data.fnumber);
+			snprintf(buf, sizeof(buf), "%.15lg", argval->data.fnumber);
 			mcp_mesg_arg_remove(msg, argname.data.string->data);
 			mcp_mesg_arg_append(msg, argname.data.string->data, buf);
 			break;
@@ -1081,7 +1081,7 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 				value = buf;
 				break;
 			case PROG_FLOAT:
-				snprintf(buf, sizeof(buf), "%.16lg", temp2->data.fnumber);
+				snprintf(buf, sizeof(buf), "%.15lg", temp2->data.fnumber);
 				value = buf;
 				break;
 			default:

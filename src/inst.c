@@ -182,7 +182,10 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 		length = snprintf(buffer, buflen, "%d", theinst->data.number);
 		break;
 	case PROG_FLOAT:
-		length = snprintf(buffer, buflen, "%#.17lg", theinst->data.fnumber);
+		length = snprintf(buffer, buflen, "%.16lg", theinst->data.fnumber);
+		if (!strchr(buffer, '.') && !strchr(buffer, 'E') && !strchr(buffer, 'e')) {
+			strcatn(buffer, buflen, ".0");
+		}
 		break;
 	case PROG_ADD:
 		if (theinst->data.addr->data->type == PROG_FUNCTION &&

@@ -504,9 +504,11 @@ include_internal_defs(COMPSTATE * cstat)
 	insert_def(cstat, "err_ibounds?", "4 is_set?");
 
 	/* Array convenience defines */
+	insert_def(cstat, "}array", "} array_make");
 	insert_def(cstat, "}list", "} array_make");
 	insert_def(cstat, "}dict", "} 2 / array_make_dict");
 	insert_def(cstat, "}join", "} array_make \"\" array_join");
+	insert_def(cstat, "}cat", "} array_make array_interpret");
 	insert_def(cstat, "}tell", "} array_make me @ 1 array_make array_notify");
 	insert_def(cstat, "[]", "array_getitem");
 	insert_def(cstat, "->[]", "array_setitem");

@@ -1302,7 +1302,7 @@ shovechars()
 						idleboot_user(d);
 					}
 				} else {
-					if ((now - d->last_time) > 300) {
+					if ((now - d->connected_at) > 300) {
 						d->booted = 1;
 					}
 				}

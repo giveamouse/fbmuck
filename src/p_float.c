@@ -657,9 +657,33 @@ prim_ftostr(PRIM_PROTOTYPE)
 {
 	CHECKOP(1);
 	oper1 = POP();
+	if (oper1->type == PROG_INTEGER) {
+		oper1->type = PROG_FLOAT;
+		oper1->data.fnumber = oper1->data.number;
+	}
 	if (oper1->type != PROG_FLOAT)
 		abort_interp("Non-float argument. (1)");
-	snprintf(buf, sizeof(buf), "%#.16lg", oper1->data.fnumber);
+	snprintf(buf, sizeof(buf), "%#.15lg", oper1->data.fnumber);
+	CLEAR(oper1);
+	PushString(buf);
+}
+
+void
+prim_ftostrc(PRIM_PROTOTYPE)
+{
+	CHECKOP(1);
+	oper1 = POP();
+	if (oper1->type == PROG_INTEGER) {
+		oper1->type = PROG_FLOAT;
+		oper1->data.fnumber = oper1->data.number;
+	}
+	if (oper1->type != PROG_FLOAT)
+		abort_interp("Non-float argument. (1)");
+	sprintf(buf, "%.15lg", oper1->data.fnumber);
+	if (!strchr(buf, '.') && !strchr(buf, 'E') && !strchr(buf, 'e')) {
+		strcatn(buf, sizeof(buf), ".0");
+	}
+
 	CLEAR(oper1);
 	PushString(buf);
 }
