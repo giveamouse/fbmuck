@@ -31,7 +31,7 @@ Installation in a shared environment is a little trickier:
 		./configure
 	(If you want your MUCKs to have the capability to use SSL, ensure
 	you have the OpenSSL headers and libraries installed on your system
-	and add '--enable-ssl' to that command line.)
+	and add '--with-ssl' to that command line.)
 
 	Then, type:
 		make
