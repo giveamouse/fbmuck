@@ -22,7 +22,6 @@ clean:
 
 cleaner:
 	${RM} Makefile config.status config.cache config.log
-	cp Makefile.cfg Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && make cleaner; \
 	done
