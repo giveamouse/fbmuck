@@ -33,7 +33,7 @@
 
 
 /* number of hostnames cached in an LRU queue */
-#define HOST_CACHE_SIZE 256
+#define HOST_CACHE_SIZE 8192
 
 /* Time before retrying to resolve a previously unresolved IP address. */
 /* 1800 seconds == 30 minutes */
