@@ -592,8 +592,12 @@ prim_descr_setuser(PRIM_PROTOTYPE)
 	}
 
 	if (ref != NOTHING) {
+		const char* destname = "*NOBODY*";
+		if (ref != NOTHING) {
+			destname = NAME(ref);
+		}
 		log_status("DESCR_SETUSER: %s(%d) to %s(%d) on descriptor %d\n",
-				   NAME(player), player, NAME(ref), ref, oper1->data.number);
+				   NAME(player), player, destname, ref, oper1->data.number);
 	}
 	tmp = oper1->data.number;
 

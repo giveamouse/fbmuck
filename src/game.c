@@ -39,6 +39,12 @@ do_dump(dbref player, const char *newfile)
 	char buf[BUFFER_LEN];
 
 	if (Wizard(player)) {
+#ifndef DISKBASE
+		if (global_dumper_pid != 0) {
+			notify(player, "Sorry, there is already a dump currently in progress.");
+			return;
+		}
+#endif
 		if (*newfile
 #ifdef GOD_PRIV
 			&& God(player)
@@ -273,6 +279,13 @@ void
 fork_and_dump(void)
 {
 	epoch++;
+
+#ifndef DISKBASE
+	if (global_dumper_pid != 0) {
+		wall_wizards("## Dump already in progress.  Skipping redundant scheduled dump.");
+		return;
+	}
+#endif
 
 	last_monolithic_time = time(NULL);
 	log_status("CHECKPOINTING: %s.#%d#\n", dumpfile, epoch);

@@ -306,6 +306,7 @@ RETSIGTYPE sig_reap(int i)
 				wall_wizards("# as soon as possible, and accept the data lost since the previous DB save.");
 			}
 			global_dumpdone = 1;
+			global_dumper_pid = 0;
 #endif
 		} else {
 			fprintf(stderr, "unknown child process (pid %d) exited with status %d\n", reapedpid, status);

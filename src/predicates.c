@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.8  2003/10/07 07:24:28  revar
+ * Fixed possible crasher bug with autostart programs.
+ *
  * Revision 1.7  2002/09/08 23:07:19  sombre
  * Fixed memory leak when toading online players.
  * Fixed remove_prop bug so it will remove props ending in /. (bug #537744)
@@ -125,6 +128,19 @@
 #include "params.h"
 #include "tune.h"
 #include "externs.h"
+
+int
+OkObj(dbref obj)
+{
+	if (obj < 0 || obj >= db_top) {
+		return 0;
+	}
+	if (Typeof(obj) == TYPE_GARBAGE) {
+		return 0;
+	}
+	return 1;
+}
+
 
 int
 can_link_to(dbref who, object_flag_type what_type, dbref where)
