@@ -1217,7 +1217,7 @@ new_connection(int port, int sock)
 		log_status("ACCEPT: %s(%d) on descriptor %d\n", hostname,
 				   ntohs(addr.sin_port), newsock);
 #endif
-		log_status("CONCOUNT: There are now %d open connections.\n", ndescriptors);
+		log_status("CONCOUNT: There are now %d open connections.\n", ++ndescriptors);
 		return initializesock(newsock, hostname);
 	}
 }
@@ -1517,7 +1517,6 @@ initializesock(int s, const char *hostname)
 	struct descriptor_data *d;
 	char buf[128], *ptr;
 
-	ndescriptors++;
 	MALLOC(d, struct descriptor_data, 1);
 
 	d->descriptor = s;
