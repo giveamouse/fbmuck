@@ -265,39 +265,42 @@ first.  You *must* own the object being recycled, even wizards must
 use the @chown command to recycle someone else's belongings.
 ~~~
 @set
-@set <object> = [!] <flag> -or-
-@set <object> = <property> : [ <string> ] -or-
-@set <object> = :
+@set <object> = [!]<flag>
+@set <object> = <property>:<string>
+@set <object> = <property>:
+@set <object> = :clear
   
 @set does one of three things on TinyMUCK, it can modify flags, add
 properties to an object, or remove properties from an object.
   
 Using the first format, you may set flags, which are: WIZARD, LINK_OK,
 DARK [DEBUG], FILTER, STICKY [SETUID], JUMP_OK, BUILDER [BOUND], QUELL,
-CHOWN_OK, HAVEN [HARDUID], ABODE [AUTOSTART], VEHICLE [VIEWABLE], ZOMBIE,
-or MUCKER.  You can also set the MUCKER (or Priority) Level of an object
-by using 0, 1, 2, or 3 as the flag name.  An optional flag which may or
-may not be on a given site is KILL_OK.
+CHOWN_OK [COLOR], HAVEN [HARDUID], ABODE [AUTOSTART], VEHICLE [VIEWABLE],
+ZOMBIE, or MUCKER.  You can also set the MUCKER (or Priority) Level of
+an object by using 0, 1, 2, or 3 as the flag name.  An optional flag
+which may or may not be on a given site is KILL_OK.
   
-The second format sets <property> on <object> to <string>, or if <string>
-is not given, removes <property>.
+The second format sets <property> on <object> to <string>
+
+The third format will remove <property> and any sub-properties under it.
   
-The third format removes all properties from an object.
+The fourth format removes all properties from an object.
 ~~~
 @propset
-@propset <object> = <type>:<property>:<value> -or-
-@propset <object> = erase:<property>
+@propset <object>=<type>:<property>:<value> -or-
+@propset <object>=erase:<property>
   
 @propset can set and clear properties from an object.
   
 If the first format above is specified, the @propset command sets
 <property> on <object> to <value>, where <value> is of type <type>.
-<type> can be one of 'string', 'integer', 'dbref', or 'lock'.  A string
-can be any set of characters the MUCK recognizes.  An integer must be
-composed solely of numerals with the possible exception of a leading sign
-indicator (+ or -).  A dbref must be of the form # followed by a positive
-integer, and it must be a valid dbref (i.e., the object must exist).  A
-lock value must be a key that would be accepted by @lock or a similar
+<type> can be one of 'string', 'integer', 'float, 'dbref', or 'lock'.
+A string can be any set of characters the MUCK recognizes.  An integer
+must be composed solely of numerals with the possible exception of
+a leading sign indicator (+ or -).  A float must be a valid floating
+point number.  A dbref must be of the form # followed by a positive
+integer, and it must be a valid dbref (i.e., the object must exist).
+A lock value must be a key that would be accepted by @lock or a similar
 command (see the help for @lock for more details).
   
 The second format removes <property> on object.  Note that if <property>
@@ -393,9 +396,11 @@ the execution exits this program, the multitasking mode returns to what
 it was before the function was called.  This lets libraries of atomic
 functions be written.
 ~~~
-chown_ok
-When set, this flag indicates that any player may use the @chown
-command to claim ownership of the item. (see @chown)
+chown_ok|color
+When set on rooms, exit and things, the C flag indicates that any player
+may use the @chown command to claim ownership of the item. (see @chown)
+When the C flag is set on a player, this indicates that the player wishes
+to receive ANSI Color codes from the server.
 ~~~
 commands
 All sorts of commands are available to players. Common ones are listed by
@@ -484,14 +489,15 @@ Flags are set with the @set command. The flags are: W(izard), S(ticky),
 L(ink_OK), D(ark), J(ump_OK), K(ill_OK), C(hown_OK), H(aven), A(bode),
 B(uilder), V(ehicle), Z(ombie), and The flags R(oom), E(xit), and
 P(layer) are also used.  Debug is the same flag as Dark, Silent as Sticky,
-and Bound as Builder.  F refers to a Muck Forth program.  An M followed
-by a 1, 2, or 3 gives the Mucker Level.  (Priority Level for exits.)
-See TYPES, GENDER, and individual flag names.
+Color as Chown_OK, and Bound as Builder.  F refers to a Muck Forth program.
+An M followed by a 1, 2, or 3 gives the Mucker Level.  (Priority Level for
+exits.) See TYPES, GENDER, and individual flag names.
 ~~~
 gender
-@set me=sex:unassigned|male|female|neuter. Default unassigned. If a
-player's sex is set, %-substitutions will use the appropriate pronoun
-for that player. Only meaningful for players. See SUBSTITUTIONS.
+@set me=sex:unassigned|male|female|neuter|herm|hermaphrodite.
+Default is unassigned. If a player's sex is set, %X substitutions
+will use the appropriate pronoun for that player in @osucc/@ofail/etc.
+Only meaningful for players. See SUBSTITUTIONS.
 ~~~
 get|take
 get <object>.  Attempts to pick up <object>.  The lock on  <object> is
@@ -777,8 +783,8 @@ Objects have several standard strings:
 ~~~
 substitutions|pronouns|pronoun_subst|pronoun substitution|%a|%s|%o|%p|%r|%n
 @osuccess, @ofail, and @odrop messages may contain %-substitutions,
-which evaluate to gender-specific pronouns if the player's sex is
-set. They are:
+which evaluate to gender-specific pronouns if the player's 'sex' property
+is set. They are:
     %a (absolute)       = Name's, his, hers, its.
     %s (subjective)     = Name, he, she, it.
     %o (objective)      = Name, him, her, it.
@@ -787,6 +793,35 @@ set. They are:
     %n (player's name)  = Name.
 Capitalized pronouns are also available with %A, %S, %O, %P, and %R.
 If you need a '%', use %%.
+  
+The naturally supported genders are 'male', 'female', 'neuter', 'herm',
+and 'hermaphrodite', with the last two being equivalent, both using the
+sie/hir/hirself/hirs pronoun set.
+ 
+This set of supported genders can be extended either on an individual
+player, or globally 0 by adding _pronouns/GENDER/%X properties on the
+player, or on #0 respectively.  For example, to add support on yourself
+for a 'stallion' gender, you would add five properties, one for each
+of the %a, %s, %o, %p, and %r pronouns, in the _pronouns/stallion/
+propdir.  ie:
+    @set me=_pronouns/stallion/%a:his
+    @set me=_pronouns/stallion/%s:he
+    @set me=_pronouns/stallion/%o:him
+    @set me=_pronouns/stallion/%p:his
+    @set me=_pronouns/stallion/%r:himself
+
+If a shapeshifting player decided that they prefer a different subjective
+pronoun for themselve while they were in herm form, they could override it
+with something like:
+    @set me=_pronouns/herm/%s:shi
+This would only override the %s pronoun while their gender was 'herm',
+though, meaning that if they shapeshift to male, they only have to change
+their 'sex' property, and not tweak their pronouns as well.
+  
+If a player sets a %a, %s, %o, %p, or %r property on themselve, that value
+WILL be used, instead of any matching _pronouns/GENDER/%X property.  This
+lets players make quick temporary pronoun fixes, and is also available
+for legacy reasons.
   
 Ex. '@ofail teapot=burns %p hand on the hot teapot.'
 See GENDER.
