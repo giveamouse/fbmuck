@@ -840,3 +840,23 @@ int is_prop_prefix(const char* Property, const char* Prefix)
 	return (*Property == '\0') || (*Property == PROPDIR_DELIMITER);
 }
 
+int has_suffix(const char* text, const char* suffix)
+{
+	int tlen = text ? strlen(text) : 0;
+	int slen = suffix ? strlen(suffix) : 0;
+
+	if (!tlen || !slen || (tlen < slen))
+		return 0;
+
+	return !string_compare(text + tlen - slen, suffix);
+}
+
+int has_suffix_char(const char* text, char suffix)
+{
+	int tlen = text ? strlen(text) : 0;
+
+	if (tlen < 1)
+		return 0;
+
+	return text[tlen - 1] == suffix;
+}

@@ -9,6 +9,7 @@
 #define MPI_ISLOCK		0x04
 #define MPI_ISDEBUG		0x08
 #define MPI_ISBLESSED	0x10
+#define MPI_NOHOW		0x20
 
 extern char *mesg_parse(int descr, dbref player, dbref what, dbref perms,
 						const char *inbuf, char *outbuf, int maxchars, int mesgtyp);

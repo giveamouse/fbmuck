@@ -48,6 +48,7 @@ dbref mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *b
 char *ref2str(dbref obj, char *buf, size_t buflen);
 int truestr(char *buf);
 
+int check_mvar_overflow(int count);
 int new_mvar(const char *varname, char *buf);
 char *get_mvar(const char *varname);
 int free_top_mvar(void);

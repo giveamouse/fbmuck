@@ -17,6 +17,7 @@
 #include "tune.h"
 #include "strings.h"
 #include "interp.h"
+#include "msgparse.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;
@@ -1101,3 +1102,215 @@ prim_blessedp(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
+void
+prim_parsepropex(PRIM_PROTOTYPE)
+{
+	struct inst*	oper1;
+	struct inst*	oper2;
+	struct inst*	oper3;
+	struct inst*	oper4;
+	stk_array*		vars;
+	const char*		mpi;
+	char*			str = 0;
+	array_iter		idx;
+	extern int		varc; /* from msgparse.c */
+	int				mvarcnt;
+	char*			buffers;
+	int				novars;
+	int				hashow = 0;
+	int				i;
+	char			buf[BUFFER_LEN];
+
+	CHECKOP(4);
+
+	oper4 = POP(); /* int:Private */
+	oper3 = POP(); /* dict:Vars */
+	oper2 = POP(); /* str:Prop */
+	oper1 = POP(); /* ref:Object */
+
+	if (mlev < 3)
+		abort_interp("Mucker level 3 or greater required.");
+
+	if (oper1->type != PROG_OBJECT)
+		abort_interp("Non-object argument. (1)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Non-string argument. (2)");
+	if (oper3->type != PROG_ARRAY)
+		abort_interp("Non-array argument. (3)");
+	if (oper3->data.array && (oper3->data.array->type != ARRAY_DICTIONARY))
+		abort_interp("Dictionary array expected. (3)");
+	if (oper4->type != PROG_INTEGER)
+		abort_interp("Non-integer argument. (4)");
+
+	if (!valid_object(oper1))
+		abort_interp("Invalid object. (1)");
+	if (!oper2->data.string)
+		abort_interp("Empty string argument. (2)");
+	if ((oper4->data.number != 0) && (oper4->data.number != 1))
+		abort_interp("Integer of 0 or 1 expected. (4)");
+
+	CHECKREMOTE(oper1->data.objref);
+
+	if (has_suffix_char(oper2->data.string->data, PROPDIR_DELIMITER))
+		abort_interp("Cannot access a propdir directly.");
+	
+	if (!prop_read_perms(ProgUID, oper1->data.objref, oper2->data.string->data, mlev))
+		abort_interp("Permission denied.");
+
+	mpi		= get_uncompress(get_property_class(oper1->data.objref, oper2->data.string->data));
+	vars	= oper3->data.array;
+	novars	= array_count(vars);
+
+	if (check_mvar_overflow(novars))
+		abort_interp("Out of MPI variables. (3)");
+
+	if (array_first(vars, &idx))
+	{
+		do
+		{
+			array_data*	val = array_getitem(vars, &idx);
+
+			if (idx.type != PROG_STRING)
+			{
+				CLEAR(&idx);
+				abort_interp("Only string keys supported. (3)");
+			}
+
+			if (idx.data.string == NULL)
+			{
+				CLEAR(&idx);
+				abort_interp("Empty string keys not supported. (3)");
+			}
+
+			if (strlen(idx.data.string->data) > MAX_MFUN_NAME_LEN)
+			{
+				CLEAR(&idx);
+				abort_interp("Key too long to be an MPI variable. (3)");
+			}
+
+			switch(val->type)
+			{
+				case PROG_INTEGER:
+				case PROG_FLOAT:
+				case PROG_OBJECT:
+				case PROG_STRING:
+				case PROG_LOCK:
+				break;
+
+				default:
+					CLEAR(&idx);
+					abort_interp("Only integer, float, dbref, string and lock values supported. (3)");
+				break;
+			}
+
+			if (string_compare(idx.data.string->data, "how") == 0)
+				hashow = 1;
+		}
+		while(array_next(vars, &idx));
+	}
+
+	if (mpi && *mpi)
+	{
+		if (novars > 0)
+		{
+			mvarcnt = varc;
+
+			if ((buffers = (char*)malloc(novars * BUFFER_LEN)) == NULL)
+				abort_interp("Out of memory.");
+
+			if (array_first(vars, &idx))
+			{
+				i = 0;
+
+				do
+				{
+					char*		var_buf = buffers + (i++ * BUFFER_LEN);
+					array_data*	val;
+
+					val = array_getitem(vars, &idx);
+
+					switch(val->type)
+					{
+						case PROG_INTEGER:
+							snprintf(var_buf, BUFFER_LEN, "%i", val->data.number);
+						break;
+
+						case PROG_FLOAT:
+							snprintf(var_buf, BUFFER_LEN, "%f", val->data.fnumber);
+						break;
+
+						case PROG_OBJECT:
+							snprintf(var_buf, BUFFER_LEN, "#%i", val->data.objref);
+						break;
+
+						case PROG_STRING:
+							strncpy(var_buf, DoNullInd(val->data.string), BUFFER_LEN);
+						break;
+
+						case PROG_LOCK:
+							strncpy(var_buf, unparse_boolexp(ProgUID, val->data.lock, 1), BUFFER_LEN);
+						break;
+
+						default:
+							var_buf[0] = '\0';
+						break;
+					}
+
+					var_buf[BUFFER_LEN - 1] = '\0';
+
+					new_mvar(idx.data.string->data, var_buf);
+				}
+				while(array_next(vars, &idx));
+			}
+		}
+
+		result = 0;
+
+		if (oper4->data.number)
+			result |= MPI_ISPRIVATE;
+
+		if (Prop_Blessed(oper1->data.objref, oper2->data.string->data))
+			result |= MPI_ISBLESSED;
+
+		if (hashow)
+			result |= MPI_NOHOW;
+
+		str = do_parse_mesg(fr->descr, player, oper1->data.objref, mpi, "(parsepropex)", buf, result);
+
+		if (novars > 0)
+		{
+			if (array_first(vars, &idx))
+			{
+				i = 0;
+
+				do
+				{
+					char*		var_buf = buffers + (i++ * BUFFER_LEN);
+					struct inst	temp;
+
+					temp.type			= PROG_STRING;
+					temp.data.string	= alloc_prog_string(var_buf);
+
+					array_setitem(&vars, &idx, &temp);
+
+					CLEAR(&temp);
+				}
+				while(array_next(vars, &idx));
+			}
+
+			free(buffers);
+
+			varc = mvarcnt;
+		}
+	}
+
+	oper3->data.array = NULL;
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
+	CLEAR(oper4);
+
+	PushArrayRaw(vars);
+	PushString(str);
+}
