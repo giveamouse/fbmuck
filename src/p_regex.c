@@ -12,7 +12,7 @@
 # define __STDC__ 1
 # include "./regex.h"
 #else
-# include <regex.h>
+# include "pcre/pcre.h"
 #endif
 
 #include "db.h"
@@ -34,22 +34,23 @@ typedef struct
 {
 	struct shared_string*	pattern;
 	int						flags;
-	regex_t					re;
+	pcre*					re;
 }
 muf_re;
 
 static muf_re muf_re_cache[MUF_RE_CACHE_ITEMS];
 
-muf_re* muf_re_get(struct shared_string* pattern, int flags, int* err)
+muf_re* muf_re_get(struct shared_string* pattern, int flags, const char** errmsg)
 {
 	int		idx	= (hash(DoNullInd(pattern), MUF_RE_CACHE_ITEMS) + flags) % MUF_RE_CACHE_ITEMS;
 	muf_re*	re	= &muf_re_cache[idx];
+	int     erroff;
 
 	if (re->pattern)
 	{
 		if ((flags != re->flags) || strcmp(DoNullInd(pattern), DoNullInd(re->pattern)))
 		{
-			regfree(&re->re);
+			pcre_free(&re->re);
 
 			if (re->pattern && (--re->pattern->links == 0))
     			free((void *)re->pattern);
@@ -58,7 +59,8 @@ muf_re* muf_re_get(struct shared_string* pattern, int flags, int* err)
 			return re;
 	}
 
-	if ((*err = regcomp(&re->re, DoNullInd(pattern), flags | REG_EXTENDED)) != 0)
+	re->re = pcre_compile(DoNullInd(pattern), flags, errmsg, &erroff, NULL);
+	if (re->re == NULL)
 	{
 		re->pattern = NULL;
 		return NULL;
@@ -76,19 +78,15 @@ const char* muf_re_error(int err)
 {
 	switch(err)
 	{
-		case REG_NOMATCH:	return "No matches";
-		case REG_BADPAT:	return "Invalid regular expression";
-		case REG_ECOLLATE:	return "Invalid collating element referenced";
-		case REG_ECTYPE:	return "Invalid character class type referenced";
-		case REG_EESCAPE:	return "Trailing \\ in pattern";
-		case REG_ESUBREG:	return "Number in \\digit invalid or in error";
-		case REG_EBRACK:	return "[ ] imbalance";
-		case REG_EPAREN:	return "\\( \\) or ( ) imbalance";
-		case REG_EBRACE:	return "{ } imbalance";
-		case REG_BADBR:		return "Content of \\{ \\} invalid";
-		case REG_ERANGE:	return "Invalid endpoint in range expression";
-		case REG_ESPACE:	return "Out of memory";
-		case REG_BADRPT:	return "?, * or + not preceded by valid regular expression";
+		case PCRE_ERROR_NOMATCH:		return "No matches";
+		case PCRE_ERROR_NULL:			return "Internal error: NULL arg to pcre_exec()";
+		case PCRE_ERROR_BADOPTION:		return "Invalid regexp option.";
+		case PCRE_ERROR_BADMAGIC:		return "Internal error: bad magic number.";
+		case PCRE_ERROR_UNKNOWN_NODE:	return "Internal error: bad regexp node.";
+		case PCRE_ERROR_NOMEMORY:		return "Out of memory.";
+		case PCRE_ERROR_NOSUBSTRING:	return "No substring.";
+		case PCRE_ERROR_MATCHLIMIT:		return "Match recursion limit exceeded.";
+		case PCRE_ERROR_CALLOUT:		return "Internal error: callout error.";
 		default:			return "Unknown error";
 	}
 }
@@ -98,11 +96,14 @@ prim_regexp(PRIM_PROTOTYPE)
 {
 	stk_array*	nu_val	= 0;
 	stk_array*	nu_idx	= 0;
-	regmatch_t*	matches	= 0;
+	const int   MATCH_ARR_SIZE = 30;
+	int			matches[MATCH_ARR_SIZE];
 	muf_re*		re;
 	char*		text;
 	int			flags	= 0;
-	int			nosubs, err, len, i;
+	int			len, i;
+	int			matchcnt = 0;
+	const char*	errstr;
 
 	CHECKOP(3);
 
@@ -120,24 +121,22 @@ prim_regexp(PRIM_PROTOTYPE)
 		abort_interp("Empty string argument (2)");
 
 	if (oper3->data.number & MUF_RE_ICASE)
-		flags |= REG_ICASE;
+		flags |= PCRE_CASELESS;
+	if (oper3->data.number & MUF_RE_EXTENDED)
+		flags |= PCRE_EXTENDED;
 
-	if ((re = muf_re_get(oper2->data.string, flags, &err)) == NULL)
-		abort_interp(muf_re_error(err));
+	if ((re = muf_re_get(oper2->data.string, flags, &errstr)) == NULL)
+		abort_interp(errstr);
 
 	text	= DoNullInd(oper1->data.string);
 	len		= strlen(text);
-	nosubs	= re->re.re_nsub + 1;
 
-	if ((matches = (regmatch_t*)malloc(sizeof(regmatch_t) * nosubs)) == NULL)
-		abort_interp("Out of memory");
-
-	if ((err = regexec(&re->re, text, nosubs, matches, 0)) != 0)
+	if ((matchcnt = pcre_exec(re->re, NULL, text, len, 0, 0, matches, MATCH_ARR_SIZE)) < 0)
 	{
-		if (err != REG_NOMATCH)
+		if (matchcnt != PCRE_ERROR_NOMATCH)
 		{
 			free(matches);
-			abort_interp(muf_re_error(err));
+			abort_interp(muf_re_error(matchcnt));
 		}
 
 		if (((nu_val = new_array_packed(0)) == NULL) ||
@@ -156,8 +155,8 @@ prim_regexp(PRIM_PROTOTYPE)
 	}
 	else
 	{
-		if (((nu_val = new_array_packed(nosubs)) == NULL) ||
-			((nu_idx = new_array_packed(nosubs)) == NULL))
+		if (((nu_val = new_array_packed(matchcnt)) == NULL) ||
+			((nu_idx = new_array_packed(matchcnt)) == NULL))
 		{
 			free(matches);
 
@@ -170,14 +169,15 @@ prim_regexp(PRIM_PROTOTYPE)
 			abort_interp("Out of memory");
 		}
 
-		for(i = 0; i < nosubs; i++)
+		for(i = 0; i < matchcnt; i++)
 		{
-			regmatch_t*	cm = &matches[i];
+			int substart = matches[i*2];
+			int subend = matches[i*2+1];
 			struct inst	idx, val;
 			stk_array*	nu;
 
-			if ((cm->rm_so >= 0) && (cm->rm_eo >= 0) && (cm->rm_so < len))
-				snprintf(buf, BUFFER_LEN, "%.*s", (int)(cm->rm_eo - cm->rm_so), &text[cm->rm_so]);
+			if ((substart >= 0) && (subend >= 0) && (substart < len))
+				snprintf(buf, BUFFER_LEN, "%.*s", (subend - substart), &text[substart]);
 			else
 				buf[0] = '\0';
 
@@ -204,7 +204,7 @@ prim_regexp(PRIM_PROTOTYPE)
 			idx.type		= PROG_INTEGER;
 			idx.data.number	= 0;
 			val.type		= PROG_INTEGER;
-			val.data.number	= cm->rm_so + 1;
+			val.data.number	= substart + 1;
 
 			array_setitem(&nu, &idx, &val);
 
@@ -214,7 +214,7 @@ prim_regexp(PRIM_PROTOTYPE)
 			idx.type		= PROG_INTEGER;
 			idx.data.number	= 1;
 			val.type		= PROG_INTEGER;
-			val.data.number	= cm->rm_eo - cm->rm_so;
+			val.data.number	= subend - substart;
 
 			array_setitem(&nu, &idx, &val);
 
@@ -246,14 +246,16 @@ prim_regexp(PRIM_PROTOTYPE)
 void
 prim_regsub(PRIM_PROTOTYPE)
 {
-	regmatch_t*	matches		= 0;
+	const int   MATCH_ARR_SIZE = 30;
+	int			matches[MATCH_ARR_SIZE];
 	int			flags		= 0;
 	char*		write_ptr	= buf;
 	int			write_left	= BUFFER_LEN - 1;
 	muf_re*		re;
 	char*		text;
-	char*		prevtext;
-	int			nosubs, err, len;
+	char*		textstart;
+	const char*	errstr;
+	int			matchcnt, len;
 
 	CHECKOP(4);
 
@@ -274,28 +276,24 @@ prim_regsub(PRIM_PROTOTYPE)
 		abort_interp("Empty string argument (2)");
 
 	if (oper4->data.number & MUF_RE_ICASE)
-		flags |= REG_ICASE;
+		flags |= PCRE_CASELESS;
+	if (oper4->data.number & MUF_RE_EXTENDED)
+		flags |= PCRE_EXTENDED;
 
-	if ((re = muf_re_get(oper2->data.string, flags, &err)) == NULL)
-		abort_interp(muf_re_error(err));
+	if ((re = muf_re_get(oper2->data.string, flags, &errstr)) == NULL)
+		abort_interp(errstr);
 
-	text     = DoNullInd(oper1->data.string);
-	prevtext = text;
-	nosubs   = re->re.re_nsub + 1;
+	textstart = text = DoNullInd(oper1->data.string);
 
-	if ((matches = (regmatch_t*)malloc(sizeof(regmatch_t) * nosubs)) == NULL)
-		abort_interp("Out of memory");
-
+	len = strlen(textstart);
 	while((*text != '\0') && (write_left > 0))
 	{
-		len = strlen(text);
-
-		if ((err = regexec(&re->re, text, nosubs, matches, 0)) != 0)
+		if ((matchcnt = pcre_exec(re->re, NULL, textstart, len, text-textstart, 0, matches, MATCH_ARR_SIZE)) < 0)
 		{
-			if (err != REG_NOMATCH)
+			if (matchcnt != PCRE_ERROR_NOMATCH)
 			{
 				free(matches);
-				abort_interp(muf_re_error(err));
+				abort_interp(muf_re_error(matchcnt));
 			}
 
 			while((write_left > 0) && (*text != '\0'))
@@ -308,12 +306,14 @@ prim_regsub(PRIM_PROTOTYPE)
 		}
 		else
 		{
-			regmatch_t*	cm			= &matches[0];
+			int			allstart	= matches[0];
+			int			allend		= matches[1];
+			int			substart	= -1;
+			int			subend		= -1;
 			char*		read_ptr	= DoNullInd(oper3->data.string);
-			int			soff		= cm->rm_so;
 			int			count;
 
-			for(count = cm->rm_so; (write_left > 0) && (*text != '\0') && (count > 0); count--)
+			for(count = allstart-(text-textstart); (write_left > 0) && (*text != '\0') && (count > 0); count--)
 			{
 				*write_ptr++ = *text++;
 				write_left--;
@@ -332,19 +332,20 @@ prim_regsub(PRIM_PROTOTYPE)
 					{
 						int idx = (*read_ptr++) - '0';
 
-						if ((idx < 0) || (idx >= nosubs))
+						if ((idx < 0) || (idx >= matchcnt))
 						{
 							free(matches);
-							abort_interp("Invalid \\subexp (3)");
+							abort_interp("Invalid \\subexp in substitution string. (3)");
 						}
 
-						cm = &matches[idx];
+						substart = matches[idx*2];
+						subend = matches[idx*2+1];
 
-						if ((cm->rm_so >= 0) && (cm->rm_eo >= 0) && (cm->rm_so < len))
+						if ((substart >= 0) && (subend >= 0) && (substart < len))
 						{
-							char* ptr = &text[cm->rm_so - soff];
+							char* ptr = &textstart[substart];
 
-							count = cm->rm_eo - cm->rm_so;
+							count = subend - substart;
 
 							if (count > write_left)
 							{
@@ -367,10 +368,13 @@ prim_regsub(PRIM_PROTOTYPE)
 				}
 			}
 
-			cm = &matches[0];
-
-			for(count = cm->rm_eo - cm->rm_so; (*text != '\0') && (count > 0); count--)
+			for(count = allend - allstart; (*text != '\0') && (count > 0); count--)
 				text++;
+
+			if (allstart == allend && *text) {
+				*write_ptr++ = *text++;
+				write_left--;
+			}
 		}
 
 		if ((oper4->data.number & MUF_RE_ALL) == 0)
@@ -383,12 +387,6 @@ prim_regsub(PRIM_PROTOTYPE)
 
 			break;
 		}
-
-		if (text == prevtext && *text) {
-			*write_ptr++ = *text++;
-			write_left--;
-		}
-		prevtext = text;
 	}
 
 	free(matches);

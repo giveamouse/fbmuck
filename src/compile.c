@@ -557,8 +557,9 @@ include_internal_defs(COMPSTATE * cstat)
     insert_def(cstat, "gui_dlog_helper", "d_helper swap \"panes\" over array_keys array_make \"names\" 4 rotate array_vals array_make 2 array_make_dict gui_dlog_create");
 
 	/* Regex */
-	insert_def(cstat, "reg_icase",		MUF_RE_ICASE_STR);
-	insert_def(cstat, "reg_all",		MUF_RE_ALL_STR);
+	insert_intdef(cstat, "reg_icase",		MUF_RE_ICASE);
+	insert_intdef(cstat, "reg_all",			MUF_RE_ALL);
+	insert_intdef(cstat, "reg_extended",	MUF_RE_EXTENDED);
 }
 
 

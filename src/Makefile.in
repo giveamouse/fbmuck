@@ -157,12 +157,12 @@ HELPFILES= man.txt help.txt mpihelp.txt
 
 all: ${TARGETS} 
 
-fbmuck: ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversion.sh Makefile
+fbmuck: libpcre.a ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversion.sh Makefile
 	sh mkversion.sh
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c version.c
 	if [ -e fbmuck ]; then ${MV} fbmuck fbmuck~ ; fi
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${COBJ} ${MALLOBJ} interface.o version.o \
-	  ${LIBR} ${LOBJ}
+	  ${LIBR} ${LOBJ} libpcre.a
 
 fb-resolver: resolver.o ${LOBJ} ${MALLOBJ} Makefile
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} ${LOBJ}
@@ -182,6 +182,16 @@ fbhelp.o: help.c
 
 fbhelp: fbhelp.o ${MALLOBJ} Makefile
 	${CC} ${CFLAGS} ${INCL} ${DEFS} fbhelp.o -o fbhelp ${MALLOBJ}
+
+pcre:
+	gzip -d -c pcre-4.3.tar.gz | tar -xf -
+	mv pcre-4.3 pcre
+	cd pcre && ./configure --enable-static --enable-newline-is-cr
+
+libpcre.a: pcre
+	cd pcre && make
+	-${RM} -f libpcre.a
+	ln -s pcre/.libs/libpcre.a
 
 #############################################################
 # Funky stuff for debugging and coding work.
@@ -228,10 +238,12 @@ Makefile: Makefile.in
 #
 
 clean:
-	-${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${MALLOBJ} ${ANNOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o
+	-${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${MALLOBJ} ${ANNOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o libpcre.a
+	-cd pcre && make clean
 
 cleaner: clean
 	-${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp
+	-${RM} -r pcre
 
 clobber: cleaner
 	-${RM} tags *~ *.bak *.orig

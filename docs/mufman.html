@@ -5014,32 +5014,39 @@ $def RINSTRING tolower swap tolower swap rinstr
 <p>
 
 
-<hr><h4><a name="regexp">REGEXP ( str:Text str:Pattern int:Flag -- list:SubMatchVals list:SubMatchIdx )
+<hr><h4><a name="regexp">REGEXP ( str:text str:pattern int:flags -- list:SubMatchVals list:SubMatchIdx )
 <br>
 
 <br>
 </a></h4>
-  Apply the regular expression &quot;Pattern&quot; to &quot;Text&quot;, returns a list array of
-the matched substrings in SubMatchVals.  (The first element of the list is
-the entire matched string.)  The indices into &quot;Text&quot; of the submatches are
-returned in SubMatchIdx.  If the match failed, both returned lists will be
-empty.
+  Tests text to see if it matches the given PCRE style regular expression
+pattern.  If the test fails, two empty lists are returned.  If the test
+succeeded, the first list returned contains, as element 0, the substring
+that matched the entire pattern, followed by the captured substrings that
+matched the various parenthesized subexpressions of the pattern.  The second
+contains, as element 0, a sublist containing the starting position and length
+of the substring that matched the entire pattern, followed by similar sublists
+for each captured parenthesized subexpression.  These indices are apropriate
+for use with the MIDSTR primitive, and consider the first character of the
+string to be position 1.
 
-The &quot;Flag&quot; argument may be a combination, or none of the following:
+The &quot;flag&quot; argument may be 0, or a combination of the following:
 
 <p>
     $def REG_ICASE    1   (Case insensitive match)
 <p>
+    $def REG_EXTENDED 4   (Allows PCRE comments, etc.  See PCRE docs.)
+<p>
 
 
-<hr><h4><a name="regsub">REGSUB ( str:Text str:Pattern str:Replace int:Flag -- str:Result )
+<hr><h4><a name="regsub">REGSUB ( str:text str:pattern str:substr int:flags -- str:result )
 <br>
 
 <br>
 </a></h4>
-  Performs a regular expression substitution using &quot;Pattern&quot; against &quot;Text&quot;,
-replacing the match with &quot;Replace&quot;.  &quot;Replace&quot; may contain \digit to
-specify a submatch.
+  Performs a regular expression substitution using pattern against text,
+replacing the match with substr.  substr may contain \digit to specify
+a submatch.  Uses PCRE style regular expression syntax.
 
 The &quot;Flag&quot; argument may be a combination, or none of the following:
 
@@ -5047,6 +5054,8 @@ The &quot;Flag&quot; argument may be a combination, or none of the following:
     $def REG_ICASE    1   (Case insensitive match)
 <p>
     $def REG_ALL      2   (Substitute all matches, rather than just the first)
+<p>
+    $def REG_EXTENDED 4   (Allows PCRE comments, etc.  See PCRE docs.)
 
 Ie: to replace all words in a string with 'yadda', ignoring case, you would
 use the following code:
