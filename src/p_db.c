@@ -1974,9 +1974,15 @@ prim_newpassword(PRIM_PROTOTYPE)
 		abort_interp("Player dbref expected. (1)");
     ptr2 = oper1->data.string? oper1->data.string->data : pad_char;
     ref = oper2->data.objref;
-    if (ref != NOTHING && !valid_player(oper2))
+    if (!valid_player(oper2))
 		abort_interp("Player dbref expected. (1)");
     CHECKREMOTE(ref);
+
+#ifdef GOD_PRIV
+	if (!God(player) && TrueWizard(ref) && (player != ref))
+		abort_interp("Only God can change a wizards password");
+#endif
+
 	set_password(ref, ptr2);
     CLEAR(oper1);
     CLEAR(oper2);
