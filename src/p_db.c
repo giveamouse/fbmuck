@@ -2297,50 +2297,44 @@ prim_program_getlines(PRIM_PROTOTYPE)
 {
 	stk_array* ary;
 	int start, end;
-	CHECKOP(1);
+	CHECKOP(3);
+	oper3 = POP();
+	oper2 = POP();
 	oper1 = POP();
 
 	start = end = 0;
 	
-	if (oper1->type == PROG_INTEGER) {
-		end = oper1->data.number;
-		CLEAR(oper1);
-		CHECKOP(1);
-		oper1 = POP();
-		if (oper1->type == PROG_INTEGER) {
-			start = oper1->data.number;
-			CLEAR(oper1);
-			CHECKOP(1);
-			oper1 = POP();
-		}
-	}
 	if (!valid_object(oper1))
-		abort_interp("Invalid object dbref.");
+		abort_interp("Invalid object dbref. (1)");
+	if (oper2->type != PROG_INTEGER)
+		abort_interp("Expected integer. (2)");
+	if (oper3->type != PROG_INTEGER)
+		abort_interp("Expected integer. (3)");
 
 	ref = oper1->data.objref;
+	start = oper2->data.number;
+	end = oper3->data.number;
 
 	if (Typeof(ref) != TYPE_PROGRAM)
-		abort_interp("Non-program object.");
-
+		abort_interp("Non-program object. (1)");
 	if (mlev < 4 && !controls(ProgUID, ref) && !(FLAGS(ref) & VEHICLE))
 		abort_interp("Permission denied.");
-
 	if (start < 0 || end < 0)
 	    abort_interp("Line indexes must be non-negative.");
 
-	if (start == 0 && end != 0)
-		start = end;
-	else if (start == 0) /* and thus end == 0 */
+	if (start == 0)
 		start = 1;
-	else if (end == 0) /* and thus start != 0 */
-		end = start;
 
 	if (end && start > end)
 		abort_interp("Illogical line range.");
 
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
+
 	{
 		/* we make two passes over our linked list's data,
-		 * first we fiquire out how many lines are
+		 * first we figure out how many lines are
 		 * actually there. This is so we only allocate
 		 * our array once, rather re-allocating 4000 times
 		 * for a 4000-line program listing, while avoiding
@@ -2364,7 +2358,6 @@ prim_program_getlines(PRIM_PROTOTYPE)
 		if (!curr) {
 			/* alright, we have no data! */
 			free_prog_text(first);
-			CLEAR(oper1);
 			PushNullArray;
 			return;
 		}
@@ -2383,26 +2376,16 @@ prim_program_getlines(PRIM_PROTOTYPE)
 		
 		ary = new_array_packed(count);
 
-		{
-			struct inst index;
-			struct inst string;
-
-			index.type = PROG_INTEGER;
-			string.type = PROG_STRING;
-			/* so we count down from the number of lines we have, 
-			 * and set our array appropriatly. */
-			for(curr = segment, i = 0; count--; i++, curr = curr->next) {
-				index.data.number = i;
-				string.data.string = alloc_prog_string(curr->this_line);
-				array_setitem(&ary, &index, &string);
-
-				/* we aren't going to use this struct shared_string anymore */
-				string.data.string->links--;
-			}
+		/*
+		 * so we count down from the number of lines we have, 
+		 * and set our array appropriatly.
+		 */
+		for(curr = segment, i = 0; count--; i++, curr = curr->next) {
+			array_set_intkey_strval(&ary, i, curr->this_line);
 		}
+
 		free_prog_text(first);
 	}
-	CLEAR(oper1);
 	PushArrayRaw(ary);
 }
 
