@@ -1600,7 +1600,7 @@ mfn_tell(MFUNARGS)
 					((obj == OWNER(perms) || obj == player) ? "" : "> "),
 					NAME(player), ((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
 		}
-		notify(obj, buf);
+		notify_from_echo(player, obj, buf, 1);
 	}
 	return argv[0];
 }
@@ -1644,7 +1644,7 @@ mfn_otell(MFUNARGS)
 		thing = DBFETCH(obj)->contents;
 		while (thing != NOTHING) {
 			if (thing != eobj) {
-				notify(thing, buf);
+				notify_from_echo(player, thing, buf, 0);
 			}
 			thing = DBFETCH(thing)->next;
 		}
