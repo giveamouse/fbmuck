@@ -107,7 +107,7 @@ typedef struct plist *PropPtr;
 #define Prop_Private(name) Prop_Check(name, PROP_PRIVATE)
 #define Prop_SeeOnly(name) Prop_Check(name, PROP_SEEONLY)
 #define Prop_Hidden(name) Prop_Check(name, PROP_HIDDEN)
-#define Prop_System(name) IsPropPrefix(name, "@__sys__")
+#define Prop_System(name) is_prop_prefix(name, "@__sys__")
 
 
 /* Routines as they need to be:

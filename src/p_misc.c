@@ -979,7 +979,7 @@ prim_ignoringp(PRIM_PROTOTYPE)
 		abort_interp("Invalid object. (2)");
 	if (!valid_object(oper2))
 		abort_interp("Invalid object. (1)");
-	result = Ignore_IsIgnoring(oper2->data.objref, oper1->data.objref);
+	result = ignore_is_ignoring(oper2->data.objref, oper1->data.objref);
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushInt(result);
@@ -997,7 +997,7 @@ prim_ignore_add(PRIM_PROTOTYPE)
 		abort_interp("Invalid object. (2)");
 	if (!valid_object(oper2))
 		abort_interp("Invalid object. (1)");
-	Ignore_AddPlayer(oper2->data.objref, oper1->data.objref);
+	ignore_add_player(oper2->data.objref, oper1->data.objref);
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
@@ -1014,7 +1014,7 @@ prim_ignore_del(PRIM_PROTOTYPE)
 		abort_interp("Invalid object. (2)");
 	if (!valid_object(oper2))
 		abort_interp("Invalid object. (1)");
-	Ignore_RemovePlayer(oper2->data.objref, oper1->data.objref);
+	ignore_remove_player(oper2->data.objref, oper1->data.objref);
 	CLEAR(oper1);
 	CLEAR(oper2);
 }

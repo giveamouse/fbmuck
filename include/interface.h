@@ -1,6 +1,9 @@
 
 /* $Header$
  * $Log: interface.h,v $
+ * Revision 1.8  2002/09/12 22:58:07  sombre
+ * Changed function naming convention of recently added code from InterCaps to underline_separated_words at Revar's request. (mutter grumble ;>)
+ *
  * Revision 1.7  2002/09/08 23:07:18  sombre
  * Fixed memory leak when toading online players.
  * Fixed remove_prop bug so it will remove props ending in /. (bug #537744)
@@ -125,13 +128,13 @@ extern int pdescrflush(int c);
 extern int pdescrbufsize(int c);
 extern dbref partial_pmatch(const char *name);
 
-extern int Ignore_IsIgnoring(dbref Player, dbref Who);
-extern int Ignore_PrimeCache(dbref Player);
-extern void Ignore_FlushCache(dbref Player);
-extern void Ignore_FlushAllCache();
-extern void Ignore_AddPlayer(dbref Player, dbref Who);
-extern void Ignore_RemovePlayer(dbref Player, dbref Who);
-extern void Ignore_RemoveFromAllPlayers(dbref Player);
+extern int ignore_is_ignoring(dbref Player, dbref Who);
+extern int ignore_prime_cache(dbref Player);
+extern void ignore_flush_cache(dbref Player);
+extern void ignore_flush_all_cache();
+extern void ignore_add_player(dbref Player, dbref Who);
+extern void ignore_remove_player(dbref Player, dbref Who);
+extern void ignore_remove_from_all_players(dbref Player);
 
 /* the following symbols are provided by game.c */
 

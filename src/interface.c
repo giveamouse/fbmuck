@@ -764,7 +764,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 int
 notify_filtered(dbref from, dbref player, const char *msg, int isprivate)
 {
-	if ((msg == 0) || Ignore_IsIgnoring(player, from))
+	if ((msg == 0) || ignore_is_ignoring(player, from))
 		return 0;
 	return notify_nolisten(player, msg, isprivate);
 }
@@ -3713,7 +3713,7 @@ ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count) {
 
 /* Ignore support -- Could do with moving into its own file */
 
-static int Ignore_IsIgnoringSub(dbref Player, dbref Who)
+static int ignore_is_ignoring_sub(dbref Player, dbref Who)
 {
 	int Top, Bottom;
 	dbref* List;
@@ -3742,7 +3742,7 @@ static int Ignore_IsIgnoringSub(dbref Player, dbref Who)
 	if (PLAYER_IGNORE_LAST(Player) == Who)
 		return 1;
 
-	if ((PLAYER_IGNORE_CACHE(Player) == NULL) && !Ignore_PrimeCache(Player))
+	if ((PLAYER_IGNORE_CACHE(Player) == NULL) && !ignore_prime_cache(Player))
 		return 0;
 
 	Top		= 0;
@@ -3770,17 +3770,17 @@ static int Ignore_IsIgnoringSub(dbref Player, dbref Who)
 	return 1;
 }
 
-int Ignore_IsIgnoring(dbref Player, dbref Who)
+int ignore_is_ignoring(dbref Player, dbref Who)
 {
-	return Ignore_IsIgnoringSub(Player, Who) || Ignore_IsIgnoringSub(Who, Player);
+	return ignore_is_ignoring_sub(Player, Who) || ignore_is_ignoring_sub(Who, Player);
 }
 
-static int IgnoreDbrefCompare(const void* Lhs, const void* Rhs)
+static int ignore_dbref_compare(const void* Lhs, const void* Rhs)
 {
 	return *(dbref*)Lhs - *(dbref*)Rhs;
 }
 
-int Ignore_PrimeCache(dbref Player)
+int ignore_prime_cache(dbref Player)
 {
 	const char* Txt = 0;
 	const char* Ptr = 0;
@@ -3843,7 +3843,7 @@ int Ignore_PrimeCache(dbref Player)
 			Ptr++;
 	}
 
-	qsort(List, Count, sizeof(dbref), IgnoreDbrefCompare);
+	qsort(List, Count, sizeof(dbref), ignore_dbref_compare);
 
 	PLAYER_SET_IGNORE_CACHE(Player, List);
 	PLAYER_SET_IGNORE_COUNT(Player, Count);
@@ -3851,7 +3851,7 @@ int Ignore_PrimeCache(dbref Player)
 	return 1;
 }
 
-void Ignore_FlushCache(dbref Player)
+void ignore_flush_cache(dbref Player)
 {
 	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) != TYPE_PLAYER))
 		return;
@@ -3866,7 +3866,7 @@ void Ignore_FlushCache(dbref Player)
 	PLAYER_SET_IGNORE_LAST(Player, NOTHING);
 }
 
-void Ignore_FlushAllCache()
+void ignore_flush_all_cache()
 {
 	int i;
 
@@ -3890,7 +3890,7 @@ void Ignore_FlushAllCache()
 	}
 }
 
-void Ignore_AddPlayer(dbref Player, dbref Who)
+void ignore_add_player(dbref Player, dbref Who)
 {
 	if (!tp_ignore_support)
 		return;
@@ -3903,10 +3903,10 @@ void Ignore_AddPlayer(dbref Player, dbref Who)
 
 	reflist_add(OWNER(Player), IGNORE_PROP, OWNER(Who));
 
-	Ignore_FlushCache(OWNER(Player));
+	ignore_flush_cache(OWNER(Player));
 }
 
-void Ignore_RemovePlayer(dbref Player, dbref Who)
+void ignore_remove_player(dbref Player, dbref Who)
 {
 	if (!tp_ignore_support)
 		return;
@@ -3919,10 +3919,10 @@ void Ignore_RemovePlayer(dbref Player, dbref Who)
 
 	reflist_del(OWNER(Player), IGNORE_PROP, OWNER(Who));
 
-	Ignore_FlushCache(OWNER(Player));
+	ignore_flush_cache(OWNER(Player));
 }
 
-void Ignore_RemoveFromAllPlayers(dbref Player)
+void ignore_remove_from_all_players(dbref Player)
 {
 	int i;
 
@@ -3933,5 +3933,5 @@ void Ignore_RemoveFromAllPlayers(dbref Player)
 		if (Typeof(i) == TYPE_PLAYER)
 			reflist_del(i, IGNORE_PROP, Player);
 
-	Ignore_FlushAllCache();
+	ignore_flush_all_cache();
 }

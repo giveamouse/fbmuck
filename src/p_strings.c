@@ -1408,7 +1408,7 @@ prim_notify(PRIM_PROTOTYPE)
 
 	if (oper1->data.string) {
 		if (tp_force_mlev1_name_notify && mlev < 2 && player != oper2->data.objref) {
-			PrefixMessage(buf, oper1->data.string->data, PNAME(player), BUFFER_LEN, 1);
+			prefix_message(buf, oper1->data.string->data, PNAME(player), BUFFER_LEN, 1);
 		}
 		else
 		{
@@ -1439,7 +1439,7 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 		abort_interp("Non-string message argument (top)");
 
 	if (tp_force_mlev1_name_notify && mlev < 2) {
-		PrefixMessage(buf, DoNullInd(oper1->data.string), PNAME(player), BUFFER_LEN, 1);
+		prefix_message(buf, DoNullInd(oper1->data.string), PNAME(player), BUFFER_LEN, 1);
 	}
 	else
 		strcpy(buf, DoNullInd(oper1->data.string));

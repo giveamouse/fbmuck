@@ -781,7 +781,7 @@ prim_array_notify(PRIM_PROTOTYPE)
 		do {
 			oper4 = array_getitem(strarr, &temp2);
 			if (tp_force_mlev1_name_notify && mlev < 2) {
-				PrefixMessage(buf, DoNullInd(oper4->data.string), PNAME(player), BUFFER_LEN, 1);
+				prefix_message(buf, DoNullInd(oper4->data.string), PNAME(player), BUFFER_LEN, 1);
 			}
 			else
 			{

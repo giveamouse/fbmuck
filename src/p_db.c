@@ -1931,8 +1931,8 @@ prim_toadplayer(PRIM_PROTOTYPE)
 		PLAYER_SET_DESCRCOUNT(victim, 0);
 	}
 
-	Ignore_RemoveFromAllPlayers(victim);
-	Ignore_FlushCache(victim);
+	ignore_remove_from_all_players(victim);
+	ignore_flush_cache(victim);
 
 	FREE_PLAYER_SP(victim);
 	ALLOC_THING_SP(victim);

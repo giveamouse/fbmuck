@@ -262,7 +262,7 @@ parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
 		the prefix argument...
 	*/
 
-	PrefixMessage(buf, ptr, prefix, BUFFER_LEN, 1);
+	prefix_message(buf, ptr, prefix, BUFFER_LEN, 1);
 
 	notify_except(DBFETCH(dest)->contents, player, buf, player);
 }

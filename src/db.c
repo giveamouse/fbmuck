@@ -889,7 +889,7 @@ db_free_object(dbref i)
 			PLAYER_SET_DESCRS(i, NULL);
 			PLAYER_SET_DESCRCOUNT(i, 0);
         }
-		Ignore_FlushCache(i);
+		ignore_flush_cache(i);
     }
 	if (Typeof(i) == TYPE_THING) {
 		FREE_THING_SP(i);

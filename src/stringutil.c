@@ -762,12 +762,12 @@ prepend_string(char** before, char* start, const char* what)
    return len;
 }
 
-int IsValidPoseSeparator(char ch)
+int is_valid_pose_separator(char ch)
 {
 	return (ch == '\'') || (ch == ' ') || (ch == ',') || (ch == '-');
 }
 
-void PrefixMessage(char* Dest, const char* Src, const char* Prefix, int BufferLength, int SuppressIfPresent)
+void prefix_message(char* Dest, const char* Src, const char* Prefix, int BufferLength, int SuppressIfPresent)
 {
 	int PrefixLength			= strlen(Prefix);
 	int CheckForHangingEnter	= 0;
@@ -781,7 +781,7 @@ void PrefixMessage(char* Dest, const char* Src, const char* Prefix, int BufferLe
 		}
 
 		if (!SuppressIfPresent || strncmp(Src, Prefix, PrefixLength) || (
-				!IsValidPoseSeparator(Src[PrefixLength]) &&	
+				!is_valid_pose_separator(Src[PrefixLength]) &&	
 				(Src[PrefixLength] != '\r') &&
 				(Src[PrefixLength] != '\0')
 			))
@@ -793,7 +793,7 @@ void PrefixMessage(char* Dest, const char* Src, const char* Prefix, int BufferLe
 
 			if (BufferLength > 1)
 			{
-				if (!IsValidPoseSeparator(*Src))
+				if (!is_valid_pose_separator(*Src))
 				{
 					*Dest++ = ' ';
 					BufferLength--;
@@ -820,7 +820,7 @@ void PrefixMessage(char* Dest, const char* Src, const char* Prefix, int BufferLe
 	*Dest = '\0';
 }
 
-int IsPropPrefix(const char* Property, const char* Prefix)
+int is_prop_prefix(const char* Property, const char* Prefix)
 {
 	while(*Property == PROPDIR_DELIMITER)
 		Property++;
