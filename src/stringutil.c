@@ -221,6 +221,9 @@ pronoun_substitute(int descr, dbref player, const char *str)
 					self_sub = uncompress(envpropstr(&mywhere, prn));
 				}
 				if (!self_sub) {
+					self_sub = uncompress(get_property_class(player, globprop));
+				}
+				if (!self_sub) {
 					self_sub = uncompress(get_property_class(0, globprop));
 				}
 #else
@@ -229,6 +232,9 @@ pronoun_substitute(int descr, dbref player, const char *str)
 					self_sub = get_property_class(mywhere, prn);
 				} else {
 					self_sub = envpropstr(&mywhere, prn);
+				}
+				if (!self_sub) {
+					self_sub = get_property_class(player, globprop);
 				}
 				if (!self_sub) {
 					self_sub = get_property_class(0, globprop);
