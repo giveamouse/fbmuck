@@ -144,10 +144,20 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 	} else if (a->type == PROG_ARRAY) {
 		return array_tree_compare_arrays(a, b, case_sens);
 	} else if (a->type == PROG_LOCK) {
-		/* Sort locks by memory address. */
-		/* This is a bug, really. */
-		/* in a perfect world, we'd compare the locks by element. */
-		return (a->data.lock - b->data.lock);
+		/*
+		 * In a perfect world, we'd compare the locks by element,
+		 * instead of unparsing them into strings for strcmp()s.
+		 */
+		char* la;
+		char* lb;
+		int retval = 0;
+
+		la = unparse_boolexp((dbref)1, a->data.lock, 0);
+		la = string_dup(la);
+		lb = unparse_boolexp((dbref)1, b->data.lock, 0);
+		retval = strcmp(la, lb);
+		free(la);
+		return retval;
 	} else if (a->type == PROG_ADD) {
 		int result = (a->data.addr->progref - b->data.addr->progref);
 
