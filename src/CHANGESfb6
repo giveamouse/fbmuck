@@ -1,5 +1,6 @@
 2.2fb6.00a34
 Fixed crasher bug in {listprops} with too many properties.
+Fixed crasher bug with the MUF code ': main repeat ;'
 Fixed possible security hole in {testlock} with @props.
 Added @bless and @unbless commands for granting wizbit mpi permissions to
   individual properties.  Syntax is @[un]bless object=propname.

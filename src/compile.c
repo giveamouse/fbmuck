@@ -1884,7 +1884,7 @@ locate_for(COMPSTATE * cstat)
 	struct CONTROL_STACK *tempeef;
 
 	tempeef = cstat->control_stack;
-	if (tempeef->type != CTYPE_FOR)
+	if (!tempeef || tempeef->type != CTYPE_FOR)
 		return 0;
 
 	return tempeef->place;
