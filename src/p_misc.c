@@ -339,32 +339,32 @@ prim_fork(PRIM_PROTOTYPE)
 	tmpfr->already_created = fr->already_created;
 	tmpfr->trig = fr->trig;
 
-	fr->brkpt.debugging = 0;
-	fr->brkpt.bypass = 0;
-	fr->brkpt.isread = 0;
-	fr->brkpt.showstack = 0;
-	fr->brkpt.lastline = 0;
-	fr->brkpt.lastpc = 0;
-	fr->brkpt.lastlisted = 0;
-	fr->brkpt.lastcmd = NULL;
-	fr->brkpt.breaknum = -1;
+	tmpfr->brkpt.debugging = 0;
+	tmpfr->brkpt.bypass = 0;
+	tmpfr->brkpt.isread = 0;
+	tmpfr->brkpt.showstack = 0;
+	tmpfr->brkpt.lastline = 0;
+	tmpfr->brkpt.lastpc = 0;
+	tmpfr->brkpt.lastlisted = 0;
+	tmpfr->brkpt.lastcmd = NULL;
+	tmpfr->brkpt.breaknum = -1;
 
-	fr->brkpt.lastproglisted = NOTHING;
-	fr->brkpt.proglines = NULL;
+	tmpfr->brkpt.lastproglisted = NOTHING;
+	tmpfr->brkpt.proglines = NULL;
 
-	fr->brkpt.count = 1;
-	fr->brkpt.temp[0] = 1;
-	fr->brkpt.level[0] = -1;
-	fr->brkpt.line[0] = -1;
-	fr->brkpt.linecount[0] = -2;
-	fr->brkpt.pc[0] = NULL;
-	fr->brkpt.pccount[0] = -2;
-	fr->brkpt.prog[0] = program;
+	tmpfr->brkpt.count = 1;
+	tmpfr->brkpt.temp[0] = 1;
+	tmpfr->brkpt.level[0] = -1;
+	tmpfr->brkpt.line[0] = -1;
+	tmpfr->brkpt.linecount[0] = -2;
+	tmpfr->brkpt.pc[0] = NULL;
+	tmpfr->brkpt.pccount[0] = -2;
+	tmpfr->brkpt.prog[0] = program;
 
-	fr->proftime.tv_sec = 0;
-    fr->proftime.tv_usec = 0;
-    fr->totaltime.tv_sec = 0;
-    fr->totaltime.tv_usec = 0;
+	tmpfr->proftime.tv_sec = 0;
+    tmpfr->proftime.tv_usec = 0;
+    tmpfr->totaltime.tv_sec = 0;
+    tmpfr->totaltime.tv_usec = 0;
 
 
 	tmpfr->pid = top_pid++;

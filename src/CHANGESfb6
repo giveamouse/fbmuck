@@ -1,5 +1,6 @@
 2.2fb6.00rc2
 Fixed crasher bug in new pronoun code.
+Fixed profiling time and debugging initialization in the FORK muf prim.
 Added player-based overriding of pronouns via _pronouns/GENDER/%x props.
 
 
