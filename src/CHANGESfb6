@@ -1,7 +1,7 @@
 2.2fb6.03
 Added improved SSL error reporting, via stderr.
 Fixed {debug} MPI tracing for some systems including Linux.
-
+Fixed bug #973899: fb-announce not compiled with ${CFLAGS}
 
 
 2.2fb6.02

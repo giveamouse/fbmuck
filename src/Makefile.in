@@ -180,7 +180,7 @@ fb-olddecompress: olddecomp.o oldcompress.o ${LOBJ} ${MALLOBJ} Makefile
 	  ${MALLOBJ} ${LOBJ}
 
 fb-announce: ${ANNOBJ} ${LOBJ} ${MALLOBJ} Makefile
-	${CC} ${ANNOBJ} -o fb-announce ${MALLOBJ} ${LIBR} ${LOBJ}
+	${CC} ${CFLAGS} ${ANNOBJ} -o fb-announce ${MALLOBJ} ${LIBR} ${LOBJ}
 
 fbhelp.o: help.c
 	${CC} ${CFLAGS} ${INCL} ${DEFS} -c help.c -o fbhelp.o -DSTANDALONE_HELP -DHELPFILE_DIR='"${INSTALL_HELPDIR}"'
