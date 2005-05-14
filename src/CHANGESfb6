@@ -2,6 +2,8 @@
 Added NICEVAL in params.h to set the dumper process nice() priority.
 Added GAUSSIAN primitive to float.  Takes std-deviation and mean and returns a
   floating point random value with the given gaussian distribution.
+Added support for STARTTLS TELNET encryption negotiation.
+Added STARTTLS_ALLOW @tune option, defaulting to off.
 Fixed crasher bug in {debugif} MPI command.
 Fixed documentation on {lsort} ('mpi lsort') for number of comparisons.
 Changed FRAND primitive to be much more efficient and have a more uniform

@@ -274,6 +274,7 @@ int tp_ignore_support = IGNORE_SUPPORT;
 int tp_ignore_bidirectional = IGNORE_BIDIRECTIONAL;
 int tp_verbose_clone = VERBOSE_CLONE;
 int tp_muf_comments_strict = MUF_COMMENTS_STRICT;
+int tp_starttls_allow = STARTTLS_ALLOW;
 
 struct tune_bool_entry {
 	const char *group;
@@ -329,6 +330,8 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Misc",       "wiz_vehicles", &tp_wiz_vehicles, 0, "Only let Wizards set vehicle bits"},
 	{"Misc",       "ignore_support", &tp_ignore_support, 3, "Enable support for @ignoring players"},
 	{"Misc",       "ignore_bidirectional", &tp_ignore_bidirectional, 3, "Enable bidirectional @ignore"},
+
+	{"SSL",        "starttls_allow", &tp_starttls_allow, 3, "Enable TELNET STARTTLS encryption on plaintext port"},
 
 	{NULL, NULL, NULL, 0}
 };

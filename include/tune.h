@@ -143,6 +143,7 @@ extern int tp_ignore_support;
 extern int tp_ignore_bidirectional;
 extern int tp_verbose_clone;
 extern int tp_muf_comments_strict;
+extern int tp_starttls_allow;
 
 extern int tune_count_parms(void);
 extern void tune_load_parms_from_file(FILE * f, dbref player, int cnt);

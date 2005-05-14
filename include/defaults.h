@@ -87,6 +87,7 @@
 
 /* Information needed for SSL */
 #define SSL_KEYFILE_PASSWD ""
+#define STARTTLS_ALLOW 0
 
 /* amount of object endowment, based on cost */
 #define MAX_OBJECT_ENDOWMENT 100
