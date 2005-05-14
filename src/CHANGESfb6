@@ -1,9 +1,12 @@
 2.2fb6.04
 Added NICEVAL in params.h to set the dumper process nice() priority.
-Added GAUSSIAN primitive to float.  Takes std-deviation and mean and returns a floating point random value with the given gaussian distribution.
+Added GAUSSIAN primitive to float.  Takes std-deviation and mean and returns a
+  floating point random value with the given gaussian distribution.
 Fixed crasher bug in {debugif} MPI command.
-Changed FRAND primitive to be much more efficient and have a more uniform distribution.
 Fixed documentation on {lsort} ('mpi lsort') for number of comparisons.
+Changed FRAND primitive to be much more efficient and have a more uniform
+  distribution.
+
 
 
 2.2fb6.03
@@ -19,11 +22,15 @@ Fixed bug #910839: W MUF can newpassword W even with GOD_PRIV.
 
 
 2.2fb6.02
-Added @tunables for addpennies, movepennies, and pennies. MPI {money} is disabled if pennies MLEV>1.
+Added @tunables for addpennies, movepennies, and pennies. MPI {money} is
+  disabled if pennies MLEV>1.
 Moved pennies from a thing/player-only trait to a global property, @/value.
-Cleaned up #defines, especially removing redundancy in the compression and database-related ones.
-Removed remaining Anonymity code fragments and defines due to non-use and non-function.
-Fixed bug with array_nintersection allowing multiple occurances in a single array to influence final output.
+Cleaned up #defines, especially removing redundancy in the compression and
+  database-related ones.
+Removed remaining Anonymity code fragments and defines due to non-use and
+  non-function.
+Fixed bug with array_nintersection allowing multiple occurances in a single
+  array to influence final output.
 Fixed a number of off-by-one crasher bugs, due to bad comparisons with db_top.
 Fixed compilation issue with socklen_t on OS X 10.3 Panther.
 Fixed possible crasher with dequeueing of tasks from a mufevent run process.
