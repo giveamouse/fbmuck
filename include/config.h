@@ -79,7 +79,6 @@
  */
 #undef SCARY_MUF_PRIMS
 
-
 /************************************************************************
    Game Options
 
@@ -230,7 +229,13 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/types.h>
-
+#ifdef DEBUG
+# undef NDEBUG
+# include <assert.h>
+#else
+# define NDEBUG
+# include <assert.h>
+#endif /* DEBUG */
 #ifdef STDC_HEADERS
 # include <stdlib.h>
 #endif
@@ -246,14 +251,14 @@
 /* An ANSI string.h and pre-ANSI memory.h might conflict.  */
 # if !defined(STDC_HEADERS) && defined(HAVE_MEMORY_H)
 #  include <memory.h>
-# endif							/* not STDC_HEADERS and HAVE_MEMORY_H */
+# endif			/* not STDC_HEADERS and HAVE_MEMORY_H */
 /* Map BSD funcs to ANSI ones. */
 # define index		strchr
 # define rindex		strrchr
 # define bcopy(s, d, n) memcpy ((d), (s), (n))
 # define bcmp(s1, s2, n) memcmp ((s1), (s2), (n))
 # define bzero(s, n) memset ((s), 0, (n))
-#else							/* not STDC_HEADERS and not HAVE_STRING_H */
+#else			/* not STDC_HEADERS and not HAVE_STRING_H */
 # include <strings.h>
 /* Map ANSI funcs to BSD ones. */
 # define strchr		index
@@ -261,7 +266,7 @@
 # define memcpy(d, s, n) bcopy((s), (d), (n))
 # define memcmp(s1, s2, n) bcmp((s1), (s2), (n))
 /* no real way to map memset to bzero, unfortunatly. */
-#endif							/* not STDC_HEADERS and not HAVE_STRING_H */
+#endif			/* not STDC_HEADERS and not HAVE_STRING_H */
 
 #ifdef HAVE_RANDOM
 # define SRANDOM(seed)	srandom((seed))
