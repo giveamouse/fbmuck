@@ -54,6 +54,9 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
 	array_data *val1;
 	array_data *val2;
 
+	assert(a != NULL);
+	assert(b != NULL);
+
 	if (a->type != PROG_ARRAY || b->type != PROG_ARRAY) {
 		return array_tree_compare(a, b, case_sens);
 	}
@@ -101,6 +104,8 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
 static int
 array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 {
+	assert(a != NULL);
+	assert(b != NULL);
 	if (a->type != b->type) {
 		if (a->type == PROG_INTEGER && b->type == PROG_FLOAT) {
 			if (fabs(((double)a->data.number - b->data.fnumber) / (double)a->data.number) < DBL_EPSILON) {
@@ -175,6 +180,9 @@ array_tree_find(array_tree * avl, array_iter * key)
 {
 	int cmpval;
 
+	assert(avl != NULL);
+	assert(key != NULL);
+
 	while (avl) {
 		cmpval = AVL_COMPARE(key, AVL_KEY(avl));
 		if (cmpval > 0) {
@@ -217,7 +225,7 @@ array_tree_height_diff(array_tree * node)
 static void
 array_tree_fixup_height(array_tree * node)
 {
-	if (node)
+	if (node != NULL)
 		node->height = (short)(1 +
 			max(array_tree_height_of(AVL_LF(node)),
 			array_tree_height_of(AVL_RT(node))));
@@ -226,7 +234,9 @@ array_tree_fixup_height(array_tree * node)
 static array_tree *
 array_tree_rotate_left_single(array_tree * a)
 {
-	array_tree *b = AVL_RT(a);
+	array_tree *b;
+	assert(a != NULL);
+	b = AVL_RT(a);
 
 	AVL_RT(a) = AVL_LF(b);
 	AVL_LF(b) = a;
@@ -240,8 +250,13 @@ array_tree_rotate_left_single(array_tree * a)
 static array_tree *
 array_tree_rotate_left_double(array_tree * a)
 {
-	array_tree *b = AVL_RT(a);
-	array_tree *c = AVL_LF(b);
+	array_tree *b, *c;
+	assert(a != NULL);
+	b = AVL_RT(a);
+	c = AVL_LF(b);
+
+	assert(b != NULL);
+	assert(c != NULL);
 
 	AVL_RT(a) = AVL_LF(c);
 	AVL_LF(b) = AVL_RT(c);
@@ -258,7 +273,9 @@ array_tree_rotate_left_double(array_tree * a)
 static array_tree *
 array_tree_rotate_right_single(array_tree * a)
 {
-	array_tree *b = AVL_LF(a);
+	array_tree *b;
+	assert(a != NULL);
+	b = AVL_LF(a);
 
 	AVL_LF(a) = AVL_RT(b);
 	AVL_RT(b) = a;
@@ -272,8 +289,13 @@ array_tree_rotate_right_single(array_tree * a)
 static array_tree *
 array_tree_rotate_right_double(array_tree * a)
 {
-	array_tree *b = AVL_LF(a);
-	array_tree *c = AVL_RT(b);
+	array_tree *b, *c;
+	assert(a != NULL);
+	b = AVL_LF(a);
+	c = AVL_RT(b);
+
+	assert(b != NULL);
+	assert(c != NULL);
 
 	AVL_LF(a) = AVL_RT(c);
 	AVL_RT(b) = AVL_LF(c);
@@ -291,7 +313,9 @@ array_tree_rotate_right_double(array_tree * a)
 static array_tree *
 array_tree_balance_node(array_tree * a)
 {
-	int dh = array_tree_height_diff(a);
+	int dh;
+	assert(a != NULL);
+	dh = array_tree_height_diff(a);
 
 	if (abs(dh) < 2) {
 		array_tree_fixup_height(a);
@@ -316,6 +340,7 @@ array_tree *
 array_tree_alloc_node(array_iter * key)
 {
 	array_tree *new_node;
+	assert(key != NULL);
 
 	new_node = (array_tree *) calloc(1,sizeof(array_tree));
 	if (!new_node) {
@@ -348,6 +373,10 @@ array_tree_free_node(array_tree * p)
 static array_tree *
 array_tree_insert(array_tree ** avl, array_iter * key)
 {
+	assert(avl != NULL);
+	assert(*avl != NULL);
+	assert(key != NULL);
+
 	array_tree *ret;
 	register array_tree *p = *avl;
 	register int cmp;
@@ -378,6 +407,7 @@ array_tree_insert(array_tree ** avl, array_iter * key)
 static array_tree *
 array_tree_getmax(array_tree * avl)
 {
+	assert(avl != NULL);
 	if (avl && AVL_RT(avl))
 		return array_tree_getmax(AVL_RT(avl));
 	return avl;
@@ -388,7 +418,11 @@ array_tree_remove_node(array_iter * key, array_tree ** root)
 {
 	array_tree *save;
 	array_tree *tmp;
-	array_tree *avl = *root;
+	array_tree *avl;
+	assert(root != NULL);
+	assert(*root != NULL);
+	assert(key != NULL);
+	avl = *root;
 	int cmpval;
 
 	save = avl;
@@ -406,6 +440,7 @@ array_tree_remove_node(array_iter * key, array_tree ** root)
 			tmp = array_tree_remove_node(
 					AVL_KEY(array_tree_getmax(AVL_LF(avl))),
 					&AVL_LF(avl));
+			assert(tmp != NULL);
 			if (!tmp)
 				abort();		/* this shouldn't be possible. */
 			AVL_LF(tmp) = AVL_LF(avl);
@@ -426,6 +461,8 @@ static array_tree *
 array_tree_delete(array_iter * key, array_tree * avl)
 {
 	array_tree *save;
+	assert(key != NULL);
+	assert(avl != NULL);
 
 	save = array_tree_remove_node(key, &avl);
 	if (save)
@@ -437,11 +474,11 @@ array_tree_delete(array_iter * key, array_tree * avl)
 void
 array_tree_delete_all(array_tree * p)
 {
-	if (!p)
+	if (p == NULL)
 		return;
 	array_tree_delete_all(AVL_LF(p));
-	array_tree_delete_all(AVL_RT(p));
 	AVL_LF(p) = NULL;
+	array_tree_delete_all(AVL_RT(p));
 	AVL_RT(p) = NULL;
 	array_tree_free_node(p);
 }
@@ -450,7 +487,7 @@ array_tree_delete_all(array_tree * p)
 array_tree *
 array_tree_first_node(array_tree * list)
 {
-	if (!list)
+	if (list == NULL)
 		return ((array_tree *) NULL);
 
 	while (AVL_LF(list))
@@ -479,9 +516,9 @@ array_tree_prev_node(array_tree * ptr, array_iter * key)
 	array_tree *from;
 	int cmpval;
 
-	if (!ptr)
+	if (ptr == NULL)
 		return NULL;
-	if (!key)
+	if (key == NULL)
 		return NULL;
 	cmpval = AVL_COMPARE(key, AVL_KEY(ptr));
 	if (cmpval > 0) {
@@ -509,9 +546,9 @@ array_tree_next_node(array_tree * ptr, array_iter * key)
 	array_tree *from;
 	int cmpval;
 
-	if (!ptr)
+	if (ptr == NULL)
 		return NULL;
-	if (!key)
+	if (key == NULL)
 		return NULL;
 	cmpval = AVL_COMPARE(key, AVL_KEY(ptr));
 	if (cmpval < 0) {
@@ -543,6 +580,11 @@ new_array(void)
 	stk_array *nu;
 
 	nu = (stk_array *) malloc(sizeof(stk_array));
+	assert(nu != NULL);
+	if (nu == NULL) {
+		fprintf(stderr, "new_array(): Out of Memory!");
+		abort();
+	}
 	nu->links = 1;
 	nu->type = ARRAY_UNDEFINED;
 	nu->items = 0;
@@ -564,11 +606,16 @@ new_array_packed(int size)
 	}
 
 	nu = new_array();
+	assert(nu != NULL); /* Redundant, but I'm coding defensively */
 	nu->items = size;
 	nu->type = ARRAY_PACKED;
 	if (size < 1)
 		size = 1;
 	nu->data.packed = (array_data *) malloc(sizeof(array_data) * size);
+	if (nu->data.packed == NULL) {
+		fprintf(stderr, "new_array_packed(): Out of Memory!");
+		abort();
+	}
 	for (i = size; i-- > 0;) {
 		nu->data.packed[i].type = PROG_INTEGER;
 		nu->data.packed[i].line = 0;
@@ -584,6 +631,7 @@ new_array_dictionary(void)
 	stk_array *nu;
 
 	nu = new_array();
+	assert(nu != NULL); /* Redundant, but I'm coding defensively */
 	nu->type = ARRAY_DICTIONARY;
 	return nu;
 }
@@ -592,7 +640,10 @@ new_array_dictionary(void)
 void
 array_set_pinned(stk_array* arr, int pinned)
 {
-	if (arr) {
+	/* Since this is a no-op if it's not actually an array,
+	 * should it ever be called with a NULL arr? */
+	assert(arr != NULL);
+	if (arr != NULL) {
 		arr->pinned = pinned;
 	}
 }
@@ -603,11 +654,12 @@ array_decouple(stk_array * arr)
 {
 	stk_array *nu;
 
-	if (!arr) {
+	if (arr == NULL) {
 		return NULL;
 	}
 
 	nu = new_array();
+	assert(nu != NULL);  /* Redundant, but I'm coding defensively */
 	nu->pinned = arr->pinned;
 	nu->type = arr->type;
 	switch (arr->type) {
@@ -616,6 +668,10 @@ array_decouple(stk_array * arr)
 
 			nu->items = arr->items;
 			nu->data.packed = (array_data *) malloc(sizeof(array_data) * arr->items);
+			if(nu->data.packed == NULL) {
+				fprintf(stderr, "array_decouple(): Out of Memory!");
+				abort();
+			}
 			for (i = arr->items; i-- > 0;) {
 				copyinst(&arr->data.packed[i], &nu->data.packed[i]);
 			}
@@ -630,6 +686,7 @@ array_decouple(stk_array * arr)
 			if (array_first(arr, &idx)) {
 				do {
 					val = array_getitem(arr, &idx);
+					assert(val != NULL);
 					array_setitem(&nu, &idx, val);
 				} while (array_next(arr, &idx));
 			}
@@ -651,7 +708,7 @@ array_promote(stk_array * arr)
 	int i;
 	array_iter idx;
 
-	if (!arr) {
+	if (arr == NULL) {
 		return NULL;
 	}
 	if (arr->type != ARRAY_PACKED) {
@@ -659,6 +716,7 @@ array_promote(stk_array * arr)
 	}
 
 	nu = new_array_dictionary();
+	assert(nu != NULL);
 
 	idx.type = PROG_INTEGER;
 	for (i = 0; i < arr->items; i++) {
@@ -674,7 +732,7 @@ array_promote(stk_array * arr)
 void
 array_free(stk_array * arr)
 {
-	if (!arr) {
+	if (arr == NULL) {
 		return;
 	}
 	arr->links--;
@@ -684,7 +742,7 @@ array_free(stk_array * arr)
 	switch (arr->type) {
 	case ARRAY_PACKED:{
 			int i;
-
+			
 			for (i = arr->items; i-- > 0;) {
 				CLEAR(&arr->data.packed[i]);
 			}
@@ -708,7 +766,7 @@ array_free(stk_array * arr)
 int
 array_count(stk_array * arr)
 {
-	if (!arr) {
+	if (arr == NULL) {
 		return 0;
 	}
 	return arr->items;
@@ -718,6 +776,8 @@ array_count(stk_array * arr)
 int
 array_idxcmp(array_iter * a, array_iter * b)
 {
+	assert(a != NULL);
+	assert(b != NULL);
 	return array_tree_compare(a, b, 0);
 }
 
@@ -725,6 +785,8 @@ array_idxcmp(array_iter * a, array_iter * b)
 int
 array_idxcmp_case(array_iter * a, array_iter * b, int case_sens)
 {
+	assert(a != NULL);
+	assert(b != NULL);
 	return array_tree_compare(a, b, case_sens);
 }
 
@@ -732,7 +794,8 @@ array_idxcmp_case(array_iter * a, array_iter * b, int case_sens)
 int
 array_contains_key(stk_array * arr, array_iter * item)
 {
-	if (!arr || !arr->items) {
+	assert(item != NULL);
+	if ((arr == NULL) || (arr->items == 0)) {
 		return 0;
 	}
 	switch (arr->type) {
@@ -763,7 +826,8 @@ array_contains_key(stk_array * arr, array_iter * item)
 int
 array_contains_value(stk_array * arr, array_data * item)
 {
-	if (!arr || !arr->items) {
+	assert(item != NULL);
+	if ((arr == NULL) || (arr->items == 0)) {
 		return 0;
 	}
 	switch (arr->type) {
@@ -782,7 +846,7 @@ array_contains_value(stk_array * arr, array_data * item)
 			array_tree *p;
 
 			p = array_tree_first_node(arr->data.dict);
-			if (!p)
+			if (p == NULL)
 				return 0;
 			while (p) {
 				if (!array_tree_compare(&p->data, item, 0)) {
@@ -803,7 +867,8 @@ array_contains_value(stk_array * arr, array_data * item)
 int
 array_first(stk_array * arr, array_iter * item)
 {
-	if (!arr || !arr->items) {
+	assert(item != NULL);
+	if ((arr == NULL) || (arr->items == 0)) {
 		return 0;
 	}
 	switch (arr->type) {
@@ -817,7 +882,7 @@ array_first(stk_array * arr, array_iter * item)
 			array_tree *p;
 
 			p = array_tree_first_node(arr->data.dict);
-			if (!p)
+			if (p == NULL)
 				return 0;
 			copyinst(&p->key, item);
 			return 1;
@@ -833,7 +898,8 @@ array_first(stk_array * arr, array_iter * item)
 int
 array_last(stk_array * arr, array_iter * item)
 {
-	if (!arr || !arr->items) {
+	assert(item != NULL);
+	if((arr == NULL) || (arr->items == 0)) {
 		return 0;
 	}
 	switch (arr->type) {
@@ -847,7 +913,7 @@ array_last(stk_array * arr, array_iter * item)
 			array_tree *p;
 
 			p = array_tree_last_node(arr->data.dict);
-			if (!p)
+			if (p == NULL)
 				return 0;
 			copyinst(&p->key, item);
 			return 1;
@@ -863,7 +929,8 @@ array_last(stk_array * arr, array_iter * item)
 int
 array_prev(stk_array * arr, array_iter * item)
 {
-	if (!arr || !arr->items) {
+	assert(item != NULL);
+	if ((arr == NULL) || (arr->items == 0)) {
 		return 0;
 	}
 	switch (arr->type) {
@@ -914,7 +981,8 @@ array_prev(stk_array * arr, array_iter * item)
 int
 array_next(stk_array * arr, array_iter * item)
 {
-	if (!arr || !arr->items) {
+	assert(item != NULL);
+	if ((arr == NULL) || (arr->items == 0)) {
 		return 0;
 	}
 	switch (arr->type) {
@@ -1001,6 +1069,9 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 {
 	stk_array *arr;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(idx != NULL);
 	if (!harr || !*harr || !idx) {
 		return -1;
 	}
@@ -1019,12 +1090,17 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 				copyinst(item, &arr->data.packed[idx->data.number]);
 				return arr->items;
 			} else if (idx->data.number == arr->items) {
+				array_data *test=NULL;
 				if (arr->links > 1 && !arr->pinned) {
 					arr->links--;
 					arr = *harr = array_decouple(arr);
 				}
 				arr->data.packed = (array_data*)
-						realloc(arr->data.packed, sizeof(array_data) * (arr->items + 1));
+					realloc(arr->data.packed, sizeof(array_data) * (arr->items + 1));
+				if(arr->data.packed == NULL) {
+					fprintf(stderr,"array_setitem(): Out of Memory!");
+					abort();
+				}
 				copyinst(item, &arr->data.packed[arr->items]);
 				return (++arr->items);
 			} else {
@@ -1066,6 +1142,11 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 	stk_array *arr;
 	int i;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(idx != NULL);
+	assert(item != NULL);
+
 	if (!harr || !*harr || !idx) {
 		return -1;
 	}
@@ -1084,6 +1165,10 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 			}
 			arr->data.packed = (array_data*)
 					realloc(arr->data.packed, sizeof(array_data) * (arr->items + 1));
+			if(arr->data.packed == NULL) {
+				fprintf(stderr,"array_insertitem(): Out of Memory!");
+				abort();
+			}
 			for (i = arr->items++; i > idx->data.number; i--) {
 				copyinst(&arr->data.packed[i - 1], &arr->data.packed[i]);
 				CLEAR(&arr->data.packed[i - 1]);
@@ -1125,6 +1210,10 @@ array_appenditem(stk_array ** harr, array_data * item)
 {
 	struct inst key;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(item != NULL);
+
 	if (!harr || !*harr)
 		return -1;
 	if ((*harr)->type != ARRAY_PACKED)
@@ -1143,6 +1232,10 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 	stk_array *nu;
 	array_data *tmp;
 	int sidx, eidx;
+
+	assert(arr != NULL);
+	assert(start != NULL);
+	assert(end != NULL);
 
 	if (!arr) {
 		return NULL;
@@ -1236,6 +1329,11 @@ array_setrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 	stk_array *arr;
 	array_iter idx;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(start != NULL);
+	assert(inarr != NULL);
+
 	if (!harr || !*harr) {
 		return -1;
 	}
@@ -1297,6 +1395,11 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 	array_iter idx;
 	array_iter didx;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(start != NULL);
+	assert(inarr != NULL);
+
 	if (!harr || !*harr) {
 		return -1;
 	}
@@ -1321,6 +1424,11 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 			}
 			arr->data.packed = (struct inst*)
 					realloc(arr->data.packed, sizeof(array_data) * (arr->items + inarr->items));
+			if(arr->data.packed == NULL) {
+				fprintf(stderr,"array_insertrange: Out of Memory!");
+				abort();
+			}
+
 			copyinst(start, &idx);
 			copyinst(start, &didx);
 			idx.data.number = arr->items - 1;
@@ -1374,6 +1482,11 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 	array_iter idx;
 	array_iter didx;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(start != NULL);
+	assert(end != NULL);
+
 	if (!harr || !*harr) {
 		return -1;
 	}
@@ -1424,6 +1537,10 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 			totsize = (arr->items)?arr->items:1;
 			arr->data.packed = (array_data*)
 					realloc(arr->data.packed, sizeof(array_data) * totsize);
+			if(arr->data.packed == NULL) {
+				fprintf(stderr,"array_delrange(): Out of Memory!");
+				abort();
+			}
 			return arr->items;
 			break;
 		}
@@ -1477,6 +1594,10 @@ array_delitem(stk_array ** harr, array_iter * item)
 	array_iter idx;
 	int result;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(item != NULL);
+
 	copyinst(item, &idx);
 	result = array_delrange(harr, item, &idx);
 	CLEAR(&idx);
@@ -1508,6 +1629,8 @@ array_demote_only(stk_array * arr, int threshold)
 	array_iter current_key;
 	array_iter *current_value;
 	array_iter new_index;
+
+	assert(arr != NULL);
 
 	if (!arr || ARRAY_DICTIONARY != arr->type)
 		return NULL;
@@ -1551,6 +1674,10 @@ array_mash(stk_array * arr_in, stk_array ** mash, int value)
 	array_iter *current_value;
 	array_data temp_value;
 
+	assert(arr_in != NULL);
+	assert(mash != NULL);
+	assert(*mash != NULL);
+
 	if (NULL == arr_in || NULL == mash || NULL == *mash)
 		return;
 
@@ -1582,6 +1709,8 @@ array_is_homogenous(stk_array * arr, int typ)
 	array_data *dat;
 	int failedflag = 0;
 
+	assert(arr != NULL);
+
 	if (array_first(arr, &idx)) {
 		do {
 			dat = array_getitem(arr, &idx);
@@ -1603,6 +1732,11 @@ array_set_strkey(stk_array ** harr, const char *key, struct inst *val)
 	struct inst name;
 	int result;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(key != NULL);
+	assert(val != NULL);
+
 	name.type = PROG_STRING;
 	name.data.string = alloc_prog_string(key);
 
@@ -1618,6 +1752,10 @@ array_set_strkey_intval(stk_array ** arr, const char *key, int val)
 {
 	struct inst value;
 	int result;
+
+	assert(arr != NULL);
+	assert(*arr != NULL);
+	assert(key != NULL);
 
 	value.type = PROG_INTEGER;
 	value.data.number = val;
@@ -1635,6 +1773,10 @@ array_set_strkey_fltval(stk_array ** arr, const char *key, double val)
 	struct inst value;
 	int result;
 
+	assert(arr != NULL);
+	assert(*arr != NULL);
+	assert(key != NULL);
+
 	value.type = PROG_FLOAT;
 	value.data.fnumber = val;
 
@@ -1650,6 +1792,11 @@ array_set_strkey_strval(stk_array ** harr, const char *key, const char *val)
 {
 	struct inst value;
 	int result;
+
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(key != NULL);
+	assert(val != NULL);
 
 	value.type = PROG_STRING;
 	value.data.string = alloc_prog_string(val);
@@ -1667,6 +1814,11 @@ array_set_strkey_refval(stk_array ** harr, const char *key, dbref val)
 	struct inst value;
 	int result;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(key != NULL);
+	assert((int)val >= -4);
+
 	value.type = PROG_OBJECT;
 	value.data.objref = val;
 
@@ -1682,6 +1834,11 @@ array_set_strkey_arrval(stk_array ** harr, const char *key, stk_array* val)
 {
 	struct inst value;
 	int result;
+
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(key != NULL);
+	assert(val != NULL);
 
 	value.type = PROG_ARRAY;
 	value.data.array = val;
@@ -1703,6 +1860,10 @@ array_set_intkey(stk_array ** harr, int key, struct inst *val)
 	struct inst name;
 	int result;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(val != NULL);
+
 	name.type = PROG_INTEGER;
 	name.data.number = key;
 
@@ -1718,6 +1879,9 @@ array_set_intkey_intval(stk_array ** harr, int key, int val)
 {
 	struct inst value;
 	int result;
+
+	assert(harr != NULL);
+	assert(*harr != NULL);
 
 	value.type = PROG_INTEGER;
 	value.data.number = val;
@@ -1735,6 +1899,9 @@ array_set_intkey_fltval(stk_array ** harr, int key, double val)
 	struct inst value;
 	int result;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+
 	value.type = PROG_FLOAT;
 	value.data.fnumber = val;
 
@@ -1750,6 +1917,10 @@ array_set_intkey_refval(stk_array ** harr, int key, dbref val)
 {
 	struct inst value;
 	int result;
+
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert((int)val >= -4);
 
 	value.type = PROG_OBJECT;
 	value.data.objref = val;
@@ -1767,6 +1938,10 @@ array_set_intkey_strval(stk_array ** harr, int key, const char *val)
 	struct inst value;
 	int result;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(val != NULL);
+
 	value.type = PROG_STRING;
 	value.data.string = alloc_prog_string(val);
 
@@ -1782,6 +1957,10 @@ array_set_intkey_arrval(stk_array ** harr, int key, stk_array* val)
 {
 	struct inst value;
 	int result;
+
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(val != NULL);
 
 	value.type = PROG_ARRAY;
 	value.data.array = val;
@@ -1799,6 +1978,8 @@ array_get_intkey_strval(stk_array * arr, int key)
 {
 	struct inst ikey;
 	array_data *value;
+
+	assert(arr != NULL);
 
 	ikey.type = PROG_INTEGER;
 	ikey.data.number = key;
@@ -1827,6 +2008,11 @@ array_set_strval(stk_array ** harr, struct inst* key, const char *val)
 	struct inst value;
 	int result;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(key != NULL);
+	assert(val != NULL);
+
 	value.type = PROG_STRING;
 	value.data.string = alloc_prog_string(val);
 
@@ -1842,6 +2028,10 @@ array_set_intval(stk_array ** harr, struct inst* key, int val)
 {
 	struct inst value;
 	int result;
+
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(key != NULL);
 
 	value.type = PROG_INTEGER;
 	value.data.number = val;
@@ -1859,6 +2049,10 @@ array_set_fltval(stk_array ** harr, struct inst* key, double val)
 	struct inst value;
 	int result;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(key != NULL);
+
 	value.type = PROG_FLOAT;
 	value.data.fnumber = val;
 
@@ -1875,6 +2069,11 @@ array_set_refval(stk_array ** harr, struct inst* key, dbref val)
 	struct inst value;
 	int result;
 
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(key != NULL);
+	assert((int)val > -4);
+
 	value.type = PROG_OBJECT;
 	value.data.objref = val;
 
@@ -1890,6 +2089,11 @@ array_set_arrval(stk_array ** harr, struct inst* key, stk_array* val)
 {
 	struct inst value;
 	int result;
+
+	assert(harr != NULL);
+	assert(*harr != NULL);
+	assert(key != NULL);
+	assert(val != NULL);
 
 	value.type = PROG_ARRAY;
 	value.data.array = val;
