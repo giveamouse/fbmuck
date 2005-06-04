@@ -346,8 +346,7 @@ varlist:
 funcheader: FUNC ;
 
 %%
-FILE	*yyin	= { stdin };
-
+FILE	*yyin=NULL;
 int	yylineno = 1;
 
 
@@ -731,6 +730,7 @@ yylex()
 
 main()
 {
+	yyin = stdin;
 	while (1)
 		yyparse();
 }
