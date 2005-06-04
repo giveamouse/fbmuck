@@ -311,6 +311,9 @@ RCLEAR(struct inst *oper, char *file, int line)
 		fprintf(stderr, "Attempt to re-CLEAR() instruction from %s:%hd "
 				"previously CLEAR()ed at %s:%d\n", file, line, (char *) oper->data.addr,
 				oper->line);
+		assert(0); /* If debugging, we want to figure out just what
+					  is going on, and dump core at this point.  This
+					  will at least give us some idea of what's going on. */	
 		return;
 		}
 	case PROG_ADD:
