@@ -344,4 +344,5 @@ char *
 do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf, const char *abuf,
 			  char *outbuf, int mesgtyp)
 {
+	return NULL;
 }
