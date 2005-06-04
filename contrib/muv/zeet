@@ -1,0 +1,19 @@
+func loopy(count)
+{
+    var i,count;
+    for (i=1; i<=count; i+=1)
+	.tell(intostr(i));
+    i = 1;
+    do {
+	.tell(intostr(i));
+	i+=1;
+    } while(i<=count);
+    i = 1;
+    do {
+	.tell(intostr(i));
+	i+=1;
+    } until (i>count);
+    i = 1;
+    while (i <= count)
+	.tell(intostr(i));
+}

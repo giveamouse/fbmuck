@@ -1,0 +1,35 @@
+lvar i
+lvar count
+: loopy
+    count !
+    
+    1 i ! 
+    begin
+        i @ count @ <= 
+    while
+        i @ intostr .tell 
+        i @ 1 + i ! 
+    repeat 
+    1 i ! 
+    begin
+        i @ intostr .tell 
+        i @ 1 + i ! 
+    (conditional follows)
+        i @ count @ <= 
+    not until 
+    1 i ! 
+    begin
+        i @ intostr .tell 
+        i @ 1 + i ! 
+    (conditional follows)
+        i @ count @ > 
+    until 
+    1 i ! 
+    begin
+        i @ count @ <= 
+    while
+        i @ intostr .tell 
+    repeat 
+;
+
+
