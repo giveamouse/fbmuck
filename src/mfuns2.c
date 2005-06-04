@@ -1562,9 +1562,20 @@ mfn_force(MFUNARGS)
 	strcpy(buf, argv[1]);
 	ptr = buf;
 	do {
+		const char *ptr2=NAME(obj);
+		char objname[BUFFER_LEN], *ptr3;
+
 		nxt = index(ptr, '\r');
 		if (nxt)
 			*nxt++ = '\0';
+
+		/* fixing bug #986845 */
+		/* follows same definition above, with different variable names */
+		for (ptr3 = objname; *ptr2 && !isspace(*ptr2);)
+			*(ptr3++) = *(ptr2++);
+		*ptr3 = '\0';
+		if (lookup_player(objname) != NOTHING)
+			ABORT_MPI("FORCE", "Cannot force a thing named after a player. [2]");
 		force_prog = what;
 		force_level++;
 		if (*ptr)
