@@ -34,9 +34,9 @@
 /* Turn this on when you want MUCK to set to a specific group ID... */
 /* #define MUD_GID "MUCK" */
 
-/* Set this when you want the background database dumper to run at a lower
- * priority... note: cannot be less than 0! */
-/* #define NICEVAL 1 */
+/*
+ * NICEVAL moved to config.h, where it belongs.
+ */
 
 /* Used for breaking out of muf READs or for stopping foreground programs. */
 #define BREAK_COMMAND "@Q"

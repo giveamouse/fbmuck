@@ -79,6 +79,16 @@
  */
 #undef SCARY_MUF_PRIMS
 
+/*
+ * This is a fairly interesting one -- if there's no DISKBASING, and thus
+ * the saves are fork()ed off into the background, then then the child
+ * may cause I/O contention with the parent (the interactive, player-
+ * connected process).  If this occurs, you can set this to a number
+ * greater than 0 to make it be slightly nicer to the rest of the
+ * system.  (Usually, setting it to 1 is all that's needed.)
+ */
+#define NICEVAL 0
+
 /************************************************************************
    Game Options
 
