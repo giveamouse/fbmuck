@@ -3854,6 +3854,8 @@ free_prog(dbref prog)
 	int siz = PROGRAM_SIZ(prog);
 
 	if (c) {
+		assert(PROGRAM_INSTANCES(prog) == 0);
+		assert(scan_instances(prog) == 0);
 		if (PROGRAM_INSTANCES(prog)) {
 			fprintf(stderr, "Freeing program %s with %d instances reported\n",
 					unparse_object(GOD, prog), PROGRAM_INSTANCES(prog));
