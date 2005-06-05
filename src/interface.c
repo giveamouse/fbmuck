@@ -342,8 +342,14 @@ main(int argc, char **argv)
 	WORD wVersionRequested;
 	WSADATA wsaData;
 	int err;
-#endif
-
+#endif /* WIN32 */
+#ifdef DEBUG
+	/* This makes glibc's malloc abort() on heap errors. */
+	if(setenv("MALLOC_CHECK_","2",1) < 0) {
+		fprintf(stderr, "[debug]setenv failed: out of memory");
+		abort();
+	}
+#endif /* DEBUG */
 	listener_port[0] = TINYPORT;
 
     init_descriptor_lookup();
