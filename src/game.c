@@ -1195,7 +1195,7 @@ process_command(int descr, dbref player, char *command)
 			case 'V':
 				/* @version */
 				Matched("@version");
-				notify(player, VERSION);
+				do_version(player);
 				break;
 			case 'w':
 			case 'W':

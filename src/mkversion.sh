@@ -37,17 +37,27 @@ cat > version.c <<EOF
  */
 
 #include <sys/time.h>
+#include "config.h"
 #include "patchlevel.h"
 #include "params.h"
 #include "externs.h"
 
-const char *generation = "$generation";
-const char *creation = "$creation";
+#define generation "$generation"
+#define creation "$creation"
 const char *version = PATCHLEVEL;
+#ifdef DEBUG
+#define debug "Debug Version, assertions enabled"
+#else
+#define debug "Production Version, assertions disabled"
+#endif
+
 
 const char *infotext[] =
 {
     VERSION,
+    debug,
+    generation,
+    creation,
     " ",
     "Based on the original code written by these programmers:",
     "  David Applegate    James Aspnes    Timothy Freeman    Bennet Yee",
@@ -106,6 +116,16 @@ do_credits(dbref player)
     for (i = 0; infotext[i]; i++) {
         notify(player, infotext[i]);
     }
+}
+
+void
+do_version(dbref player)
+{
+	char s[BUFFER_LEN];
+
+	snprintf(s,BUFFER_LEN,"Version: %s Compiled on: %s (%s)",VERSION,creation,debug);
+	notify(player, s);
+	return;
 }
 
 EOF
