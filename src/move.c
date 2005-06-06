@@ -890,8 +890,11 @@ do_recycle(int descr, dbref player, const char *name)
 					notify(player, "Permission denied.");
 					return;
 				}
+				dequeue_prog(thing, 0);
+				SetMLevel(thing, 0);
 				/* FIXME: This is a workaround for bug #201633 */
 				if(PROGRAM_INSTANCES(thing)) {
+					assert(0);  /* getting here is a bug - we already dequeued it. */
 					notify(player, "Recycle failed: Program is running.");
 					return;
 				}
