@@ -270,6 +270,10 @@ prim_force(PRIM_PROTOTYPE)
 		abort_interp("Non-string argument (2).");
 	if (oper2->type != PROG_OBJECT)
 		abort_interp("Non-object argument (1).");
+#if 1  /* defined DEBUG */
+	if (force_level > 0)
+		abort_interp("Cannot FORCE from a force.");
+#endif  /* DEBUG */
 	ref = oper2->data.objref;
 	if (ref < 0 || ref >= db_top)
 		abort_interp("Invalid object to force. (1)");
