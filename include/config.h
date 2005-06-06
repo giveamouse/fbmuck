@@ -33,9 +33,9 @@
  */
 #define GOD_PRIV
 
-/* Use to compress string data (recomended)
+/* Use to compress string data (NO LONGER RECOMMENDED)
  */
-#define COMPRESS
+#undef COMPRESS
 
 /* To use a simple disk basing scheme where properties aren't loaded
  * from the input file until they are needed, define this. (Note: if
@@ -87,7 +87,7 @@
  * greater than 0 to make it be slightly nicer to the rest of the
  * system.  (Usually, setting it to 1 is all that's needed.)
  */
-#define NICEVAL 0
+#define NICEVAL 1
 
 /************************************************************************
    Game Options
