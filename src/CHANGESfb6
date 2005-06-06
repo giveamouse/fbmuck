@@ -24,6 +24,13 @@ Modified behavior of MUF FORCE to no longer allow FORCE when force_level is
   already set. THIS MAY BREAK CODE THAT DOES MULTIPLE FORCES.
 Changed so GOD_PRIV allows God to toad wizards without having to unset
   their wizard flag.
+Added code to support RFE#859214 -- '"string1" "string2" =' now operates
+  as '"string1" "string2" strcmp not'.  Implemented in p_math.c,
+  function prim_equal -- not specifically math-related, but it makes
+  a lot of sense to overload the meaning for strings.  I am leaving this
+  undocumented for now, and disabled by default (#ifdef STRINGMATH), for
+  discussion as to whether this is a direction we want to take -- aliasing
+  math operators for string operations.
 
 2.2fb6.03
 Added improved SSL error reporting, via stderr.
