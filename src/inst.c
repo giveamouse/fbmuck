@@ -11,8 +11,6 @@
 #include "fbstrings.h"
 #include "interp.h"
 
-#include <assert.h>
-
 #undef DEBUGARRAYS
 
 /* these arrays MUST agree with what's in inst.h */
