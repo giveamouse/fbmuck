@@ -195,7 +195,14 @@ static int
 event_has_refs(dbref program, struct mufevent_process *proc)
 {
 	int loop;
-	struct frame* fr = proc->fr;
+	struct frame* fr = NULL;
+	
+	assert(proc->deleted == 0);
+
+	if (proc->deleted) {
+		return 0;
+	}
+	fr = proc->fr;
 	if (!fr) {
 		return 0;
 	}
