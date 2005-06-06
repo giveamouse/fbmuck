@@ -389,19 +389,35 @@ prim_equal(PRIM_PROTOTYPE)
 	CHECKOP(2);
 	oper1 = POP();
 	oper2 = POP();
-	if (!comp_t(oper1) || !comp_t(oper2))
-		abort_interp("Invalid argument type.");
-	if (oper1->type == PROG_FLOAT || oper2->type == PROG_FLOAT) {
-		tf1 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber :
-				(oper2->type == PROG_INTEGER) ? oper2->data.number : oper2->data.objref;
-		tf2 = (oper1->type == PROG_FLOAT) ? oper1->data.fnumber :
-				(oper1->type == PROG_INTEGER) ? oper1->data.number : oper1->data.objref;
-		result = tf1 == tf2;
+#ifdef STRINGMATH
+	if (oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
+		/* Code to handle RFE#859214 -- by winged */
+		/* easier than prim_strcmp has to be      */
+		/* Not strictly math, but a convenience   */
+		if(oper1->data.string == oper2->data.string) {
+			result = 0;
+		} else {
+			result = strcmp(DoNullInd(oper1->data.string),DoNullInd(oper2->data.string));
+			result = result ? 0 : 1;
+		}
 	} else {
-		result = (((oper2->type == PROG_INTEGER) ? oper2->data.number : oper2->data.objref)
-				  ==
-				  ((oper1->type == PROG_INTEGER) ? oper1->data.number : oper1->data.objref));
+#endif /* STRINGMATH */
+		if (!comp_t(oper1) || !comp_t(oper2))
+			abort_interp("Invalid argument type.");
+		if (oper1->type == PROG_FLOAT || oper2->type == PROG_FLOAT) {
+			tf1 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber :
+					(oper2->type == PROG_INTEGER) ? oper2->data.number : oper2->data.objref;
+			tf2 = (oper1->type == PROG_FLOAT) ? oper1->data.fnumber :
+					(oper1->type == PROG_INTEGER) ? oper1->data.number : oper1->data.objref;
+			result = tf1 == tf2;
+		} else {
+			result = (((oper2->type == PROG_INTEGER) ? oper2->data.number : oper2->data.objref)
+					  ==
+					  ((oper1->type == PROG_INTEGER) ? oper1->data.number : oper1->data.objref));
+		}
+#ifdef STRINGMATH
 	}
+#endif /* STRINGMATH */
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushInt(result);

@@ -135,5 +135,8 @@
 /* Ignore related defines */
 
 #define IGNORE_PROP "@__sys__/ignore/def"
+
+/* Do we want MUF math operators (currently =) to work on strings? */
+#undef STRINGMATH
  
 #endif /* _PARAMS_H */
