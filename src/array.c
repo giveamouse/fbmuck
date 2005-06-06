@@ -8,7 +8,6 @@
 #include <time.h>
 #include <ctype.h>
 #include <float.h>
-#include <assert.h>
 #include "db.h"
 #include "tune.h"
 #include "inst.h"
