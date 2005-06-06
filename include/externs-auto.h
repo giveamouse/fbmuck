@@ -11,7 +11,7 @@ int array_delrange(stk_array ** harr, array_iter * start, array_iter * end);
 int can_move(int descr, dbref player, const char *direction, int lev);
 void clear_propnode(PropPtr p);
 void copy_proplist(dbref obj, PropPtr * newer, PropPtr old);
-int dequeue_prog(dbref program, int sleeponly);
+int dequeue_prog_real(dbref program, int sleeponly, const char *, const int);
 void diskbase_debug(dbref player);
 char * displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz);
 void do_abort_silent(void);

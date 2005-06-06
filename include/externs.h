@@ -40,7 +40,7 @@ extern int in_timequeue(int pid);
 extern struct frame* timequeue_pid_frame(int pid);
 extern long next_event_time(void);
 extern void list_events(dbref program);
-extern int dequeue_prog(dbref program, int sleeponly);
+extern int dequeue_prog_real(dbref, int, const char *, const int);
 extern int dequeue_process(int procnum);
 extern int dequeue_timers(int procnum, char* timerid);
 extern void purge_timenode_free_pool();
@@ -313,6 +313,7 @@ extern void purge_try_pool(void);
 
 /* From mufevent.c */
 extern int muf_event_exists(struct frame* fr, const char* eventid);
+extern int muf_event_process_unregister(struct frame *fr);
 
 /* from signal.h */
 extern void set_dumper_signals();
@@ -349,6 +350,7 @@ extern int force_level;
 extern dbref force_prog;
 
 extern void do_credits(dbref player);
+extern void do_version(dbref player);
 
 extern void disassemble(dbref player, dbref program);
 

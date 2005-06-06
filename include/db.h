@@ -477,6 +477,8 @@ struct mufwatchpidlist {
 	int pid;
 };
 
+#define dequeue_prog(x,i) dequeue_prog_real(x,i,__FILE__,__LINE__)
+
 #define STD_REGUID 0
 #define STD_SETUID 1
 #define STD_HARDUID 2

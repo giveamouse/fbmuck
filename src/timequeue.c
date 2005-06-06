@@ -964,10 +964,14 @@ get_pidinfo(int pid)
  *     2: kill all matching foreground MUF processes
  */
 int
-dequeue_prog(dbref program, int killmode)
+dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 {
 	int count = 0;
 	timequeue tmp, ptr;
+
+#ifdef DEBUG
+	fprintf(stderr,"[debug] dequeue_prog called from %s:%d\n",file,line);
+#endif /* DEBUG */
 
 	while (tqhead) {
 		if (tqhead->called_prog != program && !has_refs(program, tqhead) && tqhead->uid != program) {
@@ -1017,6 +1021,12 @@ dequeue_prog(dbref program, int killmode)
 			FLAGS(ptr->uid) |= (INTERACTIVE | READMODE);
 		}
 	}
+	/* and just to make sure we got them all... otherwise, we need
+	 * to rethink what we're doing here. */
+	/* assert(PROGRAM_INSTANCES(program) == 0);*/
+#ifdef DEBUG
+	fprintf(stderr,"[debug] dequeue_prog: %d instances of #%d\n",PROGRAM_INSTANCES(program),program);
+#endif
 	return (count);
 }
 
