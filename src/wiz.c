@@ -322,14 +322,22 @@ do_force(int descr, dbref player, const char *what, char *command)
 	dbref victim, loc;
 	struct match_data md;
 
+	assert(what != NULL);
+	assert(command != NULL);
+	assert(player > 0);
+
 	if (force_level) {
-		notify(player, "Can't @force an @force.");
+		notify(player, "Can't force from within a force.");
 		return;
 	}
 
 	if (!tp_zombies && (!Wizard(player) || Typeof(player) != TYPE_PLAYER)) {
-		notify(player, "Only Wizard players may use this command.");
+		notify(player, "Zombies are not enabled here.");
 		return;
+#ifdef DEBUG	
+	} else {
+		notify(player, "[debug] Zombies are not enabled for nonwizards -- force succeeded.");
+#endif
 	}
 
 	/* get victim */
@@ -343,16 +351,19 @@ do_force(int descr, dbref player, const char *what, char *command)
 	match_player(&md);
 
 	if ((victim = noisy_match_result(&md)) == NOTHING) {
+#ifdef DEBUG
+		notify(player, "[debug] do_force: unable to find your target!");
+#endif /* DEBUG */
 		return;
 	}
 
 	if (Typeof(victim) != TYPE_PLAYER && Typeof(victim) != TYPE_THING) {
-		notify(player, "Permission Denied.");
+		notify(player, "Permission Denied -- Target not a player or thing.");
 		return;
 	}
 #ifdef GOD_PRIV
 	if (God(victim)) {
-		notify(player, "You cannot force god to do anything.");
+		notify(player, "You cannot force God to do anything.");
 		return;
 	}
 #endif							/* GOD_PRIV */
@@ -384,11 +395,11 @@ do_force(int descr, dbref player, const char *what, char *command)
 		char objname[BUFFER_LEN], *ptr2;
 
 		if ((FLAGS(player) & ZOMBIE)) {
-			notify(player, "Permission denied.");
+			notify(player, "Permission denied -- you cannot use zombies.");
 			return;
 		}
 		if (FLAGS(victim) & DARK) {
-			notify(player, "Mortals can't force dark puppets!");
+			notify(player, "Permission denied -- you cannot force dark zombies.");
 			return;
 		}
 		for (ptr2 = objname; *ptr && !isspace(*ptr);)
@@ -404,6 +415,7 @@ do_force(int descr, dbref player, const char *what, char *command)
 			   victim, NAME(player), player, command);
 	/* force victim to do command */
 	force_prog=NOTHING;
+	/* Technically, force_level must be 0 at this point, regardless. */
 	force_level++;
 	process_command(dbref_first_descr(victim), victim, command);
 	force_level--;
@@ -636,6 +648,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 		return;
 	}
 	if (!*recip) {
+		/* FIXME: Make me a tunable parameter! */
 		recipient = GOD;
 	} else {
 		if ((recipient = lookup_player(recip)) == NOTHING || recipient == victim) {
@@ -646,12 +659,17 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 
 	if (Typeof(victim) != TYPE_PLAYER) {
 		notify(player, "You can only turn players into toads!");
+#ifdef GOD_PRIV
+	} else if (!(God(player)) && (TrueWizard(victim))) {
+#else
 	} else if (TrueWizard(victim)) {
+#endif
 		notify(player, "You can't turn a Wizard into a toad.");
 	} else {
 		/* we're ok */
 		/* do it */
 		send_contents(descr, victim, HOME);
+		dequeue_prog(victim, 0);  /* Dequeue the programs that the player's running */
 		for (stuff = 0; stuff < db_top; stuff++) {
 			if (OWNER(stuff) == victim) {
 				switch (Typeof(stuff)) {
@@ -670,6 +688,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 				}
 			}
 			if (Typeof(stuff) == TYPE_THING && THING_HOME(stuff) == victim) {
+				/* FIXME: Set a tunable "lost and found" area! */
 				THING_SET_HOME(stuff, tp_player_start);
 			}
 		}
@@ -677,21 +696,20 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 			free((void *) PLAYER_PASSWORD(victim));
 			PLAYER_SET_PASSWORD(victim, 0);
 		}
-		dequeue_prog(victim, 0);	/* dequeue progs that player's running */
 
 		/* notify people */
 		notify(victim, "You have been turned into a toad.");
 		snprintf(buf, sizeof(buf), "You turned %s into a toad!", NAME(victim));
 		notify(player, buf);
 		log_status("TOADED: %s(%d) by %s(%d)\n", NAME(victim), victim, NAME(player), player);
-
 		/* reset name */
 		delete_player(victim);
 		snprintf(buf, sizeof(buf), "A slimy toad named %s", NAME(victim));
 		free((void *) NAME(victim));
 		NAME(victim) = alloc_string(buf);
 		DBDIRTY(victim);
-		boot_player_off(victim);
+
+		boot_player_off(victim); /* Disconnect the toad */
 
 		if (PLAYER_DESCRS(victim)) {
 			free(PLAYER_DESCRS(victim));
@@ -708,8 +726,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 
 		FLAGS(victim) = (FLAGS(victim) & ~TYPE_MASK) | TYPE_THING;
 		OWNER(victim) = player;	/* you get it */
-		SETVALUE(victim, 1);	/* don't let him keep his
-									 * immense wealth */
+		SETVALUE(victim, 1);	/* don't let him keep his immense wealth */
 	}
 }
 
