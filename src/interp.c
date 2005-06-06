@@ -272,8 +272,14 @@ scopedvar_getname(struct frame *fr, int level, int varnum)
 int
 scopedvar_getnum(struct frame *fr, int level, const char* varname)
 {
-	struct scopedvar_t *svinfo = fr->svars;
+	struct scopedvar_t *svinfo=NULL;
 	int varnum;
+
+	assert(fr != NULL);
+	assert(varname != NULL);
+	assert(*varname != '\0');
+
+	svinfo = fr->svars;
 
 	while (svinfo && level-->0)
 		svinfo = svinfo->next;
@@ -284,6 +290,7 @@ scopedvar_getnum(struct frame *fr, int level, const char* varname)
 		return -1;
 	}
 	for (varnum = 0; varnum < svinfo->count; varnum++) {
+		assert(svinfo->varnames[varnum] != NULL);
 		if (!string_compare(svinfo->varnames[varnum], varname)) {
 			return varnum;
 		}
@@ -295,6 +302,10 @@ void
 RCLEAR(struct inst *oper, char *file, int line)
 {
 	int varcnt, j;
+
+	assert(oper != NULL);
+	assert(file != NULL);
+	assert(line > 0);
 
 	switch (oper->type) {
 	case PROG_CLEARED: {
@@ -837,6 +848,7 @@ prog_clean(struct frame *fr)
 	dequeue_timers(fr->pid, NULL);
 
 	muf_event_purge(fr);
+	muf_event_process_unregister(fr);
 	fr->next = free_frames_list;
 	free_frames_list = fr;
 	err = 0;
