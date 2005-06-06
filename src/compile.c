@@ -138,7 +138,9 @@ typedef struct COMPILE_STATE_T {
 int primitive(const char *s);	/* returns primitive_number if
 
 								 * primitive */
-void free_prog(dbref);
+
+#define free_prog(i) free_prog_real(i,__FILE__,__LINE__);
+void free_prog_real(dbref,const char*, const int);
 const char *next_token(COMPSTATE *);
 const char *next_token_raw(COMPSTATE *);
 struct INTERMEDIATE *next_word(COMPSTATE *, const char *);
@@ -3847,29 +3849,27 @@ alloc_addr(COMPSTATE * cstat, int offset, struct inst *codestart)
 }
 
 void
-free_prog(dbref prog)
+free_prog_real(dbref prog, const char *file, const int line)
 {
 	int i;
 	struct inst *c = PROGRAM_CODE(prog);
 	int siz = PROGRAM_SIZ(prog);
 
 	if (c) {
-		assert(PROGRAM_INSTANCES(prog) == 0);
-		assert(scan_instances(prog) == 0);
 		if (PROGRAM_INSTANCES(prog)) {
-			fprintf(stderr, "Freeing program %s with %d instances reported\n",
-					unparse_object(GOD, prog), PROGRAM_INSTANCES(prog));
+			fprintf(stderr, "Freeing program %s with %d instances reported from %s:%d\n",
+					unparse_object(GOD, prog), PROGRAM_INSTANCES(prog),file,line);
 		}
 		i = scan_instances(prog);
 		if (i) {
-			fprintf(stderr, "Freeing program %s with %d instances found\n",
-					unparse_object(GOD, prog), i);
+			fprintf(stderr, "Freeing program %s with %d instances found from %s:%d\n",
+					unparse_object(GOD, prog), i,file,line);
 		}
 		for (i = 0; i < siz; i++) {
 			if (c[i].type == PROG_ADD) {
 				if (c[i].data.addr->links != 1) {
-					fprintf(stderr, "Freeing address in %s with link count %d\n",
-							unparse_object(GOD, prog), c[i].data.addr->links);
+					fprintf(stderr, "Freeing address in %s with link count %d from %s:%d\n",
+							unparse_object(GOD, prog), c[i].data.addr->links,file,line);
 				}
 				free(c[i].data.addr);
 			}
