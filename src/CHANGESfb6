@@ -9,8 +9,21 @@ Fixed documentation on {lsort} ('mpi lsort') for number of comparisons.
 Fixed typo in PROGRAM_GETLINES documentation.
 Changed FRAND primitive to be much more efficient and have a more uniform
   distribution.
-
-
+Added --enable-debug configure option, to enable assert()s and memory
+  corruption detection (the latter under glibc).
+Modified behavior of {force} to always check every line forced to prevent
+  spoofing possibility.  (Fix #986845)
+Attempted fix of bug #201633 by dequeue_prog(), then setting thing mlev to
+  0, before recycling it.
+Moved NICEVAL out of params.h and into config.h where it belongs.
+Added a LOT of assert()s.  Production systems that do not use --enable-debug
+  will not see any performance penalty.
+Added a bunch of debug messages that will only be seen when --enable-debug
+  is passed to configure.
+Modified behavior of MUF FORCE to no longer allow FORCE when force_level is
+  already set. THIS MAY BREAK CODE THAT DOES MULTIPLE FORCES.
+Changed so GOD_PRIV allows God to toad wizards without having to unset
+  their wizard flag.
 
 2.2fb6.03
 Added improved SSL error reporting, via stderr.
