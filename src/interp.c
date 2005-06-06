@@ -848,7 +848,6 @@ prog_clean(struct frame *fr)
 	dequeue_timers(fr->pid, NULL);
 
 	muf_event_purge(fr);
-	muf_event_process_unregister(fr);
 	fr->next = free_frames_list;
 	free_frames_list = fr;
 	err = 0;
