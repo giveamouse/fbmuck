@@ -279,8 +279,8 @@ prim_force(PRIM_PROTOTYPE)
 		abort_interp("Invalid object to force. (1)");
 	if (Typeof(ref) != TYPE_PLAYER && Typeof(ref) != TYPE_THING)
 		abort_interp("Object to force not a thing or player. (1)");
-	if (!oper1->data.string)
-		abort_interp("Null string argument (2).");
+	if (0 == strcmp(DoNullInd(oper1->data.string), ""))
+		abort_interp("Empty command argument (2).");
 	if (index(oper1->data.string->data, '\r'))
 		abort_interp("Carriage returns not allowed in command string. (2).");
 #ifdef GOD_PRIV
@@ -296,6 +296,11 @@ prim_force(PRIM_PROTOTYPE)
 
 	for (i = 1; i <= fr->caller.top; i++) {
 		if (Typeof(fr->caller.st[i]) != TYPE_PROGRAM) {
+#ifdef DEBUG
+			char str[BUFFER_LEN];
+			snprintf(str,BUFFER_LEN,"[debug] prim_force: fr->caller.st[%d] isn't a program.",i);
+			notify(player,str);
+#endif /* DEBUG */
 			do_abort_silent();
 		}
 	}
