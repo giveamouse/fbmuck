@@ -295,7 +295,7 @@ prim_force(PRIM_PROTOTYPE)
 #ifdef DEBUG
 			char str[BUFFER_LEN];
 			snprintf(str,BUFFER_LEN,"[debug] prim_force: fr->caller.st[%d] isn't a program.",i);
-			notify_nolisten(player,str);
+			notify_nolisten(player,str,1);
 #endif /* DEBUG */
 			do_abort_silent();
 		}
