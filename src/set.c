@@ -818,11 +818,16 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 	} else {
 		owner = OWNER(player);
 	}
-
 	if (!Wizard(OWNER(player)) && OWNER(player) != owner) {
 		notify(player, "Only wizards can transfer ownership to others.");
 		return;
 	}
+#ifdef GOD_PRIV
+	if (Wizard(OWNER(player)) && !God(player) && God(owner)) {
+		notify(player, "God doesn't need an offering or sacrifice.");
+		return;
+	}
+#endif /* GOD_PRIV */
 	if (!Wizard(OWNER(player))) {
 		if (Typeof(thing) != TYPE_EXIT ||
 			(DBFETCH(thing)->sp.exit.ndest && !controls_link(player, thing))) {
