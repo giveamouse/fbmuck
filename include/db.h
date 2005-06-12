@@ -568,11 +568,11 @@ struct program_specific {
 };
 
 #define PROGRAM_SP(x)			(DBFETCH(x)->sp.program.sp)
-#define ALLOC_PROGRAM_SP(x)      { PROGRAM_SP(x) = (struct program_specific *)malloc(sizeof(struct program_specific)); }
-#define FREE_PROGRAM_SP(x)       { dbref foo = x; free(PROGRAM_SP(foo)); PROGRAM_SP(foo) = NULL; }
+#define ALLOC_PROGRAM_SP(x)     { PROGRAM_SP(x) = (struct program_specific *)malloc(sizeof(struct program_specific)); }
+#define FREE_PROGRAM_SP(x)      { dbref foo = x; (PROGRAM_SP(foo)?free(PROGRAM_SP(foo)):0); PROGRAM_SP(foo) = NULL; }
 
-#define PROGRAM_INSTANCES(x)		(PROGRAM_SP(x)->instances)
-#define PROGRAM_CURR_LINE(x)		(PROGRAM_SP(x)->curr_line)
+#define PROGRAM_INSTANCES(x)	(PROGRAM_SP(x)!=NULL?PROGRAM_SP(x)->instances:0)
+#define PROGRAM_CURR_LINE(x)	(PROGRAM_SP(x)->curr_line)
 #define PROGRAM_SIZ(x)			(PROGRAM_SP(x)->siz)
 #define PROGRAM_CODE(x)			(PROGRAM_SP(x)->code)
 #define PROGRAM_START(x)		(PROGRAM_SP(x)->start)
