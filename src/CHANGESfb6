@@ -1,3 +1,10 @@
+2.2fb6.05
+Changed behavior of Wizard programs: They must now be set Wizard plus at least
+  M1 in order to execute.  (The idea is that setting a program M0 should
+  render it uninterpretable, but in the case of Wizard programs, they could
+  have no MUCKER bit set and still be interpreted at mlev 4.)
+If GOD_PRIV is set, Wizards can no longer chown items to God.  (Security fix)
+
 2.2fb6.04
 Added NICEVAL in params.h to set the dumper process nice() priority.
 Added GAUSSIAN primitive to float.  Takes std-deviation and mean and returns a
