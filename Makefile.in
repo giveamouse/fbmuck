@@ -105,8 +105,13 @@ package: help
 	cp -fp src/*.in src/*.sh src/*.c ${TMPPKGDIR}/src
 	cp -fp src/CHANGES* src/*WARN* src/*WOSSM* ${TMPPKGDIR}/src
 	cp -fp src/COMPILING src/BUG_FORM ${TMPPKGDIR}/src
+	cp -fp src/pcre-4.3.tar.gz ${TMPPKGDIR}/src
 	chmod +rw ${TMPPKGDIR}/src/*
 	chmod +x ${TMPPKGDIR}/configure
+	mkdir ${TMPPKGDIR}/auto
+	cp -fp auto/config.guess auto/config.sub auto/install-sh ${TMPPKGDIR}/auto
+	cp -fp auto/ltmain.sh auto/missing auto/mkinstalldirs ${TMPPKGDIR}/auto
+	chmod +x ${TMPPKGDIR}/auto/*
 	mkdir ${TMPPKGDIR}/scripts
 	cp -fp  scripts/fbmuck-add          ${TMPPKGDIR}/scripts
 	cp -fp  scripts/fbmuck-sysvinit     ${TMPPKGDIR}/scripts
