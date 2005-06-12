@@ -787,11 +787,22 @@ prog_clean(struct frame *fr)
 	watchpid_process (fr);
 
 	fr->system.top = 0;
-	for (i = 0; i < fr->argument.top; i++)
+	DEBUGPRINT("prog_clean: fr->argument.top=%d,(#%d)\n",fr->argument.top,
+				fr->argument.st[(fr->argument.top) - 1]);
+	for (i = 0; i < fr->argument.top; i++){
+		DEBUGPRINT(
+			"About to clear argument element &fr->argument.st[%d](%p).\n",
+				i, &fr->argument.st[i]
+		);
 		CLEAR(&fr->argument.st[i]);
+	}
 
-	for (i = 1; i <= fr->caller.top; i++)
+	DEBUGPRINT("prog_clean: fr->caller.top=%d\n",fr->caller.top,0);
+	for (i = 1; i <= fr->caller.top; i++) {
+		DEBUGPRINT("Decreasing instances of fr->caller.st[%d](#%d)\n",
+						i, fr->caller.st[i]);
 		PROGRAM_DEC_INSTANCES(fr->caller.st[i]);
+	}
 
 	for (i = 0; i < MAX_VAR; i++)
 		CLEAR(&fr->variables[i]);
