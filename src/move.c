@@ -851,8 +851,12 @@ do_recycle(int descr, dbref player, const char *name)
 					notify(player, "Permission denied.");
 					return;
 				}
-				if (thing == tp_player_start || thing == GLOBAL_ENVIRONMENT) {
-					notify(player, "This room may not be recycled (is either player start or the global environment).");
+				if (thing == tp_player_start) {
+					notify(player, "That is the player start room, and may not be recycled.");
+					return;
+				}
+				if (thing == GLOBAL_ENVIRONMENT) {
+					notify(player, "If you want to do that, why don't you just delete the database instead?  Room #0 contains everything, and is needed for database sanity.");
 					return;
 				}
 				break;
@@ -861,9 +865,10 @@ do_recycle(int descr, dbref player, const char *name)
 					notify(player, "Permission denied.");
 					return;
 				}
+				/* player may be a zombie or puppet */
 				if (thing == player) {
 					snprintf(buf, sizeof(buf),
-							"%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks it's legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
+							"%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks its legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
 							NAME(thing));
 					notify_except(DBFETCH(getloc(thing))->contents, thing, buf, player);
 					notify(OWNER(player), buf);
@@ -890,7 +895,9 @@ do_recycle(int descr, dbref player, const char *name)
 					notify(player, "Permission denied.");
 					return;
 				}
-				dequeue_prog(thing, 0);
+				if(PROGRAM_INSTANCES(thing)) {
+					dequeue_prog(thing, 0);
+				}
 				SetMLevel(thing, 0);
 				/* FIXME: This is a workaround for bug #201633 */
 				if(PROGRAM_INSTANCES(thing)) {
