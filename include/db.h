@@ -181,20 +181,28 @@ typedef int dbref;				/* offset into db */
 #define TYPE_EXIT           0x2
 #define TYPE_PLAYER         0x3
 #define TYPE_PROGRAM        0x4
+#define NOTYPE1				0x5 /* Room for expansion */
 #define TYPE_GARBAGE        0x6
 #define NOTYPE              0x7	/* no particular type */
 #define TYPE_MASK           0x7	/* room for expansion */
 
+#define EXPANSION0		   0x08 /* Not a flag, but one add'l flag for
+								 * expansion purposes */
+
 #define WIZARD             0x10	/* gets automatic control */
-#define LINK_OK            0x20	/* anybody can link to this room */
+#define LINK_OK            0x20	/* anybody can link to this */
 #define DARK               0x40	/* contents of room are not printed */
 #define INTERNAL           0x80	/* internal-use-only flag */
 #define STICKY            0x100	/* this object goes home when dropped */
 #define BUILDER           0x200	/* this player can use construction commands */
-#define CHOWN_OK          0x400	/* this player can be @chowned to */
+#define CHOWN_OK          0x400	/* this object can be @chowned, or
+									this player can see color */
 #define JUMP_OK           0x800	/* A room which can be jumped from, or
 								 * a player who can be jumped to */
+#define EXPANSION1		 0x1000 /* Expansion bit */
+#define EXPANSION2		 0x2000 /* Expansion bit */
 #define KILL_OK	         0x4000	/* Kill_OK bit.  Means you can be killed. */
+#define EXPANSION3		 0x8000 /* Expansion bit */
 #define HAVEN           0x10000	/* can't kill here */
 #define ABODE           0x20000	/* can set home here */
 #define MUCKER          0x40000	/* programmer */
@@ -209,6 +217,8 @@ typedef int dbref;				/* offset into db */
 #define XFORCIBLE     0x8000000	/* externally forcible flag */
 #define READMODE     0x10000000	/* internal: when set, player is in a READ */
 #define SANEBIT      0x20000000	/* internal: used to check db sanity */
+#define EXPANSION4	 0x40000000 /* Expansion flag */
+#define EXPANSION5   0x80000000 /* Expansion flag */
 
 
 /* what flags to NOT dump to disk. */
@@ -234,7 +244,11 @@ typedef long object_flag_type;
 
 #define MLevRaw(x) (((FLAGS(x) & MUCKER)? 2:0) + ((FLAGS(x) & SMUCKER)? 1:0))
 
-#define MLevel(x) ((FLAGS(x) & WIZARD)? 4 : \
+/* Setting a program M0 is supposed to make it not run, but if it's set
+ * Wizard, it'll run anyway without the extra double-check for MUCKER
+ * or SMUCKER -- change by Winged */
+#define MLevel(x) (((FLAGS(x) & WIZARD) && \
+			((FLAGS(x) & MUCKER) || (FLAGS(x) & SMUCKER)))? 4 : \
 		   (((FLAGS(x) & MUCKER)? 2 : 0) + \
 		    ((FLAGS(x) & SMUCKER)? 1 : 0)))
 
