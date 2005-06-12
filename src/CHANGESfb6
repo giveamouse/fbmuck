@@ -24,15 +24,21 @@ Modified behavior of MUF FORCE to no longer allow FORCE when force_level is
   already set. [this change has been backed out]
 Changed so GOD_PRIV allows God to toad wizards without having to unset
   their wizard flag.
-Added code to support RFE#859214 -- '"string1" "string2" =' now operates
-  as '"string1" "string2" strcmp not'.  Implemented in p_math.c,
-  function prim_equal -- not specifically math-related, but it makes
-  a lot of sense to overload the meaning for strings.  I am leaving this
-  undocumented for now, and disabled by default (#ifdef STRINGMATH), for
-  discussion as to whether this is a direction we want to take -- aliasing
+Added currently-disabled code code to support RFE#859214: 
+  '"string1" "string2" =' operates as '"string1" "string2" strcmp not'.
+  Implemented in p_math.c, function prim_equal -- however, it's not
+  specifically math-related, but it makes at least some sense to
+  overload the meaning for strings.  I am leaving this undocumented
+  for now, and disabled by default (#ifdef STRINGMATH), for discussion
+  as to whether this is a direction we want to take -- aliasing
   math operators for string operations.
 Backed out the MUF FORCE change referenced above, as there are beta
   sites that do need to use multiple FORCE levels.
+Modified default to not write compressed databases, though leaving COMPRESS
+  defined so as to read currently-compressed databases.  If you wish
+  to continue to use the (buggy) compression code, add '-compress' to
+  your command string.
+Fixed huge M1+ crasher related to event code.
 
 2.2fb6.03
 Added improved SSL error reporting, via stderr.

@@ -274,7 +274,7 @@ extern FILE *delta_infile;
 extern FILE *delta_outfile;
 
 short db_conversion_flag = 0;
-short db_decompression_flag = 0;
+short db_decompression_flag = 1;
 short wizonly_mode = 0;
 pid_t global_resolver_pid=0;
 #ifndef DISKBASE
@@ -308,7 +308,7 @@ show_program_usage(char *prog)
 #endif
 	fprintf(stderr, "        -gamedir PATH    changes directory to PATH before starting up.\n");
 	fprintf(stderr, "        -convert         load the db, then save and quit.\n");
-	fprintf(stderr, "        -decompress      when saving db, save in uncompressed format.\n");
+	fprintf(stderr, "        -compress        when saving db, save in compressed format. (DEPRECATED)\n");
 	fprintf(stderr, "        -nosanity        don't do db sanity checks at startup time.\n");
 	fprintf(stderr, "        -insanity        load db, then enter the interactive sanity editor.\n");
 	fprintf(stderr, "        -sanfix          attempt to auto-fix a corrupt db after loading.\n");
@@ -366,8 +366,8 @@ main(int argc, char **argv)
 		if (!nomore_options && argv[i][0] == '-') {
 			if (!strcmp(argv[i], "-convert")) {
 				db_conversion_flag = 1;
-			} else if (!strcmp(argv[i], "-decompress")) {
-				db_decompression_flag = 1;
+			} else if (!strcmp(argv[i], "-compress")) {
+				db_decompression_flag = 0;
 			} else if (!strcmp(argv[i], "-nosanity")) {
 				sanity_skip = 1;
 			} else if (!strcmp(argv[i], "-insanity")) {
@@ -1160,6 +1160,9 @@ shovechars()
 	avail_descriptors = max_open_files() - 5;
 
 	(void) time(&now);
+
+/* And here, we do the actual player-interaction loop */
+
 	while (shutdown_flag == 0) {
 		gettimeofday(&current_time, (struct timezone *) 0);
 		last_slice = update_quotas(last_slice, current_time);
@@ -1168,7 +1171,7 @@ shovechars()
 		process_commands();
 		muf_event_process();
 #ifdef WIN32
-//		 check_console(); /* Handle possible CTRL+C */
+/*		check_console();*/ /* Handle possible CTRL+C */
 #endif
 
 		for (d = descriptor_list; d; d = dnext) {
@@ -1381,6 +1384,7 @@ shovechars()
 						idleboot_user(d);
 					}
 				} else {
+					/* Hardcode 300 secs -- 5 mins -- at the login screen */
 					if ((now - d->connected_at) > 300) {
 						d->booted = 1;
 					}
@@ -1393,6 +1397,9 @@ shovechars()
 			con_players_curr = cnt;
 		}
 	}
+
+	/* End of the player processing loop */
+
 	(void) time(&now);
 	add_property((dbref) 0, "_sys/lastdumptime", NULL, (int) now);
 	add_property((dbref) 0, "_sys/shutdowntime", NULL, (int) now);
