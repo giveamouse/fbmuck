@@ -30,7 +30,6 @@ struct mufevent_process {
 	struct frame *fr;
 } *mufevent_processes;
 
-
 /* static void muf_event_process_free(struct mufevent* ptr)
  * Frees up a mufevent_process once you are done with it.
  * This shouldn't be used outside this module.
@@ -52,11 +51,13 @@ muf_event_process_free(struct mufevent_process *ptr)
 	ptr->prev = NULL;
 	ptr->next = NULL;
 	ptr->player = NOTHING;
-	ptr->prog = NOTHING;
 	if (ptr->fr) {
-		prog_clean(ptr->fr);
+		if(PROGRAM_INSTANCES(ptr->prog)) {
+			prog_clean(ptr->fr);
+		}
 		ptr->fr = NULL;
 	}
+	ptr->prog = NOTHING;
 	if (ptr->filters) {
 		for (i = 0; i < ptr->filtercount; i++) {
 			if (ptr->filters[i]) {
@@ -86,6 +87,7 @@ muf_event_register_specific(dbref player, dbref prog, struct frame *fr, int even
 	struct mufevent_process *ptr;
 	int i;
 
+
 	newproc = (struct mufevent_process *) malloc(sizeof(struct mufevent_process));
 
 	newproc->prev = NULL;
@@ -105,7 +107,7 @@ muf_event_register_specific(dbref player, dbref prog, struct frame *fr, int even
 	}
 
 	ptr = mufevent_processes;
-	while (ptr && ptr->next) {
+	while ((ptr != NULL) && ptr->next) {
 		ptr = ptr->next;
 	}
 	if (!ptr) {
@@ -182,7 +184,6 @@ muf_event_dequeue_pid(int pid)
 		}
 		proc = proc->next;
 	}
-
 	return count;
 }
 
@@ -197,8 +198,6 @@ event_has_refs(dbref program, struct mufevent_process *proc)
 	int loop;
 	struct frame* fr = NULL;
 	
-	assert(proc->deleted == 0);
-
 	if (proc->deleted) {
 		return 0;
 	}
@@ -207,11 +206,13 @@ event_has_refs(dbref program, struct mufevent_process *proc)
 		return 0;
 	}
 
+
 	for (loop = 1; loop < fr->caller.top; loop++) {
 		if (fr->caller.st[loop] == program) {
 			return 1;
 		}
 	}
+
 
 	for (loop = 0; loop < fr->argument.top; loop++) {
 		if (fr->argument.st[loop].type == PROG_ADD &&
@@ -237,6 +238,9 @@ muf_event_dequeue(dbref prog, int killmode)
 	struct mufevent_process *proc;
 	int count = 0;
 
+	if(killmode == 0)
+		killmode = 1;
+
 	for (proc = mufevent_processes; proc; proc = proc->next) {
 		if (proc->deleted) {
 			continue;
@@ -256,10 +260,10 @@ muf_event_dequeue(dbref prog, int killmode)
 		if (!proc->fr->been_background)
 			PLAYER_SET_BLOCK(proc->player, 0);
 		muf_event_purge(proc->fr);
+		prog_clean(proc->fr);
 		proc->deleted = 1;
 		count++;
 	}
-
 	return count;
 }
 
@@ -748,6 +752,9 @@ muf_event_purge(struct frame *fr)
  * check to see if they have any items in their event queue.
  * If so, then process one each.  Up to ten programs can have
  * events processed at a time.
+ *
+ * This also needs to make sure that background processes aren't
+ * waiting for READ events.
  */
 void
 muf_event_process(void)
@@ -771,6 +778,30 @@ muf_event_process(void)
 	while (proc != NULL && limit > 0) {
 		if (!proc->deleted && proc->fr) {
 			if (proc->filtercount > 0) {
+				/* Make sure it's not waiting for a READ event, if it's
+				 * backgrounded */
+
+				if(proc->fr && proc->fr->been_background) {
+					int cnt = 0;
+					for(cnt = 0; cnt < proc->filtercount; cnt++) {
+						if(0==strcasecmp(proc->filters[cnt],"READ")) {
+					/* It's a backgrounded process, waiting for a READ...
+					 * should we throw an error?  Should we push a
+					 * null event onto the list?  At this point, I'm
+					 * pushing a READ event with descr = -1, so that
+					 * it will at least get out of its loop. -winged
+					 */
+							struct inst temp;
+							temp.type = PROG_INTEGER;
+							temp.data.number = -1;
+							muf_event_add(proc->fr,"READ",&temp,0);
+							CLEAR(&temp);
+							break;
+						}
+					}
+				}
+
+					
 				/* Search prog's event list for the apropriate event type. */
 
 				/* HACK:  This is probably inefficient to be walking this
