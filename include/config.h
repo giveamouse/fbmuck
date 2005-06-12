@@ -33,9 +33,14 @@
  */
 #define GOD_PRIV
 
-/* Use to compress string data (NO LONGER RECOMMENDED)
+/* Use to include the string decompression routines into the server, to
+ * decompress already-compressed databases.  However:
+ * You MUST use the '-compress' command-line option to the server, else
+ * strings will not be compressed.  This is because the current compression
+ * code has some subtle bugs, there's better algorithms available, and
+ * it's easier to import an uncompressed database in any case.
  */
-#undef COMPRESS
+#define COMPRESS
 
 /* To use a simple disk basing scheme where properties aren't loaded
  * from the input file until they are needed, define this. (Note: if
@@ -239,13 +244,17 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/types.h>
+
 #ifdef DEBUG
 # undef NDEBUG
-# include <assert.h>
+#include <assert.h>
+#define DEBUGPRINT(x,y,z) fprintf(stderr,x,y,z)
 #else
 # define NDEBUG
-# include <assert.h>
+#include <assert.h>
+#define DEBUGPRINT(x,y,z) 0
 #endif /* DEBUG */
+
 #ifdef STDC_HEADERS
 # include <stdlib.h>
 #endif
