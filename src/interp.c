@@ -787,13 +787,7 @@ prog_clean(struct frame *fr)
 	watchpid_process (fr);
 
 	fr->system.top = 0;
-	DEBUGPRINT("prog_clean: fr->argument.top=%d,(#%d)\n",fr->argument.top,
-				fr->argument.st[(fr->argument.top) - 1]);
 	for (i = 0; i < fr->argument.top; i++){
-		DEBUGPRINT(
-			"About to clear argument element &fr->argument.st[%d](%p).\n",
-				i, &fr->argument.st[i]
-		);
 		CLEAR(&fr->argument.st[i]);
 	}
 
