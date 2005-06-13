@@ -806,6 +806,9 @@ muf_event_process(void)
 
 				/* HACK:  This is probably inefficient to be walking this
 				 * queue over and over. Hopefully it's usually a short list.
+				 *
+				 * Would it be more efficient to use a hash table?  It'd
+				 * be more wasteful of memory, I think. -winged
 				 */
 				ev = muf_event_pop_specific(proc->fr, proc->filtercount, proc->filters);
 			} else {
