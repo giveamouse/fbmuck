@@ -1,3 +1,12 @@
+2.2fb6.06
+Accepted patch #906013 for faster string_compare operations in the main
+  server.  help.c and topwords.c don't really need the optimization, since
+  they are used only rarely.
+Accepted patch #593612, adding '@tune m3_huh_program'.  The name might be
+  a bit misleading; what it does it it calls an exit in the environment
+  by the name of "huh?" with the entire input command buffer as its argument,
+  but only if the exit is set m3.
+
 2.2fb6.05
 Changed behavior of Wizard programs: They must now be set Wizard plus at least
   M1 in order to execute.  (The idea is that setting a program M0 should

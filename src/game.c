@@ -1405,6 +1405,17 @@ process_command(int descr, dbref player, char *command)
 			break;
 		default:
 		  bad:
+			if (tp_m3_huh_program != 0)
+			{
+				char hbuf[BUFFER_LEN];
+				snprintf(hbuf,BUFFER_LEN,"HUH? %s", command);
+				if(can_move(descr, player, hbuf, 3)) {
+					do_move(descr, player, hbuf, 3);
+					*match_args = 0;
+					*match_cmdname = 0;
+					break;
+				}
+			}	
 			notify(player, tp_huh_mesg);
 			if (tp_log_failed_commands && !controls(player, DBFETCH(player)->location)) {
 				log_status("HUH from %s(%d) in %s(%d)[%s]: %s %s\n",

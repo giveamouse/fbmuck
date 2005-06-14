@@ -88,6 +88,7 @@ extern int tp_movepennies_muf_mlev;
 extern int tp_addpennies_muf_mlev;
 extern int tp_pennies_muf_mlev;
 extern int tp_userlog_mlev;
+extern int tp_m3_huh_program;
 
 
 

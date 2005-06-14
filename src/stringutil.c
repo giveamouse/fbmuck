@@ -79,10 +79,22 @@ alphanum_compare(const char *t1, const char *s2)
 int
 string_compare(register const char *s1, register const char *s2)
 {
+#if 0
 	while (*s1 && DOWNCASE(*s1) == DOWNCASE(*s2))
 		s1++, s2++;
 
 	return (DOWNCASE(*s1) - DOWNCASE(*s2));
+#else
+	/* accepting patch #906013 */
+	char c1, c2;
+
+	do {
+	    c1 = tolower (*(const unsigned char *)s1++);
+    	c2 = tolower (*(const unsigned char *)s2++);
+    } while (i1 && i1 == i2);
+
+    return (c1 - c2);
+#endif
 }
 
 const char *
