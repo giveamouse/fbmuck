@@ -1574,8 +1574,10 @@ mfn_force(MFUNARGS)
 		for (ptr3 = objname; *ptr2 && !isspace(*ptr2);)
 			*(ptr3++) = *(ptr2++);
 		*ptr3 = '\0';
-		if (lookup_player(objname) != NOTHING)
-			ABORT_MPI("FORCE", "Cannot force a thing named after a player. [2]");
+		if (lookup_player(objname) != NOTHING && Typeof(obj) != TYPE_PLAYER) {
+			ABORT_MPI("FORCE",
+					  "Cannot force a thing named after a player. [2]");
+		}
 		force_prog = what;
 		force_level++;
 		if (*ptr)
