@@ -86,12 +86,12 @@ string_compare(register const char *s1, register const char *s2)
 	return (DOWNCASE(*s1) - DOWNCASE(*s2));
 #else
 	/* accepting patch #906013 */
-	char c1, c2;
+	unsigned char c1, c2;
 
 	do {
 	    c1 = tolower (*(const unsigned char *)s1++);
     	c2 = tolower (*(const unsigned char *)s2++);
-    } while (i1 && i1 == i2);
+    } while (c1 && c1 == c2);
 
     return (c1 - c2);
 #endif
