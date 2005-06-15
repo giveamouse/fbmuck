@@ -186,7 +186,7 @@
 #define LOG_FAILED_COMMANDS 0
 
 /* run an m3 exit with the commandline being the parameter on HUH */
-#define M3_HUH_PROGRAM 0
+#define M3_HUH 0
 
 /* Log the text of changed programs when they are saved.  This is helpful
  * for catching people who upload scanners, use them, then recycle them. */

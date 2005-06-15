@@ -1405,7 +1405,7 @@ process_command(int descr, dbref player, char *command)
 			break;
 		default:
 		  bad:
-			if (tp_m3_huh_program != 0)
+			if (tp_m3_huh != 0)
 			{
 				char hbuf[BUFFER_LEN];
 				snprintf(hbuf,BUFFER_LEN,"HUH? %s", command);
