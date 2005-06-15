@@ -1975,7 +1975,7 @@ error_str      exp            fabs           float          floor
 fmod           frand          ftostr         ftostrc        gaussian
 inf            is_set?        log            log10          modf
 pi             polar_to_xyz   pow            round          set_error
-sin            sqrt           strtof         tan            xyz_to_polar   
+sin            sqrt           strtof         tan            xyz_to_polar
 
 ~----------------------------------------------------------------------------
 ~
@@ -4870,7 +4870,7 @@ PROGRAM_GETLINES ( d i1 i2 -- a )
 program d, from line i1 to line i2, inclusive.  If both i1 and i2 are
 zero, then the entire program is returned.  If i1 is zero, it is assumed
 to mean the first line.  If i2 is zero, it is assumed to mean the very
-last line.  If i2 and i2 are the same, and non-zero, then only that line
+last line.  If i1 and i2 are the same, and non-zero, then only that line
 will be returned, as a list array with a single string element.  The target
 program must be controlled by the current program's UID, be set VIEWABLE,
 or the current program must be running with wizard permissions.

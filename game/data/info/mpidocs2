@@ -437,8 +437,8 @@ would return 4.
 it evaluates expr with a pair of values, in var1 and var2.  If expr
 returns true, then it will swap the positions of the two values in the
 list.  It runs this comparison on every pair of items in the list, so it
-will be evaluated N*N times, where N is the number of items in the list.
-This method can also be used to randomize a list.  Example:
+will be evaluated N*(N-1)/2 times, where N is the number of items in the
+list.  This method can also be used to randomize a list.  Example:
     {lsort:{&list},v1,v2,{gt:{dice:100},50}}
 
 
