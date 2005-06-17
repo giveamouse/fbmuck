@@ -418,11 +418,11 @@ array_tree_remove_node(array_iter * key, array_tree ** root)
 	array_tree *save;
 	array_tree *tmp;
 	array_tree *avl;
+	int cmpval;
 	assert(root != NULL);
 	assert(*root != NULL);
 	assert(key != NULL);
 	avl = *root;
-	int cmpval;
 
 	save = avl;
 	if (avl) {
