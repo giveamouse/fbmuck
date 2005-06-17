@@ -331,7 +331,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Misc",       "wiz_vehicles", &tp_wiz_vehicles, 0, "Only let Wizards set vehicle bits"},
 	{"Misc",       "ignore_support", &tp_ignore_support, 3, "Enable support for @ignoring players"},
 	{"Misc",       "ignore_bidirectional", &tp_ignore_bidirectional, 3, "Enable bidirectional @ignore"},
-	{"Misc",	"m3_huh", &tp_m3_huh_program, 3, "Enable huh? to call an exit named \"huh?\" and set M3, with full command string"},
+	{"Misc",	"m3_huh", &tp_m3_huh, 3, "Enable huh? to call an exit named \"huh?\" and set M3, with full command string"},
 	{"SSL",        "starttls_allow", &tp_starttls_allow, 3, "Enable TELNET STARTTLS encryption on plaintext port"},
 
 	{NULL, NULL, NULL, 0}
