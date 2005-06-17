@@ -372,14 +372,14 @@ array_tree_free_node(array_tree * p)
 static array_tree *
 array_tree_insert(array_tree ** avl, array_iter * key)
 {
-	assert(avl != NULL);
-	assert(*avl != NULL);
-	assert(key != NULL);
-
 	array_tree *ret;
 	register array_tree *p = *avl;
 	register int cmp;
 	static short balancep;
+
+	assert(avl != NULL);
+	assert(*avl != NULL);
+	assert(key != NULL);
 
 	if (p) {
 		cmp = AVL_COMPARE(key, AVL_KEY(p));
