@@ -22,7 +22,6 @@
 #include "interp.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
-static int result;
 static double fresult;
 static char buf[BUFFER_LEN];
 
@@ -585,7 +584,7 @@ prim_frand(PRIM_PROTOTYPE)
 void prim_gaussian(PRIM_PROTOTYPE)
 {
 	/* We use these two statics to prevent lost work. */
-	float srca, srcb;
+	float srca=0.0, srcb=0.0;
 	float resulta;
 	float radius = 1.0;
 	static float resultb;

@@ -922,7 +922,6 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 	stk_array *arr;
 	stk_array *nu;
 	char* prop;
-	const char* ptr;
 	int len;
 
 	CHECKOP(3);
@@ -982,7 +981,7 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 							break;
 
 							case PROP_FLTTYP:
-								snprintf(buf, BUFFER_LEN, "%lg", PropDataFVal(pptr));
+								snprintf(buf, BUFFER_LEN, "%g", PropDataFVal(pptr));
 							break;
 
 							default:
@@ -1262,7 +1261,7 @@ prim_parsepropex(PRIM_PROTOTYPE)
 						break;
 
 						case PROG_FLOAT:
-							snprintf(var_buf, BUFFER_LEN, "%lg", val->data.fnumber);
+							snprintf(var_buf, BUFFER_LEN, "%g", val->data.fnumber);
 						break;
 
 						case PROG_OBJECT:

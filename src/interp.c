@@ -1067,7 +1067,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			interp_depth--;
 			calc_profile_timing(program,fr);
 
-			return;
+			return NULL;
 		}
 
 		fr->instcnt++;

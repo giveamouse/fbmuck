@@ -1089,7 +1089,6 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 				copyinst(item, &arr->data.packed[idx->data.number]);
 				return arr->items;
 			} else if (idx->data.number == arr->items) {
-				array_data *test=NULL;
 				if (arr->links > 1 && !arr->pinned) {
 					arr->links--;
 					arr = *harr = array_decouple(arr);
