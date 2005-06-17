@@ -252,7 +252,7 @@
 #else
 # define NDEBUG
 #include <assert.h>
-#define DEBUGPRINT(x,y,z) 0
+#define DEBUGPRINT(x,y,z) ;
 #endif /* DEBUG */
 
 #ifdef STDC_HEADERS
