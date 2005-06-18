@@ -6,6 +6,12 @@ Accepted patch #593612, adding '@tune m3_huh'.  The name might be
   a bit misleading; what it does it it calls an exit in the environment
   by the name of "huh?" with the entire input command buffer as its argument,
   but only if the exit is set m3.
+Addendum to change of Wizard programs: Wizards who own programs must also
+  be set at least M1, in keeping with the idea that setting a player M0
+  automatically caps all that player's code to M0, thus killing it.  Wizards
+  who don't code shouldn't have Mucker bits; this will also allow for an
+  emergency halt of all of the wizard's programs in the case that they're
+  causing damage to the server for whatever reason.
 
 2.2fb6.05
 Changed behavior of Wizard programs: They must now be set Wizard plus at least
@@ -13,6 +19,9 @@ Changed behavior of Wizard programs: They must now be set Wizard plus at least
   render it uninterpretable, but in the case of Wizard programs, they could
   have no MUCKER bit set and still be interpreted at mlev 4.)
 If GOD_PRIV is set, Wizards can no longer chown items to God.  (Security fix)
+Moved src/COMPILING to the root directory, and edited it to more accurately
+  reflect the process.
+Fixed bug in mfn_force that prevented players from being forced.
 
 2.2fb6.04
 Added NICEVAL in params.h to set the dumper process nice() priority.
