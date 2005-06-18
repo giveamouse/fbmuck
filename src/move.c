@@ -349,7 +349,7 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 		/* check for pennies */
 		if (!controls(player, loc)
 			&& GETVALUE(player) <= tp_max_pennies && RANDOM() % tp_penny_rate == 0) {
-			notify_fmt(player, "You found a %s!", tp_penny);
+			notify_fmt(player, "You found one %s!", tp_penny);
 			SETVALUE(OWNER(player), GETVALUE(OWNER(player)) + 1);
 			DBDIRTY(OWNER(player));
 		}
