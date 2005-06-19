@@ -29,6 +29,7 @@ Want your name in this space?  Write me some docs. :)
 
 #include	<stdio.h>
 #include	<ctype.h>
+#include	<strings.h>
 
 /*
 scratch buffers in which to compile and assemble input.
@@ -70,7 +71,7 @@ char *indentlines();
 
 %%
 program:
-	| program statement { printf("%s\n",$2); }
+	| program globalstatement { printf("%s\n",$2); }
 	| program funcdef { printf("%s\n",$2); }
 	;
 
@@ -80,6 +81,20 @@ asgn:     IDENT ASGN expr {
 		}
 	;
 
+globalstatement: VAR varlist ';' {
+		char *a,*b;
+		strcpy(buffer,"");
+		for (a=(char *)$2;(b=(char *)index(a,',')) != NULL;) {
+			*b = 0;
+			strcat(buffer,"lvar ");
+			strcat(buffer,a);
+			strcat(buffer,"\n");
+			a = b+1;
+		}
+		$$ = (int)savestring(buffer);
+		}
+	;
+	
 statement: expr ';' { $$ = $1; }
 	| RETURN ';' { 
 		sprintf(buffer,"exit ");
@@ -103,13 +118,11 @@ statement: expr ';' { $$ = $1; }
 		strcpy(buffer,"");
 		for (a=(char *)$2;(b=(char *)index(a,',')) != NULL;) {
 			*b = 0;
-			strcat(buffer,"lvar ");
+			strcat(buffer,"var ");
 			strcat(buffer,a);
 			strcat(buffer,"\n");
 			a = b+1;
 		}
-		printf("%s",buffer);
-		strcpy(buffer,"");
 		$$ = (int)savestring(buffer);
 		}
 	| ';' { $$ = (int)savestring(""); }
@@ -310,15 +323,14 @@ funcdef: funcheader IDENT '(' varlist ')' statement {
 		for (a=(char *)$4;(b=(char *)index(a,',')) != NULL;) {
 			*b = 0;
 			strcpy(tmp,a);
-			strcat(tmp," !\n");
+			strcat(tmp," ");
 			strcat(tmp,buffer);
-			strcpy(buffer,tmp);
 			a = b+1;
 		}
-		strcpy(tmp,buffer);
-		sprintf(buffer,": %s\n%s\n%s\n;\n\n",&stringbuf[$2],
-			indentlines(tmp),indentlines($6));
-		free(tmp);
+		sprintf(buffer,": %s[ %s -- ret ]\n%s\n;\n\n",
+		        &stringbuf[$2],
+			tmp,
+			indentlines($6));
 		$$ = (int)savestring(buffer);
 	} ;
 
