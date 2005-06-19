@@ -56,13 +56,14 @@ char *indentlines();
 %token	OUTOFSPACE
 %token	IF ELSE FUNC RETURN VNULL
 %token  TOP PUSH ME LOC
-%token	FOR WHILE VAR
+%token	FOR FOREACH WHILE VAR
 %token	DO UNTIL CONTINUE BREAK
 
 %right	ASGN ADDASGN SUBASGN MULASGN DIVASGN MODASGN
 %left	REF
 %left	OR 
 %left	AND
+%left   KEYVALDELIM
 %left	GT GTE LT LTE EQ NE
 %left	ADD SUB
 %left	MUL DIV MOD
@@ -156,6 +157,12 @@ statement: expr ';' { $$ = $1; }
 	| FOR '(' comma_expr ';' comma_expr ';' comma_expr ')' statement stop {
 	   sprintf(buffer,"%s\nbegin\n%s\nwhile\n%s\n%s\nrepeat ",$3,
 		   indentlines($5),indentlines($9),indentlines($7));
+	   $$ = (int)savestring(buffer);
+	   loopnum++;
+	   }
+	| FOREACH '(' comma_expr ';' IDENT KEYVALDELIM IDENT ')' statement stop {
+	   sprintf(buffer,"%s\nforeach %s! %s!\n%s\nrepeat ",
+	       $3, &stringbuf[$7], &stringbuf[$5], indentlines($9));
 	   $$ = (int)savestring(buffer);
 	   loopnum++;
 	   }
@@ -452,13 +459,14 @@ int	*bval;
 	/* MUST BE IN LEXICAL SORT ORDER !!!!!! */
 	"break",		BREAK,		-1,
 	"continue",		CONTINUE,	-1,
-	"do",			DO,		-1,
+	"do",			DO,			-1,
 	"else",			ELSE,		-1,
 	"for",			FOR,		-1,
+	"foreach",		FOREACH,	-1,
 	"func",			FUNC,		-1,
-	"if",			IF,		-1,
+	"if",			IF,			-1,
 	"loc",			LOC,		-1,
-	"me",			ME,		-1,
+	"me",			ME,			-1,
 	"push",			PUSH,		-1,
 	"return",		RETURN,		-1,
 	"top",			TOP,		-1,
@@ -616,12 +624,15 @@ yylex()
 			{
 				int	t;
 				t = fgetc(yyin);
-				if(t != '=') {
+				if(t == '=') {
+					return(EQ);
+				} else if (t == '>') {
+					return(KEYVALDELIM);
+				} else {
 					(void)ungetc(t,yyin);
-					return(ASGN);
 				}
 			}
-			return(EQ);
+			return(ASGN);
 
 		case	'>':
 			{

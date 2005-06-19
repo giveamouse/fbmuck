@@ -24,6 +24,12 @@ func loopy(count)
         i += 1;
     }
 
+    var key, val;
+
+    foreach (online_array(); key => val) {
+        .tell(array_join(array_make(key, " = ", val, 3)));
+    }
+
     mylvar = 4;
     .tell(intostr(mylvar));
 }
