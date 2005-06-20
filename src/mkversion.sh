@@ -48,7 +48,7 @@ const char *version = PATCHLEVEL;
 #ifdef DEBUG
 #define debug "Debug Version, assertions enabled"
 #else
-#define debug "Production Version, assertions disabled"
+#define debug "Production compile"
 #endif
 
 
@@ -87,7 +87,7 @@ const char *infotext[] =
     "The following people helped out a lot along the way:",
     "  Caspian, Kim \\"Bookwyrm\\" Liu, Chris, Jenora, Lynx, WhiteFire,",
     "  Kimi, Cynbe, Myk, Taldin, Howard, darkfox, Moonchilde, Felorin, Xixia,",
-    "  Doran, Riss and King_Claudius.",
+    "  Doran, Riss, King_Claudius, and Henri@Voregotten Realm.",
     " ",
     "Alpha and beta test sites, who put up with this nonsense:",
     " FB 5-",
@@ -95,7 +95,7 @@ const char *infotext[] =
     "  AnimeMUCK, Realms, FurryII, Tapestries, Unbridled Desires, TruffleMUCK",
     "  and Brazillian Dreams.",
     " FB 6-",
-    "  HereLieMonsters, FurrySpaceMUCK and Sol ]|[.",
+    "  HereLieMonsters, FurrySpaceMUCK, Sol ]|[, and Voregotten Realm.",
     " ",
     "Places silly enough to give Foxen a wizbit at some time or another:",
     "  ChupMuck, HighSeas, TygMUCK, TygMUCK II, Furry, Pendor, Realms,",
