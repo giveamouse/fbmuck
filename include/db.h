@@ -245,8 +245,8 @@ typedef long object_flag_type;
 #define MLevRaw(x) (((FLAGS(x) & MUCKER)? 2:0) + ((FLAGS(x) & SMUCKER)? 1:0))
 
 /* Setting a program M0 is supposed to make it not run, but if it's set
- * Wizard, it'll run anyway without the extra double-check for MUCKER
- * or SMUCKER -- change by Winged */
+ * Wizard, it used to run anyway without the extra double-check for MUCKER
+ * or SMUCKER -- now it doesn't, change by Winged */
 #define MLevel(x) (((FLAGS(x) & WIZARD) && \
 			((FLAGS(x) & MUCKER) || (FLAGS(x) & SMUCKER)))? 4 : \
 		   (((FLAGS(x) & MUCKER)? 2 : 0) + \
