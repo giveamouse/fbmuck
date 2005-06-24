@@ -1979,6 +1979,8 @@ prim_newpassword(PRIM_PROTOTYPE)
     CHECKREMOTE(ref);
 
 #ifdef GOD_PRIV
+	if (God(ref))
+		abort_interp("God cannot be newpassworded.");
 	if (!God(player) && TrueWizard(ref) && (player != ref))
 		abort_interp("Only God can change a wizards password");
 #endif
