@@ -1,4 +1,5 @@
 2.2fb6.06
+Fixed hole in NEWPASSWORD that allowed God to be newpassworded.
 Accepted patch #906013 for faster string_compare operations in the main
   server.  help.c and topwords.c don't really need the optimization, since
   they are used only rarely.
