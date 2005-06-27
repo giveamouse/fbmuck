@@ -647,6 +647,22 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 		notify(player, "That player does not exist.");
 		return;
 	}
+#ifdef GOD_PRIV
+	if (God(victim)) {
+		notify(player, "You cannot @toad God.");
+		if(!God(player)) {
+			log_status("TOAD ATTEMPT: %s(#%d) tried to toad God.",NAME(player),player);
+		}
+		return;
+	}
+#endif
+	if(player == victim) {
+		/* If GOD_PRIV isn't defined, this could happen: we don't want the
+		 * last wizard to be toaded, in any case, so only someone else can
+		 * do it. */
+		notify(player, "You cannot toad yourself.  Get someone else to do it for you.");
+		return;
+	}
 	if (!*recip) {
 		/* FIXME: Make me a tunable parameter! */
 		recipient = GOD;
