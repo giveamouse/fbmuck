@@ -16,9 +16,11 @@ install:	Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} install; \
 	done
-	@echo "You can use 'make cert' to generate a self-signed server certificate"
-	@echo "for use in allowing secure encrypted SSL connections to your Muck."
-	@echo " "
+	@if grep "^#define HAVE_LIBSSL" include/autoconf.h > /dev/null; then \
+	echo "You can use 'make cert' to generate a self-signed server certificate"; \
+	echo "for use in allowing secure encrypted SSL connections to your Muck."; \
+	echo " "; \
+	fi
 
 install-sysv-inits:	Makefile
 	for d in ${subdirs}; do \
