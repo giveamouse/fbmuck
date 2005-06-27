@@ -1834,6 +1834,12 @@ prim_toadplayer(PRIM_PROTOTYPE)
 		abort_interp("That player is precious.");
 		return;
     }
+#ifdef GOD_PRIV
+	if (God(victim)) {
+		abort_interp("God may not be toaded. (2)");
+		return;
+	}
+#endif
     if ((FLAGS(victim) & WIZARD)) {
 		abort_interp("You can't toad a wizard.");
 		return;
