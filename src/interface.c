@@ -555,13 +555,6 @@ main(int argc, char **argv)
 			setbuf(stdout, NULL);
             }
 #endif
-
-#ifdef SPAWN_HOST_RESOLVER
-		if (!db_conversion_flag) {
-			spawn_resolver();
-		}
-#endif
-
 	}
 
 /*
@@ -580,6 +573,15 @@ main(int argc, char **argv)
 		do_setuid(MUD_ID);
 	}
 #endif							/* MUD_ID */
+
+	/* Have to do this after setting GID/UID, else we can't kill
+	 * the bloody thing... */
+#ifdef SPAWN_HOST_RESOLVER
+	if (!db_conversion_flag) {
+		spawn_resolver();
+	}
+#endif
+
 
 	/* Initialize MCP and some packages. */
 	mcp_initialize();
