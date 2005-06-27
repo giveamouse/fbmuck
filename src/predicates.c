@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.13  2005/06/27 19:30:35  winged
+ * Prevent wizards from setting themselves \!W with GOD_PRIV undefined, to prevent a case where there are no wizards at all
+ *
  * Revision 1.12  2005/06/21 17:25:57  winged
  * GOD_PRIV now allows God and God's things to set other wizards QUELL.
  * Documented a LOT of things herein.
@@ -523,7 +526,9 @@ restricted(dbref player, dbref thing, object_flag_type flag)
 			 * one. */
 			return ((Typeof(thing) == TYPE_PLAYER) && !God(player));
 #else							/* !GOD_PRIV */
-			return 0;
+			/* We don't want someone setting themselves !W, to prevent
+			 * a case where there are no wizards at all */
+			return ((Typeof(thing) == TYPE_PLAYER && thing == OWNER(player));
 #endif							/* GOD_PRIV */
 		} else
 			return 1;
