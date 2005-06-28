@@ -1,4 +1,12 @@
 2.2fb6.06
+Got rid of the last sprintf() in the code -- it was used in a context
+  where it could never overflow, but some overzealous linkers (*glares
+  at gnu ld*) complain whenever they see it, just as a matter of
+  principle.
+Added some "code-of-last-resort" (i.e., it should never be executed)
+  to prevent the last wizard from ever being set !W.  As part of this,
+  for MUCKs that don't have GOD_PRIV set, wizards cannot set themselves
+  !W.
 Fixed hole in NEWPASSWORD that allowed God to be newpassworded.
 Accepted patch #906013 for faster string_compare operations in the main
   server.  help.c and topwords.c don't really need the optimization, since
