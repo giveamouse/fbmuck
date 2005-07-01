@@ -214,6 +214,7 @@
 #define NO_MEMORY_COMMAND
 #define NO_USAGE_COMMAND
 #define NOCOREDUMP
+#define SCARY_MUF_PRIMS /* Most Windows users don't have their own compiler */
 #include "win32.h"
 #endif
 
