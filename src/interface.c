@@ -338,16 +338,29 @@ main(int argc, char **argv)
 	int sanity_autofix;
 	int val;
 #ifdef WIN32
-      int freeconsole = 0;
+	int freeconsole = 0;
 	WORD wVersionRequested;
 	WSADATA wsaData;
 	int err;
 #endif /* WIN32 */
 #ifdef DEBUG
 	/* This makes glibc's malloc abort() on heap errors. */
-	if(setenv("MALLOC_CHECK_","2",1) < 0) {
-		fprintf(stderr, "[debug]setenv failed: out of memory");
-		abort();
+	if(strcmp(DoNull(getenv("MALLOC_CHECK_")),"2") != 0) {
+		if(setenv("MALLOC_CHECK_","2",1) < 0) {
+			fprintf(stderr, "[debug]setenv failed: out of memory");
+			abort();
+		}
+		/* Make sure that the malloc checker really works by
+			respawning it... though I'm not sure if C specifies
+			that argv[argc] must be NULL? */
+		{
+			const char *argv2[argc+1];
+			int i=0;
+			for(i=0;i<argc;i++)
+				argv2[i] = argv[i];
+			argv2[argc] = NULL;
+		execvp(argv[0],argv2);
+		}
 	}
 #endif /* DEBUG */
 	listener_port[0] = TINYPORT;

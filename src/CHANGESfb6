@@ -1,4 +1,11 @@
 2.2fb6.06
+WinFuzz: SCARY_MUF_PRIMS will now be compiled into the code by default,
+  as many Windows users don't have compilers of their own.
+Changed how the debug MALLOC_CHECK_ environment check is done -- if
+  it's not in the environment, it will add it, and then re-exec().  This
+  is because of a problem in glibc that only uses the slower-but-more-
+  debugger-friendly malloc when MALLOC_CHECK_ is set at initialization
+  time, which is long before main() gets called.
 Got rid of the last sprintf() in the code -- it was used in a context
   where it could never overflow, but some overzealous linkers (*glares
   at gnu ld*) complain whenever they see it, just as a matter of
