@@ -61,10 +61,13 @@ AC_ARG_WITH(ssl,
     [
         dnl Check the specified localtion only
 		AC_MSG_CHECKING([for SSL directory])
-		sslenable=1
-		if test "$withval" != "yes"; then
+		if test "$withval" = "no"; then
+			sslenable=0
+		elif test "$withval" != "yes"; then
+			sslenable=1
         	checkssldir "$withval"
 		else
+			sslenable=1
 			for maindir in /usr /usr/local /usr/lib /usr/pkg /opt /var/ssl
 			do
 				for dir in $maindir $maindir/openssl $maindir/ssl
