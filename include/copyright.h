@@ -50,7 +50,7 @@ Parts of this code, in particular the dictionary based compression code,
 #ifdef DEFINE_HEADER_VERSIONS
 
 
-const char *copyright_h_version = "$RCSfile$ $Revision: 1.4 $";
+const char *copyright_h_version = "$RCSfile$ $Revision: 1.5 $";
 
 #else
 extern const char *copyright_h_version;

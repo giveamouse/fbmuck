@@ -49,7 +49,7 @@ extern void prim_sign(PRIM_PROTOTYPE);
 #ifdef DEFINE_HEADER_VERSIONS
 
 
-const char *p_math_h_version = "$RCSfile$ $Revision: 1.7 $";
+const char *p_math_h_version = "$RCSfile$ $Revision: 1.8 $";
 
 #else
 extern const char *p_math_h_version;

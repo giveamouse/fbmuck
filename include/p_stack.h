@@ -78,7 +78,7 @@ extern void prim_trypop(PRIM_PROTOTYPE);	/* -- */
 #ifdef DEFINE_HEADER_VERSIONS
 
 
-const char *p_stack_h_version = "$RCSfile$ $Revision: 1.5 $";
+const char *p_stack_h_version = "$RCSfile$ $Revision: 1.6 $";
 
 #else
 extern const char *p_stack_h_version;

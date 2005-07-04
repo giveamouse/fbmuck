@@ -111,9 +111,9 @@ void untouchprops_incremental(int limit);
 #ifdef DEFINE_HEADER_VERSIONS
 
 
-const char *externs-auto_h_version = "$RCSfile$ $Revision: 1.12 $";
+const char *externs_auto_h_version = "$RCSfile$ $Revision: 1.13 $";
 
 #else
-extern const char *externs-auto_h_version;
+extern const char *externs_auto_h_version;
 #endif
 

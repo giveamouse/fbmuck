@@ -180,7 +180,7 @@ extern int nargs;				/* DO NOT TOUCH THIS VARIABLE */
 #ifdef DEFINE_HEADER_VERSIONS
 
 
-const char *interp_h_version = "$RCSfile$ $Revision: 1.15 $";
+const char *interp_h_version = "$RCSfile$ $Revision: 1.16 $";
 
 #else
 extern const char *interp_h_version;

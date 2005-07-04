@@ -34,7 +34,7 @@ extern struct shared_string *CrT_alloc_prog_string(const char *, const char *, i
 #ifdef DEFINE_HEADER_VERSIONS
 
 
-const char *crt_malloc_h_version = "$RCSfile$ $Revision: 1.6 $";
+const char *crt_malloc_h_version = "$RCSfile$ $Revision: 1.7 $";
 
 #else
 extern const char *crt_malloc_h_version;

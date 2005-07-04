@@ -3,7 +3,7 @@
 #ifdef DEFINE_HEADER_VERSIONS
 
 
-const char *version_h_version = "$RCSfile$ $Revision: 1.25 $";
+const char *version_h_version = "$RCSfile$ $Revision: 1.26 $";
 
 #else
 extern const char *version_h_version;

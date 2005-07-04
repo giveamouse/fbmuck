@@ -50,7 +50,7 @@ const char *strdecrypt(const char *, const char *);
 #ifdef DEFINE_HEADER_VERSIONS
 
 
-const char *fbstrings_h_version = "$RCSfile$ $Revision: 1.3 $";
+const char *fbstrings_h_version = "$RCSfile$ $Revision: 1.4 $";
 
 #else
 extern const char *fbstrings_h_version;

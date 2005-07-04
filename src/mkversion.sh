@@ -210,7 +210,7 @@ do_getextver(dbref player) {
 	notify_nolisten(player, db_h_version, 1);
 	notify_nolisten(player, dbsearch_h_version, 1);
 	notify_nolisten(player, defaults_h_version, 1);
-	notify_nolisten(player, externs-auto_h_version, 1);
+	notify_nolisten(player, externs_auto_h_version, 1);
 	notify_nolisten(player, externs_h_version, 1);
 	notify_nolisten(player, fb_h_version, 1);
 	notify_nolisten(player, fbstrings_h_version, 1);

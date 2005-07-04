@@ -212,7 +212,7 @@ extern int reflist_find(dbref obj, const char* propname, dbref tofind);
 #ifdef DEFINE_HEADER_VERSIONS
 
 
-const char *props_h_version = "$RCSfile$ $Revision: 1.11 $";
+const char *props_h_version = "$RCSfile$ $Revision: 1.12 $";
 
 #else
 extern const char *props_h_version;

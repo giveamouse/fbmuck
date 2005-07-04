@@ -49,7 +49,7 @@
 #ifdef DEFINE_HEADER_VERSIONS
 
 
-const char *fb_h_version = "$RCSfile$ $Revision: 1.6 $";
+const char *fb_h_version = "$RCSfile$ $Revision: 1.7 $";
 
 #else
 extern const char *fb_h_version;
