@@ -1707,3 +1707,5 @@ db_read(FILE * f)
 		c = getc(f);
 	}							/* for */
 }								/* db_read */
+static const char *db_c_version = "$RCSfile$ $Revision: 1.35 $";
+const char *get_db_c_version(void) { return db_c_version; }

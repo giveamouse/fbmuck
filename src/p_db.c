@@ -2675,3 +2675,5 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
+static const char *p_db_c_version = "$RCSfile$ $Revision: 1.54 $";
+const char *get_p_db_c_version(void) { return p_db_c_version; }

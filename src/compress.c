@@ -576,3 +576,5 @@ compress(const char *s)
 }
 
 #endif
+static const char *compress_c_version = "$RCSfile$ $Revision: 1.9 $";
+const char *get_compress_c_version(void) { return compress_c_version; }

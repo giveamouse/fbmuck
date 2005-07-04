@@ -395,3 +395,5 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *sta
 	/* and return the pointer to the beginning of our backwards grown string. */
 	return bend;
 }
+static const char *inst_c_version = "$RCSfile$ $Revision: 1.30 $";
+const char *get_inst_c_version(void) { return inst_c_version; }

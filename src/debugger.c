@@ -969,3 +969,5 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	}
 	return 0;
 }
+static const char *debugger_c_version = "$RCSfile$ $Revision: 1.13 $";
+const char *get_debugger_c_version(void) { return debugger_c_version; }

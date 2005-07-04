@@ -1587,3 +1587,5 @@ do_sweep(int descr, dbref player, const char *name)
 	}
 	notify(player, "**End of list**");
 }
+static const char *look_c_version = "$RCSfile$ $Revision: 1.24 $";
+const char *get_look_c_version(void) { return look_c_version; }

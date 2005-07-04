@@ -2,6 +2,9 @@
 
 /*
  * $Log: utils.c,v $
+ * Revision 1.3  2005/07/04 12:04:24  winged
+ * Initial revisions for everything.
+ *
  * Revision 1.2  2000/03/29 12:21:02  revar
  * Reformatted all code into consistent format.
  * 	Tabs are 4 spaces.
@@ -97,3 +100,5 @@ reverse(dbref list)
 	}
 	return newlist;
 }
+static const char *utils_c_version = "$RCSfile$ $Revision: 1.3 $";
+const char *get_utils_c_version(void) { return utils_c_version; }

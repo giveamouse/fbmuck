@@ -600,3 +600,5 @@ match_rmatch(dbref arg1, struct match_data *md)
 		break;
 	}
 }
+static const char *match_c_version = "$RCSfile$ $Revision: 1.9 $";
+const char *get_match_c_version(void) { return match_c_version; }

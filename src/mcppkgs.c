@@ -282,3 +282,5 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		}
 	}
 }
+static const char *mcppkgs_c_version = "$RCSfile$ $Revision: 1.10 $";
+const char *get_mcppkgs_c_version(void) { return mcppkgs_c_version; }

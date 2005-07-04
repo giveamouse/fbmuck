@@ -587,3 +587,5 @@ free_boolexp(struct boolexp *b)
 		}
 	}
 }
+static const char *boolexp_c_version = "$RCSfile$ $Revision: 1.11 $";
+const char *get_boolexp_c_version(void) { return boolexp_c_version; }

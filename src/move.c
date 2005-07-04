@@ -1120,3 +1120,5 @@ recycle(int descr, dbref player, dbref thing)
 	recyclable = thing;
 	DBDIRTY(thing);
 }
+static const char *move_c_version = "$RCSfile$ $Revision: 1.33 $";
+const char *get_move_c_version(void) { return move_c_version; }

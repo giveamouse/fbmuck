@@ -1297,3 +1297,5 @@ set_flags_from_tunestr(dbref obj, const char* tunestr)
 }
 
 
+static const char *set_c_version = "$RCSfile$ $Revision: 1.25 $";
+const char *get_set_c_version(void) { return set_c_version; }

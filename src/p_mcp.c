@@ -1219,3 +1219,5 @@ prim_gui_value_get(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
+static const char *p_mcp_c_version = "$RCSfile$ $Revision: 1.29 $";
+const char *get_p_mcp_c_version(void) { return p_mcp_c_version; }

@@ -63,3 +63,5 @@ main(int argc, char **argv)
 	exit(0);
 	return 0;
 }
+static const char *olddecomp_c_version = "$RCSfile$ $Revision: 1.7 $";
+const char *get_olddecomp_c_version(void) { return olddecomp_c_version; }

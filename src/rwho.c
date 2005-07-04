@@ -180,3 +180,5 @@ rwhocli_userlogout(const char *uid)
 	}
 	return (0);
 }
+static const char *rwho_c_version = "$RCSfile$ $Revision: 1.7 $";
+const char *get_rwho_c_version(void) { return rwho_c_version; }

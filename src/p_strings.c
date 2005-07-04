@@ -2368,3 +2368,5 @@ prim_ansi_midstr(PRIM_PROTOTYPE)
 	CLEAR(oper3);
 	PushString(buf);
 }
+static const char *p_strings_c_version = "$RCSfile$ $Revision: 1.47 $";
+const char *get_p_strings_c_version(void) { return p_strings_c_version; }

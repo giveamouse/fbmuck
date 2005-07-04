@@ -855,3 +855,5 @@ strcatn(char* buf, size_t bufsize, const char* src)
 	}
 	return buf;
 }
+static const char *stringutil_c_version = "$RCSfile$ $Revision: 1.27 $";
+const char *get_stringutil_c_version(void) { return stringutil_c_version; }

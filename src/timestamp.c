@@ -42,3 +42,5 @@ ts_modifyobject(dbref thing)
 {
 	DBSTORE(thing, ts.modified, time(NULL));
 }
+static const char *timestamp_c_version = "$RCSfile$ $Revision: 1.3 $";
+const char *get_timestamp_c_version(void) { return timestamp_c_version; }

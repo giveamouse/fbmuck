@@ -142,3 +142,13 @@ const char *mfn_with(MFUNARGS);
 const char *mfn_xor(MFUNARGS);
 
 #endif /* _MFUN_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *mfun_h_version = "$RCSfile$ $Revision: 1.8 $";
+
+#else
+extern const char *mfun_h_version;
+#endif
+

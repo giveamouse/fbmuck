@@ -6,3 +6,13 @@
 # define PATCHLEVEL "1"
 
 #endif /* _PATCHLEVEL_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *patchlevel_h_version = "$RCSfile$ $Revision: 1.4 $";
+
+#else
+extern const char *patchlevel_h_version;
+#endif
+

@@ -857,3 +857,5 @@ muf_event_process(void)
 		proc = next;
 	}
 }
+static const char *mufevent_c_version = "$RCSfile$ $Revision: 1.29 $";
+const char *get_mufevent_c_version(void) { return mufevent_c_version; }

@@ -995,3 +995,5 @@ prim_lreverse(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(tmp);
 }
+static const char *p_stack_c_version = "$RCSfile$ $Revision: 1.18 $";
+const char *get_p_stack_c_version(void) { return p_stack_c_version; }

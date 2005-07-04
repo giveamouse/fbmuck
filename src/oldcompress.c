@@ -2,6 +2,9 @@
 
 /*
  * $Log: oldcompress.c,v $
+ * Revision 1.4  2005/07/04 12:04:23  winged
+ * Initial revisions for everything.
+ *
  * Revision 1.3  2000/07/19 01:33:18  revar
  * Compiling cleanup for -Wall -Wstrict-prototypes -Wno-format.
  * Changed the mcpgui package to use 'const char*'s instead of 'char *'s
@@ -175,3 +178,5 @@ old_uncompress(const char *s)
 
 	return buf;
 }
+static const char *oldcompress_c_version = "$RCSfile$ $Revision: 1.4 $";
+const char *get_oldcompress_c_version(void) { return oldcompress_c_version; }

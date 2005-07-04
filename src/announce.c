@@ -171,3 +171,5 @@ main(int argc, char *argv[])
 		close(ns);
 	}
 }								/* main */
+static const char *announce_c_version = "$RCSfile$ $Revision: 1.16 $";
+const char *get_announce_c_version(void) { return announce_c_version; }

@@ -344,3 +344,13 @@
 #define VERBOSE_CLONE 0
 
 #endif /* _DEFAULTS_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *defaults_h_version = "$RCSfile$ $Revision: 1.28 $";
+
+#else
+extern const char *defaults_h_version;
+#endif
+

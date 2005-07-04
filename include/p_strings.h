@@ -69,3 +69,13 @@ extern void prim_array_fmtstrings(PRIM_PROTOTYPE);
 
 #endif /* _P_STRINGS_H */
 
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *p_strings_h_version = "$RCSfile$ $Revision: 1.8 $";
+
+#else
+extern const char *p_strings_h_version;
+#endif
+

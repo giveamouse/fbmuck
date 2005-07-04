@@ -2422,3 +2422,5 @@ prim_array_filter_flags(PRIM_PROTOTYPE)
     PushArrayRaw(nw);
 }
 
+static const char *p_array_c_version = "$RCSfile$ $Revision: 1.52 $";
+const char *get_p_array_c_version(void) { return p_array_c_version; }

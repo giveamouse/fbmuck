@@ -228,3 +228,13 @@ void muf_dlog_remove(struct frame *fr, const char *dlogid);
 void muf_dlog_purge(struct frame *fr);
 
 #endif							/* MCPGUI_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *mcpgui_h_version = "$RCSfile$ $Revision: 1.11 $";
+
+#else
+extern const char *mcpgui_h_version;
+#endif
+

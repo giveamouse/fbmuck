@@ -388,3 +388,13 @@
 /******************************************************************/
 
 #endif /* _CONFIG_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *config_h_version = "$RCSfile$ $Revision: 1.32 $";
+
+#else
+extern const char *config_h_version;
+#endif
+

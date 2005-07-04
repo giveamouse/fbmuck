@@ -14,3 +14,13 @@ extern char *strchr(), *strrchr();
 # endif
 #endif
 */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *smatch_h_version = "$RCSfile$ $Revision: 1.3 $";
+
+#else
+extern const char *smatch_h_version;
+#endif
+

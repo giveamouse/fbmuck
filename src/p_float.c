@@ -724,3 +724,5 @@ prim_ftostrc(PRIM_PROTOTYPE)
 	PushString(buf);
 }
 
+static const char *p_float_c_version = "$RCSfile$ $Revision: 1.20 $";
+const char *get_p_float_c_version(void) { return p_float_c_version; }

@@ -319,3 +319,5 @@ get_tz_offset(void)
 	return timezone;
 #endif
 }
+static const char *strftime_c_version = "$RCSfile$ $Revision: 1.8 $";
+const char *get_strftime_c_version(void) { return strftime_c_version; }

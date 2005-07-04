@@ -231,3 +231,5 @@ delete_player(dbref who)
 
 	return;
 }
+static const char *player_c_version = "$RCSfile$ $Revision: 1.12 $";
+const char *get_player_c_version(void) { return player_c_version; }

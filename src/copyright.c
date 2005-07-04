@@ -44,3 +44,5 @@ const char* copyright_notice[] = {
 "  FB distribution of the TinyMUCK server."
 };
 
+static const char *copyright_c_version = "$RCSfile$ $Revision: 1.4 $";
+const char *get_copyright_c_version(void) { return copyright_c_version; }

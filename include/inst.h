@@ -29,3 +29,13 @@ extern char *debug_inst(struct frame *, int, struct inst *, int, struct inst *, 
 
 #endif /* _INST_H */
 
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *inst_h_version = "$RCSfile$ $Revision: 1.11 $";
+
+#else
+extern const char *inst_h_version;
+#endif
+

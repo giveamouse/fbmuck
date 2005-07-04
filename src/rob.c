@@ -238,3 +238,5 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 		DBDIRTY(who);
 	}
 }
+static const char *rob_c_version = "$RCSfile$ $Revision: 1.10 $";
+const char *get_rob_c_version(void) { return rob_c_version; }

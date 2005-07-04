@@ -17,3 +17,13 @@ extern void prim_regsub(PRIM_PROTOTYPE);
 
 #endif /* _P_REGEX_H */
 
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *p_regex_h_version = "$RCSfile$ $Revision: 1.4 $";
+
+#else
+extern const char *p_regex_h_version;
+#endif
+

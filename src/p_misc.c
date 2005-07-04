@@ -1084,3 +1084,5 @@ prim_debug_line(PRIM_PROTOTYPE)
 		notify_nolisten(player, msg, 1);
 	}
 }
+static const char *p_misc_c_version = "$RCSfile$ $Revision: 1.43 $";
+const char *get_p_misc_c_version(void) { return p_misc_c_version; }

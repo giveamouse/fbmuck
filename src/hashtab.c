@@ -3,6 +3,9 @@
 /*
  *
  * $Log: hashtab.c,v $
+ * Revision 1.4  2005/07/04 12:04:21  winged
+ * Initial revisions for everything.
+ *
  * Revision 1.3  2001/10/15 02:08:49  revar
  * Minor cleanups for possible Win32 port plans.
  *
@@ -176,3 +179,5 @@ kill_hash(hash_tab * table, unsigned int size, int freeptrs)
 		table[i] = NULL;
 	}
 }
+static const char *hashtab_c_version = "$RCSfile$ $Revision: 1.4 $";
+const char *get_hashtab_c_version(void) { return hashtab_c_version; }

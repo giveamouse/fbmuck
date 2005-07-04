@@ -1734,3 +1734,5 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 }
 
 
+static const char *mcp_c_version = "$RCSfile$ $Revision: 1.26 $";
+const char *get_mcp_c_version(void) { return mcp_c_version; }

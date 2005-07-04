@@ -1353,3 +1353,5 @@ do_parse_prop(int descr, dbref player, dbref what, const char *propname, const c
 	return do_parse_mesg(descr, player, what, propval, abuf, outbuf, mesgtyp);
 }
 
+static const char *msgparse_c_version = "$RCSfile$ $Revision: 1.27 $";
+const char *get_msgparse_c_version(void) { return msgparse_c_version; }

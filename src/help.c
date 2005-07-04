@@ -674,3 +674,5 @@ main(int argc, char**argv)
 
 #endif /* STANDALONE_HELP */
 
+static const char *help_c_version = "$RCSfile$ $Revision: 1.12 $";
+const char *get_help_c_version(void) { return help_c_version; }

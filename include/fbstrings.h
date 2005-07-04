@@ -46,3 +46,13 @@ const char *strencrypt(const char *, const char *);
 const char *strdecrypt(const char *, const char *);
 
 #endif /* _STRINGS_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *fbstrings_h_version = "$RCSfile$ $Revision: 1.3 $";
+
+#else
+extern const char *fbstrings_h_version;
+#endif
+

@@ -949,3 +949,5 @@ fold-fold-on-startup: nil
 End:
 */
 /* }}} */
+static const char *crt_malloc_c_version = "$RCSfile$ $Revision: 1.9 $";
+const char *get_crt_malloc_c_version(void) { return crt_malloc_c_version; }

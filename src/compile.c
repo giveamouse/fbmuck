@@ -3953,3 +3953,5 @@ init_primitives(void)
 	log_status("MUF: %d primitives exist.\n", BASE_MAX);
 }
 
+static const char *compile_c_version = "$RCSfile$ $Revision: 1.83 $";
+const char *get_compile_c_version(void) { return compile_c_version; }

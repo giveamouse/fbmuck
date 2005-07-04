@@ -107,3 +107,13 @@ const char * unparse_flags(dbref thing);
 void untouchprops_incremental(int limit);
 
 #endif /* _EXTERNS_AUTO_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *externs-auto_h_version = "$RCSfile$ $Revision: 1.12 $";
+
+#else
+extern const char *externs-auto_h_version;
+#endif
+

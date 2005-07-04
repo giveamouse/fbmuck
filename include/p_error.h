@@ -21,3 +21,13 @@ extern void prim_error_num(PRIM_PROTOTYPE);
 #define PRIMS_ERROR_CNT 9
 
 #endif /* _P_ERROR_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *p_error_h_version = "$RCSfile$ $Revision: 1.4 $";
+
+#else
+extern const char *p_error_h_version;
+#endif
+

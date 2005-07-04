@@ -276,3 +276,5 @@ blank(const char *s)
 
 	return !(*s);
 }
+static const char *speech_c_version = "$RCSfile$ $Revision: 1.11 $";
+const char *get_speech_c_version(void) { return speech_c_version; }

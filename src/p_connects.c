@@ -729,3 +729,5 @@ prim_descr_bufsize(PRIM_PROTOTYPE)
 }
 
 
+static const char *p_connects_c_version = "$RCSfile$ $Revision: 1.19 $";
+const char *get_p_connects_c_version(void) { return p_connects_c_version; }

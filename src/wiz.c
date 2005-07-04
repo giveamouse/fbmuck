@@ -1333,3 +1333,5 @@ do_memory(dbref who)
 
 	notify(who, "Done.");
 }
+static const char *wiz_c_version = "$RCSfile$ $Revision: 1.34 $";
+const char *get_wiz_c_version(void) { return wiz_c_version; }

@@ -1,6 +1,9 @@
 
 /* $Header$
  * $Log: interface.h,v $
+ * Revision 1.9  2005/07/04 12:04:17  winged
+ * Initial revisions for everything.
+ *
  * Revision 1.8  2002/09/12 22:58:07  sombre
  * Changed function naming convention of recently added code from InterCaps to underline_separated_words at Revar's request. (mutter grumble ;>)
  *
@@ -149,3 +152,13 @@ extern void dump_database(void);
 extern void panic(const char *);
 
 #endif /* _INTERFACE_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *interface_h_version = "$RCSfile$ $Revision: 1.9 $";
+
+#else
+extern const char *interface_h_version;
+#endif
+

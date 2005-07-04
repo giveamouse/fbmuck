@@ -764,3 +764,5 @@ insert(dbref player, const char *line)
 	curr->next = new_line;
 	/* DBDIRTY(program); */
 }
+static const char *edit_c_version = "$RCSfile$ $Revision: 1.9 $";
+const char *get_edit_c_version(void) { return edit_c_version; }

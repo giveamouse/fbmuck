@@ -208,3 +208,13 @@ extern void reflist_del(dbref obj, const char* propname, dbref todel);
 extern int reflist_find(dbref obj, const char* propname, dbref tofind);
 
 #endif /* _PROPS_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *props_h_version = "$RCSfile$ $Revision: 1.11 $";
+
+#else
+extern const char *props_h_version;
+#endif
+

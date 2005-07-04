@@ -140,3 +140,13 @@
 #undef STRINGMATH
  
 #endif /* _PARAMS_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *params_h_version = "$RCSfile$ $Revision: 1.16 $";
+
+#else
+extern const char *params_h_version;
+#endif
+

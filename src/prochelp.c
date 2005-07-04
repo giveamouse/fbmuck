@@ -711,3 +711,5 @@ main(int argc, char **argv)
 	fclose(htmlfile);
 	return 0;
 }
+static const char *prochelp_c_version = "$RCSfile$ $Revision: 1.10 $";
+const char *get_prochelp_c_version(void) { return prochelp_c_version; }

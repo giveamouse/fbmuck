@@ -4,6 +4,9 @@
 /* Consider this code protected under the GNU public license, with explicit
  * permission to distribute when linked against openSSL. */
 
+#define DEFINE_HEADER_VERSIONS
+#include "fb.h"
+
 #include "copyright.h"
 #include "config.h"
 #include "match.h"
@@ -4249,3 +4252,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.106 $";
+const char *get_interface_c_version(void) { return interface_c_version; }

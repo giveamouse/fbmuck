@@ -414,3 +414,13 @@ int gui_dlog_closeall_descr(int descr);
 
 
 #endif /* _EXTERNS_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *externs_h_version = "$RCSfile$ $Revision: 1.43 $";
+
+#else
+extern const char *externs_h_version;
+#endif
+

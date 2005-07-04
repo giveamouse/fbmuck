@@ -174,3 +174,5 @@ unparse_boolexp(dbref player, struct boolexp *b, int fullname)
 
 	return boolexp_buf;
 }
+static const char *unparse_c_version = "$RCSfile$ $Revision: 1.8 $";
+const char *get_unparse_c_version(void) { return unparse_c_version; }

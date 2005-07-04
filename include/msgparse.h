@@ -71,3 +71,13 @@ typedef char **argv_typ;
 #define MesgParse(in,out) mesg_parse(descr, player, what, perms, (in), (out), BUFFER_LEN, mesgtyp)
 
 #endif /* _MESGPARSE_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *msgparse_h_version = "$RCSfile$ $Revision: 1.11 $";
+
+#else
+extern const char *msgparse_h_version;
+#endif
+

@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.14  2005/07/04 12:04:24  winged
+ * Initial revisions for everything.
+ *
  * Revision 1.13  2005/06/27 19:30:35  winged
  * Prevent wizards from setting themselves \!W with GOD_PRIV undefined, to prevent a case where there are no wizards at all
  *
@@ -655,3 +658,5 @@ isancestor(dbref parent, dbref child)
 	}
 	return child == parent;
 }
+static const char *predicates_c_version = "$RCSfile$ $Revision: 1.14 $";
+const char *get_predicates_c_version(void) { return predicates_c_version; }

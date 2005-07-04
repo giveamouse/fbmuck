@@ -346,3 +346,5 @@ do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf, const char
 {
 	return NULL;
 }
+static const char *reconst_c_version = "$RCSfile$ $Revision: 1.6 $";
+const char *get_reconst_c_version(void) { return reconst_c_version; }

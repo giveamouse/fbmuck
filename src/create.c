@@ -1429,3 +1429,5 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 		notify(player, "Action priority Level reset to zero.");
 	}
 }
+static const char *create_c_version = "$RCSfile$ $Revision: 1.23 $";
+const char *get_create_c_version(void) { return create_c_version; }

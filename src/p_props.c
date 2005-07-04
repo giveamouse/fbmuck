@@ -1339,3 +1339,5 @@ prim_parsepropex(PRIM_PROTOTYPE)
 	PushArrayRaw(vars);
 	PushString(str);
 }
+static const char *p_props_c_version = "$RCSfile$ $Revision: 1.30 $";
+const char *get_p_props_c_version(void) { return p_props_c_version; }

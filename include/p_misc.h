@@ -72,3 +72,13 @@ extern void prim_debug_line(PRIM_PROTOTYPE);
 
 
 #endif /* _P_MISC_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *p_misc_h_version = "$RCSfile$ $Revision: 1.17 $";
+
+#else
+extern const char *p_misc_h_version;
+#endif
+

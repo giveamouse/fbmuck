@@ -1078,7 +1078,7 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 's':
 			case 'S':
-				/* @sanity, @sanchange, @sanfix, @set, 
+				/* @sanity, @sanchange, @sanfix, @set, @showextver,
 				   @shutdown, @stats, @success, @sweep */
 				switch (command[2]) {
 				case 'a':
@@ -1100,7 +1100,9 @@ process_command(int descr, dbref player, char *command)
 					break;
 				case 'h':
 				case 'H':
-					if (strcmp(command, "@shutdown"))
+					if (!strcmp(command, "@showextver")) {
+						do_getextver(player);
+					} else if (strcmp(command, "@shutdown"))
 						goto bad;
 					do_shutdown(player);
 					break;
@@ -1450,3 +1452,5 @@ process_command(int descr, dbref player, char *command)
 }
 
 #undef Matched
+static const char *game_c_version = "$RCSfile$ $Revision: 1.44 $";
+const char *get_game_c_version(void) { return game_c_version; }

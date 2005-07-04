@@ -1907,3 +1907,5 @@ mfn_escape(MFUNARGS)
 	*out = '\0';
 	return buf;
 }
+static const char *mfuns2_c_version = "$RCSfile$ $Revision: 1.35 $";
+const char *get_mfuns2_c_version(void) { return mfuns2_c_version; }

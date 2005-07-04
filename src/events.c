@@ -233,3 +233,5 @@ next_muckevent(void)
 	check_clean_time();
 	check_rwho_time();
 }
+static const char *events_c_version = "$RCSfile$ $Revision: 1.8 $";
+const char *get_events_c_version(void) { return events_c_version; }

@@ -74,3 +74,13 @@ extern void prim_trypop(PRIM_PROTOTYPE);	/* -- */
 #define PRIMS_INTERNAL_CNT 3
 
 #endif /* _P_STACK_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *p_stack_h_version = "$RCSfile$ $Revision: 1.5 $";
+
+#else
+extern const char *p_stack_h_version;
+#endif
+

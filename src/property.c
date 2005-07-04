@@ -1332,3 +1332,5 @@ reflist_find(dbref obj, const char* propname, dbref tofind)
 }
 
 
+static const char *property_c_version = "$RCSfile$ $Revision: 1.27 $";
+const char *get_property_c_version(void) { return property_c_version; }

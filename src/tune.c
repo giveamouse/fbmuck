@@ -965,3 +965,5 @@ do_tune(dbref player, char *parmname, char *parmval)
 		return;
 	}
 }
+static const char *tune_c_version = "$RCSfile$ $Revision: 1.42 $";
+const char *get_tune_c_version(void) { return tune_c_version; }

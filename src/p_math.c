@@ -793,3 +793,5 @@ prim_sign(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
+static const char *p_math_c_version = "$RCSfile$ $Revision: 1.12 $";
+const char *get_p_math_c_version(void) { return p_math_c_version; }

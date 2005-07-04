@@ -274,3 +274,5 @@ equalstr(char *pattern, char *str)
 {
 	return !smatch(pattern, str);
 }
+static const char *smatch_c_version = "$RCSfile$ $Revision: 1.3 $";
+const char *get_smatch_c_version(void) { return smatch_c_version; }

@@ -1,5 +1,8 @@
 /* $Header$
  * $Log: match.h,v $
+ * Revision 1.5  2005/07/04 12:04:17  winged
+ * Initial revisions for everything.
+ *
  * Revision 1.4  2003/04/07 18:37:00  cutevixy
  * Changed struct match_data and match_exits to not partially match Xpress exits unless specifically matching exits, or partial exit matching is requested in the match_data struct.
  *
@@ -136,3 +139,13 @@ extern dbref noisy_match_result(struct match_data *md);
 				/* returns matched object or NOTHING */
 
 #endif /* _MATCH_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *match_h_version = "$RCSfile$ $Revision: 1.5 $";
+
+#else
+extern const char *match_h_version;
+#endif
+

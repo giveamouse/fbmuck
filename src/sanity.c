@@ -1526,3 +1526,5 @@ san_main(void)
 
 	printf("Exiting sanity editor...\n\n");
 }
+static const char *sanity_c_version = "$RCSfile$ $Revision: 1.15 $";
+const char *get_sanity_c_version(void) { return sanity_c_version; }

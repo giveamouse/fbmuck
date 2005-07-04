@@ -114,3 +114,5 @@ disassemble(dbref player, dbref program)
 		notify(player, buf);
 	}
 }
+static const char *disassem_c_version = "$RCSfile$ $Revision: 1.16 $";
+const char *get_disassem_c_version(void) { return disassem_c_version; }

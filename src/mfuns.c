@@ -2080,3 +2080,5 @@ mfn_usecount(MFUNARGS)
 
 	return buf;
 }
+static const char *mfuns_c_version = "$RCSfile$ $Revision: 1.31 $";
+const char *get_mfuns_c_version(void) { return mfuns_c_version; }

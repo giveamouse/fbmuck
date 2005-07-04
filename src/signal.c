@@ -371,3 +371,5 @@ void set_console() {
 
 
 #endif /* WIN32 */
+static const char *signal_c_version = "$RCSfile$ $Revision: 1.19 $";
+const char *get_signal_c_version(void) { return signal_c_version; }

@@ -45,3 +45,13 @@
 #include "version.h"
 
 #endif /* _FB_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *fb_h_version = "$RCSfile$ $Revision: 1.6 $";
+
+#else
+extern const char *fb_h_version;
+#endif
+

@@ -37,3 +37,13 @@ void display_objinfo(dbref player, dbref obj, int output_type);
 
 #endif
 
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *dbsearch_h_version = "$RCSfile$ $Revision: 1.2 $";
+
+#else
+extern const char *dbsearch_h_version;
+#endif
+

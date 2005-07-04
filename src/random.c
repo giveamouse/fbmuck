@@ -470,3 +470,5 @@ int main(int argc, char **argv) {
   exit(1);
 }
 */
+static const char *random_c_version = "$RCSfile$ $Revision: 1.14 $";
+const char *get_random_c_version(void) { return random_c_version; }

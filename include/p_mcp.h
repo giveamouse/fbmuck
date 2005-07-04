@@ -34,3 +34,13 @@ extern void prim_gui_ctrl_command(PRIM_PROTOTYPE);
 #define PRIMS_MCP_CNT 14
 
 #endif /* _P_MCP_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *p_mcp_h_version = "$RCSfile$ $Revision: 1.7 $";
+
+#else
+extern const char *p_mcp_h_version;
+#endif
+

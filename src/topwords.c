@@ -349,3 +349,5 @@ main(int argc, char **argv)
 	/* printf("%d counted words.\n", counted_words); */
 	return(0);
 }
+static const char *topwords_c_version = "$RCSfile$ $Revision: 1.10 $";
+const char *get_topwords_c_version(void) { return topwords_c_version; }

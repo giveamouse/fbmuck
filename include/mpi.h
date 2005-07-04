@@ -21,3 +21,13 @@ extern char *do_parse_prop(int descr, dbref player, dbref what, const char *prop
 						   const char *abuf, char *outbuf, int mesgtyp);
 
 #endif /* _MPI_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *mpi_h_version = "$RCSfile$ $Revision: 1.6 $";
+
+#else
+extern const char *mpi_h_version;
+#endif
+

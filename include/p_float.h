@@ -51,3 +51,13 @@ extern void prim_diff3(PRIM_PROTOTYPE);
 #define PRIMS_FLOAT_CNT 31
 
 #endif /* _P_FLOAT_H */
+
+#ifdef DEFINE_HEADER_VERSIONS
+
+
+const char *p_float_h_version = "$RCSfile$ $Revision: 1.8 $";
+
+#else
+extern const char *p_float_h_version;
+#endif
+

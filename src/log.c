@@ -243,3 +243,5 @@ notify_fmt(dbref player, char *format, ...)
 	notify(player, bufr);
 	va_end(args);
 }
+static const char *log_c_version = "$RCSfile$ $Revision: 1.16 $";
+const char *get_log_c_version(void) { return log_c_version; }

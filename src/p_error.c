@@ -323,3 +323,5 @@ prim_is_error(PRIM_PROTOTYPE)
 	result = ((fr->error.is_flags) != 0);
 	PushInt(result);
 }
+static const char *p_error_c_version = "$RCSfile$ $Revision: 1.5 $";
+const char *get_p_error_c_version(void) { return p_error_c_version; }

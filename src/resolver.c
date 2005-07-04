@@ -595,3 +595,5 @@ main(int argc, char **argv)
 	exit(0);
 	return 0;
 }
+static const char *resolver_c_version = "$RCSfile$ $Revision: 1.10 $";
+const char *get_resolver_c_version(void) { return resolver_c_version; }

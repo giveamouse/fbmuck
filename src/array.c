@@ -2102,3 +2102,5 @@ array_set_arrval(stk_array ** harr, struct inst* key, stk_array* val)
 
 	return result;
 }
+static const char *array_c_version = "$RCSfile$ $Revision: 1.42 $";
+const char *get_array_c_version(void) { return array_c_version; }
