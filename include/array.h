@@ -92,9 +92,10 @@ int array_set_arrval(stk_array ** harr, struct inst* key, stk_array* val);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *array_h_version = "$RCSfile$ $Revision: 1.14 $";
-
+#ifndef arrayh_version
+#define arrayh_version
+const char *array_h_version = "$RCSfile$ $Revision: 1.15 $";
+#endif
 #else
 extern const char *array_h_version;
 #endif

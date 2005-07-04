@@ -40,9 +40,10 @@ void display_objinfo(dbref player, dbref obj, int output_type);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *dbsearch_h_version = "$RCSfile$ $Revision: 1.3 $";
-
+#ifndef dbsearchh_version
+#define dbsearchh_version
+const char *dbsearch_h_version = "$RCSfile$ $Revision: 1.4 $";
+#endif
 #else
 extern const char *dbsearch_h_version;
 #endif

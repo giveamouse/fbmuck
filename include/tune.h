@@ -156,9 +156,10 @@ extern stk_array *tune_parms_array(const char* pattern, int mlev);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *tune_h_version = "$RCSfile$ $Revision: 1.31 $";
-
+#ifndef tuneh_version
+#define tuneh_version
+const char *tune_h_version = "$RCSfile$ $Revision: 1.32 $";
+#endif
 #else
 extern const char *tune_h_version;
 #endif

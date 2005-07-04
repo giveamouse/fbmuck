@@ -24,9 +24,10 @@ extern void prim_error_num(PRIM_PROTOTYPE);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *p_error_h_version = "$RCSfile$ $Revision: 1.5 $";
-
+#ifndef p_errorh_version
+#define p_errorh_version
+const char *p_error_h_version = "$RCSfile$ $Revision: 1.6 $";
+#endif
 #else
 extern const char *p_error_h_version;
 #endif

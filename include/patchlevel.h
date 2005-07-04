@@ -9,9 +9,10 @@
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *patchlevel_h_version = "$RCSfile$ $Revision: 1.5 $";
-
+#ifndef patchlevelh_version
+#define patchlevelh_version
+const char *patchlevel_h_version = "$RCSfile$ $Revision: 1.6 $";
+#endif
 #else
 extern const char *patchlevel_h_version;
 #endif

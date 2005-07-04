@@ -1,48 +1,4 @@
-/* $Header$
- * $Log: match.h,v $
- * Revision 1.6  2005/07/04 19:07:26  winged
- * Getting all the tags set...
- *
- * Revision 1.4  2003/04/07 18:37:00  cutevixy
- * Changed struct match_data and match_exits to not partially match Xpress exits unless specifically matching exits, or partial exit matching is requested in the match_data struct.
- *
- * Revision 1.3  2000/07/18 18:18:19  winged
- * Various fixes to support warning-free compiling with -Wall -Wstrict-prototypes -Wno-format -- added single-inclusion capability to all headers.
- *
- * Revision 1.2  2000/03/29 12:21:01  revar
- * Reformatted all code into consistent format.
- * 	Tabs are 4 spaces.
- * 	Indents are one tab.
- * 	Braces are generally K&R style.
- * Added ARRAY_DIFF, ARRAY_INTERSECT and ARRAY_UNION to man.txt.
- * Rewrote restart script as a bourne shell script.
- *
- * Revision 1.1.1.1  1999/12/12 07:28:13  revar
- * Initial Sourceforge checkin, fb6.00a29
- *
- * Revision 1.1.1.1  1999/12/12 07:28:13  foxen
- * Initial FB6 CVS checkin.
- *
- * Revision 1.1  1996/06/17 17:29:45  foxen
- * Initial revision
- *
- * Revision 5.12  1994/01/06  03:18:09  foxen
- * Version 5.12
- *
- * Revision 5.1  1993/12/17  00:35:54  foxen
- * initial revision.
- *
- * Revision 1.4  90/08/27  14:08:45  rearl
- * Added match_home()
- * 
- * Revision 1.3  90/08/05  03:22:47  rearl
- * Redid match routines!
- * 
- * Revision 1.2  90/07/19  23:14:41  casie
- * Removed log comments from top.
- * 
- * 
- */
+/* $Header$ */
 
 #ifndef _MATCH_H
 #define _MATCH_H
@@ -142,9 +98,10 @@ extern dbref noisy_match_result(struct match_data *md);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *match_h_version = "$RCSfile$ $Revision: 1.6 $";
-
+#ifndef matchh_version
+#define matchh_version
+const char *match_h_version = "$RCSfile$ $Revision: 1.7 $";
+#endif
 #else
 extern const char *match_h_version;
 #endif

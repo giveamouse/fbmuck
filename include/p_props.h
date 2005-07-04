@@ -43,9 +43,10 @@ extern void prim_parsepropex(PRIM_PROTOTYPE);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *p_props_h_version = "$RCSfile$ $Revision: 1.10 $";
-
+#ifndef p_propsh_version
+#define p_propsh_version
+const char *p_props_h_version = "$RCSfile$ $Revision: 1.11 $";
+#endif
 #else
 extern const char *p_props_h_version;
 #endif

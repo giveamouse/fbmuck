@@ -74,9 +74,10 @@ typedef char **argv_typ;
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *msgparse_h_version = "$RCSfile$ $Revision: 1.12 $";
-
+#ifndef msgparseh_version
+#define msgparseh_version
+const char *msgparse_h_version = "$RCSfile$ $Revision: 1.13 $";
+#endif
 #else
 extern const char *msgparse_h_version;
 #endif

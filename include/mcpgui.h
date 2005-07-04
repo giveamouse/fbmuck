@@ -231,9 +231,10 @@ void muf_dlog_purge(struct frame *fr);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *mcpgui_h_version = "$RCSfile$ $Revision: 1.12 $";
-
+#ifndef mcpguih_version
+#define mcpguih_version
+const char *mcpgui_h_version = "$RCSfile$ $Revision: 1.13 $";
+#endif
 #else
 extern const char *mcpgui_h_version;
 #endif

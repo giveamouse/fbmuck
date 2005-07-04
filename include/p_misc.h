@@ -75,9 +75,10 @@ extern void prim_debug_line(PRIM_PROTOTYPE);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *p_misc_h_version = "$RCSfile$ $Revision: 1.18 $";
-
+#ifndef p_misch_version
+#define p_misch_version
+const char *p_misc_h_version = "$RCSfile$ $Revision: 1.19 $";
+#endif
 #else
 extern const char *p_misc_h_version;
 #endif

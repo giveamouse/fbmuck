@@ -9,9 +9,10 @@ void mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *contex
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *mcppkg_h_version = "$RCSfile$ $Revision: 1.6 $";
-
+#ifndef mcppkgh_version
+#define mcppkgh_version
+const char *mcppkg_h_version = "$RCSfile$ $Revision: 1.7 $";
+#endif
 #else
 extern const char *mcppkg_h_version;
 #endif

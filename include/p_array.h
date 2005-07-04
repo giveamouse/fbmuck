@@ -105,9 +105,10 @@ extern void prim_array_filter_flags(PRIM_PROTOTYPE);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *p_array_h_version = "$RCSfile$ $Revision: 1.16 $";
-
+#ifndef p_arrayh_version
+#define p_arrayh_version
+const char *p_array_h_version = "$RCSfile$ $Revision: 1.17 $";
+#endif
 #else
 extern const char *p_array_h_version;
 #endif

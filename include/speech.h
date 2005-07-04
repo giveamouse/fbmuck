@@ -52,9 +52,10 @@ blank(const char *s)
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *speech_h_version = "$RCSfile$ $Revision: 1.3 $";
-
+#ifndef speechh_version
+#define speechh_version
+const char *speech_h_version = "$RCSfile$ $Revision: 1.4 $";
+#endif
 #else
 extern const char *speech_h_version;
 #endif

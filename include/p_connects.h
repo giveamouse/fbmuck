@@ -60,9 +60,10 @@ extern void prim_descr_bufsize(PRIM_PROTOTYPE);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *p_connects_h_version = "$RCSfile$ $Revision: 1.8 $";
-
+#ifndef p_connectsh_version
+#define p_connectsh_version
+const char *p_connects_h_version = "$RCSfile$ $Revision: 1.9 $";
+#endif
 #else
 extern const char *p_connects_h_version;
 #endif

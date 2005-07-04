@@ -819,9 +819,10 @@ extern dbref parse_dbref(const char *);	/* parse a dbref */
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *db_h_version = "$RCSfile$ $Revision: 1.41 $";
-
+#ifndef dbh_version
+#define dbh_version
+const char *db_h_version = "$RCSfile$ $Revision: 1.42 $";
+#endif
 #else
 extern const char *db_h_version;
 #endif

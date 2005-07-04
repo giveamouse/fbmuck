@@ -125,9 +125,10 @@ extern void prim_toadplayer(PRIM_PROTOTYPE);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *p_db_h_version = "$RCSfile$ $Revision: 1.13 $";
-
+#ifndef p_dbh_version
+#define p_dbh_version
+const char *p_db_h_version = "$RCSfile$ $Revision: 1.14 $";
+#endif
 #else
 extern const char *p_db_h_version;
 #endif

@@ -391,9 +391,10 @@
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *config_h_version = "$RCSfile$ $Revision: 1.33 $";
-
+#ifndef configh_version
+#define configh_version
+const char *config_h_version = "$RCSfile$ $Revision: 1.34 $";
+#endif
 #else
 extern const char *config_h_version;
 #endif

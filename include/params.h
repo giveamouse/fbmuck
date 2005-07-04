@@ -143,9 +143,10 @@
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *params_h_version = "$RCSfile$ $Revision: 1.17 $";
-
+#ifndef paramsh_version
+#define paramsh_version
+const char *params_h_version = "$RCSfile$ $Revision: 1.18 $";
+#endif
 #else
 extern const char *params_h_version;
 #endif

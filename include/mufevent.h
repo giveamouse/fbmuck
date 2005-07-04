@@ -32,9 +32,10 @@ stk_array *get_mufevent_pidinfo(stk_array* nw, int pid);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *mufevent_h_version = "$RCSfile$ $Revision: 1.12 $";
-
+#ifndef mufeventh_version
+#define mufeventh_version
+const char *mufevent_h_version = "$RCSfile$ $Revision: 1.13 $";
+#endif
 #else
 extern const char *mufevent_h_version;
 #endif

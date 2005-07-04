@@ -131,8 +131,7 @@ do_version(dbref player)
 
 
 void
-do_getextver(dbref player) {
-	notify_nolisten(player, get_announce_c_version(), 1);
+do_showextver(dbref player) {
 	notify_nolisten(player, get_array_c_version(), 1);
 	notify_nolisten(player, get_boolexp_c_version(), 1);
 	notify_nolisten(player, get_compile_c_version(), 1);
@@ -164,7 +163,6 @@ do_getextver(dbref player) {
 	notify_nolisten(player, get_msgparse_c_version(), 1);
 	notify_nolisten(player, get_mufevent_c_version(), 1);
 	notify_nolisten(player, get_oldcompress_c_version(), 1);
-	notify_nolisten(player, get_olddecomp_c_version(), 1);
 	notify_nolisten(player, get_p_array_c_version(), 1);
 	notify_nolisten(player, get_p_connects_c_version(), 1);
 	notify_nolisten(player, get_p_db_c_version(), 1);
@@ -179,13 +177,10 @@ do_getextver(dbref player) {
 	notify_nolisten(player, get_p_strings_c_version(), 1);
 	notify_nolisten(player, get_player_c_version(), 1);
 	notify_nolisten(player, get_predicates_c_version(), 1);
-	notify_nolisten(player, get_prochelp_c_version(), 1);
 	notify_nolisten(player, get_propdirs_c_version(), 1);
 	notify_nolisten(player, get_property_c_version(), 1);
 	notify_nolisten(player, get_props_c_version(), 1);
 	notify_nolisten(player, get_random_c_version(), 1);
-	notify_nolisten(player, get_reconst_c_version(), 1);
-	notify_nolisten(player, get_resolver_c_version(), 1);
 	notify_nolisten(player, get_rob_c_version(), 1);
 	notify_nolisten(player, get_rwho_c_version(), 1);
 	notify_nolisten(player, get_sanity_c_version(), 1);
@@ -198,7 +193,6 @@ do_getextver(dbref player) {
 	notify_nolisten(player, get_stringutil_c_version(), 1);
 	notify_nolisten(player, get_timequeue_c_version(), 1);
 	notify_nolisten(player, get_timestamp_c_version(), 1);
-	notify_nolisten(player, get_topwords_c_version(), 1);
 	notify_nolisten(player, get_tune_c_version(), 1);
 	notify_nolisten(player, get_unparse_c_version(), 1);
 	notify_nolisten(player, get_utils_c_version(), 1);
@@ -206,7 +200,11 @@ do_getextver(dbref player) {
 	notify_nolisten(player, array_h_version, 1);
 	notify_nolisten(player, config_h_version, 1);
 	notify_nolisten(player, copyright_h_version, 1);
+#ifdef MALLOC_PROFILING
 	notify_nolisten(player, crt_malloc_h_version, 1);
+#else
+	notify_nolisten(player, "crt_malloc.h not used", 1);
+#endif
 	notify_nolisten(player, db_h_version, 1);
 	notify_nolisten(player, dbsearch_h_version, 1);
 	notify_nolisten(player, defaults_h_version, 1);

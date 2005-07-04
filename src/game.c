@@ -1101,7 +1101,8 @@ process_command(int descr, dbref player, char *command)
 				case 'h':
 				case 'H':
 					if (!strcmp(command, "@showextver")) {
-						do_getextver(player);
+						do_showextver(player);
+						break;
 					} else if (strcmp(command, "@shutdown"))
 						goto bad;
 					do_shutdown(player);
@@ -1452,5 +1453,5 @@ process_command(int descr, dbref player, char *command)
 }
 
 #undef Matched
-static const char *game_c_version = "$RCSfile$ $Revision: 1.44 $";
+static const char *game_c_version = "$RCSfile$ $Revision: 1.45 $";
 const char *get_game_c_version(void) { return game_c_version; }

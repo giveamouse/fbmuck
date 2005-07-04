@@ -20,9 +20,10 @@ extern void prim_regsub(PRIM_PROTOTYPE);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *p_regex_h_version = "$RCSfile$ $Revision: 1.5 $";
-
+#ifndef p_regexh_version
+#define p_regexh_version
+const char *p_regex_h_version = "$RCSfile$ $Revision: 1.6 $";
+#endif
 #else
 extern const char *p_regex_h_version;
 #endif

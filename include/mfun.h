@@ -145,9 +145,10 @@ const char *mfn_xor(MFUNARGS);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *mfun_h_version = "$RCSfile$ $Revision: 1.9 $";
-
+#ifndef mfunh_version
+#define mfunh_version
+const char *mfun_h_version = "$RCSfile$ $Revision: 1.10 $";
+#endif
 #else
 extern const char *mfun_h_version;
 #endif

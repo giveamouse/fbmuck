@@ -1,4 +1,7 @@
 2.2fb6.06
+Added @showextver command, to show the versions of all the files that
+  were used to create a given build.  This is to help track down version-
+  specific issues that may have been fixed in a later file version.
 Fixed compilation so that compiler lines no longer wrap past 80 characters.
 Fixed configure so that it now properly respects the case of --with-ssl not
   being specified on the commandline.

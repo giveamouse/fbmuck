@@ -489,7 +489,10 @@ const char *get_wiz_c_version(void);
 #endif /* _EXTERNS_H */
 
 #ifdef DEFINE_HEADER_VERSIONS
-const char *externs_h_version = "$RCSfile$ $Revision: 1.44 $";
+#ifndef externsh_version
+#define externsh_version
+const char *externs_h_version = "$RCSfile$ $Revision: 1.45 $";
+#endif
 #else
 extern const char *externs_h_version;
 #endif

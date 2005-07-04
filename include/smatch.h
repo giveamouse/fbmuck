@@ -17,9 +17,10 @@ extern char *strchr(), *strrchr();
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *smatch_h_version = "$RCSfile$ $Revision: 1.4 $";
-
+#ifndef smatchh_version
+#define smatchh_version
+const char *smatch_h_version = "$RCSfile$ $Revision: 1.5 $";
+#endif
 #else
 extern const char *smatch_h_version;
 #endif

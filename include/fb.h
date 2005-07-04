@@ -1,6 +1,8 @@
 #ifndef _FB_H
 #define _FB_H
 
+/* We need struct inst before anything */
+#include "db.h"
 #include "array.h"
 #include "autoconf.h"
 #include "config.h"
@@ -8,7 +10,7 @@
 #ifdef MALLOC_PROFILING
 # include "crt_malloc.h"
 #endif
-#include "db.h"
+#include "dbsearch.h"
 #include "defaults.h"
 #include "externs.h"
 #include "inst.h"
@@ -48,9 +50,10 @@
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *fb_h_version = "$RCSfile$ $Revision: 1.7 $";
-
+#ifndef fbh_version
+#define fbh_version
+const char *fb_h_version = "$RCSfile$ $Revision: 1.8 $";
+#endif
 #else
 extern const char *fb_h_version;
 #endif

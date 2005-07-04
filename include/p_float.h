@@ -54,9 +54,10 @@ extern void prim_diff3(PRIM_PROTOTYPE);
 
 #ifdef DEFINE_HEADER_VERSIONS
 
-
-const char *p_float_h_version = "$RCSfile$ $Revision: 1.9 $";
-
+#ifndef p_floath_version
+#define p_floath_version
+const char *p_float_h_version = "$RCSfile$ $Revision: 1.10 $";
+#endif
 #else
 extern const char *p_float_h_version;
 #endif
