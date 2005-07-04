@@ -6,6 +6,7 @@
 #define __DB_H
 
 #include "config.h"
+#include "defines.h"
 
 #include <stdio.h>
 #include <math.h>

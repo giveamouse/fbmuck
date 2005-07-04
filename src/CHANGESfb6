@@ -1,4 +1,5 @@
 2.2fb6.06
+Fixed compilation so that compiler lines no longer wrap past 80 characters.
 Fixed configure so that it now properly respects the case of --with-ssl not
   being specified on the commandline.
 WinFuzz: SCARY_MUF_PRIMS will now be compiled into the code by default,
