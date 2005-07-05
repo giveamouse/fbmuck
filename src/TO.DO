@@ -74,8 +74,7 @@ STATUS: Not done.  We also need to make sure that we're checking any
     WAITPROP (d s -- s)  Waits for deletion or change of given property.
 STATUS: Not done, propose an event class of PROP.*
 +   TRIGDESCR ( -- i) relates the descriptor that started this program.
-STATUS: We have the data in PROGRAM_SP, but I'm not sure if we exposed
-		it via a primitive yet.
+STATUS: Done. (DESCR prim)
 
     Implement following MUF prims: Make @tunable format str for list formats.
 ~	GETLISTRANGE (i i d s -- {s})
