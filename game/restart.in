@@ -14,6 +14,10 @@ exec_prefix=@exec_prefix@
 #
 GAMEDIR="@localstatedir@/fbmuck"
 
+# If you want your database to be accessible by someone other than the
+# user the MUCK is running under, you should change this to the appropriate
+# umask value. 077 is owner-only.
+UMASK=077
 
 #
 # The following are the paths to the db files to load, save to, and archive to.
@@ -86,7 +90,7 @@ fi
 cd $GAMEDIR
 # echo "Restarting at: `date`"
 
-umask 077
+umask $UMASK
 
 # Maximize resource limits
 ulimit -n `ulimit -Hn` ;# let us use all descriptors our hardlimit allows.
