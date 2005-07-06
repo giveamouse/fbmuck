@@ -832,15 +832,15 @@ mfn_lremove(MFUNARGS)
 	int len;
 	int firstResult = 1;
 
-	ptr = argv[0];  // the list we're removing from
+	ptr = argv[0];  /* the list we're removing from */
 	endbuf = buf;
-	*buf = '\0';  // empty buf; this is what we're returning, I bet
-	while (*ptr) {  // while more of the first list
-		// Find the next word.
+	*buf = '\0';  /* empty buf; this is what we're returning, I bet */
+	while (*ptr) {  /* while more of the first list */
+		/* Find the next word. */
 		for (ptr2 = ptr; *ptr2 && *ptr2 != '\r'; ptr2++) {};
 		len = ptr2 - ptr;
 
-		// If the second list contains the string, continue.
+		/* If the second list contains the string, continue. */
 		if(!list_contains(ptr, len, argv[1]) &&
 			/*
 			 * If it's the first result, it already won't be in buf.
@@ -859,7 +859,7 @@ mfn_lremove(MFUNARGS)
 			*endbuf = '\0';
 		}
 
-		// Next word.
+		/* Next word. */
 		if(*ptr2) ptr2++;
 		ptr = ptr2;
 		if (!(--iter_limit))
@@ -1907,5 +1907,5 @@ mfn_escape(MFUNARGS)
 	*out = '\0';
 	return buf;
 }
-static const char *mfuns2_c_version = "$RCSfile$ $Revision: 1.35 $";
+static const char *mfuns2_c_version = "$RCSfile$ $Revision: 1.36 $";
 const char *get_mfuns2_c_version(void) { return mfuns2_c_version; }

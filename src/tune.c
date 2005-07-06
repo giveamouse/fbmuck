@@ -19,8 +19,6 @@ const char *tp_cpenny = CPENNY;
 const char *tp_cpennies = CPENNIES;
 
 const char *tp_muckname = MUCKNAME;
-const char *tp_rwho_passwd = RWHO_PASSWD;
-const char *tp_rwho_server = RWHO_SERVER;
 
 const char *tp_huh_mesg = HUH_MESSAGE;
 const char *tp_leave_mesg = LEAVE_MESSAGE;
@@ -66,8 +64,6 @@ struct tune_str_entry tune_str_list[] = {
 	{"Properties", "proplist_counter_fmt", &tp_proplist_counter_fmt, 0, 1, "Proplist counter name format"},
 	{"Properties", "proplist_entry_fmt", &tp_proplist_entry_fmt, 0, 1, "Proplist entry name format"},
 	{"Registration", "register_mesg", &tp_register_mesg, 0, 1, "Login registration mesg"},
-	{"RWHO",       "rwho_passwd", &tp_rwho_passwd, 4, 1, "RWHO server entry password"},
-	{"RWHO",       "rwho_server", &tp_rwho_server, 4, 1, "RWHO server hostname"},
 	{"Misc",       "muckname", &tp_muckname, 0, 1, "Muck name"},
 	{"Misc",       "leave_mesg", &tp_leave_mesg, 0, 1, "Logoff message"},
 	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, 1, "Command unrecognized warning"},
@@ -82,7 +78,6 @@ struct tune_str_entry tune_str_list[] = {
 
 
 /* times */
-int tp_rwho_interval = RWHO_INTERVAL;
 int tp_dump_interval = DUMP_INTERVAL;
 int tp_dump_warntime = DUMP_WARNTIME;
 int tp_monolithic_interval = MONOLITHIC_INTERVAL;
@@ -105,7 +100,6 @@ struct tune_time_entry tune_time_list[] = {
 	{"DB Dumps",  "dump_warntime", &tp_dump_warntime, 0, "Interval between warning and dump"},
 	{"DB Dumps",  "monolithic_interval", &tp_monolithic_interval, 0, "Interval between full dumps"},
 	{"Idle Boot", "maxidle", &tp_maxidle, 0, "Maximum idle time before booting"},
-	{"RWHO",      "rwho_interval", &tp_rwho_interval, 0, "Interval between RWHO server updates."},
 	{"Tuning",    "clean_interval", &tp_clean_interval, 0, "Interval between memory cleanups."},
 
 	{NULL, NULL, NULL, 0}
@@ -237,7 +231,6 @@ int tp_dbdump_warning = DBDUMP_WARNING;
 int tp_deltadump_warning = DELTADUMP_WARNING;
 int tp_dumpdone_warning = DUMPDONE_WARNING;
 int tp_periodic_program_purge = PERIODIC_PROGRAM_PURGE;
-int tp_rwho = RWHO;
 int tp_secure_who = SECURE_WHO;
 int tp_who_doing = WHO_DOING;
 int tp_realms_control = REALMS_CONTROL;
@@ -322,7 +315,6 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Properties", "lock_envcheck", &tp_lock_envcheck, 0, "Locks check environment for properties"},
 	{"Properties", "proplist_int_counter", &tp_proplist_int_counter, 0, "Proplist counter uses an integer property"},
 	{"Registration", "registration", &tp_registration, 0, "Require new players to register manually"},
-	{"RWHO",       "support_rwho", &tp_rwho, 0, "Enable RWHO server support"},
 	{"Tuning",     "periodic_program_purge", &tp_periodic_program_purge, 0, "Periodically free unused MUF programs"},
 	{"WHO",        "use_hostnames", &tp_hostnames, 0, "Resolve IP addresses into hostnames"},
 	{"WHO",        "secure_who", &tp_secure_who, 0, "Disallow WHO command from login screen and programs"},
@@ -965,5 +957,5 @@ do_tune(dbref player, char *parmname, char *parmval)
 		return;
 	}
 }
-static const char *tune_c_version = "$RCSfile$ $Revision: 1.42 $";
+static const char *tune_c_version = "$RCSfile$ $Revision: 1.43 $";
 const char *get_tune_c_version(void) { return tune_c_version; }

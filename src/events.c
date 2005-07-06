@@ -142,65 +142,6 @@ check_clean_time(void)
 }
 
 
-/****************
- * RWHO updates *
- ****************/
-
-static long last_rwho_time = 0L;
-static int last_rwho_nogo = 1;
-
-long
-next_rwho_time(void)
-{
-	long currtime;
-
-	if (!tp_rwho) {
-		if (!last_rwho_nogo)
-			rwhocli_shutdown();
-		last_rwho_nogo = 1;
-		return (3600L);
-	}
-
-	currtime = (long) time((time_t *) NULL);
-
-	if (last_rwho_nogo) {
-		rwhocli_setup(tp_rwho_server, tp_rwho_passwd, tp_muckname, VERSION);
-		last_rwho_time = currtime;
-		update_rwho();
-	}
-	last_rwho_nogo = 0;
-
-	if (!last_rwho_time)
-		last_rwho_time = currtime;
-
-	if ((last_rwho_time + tp_rwho_interval) < currtime)
-		return (0L);
-
-	return (last_rwho_time + tp_rwho_interval - currtime);
-}
-
-
-
-void
-check_rwho_time(void)
-{
-	long currtime;
-
-	if (!tp_rwho)
-		return;
-
-	currtime = (long) time((time_t *) NULL);
-
-	if (!last_rwho_time)
-		last_rwho_time = currtime;
-
-	if ((last_rwho_time + tp_rwho_interval) < currtime) {
-		last_rwho_time = currtime;
-		update_rwho();
-	}
-}
-
-
 /**********************************************************************
  *  general handling for timed events like dbdumps, timequeues, etc.
  **********************************************************************/
@@ -220,7 +161,6 @@ next_muckevent_time(void)
 	nexttime = mintime(next_event_time(), nexttime);
 	nexttime = mintime(next_dump_time(), nexttime);
 	nexttime = mintime(next_clean_time(), nexttime);
-	nexttime = mintime(next_rwho_time(), nexttime);
 
 	return (nexttime);
 }
@@ -231,7 +171,6 @@ next_muckevent(void)
 	next_timequeue_event();
 	check_dump_time();
 	check_clean_time();
-	check_rwho_time();
 }
-static const char *events_c_version = "$RCSfile$ $Revision: 1.8 $";
+static const char *events_c_version = "$RCSfile$ $Revision: 1.9 $";
 const char *get_events_c_version(void) { return events_c_version; }

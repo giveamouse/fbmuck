@@ -160,7 +160,7 @@ free_timenode(timequeue ptr)
 }
 
 void
-purge_timenode_free_pool()
+purge_timenode_free_pool(void)
 {
 	timequeue ptr = free_timenode_list;
 	timequeue nxt = NULL;
@@ -1462,5 +1462,5 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
 		}
 	}
 }
-static const char *timequeue_c_version = "$RCSfile$ $Revision: 1.38 $";
+static const char *timequeue_c_version = "$RCSfile$ $Revision: 1.39 $";
 const char *get_timequeue_c_version(void) { return timequeue_c_version; }

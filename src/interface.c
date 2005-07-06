@@ -182,14 +182,6 @@ SSL_CTX *ssl_ctx;
 static int ndescriptors = 0;
 extern void fork_and_dump(void);
 
-extern int rwhocli_setup(const char *server, const char *serverpw, const char *myname,
-
-						 const char *comment);
-extern int rwhocli_shutdown(void);
-extern int rwhocli_pingalive(void);
-extern int rwhocli_userlogin(const char *uid, const char *name, time_t tim);
-extern int rwhocli_userlogout(const char *uid);
-
 void process_commands(void);
 void shovechars();
 void shutdownsock(struct descriptor_data *d);
@@ -665,9 +657,6 @@ main(int argc, char **argv)
 		WSACleanup();
 #endif
 
-		if (tp_rwho) {
-			rwhocli_shutdown();
-		}
 	}
 
 	if (sanity_interactive) {
@@ -1542,7 +1531,7 @@ kill_resolver(void)
 static time_t resolver_spawn_time = 0;
 
 void
-spawn_resolver()
+spawn_resolver(void)
 {
 	if (time(NULL) - resolver_spawn_time < 5) {
 		return;
@@ -2979,12 +2968,6 @@ announce_connect(int descr, dbref player)
 	if ((loc = getloc(player)) == NOTHING)
 		return;
 
-	if (tp_rwho) {
-		time(&tt);
-		snprintf(buf, sizeof(buf), "%d@%s", player, tp_muckname);
-		rwhocli_userlogin(buf, NAME(player), tt);
-	}
-
 	if ((!Dark(player)) && (!Dark(loc))) {
 		snprintf(buf, sizeof(buf), "%s has connected.", NAME(player));
 		notify_except(DBFETCH(loc)->contents, player, buf, player);
@@ -3042,11 +3025,6 @@ announce_disconnect(struct descriptor_data *d)
 
 	if ((loc = getloc(player)) == NOTHING)
 		return;
-
-	if (tp_rwho) {
-		snprintf(buf, sizeof(buf), "%d@%s", player, tp_muckname);
-		rwhocli_userlogout(buf);
-	}
 
 	get_player_descrs(d->player, &dcount);
 	if (dcount < 2 && dequeue_prog(player, 2))
@@ -3834,24 +3812,6 @@ partial_pmatch(const char *name)
 
 
 void
-update_rwho(void)
-{
-	struct descriptor_data *d;
-	char buf[BUFFER_LEN];
-
-	rwhocli_pingalive();
-	d = descriptor_list;
-	while (d) {
-		if (d->connected) {
-			snprintf(buf, sizeof(buf), "%d@%s", d->player, tp_muckname);
-			rwhocli_userlogin(buf, NAME(d->player), d->connected_at);
-		}
-		d = d->next;
-	}
-}
-
-
-void
 welcome_user(struct descriptor_data *d)
 {
 	FILE *f;
@@ -4183,7 +4143,7 @@ void ignore_flush_cache(dbref Player)
 	PLAYER_SET_IGNORE_LAST(Player, NOTHING);
 }
 
-void ignore_flush_all_cache()
+void ignore_flush_all_cache(void)
 {
 	int i;
 
@@ -4252,5 +4212,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.107 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.108 $";
 const char *get_interface_c_version(void) { return interface_c_version; }

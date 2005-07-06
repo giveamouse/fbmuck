@@ -182,7 +182,6 @@ do_showextver(dbref player) {
 	notify_nolisten(player, get_props_c_version(), 1);
 	notify_nolisten(player, get_random_c_version(), 1);
 	notify_nolisten(player, get_rob_c_version(), 1);
-	notify_nolisten(player, get_rwho_c_version(), 1);
 	notify_nolisten(player, get_sanity_c_version(), 1);
 	notify_nolisten(player, get_set_c_version(), 1);
 	notify_nolisten(player, get_signal_c_version(), 1);

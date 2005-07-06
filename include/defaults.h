@@ -77,14 +77,6 @@
 #define CLEAN_INTERVAL TIME_MINUTE(15)	/* time between unused obj purges */
 
 
-/* Enables sending of updates to an RWHO server. */
-#define RWHO 0
-
-/* Information needed for RWHO. */
-#define RWHO_INTERVAL TIME_MINUTE(4)
-#define RWHO_PASSWD "potrzebie"
-#define RWHO_SERVER "riemann.math.okstate.edu"
-
 /* Information needed for SSL */
 #define SSL_KEYFILE_PASSWD ""
 #define STARTTLS_ALLOW 0
@@ -349,7 +341,7 @@
 
 #ifndef defaultsh_version
 #define defaultsh_version
-const char *defaults_h_version = "$RCSfile$ $Revision: 1.30 $";
+const char *defaults_h_version = "$RCSfile$ $Revision: 1.31 $";
 #endif
 #else
 extern const char *defaults_h_version;

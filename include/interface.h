@@ -38,8 +38,8 @@ extern char *phost(int c);
 extern char *pdescrhost(int c);
 extern char *puser(int c);
 extern char *pdescruser(int c);
-extern int pfirstdescr();
-extern int plastdescr();
+extern int pfirstdescr(void);
+extern int plastdescr(void);
 extern void pboot(int c);
 extern int pdescrboot(int c);
 extern void pnotify(int c, char *outstr);
@@ -56,7 +56,7 @@ extern dbref partial_pmatch(const char *name);
 extern int ignore_is_ignoring(dbref Player, dbref Who);
 extern int ignore_prime_cache(dbref Player);
 extern void ignore_flush_cache(dbref Player);
-extern void ignore_flush_all_cache();
+extern void ignore_flush_all_cache(void);
 extern void ignore_add_player(dbref Player, dbref Who);
 extern void ignore_remove_player(dbref Player, dbref Who);
 extern void ignore_remove_from_all_players(dbref Player);
@@ -79,7 +79,7 @@ extern void panic(const char *);
 
 #ifndef interfaceh_version
 #define interfaceh_version
-const char *interface_h_version = "$RCSfile$ $Revision: 1.11 $";
+const char *interface_h_version = "$RCSfile$ $Revision: 1.12 $";
 #endif
 #else
 extern const char *interface_h_version;

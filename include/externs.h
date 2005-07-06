@@ -43,7 +43,7 @@ extern void list_events(dbref program);
 extern int dequeue_prog_real(dbref, int, const char *, const int);
 extern int dequeue_process(int procnum);
 extern int dequeue_timers(int procnum, char* timerid);
-extern void purge_timenode_free_pool();
+extern void purge_timenode_free_pool(void);
 extern int control_process(dbref player, int procnum);
 extern void do_dequeue(int descr, dbref player, const char *arg1);
 extern void propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
@@ -316,7 +316,7 @@ extern int muf_event_exists(struct frame* fr, const char* eventid);
 extern int muf_event_process_unregister(struct frame *fr);
 
 /* from signal.h */
-extern void set_dumper_signals();
+extern void set_dumper_signals(void);
 #ifdef WIN32
 extern void set_console(void);
 extern void check_cosole(void);
@@ -374,12 +374,7 @@ extern void show_mcp_error(McpFrame * mfr, char *topic, char *text);
 /* from diskprop.c */
 extern void dispose_all_oldprops(void);
 
-/* from rwho.c */
-extern int rwhocli_shutdown(void);
-extern int rwhocli_setup(const char *server, const char *serverpw, const char *myname, const char *comment);
-
 /* from interface.c */
-extern void update_rwho(void);
 extern void do_armageddon(dbref player, const char *msg);
 extern int pdescrsecure(int c);
 extern pid_t global_dumper_pid;
@@ -387,7 +382,7 @@ extern pid_t global_resolver_pid;
 extern short global_dumpdone;
 
 #ifdef SPAWN_HOST_RESOLVER
-extern void spawn_resolver();
+extern void spawn_resolver(void);
 #endif
 
 
@@ -469,7 +464,6 @@ const char *get_random_c_version(void);
 const char *get_reconst_c_version(void);
 const char *get_resolver_c_version(void);
 const char *get_rob_c_version(void);
-const char *get_rwho_c_version(void);
 const char *get_sanity_c_version(void);
 const char *get_set_c_version(void);
 const char *get_signal_c_version(void);
@@ -491,7 +485,7 @@ const char *get_wiz_c_version(void);
 #ifdef DEFINE_HEADER_VERSIONS
 #ifndef externsh_version
 #define externsh_version
-const char *externs_h_version = "$RCSfile$ $Revision: 1.45 $";
+const char *externs_h_version = "$RCSfile$ $Revision: 1.46 $";
 #endif
 #else
 extern const char *externs_h_version;

@@ -22,7 +22,7 @@ typedef struct stk_array_t {
 	int links;					/* number of pointers  to array */
 	int items;					/* number of items in array */
 	short type;					/* type of array */
-	short pinned;				/* if pinned, don't dup array on changes */
+	int pinned;				/* if pinned, don't dup array on changes */
 	union {
 		array_data *packed;		/* pointer to packed array */
 		array_tree *dict;		/* pointer to dictionary AVL tree */
@@ -94,7 +94,7 @@ int array_set_arrval(stk_array ** harr, struct inst* key, stk_array* val);
 
 #ifndef arrayh_version
 #define arrayh_version
-const char *array_h_version = "$RCSfile$ $Revision: 1.15 $";
+const char *array_h_version = "$RCSfile$ $Revision: 1.16 $";
 #endif
 #else
 extern const char *array_h_version;

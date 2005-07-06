@@ -17,8 +17,6 @@ extern const char *tp_cpenny;
 extern const char *tp_cpennies;
 
 extern const char *tp_muckname;
-extern const char *tp_rwho_passwd;
-extern const char *tp_rwho_server;
 
 extern const char *tp_huh_mesg;
 extern const char *tp_leave_mesg;
@@ -39,7 +37,6 @@ extern const char *tp_reserved_player_names;
 
 
 /* times */
-extern int tp_rwho_interval;
 extern int tp_dump_interval;
 extern int tp_dump_warntime;
 extern int tp_monolithic_interval;
@@ -108,7 +105,6 @@ extern int tp_dbdump_warning;
 extern int tp_dumpdone_warning;
 extern int tp_deltadump_warning;
 extern int tp_periodic_program_purge;
-extern int tp_rwho;
 extern int tp_secure_who;
 extern int tp_who_doing;
 extern int tp_realms_control;
@@ -158,7 +154,7 @@ extern stk_array *tune_parms_array(const char* pattern, int mlev);
 
 #ifndef tuneh_version
 #define tuneh_version
-const char *tune_h_version = "$RCSfile$ $Revision: 1.32 $";
+const char *tune_h_version = "$RCSfile$ $Revision: 1.33 $";
 #endif
 #else
 extern const char *tune_h_version;

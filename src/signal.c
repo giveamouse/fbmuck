@@ -80,7 +80,7 @@ our_signal(int signo, void (*sighandler) (int))
 #endif							/* _POSIX_VERSION */
 
 void
-set_dumper_signals()
+set_dumper_signals(void)
 {
 	our_signal(SIGPIPE, SIG_IGN); /* Ignore Blocked Pipe */
 	our_signal(SIGHUP,  SIG_IGN); /* Ignore Terminal Hangup */
@@ -371,5 +371,5 @@ void set_console() {
 
 
 #endif /* WIN32 */
-static const char *signal_c_version = "$RCSfile$ $Revision: 1.19 $";
+static const char *signal_c_version = "$RCSfile$ $Revision: 1.20 $";
 const char *get_signal_c_version(void) { return signal_c_version; }

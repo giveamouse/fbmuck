@@ -88,6 +88,7 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
 		more1 = array_next(a->data.array, &idx1);
 		more2 = array_next(b->data.array, &idx2);
 	}
+	/* NOTREACHED */
 	return 0;
 }
 
@@ -751,7 +752,9 @@ array_free(stk_array * arr)
 	case ARRAY_DICTIONARY:
 		array_tree_delete_all(arr->data.dict);
 
+	/* FALLTHRU */
 	default:{
+			assert(0); /* should never get here */
 			break;
 		}
 	}
@@ -1282,7 +1285,7 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 		}
 
 	case ARRAY_DICTIONARY:{
-			stk_array *nu;
+			/* stk_array *nu; */ /* Redundant */
 			array_tree *s;
 			array_tree *e;
 
@@ -1313,7 +1316,7 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 			return nu;
 			break;
 		}
-
+	/* FALLTHRU */
 	default:
 		break;
 	}
@@ -2102,5 +2105,5 @@ array_set_arrval(stk_array ** harr, struct inst* key, stk_array* val)
 
 	return result;
 }
-static const char *array_c_version = "$RCSfile$ $Revision: 1.42 $";
+static const char *array_c_version = "$RCSfile$ $Revision: 1.43 $";
 const char *get_array_c_version(void) { return array_c_version; }
