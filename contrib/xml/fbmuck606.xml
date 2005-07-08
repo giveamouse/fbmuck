@@ -79,7 +79,19 @@
 												</xs:sequence>
 											</xs:complexType>
 										</xs:element>
-										<xs:element name="Program"/>
+										<xs:element name="Program">
+											<xs:complexType>
+												<xs:sequence minOccurs="0" maxOccurs="1">
+													<xs:element name="programtext">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string"/>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
 										<xs:element name="Garbage"/>
 									</xs:choice>
 								</xs:complexType>
