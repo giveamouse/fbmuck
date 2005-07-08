@@ -1,4 +1,9 @@
 2.2fb6.06
+Removed RWHO support.
+Edited restart.in so that the umask value can be much more easily
+  found and changed -- for those sites that use two user accounts
+  for security, sometimes the normal user account needs to access
+  the database in some manner that umask 077 is too restrictive for.
 Added @showextver command, to show the versions of all the files that
   were used to create a given build.  This is to help track down version-
   specific issues that may have been fixed in a later file version.
