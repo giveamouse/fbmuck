@@ -126,8 +126,6 @@ prim_round(PRIM_PROTOTYPE)
 		abort_interp("Non-integer argument. (2)");
 	if (oper2->type != PROG_FLOAT)
 		abort_interp("Non-float argument. (1)");
-	if (oper1->data.number < 1)
-		abort_interp("Precision argument must be a positive integer (2).");
 
 	if (!no_good(oper2->data.fnumber)) {
 		temp = pow(10.0, oper1->data.number);
@@ -725,5 +723,5 @@ prim_ftostrc(PRIM_PROTOTYPE)
 	PushString(buf);
 }
 
-static const char *p_float_c_version = "$RCSfile$ $Revision: 1.22 $";
+static const char *p_float_c_version = "$RCSfile$ $Revision: 1.23 $";
 const char *get_p_float_c_version(void) { return p_float_c_version; }
