@@ -129,7 +129,9 @@ maybe_dropto(int descr, dbref loc, dbref dropto)
 
 	/* check for players */
 	DOLIST(thing, DBFETCH(loc)->contents) {
-		if (Typeof(thing) == TYPE_PLAYER)
+		/* Make zombies act like players for dropto processing */
+		if (Typeof(thing) == TYPE_PLAYER ||
+		 (Typeof(thing) == TYPE_THING && FLAGS(thing)&ZOMBIE))
 			return;
 	}
 
@@ -1120,5 +1122,5 @@ recycle(int descr, dbref player, dbref thing)
 	recyclable = thing;
 	DBDIRTY(thing);
 }
-static const char *move_c_version = "$RCSfile$ $Revision: 1.33 $";
+static const char *move_c_version = "$RCSfile$ $Revision: 1.34 $";
 const char *get_move_c_version(void) { return move_c_version; }
