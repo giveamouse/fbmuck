@@ -11,14 +11,11 @@
 #define MPI_ISBLESSED	0x10
 #define MPI_NOHOW		0x20
 
-extern char *mesg_parse(int descr, dbref player, dbref what, dbref perms,
-						const char *inbuf, char *outbuf, int maxchars, int mesgtyp);
+extern char *mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, char *outbuf, int maxchars, int mesgtyp);
 
-extern char *do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf,
-						   const char *abuf, char *outbuf, int mesgtyp);
+extern char *do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf, const char *abuf, char *outbuf, int buflen, int mesgtyp);
 
-extern char *do_parse_prop(int descr, dbref player, dbref what, const char *propname,
-						   const char *abuf, char *outbuf, int mesgtyp);
+extern char *do_parse_prop(int descr, dbref player, dbref what, const char *propname, const char *abuf, char *outbuf, int buflen, int mesgtyp);
 
 #endif /* _MPI_H */
 
@@ -26,7 +23,7 @@ extern char *do_parse_prop(int descr, dbref player, dbref what, const char *prop
 
 #ifndef mpih_version
 #define mpih_version
-const char *mpi_h_version = "$RCSfile$ $Revision: 1.8 $";
+const char *mpi_h_version = "$RCSfile$ $Revision: 1.9 $";
 #endif
 #else
 extern const char *mpi_h_version;

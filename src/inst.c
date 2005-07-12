@@ -59,10 +59,10 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 			if (strlen(ptr) >= buflen)
 				*buffer = '\0';
 			else
-				strcpy(buffer, ptr);
+				strcpyn(buffer, buflen, ptr);
 		} else {
 			if (buflen > 3)
-				strcpy(buffer, "???");
+				strcpyn(buffer, buflen, "???");
 			else
 				*buffer = '\0';
 		}
@@ -70,7 +70,7 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 	case PROG_STRING:
 		if (!theinst->data.string) {
 			if (buflen > 2)
-				strcpy(buffer, "\"\"");
+				strcpyn(buffer, buflen, "\"\"");
 			else
 				*buffer = '\0';
 			break;
@@ -86,14 +86,14 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 		break;
 	case PROG_MARK:
 		if (buflen > 4)
-			strcpy(buffer, "MARK");
+			strcpyn(buffer, buflen, "MARK");
 		else
 			*buffer = '\0';
 		break;
 	case PROG_ARRAY:
 		if (!theinst->data.array) {
 			if (buflen > 3)
-				strcpy(buffer, "0{}");
+				strcpyn(buffer, buflen, "0{}");
 			else
 				*buffer = '\0';
 			break;
@@ -280,7 +280,7 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 			/*                  12345678901234 */
 			/* 14 */
 			if (buflen > 14)
-				strcpy(buffer, "[TRUE_BOOLEXP]");
+				strcpyn(buffer, buflen, "[TRUE_BOOLEXP]");
 			else
 				*buffer = '\0';
 			break;
@@ -295,7 +295,7 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 		break;
 	default:
 		if (buflen > 3)
-			strcpy(buffer, "?");
+			strcpyn(buffer, buflen, "?");
 		else
 			*buffer = '\0';
 		break;
@@ -356,7 +356,7 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *sta
 	if (*ptr) {
 	    length -= prepend_string(&bend, bstart, ptr);
 	} else {
-		strcpy(buffer, buf3);
+		strcpyn(buffer, buflen, buf3);
 		strcatn(buffer, buflen, " ... ) ...");
 		return buffer;
 	}
@@ -395,5 +395,5 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *sta
 	/* and return the pointer to the beginning of our backwards grown string. */
 	return bend;
 }
-static const char *inst_c_version = "$RCSfile$ $Revision: 1.30 $";
+static const char *inst_c_version = "$RCSfile$ $Revision: 1.31 $";
 const char *get_inst_c_version(void) { return inst_c_version; }

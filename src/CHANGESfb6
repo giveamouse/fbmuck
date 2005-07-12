@@ -1,4 +1,5 @@
 2.2fb6.06
+Changed almost all strcpy() calls to use strcpyn() for safety.
 Removed RWHO support.
 Edited restart.in so that the umask value can be much more easily
   found and changed -- for those sites that use two user accounts
@@ -40,6 +41,8 @@ Addendum to change of Wizard programs: Wizards who own programs must also
   emergency halt of all of the wizard's programs in the case that they're
   causing damage to the server for whatever reason.
 
+
+
 2.2fb6.05
 Changed behavior of Wizard programs: They must now be set Wizard plus at least
   M1 in order to execute.  (The idea is that setting a program M0 should
@@ -49,6 +52,8 @@ If GOD_PRIV is set, Wizards can no longer chown items to God.  (Security fix)
 Moved src/COMPILING to the root directory, and edited it to more accurately
   reflect the process.
 Fixed bug in mfn_force that prevented players from being forced.
+
+
 
 2.2fb6.04
 Added NICEVAL in params.h to set the dumper process nice() priority.

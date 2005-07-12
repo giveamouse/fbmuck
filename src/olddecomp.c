@@ -32,7 +32,7 @@ string_dup(const char *s)
 	p = (char *) malloc(strlen(s) + 1);
 	if (!p)
 		return p;
-	strcpy(p, s);
+	strcpy(p, s);  /* Guaranteed enough space. */
 	return p;
 }
 
@@ -63,5 +63,5 @@ main(int argc, char **argv)
 	exit(0);
 	return 0;
 }
-static const char *olddecomp_c_version = "$RCSfile$ $Revision: 1.7 $";
+static const char *olddecomp_c_version = "$RCSfile$ $Revision: 1.8 $";
 const char *get_olddecomp_c_version(void) { return olddecomp_c_version; }

@@ -51,7 +51,7 @@ string_dup(const char *s)
 
 	p = (char *) malloc(strlen(s) + 1);
 	if (p)
-		strcpy(p, s);
+		strcpy(p, s);  /* Guaranteed enough space. */
 	return p;
 }
 
@@ -135,21 +135,21 @@ add_topic(const char *str)
 }
 
 char*
-escape_html(const char* in, char* buf)
+escape_html(char* buf, int buflen, const char* in)
 {
 	char* out = buf;
 	while (*in) {
 		if (*in == '<') {
-			strcpy(out, "&lt;");
+			strcpyn(out, buflen, "&lt;");
 			out += strlen(out);
 		} else if (*in == '>') {
-			strcpy(out, "&gt;");
+			strcpyn(out, buflen, "&gt;");
 			out += strlen(out);
 		} else if (*in == '&') {
-			strcpy(out, "&amp;");
+			strcpyn(out, buflen, "&amp;");
 			out += strlen(out);
 		} else if (*in == '"') {
-			strcpy(out, "&quot;");
+			strcpyn(out, buflen, "&quot;");
 			out += strlen(out);
 		} else {
 			*out++ = *in;
@@ -209,7 +209,7 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 			cnt = 0;
 			hcol = 0;
 			buf[0] = '\0';
-			strcpy(sectname, currsect);
+			strcpyn(sectname, sizeof(sectname), currsect);
 			sectptr = index(sectname, '|');
 			if (sectptr) {
 				*sectptr++ = '\0';
@@ -226,7 +226,7 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 				sectptr = "";
 			}
 
-			fprintf(hf, HTML_SECTION, escape_html(sectptr, buf2), escape_html(sectname, buf3));
+			fprintf(hf, HTML_SECTION, escape_html(buf2, sizeof(buf2), sectptr), escape_html(buf3, sizeof(buf3), sectname));
 			fprintf(f, "~\n~\n%s\n%s\n\n", currsect, sectname);
 			fprintf(hf, HTML_SECTIDX_BEGIN);
 			for (ptr = topichead; ptr; ptr = ptr->next) {
@@ -238,7 +238,7 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 						fprintf(hf, HTML_SECTIDX_NEWROW);
 						hcol = 1;
 					}
-					escape_html(ptr->topic, buf3);
+					escape_html(buf3, sizeof(buf3), ptr->topic);
 					fprintf(hf, HTML_SECTIDX_ENTRY, (100 / cols), buf3, buf3);
 					if (cnt == cols) {
 						snprintf(buf2, sizeof(buf2), "%-0.*s", width - 1, ptr->topic);
@@ -304,7 +304,7 @@ print_sections(FILE * f, FILE * hf, int cols)
 		cnt = 0;
 		hcol = 0;
 		buf[0] = '\0';
-		strcpy(sectname, currsect);
+		strcpyn(sectname, sizeof(sectname), currsect);
 		sectptr = index(sectname, '|');
 		if (sectptr) {
 			*sectptr++ = '\0';
@@ -321,7 +321,7 @@ print_sections(FILE * f, FILE * hf, int cols)
 			sectptr = "";
 		}
 
-		fprintf(hf, HTML_SECTLIST_ENTRY, escape_html(sectptr, buf3), escape_html(sectname, buf4));
+		fprintf(hf, HTML_SECTLIST_ENTRY, escape_html(buf3, sizeof(buf3), sectptr), escape_html(buf4, sizeof(buf4), sectname));
 		fprintf(f, "  %-40s (%s)\n", sectname, sectptr);
 	}
 	fprintf(hf, HTML_SECTLIST_FOOT);
@@ -379,7 +379,7 @@ print_topics(FILE * f, FILE * hf)
 
 		if (cnt > 0) {
 			if (!isalpha(alph)) {
-				strcpy(buf, "Symbols");
+				strcpyn(buf, sizeof(buf), "Symbols");
 			} else {
 				buf[0] = alph;
 				buf[1] = '\'';
@@ -400,7 +400,7 @@ print_topics(FILE * f, FILE * hf)
 						fprintf(hf, HTML_IDXGROUP_NEWROW);
 						hcol = 1;
 					}
-					escape_html(ptr->topic, buf3);
+					escape_html(buf3, sizeof(buf3), ptr->topic);
 					fprintf(hf, HTML_IDXGROUP_ENTRY, /*(100 / cols),*/ buf3, buf3);
 					if (cnt == cols) {
 						snprintf(buf2, sizeof(buf2), "%-0.*s", width - 1, ptr->topic);
@@ -441,7 +441,7 @@ find_topics(FILE * infile)
 			} else {
 				if (!strncmp(buf, "~~section ", 10)) {
 					buf[strlen(buf) - 1] = '\0';
-					strcpy(sect, (buf + 10));
+					strcpyn(sect, sizeof(sect), (buf + 10));
 					add_section(sect);
 				} else if (!strncmp(buf, "~~title ", 8)) {
 					buf[strlen(buf) - 1] = '\0';
@@ -465,7 +465,7 @@ find_topics(FILE * infile)
 			} else {
 				if (!strncmp(buf, "~~section ", 10)) {
 					buf[strlen(buf) - 1] = '\0';
-					strcpy(sect, (buf + 10));
+					strcpyn(sect, sizeof(sect), (buf + 10));
 					add_section(sect);
 				} else if (!strncmp(buf, "~~title ", 8)) {
 					buf[strlen(buf) - 1] = '\0';
@@ -513,8 +513,8 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 	char *ptr3;
 
 	docsfile = stdout;
-	escape_html(title, buf);
-	escape_html(author, buf2);
+	escape_html(buf, sizeof(buf), title);
+	escape_html(buf2, sizeof(buf2), author);
 	fprintf(htmlfile, HTML_PAGE_HEAD, buf, buf, buf2);
 
 	fprintf(outfile, "%*s%s\n", (36-(strlen(title)/2)), "", title);
@@ -575,8 +575,8 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 								fprintf(outfile, ", ");
 							}
 						}
-						escape_html(ptr2, buf3);
-						strcpy(buf4, buf3);
+						escape_html(buf3, sizeof(buf3), ptr2);
+						strcpyn(buf4, sizeof(buf4), buf3);
 						for (ptr3 = buf4; *ptr3; ptr3++) {
 							*ptr3 = tolower(*ptr3);
 						}
@@ -601,7 +601,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 			} else if (buf[1] == '!') {
 				fprintf(outfile, "%s", buf + 2);
 			} else if (buf[1] == '@') {
-				escape_html(buf + 2, buf3);
+				escape_html(buf3, sizeof(buf3), buf + 2);
 				fprintf(htmlfile, "%s", buf3);
 			} else if (buf[1] == '<') {
 				fprintf(outfile, "%s", buf + 2);
@@ -616,7 +616,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 				nukenext = 1;
 				fprintf(outfile, "%s", buf);
 				fprintf(docsfile, "%s", buf + 1);
-				escape_html(buf + 1, buf3);
+				escape_html(buf3, sizeof(buf3), buf + 1);
 				fprintf(htmlfile, "%s", buf3);
 			}
 		} else if (nukenext) {
@@ -627,7 +627,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 				*ptr = tolower(*ptr);
 			}
 			*ptr = '\0';
-			escape_html(buf, buf3);
+			escape_html(buf3, sizeof(buf3), buf);
 			fprintf(htmlfile, HTML_TOPICHEAD, buf3);
 		} else if (buf[0] == ' ') {
 			nukenext = 0;
@@ -639,12 +639,12 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 			}
 			fprintf(outfile, "%s", buf);
 			fprintf(docsfile, "%s", buf);
-			escape_html(buf, buf3);
+			escape_html(buf3, sizeof(buf3), buf);
 			fprintf(htmlfile, "%s", buf3);
 		} else {
 			fprintf(outfile, "%s", buf);
 			fprintf(docsfile, "%s", buf);
-			escape_html(buf, buf3);
+			escape_html(buf3, sizeof(buf3), buf);
 			fprintf(htmlfile, "%s", buf3);
 			if (topichead) {
 				fprintf(htmlfile, HTML_TOPICHEAD_BREAK);
@@ -711,5 +711,5 @@ main(int argc, char **argv)
 	fclose(htmlfile);
 	return 0;
 }
-static const char *prochelp_c_version = "$RCSfile$ $Revision: 1.10 $";
+static const char *prochelp_c_version = "$RCSfile$ $Revision: 1.11 $";
 const char *get_prochelp_c_version(void) { return prochelp_c_version; }

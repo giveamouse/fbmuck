@@ -205,7 +205,7 @@ mfn_contents(MFUNARGS)
 					  "Type must be 'player', 'room', 'thing', 'program', or 'exit'. (arg2).");
 		}
 	}
-	strcpy(buf, "");
+	strcpyn(buf, sizeof(buf), "");
 	outlen = 0;
 	ownroom = controls(perms, obj);
 	obj = DBFETCH(obj)->contents;
@@ -295,7 +295,7 @@ mfn_set(MFUNARGS)
 
 	if (!ptr)
 		ABORT_MPI("SET", "No such variable currently defined.");
-	strcpy(ptr, argv[1]);
+	strcpyn(ptr, BUFFER_LEN, argv[1]);
 	return ptr;
 }
 
@@ -332,18 +332,18 @@ mfn_name(MFUNARGS)
 	if (obj == PERMDENIED)
 		ABORT_MPI("NAME", "Permission denied.");
 	if (obj == NOTHING) {
-		strcpy(buf, "#NOTHING#");
+		strcpyn(buf, sizeof(buf), "#NOTHING#");
 		return buf;
 	}
 	if (obj == AMBIGUOUS) {
-		strcpy(buf, "#AMBIGUOUS#");
+		strcpyn(buf, sizeof(buf), "#AMBIGUOUS#");
 		return buf;
 	}
 	if (obj == HOME) {
-		strcpy(buf, "#HOME#");
+		strcpyn(buf, sizeof(buf), "#HOME#");
 		return buf;
 	}
-	strcpy(buf, NAME(obj));
+	strcpyn(buf, sizeof(buf), NAME(obj));
 	if (Typeof(obj) == TYPE_EXIT) {
 		ptr = index(buf, ';');
 		if (ptr)
@@ -363,18 +363,18 @@ mfn_fullname(MFUNARGS)
 	if (obj == PERMDENIED)
 		ABORT_MPI("NAME", "Permission denied.");
 	if (obj == NOTHING) {
-		strcpy(buf, "#NOTHING#");
+		strcpyn(buf, sizeof(buf), "#NOTHING#");
 		return buf;
 	}
 	if (obj == AMBIGUOUS) {
-		strcpy(buf, "#AMBIGUOUS#");
+		strcpyn(buf, sizeof(buf), "#AMBIGUOUS#");
 		return buf;
 	}
 	if (obj == HOME) {
-		strcpy(buf, "#HOME#");
+		strcpyn(buf, sizeof(buf), "#HOME#");
 		return buf;
 	}
-	strcpy(buf, NAME(obj));
+	strcpyn(buf, sizeof(buf), NAME(obj));
 	return buf;
 }
 
@@ -426,7 +426,7 @@ getlitem(char *buf, char *list, char *sep, int line)
 	}
 	tmpchr = *ptr2;
 	*ptr2 = '\0';
-	strcpy(buf, ptr);
+	strcpyn(buf, sizeof(buf), ptr);
 	*ptr2 = tmpchr;
 	return buf;
 }
@@ -448,15 +448,15 @@ mfn_sublist(MFUNARGS)
 	if (argc > 1) {
 		which = atoi(argv[1]);
 	} else {
-		strcpy(buf, argv[0]);
+		strcpyn(buf, sizeof(buf), argv[0]);
 		return buf;
 	}
 
-	strcpy(sepbuf, "\r");
+	strcpyn(sepbuf, sizeof(sepbuf), "\r");
 	if (argc > 3) {
 		if (!*argv[3])
 			ABORT_MPI("SUBLIST", "Can't use null seperator string.");
-		strcpy(sepbuf, argv[3]);
+		strcpyn(sepbuf, sizeof(sepbuf), argv[3]);
 	}
 
 	count = countlitems(argv[0], sepbuf);	/* count of items in list */
@@ -512,11 +512,11 @@ mfn_lrand(MFUNARGS)
 	int count = 1;
 	int which = 0;
 
-	strcpy(sepbuf, "\r");
+	strcpyn(sepbuf, sizeof(sepbuf), "\r");
 	if (argc > 1) {
 		if (!*argv[1])
 			ABORT_MPI("LRAND", "Can't use null seperator string.");
-		strcpy(sepbuf, argv[1]);
+		strcpyn(sepbuf, sizeof(sepbuf), argv[1]);
 	}
 
 	count = countlitems(argv[0], sepbuf);
@@ -533,11 +533,11 @@ mfn_lrand(MFUNARGS)
 const char *
 mfn_count(MFUNARGS)
 {
-	strcpy(buf, "\r");
+	strcpyn(buf, sizeof(buf), "\r");
 	if (argc > 1) {
 		if (!*argv[1])
 			ABORT_MPI("COUNT", "Can't use null seperator string.");
-		strcpy(buf, argv[1]);
+		strcpyn(buf, sizeof(buf), argv[1]);
 	}
 	snprintf(buf, BUFFER_LEN, "%d", countlitems(argv[0], buf));
 	return buf;
@@ -614,7 +614,7 @@ mfn_fold(MFUNARGS)
 		sepin = sepinbuf;
 	} else {
 		sepin = sepinbuf;
-		strcpy(sepin, "\r");
+		strcpyn(sepin, sizeof(sepin), "\r");
 	}
 	seplen = strlen(sepin);
 	ptr = MesgParse(argv[2], listbuf);
@@ -624,7 +624,7 @@ mfn_fold(MFUNARGS)
 		*ptr2 = '\0';
 		ptr2 += seplen;
 	}
-	strcpy(buf, ptr);
+	strcpyn(buf, sizeof(buf), ptr);
 	ptr = ptr2;
 	while (*ptr) {
 		for (ptr2 = ptr; *ptr2 && strncmp(ptr2, sepin, seplen); ptr2++) ;
@@ -632,8 +632,8 @@ mfn_fold(MFUNARGS)
 			*ptr2 = '\0';
 			ptr2 += seplen;
 		}
-		strcpy(tmp2, ptr);
-		strcpy(tmp, buf);
+		strcpyn(tmp2, sizeof(tmp2), ptr);
+		strcpyn(tmp, sizeof(tmp), buf);
 		MesgParse(argv[3], buf);
 		CHECKRETURN(ptr, "FOLD", "arg 4");
 		ptr = ptr2;
@@ -718,7 +718,7 @@ mfn_foreach(MFUNARGS)
 		sepin = ptr;
 	} else {
 		sepin = scratch;
-		strcpy(sepin, "\r");
+		strcpyn(sepin, sizeof(scratch), "\r");
 	}
 	seplen = strlen(sepin);
 	ptr = dptr;
@@ -729,7 +729,7 @@ mfn_foreach(MFUNARGS)
 			*ptr2 = '\0';
 			ptr2 += seplen;
 		}
-		strcpy(tmp, ptr);
+		strcpyn(tmp, sizeof(tmp), ptr);
 		dptr = MesgParse(argv[2], buf);
 		CHECKRETURN(dptr, "FOREACH", "arg 3");
 		ptr = ptr2;
@@ -775,7 +775,7 @@ mfn_filter(MFUNARGS)
 		sepin = sepinbuf;
 	} else {
 		sepin = sepinbuf;
-		strcpy(sepin, "\r");
+		strcpyn(sepin, sizeof(sepinbuf), "\r");
 	}
 	if (argc > 4) {
 		ptr = MesgParse(sepbuf, sepoutbuf);
@@ -783,7 +783,7 @@ mfn_filter(MFUNARGS)
 		sepbuf = sepoutbuf;
 	} else {
 		sepbuf = sepoutbuf;
-		strcpy(sepbuf, sepin);
+		strcpyn(sepbuf, sizeof(sepoutbuf), sepin);
 	}
 	seplen = strlen(sepin);
 	*buf = '\0';
@@ -794,7 +794,7 @@ mfn_filter(MFUNARGS)
 			*ptr2 = '\0';
 			ptr2 += seplen;
 		}
-		strcpy(tmp, ptr);
+		strcpyn(tmp, sizeof(tmp), ptr);
 		dptr = MesgParse(argv[2], buf2);
 		CHECKRETURN(dptr, "FILTER", "arg 3");
 		if (truestr(buf2)) {
@@ -1038,8 +1038,8 @@ mfn_lsort(MFUNARGS)
 	for (i = 0; i < count; i++) {
 		for (j = i + 1; j < count; j++) {
 			if (argc > 1) {
-				strcpy(vbuf, litem[i]);
-				strcpy(vbuf2, litem[j]);
+				strcpyn(vbuf, sizeof(vbuf), litem[i]);
+				strcpyn(vbuf2, sizeof(vbuf2), litem[j]);
 				ptr = MesgParse(argv[3], buf);
 				CHECKRETURN(ptr, "LSORT", "arg 4");
 				if (truestr(buf)) {
@@ -1148,7 +1148,7 @@ mfn_parse(MFUNARGS)
 		sepin = sepinbuf;
 	} else {
 		sepin = sepinbuf;
-		strcpy(sepin, "\r");
+		strcpyn(sepin, sizeof(sepinbuf), "\r");
 	}
 
 	if (argc > 4) {
@@ -1157,7 +1157,7 @@ mfn_parse(MFUNARGS)
 		sepbuf = sepoutbuf;
 	} else {
 		sepbuf = sepoutbuf;
-		strcpy(sepbuf, sepin);
+		strcpyn(sepbuf, sizeof(sepoutbuf), sepin);
 	}
 	seplen = strlen(sepin);
 	oseplen = strlen(sepbuf);
@@ -1171,7 +1171,7 @@ mfn_parse(MFUNARGS)
 			*ptr2 = '\0';
 			ptr2 += seplen;
 		}
-		strcpy(tmp, ptr);
+		strcpyn(tmp, sizeof(tmp), ptr);
 		dptr = MesgParse(argv[2], buf2);
 		CHECKRETURN(dptr, "PARSE", "arg 3");
 		nextlen = strlen(buf2);
@@ -1478,7 +1478,7 @@ mfn_muf(MFUNARGS)
 	switch (rv->type) {
 	case PROG_STRING:
 		if (rv->data.string) {
-			strcpy(buf, rv->data.string->data);
+			strcpyn(buf, sizeof(buf), rv->data.string->data);
 			CLEAR(rv);
 			return buf;
 		} else {
@@ -1559,7 +1559,7 @@ mfn_force(MFUNARGS)
 
 	if (force_level)
 		ABORT_MPI("FORCE", "Permission denied: You can't force recursively.");
-	strcpy(buf, argv[1]);
+	strcpyn(buf, sizeof(buf), argv[1]);
 	ptr = buf;
 	do {
 		const char *ptr2=NAME(obj);
@@ -1740,7 +1740,7 @@ mfn_commas(MFUNARGS)
 		ptr = MesgParse(argv[1], sepbuf);
 		CHECKRETURN(ptr, "COMMAS", "arg 2");
 	} else {
-		strcpy(sepbuf, " and ");
+		strcpyn(sepbuf, sizeof(sepbuf), " and ");
 	}
 
 	if (argc > 2) {
@@ -1907,5 +1907,5 @@ mfn_escape(MFUNARGS)
 	*out = '\0';
 	return buf;
 }
-static const char *mfuns2_c_version = "$RCSfile$ $Revision: 1.36 $";
+static const char *mfuns2_c_version = "$RCSfile$ $Revision: 1.37 $";
 const char *get_mfuns2_c_version(void) { return mfuns2_c_version; }

@@ -549,7 +549,7 @@ muf_event_exists(struct frame* fr, const char* eventid)
 	int count = 0;
 	char pattern[BUFFER_LEN];
 	
-	strcpy(pattern, eventid);
+	strcpyn(pattern, sizeof(pattern), eventid);
 
 	for (ptr = fr->events; ptr; ptr = ptr->next)
 		if (equalstr(pattern, ptr->event))
@@ -857,5 +857,5 @@ muf_event_process(void)
 		proc = next;
 	}
 }
-static const char *mufevent_c_version = "$RCSfile$ $Revision: 1.29 $";
+static const char *mufevent_c_version = "$RCSfile$ $Revision: 1.30 $";
 const char *get_mufevent_c_version(void) { return mufevent_c_version; }

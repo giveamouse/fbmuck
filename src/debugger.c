@@ -92,7 +92,7 @@ show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, 
 	}
 
 	if (linestart > code && (linestart - 1)->line == thisline)
-		strcpy(buf, "...");
+		strcpyn(buf, sizeof(buf), "...");
 	maxback = maxprims;
 	while (linestart <= lineend) {
 		if (strlen(buf) < BUFFER_LEN / 2) {
@@ -498,7 +498,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 
 	while (isspace(*text))
 		text++;
-	strcpy(cmd, text);
+	strcpyn(cmd, sizeof(cmd), text);
 	ptr = cmd + strlen(cmd);
 	if (ptr > cmd)
 		ptr--;
@@ -508,7 +508,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	if (*arg)
 		*arg++ = '\0';
 	if (!*cmd && fr->brkpt.lastcmd) {
-		strcpy(cmd, fr->brkpt.lastcmd);
+		strcpyn(cmd, sizeof(cmd), fr->brkpt.lastcmd);
 	} else {
 		if (fr->brkpt.lastcmd)
 			free(fr->brkpt.lastcmd);
@@ -783,7 +783,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 		for (j = fr->argument.top; j > 0 && i-- > 0;) {
 			cnt = 0;
 			do {
-				strcpy(buf, ptr);
+				strcpyn(buf, sizeof(buf), ptr);
 				ptr = insttotext(NULL, 0, &fr->argument.st[--j], buf2, sizeof(buf2), 4000, program, 1);
 				cnt++;
 			} while (!string_compare(ptr, buf) && j > 0);
@@ -969,5 +969,5 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	}
 	return 0;
 }
-static const char *debugger_c_version = "$RCSfile$ $Revision: 1.13 $";
+static const char *debugger_c_version = "$RCSfile$ $Revision: 1.14 $";
 const char *get_debugger_c_version(void) { return debugger_c_version; }

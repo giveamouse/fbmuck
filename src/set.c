@@ -1151,7 +1151,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 
 	while (isspace(*prop))
 		prop++;
-	strcpy(buf, prop);
+	strcpyn(buf, sizeof(buf), prop);
 
 	type = p = buf;
 	while (*p && *p != PROP_DELIMITER)
@@ -1297,5 +1297,5 @@ set_flags_from_tunestr(dbref obj, const char* tunestr)
 }
 
 
-static const char *set_c_version = "$RCSfile$ $Revision: 1.25 $";
+static const char *set_c_version = "$RCSfile$ $Revision: 1.26 $";
 const char *get_set_c_version(void) { return set_c_version; }

@@ -624,20 +624,21 @@ process_command(int descr, dbref player, char *command)
 	  bad_pre_command:
 		if (TrueWizard(OWNER(player)) && (*command == OVERIDE_TOKEN))
 			command++;
-		full_command = strcpy(xbuf, command);
+		full_command = strcpyn(xbuf, sizeof(xbuf), command);
 		for (; *full_command && !isspace(*full_command); full_command++) ;
 		if (*full_command)
 			full_command++;
 
 		/* find arg1 -- move over command word */
-		command = strcpy(ybuf, command);
+		command = strcpyn(ybuf, sizeof(ybuf), command);
 		for (arg1 = command; *arg1 && !isspace(*arg1); arg1++) ;
 		/* truncate command */
 		if (*arg1)
 			*arg1++ = '\0';
 
 		/* remember command for programs */
-		strcpy(match_cmdname, command);
+		strcpyn(match_args, sizeof(match_args), full_command);
+		strcpyn(match_cmdname, sizeof(match_cmdname), command);
 
 		/* move over spaces */
 		while (*arg1 && isspace(*arg1))
@@ -655,9 +656,6 @@ process_command(int descr, dbref player, char *command)
 			*arg2++ = '\0';
 		while (*arg2 && isspace(*arg2))
 			arg2++;
-
-		strcpy(match_cmdname, command);
-		strcpy(match_args, full_command);
 
 		switch (command[0]) {
 		case '@':
@@ -1453,5 +1451,5 @@ process_command(int descr, dbref player, char *command)
 }
 
 #undef Matched
-static const char *game_c_version = "$RCSfile$ $Revision: 1.45 $";
+static const char *game_c_version = "$RCSfile$ $Revision: 1.46 $";
 const char *get_game_c_version(void) { return game_c_version; }

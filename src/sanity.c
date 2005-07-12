@@ -552,10 +552,10 @@ san_fixed_log(char *format, int unparse, dbref ref1, dbref ref2)
 
 	if (unparse) {
 		if (ref1 >= 0) {
-			strcpy(buf1, unparse(ref1));
+			strcpyn(buf1, sizeof(buf1), unparse(ref1));
 		}
 		if (ref2 >= 0) {
-			strcpy(buf2, unparse(ref2));
+			strcpyn(buf2, sizeof(buf2), unparse(ref2));
 		}
 		log2file("logs/sanfixed", format, buf1, buf2);
 	} else {
@@ -1109,7 +1109,7 @@ sanechange(dbref player, const char *command)
 
 	if (results != 3) {
 		d = v = 0;
-		strcpy(field, "help");
+		strcpyn(field, sizeof(field), "help");
 	}
 
 	*buf2 = 0;
@@ -1120,31 +1120,31 @@ sanechange(dbref player, const char *command)
 	}
 
 	if (!string_compare(field, "next")) {
-		strcpy(buf2, unparse(NEXTOBJ(d)));
+		strcpyn(buf2, sizeof(buf2), unparse(NEXTOBJ(d)));
 		NEXTOBJ(d) = v;
 		DBDIRTY(d);
 		SanPrint(player, "## Setting #%d's next field to %s", d, unparse(v));
 
 	} else if (!string_compare(field, "exits")) {
-		strcpy(buf2, unparse(EXITS(d)));
+		strcpyn(buf2, sizeof(buf2), unparse(EXITS(d)));
 		EXITS(d) = v;
 		DBDIRTY(d);
 		SanPrint(player, "## Setting #%d's Exits list start to %s", d, unparse(v));
 
 	} else if (!string_compare(field, "contents")) {
-		strcpy(buf2, unparse(CONTENTS(d)));
+		strcpyn(buf2, sizeof(buf2), unparse(CONTENTS(d)));
 		CONTENTS(d) = v;
 		DBDIRTY(d);
 		SanPrint(player, "## Setting #%d's Contents list start to %s", d, unparse(v));
 
 	} else if (!string_compare(field, "location")) {
-		strcpy(buf2, unparse(LOCATION(d)));
+		strcpyn(buf2, sizeof(buf2), unparse(LOCATION(d)));
 		LOCATION(d) = v;
 		DBDIRTY(d);
 		SanPrint(player, "## Setting #%d's location to %s", d, unparse(v));
 
 	} else if (!string_compare(field, "owner")) {
-		strcpy(buf2, unparse(OWNER(d)));
+		strcpyn(buf2, sizeof(buf2), unparse(OWNER(d)));
 		OWNER(d) = v;
 		DBDIRTY(d);
 		SanPrint(player, "## Setting #%d's owner to %s", d, unparse(v));
@@ -1164,7 +1164,7 @@ sanechange(dbref player, const char *command)
 			return;
 		}
 
-		strcpy(buf2, unparse(*ip));
+		strcpyn(buf2, sizeof(buf2), unparse(*ip));
 		*ip = v;
 		DBDIRTY(d);
 		printf("Setting home to: %s\n", unparse(v));
@@ -1526,5 +1526,5 @@ san_main(void)
 
 	printf("Exiting sanity editor...\n\n");
 }
-static const char *sanity_c_version = "$RCSfile$ $Revision: 1.15 $";
+static const char *sanity_c_version = "$RCSfile$ $Revision: 1.16 $";
 const char *get_sanity_c_version(void) { return sanity_c_version; }

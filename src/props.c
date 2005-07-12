@@ -151,8 +151,9 @@ PropPtr
 alloc_propnode(const char *name)
 {
 	PropPtr new_node;
+	int nlen = strlen(name);
 
-	new_node = (PropPtr) malloc(sizeof(struct plist) + strlen(name));
+	new_node = (PropPtr) malloc(sizeof(struct plist) + nlen);
 
 	if (!new_node) {
 		fprintf(stderr, "alloc_propnode(): Out of Memory!\n");
@@ -163,7 +164,7 @@ alloc_propnode(const char *name)
 	AVL_RT(new_node) = NULL;
 	new_node->height = 1;
 
-	strcpy(PropName(new_node), name);
+	strcpyn(PropName(new_node), nlen+1, name);
 	SetPFlagsRaw(new_node, PROP_DIRTYP);
 	SetPDataVal(new_node, 0);
 	SetPDir(new_node, NULL);
@@ -445,5 +446,5 @@ Prop_Check(const char *name, const char what)
 	}
 	return (0);
 }
-static const char *props_c_version = "$RCSfile$ $Revision: 1.7 $";
+static const char *props_c_version = "$RCSfile$ $Revision: 1.8 $";
 const char *get_props_c_version(void) { return props_c_version; }

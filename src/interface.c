@@ -205,7 +205,6 @@ void parse_connect(const char *msg, char *command, char *user, char *pass);
 void set_userstring(char **userstring, const char *command);
 int do_command(struct descriptor_data *d, char *command);
 int is_interface_command(const char* cmd);
-char *strsave(const char *s);
 int make_socket(int);
 int queue_string(struct descriptor_data *, const char *);
 int queue_write(struct descriptor_data *, const char *, int);
@@ -711,16 +710,18 @@ main(int argc, char **argv)
 			argslist = (char**)calloc(argcnt, sizeof(char*));
 
 			for (i = 0; i < numsocks; i++) {
+				int alen = strlen(numbuf)+1;
 				snprintf(numbuf, sizeof(numbuf), "%d", listener_port[i]);
-				argslist[argnum] = (char*)malloc(strlen(numbuf)+1);
-				strcpy(argslist[argnum++], numbuf);
+				argslist[argnum] = (char*)malloc(alen);
+				strcpyn(argslist[argnum++], alen, numbuf);
 			}
 
 #ifdef USE_SSL
 			for (i = 0; i < ssl_numsocks; i++) {
+				int alen = strlen(numbuf)+1;
 				snprintf(numbuf, sizeof(numbuf), "-sport %d", ssl_listener_port[i]);
-				argslist[argnum] = (char*)malloc(strlen(numbuf)+1);
-				strcpy(argslist[argnum++], numbuf);
+				argslist[argnum] = (char*)malloc(alen);
+				strcpyn(argslist[argnum++], alen, numbuf);
 			}
 #endif
 
@@ -818,8 +819,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 						{
 							notify_nolisten_level++;
 
-							prefix = do_parse_prop(-1, player, player, MESGPROP_PECHO,
-												"(@Pecho)", pbuf, MPI_ISPRIVATE);
+							prefix = do_parse_prop(-1, player, player, MESGPROP_PECHO, "(@Pecho)", pbuf, sizeof(pbuf), MPI_ISPRIVATE);
 
 							notify_nolisten_level--;
 						}
@@ -894,8 +894,7 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 				char ch = *match_args;
 
 				*match_args = '\0';
-				prefix = do_parse_prop(-1, from, player, MESGPROP_OECHO,
-										"(@Oecho)", pbuf, MPI_ISPRIVATE);
+				prefix = do_parse_prop(-1, from, player, MESGPROP_OECHO, "(@Oecho)", pbuf, sizeof(pbuf), MPI_ISPRIVATE);
 				*match_args = ch;
 
 				if (!prefix || !*prefix)
@@ -1423,7 +1422,7 @@ wall_and_flush(const char *msg)
 
 	if (!msg || !*msg)
 		return;
-	strcpy(buf, msg);
+	strcpyn(buf, sizeof(buf), msg);
 	strcatn(buf, sizeof(buf), "\r\n");
 
 	for (d = descriptor_list; d; d = dnext) {
@@ -1463,7 +1462,7 @@ wall_wizards(const char *msg)
 
 	msg = uncompress(msg);
 
-	strcpy(buf, msg);
+	strcpyn(buf, sizeof(buf), msg);
 	strcatn(buf, sizeof(buf), "\r\n");
 
 	for (d = descriptor_list; d; d = dnext) {
@@ -1500,11 +1499,11 @@ new_connection(int port, int sock, int is_ssl)
 		fcntl(newsock, F_SETFD, 1);
 #endif
 #ifdef USE_IPV6
-		strcpy(hostname, addrout(port, &(addr.sin6_addr), addr.sin6_port));
+		strcpyn(hostname, sizeof(hostname), addrout(port, &(addr.sin6_addr), addr.sin6_port));
 		log_status("ACCEPT: %s(%d) on descriptor %d\n", hostname,
 				   ntohs(addr.sin6_port), newsock);
 #else
-		strcpy(hostname, addrout(port, addr.sin_addr.s_addr, addr.sin_port));
+		strcpyn(hostname, sizeof(hostname), addrout(port, addr.sin_addr.s_addr, addr.sin_port));
 		log_status("ACCEPT: %s(%d) on descriptor %d\n", hostname,
 				   ntohs(addr.sin_port), newsock);
 #endif
@@ -1632,8 +1631,8 @@ resolve_hostnames()
 					if (!strcmp(d->hostname, hostip) && !strcmp(d->username, port)) {
 						FREE(d->hostname);
 						FREE(d->username);
-						d->hostname = strsave(hostname);
-						d->username = strsave(username);
+						d->hostname = string_dup(hostname);
+						d->username = string_dup(username);
 					}
 				}
 			}
@@ -1848,7 +1847,7 @@ initializesock(int s, const char *hostname, int is_ssl)
 	d->quota = tp_command_burst_size;
 	d->last_time = d->connected_at;
 	mcp_frame_init(&d->mcpframe, d);
-	strcpy(buf, hostname);
+	strcpyn(buf, sizeof(buf), hostname);
 	ptr = index(buf, ')');
 	if (ptr)
 		*ptr = '\0';
@@ -2119,18 +2118,6 @@ freeqs(struct descriptor_data *d)
 	d->raw_input_at = 0;
 }
 
-char *
-strsave(const char *s)
-{
-	char *p;
-
-	MALLOC(p, char, strlen(s) + 1);
-
-	if (p)
-		strcpy(p, s);
-	return p;
-}
-
 void
 save_command(struct descriptor_data *d, const char *command)
 {
@@ -2352,7 +2339,7 @@ set_userstring(char **userstring, const char *command)
 	while (*command && isascii(*command) && isspace(*command))
 		command++;
 	if (*command)
-		*userstring = strsave(command);
+		*userstring = string_dup(command);
 }
 
 void
@@ -2474,7 +2461,7 @@ do_command(struct descriptor_data *d, char *command)
 			queue_ansi(d, d->output_prefix);
 			queue_write(d, "\r\n", 2);
 		}
-		strcpy(buf, "@");
+		strcpyn(buf, sizeof(buf), "@");
 		strcatn(buf, sizeof(buf), WHO_COMMAND);
 		strcatn(buf, sizeof(buf), " ");
 		strcatn(buf, sizeof(buf), command + sizeof(WHO_COMMAND) - 1);
@@ -4212,5 +4199,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.108 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.109 $";
 const char *get_interface_c_version(void) { return interface_c_version; }

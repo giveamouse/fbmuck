@@ -439,7 +439,7 @@ prim_checkargs(PRIM_PROTOTYPE)
 		CLEAR(oper1);
 		return;
 	}
-	strcpy(buf, oper1->data.string->data);	/* copy into local buffer */
+	strcpyn(buf, sizeof(buf), oper1->data.string->data);	/* copy into local buffer */
 	currpos = strlen(buf) - 1;
 	stackpos = *top - 1;
 
@@ -762,14 +762,14 @@ prim_interp(PRIM_PROTOTYPE)
 		abort_interp("Interp call loops not allowed.");
 	CHECKREMOTE(oper2->data.objref);
 
-	strcpy(buf, match_args);
-	strcpy(match_args, oper3->data.string ? oper3->data.string->data : "");
+	strcpyn(buf, sizeof(buf), match_args);
+	strcpyn(match_args, sizeof(match_args), oper3->data.string ? oper3->data.string->data : "");
 	tmpfr = interp(fr->descr, player, DBFETCH(player)->location, oper1->data.objref,
 				   oper2->data.objref, PREEMPT, STD_HARDUID, 0);
 	if (tmpfr) {
 		rv = interp_loop(player, oper1->data.objref, tmpfr, 1);
 	}
-	strcpy(match_args, buf);
+	strcpyn(match_args, sizeof(match_args), buf);
 
 	CLEAR(oper3);
 	CLEAR(oper2);
@@ -995,5 +995,5 @@ prim_lreverse(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(tmp);
 }
-static const char *p_stack_c_version = "$RCSfile$ $Revision: 1.18 $";
+static const char *p_stack_c_version = "$RCSfile$ $Revision: 1.19 $";
 const char *get_p_stack_c_version(void) { return p_stack_c_version; }

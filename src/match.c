@@ -331,7 +331,7 @@ match_exits(dbref first, struct match_data *md)
 							md->exact_match = exit;
 							md->longest_match = strlen(md->match_name) - strlen(p);
 							if ((*p == ' ') || (partial && notnull)) {
-								strcpy(match_args, (partial && notnull)? p : (p + 1));
+								strcpyn(match_args, sizeof(match_args), (partial && notnull)? p : (p + 1));
 								{
 									char *pp;
 									int ip;
@@ -343,7 +343,7 @@ match_exits(dbref first, struct match_data *md)
 								}
 							} else {
 								*match_args = '\0';
-								strcpy(match_cmdname, (char *) md->match_name);
+								strcpyn(match_cmdname, sizeof(match_cmdname), (char *) md->match_name);
 							}
 						} else if ((strlen(md->match_name) - strlen(p) ==
 									md->longest_match) && !((lev == md->match_level) &&
@@ -359,7 +359,7 @@ match_exits(dbref first, struct match_data *md)
 							}
 							if (md->exact_match == exit) {
 								if ((*p == ' ') || (partial && notnull)) {
-									strcpy(match_args, (partial && notnull) ? p : (p + 1));
+									strcpyn(match_args, sizeof(match_args), (partial && notnull) ? p : (p + 1));
 									{
 										char *pp;
 										int ip;
@@ -371,7 +371,7 @@ match_exits(dbref first, struct match_data *md)
 									}
 								} else {
 									*match_args = '\0';
-									strcpy(match_cmdname, (char *) md->match_name);
+									strcpyn(match_cmdname, sizeof(match_cmdname), (char *) md->match_name);
 								}
 							}
 						}
@@ -487,8 +487,8 @@ match_all_exits(struct match_data *md)
 	dbref loc;
 	int limit = 88;
 
-	strcpy(match_args, "\0");
-	strcpy(match_cmdname, "\0");
+	strcpyn(match_args, sizeof(match_args), "\0");
+	strcpyn(match_cmdname, sizeof(match_cmdname), "\0");
 	if ((loc = DBFETCH(md->match_from)->location) != NOTHING)
 		match_room_exits(loc, md);
 
@@ -600,5 +600,5 @@ match_rmatch(dbref arg1, struct match_data *md)
 		break;
 	}
 }
-static const char *match_c_version = "$RCSfile$ $Revision: 1.9 $";
+static const char *match_c_version = "$RCSfile$ $Revision: 1.10 $";
 const char *get_match_c_version(void) { return match_c_version; }

@@ -203,9 +203,10 @@ gui_value_set_local(const char *dlogid, const char *id, int lines, const char **
 		}
 		free(ptr->value);
 	} else {
+		int ilen = strlen(id)+1;
 		ptr = (DlogValue *) malloc(sizeof(DlogValue));
-		ptr->name = (char *) malloc(strlen(id) + 1);
-		strcpy(ptr->name, id);
+		ptr->name = (char *) malloc(ilen);
+		strcpyn(ptr->name, ilen, id);
 		ptr->next = ddata->values;
 		ddata->values = ptr;
 	}
@@ -213,8 +214,9 @@ gui_value_set_local(const char *dlogid, const char *id, int lines, const char **
 	ptr->value = (char **) malloc(sizeof(char *) * lines);
 
 	for (i = 0; i < lines; i++) {
-		ptr->value[i] = (char *) malloc(strlen(value[i]) + 1);
-		strcpy(ptr->value[i], value[i]);
+		int vlen = strlen(value[i])+1;
+		ptr->value[i] = (char *) malloc(vlen);
+		strcpyn(ptr->value[i], vlen, value[i]);
 	}
 }
 
@@ -311,6 +313,7 @@ gui_dlog_alloc(int descr, Gui_CB callback, GuiErr_CB error_cb, void *context)
 {
 	char tmpid[32];
 	DlogData *ptr;
+	int tlen;
 
 	while (1) {
 		snprintf(tmpid, sizeof(tmpid), "%08lX", (unsigned long)RANDOM());
@@ -319,8 +322,9 @@ gui_dlog_alloc(int descr, Gui_CB callback, GuiErr_CB error_cb, void *context)
 		}
 	}
 	ptr = (DlogData *) malloc(sizeof(DlogData));
-	ptr->id = (char *) malloc(strlen(tmpid) + 1);
-	strcpy(ptr->id, tmpid);
+	tlen = strlen(tmpid)+1;
+	ptr->id = (char *) malloc(tlen);
+	strcpyn(ptr->id, tlen, tmpid);
 	ptr->descr = descr;
 	ptr->dismissed = 0;
 	ptr->callback = callback;
@@ -1076,7 +1080,7 @@ muf_dlog_add(struct frame *fr, const char *dlogid)
 {
 	struct dlogidlist *item = (struct dlogidlist *) malloc(sizeof(struct dlogidlist));
 
-	strcpy(item->dlogid, dlogid);
+	strcpyn(item->dlogid, sizeof(item->dlogid), dlogid);
 	item->next = fr->dlogids;
 	fr->dlogids = item;
 }
@@ -1164,5 +1168,5 @@ do_post_dlog(int descr, const char *text)
 
 	GuiShow(dlg);
 }
-static const char *mcpgui_c_version = "$RCSfile$ $Revision: 1.27 $";
+static const char *mcpgui_c_version = "$RCSfile$ $Revision: 1.28 $";
 const char *get_mcpgui_c_version(void) { return mcpgui_c_version; }

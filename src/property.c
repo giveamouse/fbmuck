@@ -280,7 +280,7 @@ get_property(dbref player, const char *pname)
 	fetchprops(player, propdir_name(pname));
 #endif
 
-	w = strcpy(buf, pname);
+	w = strcpyn(buf, sizeof(buf), pname);
 
 	p = propdir_get_elem(DBFETCH(player)->properties, w);
 	return (p);
@@ -334,7 +334,7 @@ has_property_strict(int descr, dbref player, dbref what, const char *pname, cons
 			str = uncompress(DoNull(PropDataStr(p)));
 
 			if (has_prop_recursion_limit-->0) {
-				ptr = do_parse_mesg(descr, player, what, str, "(Lock)", buf,
+				ptr = do_parse_mesg(descr, player, what, str, "(Lock)", buf, sizeof(buf),
 									(MPI_ISPRIVATE | MPI_ISLOCK |
 									((PropFlags(p) & PROP_BLESSED)? MPI_ISBLESSED : 0)));
 			} else {
@@ -535,7 +535,7 @@ copy_prop(dbref old)
    property name into 'name'.  Returns NULL if the property list is empty
    or does not exist. */
 PropPtr
-first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name)
+first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name, int maxlen)
 {
 	char buf[BUFFER_LEN];
 	PropPtr p;
@@ -549,14 +549,14 @@ first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name)
 		*list = DBFETCH(player)->properties;
 		p = first_node(*list);
 		if (p) {
-			strcpy(name, PropName(p));
+			strcpyn(name, maxlen, PropName(p));
 		} else {
 			*name = '\0';
 		}
 		return (p);
 	}
 
-	strcpy(buf, dir);
+	strcpyn(buf, sizeof(buf), dir);
 	*list = p = propdir_get_elem(DBFETCH(player)->properties, buf);
 	if (!p) {
 		*name = '\0';
@@ -565,7 +565,7 @@ first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name)
 	*list = PropDir(p);
 	p = first_node(*list);
 	if (p) {
-		strcpy(name, PropName(p));
+		strcpyn(name, maxlen, PropName(p));
 	} else {
 		*name = '\0';
 	}
@@ -582,14 +582,14 @@ first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name)
  */
 
 PropPtr
-first_prop(dbref player, const char *dir, PropPtr * list, char *name)
+first_prop(dbref player, const char *dir, PropPtr * list, char *name, int maxlen)
 {
 
 #ifdef DISKBASE
 	fetchprops(player, (char *) dir);
 #endif
 
-	return (first_prop_nofetch(player, dir, list, name));
+	return (first_prop_nofetch(player, dir, list, name, maxlen));
 }
 
 
@@ -601,14 +601,14 @@ first_prop(dbref player, const char *dir, PropPtr * list, char *name)
  */
 
 PropPtr
-next_prop(PropPtr list, PropPtr prop, char *name)
+next_prop(PropPtr list, PropPtr prop, char *name, int maxlen)
 {
 	PropPtr p = prop;
 
 	if (!p || !(p = next_node(list, PropName(p))))
 		return ((PropPtr) 0);
 
-	strcpy(name, PropName(p));
+	strcpyn(name, maxlen, PropName(p));
 	return (p);
 }
 
@@ -634,7 +634,7 @@ next_prop_name(dbref player, char *outbuf, int outbuflen, char *name)
 	fetchprops(player, propdir_name(name));
 #endif
 
-	strcpy(buf, name);
+	strcpyn(buf, sizeof(buf), name);
 	if (!*name || name[strlen(name) - 1] == PROPDIR_DELIMITER) {
 		l = DBFETCH(player)->properties;
 		p = propdir_first_elem(l, buf);
@@ -651,12 +651,12 @@ next_prop_name(dbref player, char *outbuf, int outbuflen, char *name)
 			*outbuf = '\0';
 			return NULL;
 		}
-		strcpy(outbuf, name);
+		strcpyn(outbuf, outbuflen, name);
 		ptr = rindex(outbuf, PROPDIR_DELIMITER);
 		if (!ptr)
 			ptr = outbuf;
 		*(ptr++) = PROPDIR_DELIMITER;
-		strcpy(ptr, PropName(p));
+		strcpyn(ptr, outbuflen - (ptr-outbuf), PropName(p));
 	}
 	return outbuf;
 }
@@ -682,7 +682,7 @@ is_propdir_nofetch(dbref player, const char *pname)
 	PropPtr p;
 	char w[BUFFER_LEN];
 
-	strcpy(w, pname);
+	strcpyn(w, sizeof(w), pname);
 	p = propdir_get_elem(DBFETCH(player)->properties, w);
 	if (!p)
 		return 0;
@@ -1332,5 +1332,5 @@ reflist_find(dbref obj, const char* propname, dbref tofind)
 }
 
 
-static const char *property_c_version = "$RCSfile$ $Revision: 1.27 $";
+static const char *property_c_version = "$RCSfile$ $Revision: 1.28 $";
 const char *get_property_c_version(void) { return property_c_version; }

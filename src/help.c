@@ -109,7 +109,7 @@ spit_file_segment(dbref player, const char *filename, const char *seg)
 
 	startline = endline = currline = 0;
 	if (seg && *seg) {
-		strcpy(segbuf, seg);
+		strcpyn(segbuf, sizeof(segbuf), seg);
 		for (p = segbuf; isdigit(*p); p++) ;
 		if (*p) {
 			*p++ = '\0';
@@ -165,7 +165,7 @@ index_file(dbref player, const char *onwhat, const char *file)
 	int arglen, found;
 
 	*topic = '\0';
-	strcpy(topic, onwhat);
+	strcpyn(topic, sizeof(topic), onwhat);
 	if (*onwhat) {
 		strcatn(topic, sizeof(topic), "|");
 	}
@@ -255,7 +255,7 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		valtype = mcp_mesg_arg_getline(msg, "type", 0);
 
 		*topic = '\0';
-		strcpy(topic, onwhat);
+		strcpyn(topic, sizeof(topic), onwhat);
 		if (*onwhat) {
 			strcatn(topic, sizeof(topic), "|");
 		}
@@ -341,7 +341,7 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 					}
 				}
 				if (!*buf) {
-					strcpy(buf, "  ");
+					strcpyn(buf, sizeof(buf), "  ");
 				}
 				mcp_mesg_arg_append(&omsg, "text", buf);
 			}
@@ -408,7 +408,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 
 	dirnamelen = strlen(dir) + 5;
 	dirname = (char *) malloc(dirnamelen);
-	strcpy(dirname, dir);
+	strcpyn(dirname, dirnamelen, dir);
 	strcatn(dirname, dirnamelen, "*.*");
 	hFind = FindFirstFile(dirname,&finddata);
 	bMore = (hFind != (HANDLE) -1);
@@ -551,7 +551,7 @@ do_info(dbref player, const char *topic, const char *seg)
 	} else {
 #ifdef DIR_AVALIBLE
 		buf = (char *) calloc(1, buflen);
-		(void) strcpy(buf, "    ");
+		(void) strcpyn(buf, buflen, "    ");
 		f = 0;
 		cols = 0;
 		if ((df = (DIR *) opendir(INFO_DIR))) {
@@ -562,7 +562,7 @@ do_info(dbref player, const char *topic, const char *seg)
 						notify(player, "Available information files are:");
 					if ((cols++ > 2) || ((strlen(buf) + strlen(dp->d_name)) > 63)) {
 						notify(player, buf);
-						strcpy(buf, "    ");
+						strcpyn(buf, buflen, "    ");
 						cols = 0;
 					}
 					strcatn(buf, buflen, dp->d_name);
@@ -582,13 +582,13 @@ do_info(dbref player, const char *topic, const char *seg)
 		free(buf);
 #elif WIN32
 		buf = (char *) calloc(1,buflen);
-		(void) strcpy(buf, "    ");
+		(void) strcpyn(buf, buflen, "    ");
 		f = 0;
 		cols = 0;
 
 		dirnamelen = strlen(INFO_DIR) + 4;
 		dirname = (char *) malloc(dirnamelen);
-		strcpy(dirname, INFO_DIR);
+		strcpyn(dirname, dirnamelen, INFO_DIR);
 		strcatn(dirname, dirnamelen, "*.*");
 		hFind = FindFirstFile(dirname,&finddata);
 		bMore = (hFind != (HANDLE) -1);
@@ -601,7 +601,7 @@ do_info(dbref player, const char *topic, const char *seg)
 					notify(player, "Available information files are:");
 				if ((cols++ > 2) || ((strlen(buf) + strlen(finddata.cFileName)) > 63)) {
 					notify(player,buf);
-					(void) strcpy(buf, "    ");
+					(void) strcpyn(buf, buflen, "    ");
 					cols = 0;
 				}
 			    strcatn(buf, buflen, finddata.cFileName);
@@ -674,5 +674,5 @@ main(int argc, char**argv)
 
 #endif /* STANDALONE_HELP */
 
-static const char *help_c_version = "$RCSfile$ $Revision: 1.12 $";
+static const char *help_c_version = "$RCSfile$ $Revision: 1.13 $";
 const char *get_help_c_version(void) { return help_c_version; }

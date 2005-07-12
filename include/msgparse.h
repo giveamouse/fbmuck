@@ -25,7 +25,7 @@ const char *safegetprop(dbref player, dbref what, dbref perms, const char *inbuf
 const char *safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp, int* blessed);
 int safeblessprop(dbref obj, dbref perms, char *buf, int mesgtyp, int set_p);
 
-char *stripspaces(char *buf, char *in);
+char *stripspaces(char *buf, int buflen, char *in);
 char *string_substitute(const char *str, const char *oldstr, const char *newstr, char *buf,
 
 						int maxlen);
@@ -76,7 +76,7 @@ typedef char **argv_typ;
 
 #ifndef msgparseh_version
 #define msgparseh_version
-const char *msgparse_h_version = "$RCSfile$ $Revision: 1.13 $";
+const char *msgparse_h_version = "$RCSfile$ $Revision: 1.14 $";
 #endif
 #else
 extern const char *msgparse_h_version;

@@ -13,7 +13,7 @@ int2str(char *buf, int val, int len, char pref)
 	while (((++lp) < (len - 1)) && (buf[lp] == '0'))
 		buf[lp] = pref;
 	if (!pref)
-		(void) strcpy(buf, buf + lp);
+		(void) strcpyn(buf, len, buf + lp);
 }
 
 
@@ -40,50 +40,50 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 				case 'a':
 					switch (tmval->tm_wday) {
 					case 0:
-						(void) strcpy(tmp, "Sun");
+						(void) strcpyn(tmp, sizeof(tmp), "Sun");
 						break;
 					case 1:
-						(void) strcpy(tmp, "Mon");
+						(void) strcpyn(tmp, sizeof(tmp), "Mon");
 						break;
 					case 2:
-						(void) strcpy(tmp, "Tue");
+						(void) strcpyn(tmp, sizeof(tmp), "Tue");
 						break;
 					case 3:
-						(void) strcpy(tmp, "Wed");
+						(void) strcpyn(tmp, sizeof(tmp), "Wed");
 						break;
 					case 4:
-						(void) strcpy(tmp, "Thu");
+						(void) strcpyn(tmp, sizeof(tmp), "Thu");
 						break;
 					case 5:
-						(void) strcpy(tmp, "Fri");
+						(void) strcpyn(tmp, sizeof(tmp), "Fri");
 						break;
 					case 6:
-						(void) strcpy(tmp, "Sat");
+						(void) strcpyn(tmp, sizeof(tmp), "Sat");
 						break;
 					}
 					break;
 				case 'A':
 					switch (tmval->tm_wday) {
 					case 0:
-						(void) strcpy(tmp, "Sunday");
+						(void) strcpyn(tmp, sizeof(tmp), "Sunday");
 						break;
 					case 1:
-						(void) strcpy(tmp, "Monday");
+						(void) strcpyn(tmp, sizeof(tmp), "Monday");
 						break;
 					case 2:
-						(void) strcpy(tmp, "Tuesday");
+						(void) strcpyn(tmp, sizeof(tmp), "Tuesday");
 						break;
 					case 3:
-						(void) strcpy(tmp, "Wednesday");
+						(void) strcpyn(tmp, sizeof(tmp), "Wednesday");
 						break;
 					case 4:
-						(void) strcpy(tmp, "Thursday");
+						(void) strcpyn(tmp, sizeof(tmp), "Thursday");
 						break;
 					case 5:
-						(void) strcpy(tmp, "Friday");
+						(void) strcpyn(tmp, sizeof(tmp), "Friday");
 						break;
 					case 6:
-						(void) strcpy(tmp, "Saturday");
+						(void) strcpyn(tmp, sizeof(tmp), "Saturday");
 						break;
 					}
 					break;
@@ -91,80 +91,80 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 				case 'b':
 					switch (tmval->tm_mon) {
 					case 0:
-						(void) strcpy(tmp, "Jan");
+						(void) strcpyn(tmp, sizeof(tmp), "Jan");
 						break;
 					case 1:
-						(void) strcpy(tmp, "Feb");
+						(void) strcpyn(tmp, sizeof(tmp), "Feb");
 						break;
 					case 2:
-						(void) strcpy(tmp, "Mar");
+						(void) strcpyn(tmp, sizeof(tmp), "Mar");
 						break;
 					case 3:
-						(void) strcpy(tmp, "Apr");
+						(void) strcpyn(tmp, sizeof(tmp), "Apr");
 						break;
 					case 4:
-						(void) strcpy(tmp, "May");
+						(void) strcpyn(tmp, sizeof(tmp), "May");
 						break;
 					case 5:
-						(void) strcpy(tmp, "Jun");
+						(void) strcpyn(tmp, sizeof(tmp), "Jun");
 						break;
 					case 6:
-						(void) strcpy(tmp, "Jul");
+						(void) strcpyn(tmp, sizeof(tmp), "Jul");
 						break;
 					case 7:
-						(void) strcpy(tmp, "Aug");
+						(void) strcpyn(tmp, sizeof(tmp), "Aug");
 						break;
 					case 8:
-						(void) strcpy(tmp, "Sep");
+						(void) strcpyn(tmp, sizeof(tmp), "Sep");
 						break;
 					case 9:
-						(void) strcpy(tmp, "Oct");
+						(void) strcpyn(tmp, sizeof(tmp), "Oct");
 						break;
 					case 10:
-						(void) strcpy(tmp, "Nov");
+						(void) strcpyn(tmp, sizeof(tmp), "Nov");
 						break;
 					case 11:
-						(void) strcpy(tmp, "Dec");
+						(void) strcpyn(tmp, sizeof(tmp), "Dec");
 						break;
 					}
 					break;
 				case 'B':
 					switch (tmval->tm_mon) {
 					case 0:
-						(void) strcpy(tmp, "January");
+						(void) strcpyn(tmp, sizeof(tmp), "January");
 						break;
 					case 1:
-						(void) strcpy(tmp, "February");
+						(void) strcpyn(tmp, sizeof(tmp), "February");
 						break;
 					case 2:
-						(void) strcpy(tmp, "March");
+						(void) strcpyn(tmp, sizeof(tmp), "March");
 						break;
 					case 3:
-						(void) strcpy(tmp, "April");
+						(void) strcpyn(tmp, sizeof(tmp), "April");
 						break;
 					case 4:
-						(void) strcpy(tmp, "May");
+						(void) strcpyn(tmp, sizeof(tmp), "May");
 						break;
 					case 5:
-						(void) strcpy(tmp, "June");
+						(void) strcpyn(tmp, sizeof(tmp), "June");
 						break;
 					case 6:
-						(void) strcpy(tmp, "July");
+						(void) strcpyn(tmp, sizeof(tmp), "July");
 						break;
 					case 7:
-						(void) strcpy(tmp, "August");
+						(void) strcpyn(tmp, sizeof(tmp), "August");
 						break;
 					case 8:
-						(void) strcpy(tmp, "September");
+						(void) strcpyn(tmp, sizeof(tmp), "September");
 						break;
 					case 9:
-						(void) strcpy(tmp, "October");
+						(void) strcpyn(tmp, sizeof(tmp), "October");
 						break;
 					case 10:
-						(void) strcpy(tmp, "November");
+						(void) strcpyn(tmp, sizeof(tmp), "November");
 						break;
 					case 11:
-						(void) strcpy(tmp, "December");
+						(void) strcpyn(tmp, sizeof(tmp), "December");
 						break;
 					}
 					break;
@@ -265,10 +265,10 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 					break;
 				case 'Z':
 #ifdef HAVE_STRUCT_TM_TM_ZONE
-					strcpy(tmp, tmval->tm_zone);
+					strcpyn(tmp, sizeof(tmp), tmval->tm_zone);
 #else							/* !HAVE_STRUCT_TM_TM_ZONE */
 # ifdef HAVE_TZNAME
-					strcpy(tmp, tzname[tmval->tm_isdst]);
+					strcpyn(tmp, sizeof(tmp), tzname[tmval->tm_isdst]);
 # endif
 #endif							/* !HAVE_STRUCT_TM_TM_ZONE */
 					break;
@@ -284,7 +284,7 @@ format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 				}
 				if (pos + strlen(tmp) > max_len)
 					return (0);
-				(void) strcpy(buf + pos, tmp);
+				(void) strcpyn(buf + pos, max_len - pos, tmp);
 				pos += strlen(tmp);
 			}
 	buf[pos] = '\0';
@@ -319,5 +319,5 @@ get_tz_offset(void)
 	return timezone;
 #endif
 }
-static const char *strftime_c_version = "$RCSfile$ $Revision: 1.8 $";
+static const char *strftime_c_version = "$RCSfile$ $Revision: 1.9 $";
 const char *get_strftime_c_version(void) { return strftime_c_version; }

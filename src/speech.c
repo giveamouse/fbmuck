@@ -181,8 +181,7 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
 
 				memset(buf,0,BUFFER_LEN); /* Make sure the buffer is zeroed */
 
-				prefix = do_parse_prop(-1, who, obj, MESGPROP_OECHO,
-										"(@Oecho)", pbuf, MPI_ISPRIVATE);
+				prefix = do_parse_prop(-1, who, obj, MESGPROP_OECHO, "(@Oecho)", pbuf, sizeof(pbuf), MPI_ISPRIVATE);
 				if (!prefix || !*prefix)
 					prefix = "Outside>";
 				snprintf(buf, sizeof(buf), "%s %.*s", prefix, (int)(BUFFER_LEN - 2 - strlen(prefix)), msg);
@@ -247,11 +246,10 @@ void
 parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
 			   const char *prefix, const char *whatcalled, int mpiflags)
 {
-	/* TODO: Remove the * 2 if do_parse_mesg doesn't need it */
-	char buf[BUFFER_LEN * 2];
+	char buf[BUFFER_LEN];
 	char *ptr;
 
-	do_parse_mesg(descr, player, exit, msg, whatcalled, buf, MPI_ISPUBLIC | mpiflags);
+	do_parse_mesg(descr, player, exit, msg, whatcalled, buf, sizeof(buf), MPI_ISPUBLIC | mpiflags);
 	ptr = pronoun_substitute(descr, player, buf);
 	if (!*ptr)
 		return;
@@ -276,5 +274,5 @@ blank(const char *s)
 
 	return !(*s);
 }
-static const char *speech_c_version = "$RCSfile$ $Revision: 1.11 $";
+static const char *speech_c_version = "$RCSfile$ $Revision: 1.12 $";
 const char *get_speech_c_version(void) { return speech_c_version; }

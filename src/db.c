@@ -246,17 +246,17 @@ putproperties_rec(FILE * f, const char *dir, dbref obj)
 	char buf[BUFFER_LEN];
 	char name[BUFFER_LEN];
 
-	pref = first_prop_nofetch(obj, dir, &pptr, name);
+	pref = first_prop_nofetch(obj, dir, &pptr, name, sizeof(name));
 	while (pref) {
 		p = pref;
 		db_putprop(f, dir, p);
-		strcpy(buf, dir);
+		strcpyn(buf, sizeof(buf), dir);
 		strcatn(buf, sizeof(buf), name);
 		if (PropDir(p)) {
 			strcatn(buf, sizeof(buf), "/");
 			putproperties_rec(f, buf, obj);
 		}
-		pref = next_prop(pptr, pref, name);
+		pref = next_prop(pptr, pref, name, sizeof(name));
 	}
 }
 
@@ -288,11 +288,11 @@ fetch_propvals(dbref obj, const char *dir)
 	char buf[BUFFER_LEN];
 	char name[BUFFER_LEN];
 
-	p = first_prop_nofetch(obj, dir, &pptr, name);
+	p = first_prop_nofetch(obj, dir, &pptr, name, sizeof(name));
 	while (p) {
 		cnt = (cnt || propfetch(obj, p));
 		if (PropDir(p) || (PropFlags(p) & PROP_DIRUNLOADED)) {
-			strcpy(buf, dir);
+			strcpyn(buf, sizeof(buf), dir);
 			strcatn(buf, sizeof(buf), name);
 			strcatn(buf, sizeof(buf), "/");
 			if (PropFlags(p) & PROP_DIRUNLOADED) {
@@ -305,7 +305,7 @@ fetch_propvals(dbref obj, const char *dir)
 			}
 			fetch_propvals(obj, buf);
 		}
-		p = next_prop(pptr, p, name);
+		p = next_prop(pptr, p, name, sizeof(name));
 	}
 	return cnt;
 }
@@ -455,7 +455,7 @@ log_program_text(struct line *first, dbref player, dbref i)
 	char fname[BUFFER_LEN];
 	time_t lt = time(NULL);
 
-	strcpy(fname, PROGRAM_LOG);
+	strcpyn(fname, sizeof(fname), PROGRAM_LOG);
 	f = fopen(fname, "a");
 	if (!f) {
 		log_status("Couldn't open file %s!\n", fname);
@@ -990,7 +990,7 @@ read_program(dbref i)
 			len--;
 		}
 		if (!*buf)
-			strcpy(buf, " ");
+			strcpyn(buf, sizeof(buf), " ");
 		nu->this_line = alloc_string(buf);
 		if (!first) {
 			prev = nu;
@@ -1707,5 +1707,5 @@ db_read(FILE * f)
 		c = getc(f);
 	}							/* for */
 }								/* db_read */
-static const char *db_c_version = "$RCSfile$ $Revision: 1.35 $";
+static const char *db_c_version = "$RCSfile$ $Revision: 1.36 $";
 const char *get_db_c_version(void) { return db_c_version; }

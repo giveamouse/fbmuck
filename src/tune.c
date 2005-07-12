@@ -385,7 +385,7 @@ tune_display_parms(dbref player, char *name)
 	struct tune_bool_entry *tbool = tune_bool_list;
 
 	while (tstr->name) {
-		strcpy(buf, tstr->name);
+		strcpyn(buf, sizeof(buf), tstr->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(str)  %-20s = %.4096s", tstr->name, *tstr->str);
 			notify(player, buf);
@@ -394,7 +394,7 @@ tune_display_parms(dbref player, char *name)
 	}
 
 	while (ttim->name) {
-		strcpy(buf, ttim->name);
+		strcpyn(buf, sizeof(buf), ttim->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(time) %-20s = %s", ttim->name, timestr_full(*ttim->tim));
 			notify(player, buf);
@@ -403,7 +403,7 @@ tune_display_parms(dbref player, char *name)
 	}
 
 	while (tval->name) {
-		strcpy(buf, tval->name);
+		strcpyn(buf, sizeof(buf), tval->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(int)  %-20s = %d", tval->name, *tval->val);
 			notify(player, buf);
@@ -412,7 +412,7 @@ tune_display_parms(dbref player, char *name)
 	}
 
 	while (tref->name) {
-		strcpy(buf, tref->name);
+		strcpyn(buf, sizeof(buf), tref->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(ref)  %-20s = %s", tref->name, unparse_object(player, *tref->ref));
 			notify(player, buf);
@@ -421,7 +421,7 @@ tune_display_parms(dbref player, char *name)
 	}
 
 	while (tbool->name) {
-		strcpy(buf, tbool->name);
+		strcpyn(buf, sizeof(buf), tbool->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(bool) %-20s = %s", tbool->name, ((*tbool->boolval) ? "yes" : "no"));
 			notify(player, buf);
@@ -482,10 +482,10 @@ tune_parms_array(const char* pattern, int mlev)
 	char buf[BUFFER_LEN];
 	int i = 0;
 
-	strcpy(pat, pattern);
+	strcpyn(pat, sizeof(pat), pattern);
 	while (tbool->name) {
 		if (tbool->security <= mlev) {
-			strcpy(buf, tbool->name);
+			strcpyn(buf, sizeof(buf), tbool->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
 				array_set_strkey_strval(&item, "type", "boolean");
@@ -506,7 +506,7 @@ tune_parms_array(const char* pattern, int mlev)
 
 	while (ttim->name) {
 		if (ttim->security <= mlev) {
-			strcpy(buf, ttim->name);
+			strcpyn(buf, sizeof(buf), ttim->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
 				array_set_strkey_strval(&item, "type", "timespan");
@@ -527,7 +527,7 @@ tune_parms_array(const char* pattern, int mlev)
 
 	while (tval->name) {
 		if (tval->security <= mlev) {
-			strcpy(buf, tval->name);
+			strcpyn(buf, sizeof(buf), tval->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
 				array_set_strkey_strval(&item, "type", "integer");
@@ -548,7 +548,7 @@ tune_parms_array(const char* pattern, int mlev)
 
 	while (tref->name) {
 		if (tref->security <= mlev) {
-			strcpy(buf, tref->name);
+			strcpyn(buf, sizeof(buf), tref->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
 				array_set_strkey_strval(&item, "type", "dbref");
@@ -595,7 +595,7 @@ tune_parms_array(const char* pattern, int mlev)
 
 	while (tstr->name) {
 		if (tstr->security <= mlev) {
-			strcpy(buf, tstr->name);
+			strcpyn(buf, sizeof(buf), tstr->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
 				array_set_strkey_strval(&item, "type", "string");
@@ -696,7 +696,7 @@ tune_get_parmstring(const char *name, int mlev)
 	}
 
 	/* Parameter was not found.  Return null string. */
-	strcpy(buf, "");
+	strcpyn(buf, sizeof(buf), "");
 	return (buf);
 }
 
@@ -737,7 +737,7 @@ tune_setparm(const char *parmname, const char *val)
 	char buf[BUFFER_LEN];
 	char *parmval;
 
-	strcpy(buf, val);
+	strcpyn(buf, sizeof(buf), val);
 	parmval = buf;
 
 	while (tstr->name) {
@@ -957,5 +957,5 @@ do_tune(dbref player, char *parmname, char *parmval)
 		return;
 	}
 }
-static const char *tune_c_version = "$RCSfile$ $Revision: 1.43 $";
+static const char *tune_c_version = "$RCSfile$ $Revision: 1.44 $";
 const char *get_tune_c_version(void) { return tune_c_version; }

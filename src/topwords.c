@@ -30,6 +30,24 @@ hash_tab wordhash[WORD_HASH_SIZE];
 struct queue_node *sizehash[100000];
 
 
+/*
+ * Like strncpy, except it guarentees null termination of the result string.
+ * It also has a more sensible argument ordering.
+ */
+char*
+strcpyn(char* buf, size_t bufsize, const char* src)
+{
+	int pos = 0;
+	char* dest = buf;
+
+	while (++pos < bufsize && *src) {
+		*dest++ = *src++;
+	}
+	*dest = '\0';
+	return buf;
+}
+
+
 int
 notify(int player, const char *msg)
 {
@@ -49,7 +67,8 @@ string_dup(const char *s)
 {
 	char *p = (char *) malloc(strlen(s) + 1);
 
-	strcpy(p, s);
+	if (p)
+	    strcpy(p, s);  /* Guaranteed enough space. */
 	return p;
 }
 #endif
@@ -192,7 +211,7 @@ queue_add_node(const char *word, int pri)
 	tail = nu;
 	nu->count = 0;
 	nu->spcount = 0;
-	strcpy(nu->word, word);
+	strcpyn(nu->word, sizeof(nu->word), word);
 	nu->len = strlen(nu->word);
 	if (nu->word[nu->len - 1] == ' ') {
 		nu->word[nu->len - 1] = '\0';
@@ -222,7 +241,7 @@ add_to_list(const char *word)
 		return;
 	}
 
-	strcpy(buf, word);
+	strcpyn(buf, sizeof(buf), word);
 	if (buf[strlen(buf) - 1] == ' ') {
 		buf[strlen(buf) - 1] = '\0';
 		spcflag++;
@@ -250,7 +269,7 @@ remember_word_variants(const char *in)
 {
 	char word[32];
 
-	strcpy(word, in);
+	strcpyn(word, sizeof(word), in);
 	add_to_list(word);
 	/*
 	   t = word + strlen(word);
@@ -349,5 +368,5 @@ main(int argc, char **argv)
 	/* printf("%d counted words.\n", counted_words); */
 	return(0);
 }
-static const char *topwords_c_version = "$RCSfile$ $Revision: 1.10 $";
+static const char *topwords_c_version = "$RCSfile$ $Revision: 1.11 $";
 const char *get_topwords_c_version(void) { return topwords_c_version; }

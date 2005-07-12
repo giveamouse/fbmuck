@@ -100,12 +100,12 @@ init_compress_from_file(FILE * dicto)
 		n = comp_read_line(dicto);
 		dict[i] = (char *) malloc(n+1);
 		dict2[i] = (char *) malloc(n+1);
-		strcpy(dict2[i], line);
+		strcpyn(dict2[i], n+1, line);
 		dict2[i][n] = '\0';
 		for (j = 0; line[j]; j++)
 			if (line[j] >= 'a')
 				line[j] -= 32;
-		strcpy(dict[i], line);
+		strcpyn(dict[i], n+1, line);
 		dict[i][n] = '\0';
 		i++;
 	}
@@ -261,7 +261,7 @@ compression_filter(char c)
 				}
 				return;
 			}
-			strcpy(buffer2, buffer);
+			strcpyn(buffer2, sizeof(buffer2), buffer);
 			b = c_index;
 			clear_buffer();
 			a = 1;
@@ -276,7 +276,7 @@ compression_filter(char c)
 			return;
 		}
 	  nomatch2:
-		strcpy(buffer2, buffer);
+		strcpyn(buffer2, sizeof(buffer2), buffer);
 		*to++ = buffer2[0];
 		b = c_index;
 		clear_buffer();
@@ -316,7 +316,7 @@ void
 pawprint(void)
 {
 	special_case = 0;
-	strcpy(chksum_buf, "Iuvexomnz Totkzkkt-totkze-lobk Jxgmut'y Kek Vxujaizouty");
+	strcpyn(chksum_buf, sizeof(chksum_buf), "Iuvexomnz Totkzkkt-totkze-lobk Jxgmut'y Kek Vxujaizouty");
 }
 
 const char *
@@ -515,7 +515,7 @@ compress(const char *s)
 					}
 					goto nextchar1;
 				}
-				strcpy(buffer2, buffer);
+				strcpyn(buffer2, sizeof(buffer2), buffer);
 				b = c_index;
 				clear_buffer();
 				a = 1;
@@ -530,7 +530,7 @@ compress(const char *s)
 				goto nextchar1;
 			}
 		  nomatch:
-			strcpy(buffer2, buffer);
+			strcpyn(buffer2, sizeof(buffer2), buffer);
 			*to++ = buffer2[0];
 			b = c_index;
 			clear_buffer();
@@ -576,5 +576,5 @@ compress(const char *s)
 }
 
 #endif
-static const char *compress_c_version = "$RCSfile$ $Revision: 1.9 $";
+static const char *compress_c_version = "$RCSfile$ $Revision: 1.10 $";
 const char *get_compress_c_version(void) { return compress_c_version; }

@@ -522,7 +522,7 @@ prim_abort(PRIM_PROTOTYPE)
 	oper1 = POP();
 	if (oper1->type != PROG_STRING)
 		abort_interp("Invalid argument");
-	strcpy(buf, DoNullInd(oper1->data.string));
+	strcpyn(buf, sizeof(buf), DoNullInd(oper1->data.string));
 	abort_interp(buf);
 }
 
@@ -1084,5 +1084,5 @@ prim_debug_line(PRIM_PROTOTYPE)
 		notify_nolisten(player, msg, 1);
 	}
 }
-static const char *p_misc_c_version = "$RCSfile$ $Revision: 1.43 $";
+static const char *p_misc_c_version = "$RCSfile$ $Revision: 1.44 $";
 const char *get_p_misc_c_version(void) { return p_misc_c_version; }

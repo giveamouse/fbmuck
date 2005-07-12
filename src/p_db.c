@@ -384,13 +384,13 @@ prim_name(PRIM_PROTOTYPE)
 		abort_interp("Invalid object.");
 
 	if (Typeof(ref) == TYPE_GARBAGE) {
-		strcpy(buf, "<garbage>");
+		strcpyn(buf, sizeof(buf), "<garbage>");
 	} else {
 		CHECKREMOTE(ref);
 		/* if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
 		   ts_lastuseobject(ref); */
 		if (NAME(ref)) {
-			strcpy(buf, NAME(ref));
+			strcpyn(buf, sizeof(buf), NAME(ref));
 		} else {
 			buf[0] = '\0';
 		}
@@ -418,7 +418,7 @@ prim_setname(PRIM_PROTOTYPE)
 		const char *b = DoNullInd(oper1->data.string);
 
 		if (Typeof(ref) == TYPE_PLAYER) {
-			strcpy(buf, b);
+			strcpyn(buf, sizeof(buf), b);
 			b = buf;
 			if (mlev < 4) {
 				abort_interp("Permission denied.");
@@ -512,8 +512,8 @@ prim_match(PRIM_PROTOTYPE)
 		char tmppp[BUFFER_LEN];
 		struct match_data md;
 
-		(void) strcpy(buf, match_args);
-		(void) strcpy(tmppp, match_cmdname);
+		(void) strcpyn(buf, sizeof(buf), match_args);
+		(void) strcpyn(tmppp, sizeof(tmppp), match_cmdname);
 		strip_ansi(buf2, oper1->data.string->data);
 		init_match(fr->descr, player, buf2, NOTYPE, &md);
 		if (buf2[0] == REGISTERED_TOKEN) {
@@ -531,8 +531,8 @@ prim_match(PRIM_PROTOTYPE)
 			match_player(&md);
 		}
 		ref = match_result(&md);
-		(void) strcpy(match_args, buf);
-		(void) strcpy(match_cmdname, tmppp);
+		(void) strcpyn(match_args, sizeof(match_args), buf);
+		(void) strcpyn(match_cmdname, sizeof(match_cmdname), tmppp);
 	}
 	CLEAR(oper1);
 	PushObject(ref);
@@ -560,13 +560,13 @@ prim_rmatch(PRIM_PROTOTYPE)
 		char tmppp[BUFFER_LEN];
 		struct match_data md;
 
-		(void) strcpy(buf, match_args);
-		(void) strcpy(tmppp, match_cmdname);
+		(void) strcpyn(buf, sizeof(buf), match_args);
+		(void) strcpyn(tmppp, sizeof(tmppp), match_cmdname);
 		init_match(fr->descr, player, DoNullInd(oper1->data.string), TYPE_THING, &md);
 		match_rmatch(oper2->data.objref, &md);
 		ref = match_result(&md);
-		(void) strcpy(match_args, buf);
-		(void) strcpy(match_cmdname, tmppp);
+		(void) strcpyn(match_args, sizeof(match_args), buf);
+		(void) strcpyn(match_cmdname, sizeof(match_cmdname), tmppp);
 	}
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -1605,7 +1605,7 @@ prim_findnext(PRIM_PROTOTYPE)
 	} else {
 		item++;
 	}
-	strcpy(buf, name);
+	strcpyn(buf, sizeof(buf), name);
 
 	ref = NOTHING;
 	init_checkflags(player, DoNullInd(oper4->data.string), &check);
@@ -2675,5 +2675,5 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
-static const char *p_db_c_version = "$RCSfile$ $Revision: 1.54 $";
+static const char *p_db_c_version = "$RCSfile$ $Revision: 1.55 $";
 const char *get_p_db_c_version(void) { return p_db_c_version; }

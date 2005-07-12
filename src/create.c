@@ -110,7 +110,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 		notify(player, "That command is restricted to authorized builders.");
 		return;
 	}
-	strcpy(buf2, linkto);
+	strcpyn(buf2, sizeof(buf2), linkto);
 	for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
 	qname = rname;
 	if (*rname)
@@ -520,7 +520,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	snprintf(buf, sizeof(buf), "%s created with room number %d.", name, room);
 	notify(player, buf);
 
-	strcpy(buf, pname);
+	strcpyn(buf, sizeof(buf), pname);
 	for (rname = buf; (*rname && (*rname != '=')); rname++) ;
 	qname = rname;
 	if (*rname)
@@ -529,8 +529,8 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 		*(qname--) = '\0';
 	qname = buf;
 	for (; *rname && isspace(*rname); rname++) ;
-	rname = strcpy(rbuf, rname);
-	qname = strcpy(qbuf, qname);
+	rname = strcpyn(rbuf, sizeof(rbuf), rname);
+	qname = strcpyn(qbuf, sizeof(qbuf), qname);
 
 	if (*qname) {
 		notify(player, "Trying to set parent...");
@@ -961,7 +961,7 @@ copy_props(dbref player, dbref source, dbref destination, const char *dir)
 	PropPtr propadr, pptr;
 
 	/* loop through all properties in the current propdir */
-	propadr = first_prop(source, (char *) dir, &pptr, propname);
+	propadr = first_prop(source, (char *) dir, &pptr, propname, sizeof(propname));
 	while (propadr) {
 	
 		/* generate name for current property */
@@ -980,7 +980,7 @@ copy_props(dbref player, dbref source, dbref destination, const char *dir)
 		copy_props(player, source, destination, buf);
 		
 		/* find next property in current dir */
-		propadr = next_prop(pptr, propadr, propname);
+		propadr = next_prop(pptr, propadr, propname, sizeof(propname));
 
 	}
 	
@@ -1122,7 +1122,7 @@ do_create(dbref player, char *name, char *acost)
 
 	NOGUEST("@create",player);
 
-	strcpy(buf2, acost);
+	strcpyn(buf2, sizeof(buf2), acost);
 	for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
 	qname = rname;
 	if (*rname)
@@ -1323,7 +1323,7 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 		notify(player, "That command is restricted to authorized builders.");
 		return;
 	}
-	strcpy(buf2, source_name);
+	strcpyn(buf2, sizeof(buf2), source_name);
 	for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
 	qname = rname;
 	if (*rname)
@@ -1429,5 +1429,5 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 		notify(player, "Action priority Level reset to zero.");
 	}
 }
-static const char *create_c_version = "$RCSfile$ $Revision: 1.23 $";
+static const char *create_c_version = "$RCSfile$ $Revision: 1.24 $";
 const char *get_create_c_version(void) { return create_c_version; }

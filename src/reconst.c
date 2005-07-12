@@ -13,7 +13,7 @@ string_dup(const char *s)
 	p = (char *) malloc(strlen(s) + 1);
 	if (!p)
 		return p;
-	strcpy(p, s);
+	strcpy(p, s);  /* Guaranteed enough space. */
 	return p;
 }
 
@@ -341,10 +341,9 @@ equalstr(const char *s1, const char *s2)
 }
 
 char *
-do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf, const char *abuf,
-			  char *outbuf, int mesgtyp)
+do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf, const char *abuf, char *outbuf, int outbuflen, int mesgtyp)
 {
 	return NULL;
 }
-static const char *reconst_c_version = "$RCSfile$ $Revision: 1.6 $";
+static const char *reconst_c_version = "$RCSfile$ $Revision: 1.7 $";
 const char *get_reconst_c_version(void) { return reconst_c_version; }

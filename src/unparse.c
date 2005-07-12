@@ -113,7 +113,7 @@ unparse_boolexp1(dbref player, struct boolexp *b, boolexp_type outer_type, int f
 	if ((buftop - boolexp_buf) > (BUFFER_LEN / 2))
 		return;
 	if (b == TRUE_BOOLEXP) {
-		strcpy(buftop, "*UNLOCKED*");
+		strcpyn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), "*UNLOCKED*");
 		buftop += strlen(buftop);
 	} else {
 		switch (b->type) {
@@ -145,14 +145,14 @@ unparse_boolexp1(dbref player, struct boolexp *b, boolexp_type outer_type, int f
 			break;
 		case BOOLEXP_CONST:
 			if (fullname) {
-				strcpy(buftop, unparse_object(player, b->thing));
+				strcpyn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), unparse_object(player, b->thing));
 			} else {
 				snprintf(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), "#%d", b->thing);
 			}
 			buftop += strlen(buftop);
 			break;
 		case BOOLEXP_PROP:
-			strcpy(buftop, PropName(b->prop_check));
+			strcpyn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), PropName(b->prop_check));
 			strcatn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), ":");
 			if (PropType(b->prop_check) == PROP_STRTYP)
 				strcatn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), PropDataStr(b->prop_check));
@@ -174,5 +174,5 @@ unparse_boolexp(dbref player, struct boolexp *b, int fullname)
 
 	return boolexp_buf;
 }
-static const char *unparse_c_version = "$RCSfile$ $Revision: 1.8 $";
+static const char *unparse_c_version = "$RCSfile$ $Revision: 1.9 $";
 const char *get_unparse_c_version(void) { return unparse_c_version; }

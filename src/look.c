@@ -75,7 +75,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
 		int i;
 
 		if (*(++p) == REGISTERED_TOKEN) {
-			strcpy(buf, p);
+			strcpyn(buf, sizeof(buf), p);
 			for (p2 = buf; *p && !isspace(*p); p++) ;
 			if (*p)
 				p++;
@@ -104,21 +104,21 @@ exec_or_notify(int descr, dbref player, dbref thing,
 		} else {
 			struct frame *tmpfr;
 
-			strcpy(tmparg, match_args);
-			strcpy(tmpcmd, match_cmdname);
-			p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, MPI_ISPRIVATE | mpiflags);
-			strcpy(match_args, p);
-			strcpy(match_cmdname, whatcalled);
+			strcpyn(tmparg, sizeof(tmparg), match_args);
+			strcpyn(tmpcmd, sizeof(tmpcmd), match_cmdname);
+			p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, sizeof(buf), MPI_ISPRIVATE | mpiflags);
+			strcpyn(match_args, sizeof(match_args), p);
+			strcpyn(match_cmdname, sizeof(match_cmdname), whatcalled);
 			tmpfr = interp(descr, player, DBFETCH(player)->location, i, thing,
 						   PREEMPT, STD_HARDUID, 0);
 			if (tmpfr) {
 				interp_loop(player, i, tmpfr, 0);
 			}
-			strcpy(match_args, tmparg);
-			strcpy(match_cmdname, tmpcmd);
+			strcpyn(match_args, sizeof(match_args), tmparg);
+			strcpyn(match_cmdname, sizeof(match_cmdname), tmpcmd);
 		}
 	} else {
-		p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, MPI_ISPRIVATE | mpiflags);
+		p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, sizeof(buf), MPI_ISPRIVATE | mpiflags);
 		notify(player, p);
 	}
 }
@@ -296,7 +296,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 #endif
 
 			lastmatch = NULL;
-			propadr = first_prop(thing, "_details/", &pptr, propname);
+			propadr = first_prop(thing, "_details/", &pptr, propname, sizeof(propname));
 			while (propadr) {
 				if (exit_prefix(propname, buf)) {
 					if (lastmatch) {
@@ -307,7 +307,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 						lastmatch = propadr;
 					}
 				}
-				propadr = next_prop(pptr, propadr, propname);
+				propadr = next_prop(pptr, propadr, propname, sizeof(propname));
 			}
 			if (lastmatch && PropType(lastmatch) == PROP_STRTYP) {
 #ifdef DISKBASE
@@ -334,7 +334,7 @@ flag_description(dbref thing)
 {
 	static char buf[BUFFER_LEN];
 
-	strcpy(buf, "Type: ");
+	strcpyn(buf, sizeof(buf), "Type: ");
 	switch (Typeof(thing)) {
 	case TYPE_ROOM:
 		strcatn(buf, sizeof(buf), "ROOM");
@@ -437,7 +437,7 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
 	int i, cnt = 0;
 	int recurse = 0;
 
-	strcpy(wld, wild);
+	strcpyn(wld, sizeof(wld), wild);
 	i = strlen(wld);
 	if (i && wld[i - 1] == PROPDIR_DELIMITER)
 		strcatn(wld, sizeof(wld), "*");
@@ -449,7 +449,7 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
 	if (*ptr)
 		*ptr++ = '\0';
 
-	propadr = first_prop(thing, (char *) dir, &pptr, propname);
+	propadr = first_prop(thing, (char *) dir, &pptr, propname, sizeof(propname));
 	while (propadr) {
 		if (equalstr(wldcrd, propname)) {
 			snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
@@ -465,7 +465,7 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
 				cnt += listprops_wildcard(player, thing, buf, ptr);
 			}
 		}
-		propadr = next_prop(pptr, propadr, propname);
+		propadr = next_prop(pptr, propadr, propname, sizeof(propname));
 	}
 	return cnt;
 }
@@ -568,7 +568,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 				NAME(OWNER(thing)));
 		break;
 	case TYPE_GARBAGE:
-		strcpy(buf, unparse_object(player, thing));
+		strcpyn(buf, sizeof(buf), unparse_object(player, thing));
 		break;
 	}
 	notify(player, buf);
@@ -832,7 +832,7 @@ init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
 	int output_type = 0;
 	int mode = 0;
 
-	strcpy(buf, flags);
+	strcpyn(buf, sizeof(buf), flags);
 	for (cptr = buf; *cptr && (*cptr != '='); cptr++) ;
 	if (*cptr == '=')
 		*(cptr++) = '\0';
@@ -1165,7 +1165,7 @@ display_objinfo(dbref player, dbref obj, int output_type)
 	char buf[BUFFER_LEN];
 	char buf2[BUFFER_LEN];
 
-	strcpy(buf2, unparse_object(player, obj));
+	strcpyn(buf2, sizeof(buf2), unparse_object(player, obj));
 
 	switch (output_type) {
 	case 1:					/* owners */
@@ -1211,7 +1211,7 @@ display_objinfo(dbref player, dbref obj, int output_type)
 		break;
 	case 0:
 	default:
-		strcpy(buf, buf2);
+		strcpyn(buf, sizeof(buf), buf2);
 		break;
 	}
 	notify(player, buf);
@@ -1227,7 +1227,7 @@ do_find(dbref player, const char *name, const char *flags)
 	int total = 0;
 	int output_type = init_checkflags(player, flags, &check);
 
-	strcpy(buf, "*");
+	strcpyn(buf, sizeof(buf), "*");
 	strcatn(buf, sizeof(buf), name);
 	strcatn(buf, sizeof(buf), "*");
 
@@ -1447,7 +1447,7 @@ exit_matches_name(dbref exit, const char *name, int exactMatch)
 	char buf[BUFFER_LEN];
 	char *ptr, *ptr2;
 
-	strcpy(buf, NAME(exit));
+	strcpyn(buf, sizeof(buf), NAME(exit));
 	for (ptr2 = ptr = buf; *ptr; ptr = ptr2) {
 		while (*ptr2 && *ptr2 != ';')
 			ptr2++;
@@ -1587,5 +1587,5 @@ do_sweep(int descr, dbref player, const char *name)
 	}
 	notify(player, "**End of list**");
 }
-static const char *look_c_version = "$RCSfile$ $Revision: 1.24 $";
+static const char *look_c_version = "$RCSfile$ $Revision: 1.25 $";
 const char *get_look_c_version(void) { return look_c_version; }

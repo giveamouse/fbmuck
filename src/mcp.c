@@ -118,8 +118,7 @@ mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_C
 {
 	McpPkg *nu = (McpPkg *) malloc(sizeof(McpPkg));
 
-	nu->pkgname = (char *) malloc(strlen(pkgname) + 1);
-	strcpy(nu->pkgname, pkgname);
+	nu->pkgname = string_dup(pkgname);
 	nu->minver = minver;
 	nu->maxver = maxver;
 	nu->callback = callback;
@@ -473,8 +472,7 @@ mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer
 
 	selver = mcp_version_select(ptr->minver, ptr->maxver, minver, maxver);
 	nu = (McpPkg *) malloc(sizeof(McpPkg));
-	nu->pkgname = (char *) malloc(strlen(ptr->pkgname) + 1);
-	strcpy(nu->pkgname, ptr->pkgname);
+	nu->pkgname = string_dup(ptr->pkgname);
 	nu->minver = selver;
 	nu->maxver = selver;
 	nu->callback = ptr->callback;
@@ -746,7 +744,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 		snprintf(mesgname, sizeof(mesgname), "%s", msg->package);
 	}
 
-	strcpy(outbuf, MCP_MESG_PREFIX);
+	strcpyn(outbuf, sizeof(outbuf), MCP_MESG_PREFIX);
 	strcatn(outbuf, sizeof(outbuf), mesgname);
 	if (strcmp_nocase(mesgname, MCP_INIT_PKG)) {
 		McpVer nullver = { 0, 0 };
@@ -776,8 +774,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 						nu->next = ap->next;
 						ap->next = nu;
 						*p++ = '\0';
-						nu->value = (char *) malloc(strlen(p) + 1);
-						strcpy(nu->value, p);
+						nu->value = string_dup(p);
 						ap->value = (char *) realloc(ap->value, strlen(ap->value) + 1);
 						ap = nu;
 						p = nu->value;
@@ -899,10 +896,8 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 void
 mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname)
 {
-	msg->package = (char *) malloc(strlen(package) + 1);
-	strcpy(msg->package, package);
-	msg->mesgname = (char *) malloc(strlen(mesgname) + 1);
-	strcpy(msg->mesgname, mesgname);
+	msg->package = string_dup(package);
+	msg->mesgname = string_dup(mesgname);
 	msg->datatag = NULL;
 	msg->args = NULL;
 	msg->incomplete = 0;
@@ -1083,7 +1078,7 @@ mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 		}
 		ptr = (McpArg *) malloc(sizeof(McpArg));
 		ptr->name = (char *) malloc(namelen + 1);
-		strcpy(ptr->name, argname);
+		strcpyn(ptr->name, namelen+1, argname);
 		ptr->value = NULL;
 		ptr->last = NULL;
 		ptr->next = NULL;
@@ -1110,7 +1105,7 @@ mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 		McpArgPart *nu = (McpArgPart *) malloc(sizeof(McpArgPart));
 
 		nu->value = (char *) malloc(vallen + 1);
-		strcpy(nu->value, argval);
+		strcpyn(nu->value, vallen+1, argval);
 		nu->next = NULL;
 
 		if (!ptr->last) {
@@ -1299,8 +1294,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 	if (!*mesg->mesgname) {
 		auth = mcp_mesg_arg_getline(mesg, "authentication-key", 0);
 		if (auth) {
-			mfr->authkey = (char *) malloc(strlen(auth) + 1);
-			strcpy(mfr->authkey, auth);
+			mfr->authkey = string_dup(auth);
 		} else {
 			McpMesg reply;
 			char authval[128];
@@ -1310,8 +1304,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 			mcp_mesg_arg_append(&reply, "to", "2.1");
 			snprintf(authval, sizeof(authval), "%.8lX", (unsigned long)(RANDOM() ^ RANDOM()));
 			mcp_mesg_arg_append(&reply, "authentication-key", authval);
-			mfr->authkey = (char *) malloc(strlen(authval) + 1);
-			strcpy(mfr->authkey, authval);
+			mfr->authkey = string_dup(authval);
 			mcp_frame_output_mesg(mfr, &reply);
 			mcp_mesg_clear(&reply);
 		}
@@ -1626,8 +1619,7 @@ mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
 		/* It's incomplete.  Remember it to finish later. */
 		const char *msgdt = mcp_mesg_arg_getline(newmsg, MCP_DATATAG, 0);
 
-		newmsg->datatag = (char *) malloc(strlen(msgdt) + 1);
-		strcpy(newmsg->datatag, msgdt);
+		newmsg->datatag = string_dup(msgdt);
 		mcp_mesg_arg_remove(newmsg, MCP_DATATAG);
 		newmsg->next = mfr->messages;
 		mfr->messages = newmsg;
@@ -1734,5 +1726,5 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 }
 
 
-static const char *mcp_c_version = "$RCSfile$ $Revision: 1.26 $";
+static const char *mcp_c_version = "$RCSfile$ $Revision: 1.27 $";
 const char *get_mcp_c_version(void) { return mcp_c_version; }

@@ -200,7 +200,7 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild
 	int i, cnt = 0;
 	int recurse = 0;
 
-	strcpy(wld, wild);
+	strcpyn(wld, sizeof(wld), wild);
 	i = strlen(wld);
 	if (i && wld[i - 1] == PROPDIR_DELIMITER)
 		strcatn(wld, sizeof(wld), "*");
@@ -212,7 +212,7 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild
 	if (*ptr)
 		*ptr++ = '\0';
 
-	propadr = first_prop(thing, (char *) dir, &pptr, propname);
+	propadr = first_prop(thing, (char *) dir, &pptr, propname, sizeof(propname));
 	while (propadr) {
 		if (equalstr(wldcrd, propname)) {
 			snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
@@ -234,7 +234,7 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild
 				cnt += blessprops_wildcard(player, thing, buf, ptr, blessp);
 			}
 		}
-		propadr = next_prop(pptr, propadr, propname);
+		propadr = next_prop(pptr, propadr, propname, sizeof(propname));
 	}
 	return cnt;
 }
@@ -1333,5 +1333,5 @@ do_memory(dbref who)
 
 	notify(who, "Done.");
 }
-static const char *wiz_c_version = "$RCSfile$ $Revision: 1.34 $";
+static const char *wiz_c_version = "$RCSfile$ $Revision: 1.35 $";
 const char *get_wiz_c_version(void) { return wiz_c_version; }

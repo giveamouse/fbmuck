@@ -807,7 +807,7 @@ prim_array_notify(PRIM_PROTOTYPE)
 			else
 			{
 				/* TODO: Is there really a reason to make a copy? */
-				strcpy(buf, DoNullInd(oper4->data.string));
+				strcpyn(buf, sizeof(buf), DoNullInd(oper4->data.string));
 			}
 
 			if (array_first(refarr, &temp1)) {
@@ -1064,15 +1064,15 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 		abort_interp("String required. (2)");
 
 	ref = oper1->data.objref;
-	strcpy(dir, DoNullInd(oper2->data.string));
+	strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
 	if (!*dir)
-		strcpy(dir, "/");
+		strcpyn(dir, sizeof(dir), "/");
 	len = strlen(dir) - 1;
 	if (len > 0 && dir[len] == PROPDIR_DELIMITER)
 		dir[len] = '\0';
 
 	nu = new_array_packed(0);
-	propadr = first_prop(ref, dir, &pptr, propname);
+	propadr = first_prop(ref, dir, &pptr, propname, sizeof(propname));
 	while (propadr) {
 		snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 		if (prop_read_perms(ProgUID, ref, buf, mlev)) {
@@ -1091,7 +1091,7 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 				}
 			}
 		}
-		propadr = next_prop(pptr, propadr, propname);
+		propadr = next_prop(pptr, propadr, propname, sizeof(propname));
 	}
 
 	CLEAR(oper1);
@@ -1125,12 +1125,12 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 		abort_interp("String required. (2)");
 
 	ref = oper1->data.objref;
-	strcpy(dir, DoNullInd(oper2->data.string));
+	strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
 	if (!*dir)
-		strcpy(dir, "/");
+		strcpyn(dir, sizeof(dir), "/");
 
 	nu = new_array_dictionary();
-	propadr = first_prop(ref, dir, &pptr, propname);
+	propadr = first_prop(ref, dir, &pptr, propname, sizeof(propname));
 	while (propadr) {
 		snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 		if (prop_read_perms(ProgUID, ref, buf, mlev)) {
@@ -1187,7 +1187,7 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 				}
 			}
 		}
-		propadr = next_prop(pptr, propadr, propname);
+		propadr = next_prop(pptr, propadr, propname, sizeof(propname));
 	}
 
 	PushArrayRaw(nu);
@@ -1217,9 +1217,9 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 		abort_interp("String required. (2)");
 
 	ref = oper1->data.objref;
-	strcpy(dir, DoNullInd(oper2->data.string));
+	strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
 	if (!*dir)
-		strcpy(dir, "/");
+		strcpyn(dir, sizeof(dir), "/");
 
 	snprintf(propname, sizeof(propname), "%s#", dir);
 	maxcount = get_property_value(ref, propname);
@@ -1342,7 +1342,7 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
 		abort_interp("Array required. (3)");
 
 	ref = oper1->data.objref;
-	strcpy(dir, DoNullInd(oper2->data.string));
+	strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
 	arr = oper3->data.array;
 
 	if (array_first(arr, &temp1)) {
@@ -1434,7 +1434,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 		abort_interp("Argument must be a list type array. (3)");
 
 	ref = oper1->data.objref;
-	strcpy(dir, DoNullInd(oper2->data.string));
+	strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
 	arr = oper3->data.array;
 
 	dirlen = strlen(dir);
@@ -1444,7 +1444,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 		if (*fmtin == 'P') {
 			if ((fmtout + dirlen) - propname > sizeof(propname))
 				break;
-			strcpy(fmtout, dir);
+			strcpyn(fmtout, sizeof(propname)-(fmtout-propname), dir);
 			fmtout = &fmtout[strlen(fmtout)];
 		} else {
 			*fmtout++ = *fmtin;
@@ -1481,7 +1481,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 				} else if (*fmtin == 'P') {
 					if ((fmtout + dirlen) - propname > sizeof(propname))
 						break;
-					strcpy(fmtout, dir);
+					strcpyn(fmtout, sizeof(propname)-(fmtout-propname), dir);
 					fmtout = &fmtout[strlen(fmtout)];
 				} else {
 					*fmtout++ = *fmtin;
@@ -1536,7 +1536,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 			} else if (*fmtin == 'P') {
 				if ((fmtout + dirlen) - propname > sizeof(propname))
 					break;
-				strcpy(fmtout, dir);
+				strcpyn(fmtout, sizeof(propname)-(fmtout-propname), dir);
 				fmtout = &fmtout[strlen(fmtout)];
 			} else {
 				*fmtout++ = *fmtin;
@@ -1579,7 +1579,7 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 		abort_interp("Non-null string required. (2)");
 
 	ref = oper1->data.objref;
-	strcpy(dir, oper2->data.string->data);
+	strcpyn(dir, sizeof(dir), oper2->data.string->data);
 
 	if (!prop_read_perms(ProgUID, ref, dir, mlev))
 		abort_interp("Permission denied.");
@@ -1651,7 +1651,7 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 		abort_interp("Argument must be a list array of dbrefs. (3)");
 
 	ref = oper1->data.objref;
-	strcpy(dir, DoNullInd(oper2->data.string));
+	strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
 	arr = oper3->data.array;
 	buf[0] = '\0';
 
@@ -1673,7 +1673,7 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 
 			if (*buf)
 				*out++ = ' ';
-			strcpy(out, buf2);
+			strcpyn(out, sizeof(buf)-(out-buf), buf2);
 			out += len;
 		} while (array_next(arr, &temp1));
 	}
@@ -1975,13 +1975,13 @@ prim_array_join(PRIM_PROTOTYPE)
 			tmplen = strlen(delim);
 			if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1)
 				abort_interp("Operation would result in overflow.");
-			strcpy(ptr, delim);
+			strcpyn(ptr, sizeof(outbuf) - (outbuf - ptr), delim);
 			ptr += tmplen;
 		}
 		tmplen = strlen(text);
 		if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1)
 			abort_interp("Operation would result in overflow.");
-		strcpy(ptr, text);
+		strcpyn(ptr, sizeof(outbuf) - (outbuf - ptr), text);
 		ptr += tmplen;
 		done = !array_next(arr, &temp1);
 	}
@@ -2068,7 +2068,7 @@ prim_array_interpret(PRIM_PROTOTYPE)
             outbuf[BUFFER_LEN - 1] = '\0';
             break;
         } else {
-            strcpy(ptr, text);
+	    strcpyn(ptr, sizeof(outbuf) - (outbuf - ptr), text);
             ptr += tmplen;
         }
         done = !array_next(arr, &temp1);
@@ -2422,5 +2422,5 @@ prim_array_filter_flags(PRIM_PROTOTYPE)
     PushArrayRaw(nw);
 }
 
-static const char *p_array_c_version = "$RCSfile$ $Revision: 1.52 $";
+static const char *p_array_c_version = "$RCSfile$ $Revision: 1.53 $";
 const char *get_p_array_c_version(void) { return p_array_c_version; }

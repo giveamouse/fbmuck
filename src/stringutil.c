@@ -198,12 +198,12 @@ pronoun_substitute(int descr, dbref player, const char *str)
 
 	str = uncompress(str);
 
-	strcpy(orig, str);
+	strcpyn(orig, sizeof(orig), str);
 	str = orig;
 
 	sexstr = get_property_class(player, "sex");
 	if (sexstr) {
-		sexstr = do_parse_mesg(descr, player, player, sexstr, "(Lock)", sexbuf,
+		sexstr = do_parse_mesg(descr, player, player, sexstr, "(Lock)", sexbuf, sizeof(sexbuf),
 						(MPI_ISPRIVATE | MPI_ISLOCK |
 							(Prop_Blessed(player, "sex")? MPI_ISBLESSED : 0)));
 	}
@@ -392,7 +392,7 @@ alloc_string(const char *string)
 	if ((s = (char *) malloc(strlen(string) + 1)) == 0) {
 		abort();
 	}
-	strcpy(s, string);
+	strcpy(s, string);  /* Guaranteed enough space. */
 	return s;
 }
 
@@ -424,7 +424,7 @@ string_dup(const char *s)
 
 	p = (char *) malloc(1 + strlen(s));
 	if (p)
-		(void) strcpy(p, s);
+		(void) strcpy(p, s);  /* Guaranteed enough space. */
 	return (p);
 }
 #endif
@@ -573,7 +573,7 @@ strdecrypt(const char *data, const char *key)
 	chrcnt = charset_count[(data[0] - ' ') - 1];
 	seed2 = (data[1] - ' ');
 
-	strcpy(linebuf, data + 2);
+	strcpyn(linebuf, sizeof(linebuf), data + 2);
 
 	seed = 0;
 	for (cp = key; *cp; cp++) {
@@ -740,7 +740,7 @@ prefix_message(char* Dest, const char* Src, const char* Prefix, int BufferLength
 				(Src[PrefixLength] != '\0')
 			))
 		{
-			strcpy(Dest, Prefix);
+			strcpyn(Dest, BufferLength, Prefix);
 
 			Dest			+= PrefixLength;
 			BufferLength	-= PrefixLength;
@@ -855,5 +855,5 @@ strcatn(char* buf, size_t bufsize, const char* src)
 	}
 	return buf;
 }
-static const char *stringutil_c_version = "$RCSfile$ $Revision: 1.27 $";
+static const char *stringutil_c_version = "$RCSfile$ $Revision: 1.28 $";
 const char *get_stringutil_c_version(void) { return stringutil_c_version; }

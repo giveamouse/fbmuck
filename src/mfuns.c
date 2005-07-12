@@ -370,7 +370,7 @@ mfn_listprops(MFUNARGS)
 	char pnamebuf[BUFFER_LEN];
 	int flag;
 
-	strcpy(pnamebuf, argv[0]);
+	strcpyn(pnamebuf, sizeof(pnamebuf), argv[0]);
 	pname = pnamebuf;
 	if (argc > 1) {
 		obj = mesg_dbref(descr, player, what, perms, argv[1], mesgtyp);
@@ -421,7 +421,7 @@ mfn_listprops(MFUNARGS)
 
 				nptr = rindex(ptr, PROPDIR_DELIMITER);
 				if (nptr && *nptr) {
-					strcpy(patbuf, ++nptr);
+					strcpyn(patbuf, sizeof(patbuf), ++nptr);
 					if (!equalstr(pattern, patbuf)) {
 						flag = 0;
 					}
@@ -433,7 +433,7 @@ mfn_listprops(MFUNARGS)
 					if (*buf != '\0') {
 						*endbuf++ = '\r';
 					}
-					strcpy(endbuf, ptr);
+					strcpyn(endbuf, BUFFER_LEN - (endbuf - buf), ptr);
 					endbuf += entrylen;
 				}
 			}
@@ -538,7 +538,7 @@ mfn_select(MFUNARGS)
 				char *pname2;
 				int sublen = strlen(pname);
 
-				pname2 = strcpy(propname2, pname);
+				pname2 = strcpyn(propname2, sizeof(propname2), pname);
 				propname2[sublen++] = PROPDIR_DELIMITER;
 				propname2[sublen] = '\0';
 
@@ -550,7 +550,7 @@ mfn_select(MFUNARGS)
 						if (bestval < i && i <= targval) {
 							bestval = i;
 							bestobj = obj;
-							strcpy(bestname, pname2);
+							strcpyn(bestname, sizeof(bestname), pname2);
 						}
 					}
 					pname2 = next_prop_name(obj, propname2, sizeof(propname2), pname2);
@@ -562,7 +562,7 @@ mfn_select(MFUNARGS)
 				if (bestval < i && i <= targval) {
 					bestval = i;
 					bestobj = obj;
-					strcpy(bestname, pname);
+					strcpyn(bestname, sizeof(bestname), pname);
 				}
 			}
 			pname = next_prop_name(obj, propname, sizeof(propname), pname);
@@ -731,7 +731,7 @@ mfn_lit(MFUNARGS)
 {
 	int i, len, len2;
 
-	strcpy(buf, argv[0]);
+	strcpyn(buf, sizeof(buf), argv[0]);
 	len = strlen(buf);
 	for (i = 1; i < argc; i++) {
 		len2 = strlen(argv[i]);
@@ -742,8 +742,8 @@ mfn_lit(MFUNARGS)
 			}
 			break;
 		}
-		strcpy(buf + len, ",");
-		strcpy(buf + len, argv[i]);
+		strcpyn(buf + len, sizeof(buf) - len, ",");
+		strcpyn(buf + len, sizeof(buf) - len, argv[i]);
 		len += len2;
 	}
 	return buf;
@@ -757,7 +757,7 @@ mfn_eval(MFUNARGS)
 	char buf2[BUFFER_LEN];
 	char* ptr;
 
-	strcpy(buf, argv[0]);
+	strcpyn(buf, sizeof(buf), argv[0]);
 	len = strlen(buf);
 	for (i = 1; i < argc; i++) {
 		len2 = strlen(argv[i]);
@@ -768,11 +768,11 @@ mfn_eval(MFUNARGS)
 			}
 			break;
 		}
-		strcpy(buf + len, ",");
-		strcpy(buf + len, argv[i]);
+		strcpyn(buf + len, sizeof(buf) - len, ",");
+		strcpyn(buf + len, sizeof(buf) - len, argv[i]);
 		len += len2;
 	}
-	strcpy(buf2, buf);
+	strcpyn(buf2, sizeof(buf2), buf);
 	ptr = mesg_parse(descr, player, what, perms, buf2, buf, BUFFER_LEN, (mesgtyp & ~MPI_ISBLESSED));
 	CHECKRETURN(ptr, "EVAL", "arg 1");
 	return buf;
@@ -786,7 +786,7 @@ mfn_evalbang(MFUNARGS)
 	char buf2[BUFFER_LEN];
 	char* ptr;
 
-	strcpy(buf, argv[0]);
+	strcpyn(buf, sizeof(buf), argv[0]);
 	len = strlen(buf);
 	for (i = 1; i < argc; i++) {
 		len2 = strlen(argv[i]);
@@ -797,11 +797,11 @@ mfn_evalbang(MFUNARGS)
 			}
 			break;
 		}
-		strcpy(buf + len, ",");
-		strcpy(buf + len, argv[i]);
+		strcpyn(buf + len, sizeof(buf) - len, ",");
+		strcpyn(buf + len, sizeof(buf) - len, argv[i]);
 		len += len2;
 	}
-	strcpy(buf2, buf);
+	strcpyn(buf2, sizeof(buf2), buf);
 	ptr = mesg_parse(descr, player, what, perms, buf2, buf, BUFFER_LEN, mesgtyp);
 	CHECKRETURN(ptr, "EVAL!", "arg 1");
 	return buf;
@@ -815,7 +815,7 @@ mfn_strip(MFUNARGS)
 	char *ptr;
 
 	for (ptr = argv[0]; *ptr == ' '; ptr++) ;
-	strcpy(buf, ptr);
+	strcpyn(buf, sizeof(buf), ptr);
 	len = strlen(buf);
 	for (i = 1; i < argc; i++) {
 		len2 = strlen(argv[i]);
@@ -826,8 +826,8 @@ mfn_strip(MFUNARGS)
 			}
 			break;
 		}
-		strcpy(buf + len, ",");
-		strcpy(buf + len, argv[i]);
+		strcpyn(buf + len, sizeof(buf) - len, ",");
+		strcpyn(buf + len, sizeof(buf) - len, argv[i]);
 		len += len2;
 	}
 	ptr = &buf[strlen(buf) - 1];
@@ -1157,7 +1157,7 @@ mfn_inc(MFUNARGS)
 	if (argc > 1)
 		x = atoi(argv[1]);
 	snprintf(buf, BUFFER_LEN, "%d", (atoi(ptr) + x));
-	strcpy(ptr, buf);
+	strcpyn(ptr, BUFFER_LEN, buf);
 	return (buf);
 }
 
@@ -1173,7 +1173,7 @@ mfn_dec(MFUNARGS)
 	if (argc > 1)
 		x = atoi(argv[1]);
 	snprintf(buf, BUFFER_LEN, "%d", (atoi(ptr) - x));
-	strcpy(ptr, buf);
+	strcpyn(ptr, BUFFER_LEN, buf);
 	return (buf);
 }
 
@@ -1817,7 +1817,7 @@ mfn_money(MFUNARGS)
 		snprintf(buf, BUFFER_LEN, "%d", GETVALUE(obj));
 		break;
 	default:
-		strcpy(buf, "0");
+		strcpyn(buf, sizeof(buf), "0");
 		break;
 	}
 	return buf;
@@ -1852,7 +1852,7 @@ mfn_tell(MFUNARGS)
 	if ((mesgtyp & MPI_ISLISTENER) && (Typeof(what) != TYPE_ROOM))
 		ABORT_MPI("TELL", "Permission denied.");
 	*buf = '\0';
-	strcpy(buf2, argv[0]);
+	strcpyn(buf2, sizeof(buf2), argv[0]);
 	for (ptr = buf2; (ptr != NULL) && *ptr != '\0'; ptr = ptr2) {
 		ptr2 = index(ptr, '\r');
 		if (ptr2 != NULL) {
@@ -1894,7 +1894,7 @@ mfn_otell(MFUNARGS)
 		ABORT_MPI("OTELL", "Permission denied.");
 	if (argc > 2)
 		eobj = mesg_dbref_raw(descr, player, what, perms, argv[2]);
-	strcpy(buf2, argv[0]);
+	strcpyn(buf2, sizeof(buf2), argv[0]);
 	for (ptr = buf2; *ptr; ptr = ptr2) {
 		ptr2 = index(ptr, '\r');
 		if (ptr2) {
@@ -1906,7 +1906,7 @@ mfn_otell(MFUNARGS)
 			 (Typeof(what) == TYPE_ROOM ||
 			  (Typeof(what) == TYPE_EXIT && Typeof(getloc(what)) == TYPE_ROOM))) ||
 			string_prefix(argv[0], NAME(player))) {
-			strcpy(buf, ptr);
+			strcpyn(buf, sizeof(buf), ptr);
 		} else {
 			snprintf(buf, BUFFER_LEN, "%.16s%s%.4078s", NAME(player),
 					((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
@@ -1945,7 +1945,7 @@ mfn_right(MFUNARGS)
 		if (!*fptr)
 			fptr = fillstr;
 	}
-	strcpy(ptr, argv[0]);
+	strcpyn(ptr, sizeof(buf) - (ptr - buf), argv[0]);
 	return buf;
 }
 
@@ -1967,7 +1967,7 @@ mfn_left(MFUNARGS)
 	fillstr = (argc > 2) ? argv[2] : " ";
 	if (!*fillstr)
 		ABORT_MPI("LEFT", "Null pad string.");
-	strcpy(buf, argv[0]);
+	strcpyn(buf, sizeof(buf), argv[0]);
 	for (i = strlen(argv[0]), ptr = &buf[i], fptr = fillstr; i < len; i++) {
 		*ptr++ = *fptr++;
 		if (!*fptr)
@@ -2003,7 +2003,7 @@ mfn_center(MFUNARGS)
 		if (!*fptr)
 			fptr = fillstr;
 	}
-	strcpy(ptr, argv[0]);
+	strcpyn(ptr, sizeof(buf) - (ptr - buf), argv[0]);
 	for (i = strlen(buf), ptr = &buf[i], fptr = fillstr; i < len; i++) {
 		*ptr++ = *fptr++;
 		if (!*fptr)
@@ -2080,5 +2080,5 @@ mfn_usecount(MFUNARGS)
 
 	return buf;
 }
-static const char *mfuns_c_version = "$RCSfile$ $Revision: 1.31 $";
+static const char *mfuns_c_version = "$RCSfile$ $Revision: 1.32 $";
 const char *get_mfuns_c_version(void) { return mfuns_c_version; }

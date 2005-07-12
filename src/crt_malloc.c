@@ -894,7 +894,7 @@ CrT_alloc_string(const char *string, const char *file, int line)
 	if ((s = (char *) CrT_malloc(strlen(string) + 1, file, line)) == 0) {
 		abort();
 	}
-	strcpy(s, string);
+	strcpy(s, string);  /* Guaranteed enough space. */
 	return s;
 }
 
@@ -931,7 +931,7 @@ CrT_string_dup(const char *s, const char *file, int line)
 
 	p = (char *) CrT_malloc(1 + strlen(s), file, line);
 	if (p)
-		strcpy(p, s);
+		strcpy(p, s);  /* Guaranteed enough space. */
 	return (p);
 }
 
@@ -949,5 +949,5 @@ fold-fold-on-startup: nil
 End:
 */
 /* }}} */
-static const char *crt_malloc_c_version = "$RCSfile$ $Revision: 1.9 $";
+static const char *crt_malloc_c_version = "$RCSfile$ $Revision: 1.10 $";
 const char *get_crt_malloc_c_version(void) { return crt_malloc_c_version; }

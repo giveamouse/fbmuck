@@ -448,15 +448,15 @@ include_defs(COMPSTATE * cstat, dbref i)
 	const char *tmpptr;
 	PropPtr j, pptr;
 
-	strcpy(dirname, "/_defs/");
-	j = first_prop(i, dirname, &pptr, temp);
+	strcpyn(dirname, sizeof(dirname), "/_defs/");
+	j = first_prop(i, dirname, &pptr, temp, sizeof(temp));
 	while (j) {
-		strcpy(dirname, "/_defs/");
+		strcpyn(dirname, sizeof(dirname), "/_defs/");
 		strcatn(dirname, sizeof(dirname), temp);
 		tmpptr = uncompress(get_property_class(i, dirname));
 		if (tmpptr && *tmpptr)
 			insert_def(cstat, temp, (char *) tmpptr);
-		j = next_prop(pptr, j, temp);
+		j = next_prop(pptr, j, temp, sizeof(temp));
 	}
 }
 
@@ -1527,6 +1527,7 @@ const char *
 next_token(COMPSTATE * cstat)
 {
 	char *expansion, *temp;
+	int elen = 0;
 
 	temp = (char *) next_token_raw(cstat);
 	if (!temp)
@@ -1540,8 +1541,9 @@ next_token(COMPSTATE * cstat)
 	if (temp[0] == BEGINESCAPE) {
 		if (temp[1]) {
 			expansion = temp;
-			temp = (char *) malloc(strlen(expansion));
-			strcpy(temp, (expansion + 1));
+			elen = strlen(expansion);
+			temp = (char *) malloc(elen);
+			strcpyn(temp, elen, (expansion + 1));
 			free(expansion);
 		}
 		return (temp);
@@ -1553,7 +1555,7 @@ next_token(COMPSTATE * cstat)
 		} else {
 			int templen = strlen(cstat->next_char) + strlen(expansion) + 21;
 			temp = (char *) malloc(templen);
-			strcpy(temp, expansion);
+			strcpyn(temp, templen, expansion);
 			strcatn(temp, templen, cstat->next_char);
 			free((void *) expansion);
 			if (cstat->line_copy) {
@@ -1746,7 +1748,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	int i = 0;
 	int j;
 
-	strcpy(temp, ++direct);
+	strcpyn(temp, sizeof(temp), ++direct);
 
 	if (!(temp[0])) {
 		v_abort_compile(cstat, "I don't understand that compiler directive!");
@@ -1790,7 +1792,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 		include_internal_defs(cstat); /* Always include internal defs. */
 		while(*cstat->next_char && isspace(*cstat->next_char))
 			cstat->next_char++; /* eating leading spaces */
-		strcpy(nextToken, cstat->next_char);
+		strcpyn(nextToken, sizeof(nextToken), cstat->next_char);
 		tmpname = nextToken;
 		while (*cstat->next_char)
 			cstat->next_char++;
@@ -1935,15 +1937,15 @@ do_directive(COMPSTATE * cstat, char *direct)
 		{
 			char tempa[BUFFER_LEN], tempb[BUFFER_LEN];
 
-			strcpy(tempa, match_args);
-			strcpy(tempb, match_cmdname);
+			strcpyn(tempa, sizeof(tempa), match_args);
+			strcpyn(tempb, sizeof(tempb), match_cmdname);
 			init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
 			match_registered(&md);
 			match_absolute(&md);
 			match_me(&md);
 			i = (int) match_result(&md);
-			strcpy(match_args, tempa);
-			strcpy(match_cmdname, tempb);
+			strcpyn(match_args, sizeof(match_args), tempa);
+			strcpyn(match_cmdname, sizeof(match_cmdname), tempb);
 		}
 		free(tmpname);
 		if (((dbref) i == NOTHING) || (i < 0) || (i >= db_top)
@@ -2019,9 +2021,9 @@ do_directive(COMPSTATE * cstat, char *direct)
 			v_abort_compile(cstat, "Unexpected end of file looking for $ifdef condition.");
 		}
 		if (*tmpname == '"') {
-			strcpy(temp, tmpname+1);
+			strcpyn(temp, sizeof(temp), tmpname+1);
 		} else {
-			strcpy(temp, tmpname);
+			strcpyn(temp, sizeof(temp), tmpname);
 		}
 		free(tmpname);
 		for (i = 1; temp[i] && (temp[i] != '=') && (temp[i] != '>') && (temp[i] != '<'); i++) ;
@@ -2073,15 +2075,15 @@ do_directive(COMPSTATE * cstat, char *direct)
 		{
 			char tempa[BUFFER_LEN], tempb[BUFFER_LEN];
 
-			strcpy(tempa, match_args);
-			strcpy(tempb, match_cmdname);
+			strcpyn(tempa, sizeof(tempa), match_args);
+			strcpyn(tempb, sizeof(tempb), match_cmdname);
 			init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
 			match_registered(&md);
 			match_absolute(&md);
 			match_me(&md);
 			i = (int) match_result(&md);
-			strcpy(match_args, tempa);
-			strcpy(match_cmdname, tempb);
+			strcpyn(match_args, sizeof(match_args), tempa);
+			strcpyn(match_cmdname, sizeof(match_cmdname), tempb);
 		} else {
 			i = cstat->program;
 		}
@@ -2158,15 +2160,15 @@ do_directive(COMPSTATE * cstat, char *direct)
 		{
 			char tempa[BUFFER_LEN], tempb[BUFFER_LEN];
 
-			strcpy(tempa, match_args);
-			strcpy(tempb, match_cmdname);
+			strcpyn(tempa, sizeof(tempa), match_args);
+			strcpyn(tempb, sizeof(tempb), match_cmdname);
 			init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
 			match_registered(&md);
 			match_absolute(&md);
 			match_me(&md);
 			i = (int) match_result(&md);
-			strcpy(match_args, tempa);
-			strcpy(match_cmdname, tempb);
+			strcpyn(match_args, sizeof(match_args), tempa);
+			strcpyn(match_cmdname, sizeof(match_cmdname), tempb);
 		} else {
 			i = cstat->program;
 		}
@@ -2180,7 +2182,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 		}
 		if (!tmpptr || !*tmpptr) {
 			tmpptr = (char*)malloc(4 * sizeof(char));
-			strcpy(tmpptr, "0.0");
+			strcpyn(tmpptr, 4*sizeof(char), "0.0");
 			needFree = 1;
 		} else { 
 			uncompress(tmpptr);	
@@ -2236,15 +2238,15 @@ do_directive(COMPSTATE * cstat, char *direct)
 		if (!tmpname)
 			v_abort_compile(cstat, "Unexpected end of file in $iflib/$ifnlib clause.");
 
-		strcpy(tempa, match_args);
-		strcpy(tempb, match_cmdname);
+		strcpyn(tempa, sizeof(tempa), match_args);
+		strcpyn(tempb, sizeof(tempb), match_cmdname);
 		init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
 		match_registered(&md);
 		match_absolute(&md);
 		match_me(&md);
 		i = (int) match_result(&md);
-		strcpy(match_args, tempa);
-		strcpy(match_cmdname, tempb);
+		strcpyn(match_args, sizeof(match_args), tempa);
+		strcpyn(match_cmdname, sizeof(match_cmdname), tempb);
 
 		free(tmpname);
 		if ((((dbref) i == NOTHING) || (i < 0) || (i >= db_top)
@@ -2393,7 +2395,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		if (!proc_name)
 			abort_compile(cstat, "Unexpected end of file within procedure.");
 
-		strcpy(buf, proc_name);
+		strcpyn(buf, sizeof(buf), proc_name);
 		if (proc_name)
 			free((void *) proc_name);
 		proc_name = buf;
@@ -3953,5 +3955,5 @@ init_primitives(void)
 	log_status("MUF: %d primitives exist.\n", BASE_MAX);
 }
 
-static const char *compile_c_version = "$RCSfile$ $Revision: 1.83 $";
+static const char *compile_c_version = "$RCSfile$ $Revision: 1.84 $";
 const char *get_compile_c_version(void) { return compile_c_version; }

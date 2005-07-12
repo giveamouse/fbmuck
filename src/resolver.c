@@ -47,6 +47,24 @@
 #define IDENTD_TIMEOUT 60
 
 
+/*
+ * Like strncpy, except it guarentees null termination of the result string.
+ * It also has a more sensible argument ordering.
+ */
+char*
+strcpyn(char* buf, size_t bufsize, const char* src)
+{
+	int pos = 0;
+	char* dest = buf;
+
+	while (++pos < bufsize && *src) {
+		*dest++ = *src++;
+	}
+	*dest = '\0';
+	return buf;
+}
+
+
 int
 notify(int player, const char* msg)
 {
@@ -203,7 +221,7 @@ hostadd(long ip, const char *name)
 	ptr->ipnum = ip;
 #endif
 	ptr->time = 0;
-	strcpy(ptr->name, name);
+	strcpyn(ptr->name, sizeof(ptr->name), name);
 	hostprune();
 }
 
@@ -465,7 +483,7 @@ addrout(long a, unsigned short prt, unsigned short myprt)
 #endif
 
 	if (he) {
-		strcpy(tmpbuf, he->h_name);
+		strcpyn(tmpbuf, sizeof(tmpbuf), he->h_name);
 #ifdef USE_IPV6
 		hostadd(a, tmpbuf);
 #else
@@ -595,5 +613,5 @@ main(int argc, char **argv)
 	exit(0);
 	return 0;
 }
-static const char *resolver_c_version = "$RCSfile$ $Revision: 1.10 $";
+static const char *resolver_c_version = "$RCSfile$ $Revision: 1.11 $";
 const char *get_resolver_c_version(void) { return resolver_c_version; }
