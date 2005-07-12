@@ -51,6 +51,7 @@ prim_array_make(PRIM_PROTOTYPE)
 	nu = new_array_packed(result);
 	for (i = result; i-- > 0;) {
 		temp1.data.number = i;
+		CHECKOP(1);
 		oper1 = POP();
 		array_setitem(&nu, &temp1, oper1);
 		CLEAR(oper1);
@@ -79,10 +80,10 @@ prim_array_make_dict(PRIM_PROTOTYPE)
 
 	if (*top < (2 * result))
 		abort_interp("Stack underflow.");
-	nargs = 2;
 
 	nu = new_array_dictionary();
 	for (i = result; i-- > 0;) {
+		CHECKOP(2);
 		oper1 = POP();			/* val */
 		oper2 = POP();			/* key */
 		if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING) {
@@ -2422,5 +2423,5 @@ prim_array_filter_flags(PRIM_PROTOTYPE)
     PushArrayRaw(nw);
 }
 
-static const char *p_array_c_version = "$RCSfile$ $Revision: 1.53 $";
+static const char *p_array_c_version = "$RCSfile$ $Revision: 1.54 $";
 const char *get_p_array_c_version(void) { return p_array_c_version; }
