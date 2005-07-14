@@ -2194,8 +2194,12 @@ prim_contents_array(PRIM_PROTOTYPE)
 	if (!valid_object(oper1))
 		abort_interp("Invalid dbref (1)");
 	ref = oper1->data.objref;
-	if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT))
-		abort_interp("Dbref cannot be a program nor exit (1)");
+
+	if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT)) {
+		PushArrayRaw(new_array_packed(0));
+		return;
+	}		
+
 	CHECKREMOTE(oper1->data.objref);
 
 	for(ref = DBFETCH(oper1->data.objref)->contents; (ref >= 0) && (ref < db_top); ref = DBFETCH(ref)->next)
@@ -2225,8 +2229,11 @@ prim_exits_array(PRIM_PROTOTYPE)
 	CHECKREMOTE(oper1->data.objref);
 	if ((mlev < 3) && !permissions(ProgUID, ref))
 		abort_interp("Permission denied.");
-	if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT))
-		abort_interp("Dbref cannot be a program nor exit (1)");
+
+	if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT)) {
+		PushArrayRaw(new_array_packed(0));
+		return;
+	}
 
 	for(ref = DBFETCH(oper1->data.objref)->exits; (ref >= 0) && (ref < db_top); ref = DBFETCH(ref)->next)
 		count++;
@@ -2675,5 +2682,5 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
-static const char *p_db_c_version = "$RCSfile$ $Revision: 1.55 $";
+static const char *p_db_c_version = "$RCSfile$ $Revision: 1.56 $";
 const char *get_p_db_c_version(void) { return p_db_c_version; }
