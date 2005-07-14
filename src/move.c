@@ -41,7 +41,7 @@ moveto(dbref what, dbref where)
 			if (parent_loop_check(what, where)) {
 			  where = PLAYER_HOME(OWNER(what));
 			  if (parent_loop_check(what, where))
-			    where = (dbref) 0;
+			    where = (dbref) tp_player_start;
 			}
 			break;
 		case TYPE_ROOM:
@@ -63,7 +63,7 @@ moveto(dbref what, dbref where)
 			if (parent_loop_check(what, where)) {
 			  where = PLAYER_HOME(OWNER(what));
 			  if (parent_loop_check(what, where))
-			    where = (dbref) 0;
+			    where = (dbref) tp_player_start;
 			}
 			break;
 		case TYPE_ROOM:
@@ -275,7 +275,7 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 	    if (parent_loop_check(player, loc)) {
 	      loc = PLAYER_HOME(OWNER(player));
 	      if (parent_loop_check(player, loc))
-		loc = (dbref) 0;
+		loc = (dbref) tp_player_start;
 	    }
 	    break;
 	  case TYPE_ROOM:
@@ -841,6 +841,12 @@ do_recycle(int descr, dbref player, const char *name)
 	match_here(&md);
 	match_absolute(&md);
 	if ((thing = noisy_match_result(&md)) != NOTHING) {
+#ifdef GOD_PRIV
+	if(!God(player) && God(OWNER(thing))) {
+		notify(player, "Only God may reclaim God's property.");
+		return;
+	}
+#endif
 		if (!controls(player, thing)) {
 			if(Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
 				notify(player, "That's already garbage!");
@@ -1122,5 +1128,5 @@ recycle(int descr, dbref player, dbref thing)
 	recyclable = thing;
 	DBDIRTY(thing);
 }
-static const char *move_c_version = "$RCSfile$ $Revision: 1.34 $";
+static const char *move_c_version = "$RCSfile$ $Revision: 1.35 $";
 const char *get_move_c_version(void) { return move_c_version; }

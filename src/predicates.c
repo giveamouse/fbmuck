@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.15  2005/07/14 12:16:23  winged
+ * Adding a bunch of GOD_PRIV God's objects can't be screwed with code
+ *
  * Revision 1.14  2005/07/04 12:04:24  winged
  * Initial revisions for everything.
  *
@@ -403,21 +406,32 @@ controls(dbref who, dbref what)
 		who = OWNER(who);
 
 	/* Wizard controls everything */
-	if (Wizard(who))
+	if (Wizard(who)) {
+#ifdef GOD_PRIV
+		if(God(OWNER(what)) && !God(who))
+			/* Only God controls God's objects */
+			return 0;
+		} else {
+#endif
 		return 1;
+	}
 
 	if (tp_realms_control) {
 		/* Realm Owner controls everything under his environment. */
 		/* To set up a Realm, a Wizard sets the W flag on a room.  The
-		 * owner of that room controls every object contained within
-		 * that room, all the way to the leaves of the tree.  (I'm not
-		 * sure this should extend to Player objects, though?  For the
-		 * same MPI security hole reason cited below for the exits? 
-		 * -winged) */
+		 * owner of that room controls every Room object contained within
+		 * that room, all the way to the leaves of the tree.
+		 * -winged */
 		for (index = what; index != NOTHING; index = getloc(index)) {
 			if ((OWNER(index) == who) && (Typeof(index) == TYPE_ROOM)
-					&& Wizard(index))
-				return 1;
+					&& Wizard(index)) {
+				/* Realm Owner doesn't control other Player objects */
+				if(Typeof(what) == TYPE_PLAYER) {
+					return 0;
+				} else {
+					return 1;
+				}
+			}
 		}
 	}
 
@@ -658,5 +672,5 @@ isancestor(dbref parent, dbref child)
 	}
 	return child == parent;
 }
-static const char *predicates_c_version = "$RCSfile$ $Revision: 1.14 $";
+static const char *predicates_c_version = "$RCSfile$ $Revision: 1.15 $";
 const char *get_predicates_c_version(void) { return predicates_c_version; }

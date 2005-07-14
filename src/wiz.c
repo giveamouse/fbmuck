@@ -55,6 +55,12 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 		}
 		to = arg2;
 	}
+#ifdef GOD_PRIV
+	if(!God(player) && God(OWNER(victim))) {
+		notify(player, "God has already set that where He wants it to be.");
+		return;
+	}
+#endif
 
 	/* get destination */
 	init_match(descr, player, to, TYPE_PLAYER, &md);
@@ -200,6 +206,13 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild
 	int i, cnt = 0;
 	int recurse = 0;
 
+#ifdef GOD_PRIV
+	if(!God(player) && God(OWNER(thing))) {
+		notify(player,"Only God may touch what is God's.");
+		return 0;
+	}
+#endif
+
 	strcpyn(wld, sizeof(wld), wild);
 	i = strlen(wld);
 	if (i && wld[i - 1] == PROPDIR_DELIMITER)
@@ -289,6 +302,7 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 		return;
 	}
 
+
 	if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
 		notify(player, "Only Wizard players may use this command.");
 		return;
@@ -305,6 +319,13 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 	if ((victim = noisy_match_result(&md)) == NOTHING) {
 		return;
 	}
+
+#ifdef GOD_PRIV
+	if(!God(player) && God(OWNER(victim))) {
+		notify(player, "Only God may touch God's stuff.");
+		return;
+	}
+#endif
 
 	if (!Wizard(OWNER(player))) {
 		notify(player, "Permission denied.");
@@ -1333,5 +1354,5 @@ do_memory(dbref who)
 
 	notify(who, "Done.");
 }
-static const char *wiz_c_version = "$RCSfile$ $Revision: 1.35 $";
+static const char *wiz_c_version = "$RCSfile$ $Revision: 1.36 $";
 const char *get_wiz_c_version(void) { return wiz_c_version; }

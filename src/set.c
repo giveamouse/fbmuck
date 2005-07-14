@@ -912,6 +912,13 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	/* find thing */
 	if ((thing = match_controlled(descr, player, name)) == NOTHING)
 		return;
+#ifdef GOD_PRIV
+	/* Only God can set anything on any of his stuff */
+	if(!God(player) && God(OWNER(thing))) {
+		notify(player,"Only God may touch God's property.");
+		return;
+	}
+#endif
 
 	/* move p past NOT_TOKEN if present */
 	for (p = flag; *p && (*p == NOT_TOKEN || isspace(*p)); p++) ;
@@ -1042,7 +1049,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 		notify(player, "Mucker level set.");
 		return;
 	} else if (!string_compare("4", p) || !string_compare("M4", p)) {
-		notify(player, "To set Mucker Level 4, set the Wizard bit.");
+		notify(player, "To set Mucker Level 4, set the Wizard bit and another Mucker bit.");
 		return;
 	} else if (string_prefix("WIZARD", p)) {
 		if (force_level) {
@@ -1297,5 +1304,5 @@ set_flags_from_tunestr(dbref obj, const char* tunestr)
 }
 
 
-static const char *set_c_version = "$RCSfile$ $Revision: 1.26 $";
+static const char *set_c_version = "$RCSfile$ $Revision: 1.27 $";
 const char *get_set_c_version(void) { return set_c_version; }
