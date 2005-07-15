@@ -194,16 +194,12 @@ control_process(dbref player, int pid)
 	}
 
 	/* However, if it is in the timequeue, we have to handle it.
-		However, we've got a bit of a problem -- we need to
-		make sure that the person who has the process in his
-		queue can kill it too. */
+		Other than a Wizard, there are three people who can kill it:
+		the owner of the program, the owner of the trigger, and the
+		person who is currently running it. */
 
-	if (player == ptr->uid) {
-		return 1;
-	}
-
-	if ((!controls(player, ptr->called_prog) && !controls(player, ptr->trig))
-			|| (player != ptr->uid)) {
+	if (!controls(player, ptr->called_prog) && !controls(player, ptr->trig)
+			&& (player != ptr->uid)) {
 		return 0;
 	}
 	return 1;
@@ -1491,5 +1487,5 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
 		}
 	}
 }
-static const char *timequeue_c_version = "$RCSfile$ $Revision: 1.41 $";
+static const char *timequeue_c_version = "$RCSfile$ $Revision: 1.42 $";
 const char *get_timequeue_c_version(void) { return timequeue_c_version; }
