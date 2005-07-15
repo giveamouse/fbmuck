@@ -185,11 +185,25 @@ control_process(dbref player, int pid)
 		ptr = ptr->next;
 	}
 
+	/* If the process isn't in the timequeue, that means it's
+		waiting for an event, so let the event code handle
+		it. */
+
 	if (!ptr) {
 		return muf_event_controls(player, pid);
 	}
 
-	if (!controls(player, ptr->called_prog) && !controls(player, ptr->trig)) {
+	/* However, if it is in the timequeue, we have to handle it.
+		However, we've got a bit of a problem -- we need to
+		make sure that the person who has the process in his
+		queue can kill it too. */
+
+	if (player == ptr->uid) {
+		return 1;
+	}
+
+	if ((!controls(player, ptr->called_prog) && !controls(player, ptr->trig))
+			|| (player != ptr->uid)) {
 		return 0;
 	}
 	return 1;
@@ -734,13 +748,19 @@ list_events(dbref player)
 	notify_nolisten(player, buf, 1);
 
 	while (ptr) {
+		/* pid */
 		snprintf(pidstr, sizeof(pidstr), "%d", ptr->eventnum);
+		/* next due */
 		strcpyn(duestr, sizeof(duestr), ((ptr->when - rtime) > 0) ?
 				time_format_2((long) (ptr->when - rtime)) : "Due");
+		/* Run length */
 		strcpyn(runstr, sizeof(runstr), ptr->fr ?
 				time_format_2((long) (rtime - ptr->fr->started)): "0s");
+		/* Thousand Instructions executed */
 		snprintf(inststr, sizeof(inststr), "%d", ptr->fr? (ptr->fr->instcnt / 1000) : 0);
 
+		/* If it's actually a program, instead of MPI... */
+		/* we need to figure out how much CPU it's used */
 		if (ptr->fr) {
 			etime = rtime - ptr->fr->started;
 			if (etime > 0) {
@@ -757,32 +777,41 @@ list_events(dbref player)
 			pcnt = 0.0;
 		}
 		snprintf(cpustr, sizeof(cpustr), "%4.1f", pcnt);
+		/* Get the dbref! */
 		if (ptr->fr) {
+			/* if it's a program... */
 			snprintf(progstr, sizeof(progstr), "#%d", ptr->fr->caller.st[1]);
 			snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(ptr->fr->caller.st[1]));
 		} else if (ptr->typ == TQ_MPI_TYP) {
+			/* if it's MPI... */
 			snprintf(progstr, sizeof(progstr), "#%d", ptr->trig);
 			snprintf(prognamestr, sizeof(prognamestr), "%s", "");
 		} else {
+			/* if it's anything else... */
 			snprintf(progstr, sizeof(progstr), "#%d", ptr->called_prog);
 			snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(ptr->called_prog));
 		}
 
+		/* Now, the next due is based on if it's waiting on a READ */
 		if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ) {
 			strcpyn(duestr, sizeof(duestr), "--");
 		} else if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_TIMER) {
+			/* if it's a timer event, it gives the eventnum */
 			snprintf(pidstr, sizeof(pidstr), "(%d)", ptr->eventnum);
 		} else if (ptr->typ == TQ_MPI_TYP) {
+			/* and if it's MPI, undo most of the stuff we did
+			 * before, and set it up for mostly MPI stuff */
 			strcpyn(runstr, sizeof(runstr), "--");
 			strcpyn(inststr, sizeof(inststr), "MPI");
 			strcpyn(cpustr, sizeof(cpustr), "--");
 		}
-		(void) snprintf(buf, sizeof(buf), strfmt, pidstr, duestr, runstr, inststr,
-					                cpustr, progstr, prognamestr, NAME(ptr->uid), 
-									ptr->called_data? ptr->called_data : "");
+		(void) snprintf(buf, sizeof(buf), strfmt, pidstr, duestr, runstr,
+						inststr, cpustr, progstr, prognamestr, NAME(ptr->uid), 
+						(ptr->called_data? ptr->called_data : ""));
 		if (Wizard(OWNER(player)) || ptr->uid == player) {
 			notify_nolisten(player, buf, 1);
-		} else if (ptr->called_prog != NOTHING && OWNER(ptr->called_prog) == OWNER(player)) {
+		} else if (ptr->called_prog != NOTHING &&
+					 OWNER(ptr->called_prog) == OWNER(player)) {
 			notify_nolisten(player, buf, 1);
 		}
 		ptr = ptr->next;
@@ -1462,5 +1491,5 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
 		}
 	}
 }
-static const char *timequeue_c_version = "$RCSfile$ $Revision: 1.40 $";
+static const char *timequeue_c_version = "$RCSfile$ $Revision: 1.41 $";
 const char *get_timequeue_c_version(void) { return timequeue_c_version; }
