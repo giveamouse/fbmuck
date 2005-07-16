@@ -205,7 +205,7 @@ mfn_contents(MFUNARGS)
 					  "Type must be 'player', 'room', 'thing', 'program', or 'exit'. (arg2).");
 		}
 	}
-	strcpyn(buf, sizeof(buf), "");
+	strcpyn(buf, buflen, "");
 	outlen = 0;
 	ownroom = controls(perms, obj);
 	obj = DBFETCH(obj)->contents;
@@ -332,18 +332,18 @@ mfn_name(MFUNARGS)
 	if (obj == PERMDENIED)
 		ABORT_MPI("NAME", "Permission denied.");
 	if (obj == NOTHING) {
-		strcpyn(buf, sizeof(buf), "#NOTHING#");
+		strcpyn(buf, buflen, "#NOTHING#");
 		return buf;
 	}
 	if (obj == AMBIGUOUS) {
-		strcpyn(buf, sizeof(buf), "#AMBIGUOUS#");
+		strcpyn(buf, buflen, "#AMBIGUOUS#");
 		return buf;
 	}
 	if (obj == HOME) {
-		strcpyn(buf, sizeof(buf), "#HOME#");
+		strcpyn(buf, buflen, "#HOME#");
 		return buf;
 	}
-	strcpyn(buf, sizeof(buf), NAME(obj));
+	strcpyn(buf, buflen, NAME(obj));
 	if (Typeof(obj) == TYPE_EXIT) {
 		ptr = index(buf, ';');
 		if (ptr)
@@ -363,18 +363,18 @@ mfn_fullname(MFUNARGS)
 	if (obj == PERMDENIED)
 		ABORT_MPI("NAME", "Permission denied.");
 	if (obj == NOTHING) {
-		strcpyn(buf, sizeof(buf), "#NOTHING#");
+		strcpyn(buf, buflen, "#NOTHING#");
 		return buf;
 	}
 	if (obj == AMBIGUOUS) {
-		strcpyn(buf, sizeof(buf), "#AMBIGUOUS#");
+		strcpyn(buf, buflen, "#AMBIGUOUS#");
 		return buf;
 	}
 	if (obj == HOME) {
-		strcpyn(buf, sizeof(buf), "#HOME#");
+		strcpyn(buf, buflen, "#HOME#");
 		return buf;
 	}
-	strcpyn(buf, sizeof(buf), NAME(obj));
+	strcpyn(buf, buflen, NAME(obj));
 	return buf;
 }
 
@@ -407,7 +407,7 @@ countlitems(char *list, char *sep)
  * line is list line to take. */
 
 char *
-getlitem(char *buf, char *list, char *sep, int line)
+getlitem(char *buf, int buflen, char *list, char *sep, int line)
 {
 	char *ptr, *ptr2;
 	char tmpchr;
@@ -426,7 +426,7 @@ getlitem(char *buf, char *list, char *sep, int line)
 	}
 	tmpchr = *ptr2;
 	*ptr2 = '\0';
-	strcpyn(buf, sizeof(buf), ptr);
+	strcpyn(buf, buflen, ptr);
 	*ptr2 = tmpchr;
 	return buf;
 }
@@ -448,7 +448,7 @@ mfn_sublist(MFUNARGS)
 	if (argc > 1) {
 		which = atoi(argv[1]);
 	} else {
-		strcpyn(buf, sizeof(buf), argv[0]);
+		strcpyn(buf, buflen, argv[0]);
 		return buf;
 	}
 
@@ -497,7 +497,7 @@ mfn_sublist(MFUNARGS)
 		} else {
 			pflag++;
 		}
-		ptr = getlitem(buf2, argv[0], sepbuf, i);
+		ptr = getlitem(buf2, sizeof(buf2), argv[0], sepbuf, i);
 		strcatn(buf, BUFFER_LEN, ptr);
 	}
 	return buf;
@@ -522,7 +522,7 @@ mfn_lrand(MFUNARGS)
 	count = countlitems(argv[0], sepbuf);
 	if (count) {
 		which = ((RANDOM() / 256) % count) + 1;
-		getlitem(buf, argv[0], sepbuf, which);
+		getlitem(buf, buflen, argv[0], sepbuf, which);
 	} else {
 		*buf = '\0';
 	}
@@ -533,11 +533,11 @@ mfn_lrand(MFUNARGS)
 const char *
 mfn_count(MFUNARGS)
 {
-	strcpyn(buf, sizeof(buf), "\r");
+	strcpyn(buf, buflen, "\r");
 	if (argc > 1) {
 		if (!*argv[1])
 			ABORT_MPI("COUNT", "Can't use null seperator string.");
-		strcpyn(buf, sizeof(buf), argv[1]);
+		strcpyn(buf, buflen, argv[1]);
 	}
 	snprintf(buf, BUFFER_LEN, "%d", countlitems(argv[0], buf));
 	return buf;
@@ -553,9 +553,9 @@ mfn_with(MFUNARGS)
 	char *ptr, *valptr;
 	int v, cnt;
 
-	ptr = MesgParse(argv[0], namebuf);
+	ptr = MesgParse(argv[0], namebuf, sizeof(namebuf));
 	CHECKRETURN(ptr, "WITH", "arg 1");
-	valptr = MesgParse(argv[1], vbuf);
+	valptr = MesgParse(argv[1], vbuf, sizeof(vbuf));
 	CHECKRETURN(valptr, "WITH", "arg 2");
 	v = new_mvar(ptr, vbuf);
 	if (v == 1)
@@ -564,7 +564,7 @@ mfn_with(MFUNARGS)
 		ABORT_MPI("WITH", "Too many variables already defined.");
 	*buf = '\0';
 	for (cnt = 2; cnt < argc; cnt++) {
-		ptr = MesgParse(argv[cnt], cmdbuf);
+		ptr = MesgParse(argv[cnt], cmdbuf, sizeof(cmdbuf));
 		if (!ptr) {
 			snprintf(buf, BUFFER_LEN, "%s %cWITH%c (arg %d)", get_mvar("how"),
 					MFUN_LEADCHAR, MFUN_ARGEND, cnt);
@@ -590,7 +590,7 @@ mfn_fold(MFUNARGS)
 	char *sepin = argv[4];
 	int seplen, v;
 
-	ptr = MesgParse(argv[0], varname);
+	ptr = MesgParse(argv[0], varname, sizeof(varname));
 	CHECKRETURN(ptr, "FOLD", "arg 1");
 	v = new_mvar(ptr, tmp);
 	if (v == 1)
@@ -598,7 +598,7 @@ mfn_fold(MFUNARGS)
 	if (v == 2)
 		ABORT_MPI("FOLD", "Too many variables already defined.");
 
-	ptr = MesgParse(argv[1], varname);
+	ptr = MesgParse(argv[1], varname, sizeof(varname));
 	CHECKRETURN(ptr, "FOLD", "arg 2");
 	v = new_mvar(ptr, tmp2);
 	if (v == 1)
@@ -607,7 +607,7 @@ mfn_fold(MFUNARGS)
 		ABORT_MPI("FOLD", "Too many variables already defined.");
 
 	if (argc > 4) {
-		ptr = MesgParse(sepin, sepinbuf);
+		ptr = MesgParse(sepin, sepinbuf, sizeof(sepinbuf));
 		CHECKRETURN(ptr, "FOLD", "arg 5");
 		if (!*ptr)
 			ABORT_MPI("FOLD", "Can't use Null seperator string");
@@ -617,14 +617,14 @@ mfn_fold(MFUNARGS)
 		strcpyn(sepin, sizeof(sepin), "\r");
 	}
 	seplen = strlen(sepin);
-	ptr = MesgParse(argv[2], listbuf);
+	ptr = MesgParse(argv[2], listbuf, sizeof(listbuf));
 	CHECKRETURN(ptr, "FOLD", "arg 3");
 	for (ptr2 = ptr; *ptr2 && strncmp(ptr2, sepin, seplen); ptr2++) ;
 	if (*ptr2) {
 		*ptr2 = '\0';
 		ptr2 += seplen;
 	}
-	strcpyn(buf, sizeof(buf), ptr);
+	strcpyn(buf, buflen, ptr);
 	ptr = ptr2;
 	while (*ptr) {
 		for (ptr2 = ptr; *ptr2 && strncmp(ptr2, sepin, seplen); ptr2++) ;
@@ -634,7 +634,7 @@ mfn_fold(MFUNARGS)
 		}
 		strcpyn(tmp2, sizeof(tmp2), ptr);
 		strcpyn(tmp, sizeof(tmp), buf);
-		MesgParse(argv[3], buf);
+		MesgParse(argv[3], buf, buflen);
 		CHECKRETURN(ptr, "FOLD", "arg 4");
 		ptr = ptr2;
 		if (!(--iter_limit))
@@ -655,7 +655,7 @@ mfn_for(MFUNARGS)
 	char *ptr, *dptr;
 	int v, i, start, end, incr;
 
-	ptr = MesgParse(argv[0], scratch);
+	ptr = MesgParse(argv[0], scratch, sizeof(scratch));
 	CHECKRETURN(ptr, "FOR", "arg 1 (varname)");
 	v = new_mvar(ptr, tmp);
 	if (v == 1)
@@ -663,22 +663,22 @@ mfn_for(MFUNARGS)
 	if (v == 2)
 		ABORT_MPI("FOR", "Too many variables already defined.");
 
-	dptr = MesgParse(argv[1], scratch);
+	dptr = MesgParse(argv[1], scratch, sizeof(scratch));
 	CHECKRETURN(dptr, "FOR", "arg 2 (start num)");
 	start = atoi(dptr);
 
-	dptr = MesgParse(argv[2], scratch);
+	dptr = MesgParse(argv[2], scratch, sizeof(scratch));
 	CHECKRETURN(dptr, "FOR", "arg 3 (end num)");
 	end = atoi(dptr);
 
-	dptr = MesgParse(argv[3], scratch);
+	dptr = MesgParse(argv[3], scratch, sizeof(scratch));
 	CHECKRETURN(dptr, "FOR", "arg 4 (increment)");
 	incr = atoi(dptr);
 
 	*buf = '\0';
 	for (i = start; ((incr >= 0 && i <= end) || (incr < 0 && i >= end)); i += incr) {
 		snprintf(tmp, sizeof(tmp), "%d", i);
-		dptr = MesgParse(argv[4], buf);
+		dptr = MesgParse(argv[4], buf, buflen);
 		CHECKRETURN(dptr, "FOR", "arg 5 (repeated command)");
 		if (!(--iter_limit))
 			ABORT_MPI("FOR", "Iteration limit exceeded");
@@ -699,7 +699,7 @@ mfn_foreach(MFUNARGS)
 	char *sepin;
 	int seplen, v;
 
-	ptr = MesgParse(argv[0], scratch);
+	ptr = MesgParse(argv[0], scratch, sizeof(scratch));
 	CHECKRETURN(ptr, "FOREACH", "arg 1");
 	v = new_mvar(ptr, tmp);
 	if (v == 1)
@@ -707,11 +707,11 @@ mfn_foreach(MFUNARGS)
 	if (v == 2)
 		ABORT_MPI("FOREACH", "Too many variables already defined.");
 
-	dptr = MesgParse(argv[1], listbuf);
+	dptr = MesgParse(argv[1], listbuf, sizeof(listbuf));
 	CHECKRETURN(dptr, "FOREACH", "arg 2");
 
 	if (argc > 3) {
-		ptr = MesgParse(argv[3], scratch);
+		ptr = MesgParse(argv[3], scratch, sizeof(scratch));
 		CHECKRETURN(ptr, "FOREACH", "arg 4");
 		if (!*ptr)
 			ABORT_MPI("FOREACH", "Can't use Null seperator string");
@@ -730,7 +730,7 @@ mfn_foreach(MFUNARGS)
 			ptr2 += seplen;
 		}
 		strcpyn(tmp, sizeof(tmp), ptr);
-		dptr = MesgParse(argv[2], buf);
+		dptr = MesgParse(argv[2], buf, buflen);
 		CHECKRETURN(dptr, "FOREACH", "arg 3");
 		ptr = ptr2;
 		if (!(--iter_limit))
@@ -757,7 +757,7 @@ mfn_filter(MFUNARGS)
 	int seplen, v;
 	int outcount = 0;
 
-	ptr = MesgParse(argv[0], scratch);
+	ptr = MesgParse(argv[0], scratch, sizeof(scratch));
 	CHECKRETURN(ptr, "FILTER", "arg 1");
 	v = new_mvar(ptr, tmp);
 	if (v == 1)
@@ -765,10 +765,10 @@ mfn_filter(MFUNARGS)
 	if (v == 2)
 		ABORT_MPI("FILTER", "Too many variables already defined.");
 
-	dptr = MesgParse(argv[1], listbuf);
+	dptr = MesgParse(argv[1], listbuf, sizeof(listbuf));
 	CHECKRETURN(dptr, "FILTER", "arg 2");
 	if (argc > 3) {
-		ptr = MesgParse(sepin, sepinbuf);
+		ptr = MesgParse(sepin, sepinbuf, sizeof(sepinbuf));
 		CHECKRETURN(ptr, "FILTER", "arg 4");
 		if (!*ptr)
 			ABORT_MPI("FILTER", "Can't use Null seperator string");
@@ -778,7 +778,7 @@ mfn_filter(MFUNARGS)
 		strcpyn(sepin, sizeof(sepinbuf), "\r");
 	}
 	if (argc > 4) {
-		ptr = MesgParse(sepbuf, sepoutbuf);
+		ptr = MesgParse(sepbuf, sepoutbuf, sizeof(sepoutbuf));
 		CHECKRETURN(ptr, "FILTER", "arg 5");
 		sepbuf = sepoutbuf;
 	} else {
@@ -795,7 +795,7 @@ mfn_filter(MFUNARGS)
 			ptr2 += seplen;
 		}
 		strcpyn(tmp, sizeof(tmp), ptr);
-		dptr = MesgParse(argv[2], buf2);
+		dptr = MesgParse(argv[2], buf2, sizeof(buf2));
 		CHECKRETURN(dptr, "FILTER", "arg 3");
 		if (truestr(buf2)) {
 			if (outcount++)
@@ -1007,17 +1007,17 @@ mfn_lsort(MFUNARGS)
 		ABORT_MPI("LSORT", "Takes 1 or 4 arguments.");
 	for (i = 0; i < MAX_MFUN_LIST_LEN; i++)
 		litem[i] = NULL;
-	ptr = MesgParse(argv[0], listbuf);
+	ptr = MesgParse(argv[0], listbuf, sizeof(listbuf));
 	CHECKRETURN(ptr, "LSORT", "arg 1");
 	if (argc > 1) {
-		ptr2 = MesgParse(argv[1], scratch);
+		ptr2 = MesgParse(argv[1], scratch, sizeof(scratch));
 		CHECKRETURN(ptr2, "LSORT", "arg 2");
 		j = new_mvar(ptr2, vbuf);
 		if (j == 1)
 			ABORT_MPI("LSORT", "Variable name too long.");
 		if (j == 2)
 			ABORT_MPI("LSORT", "Too many variables already defined.");
-		ptr2 = MesgParse(argv[2], scratch);
+		ptr2 = MesgParse(argv[2], scratch, sizeof(scratch));
 		CHECKRETURN(ptr2, "LSORT", "arg 3");
 		j = new_mvar(ptr2, vbuf2);
 		if (j == 1)
@@ -1040,7 +1040,7 @@ mfn_lsort(MFUNARGS)
 			if (argc > 1) {
 				strcpyn(vbuf, sizeof(vbuf), litem[i]);
 				strcpyn(vbuf2, sizeof(vbuf2), litem[j]);
-				ptr = MesgParse(argv[3], buf);
+				ptr = MesgParse(argv[3], buf, buflen);
 				CHECKRETURN(ptr, "LSORT", "arg 4");
 				if (truestr(buf)) {
 					tmp = litem[i];
@@ -1129,7 +1129,7 @@ mfn_parse(MFUNARGS)
 	int seplen, oseplen, v;
 	int outlen, nextlen;
 
-	ptr = MesgParse(argv[0], buf2);
+	ptr = MesgParse(argv[0], buf2, sizeof(buf2));
 	CHECKRETURN(ptr, "PARSE", "arg 1");
 	v = new_mvar(ptr, tmp);
 	if (v == 1)
@@ -1137,11 +1137,11 @@ mfn_parse(MFUNARGS)
 	if (v == 2)
 		ABORT_MPI("PARSE", "Too many variables already defined.");
 
-	dptr = MesgParse(argv[1], listbuf);
+	dptr = MesgParse(argv[1], listbuf, sizeof(listbuf));
 	CHECKRETURN(dptr, "PARSE", "arg 2");
 
 	if (argc > 3) {
-		ptr = MesgParse(sepin, sepinbuf);
+		ptr = MesgParse(sepin, sepinbuf, sizeof(sepinbuf));
 		CHECKRETURN(ptr, "PARSE", "arg 4");
 		if (!*ptr)
 			ABORT_MPI("PARSE", "Can't use Null seperator string");
@@ -1152,7 +1152,7 @@ mfn_parse(MFUNARGS)
 	}
 
 	if (argc > 4) {
-		ptr = MesgParse(sepbuf, sepoutbuf);
+		ptr = MesgParse(sepbuf, sepoutbuf, sizeof(sepoutbuf));
 		CHECKRETURN(ptr, "PARSE", "arg 5");
 		sepbuf = sepoutbuf;
 	} else {
@@ -1172,7 +1172,7 @@ mfn_parse(MFUNARGS)
 			ptr2 += seplen;
 		}
 		strcpyn(tmp, sizeof(tmp), ptr);
-		dptr = MesgParse(argv[2], buf2);
+		dptr = MesgParse(argv[2], buf2, sizeof(buf2));
 		CHECKRETURN(dptr, "PARSE", "arg 3");
 		nextlen = strlen(buf2);
 		if (outlen + nextlen + oseplen > BUFFER_LEN - 3)
@@ -1326,14 +1326,14 @@ mfn_fox(MFUNARGS)
 const char *
 mfn_debugif(MFUNARGS)
 {
-	char *ptr = MesgParse(argv[0], buf);
+	char *ptr = MesgParse(argv[0], buf, buflen);
 
 	CHECKRETURN(ptr, "DEBUGIF", "arg 1");
 	if (truestr(argv[0])) {
 		ptr = mesg_parse(descr, player, what, perms, argv[1],
 						 buf, BUFFER_LEN, (mesgtyp | MPI_ISDEBUG));
 	} else {
-		ptr = MesgParse(argv[1], buf);
+		ptr = MesgParse(argv[1], buf, buflen);
 	}
 	CHECKRETURN(ptr, "DEBUGIF", "arg 2");
 	return buf;
@@ -1478,7 +1478,7 @@ mfn_muf(MFUNARGS)
 	switch (rv->type) {
 	case PROG_STRING:
 		if (rv->data.string) {
-			strcpyn(buf, sizeof(buf), rv->data.string->data);
+			strcpyn(buf, buflen, rv->data.string->data);
 			CLEAR(rv);
 			return buf;
 		} else {
@@ -1559,7 +1559,7 @@ mfn_force(MFUNARGS)
 
 	if (force_level)
 		ABORT_MPI("FORCE", "Permission denied: You can't force recursively.");
-	strcpyn(buf, sizeof(buf), argv[1]);
+	strcpyn(buf, buflen, argv[1]);
 	ptr = buf;
 	do {
 		const char *ptr2=NAME(obj);
@@ -1730,21 +1730,21 @@ mfn_commas(MFUNARGS)
 	if (argc == 3)
 		ABORT_MPI("COMMAS", "Takes 1, 2, or 4 arguments.");
 
-	ptr = MesgParse(argv[0], listbuf);
+	ptr = MesgParse(argv[0], listbuf, sizeof(listbuf));
 	CHECKRETURN(ptr, "COMMAS", "arg 1");
 	count = countlitems(listbuf, "\r");
 	if (count == 0)
 		return "";
 
 	if (argc > 1) {
-		ptr = MesgParse(argv[1], sepbuf);
+		ptr = MesgParse(argv[1], sepbuf, sizeof(sepbuf));
 		CHECKRETURN(ptr, "COMMAS", "arg 2");
 	} else {
 		strcpyn(sepbuf, sizeof(sepbuf), " and ");
 	}
 
 	if (argc > 2) {
-		ptr = MesgParse(argv[2], buf2);
+		ptr = MesgParse(argv[2], buf2, sizeof(buf2));
 		CHECKRETURN(ptr, "COMMAS", "arg 3");
 		v = new_mvar(ptr, tmp);
 		if (v == 1)
@@ -1756,10 +1756,10 @@ mfn_commas(MFUNARGS)
 	*buf = '\0';
 	out = buf;
 	for (i = 1; i <= count; i++) {
-		ptr = getlitem(buf2, listbuf, "\r", i);
+		ptr = getlitem(buf2, sizeof(buf2), listbuf, "\r", i);
 		if (argc > 2) {
 			strcpyn(tmp, BUFFER_LEN, ptr);
-			ptr = MesgParse(argv[3], buf2);
+			ptr = MesgParse(argv[3], buf2, sizeof(buf2));
 			CHECKRETURN(ptr, "COMMAS", "arg 3");
 		}
 		itemlen = strlen(ptr);
@@ -1907,5 +1907,5 @@ mfn_escape(MFUNARGS)
 	*out = '\0';
 	return buf;
 }
-static const char *mfuns2_c_version = "$RCSfile$ $Revision: 1.37 $";
+static const char *mfuns2_c_version = "$RCSfile$ $Revision: 1.38 $";
 const char *get_mfuns2_c_version(void) { return mfuns2_c_version; }

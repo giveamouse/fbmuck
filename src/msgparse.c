@@ -855,8 +855,8 @@ static int mesg_instr_cnt = 0;
 
 /******** HOOK ********/
 char *
-mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, char *outbuf,
-		   int maxchars, int mesgtyp)
+mesg_parse(int descr, dbref player, dbref what, dbref perms,
+    const char *inbuf, char *outbuf, int maxchars, int mesgtyp)
 {
 	char wbuf[BUFFER_LEN];
 	char buf[BUFFER_LEN];
@@ -1047,7 +1047,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 						}
 						if (mfun_list[s].parsep) {
 							for (i = (varflag ? 1 : 0); i < argc; i++) {
-								ptr = MesgParse(argv[i], buf);
+								ptr = MesgParse(argv[i], buf, sizeof(buf));
 								if (!ptr) {
 									char *zptr = get_mvar("how");
 
@@ -1118,8 +1118,8 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 							outbuf[0] = '\0';
 							return NULL;
 						} else {
-							ptr = mfun_list[s].mfn(descr, player, what, perms, argc,
-												   argv, buf, mesgtyp);
+							ptr = mfun_list[s].mfn(descr, player, what, perms,
+							    argc, argv, buf, sizeof(buf), mesgtyp);
 							if (!ptr) {
 								outbuf[q] = '\0';
 								for (i = 0; i < argc; i++) {
@@ -1130,7 +1130,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 								return NULL;
 							}
 							if (mfun_list[s].postp) {
-								dptr = MesgParse(ptr, buf);
+								dptr = MesgParse(ptr, buf, sizeof(buf));
 								if (!dptr) {
 									char *zptr = get_mvar("how");
 
@@ -1242,8 +1242,9 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf, 
 }
 
 char *
-do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms, const char *inbuf,
-				const char *abuf, char *outbuf, int mesgtyp)
+do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms,
+    const char *inbuf, const char *abuf, char *outbuf, int outbuflen,
+    int mesgtyp)
 {
 
 	char howvar[BUFFER_LEN];
@@ -1295,7 +1296,7 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms, const char *in
 
 	inbuf = uncompress(inbuf);
 
-	dptr = MesgParse(inbuf, outbuf);
+	dptr = MesgParse(inbuf, outbuf, outbuflen);
 	if (!dptr) {
 		*outbuf = '\0';
 	}
@@ -1322,7 +1323,7 @@ do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf, const char
 
 		/* Quickie additions to do rough per-object MPI profiling */
 		gettimeofday(&st,NULL);
-		tmp = do_parse_mesg_2(descr, player, what, what, inbuf, abuf, outbuf, mesgtyp);
+		tmp = do_parse_mesg_2(descr, player, what, what, inbuf, abuf, outbuf, outbuflen, mesgtyp);
 		gettimeofday(&et,NULL);
 		if (strcmp(tmp,inbuf)) {
 			if (st.tv_usec > et.tv_usec) {
@@ -1357,5 +1358,5 @@ do_parse_prop(int descr, dbref player, dbref what, const char *propname, const c
 	return do_parse_mesg(descr, player, what, propval, abuf, outbuf, outbuflen, mesgtyp);
 }
 
-static const char *msgparse_c_version = "$RCSfile$ $Revision: 1.28 $";
+static const char *msgparse_c_version = "$RCSfile$ $Revision: 1.29 $";
 const char *get_msgparse_c_version(void) { return msgparse_c_version; }

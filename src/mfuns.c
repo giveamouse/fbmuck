@@ -27,12 +27,12 @@ mfn_func(MFUNARGS)
 	char defbuf[BUFFER_LEN];
 	int i;
 
-	funcname = MesgParse(argv[0], namebuf);
+	funcname = MesgParse(argv[0], namebuf, sizeof(namebuf));
 	CHECKRETURN(funcname, "FUNC", "name argument (1)");
 
 	def = argv[argc - 1];
 	for (i = 1; i < argc - 1; i++) {
-		ptr = MesgParse(argv[i], argbuf);
+		ptr = MesgParse(argv[i], argbuf, sizeof(argbuf));
 		CHECKRETURN(ptr, "FUNC", "variable name argument");
 		snprintf(defbuf, sizeof(defbuf), "{with:%.*s,{:%d},%.*s}", MAX_MFUN_NAME_LEN, ptr, i,
 				(BUFFER_LEN - MAX_MFUN_NAME_LEN - 20), def);
@@ -731,7 +731,7 @@ mfn_lit(MFUNARGS)
 {
 	int i, len, len2;
 
-	strcpyn(buf, sizeof(buf), argv[0]);
+	strcpyn(buf, buflen, argv[0]);
 	len = strlen(buf);
 	for (i = 1; i < argc; i++) {
 		len2 = strlen(argv[i]);
@@ -742,8 +742,8 @@ mfn_lit(MFUNARGS)
 			}
 			break;
 		}
-		strcpyn(buf + len, sizeof(buf) - len, ",");
-		strcpyn(buf + len, sizeof(buf) - len, argv[i]);
+		strcpyn(buf + len, buflen - len, ",");
+		strcpyn(buf + len, buflen - len, argv[i]);
 		len += len2;
 	}
 	return buf;
@@ -757,7 +757,7 @@ mfn_eval(MFUNARGS)
 	char buf2[BUFFER_LEN];
 	char* ptr;
 
-	strcpyn(buf, sizeof(buf), argv[0]);
+	strcpyn(buf, buflen, argv[0]);
 	len = strlen(buf);
 	for (i = 1; i < argc; i++) {
 		len2 = strlen(argv[i]);
@@ -768,8 +768,8 @@ mfn_eval(MFUNARGS)
 			}
 			break;
 		}
-		strcpyn(buf + len, sizeof(buf) - len, ",");
-		strcpyn(buf + len, sizeof(buf) - len, argv[i]);
+		strcpyn(buf + len, buflen - len, ",");
+		strcpyn(buf + len, buflen - len, argv[i]);
 		len += len2;
 	}
 	strcpyn(buf2, sizeof(buf2), buf);
@@ -786,7 +786,7 @@ mfn_evalbang(MFUNARGS)
 	char buf2[BUFFER_LEN];
 	char* ptr;
 
-	strcpyn(buf, sizeof(buf), argv[0]);
+	strcpyn(buf, buflen, argv[0]);
 	len = strlen(buf);
 	for (i = 1; i < argc; i++) {
 		len2 = strlen(argv[i]);
@@ -797,8 +797,8 @@ mfn_evalbang(MFUNARGS)
 			}
 			break;
 		}
-		strcpyn(buf + len, sizeof(buf) - len, ",");
-		strcpyn(buf + len, sizeof(buf) - len, argv[i]);
+		strcpyn(buf + len, buflen - len, ",");
+		strcpyn(buf + len, buflen - len, argv[i]);
 		len += len2;
 	}
 	strcpyn(buf2, sizeof(buf2), buf);
@@ -815,7 +815,7 @@ mfn_strip(MFUNARGS)
 	char *ptr;
 
 	for (ptr = argv[0]; *ptr == ' '; ptr++) ;
-	strcpyn(buf, sizeof(buf), ptr);
+	strcpyn(buf, buflen, ptr);
 	len = strlen(buf);
 	for (i = 1; i < argc; i++) {
 		len2 = strlen(argv[i]);
@@ -826,8 +826,8 @@ mfn_strip(MFUNARGS)
 			}
 			break;
 		}
-		strcpyn(buf + len, sizeof(buf) - len, ",");
-		strcpyn(buf + len, sizeof(buf) - len, argv[i]);
+		strcpyn(buf + len, buflen - len, ",");
+		strcpyn(buf + len, buflen - len, argv[i]);
 		len += len2;
 	}
 	ptr = &buf[strlen(buf) - 1];
@@ -1336,7 +1336,7 @@ mfn_or(MFUNARGS)
 	int i;
 
 	for (i = 0; i < argc; i++) {
-		ptr = MesgParse(argv[i], buf);
+		ptr = MesgParse(argv[i], buf, buflen);
 		snprintf(buf2, sizeof(buf2), "arg %d", i + 1);
 		CHECKRETURN(ptr, "OR", buf2);
 		if (truestr(ptr)) {
@@ -1368,7 +1368,7 @@ mfn_and(MFUNARGS)
 	int i;
 
 	for (i = 0; i < argc; i++) {
-		ptr = MesgParse(argv[i], buf);
+		ptr = MesgParse(argv[i], buf, buflen);
 		snprintf(buf2, sizeof(buf2), "arg %d", i + 1);
 		CHECKRETURN(ptr, "AND", buf2);
 		if (!truestr(ptr)) {
@@ -1409,13 +1409,13 @@ mfn_default(MFUNARGS)
 	char *ptr;
 
 	*buf = '\0';
-	ptr = MesgParse(argv[0], buf);
+	ptr = MesgParse(argv[0], buf, buflen);
 	CHECKRETURN(ptr, "DEFAULT", "arg 1");
 	if (ptr && truestr(buf)) {
 		if (!ptr)
 			ptr = "";
 	} else {
-		ptr = MesgParse(argv[1], buf);
+		ptr = MesgParse(argv[1], buf, buflen);
 		CHECKRETURN(ptr, "DEFAULT", "arg 2");
 	}
 	return ptr;
@@ -1432,13 +1432,13 @@ mfn_if(MFUNARGS)
 	} else {
 		fbr = "";
 	}
-	ptr = MesgParse(argv[0], buf);
+	ptr = MesgParse(argv[0], buf, buflen);
 	CHECKRETURN(ptr, "IF", "arg 1");
 	if (ptr && truestr(buf)) {
-		ptr = MesgParse(argv[1], buf);
+		ptr = MesgParse(argv[1], buf, buflen);
 		CHECKRETURN(ptr, "IF", "arg 2");
 	} else if (*fbr) {
-		ptr = MesgParse(fbr, buf);
+		ptr = MesgParse(fbr, buf, buflen);
 		CHECKRETURN(ptr, "IF", "arg 3");
 	} else {
 		*buf = '\0';
@@ -1457,11 +1457,11 @@ mfn_while(MFUNARGS)
 
 	*buf = '\0';
 	while (1) {
-		ptr = MesgParse(argv[0], buf2);
+		ptr = MesgParse(argv[0], buf2, sizeof(buf2));
 		CHECKRETURN(ptr, "WHILE", "arg 1");
 		if (!truestr(ptr))
 			break;
-		ptr = MesgParse(argv[1], buf);
+		ptr = MesgParse(argv[1], buf, buflen);
 		CHECKRETURN(ptr, "WHILE", "arg 2");
 		if (!(--iter_limit))
 			ABORT_MPI("WHILE", "Iteration limit exceeded");
@@ -1817,7 +1817,7 @@ mfn_money(MFUNARGS)
 		snprintf(buf, BUFFER_LEN, "%d", GETVALUE(obj));
 		break;
 	default:
-		strcpyn(buf, sizeof(buf), "0");
+		strcpyn(buf, buflen, "0");
 		break;
 	}
 	return buf;
@@ -1906,7 +1906,7 @@ mfn_otell(MFUNARGS)
 			 (Typeof(what) == TYPE_ROOM ||
 			  (Typeof(what) == TYPE_EXIT && Typeof(getloc(what)) == TYPE_ROOM))) ||
 			string_prefix(argv[0], NAME(player))) {
-			strcpyn(buf, sizeof(buf), ptr);
+			strcpyn(buf, buflen, ptr);
 		} else {
 			snprintf(buf, BUFFER_LEN, "%.16s%s%.4078s", NAME(player),
 					((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
@@ -1945,7 +1945,7 @@ mfn_right(MFUNARGS)
 		if (!*fptr)
 			fptr = fillstr;
 	}
-	strcpyn(ptr, sizeof(buf) - (ptr - buf), argv[0]);
+	strcpyn(ptr, buflen - (ptr - buf), argv[0]);
 	return buf;
 }
 
@@ -1967,7 +1967,7 @@ mfn_left(MFUNARGS)
 	fillstr = (argc > 2) ? argv[2] : " ";
 	if (!*fillstr)
 		ABORT_MPI("LEFT", "Null pad string.");
-	strcpyn(buf, sizeof(buf), argv[0]);
+	strcpyn(buf, buflen, argv[0]);
 	for (i = strlen(argv[0]), ptr = &buf[i], fptr = fillstr; i < len; i++) {
 		*ptr++ = *fptr++;
 		if (!*fptr)
@@ -2003,7 +2003,7 @@ mfn_center(MFUNARGS)
 		if (!*fptr)
 			fptr = fillstr;
 	}
-	strcpyn(ptr, sizeof(buf) - (ptr - buf), argv[0]);
+	strcpyn(ptr, buflen - (ptr - buf), argv[0]);
 	for (i = strlen(buf), ptr = &buf[i], fptr = fillstr; i < len; i++) {
 		*ptr++ = *fptr++;
 		if (!*fptr)
@@ -2080,5 +2080,5 @@ mfn_usecount(MFUNARGS)
 
 	return buf;
 }
-static const char *mfuns_c_version = "$RCSfile$ $Revision: 1.32 $";
+static const char *mfuns_c_version = "$RCSfile$ $Revision: 1.33 $";
 const char *get_mfuns_c_version(void) { return mfuns_c_version; }

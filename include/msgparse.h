@@ -60,7 +60,7 @@ int free_mfuncs(int downto);
 
 
 #define MFUNARGS int descr, dbref player, dbref what, dbref perms, int argc, \
-                argv_typ argv, char *buf, int mesgtyp
+                argv_typ argv, char *buf, int buflen, int mesgtyp
 
 #define CHECKRETURN(vari,funam,num) if (!vari) { snprintf(buf, BUFFER_LEN, "%s %c%s%c (%s)", get_mvar("how"), MFUN_LEADCHAR, funam, MFUN_ARGEND, num);  notify_nolisten(player, buf, 1);  return NULL; }
 
@@ -68,7 +68,7 @@ int free_mfuncs(int downto);
 
 typedef char **argv_typ;
 
-#define MesgParse(in,out) mesg_parse(descr, player, what, perms, (in), (out), BUFFER_LEN, mesgtyp)
+#define MesgParse(in,out,outlen) mesg_parse(descr, player, what, perms, (in), (out), (outlen), mesgtyp)
 
 #endif /* _MESGPARSE_H */
 
@@ -76,7 +76,7 @@ typedef char **argv_typ;
 
 #ifndef msgparseh_version
 #define msgparseh_version
-const char *msgparse_h_version = "$RCSfile$ $Revision: 1.14 $";
+const char *msgparse_h_version = "$RCSfile$ $Revision: 1.15 $";
 #endif
 #else
 extern const char *msgparse_h_version;
