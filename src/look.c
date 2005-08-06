@@ -232,7 +232,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 			switch (Typeof(thing)) {
 			case TYPE_ROOM:
 				if (getloc(player) != thing && !can_link_to(player, TYPE_ROOM, thing)) {
-					notify(player, "Permission denied.");
+					notify(player, "Permission denied. (you're not where you want to look, and can't link to it)");
 				} else {
 					look_room(descr, player, thing, 1);
 				}
@@ -240,7 +240,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 			case TYPE_PLAYER:
 				if (getloc(player) != getloc(thing)
 					&& !controls(player, thing)) {
-					notify(player, "Permission denied.");
+					notify(player, "Permission denied. (Your location isn't the same as what you're looking at)");
 				} else {
 					look_simple(descr, player, thing);
 					look_contents(player, thing, "Carrying:");
@@ -254,7 +254,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 			case TYPE_THING:
 				if (getloc(player) != getloc(thing)
 					&& getloc(thing) != player && !controls(player, thing)) {
-					notify(player, "Permission denied.");
+					notify(player, "Permission denied. (You're not in the same room as or carrying the object)");
 				} else {
 					look_simple(descr, player, thing);
 					if (!(FLAGS(thing) & HAVEN)) {
@@ -1336,7 +1336,7 @@ do_entrances(int descr, dbref player, const char *name, const char *flags)
 		return;
 	}
 	if (!controls(OWNER(player), thing)) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (You can't list entrances of objects you don't control)");
 		return;
 	}
 	init_checkflags(player, flags, &check);
@@ -1409,7 +1409,7 @@ do_contents(int descr, dbref player, const char *name, const char *flags)
 	if (thing == NOTHING)
 		return;
 	if (!controls(OWNER(player), thing)) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (You can't get the contents of something you don't control)");
 		return;
 	}
 	init_checkflags(player, flags, &check);
@@ -1511,7 +1511,7 @@ do_sweep(int descr, dbref player, const char *name)
 	}
 
 	if (*name && !controls(OWNER(player), thing)) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (You can't perform a security sweep in a room you don't own)");
 		return;
 	}
 
@@ -1587,5 +1587,5 @@ do_sweep(int descr, dbref player, const char *name)
 	}
 	notify(player, "**End of list**");
 }
-static const char *look_c_version = "$RCSfile$ $Revision: 1.25 $";
+static const char *look_c_version = "$RCSfile$ $Revision: 1.26 $";
 const char *get_look_c_version(void) { return look_c_version; }

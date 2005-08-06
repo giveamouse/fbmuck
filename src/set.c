@@ -31,7 +31,7 @@ match_controlled(int descr, dbref player, const char *name)
 
 	match = noisy_match_result(&md);
 	if (match != NOTHING && !controls(player, match)) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (You don't control what was matched)");
 		return NOTHING;
 	} else {
 		return match;
@@ -609,7 +609,7 @@ _do_unlink(int descr, dbref player, const char *name, int quiet)
 		break;
 	default:
 		if (!controls(player, exit) && !controls_link(player, exit)) {
-			notify(player, "Permission denied.");
+			notify(player, "Permission denied. (You don't control the exit or its link)");
 		} else {
 			switch (Typeof(exit)) {
 			case TYPE_EXIT:
@@ -715,7 +715,7 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 			/* we're ok, check the usual stuff */
 			if (DBFETCH(thing)->sp.exit.ndest != 0) {
 				if(!controls(player, thing)) {
-					notify(player, "Permission denied.");
+					notify(player, "Permission denied. (The exit is linked, and you don't control it)");
 					return;
 				}
 			} else {
@@ -755,7 +755,7 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 				return;
 			if (!controls(player, thing)
 				|| !can_link_to(player, Typeof(thing), dest)) {
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (You can't link to where you want to.");
 				return;
 			}
 			if (parent_loop_check(thing, dest)) {
@@ -774,7 +774,7 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 				return;
 			if (!controls(player, thing) || !can_link_to(player, Typeof(thing), dest)
 				|| (thing == dest)) {
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (You can't link to the dropto like that)");
 				return;
 			}
 			break;
@@ -962,7 +962,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 			ival = atoi(++pname);
 
 		if (Prop_System(type) || (!Wizard(OWNER(player)) && (Prop_SeeOnly(type) || Prop_Hidden(type)))) {
-			notify(player, "Permission denied.");
+			notify(player, "Permission denied. (The property is hidden from you.)");
 			free((void *)x);
 			return;
 		}
@@ -991,7 +991,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 			   ((string_prefix("MUCKER", p)) && (*flag == NOT_TOKEN))) {
 		if (!Wizard(OWNER(player))) {
 			if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)) {
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (You can't clear that mucker flag)");
 				return;
 			}
 		}
@@ -1006,7 +1006,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 		if (!Wizard(OWNER(player))) {
 			if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)
 				|| (MLevRaw(player) < 1)) {
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (You may not set that M1)");
 				return;
 			}
 		}
@@ -1022,7 +1022,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 		if (!Wizard(OWNER(player))) {
 			if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)
 				|| (MLevRaw(player) < 2)) {
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (You may not set that M2)");
 				return;
 			}
 		}
@@ -1037,7 +1037,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 		if (!Wizard(OWNER(player))) {
 			if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)
 				|| (MLevRaw(player) < 3)) {
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (You may not set that M3)");
 				return;
 			}
 		}
@@ -1082,7 +1082,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 		}
 		if (Typeof(thing) == TYPE_EXIT) {
 			if (!Wizard(OWNER(player))) {
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (Only a Wizard may set the M-level of an exit)");
 				return;
 			}
 		}
@@ -1115,7 +1115,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 
 	/* check for restricted flag */
 	if (restricted(player, thing, f)) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (restricted flag)");
 		return;
 	}
 	/* check for stupid wizard */
@@ -1193,7 +1193,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 	}
 
 	if (Prop_System(pname) || (!Wizard(OWNER(player)) && (Prop_SeeOnly(pname) || Prop_Hidden(pname)))) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (can't set a property that's restricted against you)");
 		return;
 	}
 
@@ -1304,5 +1304,5 @@ set_flags_from_tunestr(dbref obj, const char* tunestr)
 }
 
 
-static const char *set_c_version = "$RCSfile$ $Revision: 1.27 $";
+static const char *set_c_version = "$RCSfile$ $Revision: 1.28 $";
 const char *get_set_c_version(void) { return set_c_version; }

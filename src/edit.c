@@ -498,7 +498,7 @@ match_and_list(int descr, dbref player, const char *name, char *linespec)
 	}
 /*	if (!(controls(player, thing) || Linkable(thing))) { */
 	if (!(controls(player, thing) || (FLAGS(thing) & VEHICLE))) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (You don't control the program, and it's not set Viewable)");
 		return;
 	}
 	if (!*linespec) {
@@ -764,5 +764,5 @@ insert(dbref player, const char *line)
 	curr->next = new_line;
 	/* DBDIRTY(program); */
 }
-static const char *edit_c_version = "$RCSfile$ $Revision: 1.9 $";
+static const char *edit_c_version = "$RCSfile$ $Revision: 1.10 $";
 const char *get_edit_c_version(void) { return edit_c_version; }

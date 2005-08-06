@@ -132,7 +132,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 		return;
 	}
 	if (!controls(player, loc)) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (you don't control the location)");
 		return;
 	} else if (!payfor(player, tp_exit_cost)) {
 		notify_fmt(player, "Sorry, you don't have enough %s to open an exit.", tp_pennies);
@@ -357,7 +357,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 				notify(player, "That exit is already linked.");
 				return;
 			} else {
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (you don't control the exit to relink)");
 				return;
 			}
 		}
@@ -418,7 +418,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 			return;
 		if (!controls(player, thing)
 			|| !can_link_to(player, Typeof(thing), dest)) {
-			notify(player, "Permission denied.");
+			notify(player, "Permission denied. (you don't control the thing, or you can't link to dest)");
 			return;
 		}
 		if (parent_loop_check(thing, dest)) {
@@ -444,7 +444,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 			break;
 		if (!controls(player, thing) || !can_link_to(player, Typeof(thing), dest)
 			|| (thing == dest)) {
-			notify(player, "Permission denied.");
+			notify(player, "Permission denied. (you don't control the room, or can't link to the dropto)");
 		} else {
 			DBFETCH(thing)->sp.room.dropto = dest;	/* dropto */
 			notify(player, "Dropto set.");
@@ -1049,7 +1049,7 @@ do_clone(int descr, dbref player, char *name)
 
 	/* no stealing stuff. */
 	if(!controls(player, thing)) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (you can't clone this)");
 		return;
 	}
 
@@ -1229,7 +1229,7 @@ parse_source(int descr, dbref player, const char *source_name)
 
 	/* You can only attach actions to things you control */
 	if (!controls(player, source)) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (you don't control the attachment point)");
 		return NOTHING;
 	}
 	if (Typeof(source) == TYPE_EXIT) {
@@ -1412,7 +1412,7 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 		notify(player, "That's not an action!");
 		return;
 	} else if (!controls(player, action)) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (you don't control the action you're trying to reattach)");
 		return;
 	}
 	if (((source = parse_source(descr, player, source_name)) == NOTHING)
@@ -1429,5 +1429,5 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 		notify(player, "Action priority Level reset to zero.");
 	}
 }
-static const char *create_c_version = "$RCSfile$ $Revision: 1.24 $";
+static const char *create_c_version = "$RCSfile$ $Revision: 1.25 $";
 const char *get_create_c_version(void) { return create_c_version; }

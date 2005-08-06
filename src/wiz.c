@@ -115,7 +115,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 				!controls(player, destination) ||
 				!controls(player, getloc(victim)) ||
 				(Typeof(destination) == TYPE_THING && !controls(player, getloc(destination)))) {
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (must control victim, dest, victim's loc, and dest's loc)");
 				break;
 			}
 			if (Typeof(destination) != TYPE_ROOM && Typeof(destination) != TYPE_THING) {
@@ -149,7 +149,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 			if (!((controls(player, destination) ||
 				   can_link_to(player, NOTYPE, destination)) &&
 				  (controls(player, victim) || controls(player, DBFETCH(victim)->location)))) {
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (must control dest and be able to link to it, or control dest's loc)");
 				break;
 			}
 			/* check for non-sticky dropto */
@@ -172,7 +172,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 			if (!controls(player, victim)
 				|| !can_link_to(player, NOTYPE, destination)
 				|| victim == GLOBAL_ENVIRONMENT) {
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (Can't move #0, dest must be linkable, and must control victim)");
 				break;
 			}
 			if (parent_loop_check(victim, destination)) {
@@ -279,7 +279,7 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
 	}
 
 	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (You're not a wizard)");
 		return;
 	}
 
@@ -328,7 +328,7 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 #endif
 
 	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (you're not a wizard)");
 		return;
 	}
 
@@ -390,7 +390,7 @@ do_force(int descr, dbref player, const char *what, char *command)
 #endif							/* GOD_PRIV */
 
 /*    if (!controls(player, victim)) {
- *	notify(player, "Permission denied.");
+ *	notify(player, "Permission denied. (you're not a wizard!)");
  *	return;
  *    }
  */
@@ -476,7 +476,7 @@ do_stats(dbref player, const char *name)
 				return;
 			}
 			if (!Wizard(OWNER(player)) && (OWNER(player) != owner)) {
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (you must be a wizard to get someone else's stats)");
 				return;
 			}
 			for (i = 0; i < db_top; i++) {
@@ -837,7 +837,7 @@ void
 do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2)
 {
 	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (@dbginfo is a wizard-only command)");
 		return;
 	}
 	if (!*arg1) {
@@ -870,7 +870,7 @@ do_usage(dbref player)
 #endif
 
 	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (@usage is wizard-only)");
 		return;
 	}
 #ifndef NO_USAGE_COMMAND
@@ -932,7 +932,7 @@ do_muf_topprofs(dbref player, char *arg1)
 	time_t current_systime = time(NULL);
 
 	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (MUF profiling stats are wiz-only)");
 		return;
 	}
 	if (!string_compare(arg1, "reset")) {
@@ -1043,7 +1043,7 @@ do_mpi_topprofs(dbref player, char *arg1)
 	time_t current_systime = time(NULL);
 
 	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (MPI statistics are wizard-only)");
 		return;
 	}
 	if (!string_compare(arg1, "reset")) {
@@ -1154,7 +1154,7 @@ do_all_topprofs(dbref player, char *arg1)
 	time_t current_systime = time(NULL);
 
 	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied.");
+		notify(player, "Permission denied. (server profiling statistics are wizard-only)");
 		return;
 	}
 	if (!string_compare(arg1, "reset")) {
@@ -1309,7 +1309,7 @@ void
 do_memory(dbref who)
 {
 	if (!Wizard(OWNER(who))) {
-		notify(who, "Permission denied.");
+		notify(who, "Permission denied. (You don't need to know the memory stats)");
 		return;
 	}
 #ifndef NO_MEMORY_COMMAND
@@ -1354,5 +1354,5 @@ do_memory(dbref who)
 
 	notify(who, "Done.");
 }
-static const char *wiz_c_version = "$RCSfile$ $Revision: 1.36 $";
+static const char *wiz_c_version = "$RCSfile$ $Revision: 1.37 $";
 const char *get_wiz_c_version(void) { return wiz_c_version; }

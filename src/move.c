@@ -851,12 +851,12 @@ do_recycle(int descr, dbref player, const char *name)
 			if(Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
 				notify(player, "That's already garbage!");
 			else
-				notify(player, "Permission denied.");
+				notify(player, "Permission denied. (You don't control what you want to recycle)");
 		} else {
 			switch (Typeof(thing)) {
 			case TYPE_ROOM:
 				if (OWNER(thing) != OWNER(player)) {
-					notify(player, "Permission denied.");
+					notify(player, "Permission denied. (You don't control the room you want to recycle)");
 					return;
 				}
 				if (thing == tp_player_start) {
@@ -870,7 +870,7 @@ do_recycle(int descr, dbref player, const char *name)
 				break;
 			case TYPE_THING:
 				if (OWNER(thing) != OWNER(player)) {
-					notify(player, "Permission denied.");
+					notify(player, "Permission denied. (You can't recycle a thing you don't control)");
 					return;
 				}
 				/* player may be a zombie or puppet */
@@ -885,7 +885,7 @@ do_recycle(int descr, dbref player, const char *name)
 				break;
 			case TYPE_EXIT:
 				if (OWNER(thing) != OWNER(player)) {
-					notify(player, "Permission denied.");
+					notify(player, "Permission denied. (You may not recycle an exit you don't own)");
 					return;
 				}
 				if (!unset_source(player, DBFETCH(player)->location, thing)) {
@@ -900,17 +900,17 @@ do_recycle(int descr, dbref player, const char *name)
 				break;
 			case TYPE_PROGRAM:
 				if (OWNER(thing) != OWNER(player)) {
-					notify(player, "Permission denied.");
+					notify(player, "Permission denied. (You can't recycle a program you don't own)");
 					return;
 				}
+				SetMLevel(thing, 0);
 				if(PROGRAM_INSTANCES(thing)) {
 					dequeue_prog(thing, 0);
 				}
-				SetMLevel(thing, 0);
 				/* FIXME: This is a workaround for bug #201633 */
 				if(PROGRAM_INSTANCES(thing)) {
 					assert(0);  /* getting here is a bug - we already dequeued it. */
-					notify(player, "Recycle failed: Program is running.");
+					notify(player, "Recycle failed: Program is still running.");
 					return;
 				}
 				break;
@@ -1128,5 +1128,5 @@ recycle(int descr, dbref player, dbref thing)
 	recyclable = thing;
 	DBDIRTY(thing);
 }
-static const char *move_c_version = "$RCSfile$ $Revision: 1.35 $";
+static const char *move_c_version = "$RCSfile$ $Revision: 1.36 $";
 const char *get_move_c_version(void) { return move_c_version; }

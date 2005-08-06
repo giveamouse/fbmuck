@@ -610,7 +610,7 @@ do_uncompile(dbref player)
 	dbref i;
 
 	if (!Wizard(OWNER(player))) {
-		notify_nolisten(player, "Permission denied.", 1);
+		notify_nolisten(player, "Permission denied. (uncompile)", 1);
 		return;
 	}
 	for (i = 0; i < db_top; i++) {
@@ -3955,5 +3955,5 @@ init_primitives(void)
 	log_status("MUF: %d primitives exist.\n", BASE_MAX);
 }
 
-static const char *compile_c_version = "$RCSfile$ $Revision: 1.84 $";
+static const char *compile_c_version = "$RCSfile$ $Revision: 1.85 $";
 const char *get_compile_c_version(void) { return compile_c_version; }
