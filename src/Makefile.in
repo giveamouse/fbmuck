@@ -212,7 +212,7 @@ saber_obj: ${CSRC} interface.o
 tags: ${CSRC} ${MSRC} ${MALLSRC}
 	${MKTAGS} ${CSRC} ${MALLSRC} interface.c ../include/*.h
 
-lint: ${CSRC} ${MSRC} ${MALLSRC}
+lint: ${CSRC} ${MSRC} ${MALLSRC} ${INCLUDE}/defines.h
 	-${RM} netmuck.lint
 	-${LINT} ${LINTFLAGS} ${CSRC} ${MSRC} ${MALLSRC} > netmuck.lint
 

@@ -13,7 +13,6 @@
 #include "props.h"
 #include "interface.h"
 #include "externs.h"
-#include "mufevent.h"
 #include "interp.h"
 
 #include <stdio.h>
@@ -1487,5 +1486,5 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
 		}
 	}
 }
-static const char *timequeue_c_version = "$RCSfile$ $Revision: 1.42 $";
+static const char *timequeue_c_version = "$RCSfile$ $Revision: 1.43 $";
 const char *get_timequeue_c_version(void) { return timequeue_c_version; }

@@ -16,7 +16,6 @@
 #include "params.h"
 #include "fbstrings.h"
 #include "interp.h"
-#include "mufevent.h"
 #include "array.h"
 
 
@@ -857,5 +856,5 @@ muf_event_process(void)
 		proc = next;
 	}
 }
-static const char *mufevent_c_version = "$RCSfile$ $Revision: 1.30 $";
+static const char *mufevent_c_version = "$RCSfile$ $Revision: 1.31 $";
 const char *get_mufevent_c_version(void) { return mufevent_c_version; }

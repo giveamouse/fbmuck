@@ -397,6 +397,7 @@ struct inst {					/* instruction */
 };
 
 #include "array.h"
+#include "mufevent.h"
 
 typedef struct inst vars[MAX_VAR];
 
@@ -821,7 +822,7 @@ extern dbref parse_dbref(const char *);	/* parse a dbref */
 
 #ifndef dbh_version
 #define dbh_version
-const char *db_h_version = "$RCSfile$ $Revision: 1.42 $";
+const char *db_h_version = "$RCSfile$ $Revision: 1.43 $";
 #endif
 #else
 extern const char *db_h_version;

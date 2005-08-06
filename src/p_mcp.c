@@ -18,7 +18,6 @@
 #include "interp.h"
 #include "mcpgui.h"
 #include "array.h"
-#include "mufevent.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;
@@ -1212,5 +1211,5 @@ prim_gui_value_get(PRIM_PROTOTYPE)
 	PushArrayRaw(nu);
 }
 
-static const char *p_mcp_c_version = "$RCSfile$ $Revision: 1.30 $";
+static const char *p_mcp_c_version = "$RCSfile$ $Revision: 1.31 $";
 const char *get_p_mcp_c_version(void) { return p_mcp_c_version; }

@@ -74,7 +74,6 @@
 #include "tune.h"
 #include "props.h"
 #include "mcp.h"
-#include "mufevent.h"
 #include "externs.h"
 #include "interp.h"
 
@@ -4199,5 +4198,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.109 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.110 $";
 const char *get_interface_c_version(void) { return interface_c_version; }

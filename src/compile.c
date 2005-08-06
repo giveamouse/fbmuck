@@ -2970,6 +2970,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		} else {
 			abort_compile(cstat, "VAR! used outside of procedure.");
 		}
+		/* NOTREACHED */
 		return 0;
 	} else if (!string_compare(token, "LVAR")) {
 		if (cstat->curr_proc)
@@ -3955,5 +3956,5 @@ init_primitives(void)
 	log_status("MUF: %d primitives exist.\n", BASE_MAX);
 }
 
-static const char *compile_c_version = "$RCSfile$ $Revision: 1.85 $";
+static const char *compile_c_version = "$RCSfile$ $Revision: 1.86 $";
 const char *get_compile_c_version(void) { return compile_c_version; }
