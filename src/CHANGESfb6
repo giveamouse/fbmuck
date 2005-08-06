@@ -1,4 +1,6 @@
 2.2fb6.06
+Changed a lot of "Permission Denied" messages to explain why permission
+  was denied.
 Changed almost all strcpy() calls to use strcpyn() for safety.
 Removed RWHO support.
 Edited restart.in so that the umask value can be much more easily
