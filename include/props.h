@@ -155,6 +155,7 @@ extern const char *get_property_class(dbref player, const char *type);
 extern double get_property_fvalue(dbref player, const char *type);
 extern int get_property_value(dbref player, const char *type);
 extern struct boolexp *get_property_lock(dbref player, const char *type);
+extern dbref get_property_dbref(dbref player, const char *pname);
 extern const char *envpropstr(dbref * where, const char *propname);
 extern PropPtr get_property(dbref player, const char *type);
 extern PropPtr envprop(dbref * where, const char *propname, int typ);
@@ -213,7 +214,7 @@ extern int reflist_find(dbref obj, const char* propname, dbref tofind);
 
 #ifndef propsh_version
 #define propsh_version
-const char *props_h_version = "$RCSfile$ $Revision: 1.14 $";
+const char *props_h_version = "$RCSfile$ $Revision: 1.15 $";
 #endif
 #else
 extern const char *props_h_version;

@@ -40,8 +40,6 @@ int fetch_propvals(dbref obj, const char *dir);
 dbref find_mlev(dbref prog, struct frame * fr, int st);
 void flush_user_output(dbref player);
 int format_time(char *buf, int max_len, const char *fmt, struct tm *tmval);
-dbref get_property_dbref(dbref player, const char *pname);
-int get_property_value(dbref player, const char *pname);
 long get_tz_offset(void);
 dbref getparent(dbref obj);
 int gui_dlog_freeall_descr(int descr);
@@ -112,7 +110,7 @@ void untouchprops_incremental(int limit);
 
 #ifndef externs_autoh_version
 #define externs_autoh_version
-const char *externs_auto_h_version = "$RCSfile$ $Revision: 1.14 $";
+const char *externs_auto_h_version = "$RCSfile$ $Revision: 1.15 $";
 #endif
 #else
 extern const char *externs_auto_h_version;
