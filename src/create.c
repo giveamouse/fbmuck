@@ -646,7 +646,7 @@ do_prog(int descr, dbref player, const char *name)
 			return;
 		}
 		if (FLAGS(i) & INTERNAL) {
-			notify(player, "Sorry, this program is currently being edited.  Try again later.");
+			notify(player, "Sorry, this program is currently being edited by someone else.  Try again later.");
 			return;
 		}
 		PROGRAM_SET_FIRST(i, read_program(i));
@@ -696,7 +696,7 @@ do_edit(int descr, dbref player, const char *name)
 		return;
 	}
 	if (FLAGS(i) & INTERNAL) {
-		notify(player, "Sorry, this program is currently being edited.  Try again later.");
+		notify(player, "Sorry, this program is currently being edited by someone else.  Try again later.");
 		return;
 	}
 	FLAGS(i) |= INTERNAL;
@@ -878,7 +878,7 @@ mcpedit_program(int descr, dbref player, dbref prog, const char* name)
 		return;
 	}
 	if (FLAGS(prog) & INTERNAL) {
-		show_mcp_error(mfr, "@mcpedit", "Sorry, this program is currently being edited.  Try again later.");
+		show_mcp_error(mfr, "@mcpedit", "Sorry, this program is currently being edited by someone else.  Try again later.");
 		return;
 	}
 	PROGRAM_SET_FIRST(prog, read_program(prog));
@@ -1429,5 +1429,5 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 		notify(player, "Action priority Level reset to zero.");
 	}
 }
-static const char *create_c_version = "$RCSfile$ $Revision: 1.25 $";
+static const char *create_c_version = "$RCSfile$ $Revision: 1.26 $";
 const char *get_create_c_version(void) { return create_c_version; }

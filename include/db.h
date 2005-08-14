@@ -193,11 +193,18 @@ typedef int dbref;				/* offset into db */
 #define WIZARD             0x10	/* gets automatic control */
 #define LINK_OK            0x20	/* anybody can link to this */
 #define DARK               0x40	/* contents of room are not printed */
+#define DEBUG DARK				/* Used to print debugging information on
+								 * on MUF programs */
 #define INTERNAL           0x80	/* internal-use-only flag */
 #define STICKY            0x100	/* this object goes home when dropped */
+#define SETUID STICKY			/* Used for programs that must run with the
+								 * permissions of their owner */
+#define SILENT STICKY
 #define BUILDER           0x200	/* this player can use construction commands */
+#define BOUND BUILDER
 #define CHOWN_OK          0x400	/* this object can be @chowned, or
 									this player can see color */
+#define COLOR CHOWN_OK
 #define JUMP_OK           0x800	/* A room which can be jumped from, or
 								 * a player who can be jumped to */
 #define EXPANSION1		 0x1000 /* Expansion bit */
@@ -205,17 +212,26 @@ typedef int dbref;				/* offset into db */
 #define KILL_OK	         0x4000	/* Kill_OK bit.  Means you can be killed. */
 #define EXPANSION3		 0x8000 /* Expansion bit */
 #define HAVEN           0x10000	/* can't kill here */
+#define HIDE HAVEN
+#define HARDUID HAVEN			/* Program runs with uid of trigger owner */
 #define ABODE           0x20000	/* can set home here */
+#define ABATE ABODE
+#define AUTOSTART ABODE
 #define MUCKER          0x40000	/* programmer */
 #define QUELL           0x80000	/* When set, wiz-perms are turned off */
 #define SMUCKER        0x100000	/* second programmer bit.  For levels */
-#define INTERACTIVE    0x200000	/* internal: denotes player is in editor, or muf READ. */
-#define OBJECT_CHANGED 0x400000	/* internal: when an object is dbdirty()ed, set this */
+#define INTERACTIVE    0x200000	/* internal: denotes player is in editor, or
+								 * muf READ. */
+#define OBJECT_CHANGED 0x400000	/* internal: when an object is dbdirty()ed,
+								 * set this */
 #define SAVED_DELTA    0x800000	/* internal: object last saved to delta file */
 #define VEHICLE       0x1000000	/* Vehicle flag */
+#define VIEWABLE VEHICLE
 #define ZOMBIE        0x2000000	/* Zombie flag */
+#define ZMUF_DEBUGGER ZOMBIE
 #define LISTENER      0x4000000	/* internal: listener flag */
 #define XFORCIBLE     0x8000000	/* externally forcible flag */
+#define XPRESS XFORCIBLE
 #define READMODE     0x10000000	/* internal: when set, player is in a READ */
 #define SANEBIT      0x20000000	/* internal: used to check db sanity */
 #define EXPANSION4	 0x40000000 /* Expansion flag */
@@ -822,7 +838,7 @@ extern dbref parse_dbref(const char *);	/* parse a dbref */
 
 #ifndef dbh_version
 #define dbh_version
-const char *db_h_version = "$RCSfile$ $Revision: 1.43 $";
+const char *db_h_version = "$RCSfile$ $Revision: 1.44 $";
 #endif
 #else
 extern const char *db_h_version;
