@@ -350,7 +350,8 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 	if (tp_penny_rate != 0) {
 		/* check for pennies */
 		if (!controls(player, loc)
-			&& GETVALUE(player) <= tp_max_pennies && RANDOM() % tp_penny_rate == 0) {
+			&& GETVALUE(OWNER(player)) <= tp_max_pennies 
+                        && RANDOM() % tp_penny_rate == 0) {
 			notify_fmt(player, "You found one %s!", tp_penny);
 			SETVALUE(OWNER(player), GETVALUE(OWNER(player)) + 1);
 			DBDIRTY(OWNER(player));
@@ -1128,5 +1129,5 @@ recycle(int descr, dbref player, dbref thing)
 	recyclable = thing;
 	DBDIRTY(thing);
 }
-static const char *move_c_version = "$RCSfile$ $Revision: 1.36 $";
+static const char *move_c_version = "$RCSfile$ $Revision: 1.37 $";
 const char *get_move_c_version(void) { return move_c_version; }
