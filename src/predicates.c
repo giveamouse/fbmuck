@@ -2,6 +2,10 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.16  2005/08/18 15:46:11  wog
+ * Fix bug introduced in r1.15 by which all non-wizards controlled everything (!)
+ * if GOD_PRIV was defined.
+ *
  * Revision 1.15  2005/07/14 12:16:23  winged
  * Adding a bunch of GOD_PRIV God's objects can't be screwed with code
  *
@@ -411,7 +415,7 @@ controls(dbref who, dbref what)
 		if(God(OWNER(what)) && !God(who))
 			/* Only God controls God's objects */
 			return 0;
-		} else {
+		else
 #endif
 		return 1;
 	}
@@ -672,5 +676,5 @@ isancestor(dbref parent, dbref child)
 	}
 	return child == parent;
 }
-static const char *predicates_c_version = "$RCSfile$ $Revision: 1.15 $";
+static const char *predicates_c_version = "$RCSfile$ $Revision: 1.16 $";
 const char *get_predicates_c_version(void) { return predicates_c_version; }
