@@ -11,7 +11,7 @@ STATUS: ?What does this refer to?
     Eliminate DBSAVE lockups by caching changes in memory, and saving in BG.
 STATUS: Worked around with the magic of fork()/vfork()
     Add threadsafe DB_LOCKING
-STATUS: Not a chance in hell.
+STATUS: Not a chance in hell -- unless we use db4 or such.
 
     Make free frames pool dynamic in size, based on use timestamp.
 STATUS: Unknown
@@ -25,7 +25,7 @@ STATUS: What do they want to do with it?
 STATUS: Should be done.
 
     Investigate inserver player command macros.
-STATUS: Unknown
+STATUS: Unknown - can be imitated with {force:me,"string\nstring\nstring"}.
     Error msgs in MUF interpreter need cleanup.
 STATUS: Most seem to be better, but still need full audit.
     Make Netmuck simpler to compile/install.  Especially for doing upgrades.
@@ -121,14 +121,21 @@ STATUS: Unknown
     Make Huh? sysparm message exec for MPI, with dbref 0 perms.
 STATUS: Not done.  I propose a change to this request: #0 perms, with a
 		secondary @tune to state whether to evaluate blessed or not.
+		Perhaps superseded, though, by HUH? M3 exit-in-environment
+		patch.
 
     Change compiler to bytecode style.  Use fn ptrs.
-STATUS: Unknown.  It's currently a tokenizer.
+STATUS: Unknown.  It's currently a tokenizer.  Would like to change it
+		to be a lot more like MPI's layout.
 
 +   Make server force ZOMBIES to look whenever it moves them.  All cases.
 STATUS: Unknown, but I think it's done.
 +   Make dropto treat zombies like players for triggering.
-STATUS: Unknown -- I'm not sure what this refers to.
+STATUS: Unknown -- I'm not sure what this refers to. (oh, wait... now I
+		know.  If an object is a THING, and there are no players, and
+		there's a dropto, all THINGs get swept to the dropto.  If the
+		THING is a Zombie, though, it should be treated like an interactive
+		player.)
 ?   Make dropto not drop zombies.
 STATUS: As in, zombies are treated as players for purposes of determining
 		if they should be dropto'ed, and as long as they are there (and
@@ -148,7 +155,8 @@ STATUS: Not done.
 STATUS: ?What does this refer to?  When a player spouts a verb that's
 		not recognized by the server, it runs those propqueues?
     Implement control Zones.
-STATUS: Is this like Realms Control?
+STATUS: Is this like Realms Control? -- or like the Group object type
+		that I proposed on fbmuck-devel?
     Implement inserver 'look player=object' command, with apropriate lock.
 STATUS: Unknown.
     Implement {case:} to act as case statement.
@@ -161,13 +169,14 @@ STATUS: Backported from ProtoMUCK, I believe.
     Add PCREATE (s s -- d)
 STATUS: Done.
 	Add TOADPLAYER (d d -- )
-STATUS: Done
+STATUS: Done -- SCARY_MUF_PRIMITIVES
 	Add NEWPASSWD (d s s -- i) prims.
 STATUS: Unknown.
     LOCKEDPROP?
 STATUS: Relies on bloated database, as referenced above.
     PARSEMPISTR
-STATUS: Not done.  Not sure what the MPI perms should be.
+STATUS: Not done.  Not sure what the MPI perms should be -- trig's? prog's?
+		uid's?
     Add SEED prim to set te random number seed.
 STATUS: Every frame has its own seed, so I think it's done.
 
@@ -187,7 +196,7 @@ PROBLEMS:
 ?   Need to make FORCE prim log forces to status file.
 STATUS: Done.
     Make it impossible to trigger an _listen in a prog that was itself
-      triggered by an _listen propqueue.
+    triggered by an _listen propqueue.
 STATUS: Not done, but should be fairly easy.
 ?   M1, M2, M3, &c should be be flag aliases for 1, 2, 3, &c.
 STATUS: Not done, but is just part of command-line parsing.
@@ -225,7 +234,7 @@ STATUS: Need to re-examine, and especially look at metalinks.
 CODE CLEANUP:
     Make system only props that are protected.
 STATUS: @sys/* exist, but can still be overwritten by wizards.
-Move passwords into sysprops.
+	Move passwords into sysprops.
 STATUS: Not done.  (Pennies are in sysprops, though.)
     Make properties use skiplists. (?)
 STATUS: ?What does this refer to?
