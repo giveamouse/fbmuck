@@ -40,6 +40,9 @@
 /* Define to 1 if you have the <linux/in6.h> header file. */
 #undef HAVE_LINUX_IN6_H
 
+/* Define to 1 if long long works and has more range than long. */
+#undef HAVE_LONG_LONG
+
 /* Define to 1 if long double works and has more range or precision than
    double. */
 #undef HAVE_LONG_DOUBLE
