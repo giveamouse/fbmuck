@@ -55,6 +55,21 @@ string_dup(const char *s)
 	return p;
 }
 
+/* from stringutil.c */
+char*
+strcpyn(char* buf, size_t bufsize, const char* src)
+{
+        int pos = 0;
+        char* dest = buf;
+
+        while (++pos < bufsize && *src) {
+                *dest++ = *src++;
+        }
+        *dest = '\0';
+        return buf;
+}
+
+
 
 char sect[256] = "";
 
@@ -711,5 +726,5 @@ main(int argc, char **argv)
 	fclose(htmlfile);
 	return 0;
 }
-static const char *prochelp_c_version = "$RCSfile$ $Revision: 1.11 $";
+static const char *prochelp_c_version = "$RCSfile$ $Revision: 1.12 $";
 const char *get_prochelp_c_version(void) { return prochelp_c_version; }
