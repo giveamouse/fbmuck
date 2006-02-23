@@ -440,8 +440,15 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 
 	for (i = 0; i < DBFETCH(exit)->sp.exit.ndest; i++) {
 		dest = (DBFETCH(exit)->sp.exit.dest)[i];
-		if (dest == HOME)
+		if (dest == HOME) {
 			dest = PLAYER_HOME(player);
+
+			/* fix #1112946 temporarily -- premchai21 */
+			if (Typeof(dest) == TYPE_THING) {
+				notify(player, "That would be an undefined operation.");
+				continue;
+			}
+		}
 		switch (Typeof(dest)) {
 		case TYPE_ROOM:
 			if (pflag) {
@@ -1129,5 +1136,5 @@ recycle(int descr, dbref player, dbref thing)
 	recyclable = thing;
 	DBDIRTY(thing);
 }
-static const char *move_c_version = "$RCSfile$ $Revision: 1.37 $";
+static const char *move_c_version = "$RCSfile$ $Revision: 1.38 $";
 const char *get_move_c_version(void) { return move_c_version; }
