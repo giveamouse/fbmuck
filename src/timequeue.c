@@ -1061,7 +1061,9 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 	 * to rethink what we're doing here. */
 	/* assert(PROGRAM_INSTANCES(program) == 0);*/
 #ifdef DEBUG
-	fprintf(stderr,"[debug] dequeue_prog: %d instances of #%d\n",PROGRAM_INSTANCES(program),program);
+	/* KLUDGE by premchai21 */
+	if (Typeof(program) == TYPE_PROGRAM)
+		fprintf(stderr,"[debug] dequeue_prog: %d instances of #%d\n",PROGRAM_INSTANCES(program),program);
 #endif
 	return (count);
 }
@@ -1486,5 +1488,5 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
 		}
 	}
 }
-static const char *timequeue_c_version = "$RCSfile$ $Revision: 1.43 $";
+static const char *timequeue_c_version = "$RCSfile$ $Revision: 1.44 $";
 const char *get_timequeue_c_version(void) { return timequeue_c_version; }
