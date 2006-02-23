@@ -287,7 +287,7 @@ get_property(dbref player, const char *pname)
 }
 
 
-/* checks if object has property, returning 1 if it or any of it's contents has
+/* checks if object has property, returning 1 if it or any of its contents has
    the property stated                                                      */
 int
 has_property(int descr, dbref player, dbref what, const char *pname, const char *strval,
@@ -330,7 +330,8 @@ has_property_strict(int descr, dbref player, dbref what, const char *pname, cons
 #ifdef DISKBASE
 		propfetch(what, p);
 #endif
-		if (PropType(p) == PROP_STRTYP) {
+		switch (PropType(p)) {
+		    case PROP_STRTYP:
 			str = uncompress(DoNull(PropDataStr(p)));
 
 			if (has_prop_recursion_limit-->0) {
@@ -343,12 +344,14 @@ has_property_strict(int descr, dbref player, dbref what, const char *pname, cons
 			}
 			has_prop_recursion_limit++;
 			return (equalstr((char *) strval, ptr));
-		} else if (PropType(p) == PROP_LOKTYP) {
-			return 0;
-		} else if (PropType(p) == PROP_INTTYP) {
+
+		    case PROP_INTTYP:
 			return (value == PropDataVal(p));
-		} else {
+		    case PROP_FLTTYP:
 			return (value == (int) PropDataFVal(p));
+		    default:
+			/* assume other types don't match */
+			return 0;
 		}
 	}
 	return 0;
@@ -1332,5 +1335,5 @@ reflist_find(dbref obj, const char* propname, dbref tofind)
 }
 
 
-static const char *property_c_version = "$RCSfile$ $Revision: 1.28 $";
+static const char *property_c_version = "$RCSfile$ $Revision: 1.29 $";
 const char *get_property_c_version(void) { return property_c_version; }
