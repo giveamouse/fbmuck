@@ -458,7 +458,7 @@ log_program_text(struct line *first, dbref player, dbref i)
 	strcpyn(fname, sizeof(fname), PROGRAM_LOG);
 	f = fopen(fname, "a");
 	if (!f) {
-		log_status("Couldn't open file %s!\n", fname);
+		log_status("Couldn't open file %s!", fname);
 		return;
 	}
 
@@ -489,7 +489,7 @@ write_program(struct line *first, dbref i)
 	snprintf(fname, sizeof(fname), "muf/%d.m", (int) i);
 	f = fopen(fname, "w");
 	if (!f) {
-		log_status("Couldn't open file %s!\n", fname);
+		log_status("Couldn't open file %s!", fname);
 		return;
 	}
 	while (first) {
@@ -1707,5 +1707,5 @@ db_read(FILE * f)
 		c = getc(f);
 	}							/* for */
 }								/* db_read */
-static const char *db_c_version = "$RCSfile$ $Revision: 1.36 $";
+static const char *db_c_version = "$RCSfile$ $Revision: 1.37 $";
 const char *get_db_c_version(void) { return db_c_version; }

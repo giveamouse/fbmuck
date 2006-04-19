@@ -726,7 +726,7 @@ prim_setsysparm(PRIM_PROTOTYPE)
 
 	switch (result) {
 	case 0:					/* TUNESET_SUCCESS */
-		log_status("TUNED (MUF): %s(%d) tuned %s to %s\n",
+		log_status("TUNED (MUF): %s(%d) tuned %s to %s",
 				   NAME(player), player, oper2->data.string->data, oper1->data.string->data);
 		break;
 	case 1:					/* TUNESET_UNKNOWN */
@@ -1084,5 +1084,5 @@ prim_debug_line(PRIM_PROTOTYPE)
 		notify_nolisten(player, msg, 1);
 	}
 }
-static const char *p_misc_c_version = "$RCSfile$ $Revision: 1.44 $";
+static const char *p_misc_c_version = "$RCSfile$ $Revision: 1.45 $";
 const char *get_p_misc_c_version(void) { return p_misc_c_version; }

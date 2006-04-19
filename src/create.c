@@ -250,7 +250,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 			break;
 		default:
 			notify(player, "Internal error: weird object type.");
-			log_status("PANIC: weird object: Typeof(%d) = %d\n", dest, Typeof(dest));
+			log_status("PANIC: weird object: Typeof(%d) = %d", dest, Typeof(dest));
 
 			if(dryrun)
 				error = 1;
@@ -455,7 +455,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 		break;
 	default:
 		notify(player, "Internal error: weird object type.");
-		log_status("PANIC: weird object: Typeof(%d) = %d\n", thing, Typeof(thing));
+		log_status("PANIC: weird object: Typeof(%d) = %d", thing, Typeof(thing));
 		break;
 	}
 	DBDIRTY(thing);
@@ -1261,7 +1261,7 @@ set_source(dbref player, dbref action, dbref source)
 		break;
 	default:
 		notify(player, "Internal error: weird object type.");
-		log_status("PANIC: tried to source %d to %d: type: %d\n",
+		log_status("PANIC: tried to source %d to %d: type: %d",
 				   action, source, Typeof(source));
 		return;
 		break;
@@ -1292,7 +1292,7 @@ unset_source(dbref player, dbref loc, dbref action)
 			DBSTORE(oldsrc, exits, remove_first(DBFETCH(oldsrc)->exits, action));
 			break;
 		default:
-			log_status("PANIC: source of action #%d was type: %d.\n", action, Typeof(oldsrc));
+			log_status("PANIC: source of action #%d was type: %d.", action, Typeof(oldsrc));
 			return 0;
 			/* NOTREACHED */
 			break;
@@ -1429,5 +1429,5 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 		notify(player, "Action priority Level reset to zero.");
 	}
 }
-static const char *create_c_version = "$RCSfile$ $Revision: 1.26 $";
+static const char *create_c_version = "$RCSfile$ $Revision: 1.27 $";
 const char *get_create_c_version(void) { return create_c_version; }

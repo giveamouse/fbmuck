@@ -76,7 +76,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
 				return;
 			}
 			/* everything ok, notify */
-			log_status("NAME CHANGE: %s(#%d) to %s\n", NAME(thing), thing, newname);
+			log_status("NAME CHANGE: %s(#%d) to %s", NAME(thing), thing, newname);
 			delete_player(thing);
 			if (NAME(thing)) {
 				free((void *) NAME(thing));
@@ -783,7 +783,7 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 			return;
 		default:
 			notify(player, "Internal error: weird object type.");
-			log_status("PANIC: weird object: Typeof(%d) = %d\n", thing, Typeof(thing));
+			log_status("PANIC: weird object: Typeof(%d) = %d", thing, Typeof(thing));
 			return;
 	}
 
@@ -1304,5 +1304,5 @@ set_flags_from_tunestr(dbref obj, const char* tunestr)
 }
 
 
-static const char *set_c_version = "$RCSfile$ $Revision: 1.28 $";
+static const char *set_c_version = "$RCSfile$ $Revision: 1.29 $";
 const char *get_set_c_version(void) { return set_c_version; }

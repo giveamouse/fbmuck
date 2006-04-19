@@ -91,7 +91,7 @@ copy_bool(struct boolexp *old)
 		}
 		break;
 	default:
-		log_status("PANIC: copy_boolexp: Error in boolexp!\n");
+		log_status("PANIC: copy_boolexp: Error in boolexp!");
 		abort();
 	}
 	return o;
@@ -587,5 +587,5 @@ free_boolexp(struct boolexp *b)
 		}
 	}
 }
-static const char *boolexp_c_version = "$RCSfile$ $Revision: 1.11 $";
+static const char *boolexp_c_version = "$RCSfile$ $Revision: 1.12 $";
 const char *get_boolexp_c_version(void) { return boolexp_c_version; }

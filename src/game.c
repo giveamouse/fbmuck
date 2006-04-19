@@ -86,12 +86,12 @@ void
 do_shutdown(dbref player)
 {
 	if (Wizard(player)) {
-		log_status("SHUTDOWN: by %s\n", unparse_object(player, player));
+		log_status("SHUTDOWN: by %s", unparse_object(player, player));
 		shutdown_flag = 1;
 		restart_flag = 0;
 	} else {
 		notify(player, "Your delusions of grandeur have been duly noted.");
-		log_status("ILLEGAL SHUTDOWN: tried by %s\n", unparse_object(player, player));
+		log_status("ILLEGAL SHUTDOWN: tried by %s", unparse_object(player, player));
 	}
 }
 
@@ -99,12 +99,12 @@ void
 do_restart(dbref player)
 {
 	if (Wizard(player)) {
-		log_status("SHUTDOWN & RESTART: by %s\n", unparse_object(player, player));
+		log_status("SHUTDOWN & RESTART: by %s", unparse_object(player, player));
 		shutdown_flag = 1;
 		restart_flag = 1;
 	} else {
 		notify(player, "Your delusions of grandeur have been duly noted.");
-		log_status("ILLEGAL RESTART: tried by %s\n", unparse_object(player, player));
+		log_status("ILLEGAL RESTART: tried by %s", unparse_object(player, player));
 	}
 }
 
@@ -202,7 +202,7 @@ panic(const char *message)
 	char panicfile[2048];
 	FILE *f;
 
-	log_status("PANIC: %s\n", message);
+	log_status("PANIC: %s", message);
 	fprintf(stderr, "PANIC: %s\n", message);
 
 	/* shut down interface */
@@ -225,11 +225,11 @@ panic(const char *message)
 		abort();
 #endif							/* NOCOREDUMP */
 	} else {
-		log_status("DUMPING: %s\n", panicfile);
+		log_status("DUMPING: %s", panicfile);
 		fprintf(stderr, "DUMPING: %s\n", panicfile);
 		db_write(f);
 		fclose(f);
-		log_status("DUMPING: %s (done)\n", panicfile);
+		log_status("DUMPING: %s (done)", panicfile);
 		fprintf(stderr, "DUMPING: %s (done)\n", panicfile);
 		(void) unlink(DELTAFILE_NAME);
 	}
@@ -269,9 +269,9 @@ dump_database(void)
 {
 	epoch++;
 
-	log_status("DUMPING: %s.#%d#\n", dumpfile, epoch);
+	log_status("DUMPING: %s.#%d#", dumpfile, epoch);
 	dump_database_internal();
-	log_status("DUMPING: %s.#%d# (done)\n", dumpfile, epoch);
+	log_status("DUMPING: %s.#%d# (done)", dumpfile, epoch);
 }
 
 #ifdef WIN32
@@ -301,7 +301,7 @@ fork_and_dump(void)
 #endif
 
 	last_monolithic_time = time(NULL);
-	log_status("CHECKPOINTING: %s.#%d#\n", dumpfile, epoch);
+	log_status("CHECKPOINTING: %s.#%d#", dumpfile, epoch);
 
 	if (tp_dbdump_warning)
 		wall_and_flush(tp_dumping_mesg);
@@ -397,7 +397,7 @@ dump_deltas(void)
 	}
 
 	epoch++;
-	log_status("DELTADUMP: %s.#%d#\n", dumpfile, epoch);
+	log_status("DELTADUMP: %s.#%d#", dumpfile, epoch);
 
 	if (tp_deltadump_warning)
 		wall_and_flush(tp_dumpdeltas_mesg);
@@ -422,7 +422,7 @@ init_game(const char *infile, const char *outfile)
 	FILE *f;
 
 	if ((f = fopen(MACRO_FILE, "r")) == NULL)
-		log_status("INIT: Macro storage file %s is tweaked.\n", MACRO_FILE);
+		log_status("INIT: Macro storage file %s is tweaked.", MACRO_FILE);
 	else {
 		macroload(f);
 		fclose(f);
@@ -447,11 +447,11 @@ init_game(const char *infile, const char *outfile)
 	tune_load_parmsfile(NOTHING);	/* load @tune parms from file */
 
 	/* ok, read the db in */
-	log_status("LOADING: %s\n", infile);
+	log_status("LOADING: %s", infile);
 	fprintf(stderr, "LOADING: %s\n", infile);
 	if (db_read(input_file) < 0)
 		return -1;
-	log_status("LOADING: %s (done)\n", infile);
+	log_status("LOADING: %s (done)", infile);
 	fprintf(stderr, "LOADING: %s (done)\n", infile);
 
 	/* set up dumper */
@@ -529,7 +529,7 @@ process_command(int descr, dbref player, char *command)
 	/* robustify player */
 	if (player < 0 || player >= db_top ||
 		(Typeof(player) != TYPE_PLAYER && Typeof(player) != TYPE_THING)) {
-		log_status("process_command: bad player %d\n", player);
+		log_status("process_command: bad player %d", player);
 		return;
 	}
 
@@ -538,7 +538,7 @@ process_command(int descr, dbref player, char *command)
 			if (!*command) {
 				return; 
 			}
-			log_command("%s%s%s%s(%d) in %s(%d):%s %s\n",
+			log_command("%s%s%s%s(%d) in %s(%d):%s %s",
 						Wizard(OWNER(player)) ? "WIZ: " : "",
 						(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
 						(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
@@ -547,7 +547,7 @@ process_command(int descr, dbref player, char *command)
 						(int) DBFETCH(player)->location, " ", command);
 		} else {
 			if (tp_log_interactive) {
-				log_command("%s%s%s%s(%d) in %s(%d):%s %s\n",
+				log_command("%s%s%s%s(%d) in %s(%d):%s %s",
 							Wizard(OWNER(player)) ? "WIZ: " : "",
 							(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
 							(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
@@ -1419,7 +1419,7 @@ process_command(int descr, dbref player, char *command)
 			}	
 			notify(player, tp_huh_mesg);
 			if (tp_log_failed_commands && !controls(player, DBFETCH(player)->location)) {
-				log_status("HUH from %s(%d) in %s(%d)[%s]: %s %s\n",
+				log_status("HUH from %s(%d) in %s(%d)[%s]: %s %s",
 						   NAME(player), player, NAME(DBFETCH(player)->location),
 						   DBFETCH(player)->location,
 						   NAME(OWNER(DBFETCH(player)->location)), command, full_command);
@@ -1451,5 +1451,5 @@ process_command(int descr, dbref player, char *command)
 }
 
 #undef Matched
-static const char *game_c_version = "$RCSfile$ $Revision: 1.46 $";
+static const char *game_c_version = "$RCSfile$ $Revision: 1.47 $";
 const char *get_game_c_version(void) { return game_c_version; }

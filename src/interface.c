@@ -485,7 +485,7 @@ main(int argc, char **argv)
 
 	if (!sanity_interactive) {
 
-                log_status("INIT: TinyMUCK %s starting.\n", "version");
+                log_status("INIT: TinyMUCK %s starting.", "version");
 
 #ifdef DETACH
 # ifndef WIN32
@@ -517,7 +517,7 @@ main(int argc, char **argv)
 			fprintf(ffd, "%d\n", getpid());
 			fclose(ffd);
 		}
-		log_status("%s PID is: %d\n", argv[0], getpid());
+		log_status("%s PID is: %d", argv[0], getpid());
 
 
 #ifdef DETACH
@@ -1129,7 +1129,7 @@ shovechars()
 	ssl_ctx = SSL_CTX_new (SSLv23_server_method ());
  
 	if (!SSL_CTX_use_certificate_file (ssl_ctx, SSL_CERT_FILE, SSL_FILETYPE_PEM)) {
-		log_status("Could not load certificate file %s\n", SSL_CERT_FILE);
+		log_status("Could not load certificate file %s", SSL_CERT_FILE);
 		fprintf(stderr, "Could not load certificate file %s\n", SSL_CERT_FILE);
 		ssl_status_ok = 0;
 	}
@@ -1138,14 +1138,14 @@ shovechars()
 		SSL_CTX_set_default_passwd_cb_userdata(ssl_ctx, (void*)tp_ssl_keyfile_passwd);
 
 		if (!SSL_CTX_use_PrivateKey_file (ssl_ctx, SSL_KEY_FILE, SSL_FILETYPE_PEM)) {
-			log_status("Could not load private key file %s\n", SSL_KEY_FILE);
+			log_status("Could not load private key file %s", SSL_KEY_FILE);
 			fprintf(stderr, "Could not load private key file %s\n", SSL_KEY_FILE);
 			ssl_status_ok = 0;
 		}
 	}
 	if (ssl_status_ok) {
 		if (!SSL_CTX_check_private_key (ssl_ctx)) {
-			log_status("Private key does not check out and appears to be invalid.\n");
+			log_status("Private key does not check out and appears to be invalid.");
 			fprintf(stderr, "Private key does not check out and appears to be invalid.\n");
 			ssl_status_ok = 0;
 		}
@@ -1499,14 +1499,14 @@ new_connection(int port, int sock, int is_ssl)
 #endif
 #ifdef USE_IPV6
 		strcpyn(hostname, sizeof(hostname), addrout(port, &(addr.sin6_addr), addr.sin6_port));
-		log_status("ACCEPT: %s(%d) on descriptor %d\n", hostname,
+		log_status("ACCEPT: %s(%d) on descriptor %d", hostname,
 				   ntohs(addr.sin6_port), newsock);
 #else
 		strcpyn(hostname, sizeof(hostname), addrout(port, addr.sin_addr.s_addr, addr.sin_port));
-		log_status("ACCEPT: %s(%d) on descriptor %d\n", hostname,
+		log_status("ACCEPT: %s(%d) on descriptor %d", hostname,
 				   ntohs(addr.sin_port), newsock);
 #endif
-		log_status("CONCOUNT: There are now %d open connections.\n", ++ndescriptors);
+		log_status("CONCOUNT: There are now %d open connections.", ++ndescriptors);
 		return initializesock(newsock, hostname, is_ssl);
 	}
 }
@@ -1698,7 +1698,7 @@ addrout(int lport, long a, unsigned short prt)
 
 #if MIN_SECS_TO_LOG
 				if (lag >= CFG_MIN_SECS_TO_LOG) {
-					log_status("GETHOSTBYNAME-RAN: secs %3d\n", lag);
+					log_status("GETHOSTBYNAME-RAN: secs %3d", lag);
 				}
 #endif
 
@@ -1757,11 +1757,11 @@ void
 shutdownsock(struct descriptor_data *d)
 {
 	if (d->connected) {
-		log_status("DISCONNECT: descriptor %d player %s(%d) from %s(%s)\n",
+		log_status("DISCONNECT: descriptor %d player %s(%d) from %s(%s)",
 				   d->descriptor, NAME(d->player), d->player, d->hostname, d->username);
 		announce_disconnect(d);
 	} else {
-		log_status("DISCONNECT: descriptor %d from %s(%s) never connected.\n",
+		log_status("DISCONNECT: descriptor %d from %s(%s) never connected.",
 				   d->descriptor, d->hostname, d->username);
 	}
 	clearstrings(d);
@@ -1779,7 +1779,7 @@ shutdownsock(struct descriptor_data *d)
 	mcp_frame_clear(&d->mcpframe);
 	FREE(d);
 	ndescriptors--;
-	log_status("CONCOUNT: There are now %d open connections.\n", ndescriptors);
+	log_status("CONCOUNT: There are now %d open connections.", ndescriptors);
 }
 
 void
@@ -2234,7 +2234,7 @@ process_input(struct descriptor_data *d)
 						    d->ssl_session = SSL_new(ssl_ctx);
 						    SSL_set_fd(d->ssl_session, d->descriptor);
 						    SSL_accept(d->ssl_session);
-						    log_status("STARTTLS: %i\n", d->descriptor);
+						    log_status("STARTTLS: %i", d->descriptor);
 					    }
 					}
 #endif
@@ -2536,7 +2536,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 		player = connect_player(user, password);
 		if (player == NOTHING) {
 			queue_ansi(d, connect_fail);
-			log_status("FAILED CONNECT %s on descriptor %d\n", user, d->descriptor);
+			log_status("FAILED CONNECT %s on descriptor %d", user, d->descriptor);
 		} else {
 			if ((wizonly_mode ||
 				 (tp_playermax && con_players_curr >= tp_playermax_limit)) &&
@@ -2549,7 +2549,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 				queue_string(d, "\r\n");
 				d->booted = 1;
 			} else {
-				log_status("CONNECTED: %s(%d) on descriptor %d\n",
+				log_status("CONNECTED: %s(%d) on descriptor %d",
 						   NAME(player), player, d->descriptor);
 				d->connected = 1;
 				d->connected_at = time(NULL);
@@ -2586,9 +2586,9 @@ check_connect(struct descriptor_data *d, const char *msg)
 				player = create_player(user, password);
 				if (player == NOTHING) {
 					queue_ansi(d, create_fail);
-					log_status("FAILED CREATE %s on descriptor %d\n", user, d->descriptor);
+					log_status("FAILED CREATE %s on descriptor %d", user, d->descriptor);
 				} else {
-					log_status("CREATED %s(%d) on descriptor %d\n",
+					log_status("CREATED %s(%d) on descriptor %d",
 							   NAME(player), player, d->descriptor);
 					d->connected = 1;
 					d->connected_at = time(NULL);
@@ -2605,7 +2605,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 		} else {
 			queue_ansi(d, tp_register_mesg);
 			queue_string(d, "\r\n");
-			log_status("FAILED CREATE %s on descriptor %d\n", user, d->descriptor);
+			log_status("FAILED CREATE %s on descriptor %d", user, d->descriptor);
 		}
 	} else if (!*command) {
 		/* do nothing */
@@ -2727,13 +2727,13 @@ do_armageddon(dbref player, const char *msg)
 
 	if (!Wizard(player)) {
 		notify(player, "Sorry, but you don't look like the god of War to me.");
-		log_status("ILLEGAL ARMAGEDDON: tried by %s\n", unparse_object(player, player));
+		log_status("ILLEGAL ARMAGEDDON: tried by %s", unparse_object(player, player));
 		return;
 	}
 	snprintf(buf, sizeof(buf), "\r\nImmediate shutdown initiated by %s.\r\n", NAME(player));
 	if (msg || *msg)
 		strcatn(buf, sizeof(buf), msg);
-	log_status("ARMAGEDDON initiated by %s(%d): %s\n", NAME(player), player, msg);
+	log_status("ARMAGEDDON initiated by %s(%d): %s", NAME(player), player, msg);
 	fprintf(stderr, "ARMAGEDDON initiated by %s(%d): %s\n", NAME(player), player, msg);
 	close_sockets(buf);
 
@@ -2788,7 +2788,7 @@ dump_users(struct descriptor_data *e, char *user)
 
 	if (wizard)
 		/* S/he is connected and not quelled. Okay; log it. */
-		log_command("WIZ: %s(%d) in %s(%d):  %s\n", NAME(e->player),
+		log_command("WIZ: %s(%d) in %s(%d):  %s", NAME(e->player),
 					(int) e->player, NAME(DBFETCH(e->player)->location),
 					(int) DBFETCH(e->player)->location, "WHO");
 
@@ -3054,7 +3054,7 @@ do_setuid(char *name)
 	struct passwd *pw;
 
 	if ((pw = getpwnam(name)) == NULL) {
-		log_status("can't get pwent for %s\n", name);
+		log_status("can't get pwent for %s", name);
 		exit(1);
 	}
 	if (setuid(pw->pw_uid) == -1) {
@@ -3074,7 +3074,7 @@ do_setgid(char *name)
 	struct group *gr;
 
 	if ((gr = getgrnam(name)) == NULL) {
-		log_status("can't get grent for group %s\n", name);
+		log_status("can't get grent for group %s", name);
 		exit(1);
 	}
 	if (setgid(gr->gr_gid) == -1) {
@@ -3837,7 +3837,7 @@ dump_status(void)
 	char buf[BUFFER_LEN];
 
 	(void) time(&now);
-	log_status("STATUS REPORT:\n");
+	log_status("STATUS REPORT:");
 	for (d = descriptor_list; d; d = d->next) {
 		if (d->connected) {
 			snprintf(buf, sizeof(buf), "PLAYING descriptor %d player %s(%d) from host %s(%s), %s.\n",
@@ -3858,28 +3858,28 @@ log_ssl_error(const char* text, int descr, int errnum)
 {
 	switch (errnum) {
 		case SSL_ERROR_SSL:
-			log_status("SSL %s: sock %d, Error SSL_ERROR_SSL\n", text, descr);
+			log_status("SSL %s: sock %d, Error SSL_ERROR_SSL", text, descr);
 			break;
 		case SSL_ERROR_WANT_READ:
-			log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_READ\n", text, descr);
+			log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_READ", text, descr);
 			break;
 		case SSL_ERROR_WANT_WRITE:
-			log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_WRITE\n", text, descr);
+			log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_WRITE", text, descr);
 			break;
 		case SSL_ERROR_WANT_X509_LOOKUP:
-			log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_X509_LOOKUP\n", text, descr);
+			log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_X509_LOOKUP", text, descr);
 			break;
 		case SSL_ERROR_SYSCALL:
-			log_status("SSL %s: sock %d, Error SSL_ERROR_SYSCALL: %s\n", text, descr, strerror(errno));
+			log_status("SSL %s: sock %d, Error SSL_ERROR_SYSCALL: %s", text, descr, strerror(errno));
 			break;
 		case SSL_ERROR_ZERO_RETURN:
-			log_status("SSL %s: sock %d, Error SSL_ERROR_ZERO_RETURN\n", text, descr);
+			log_status("SSL %s: sock %d, Error SSL_ERROR_ZERO_RETURN", text, descr);
 			break;
 		case SSL_ERROR_WANT_CONNECT:
-			log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_CONNECT\n", text, descr);
+			log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_CONNECT", text, descr);
 			break;
 		case SSL_ERROR_WANT_ACCEPT:
-			log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_ACCEPT\n", text, descr);
+			log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_ACCEPT", text, descr);
 			break;
 	}
 }
@@ -4198,5 +4198,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.110 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.111 $";
 const char *get_interface_c_version(void) { return interface_c_version; }

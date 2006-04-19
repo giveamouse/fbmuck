@@ -24,167 +24,67 @@
    USE ANSI C varargs features, no? Sigh. */
 
 void
-log2file(char *myfilename, char *format, ...)
+vlog2file(int prepend_time, char *filename, char *format, va_list args)
 {
-	va_list args;
 	FILE *fp;
+	time_t lt;
+	char buf[40];
+	lt = time(NULL);
+	*buf = '\0';
 
-	va_start(args, format);
-
-	if ((fp = fopen(myfilename, "a")) == NULL) {
-		fprintf(stderr, "Unable to open %s!\n", myfilename);
+	if ((fp = fopen(filename, "a")) == NULL) {
+		fprintf(stderr, "Unable to open %s!\n", filename);
+		if (prepend_time)
+			fprintf(stderr, "%.16s: ", ctime(&lt));
 		vfprintf(stderr, format, args);
 	} else {
+		if (prepend_time) {
+#ifndef WIN32
+			format_time(buf, 32, "%c", localtime(&lt));
+#else
+			format_time(buf, 32, "%c", uw32localtime(&lt));
+#endif
+			fprintf(fp, "%.32s: ", buf);
+		}
+		
 		vfprintf(fp, format, args);
 		fprintf(fp, "\n");
+
 		fclose(fp);
 	}
-	va_end(args);
 }
 
 void
-log_sanity(char *format, ...)
+log2file(char *filename, char *format, ...)
 {
 	va_list args;
-	FILE *fp;
-	time_t lt;
-	char buf[40];
-
 	va_start(args, format);
-	lt = time(NULL);
-
-	*buf = '\0';
-	if ((fp = fopen(LOG_SANITY, "a")) == NULL) {
-		fprintf(stderr, "Unable to open %s!\n", LOG_STATUS);
-		fprintf(stderr, "%.16s: ", ctime(&lt));
-		vfprintf(stderr, format, args);
-	} else {
-#ifndef WIN32
-		format_time(buf, 32, "%c", localtime(&lt));
-#else
-		format_time(buf, 32, "%c", uw32localtime(&lt));
-#endif
-
-		fprintf(fp, "%.32s: ", buf);
-		vfprintf(fp, format, args);
-		fclose(fp);
-	}
+	vlog2file(0, filename, format, args);
 	va_end(args);
+}
+
+#define log_function(FILENAME) \
+{ \
+	va_list args; \
+	va_start(args, format); \
+	vlog2file(1, FILENAME, format, args); \
+	va_end(args); \
 }
 
 void
-log_status(char *format, ...)
-{
-	va_list args;
-	FILE *fp;
-	time_t lt;
-	char buf[40];
-
-	va_start(args, format);
-	lt = time(NULL);
-
-	*buf = '\0';
-	if ((fp = fopen(LOG_STATUS, "a")) == NULL) {
-		fprintf(stderr, "Unable to open %s!\n", LOG_STATUS);
-		fprintf(stderr, "%.16s: ", ctime(&lt));
-		vfprintf(stderr, format, args);
-	} else {
-#ifndef WIN32
-		format_time(buf, 32, "%c", localtime(&lt));
-#else
-		format_time(buf, 32, "%c", uw32localtime(&lt));
-#endif
-		fprintf(fp, "%.32s: ", buf);
-		vfprintf(fp, format, args);
-		fclose(fp);
-	}
-	va_end(args);
-}
+log_sanity(char *format, ...) log_function(LOG_SANITY)
 
 void
-log_muf(char *format, ...)
-{
-	va_list args;
-	FILE *muflog;
-	time_t lt;
-	char buf[40];
-
-	va_start(args, format);
-	lt = time(NULL);
-
-	if ((muflog = fopen(LOG_MUF, "a")) == NULL) {
-		fprintf(stderr, "Unable to open %s!\n", LOG_MUF);
-		fprintf(stderr, "%.16s: ", ctime(&lt));
-		vfprintf(stderr, format, args);
-	} else {
-#ifndef WIN32
-		format_time(buf, 32, "%c", localtime(&lt));
-#else
-		format_time(buf, 32, "%c", uw32localtime(&lt));
-#endif
-		fprintf(muflog, "%.32s: ", buf);
-		vfprintf(muflog, format, args);
-		fclose(muflog);
-	}
-	va_end(args);
-}
+log_status(char *format, ...) log_function(LOG_STATUS)
 
 void
-log_gripe(char *format, ...)
-{
-	va_list args;
-	FILE *fp;
-	time_t lt;
-	char buf[40];
-
-	va_start(args, format);
-	lt = time(NULL);
-
-	*buf = '\0';
-	if ((fp = fopen(LOG_GRIPE, "a")) == NULL) {
-		fprintf(stderr, "Unable to open %s!\n", LOG_GRIPE);
-		fprintf(stderr, "%.16s: ", ctime(&lt));
-		vfprintf(stderr, format, args);
-	} else {
-#ifndef WIN32
-		format_time(buf, 32, "%c", localtime(&lt));
-#else
-		format_time(buf, 32, "%c", uw32localtime(&lt));
-#endif
-		fprintf(fp, "%.32s: ", buf);
-		vfprintf(fp, format, args);
-		fclose(fp);
-	}
-	va_end(args);
-}
+log_muf(char *format, ...) log_function(LOG_MUF)
 
 void
-log_command(char *format, ...)
-{
-	va_list args;
-	char buf[40];
-	FILE *fp;
-	time_t lt;
+log_gripe(char *format, ...) log_function(LOG_GRIPE)
 
-	va_start(args, format);
-	lt = time(NULL);
-
-	*buf = '\0';
-	if ((fp = fopen(COMMAND_LOG, "a")) == NULL) {
-		fprintf(stderr, "Unable to open %s!\n", COMMAND_LOG);
-		vfprintf(stderr, format, args);
-	} else {
-#ifndef WIN32
-		format_time(buf, 32, "%c", localtime(&lt));
-#else
-		format_time(buf, 32, "%c", uw32localtime(&lt));
-#endif
-		fprintf(fp, "%.32s: ", buf);
-		vfprintf(fp, format, args);
-		fclose(fp);
-	}
-	va_end(args);
-}
+void
+log_command(char *format, ...) log_function(COMMAND_LOG)
 
 void
 strip_evil_characters(char *badstring)
@@ -243,5 +143,5 @@ notify_fmt(dbref player, char *format, ...)
 	notify(player, bufr);
 	va_end(args);
 }
-static const char *log_c_version = "$RCSfile$ $Revision: 1.16 $";
+static const char *log_c_version = "$RCSfile$ $Revision: 1.17 $";
 const char *get_log_c_version(void) { return log_c_version; }

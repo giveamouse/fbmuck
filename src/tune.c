@@ -625,7 +625,7 @@ tune_save_parmsfile(void)
 
 	f = fopen(PARMFILE_NAME, "w");
 	if (!f) {
-		log_status("Couldn't open file %s!\n", PARMFILE_NAME);
+		log_status("Couldn't open file %s!", PARMFILE_NAME);
 		return;
 	}
 
@@ -899,7 +899,7 @@ tune_load_parmsfile(dbref player)
 
 	f = fopen(PARMFILE_NAME, "r");
 	if (!f) {
-		log_status("Couldn't open file %s!\n", PARMFILE_NAME);
+		log_status("Couldn't open file %s!", PARMFILE_NAME);
 		return;
 	}
 
@@ -923,7 +923,7 @@ do_tune(dbref player, char *parmname, char *parmval)
 		result = tune_setparm(parmname, parmval);
 		switch (result) {
 		case TUNESET_SUCCESS:
-			log_status("TUNED: %s(%d) tuned %s to %s\n",
+			log_status("TUNED: %s(%d) tuned %s to %s",
 					   NAME(player), player, parmname, parmval);
 			notify(player, "Parameter set.");
 			tune_display_parms(player, parmname);
@@ -957,5 +957,5 @@ do_tune(dbref player, char *parmname, char *parmval)
 		return;
 	}
 }
-static const char *tune_c_version = "$RCSfile$ $Revision: 1.44 $";
+static const char *tune_c_version = "$RCSfile$ $Revision: 1.45 $";
 const char *get_tune_c_version(void) { return tune_c_version; }

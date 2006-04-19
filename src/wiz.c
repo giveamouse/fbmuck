@@ -432,7 +432,7 @@ do_force(int descr, dbref player, const char *what, char *command)
 		}
 	}
 
-	log_status("FORCED: %s(%d) by %s(%d): %s\n", NAME(victim),
+	log_status("FORCED: %s(%d) by %s(%d): %s", NAME(victim),
 			   victim, NAME(player), player, command);
 	/* force victim to do command */
 	force_prog=NOTHING;
@@ -639,7 +639,7 @@ do_boot(dbref player, const char *name)
 	else {
 		notify(victim, "You have been booted off the game.");
 		if (boot_off(victim)) {
-			log_status("BOOTED: %s(%d) by %s(%d)\n", NAME(victim),
+			log_status("BOOTED: %s(%d) by %s(%d)", NAME(victim),
 					   victim, NAME(player), player);
 			if (player != victim) {
 				snprintf(buf, sizeof(buf), "You booted %s off!", NAME(victim));
@@ -738,7 +738,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 		notify(victim, "You have been turned into a toad.");
 		snprintf(buf, sizeof(buf), "You turned %s into a toad!", NAME(victim));
 		notify(player, buf);
-		log_status("TOADED: %s(%d) by %s(%d)\n", NAME(victim), victim, NAME(player), player);
+		log_status("TOADED: %s(%d) by %s(%d)", NAME(victim), victim, NAME(player), player);
 		/* reset name */
 		delete_player(victim);
 		snprintf(buf, sizeof(buf), "A slimy toad named %s", NAME(victim));
@@ -801,7 +801,7 @@ do_newpassword(dbref player, const char *name, const char *password)
 		notify(player, "Password changed.");
 		snprintf(buf, sizeof(buf), "Your password has been changed by %s.", NAME(player));
 		notify(victim, buf);
-		log_status("NEWPASS'ED: %s(%d) by %s(%d)\n", NAME(victim), victim,
+		log_status("NEWPASS'ED: %s(%d) by %s(%d)", NAME(victim), victim,
 				   NAME(player), player);
 	}
 }
@@ -820,7 +820,7 @@ do_pcreate(dbref player, const char *user, const char *password)
 	if (newguy == NOTHING) {
 		notify(player, "Create failed.");
 	} else {
-		log_status("PCREATED %s(%d) by %s(%d)\n", NAME(newguy), newguy, NAME(player), player);
+		log_status("PCREATED %s(%d) by %s(%d)", NAME(newguy), newguy, NAME(player), player);
 		snprintf(buf, sizeof(buf), "Player %s created as object #%d.", user, newguy);
 		notify(player, buf);
 	}
@@ -1354,5 +1354,5 @@ do_memory(dbref who)
 
 	notify(who, "Done.");
 }
-static const char *wiz_c_version = "$RCSfile$ $Revision: 1.37 $";
+static const char *wiz_c_version = "$RCSfile$ $Revision: 1.38 $";
 const char *get_wiz_c_version(void) { return wiz_c_version; }

@@ -458,7 +458,7 @@ do_delete(dbref player, dbref program, int arg[], int argc)
 void
 do_quit(dbref player, dbref program)
 {
-	log_status("PROGRAM SAVED: %s by %s(%d)\n", unparse_object(player, program),
+	log_status("PROGRAM SAVED: %s by %s(%d)", unparse_object(player, program),
 			   NAME(player), player);
 	write_program(PROGRAM_FIRST(program), program);
 
@@ -764,5 +764,5 @@ insert(dbref player, const char *line)
 	curr->next = new_line;
 	/* DBDIRTY(program); */
 }
-static const char *edit_c_version = "$RCSfile$ $Revision: 1.10 $";
+static const char *edit_c_version = "$RCSfile$ $Revision: 1.11 $";
 const char *get_edit_c_version(void) { return edit_c_version; }

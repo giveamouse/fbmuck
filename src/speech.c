@@ -88,7 +88,7 @@ do_wall(dbref player, const char *message)
 	char buf[BUFFER_LEN];
 
 	if (Wizard(player) && Typeof(player) == TYPE_PLAYER) {
-		log_status("WALL from %s(%d): %s\n", NAME(player), player, message);
+		log_status("WALL from %s(%d): %s", NAME(player), player, message);
 		snprintf(buf, sizeof(buf), "%s shouts, \"%s\"", NAME(player), message);
 		for (i = 0; i < db_top; i++) {
 			if (Typeof(i) == TYPE_PLAYER) {
@@ -116,7 +116,7 @@ do_gripe(dbref player, const char *message)
 	}
 
 	loc = DBFETCH(player)->location;
-	log_gripe("GRIPE from %s(%d) in %s(%d): %s\n",
+	log_gripe("GRIPE from %s(%d) in %s(%d): %s",
 			  NAME(player), player, NAME(loc), loc, message);
 
 	notify(player, "Your complaint has been duly noted.");
@@ -274,5 +274,5 @@ blank(const char *s)
 
 	return !(*s);
 }
-static const char *speech_c_version = "$RCSfile$ $Revision: 1.12 $";
+static const char *speech_c_version = "$RCSfile$ $Revision: 1.13 $";
 const char *get_speech_c_version(void) { return speech_c_version; }

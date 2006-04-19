@@ -206,7 +206,7 @@ delete_player(dbref who)
 							NAME(ren), ren, namebuf);
 					wall_wizards(buf);
 
-					log_status("SANITY NAME CHANGE: %s(#%d) to %s\n", NAME(ren), ren, namebuf);
+					log_status("SANITY NAME CHANGE: %s(#%d) to %s", NAME(ren), ren, namebuf);
 
 					if (ren == found) {
 						free_hash(NAME(ren), player_list, PLAYER_HASH_SIZE);
@@ -231,5 +231,5 @@ delete_player(dbref who)
 
 	return;
 }
-static const char *player_c_version = "$RCSfile$ $Revision: 1.12 $";
+static const char *player_c_version = "$RCSfile$ $Revision: 1.13 $";
 const char *get_player_c_version(void) { return player_c_version; }

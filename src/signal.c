@@ -229,7 +229,7 @@ RETSIGTYPE sig_dump_status(int i)
  */
 RETSIGTYPE sig_shutdown(int i)
 {
-	log_status("SHUTDOWN: via SIGNAL\n");
+	log_status("SHUTDOWN: via SIGNAL");
 	shutdown_flag = 1;
 	restart_flag = 0;
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
@@ -275,7 +275,7 @@ RETSIGTYPE sig_reap(int i)
 #endif
 	} else {
 		if (reapedpid == global_resolver_pid) {
-			log_status("resolver exited with status %d\n", status);
+			log_status("resolver exited with status %d", status);
 			if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
 				/* If the resolver exited with an error, respawn it. */
 				spawn_resolver();
@@ -287,7 +287,7 @@ RETSIGTYPE sig_reap(int i)
 		} else if(reapedpid == global_dumper_pid) {
 			int warnflag = 0;
 
-			log_status("forked DB dump task exited with status %d\n", status);
+			log_status("forked DB dump task exited with status %d", status);
 
 			if (WIFSIGNALED(status)) {
 				warnflag = 1;
@@ -352,7 +352,7 @@ BOOL WINAPI HandleConsole(DWORD mesg) {
       case CTRL_SHUTDOWN_EVENT:
          shutdown_flag = 1;
          restart_flag = 0;
-         log_status("SHUTDOWN: via SIGNAL\n");
+         log_status("SHUTDOWN: via SIGNAL");
          break;
 
       default:
@@ -371,5 +371,5 @@ void set_console() {
 
 
 #endif /* WIN32 */
-static const char *signal_c_version = "$RCSfile$ $Revision: 1.20 $";
+static const char *signal_c_version = "$RCSfile$ $Revision: 1.21 $";
 const char *get_signal_c_version(void) { return signal_c_version; }

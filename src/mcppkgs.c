@@ -246,7 +246,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 				curr = new_line;
 			}
 
-			log_status("PROGRAM SAVED: %s by %s(%d)\n",
+			log_status("PROGRAM SAVED: %s by %s(%d)",
 					   unparse_object(player, obj), NAME(player), player);
 
 			write_program(PROGRAM_FIRST(obj), obj);
@@ -282,5 +282,5 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		}
 	}
 }
-static const char *mcppkgs_c_version = "$RCSfile$ $Revision: 1.10 $";
+static const char *mcppkgs_c_version = "$RCSfile$ $Revision: 1.11 $";
 const char *get_mcppkgs_c_version(void) { return mcppkgs_c_version; }

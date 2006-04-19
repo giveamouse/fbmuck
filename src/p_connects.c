@@ -596,7 +596,7 @@ prim_descr_setuser(PRIM_PROTOTYPE)
 		if (ref != NOTHING) {
 			destname = NAME(ref);
 		}
-		log_status("DESCR_SETUSER: %s(%d) to %s(%d) on descriptor %d\n",
+		log_status("DESCR_SETUSER: %s(%d) to %s(%d) on descriptor %d",
 				   NAME(player), player, destname, ref, oper1->data.number);
 	}
 	tmp = oper1->data.number;
@@ -729,5 +729,5 @@ prim_descr_bufsize(PRIM_PROTOTYPE)
 }
 
 
-static const char *p_connects_c_version = "$RCSfile$ $Revision: 1.19 $";
+static const char *p_connects_c_version = "$RCSfile$ $Revision: 1.20 $";
 const char *get_p_connects_c_version(void) { return p_connects_c_version; }
