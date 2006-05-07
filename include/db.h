@@ -193,8 +193,11 @@ typedef int dbref;				/* offset into db */
 #define WIZARD             0x10	/* gets automatic control */
 #define LINK_OK            0x20	/* anybody can link to this */
 #define DARK               0x40	/* contents of room are not printed */
-#define DEBUG DARK				/* Used to print debugging information on
-								 * on MUF programs */
+
+/* This #define disabled to avoid accidentally triggerring debugging code */
+/* #define DEBUG DARK */	/* Used to print debugging information on
+				 * on MUF programs */
+
 #define INTERNAL           0x80	/* internal-use-only flag */
 #define STICKY            0x100	/* this object goes home when dropped */
 #define SETUID STICKY			/* Used for programs that must run with the
@@ -838,7 +841,7 @@ extern dbref parse_dbref(const char *);	/* parse a dbref */
 
 #ifndef dbh_version
 #define dbh_version
-const char *db_h_version = "$RCSfile$ $Revision: 1.44 $";
+const char *db_h_version = "$RCSfile$ $Revision: 1.45 $";
 #endif
 #else
 extern const char *db_h_version;
