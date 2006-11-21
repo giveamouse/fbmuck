@@ -4335,7 +4335,7 @@ onto the stack.
 </a></h4>
   Compares strings s1 and s2. Returns i as 0 if they are equal,
 otherwise returns i as the difference between the first non-matching
-character in the strings.  For example, &quot;a&quot; &quot;z&quot; strcmp returns 25.
+character in the strings.  For example, &quot;z&quot; &quot;a&quot; strcmp returns 25.
 The reason it returns a 0 for a match, and the difference on a non-match,
 is to allow for nice things like string sorting functions.
 This primitive is case sensitive, unlike stringcmp.
@@ -4365,7 +4365,7 @@ Return value is like strcmp.
 </a></h4>
   Compares strings s1 and s2. Returns i as 0 if they are equal,
 otherwise returns i as the difference between the first non-matching
-character in the strings.  For example, &quot;a&quot; &quot;z&quot; stringcmp returns 25.
+character in the strings.  For example, &quot;z&quot; &quot;a&quot; stringcmp returns 25.
 This function is not case sensitive, unlike strcmp.
 <p><h5>Also see:
     <a href="#strncmp">STRNCMP</a>

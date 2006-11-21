@@ -1755,7 +1755,7 @@ STRCMP ( s1 s2 -- i )
 
   Compares strings s1 and s2. Returns i as 0 if they are equal,
 otherwise returns i as the difference between the first non-matching
-character in the strings.  For example, "a" "z" strcmp returns 25.
+character in the strings.  For example, "z" "a" strcmp returns 25.
 The reason it returns a 0 for a match, and the difference on a non-match,
 is to allow for nice things like string sorting functions.
 This primitive is case sensitive, unlike stringcmp.
@@ -1771,7 +1771,7 @@ STRINGCMP ( s1 s2 -- i )
 
   Compares strings s1 and s2. Returns i as 0 if they are equal,
 otherwise returns i as the difference between the first non-matching
-character in the strings.  For example, "a" "z" stringcmp returns 25.
+character in the strings.  For example, "z" "a" stringcmp returns 25.
 This function is not case sensitive, unlike strcmp.
 
 

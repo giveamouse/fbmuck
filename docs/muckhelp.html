@@ -73,20 +73,21 @@
     <td nowrap> &nbsp; <a href="#@restart">@restart</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#@restrict">@restrict</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#@set">@set</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#@shutdown">@shutdown</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#@stats">@stats</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#@success">@success</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#@teleport">@teleport</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#@teleport">@teleport</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#@toad">@toad</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#@trace">@trace</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#@unbless">@unbless</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#@unlink">@unlink</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#@unlock">@unlock</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#@unlock">@unlock</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#@usage">@usage</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#@wall">@wall</a> &nbsp; </td>
   </tr>
@@ -2749,9 +2750,10 @@ of using the text edit mode.
     <td width="20%"> &nbsp; <a href="#@newpassword">@newpassword</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#@pcreate">@pcreate</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#@restart">@restart</a> &nbsp; </td>
-    <td width="20%"> &nbsp; <a href="#@shutdown">@shutdown</a> &nbsp; </td>
+    <td width="20%"> &nbsp; <a href="#@restrict">@restrict</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="20%"> &nbsp; <a href="#@shutdown">@shutdown</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#@toad">@toad</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#@unbless">@unbless</a> &nbsp; </td>
     <td width="20%"> &nbsp; <a href="#@usage">@usage</a> &nbsp; </td>
@@ -2981,6 +2983,21 @@ database out to disk.
     <a href="#@shutdown">@SHUTDOWN</a> and
     <a href="#@restart">@RESTART</a>
 </h5>
+<p>
+
+
+
+<hr><h4><a name="@restrict">@RESTRICT [on|off]
+<br>
+
+<br>
+</a></h4>
+  Manages restriction of logins, turning on or off maintenance wiz-only login
+mode.  With no args, @restrict will print out the current login restriction
+state.  With an argument of 'on', maintenance mode is turned on, and only
+wizards can log in.  With an argument of 'off', restricted login mode is turned
+off, and all players can log in.  NOTE: when the muck starts up in sanfix mode,
+with a corrupted database, it will be with @restricted logins.
 <p>
 
 

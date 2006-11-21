@@ -40,9 +40,9 @@ Symbols
   @mcpprogram    @name          @newpassword   @odrop         @ofail
   @open          @osuccess      @owned         @password      @pcreate
   @program       @propset       @ps            @recycle       @restart
-  @set           @shutdown      @stats         @success       @teleport
-  @toad          @trace         @unbless       @unlink        @unlock
-  @usage         @wall          
+  @restrict      @set           @shutdown      @stats         @success
+  @teleport      @toad          @trace         @unbless       @unlink
+  @unlock        @usage         @wall          
 
 A's
   abode  
@@ -1689,8 +1689,8 @@ Wizardly Commands|WizCmds
 Wizardly Commands
 
 @armageddon    @bless         @boot          @delta         @dump
-@force         @newpassword   @pcreate       @restart       @shutdown
-@toad          @unbless       @usage         @wall          
+@force         @newpassword   @pcreate       @restart       @restrict
+@shutdown      @toad          @unbless       @usage         @wall
 
 ~----------------------------------------------------------------------------
 ~
@@ -1853,6 +1853,18 @@ NOT save the database out to disk.  Use this ONLY when you suspect the
 database has been corrupted, and it would be a BAD thing to save the
 database out to disk.
 Also see: @SHUTDOWN and @RESTART
+~
+~
+~
+@RESTRICT
+@RESTRICT [on|off]
+
+  Manages restriction of logins, turning on or off maintenance wiz-only login
+mode.  With no args, @restrict will print out the current login restriction
+state.  With an argument of 'on', maintenance mode is turned on, and only
+wizards can log in.  With an argument of 'off', restricted login mode is turned
+off, and all players can log in.  NOTE: when the muck starts up in sanfix mode,
+with a corrupted database, it will be with @restricted logins.
 ~
 ~
 ~
