@@ -1401,6 +1401,8 @@ mfn_delay(MFUNARGS)
 
 	if (i < 1)
 		i = 1;
+        if (i > 31622400)
+		ABORT_MPI("DELAY", "Delaying more than a year in MPI is just silly.");
 #ifdef WIZZED_DELAY
 	if (!(mesgtyp & MPI_ISBLESSED))
 		ABORT_MPI("DELAY", "Permission denied.");
@@ -1907,5 +1909,5 @@ mfn_escape(MFUNARGS)
 	*out = '\0';
 	return buf;
 }
-static const char *mfuns2_c_version = "$RCSfile$ $Revision: 1.38 $";
+static const char *mfuns2_c_version = "$RCSfile$ $Revision: 1.39 $";
 const char *get_mfuns2_c_version(void) { return mfuns2_c_version; }

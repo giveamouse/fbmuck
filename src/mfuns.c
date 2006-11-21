@@ -1935,7 +1935,7 @@ mfn_right(MFUNARGS)
 	char *fillstr;
 
 	len = (argc > 1) ? atoi(argv[1]) : 78;
-	if (len + 1 > BUFFER_LEN)
+	if (len > BUFFER_LEN - 1)
 		ABORT_MPI("RIGHT", "Fieldwidth too big.");
 	fillstr = (argc > 2) ? argv[2] : " ";
 	if (!*fillstr)
@@ -1962,7 +1962,7 @@ mfn_left(MFUNARGS)
 	char *fillstr;
 
 	len = (argc > 1) ? atoi(argv[1]) : 78;
-	if (len + 1 > BUFFER_LEN)
+	if (len > BUFFER_LEN - 1)
 		ABORT_MPI("LEFT", "Fieldwidth too big.");
 	fillstr = (argc > 2) ? argv[2] : " ";
 	if (!*fillstr)
@@ -1990,7 +1990,7 @@ mfn_center(MFUNARGS)
 	char *fillstr;
 
 	len = (argc > 1) ? atoi(argv[1]) : 78;
-	if (len + 1 > BUFFER_LEN)
+	if (len > BUFFER_LEN - 1)
 		ABORT_MPI("CENTER", "Fieldwidth too big.");
 	halflen = len / 2;
 
@@ -2080,5 +2080,5 @@ mfn_usecount(MFUNARGS)
 
 	return buf;
 }
-static const char *mfuns_c_version = "$RCSfile$ $Revision: 1.33 $";
+static const char *mfuns_c_version = "$RCSfile$ $Revision: 1.34 $";
 const char *get_mfuns_c_version(void) { return mfuns_c_version; }
