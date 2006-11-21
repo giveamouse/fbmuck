@@ -1677,6 +1677,18 @@ database out to disk.
 ~
 ~
 ~
+@RESTRICT
+@RESTRICT [on|off]
+
+  Manages restriction of logins, turning on or off maintenance wiz-only login
+mode.  With no args, @restrict will print out the current login restriction
+state.  With an argument of 'on', maintenance mode is turned on, and only
+wizards can log in.  With an argument of 'off', restricted login mode is turned
+off, and all players can log in.  NOTE: when the muck starts up in sanfix mode,
+with a corrupted database, it will be with @restricted logins.
+~
+~
+~
 ~~section Miscellaneous|MiscHelp
 ~
 ~
