@@ -1,3 +1,9 @@
+2.2fb6.07
+Fixed buffer overflow errors in MPI.  This might be remotely exploitable
+  to execute arbitrary malicious code.
+
+
+
 2.2fb6.06
 Fix db.h to not turn on DEBUG when it is not requested.
 A few changes to make 'make lint' on FreeBSD actually work properly.
