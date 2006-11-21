@@ -25,13 +25,13 @@ STATUS: What do they want to do with it?
 STATUS: Should be done.
 
     Investigate inserver player command macros.
-STATUS: Unknown - can be imitated with {force:me,"string\nstring\nstring"}.
+STATUS: Not done.  Can be imitated with {force:me,"string\nstring\nstring"}.
     Error msgs in MUF interpreter need cleanup.
 STATUS: Most seem to be better, but still need full audit.
     Make Netmuck simpler to compile/install.  Especially for doing upgrades.
 STATUS: If we could figure out a consistent way to do so, it'd be
-		possible.  At least we have 'make install', which will install
-		the binaries and shared help files.
+	possible.  At least we have 'make install', which will install
+	the binaries and shared help files.
     Investigate forbidding X flags on Wizbitted objects.
 STATUS: Obsoleted via BLESS.
     Allow exiting from the MUF editor without saving.
@@ -43,7 +43,7 @@ STATUS: MCP-GUI allows this, but the editor itself needs a lot of work.
     Add DESCR* prims to replace/supplement CON* prims.
 STATUS: Done.
     Add keyhole optimizer to MUF.
-STATUS: ?what does this refer to?
+STATUS: Done.
     Add standardized ~sys/cmd/@teleport/osucc type mesgs for inserver cmds.
 STATUS: Not done.
     Add lock checking for inserver commands.
@@ -61,8 +61,8 @@ STATUS: Not done.
     Document running order for @succ, etc & _arrive, _listen, _depart etc.
 STATUS: Not done.
 
-    Make MPI use allocated strings instead of BUFFER_LEN buffers.
-STATUS: Not done.
+    Make MPI use allocated strings instead of BUFFER_LEN argument buffers.
+STATUS: Done.
     Improve prop deletion schemes for protected props.
 STATUS: ?what does this refer to?
     Add process listing/management primitives.
@@ -125,7 +125,7 @@ STATUS: Not done.  I propose a change to this request: #0 perms, with a
 		patch.
 
     Change compiler to bytecode style.  Use fn ptrs.
-STATUS: Unknown.  It's currently a tokenizer.  Would like to change it
+STATUS: Not Done.  Probably not needed.  Would like to change it
 		to be a lot more like MPI's layout.
 
 +   Make server force ZOMBIES to look whenever it moves them.  All cases.
@@ -144,10 +144,10 @@ STATUS: As in, zombies are treated as players for purposes of determining
 ?   Document the CONTROLS and SYSPARM muf primitives.
 STATUS: Unknown.
 +   Write mpi-intro docs. (mostly done)
-STATUS: Done.  I think.
+STATUS: 2/3rds Done.  We need advanced MPI docs.
 
 ?   Make pose strip starting space for ',:;!?. or space.
-STATUS: Not sure, will check.
+STATUS: Not sure, will check.  Not really needed, with MUF.
 
     Make building quotas.
 STATUS: Not done.
@@ -219,16 +219,16 @@ STATUS: Wouldn't this be RMATCH, following the above naming scheme?
 
 ENHANCEMENTS:
     Let smatch() return the unknown parameters.
-STATUS: Unknown.
+STATUS: Not done.  Would be similar to what \1, \2, etc is for regsub.
 -   Add in Anon funcs. : Fn "cat" "dog" "bat" 3 ': strcmp > ; .sort ;
-STATUS: If this were done, Revar would have said so.
+STATUS: Not done.
 -   Make ticked macros and prims compile to anony funcs.
-STATUS: If this were done, Revar would have said so.
+STATUS: Not done.
 
 
 COMMANDS:
     @unlink <obj>[=<newdest>]  to unlink and relink in one.
-STATUS: Need to re-examine, and especially look at metalinks.
+STATUS: Not done.  Need to re-examine, and especially look at metalinks.
 
 
 CODE CLEANUP:
@@ -237,9 +237,9 @@ STATUS: @sys/* exist, but can still be overwritten by wizards.
 	Move passwords into sysprops.
 STATUS: Not done.  (Pennies are in sysprops, though.)
     Make properties use skiplists. (?)
-STATUS: ?What does this refer to?
-      ^- Make PUBLIC declarations use faster structure.
-STATUS: Deep voodoo, only Revar knows for sure.
+STATUS: Not done.  Not needed.
+    Make PUBLIC declarations use faster structure.
+STATUS: Not done.
 
 
 
