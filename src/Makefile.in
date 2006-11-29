@@ -168,12 +168,12 @@ $(INCLUDE)/defines.h:
 	@echo "#define BINDIR \"$(INSTALL_BINDIR)\"" >> $(INCLUDE)/defines.h
 	@echo "#define INSTALL_HELPDIR \"$(INSTALL_HELPDIR)\"" >> $(INCLUDE)/defines.h
 
-fbmuck: $(INCLUDE)/defines.h libpcre.a ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversion.sh Makefile
+fbmuck: $(INCLUDE)/defines.h ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversion.sh Makefile
 	sh mkversion.sh
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c version.c
 	if [ -f fbmuck ]; then ${MV} fbmuck fbmuck~ ; fi
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${COBJ} ${MALLOBJ} interface.o version.o \
-	  ${LIBR} ${LOBJ} libpcre.a
+	  ${LIBR} ${LOBJ}
 
 fb-resolver: resolver.o ${LOBJ} ${MALLOBJ} Makefile
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} ${LOBJ}
@@ -194,10 +194,6 @@ fbhelp.o: help.c
 fbhelp: fbhelp.o ${MALLOBJ} Makefile
 	${CC} ${CFLAGS} ${INCL} ${DEFS} fbhelp.o -o fbhelp ${MALLOBJ}
 
-libpcre.a:
-	cd pcre && ${MAKE}
-	-${RM} -f libpcre.a
-	cp -p pcre/.libs/libpcre.a . || ln -s pcre/.libs/libpcre.a
 
 #############################################################
 # Funky stuff for debugging and coding work.
@@ -244,12 +240,10 @@ Makefile: Makefile.in
 #
 
 clean:
-	-${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${MALLOBJ} ${ANNOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o libpcre.a
-	cd pcre && ${MAKE} clean
+	-${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${MALLOBJ} ${ANNOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o
 
 cleaner: clean
 	-${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp ${INCLUDE}/defines.h
-	-${RM} -rf pcre
 
 distclean: cleaner
 

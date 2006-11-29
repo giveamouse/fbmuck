@@ -1,3 +1,10 @@
+2.2fb6.08
+Removed PCRE sources from fbmuck package.
+Added --with-pcre=DIR configure script option to specify PCRE location.
+Fixed compile problem that conflicted with packaging automation.
+
+
+
 2.2fb6.07
 Fixed buffer overflow errors in MPI.  This might be remotely exploitable
   to execute arbitrary malicious code.

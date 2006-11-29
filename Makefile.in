@@ -111,7 +111,7 @@ package: help
 	cp -fp src/CHANGES* src/*WARN* src/*WOSSM* ${TMPPKGDIR}/src
 	cp -fp src/BUG_FORM ${TMPPKGDIR}/src
 	cp -fp COMPILING ${TMPPKGDIR}
-	cp -fp src/pcre-4.3.tar.gz ${TMPPKGDIR}/src
+	#cp -fp src/pcre-4.3.tar.gz ${TMPPKGDIR}/src
 	chmod +rw ${TMPPKGDIR}/src/*
 	chmod +x ${TMPPKGDIR}/configure
 	mkdir ${TMPPKGDIR}/auto

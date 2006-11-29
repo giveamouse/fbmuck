@@ -12,7 +12,11 @@
 # define __STDC__ 1
 # include "./pcre.h"
 #else
-# include "pcre/pcre.h"
+# ifdef HAVE_PCREINCDIR
+#  include <pcre/pcre.h>
+# else
+#  include <pcre.h>
+# endif
 #endif
 
 #include "db.h"
@@ -389,5 +393,5 @@ prim_regsub(PRIM_PROTOTYPE)
 
 	PushString(buf);
 }
-static const char *p_regex_c_version = "$RCSfile$ $Revision: 1.16 $";
+static const char *p_regex_c_version = "$RCSfile$ $Revision: 1.17 $";
 const char *get_p_regex_c_version(void) { return p_regex_c_version; }

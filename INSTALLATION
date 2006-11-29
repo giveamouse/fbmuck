@@ -17,6 +17,14 @@ Installation in a non-shared environment is fairly simple:
 		make
 		make install    
 
+	If your system does not have the PCRE (Perl Compatible Regular
+	Expressions) library installed, you will need to install it first.
+	If you have to install PCRE in a non-standard location, then you
+	can point the fbmuck configure command at the new location with
+	the --with-pcre=DIR argument.  The configure script should be able
+	to find it by itsef, if it's in /usr, /usr/local, /opt, or /sw.
+	You can find the latest PCRE sources at http://www.pcre.org/
+
 	The argument to --prefix is the name of the directory you want
 	all the fbmuck program and support files to be installed to.  If
 	you do not include it, it will default to /usr/local.  If you do
@@ -57,7 +65,7 @@ Installation in a shared environment is a little trickier:
 	(highly recommended), you type:
 		make install-inits
 
-	This will copy the appropriate script to the appropriate place on
+	This will copy the apropriate script to the apropriate place on
 	your system, and use chkconfig(8) to install the appropriate links
 	into your /etc/rc.d directories.  This lets your system cleanly
 	stop and start the mucks when it restarts.  Please see the file
