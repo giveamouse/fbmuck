@@ -40,24 +40,24 @@ using namespace std;
 # define F_PI M_PI
 # define NF_PI -M_PI
 #else
-# define F_PI 3.14159265359
-# define NF_PI -3.14159265359
+# define F_PI 3.141592653589793236
+# define NF_PI -3.141592653589793236
 #endif
 
 #ifdef M_PI_2
 # define H_PI M_PI_2
 # define NH_PI -M_PI_2
 #else
-# define H_PI 1.5707963268
-# define NH_PI -1.5707963268
+# define H_PI 1.5707963267949
+# define NH_PI -1.5707963267949
 #endif
 
 #ifdef M_PI_4  /* A quarter slice.  Yum. */
 # define Q_PI M_PI_4
 # define NQ_PI -M_PI_4
 #else
-# define Q_PI 0.7853981634
-# define NQ_PI -0.7853981634
+# define Q_PI 0.7853981633974
+# define NQ_PI -0.7853981633974
 #endif
 
 extern char match_args[BUFFER_LEN];
@@ -841,7 +841,7 @@ extern dbref parse_dbref(const char *);	/* parse a dbref */
 
 #ifndef dbh_version
 #define dbh_version
-const char *db_h_version = "$RCSfile$ $Revision: 1.45 $";
+const char *db_h_version = "$RCSfile$ $Revision: 1.46 $";
 #endif
 #else
 extern const char *db_h_version;

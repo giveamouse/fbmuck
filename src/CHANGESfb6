@@ -2,6 +2,7 @@
 Removed PCRE sources from fbmuck package.
 Added --with-pcre=DIR configure script option to specify PCRE location.
 Fixed compile problem that conflicted with packaging automation.
+Added more decimal places to defines for Pi.
 
 
 
