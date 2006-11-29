@@ -241,7 +241,6 @@ do_showextver(dbref player) {
 	notify_nolisten(player, smatch_h_version, 1);
 	notify_nolisten(player, speech_h_version, 1);
 	notify_nolisten(player, tune_h_version, 1);
-	notify_nolisten(player, version_h_version, 1);
 	return;
 }
 
