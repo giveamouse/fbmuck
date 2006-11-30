@@ -1,8 +1,10 @@
 2.2fb6.08
 Removed PCRE sources from fbmuck package.
 Added --with-pcre=DIR configure script option to specify PCRE location.
-Fixed compile problem that conflicted with packaging automation.
 Added more decimal places to defines for Pi.
+Fixed compile problem that conflicted with packaging automation.
+Fixed advancedb starter database, so the initial wizards are set ML3, and
+  their MUF programs work.
 
 
 
