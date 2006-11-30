@@ -1,7 +1,7 @@
-***Foxen7 TinyMUCK DUMP Format***
+***Foxen8 TinyMUCK DUMP Format***
 164
 1
-111
+112
 autolook_cmd=look
 penny=penny
 pennies=pennies
@@ -18,8 +18,6 @@ playermax_bootmesg=Sorry, but there are too many players online.  Please try rec
 proplist_counter_fmt=P#
 proplist_entry_fmt=P#/N
 register_mesg=Sorry, you can get a character by e-mailing XXXX@machine.net.address with a charname and password.
-rwho_passwd=potrzebie
-rwho_server=riemann.math.okstate.edu
 muckname=TygryssMUCK
 leave_mesg=Come back later!
 huh_mesg=Huh?  (Type "help" for help.)
@@ -32,7 +30,6 @@ dump_interval=  0d  4:00:00
 dump_warntime=  0d  0:02:00
 monolithic_interval=  1d  0:00:00
 maxidle=  0d  2:00:00
-rwho_interval=  0d  0:04:00
 clean_interval=  0d  0:15:00
 max_object_endowment=100
 object_cost=10
@@ -56,6 +53,9 @@ instr_slice=2000
 process_timer_limit=4
 mcp_muf_mlev=3
 userlog_mlev=3
+movepennies_muf_mlev=2
+addpennies_muf_mlev=2
+pennies_muf_mlev=1
 mpi_max_commands=2048
 playermax_limit=56
 command_burst_size=500
@@ -104,7 +104,6 @@ look_propqueues=no
 lock_envcheck=no
 proplist_int_counter=yes
 registration=yes
-support_rwho=no
 periodic_program_purge=yes
 use_hostnames=no
 secure_who=no
@@ -113,6 +112,8 @@ allow_zombies=yes
 wiz_vehicles=no
 ignore_support=yes
 ignore_bidirectional=yes
+m3_huh=no
+starttls_allow=yes
 #163
 read;write;protect;editmsg;editmesg;protect;erase
 162
@@ -140,6 +141,7 @@ Bulletin board
 3
 1073754851
 *Props*
+@/value:3:1
 _/de:10:@$mesgboard recent
 _/lok:4:#149
 msgs#/i:10:0
@@ -147,7 +149,6 @@ msgs#/i:10:0
 158
 163
 153
-1
 #161
 south;cave;in;entrance;enter;s
 158
@@ -197,6 +198,7 @@ The Heartstone
 1
 1073749224
 *Props*
+@/value:3:1
 _/de:10:The Heartstone is a single large ruby orb, flawless and pure, sitting upon a dark obsidian pedestal.  Perhaps its deep red color is what gives rise to its name. Or perhaps it's the faint pulsing glow deep within it... or are you merely imagining that? The legends of it say that it embodies the spiritual heart of the land. Perhaps there are many reasons why it is so christened. Undeniably, it carries the weight of countless years within it.
 _/fl:10:The Heartstone appears to be fused into the obsidian of the pedestal, immovable.
 _/lok:4:#149
@@ -204,7 +206,6 @@ _/lok:4:#149
 158
 -1
 153
-1
 #158
 A small clearing in the wilderness
 156
@@ -287,16 +288,16 @@ Keeper
 0
 29
 -1
-524819
+1835539
 1073700862
 1073700862
 0
 1073749482
 *Props*
+@/value:3:50
 *End*
 0
 -1
-50
 2C02DPyPioReG8Je4IIAzw==
 #152
 lock-truewizard?
@@ -423,8 +424,8 @@ whisper;whispe;whisp;whis;whi;wh;w
 143
 2
 1073635082
-1073750722
-3
+1164851461
+5
 1073749224
 *Props*
 *End*
@@ -683,8 +684,8 @@ watchfor;wf
 127
 2
 1073632632
-1073632632
-0
+1164851468
+1
 1073749224
 *Props*
 *End*
@@ -698,8 +699,8 @@ whodoing;wd;@WHO
 126
 2
 1073632620
-1073752413
-5
+1164851472
+6
 1073749224
 *Props*
 *End*
@@ -1073,8 +1074,8 @@ WhereAre;wa
 100
 2
 1073534249
-1073631247
-1
+1164851465
+2
 1073749224
 *Props*
 _/de:10:wa #help for info.
@@ -1089,8 +1090,8 @@ cmd-whereare.muf
 148
 18087988
 1073534238
-1073631247
-1
+1164851465
+2
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-newwa
@@ -1246,8 +1247,8 @@ cp;mv;propcp;propmv
 -1
 2
 1073530978
-1073530978
-0
+1164851470
+1
 1073749224
 *Props*
 *End*
@@ -1363,8 +1364,8 @@ cmd-whodoing.muf
 86
 18087972
 1073530629
-1073752413
-5
+1164851472
+6
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-whodoing.muf
@@ -1406,8 +1407,8 @@ cmd-whisper.muf
 84
 18087972
 1073530629
-1073750722
-2
+1164851461
+3
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-whisper.muf
@@ -1448,8 +1449,8 @@ cmd-watchfor.muf
 81
 18087988
 1073530629
-1073756299
-19
+1164851468
+20
 1073749224
 *Props*
 .debug/errcount:3:1
@@ -2356,8 +2357,8 @@ cmd-3who.muf
 33
 18087988
 1073530629
-1073530629
-0
+1164851470
+1
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-3who.muf
@@ -2370,8 +2371,8 @@ lib-timestr.muf
 32
 17825828
 1073518551
-1073752413
-16
+1164851472
+18
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-timestr.muf
@@ -2393,8 +2394,8 @@ lib-table.muf
 31
 18153764
 1073518546
-1073756302
-25
+1164851472
+26
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-table.muf
@@ -2432,8 +2433,8 @@ lib-ignore.muf
 30
 18087972
 1073518532
-1073750722
-16
+1164851461
+18
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-ignore.muf
@@ -2561,8 +2562,8 @@ lib-alias.muf
 25
 18087972
 1073518485
-1073750732
-14
+1164851461
+15
 1073753654
 *Props*
 _/de:10:A scroll containing a spell called cmd-@archive.muf
@@ -2600,8 +2601,8 @@ lib-strings.muf
 24
 18087972
 1073502873
-1073755435
-182
+1164851472
+183
 1073754225
 *Props*
 _/de:10:A scroll containing a spell called stringslib
@@ -2904,12 +2905,12 @@ paperduck
 0
 1073749224
 *Props*
+@/value:3:1
 _/de:10:An origami duck. Its paper is glossy so it can float.
 *End*
 0
 -1
 153
-1
 #11
 lib-match.muf
 153
@@ -3282,11 +3283,11 @@ One
 0
 -1
 154
-1171
+1311891
 1073500921
-1073756323
-19
-1073756299
+1164851489
+20
+1164851461
 *Props*
 @/host:10:67.34.155.220
 @/last/on:10:1073756240
@@ -3299,6 +3300,7 @@ One
 @/last/on#/6:10:1073749373
 @/last/on#/7:10:1073756240
 @/lasthost:10:67.34.155.220
+@/value:3:3
 @shout/time:3:1073751394
 _/de:10:You see Number One.
 _page/curr_format:10:page
@@ -3317,7 +3319,6 @@ status:10:WIZ
 *End*
 0
 -1
-3
 CuG4ZtGvyRbfJubgNISTcg==
 #0
 Room Zero
@@ -3326,8 +3327,8 @@ Room Zero
 -1
 0
 1073500921
-1073756252
-30
+1164851482
+33
 1073756262
 *Props*
 _/de:10:You are in Room Zero. It's very dark here.
@@ -3388,11 +3389,11 @@ _reg/lock/wizard:5:151
 _reg/mesgboard:5:44
 _reg/nothing:5:149
 _sys/dumpinterval:3:14400
-_sys/lastdumptime:3:1073756323
+_sys/lastdumptime:3:1164851489
 _sys/max_connects:3:1
 _sys/maxpennies:3:10000
-_sys/shutdowntime:3:1073756323
-_sys/startuptime:3:1073756237
+_sys/shutdowntime:3:1164851489
+_sys/startuptime:3:1164851418
 day:3:12426
 *End*
 -1
