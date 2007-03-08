@@ -173,6 +173,8 @@ extern int controls(dbref who, dbref what);
 extern int controls_link(dbref who, dbref what);
 extern int restricted(dbref player, dbref thing, object_flag_type flag);
 extern int payfor(dbref who, int cost);
+extern int ok_ascii_thing(const char *name);
+extern int ok_ascii_other(const char *name);
 extern int ok_name(const char *name);
 extern int isancestor(dbref parent, dbref child);
 
@@ -465,7 +467,7 @@ const char *get_wiz_c_version(void);
 #ifdef DEFINE_HEADER_VERSIONS
 #ifndef externsh_version
 #define externsh_version
-const char *externs_h_version = "$RCSfile$ $Revision: 1.47 $";
+const char *externs_h_version = "$RCSfile$ $Revision: 1.48 $";
 #endif
 #else
 extern const char *externs_h_version;

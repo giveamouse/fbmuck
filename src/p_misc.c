@@ -899,7 +899,7 @@ prim_name_okp(PRIM_PROTOTYPE)
 		abort_interp("Object name string expected.");
 	if (!oper1->data.string)
 		abort_interp("Cannot be an empty string.");
-	result = ok_name(oper1->data.string->data);
+	result = ok_ascii_thing(oper1->data.string->data) && ok_name(oper1->data.string->data);
 	CLEAR(oper1);
 	PushInt(result);
 }
@@ -1084,5 +1084,5 @@ prim_debug_line(PRIM_PROTOTYPE)
 		notify_nolisten(player, msg, 1);
 	}
 }
-static const char *p_misc_c_version = "$RCSfile$ $Revision: 1.45 $";
+static const char *p_misc_c_version = "$RCSfile$ $Revision: 1.46 $";
 const char *get_p_misc_c_version(void) { return p_misc_c_version; }

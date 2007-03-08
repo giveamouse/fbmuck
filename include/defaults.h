@@ -335,13 +335,17 @@
 /* Verbose @clone command. */
 #define VERBOSE_CLONE 0
 
+/* Force 7-bit names */
+#define ASCII_THING_NAMES 1
+#define ASCII_OTHER_NAMES 0
+
 #endif /* _DEFAULTS_H */
 
 #ifdef DEFINE_HEADER_VERSIONS
 
 #ifndef defaultsh_version
 #define defaultsh_version
-const char *defaults_h_version = "$RCSfile$ $Revision: 1.31 $";
+const char *defaults_h_version = "$RCSfile$ $Revision: 1.32 $";
 #endif
 #else
 extern const char *defaults_h_version;

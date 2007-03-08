@@ -454,6 +454,10 @@ prim_setname(PRIM_PROTOTYPE)
 			add_player(ref);
 			ts_modifyobject(ref);
 		} else {
+			if (((Typeof(ref) == TYPE_THING) && !ok_ascii_thing(b)) ||
+			    ((Typeof(ref) != TYPE_THING) && !ok_ascii_other(b)) ) {
+					abort_interp("Invalid 8-bit name.");
+			}
 			if (!ok_name(b)) {
 				abort_interp("Invalid name.");
 			}
@@ -1234,7 +1238,7 @@ prim_newobject(PRIM_PROTOTYPE)
 		const char *b = DoNullInd(oper1->data.string);
 		dbref loc;
 
-		if (!ok_name(b))
+		if(!ok_ascii_thing(b) || !ok_name(b))
 			abort_interp("Invalid name. (2)");
 
 		ref = new_object();
@@ -1285,7 +1289,7 @@ prim_newroom(PRIM_PROTOTYPE)
 	{
 		const char *b = DoNullInd(oper1->data.string);
 
-		if (!ok_name(b))
+		if (!ok_ascii_other(b) || !ok_name(b))
 			abort_interp("Invalid name. (2)");
 
 		ref = new_object();
@@ -1328,7 +1332,7 @@ prim_newexit(PRIM_PROTOTYPE)
 	{
 		const char *b = DoNullInd(oper1->data.string);
 
-		if (!ok_name(b))
+		if (!ok_ascii_other(b) || !ok_name(b))
 			abort_interp("Invalid name. (2)");
 
 		ref = new_object();
@@ -2010,7 +2014,7 @@ prim_newprogram(PRIM_PROTOTYPE)
 		abort_interp("Permission denied.  Requires Wizbit.");
 	if (oper1->type != PROG_STRING)
 		abort_interp("Expected string argument.");
-	if (!ok_name(oper1->data.string->data))
+	if (!ok_ascii_other(oper1->data.string->data) || !ok_name(oper1->data.string->data))
 		abort_interp("Invalid name (2)");
 
 	newprog = new_object();
@@ -2682,5 +2686,5 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
-static const char *p_db_c_version = "$RCSfile$ $Revision: 1.57 $";
+static const char *p_db_c_version = "$RCSfile$ $Revision: 1.58 $";
 const char *get_p_db_c_version(void) { return p_db_c_version; }

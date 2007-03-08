@@ -1,4 +1,8 @@
 2.2fb6.08
+fbmuck is now 8-bit clean.  Compression is completely removed from the
+  main driver, and compressed databases MUST be decompressed via
+  fb-olddecompress in order to work with the new version.  See docs/8-bit
+  for more implementation details.
 Removed PCRE sources from fbmuck package.
 Added --with-pcre=DIR configure script option to specify PCRE location.
 Added more decimal places to defines for Pi.

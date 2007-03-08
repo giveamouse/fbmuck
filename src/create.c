@@ -490,6 +490,10 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 		notify(player, "You must specify a name for the room.");
 		return;
 	}
+	if(!ok_ascii_other(name)) {
+		notify(player, "Room names are limited to 7-bit ASCII.");
+		return;
+	}
 	if (!ok_name(name)) {
 		notify(player, "That's a silly name for a room!");
 		return;
@@ -1140,6 +1144,9 @@ do_create(dbref player, char *name, char *acost)
 	if (*name == '\0') {
 		notify(player, "Create what?");
 		return;
+	} else if(!ok_ascii_thing(name)) {
+		notify(player, "Thing names are limited to 7-bit ASCII.");
+		return;
 	} else if (!ok_name(name)) {
 		notify(player, "That's a silly name for a thing!");
 		return;
@@ -1336,6 +1343,9 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 	if (!*action_name || !*qname) {
 		notify(player, "You must specify an action name and a source object.");
 		return;
+	} else if(!ok_ascii_other(action_name)) {
+		notify(player, "Action names are limited to 7-bit ASCII.");
+		return;
 	} else if (!ok_name(action_name)) {
 		notify(player, "That's a strange name for an action!");
 		return;
@@ -1429,5 +1439,5 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 		notify(player, "Action priority Level reset to zero.");
 	}
 }
-static const char *create_c_version = "$RCSfile$ $Revision: 1.27 $";
+static const char *create_c_version = "$RCSfile$ $Revision: 1.28 $";
 const char *get_create_c_version(void) { return create_c_version; }

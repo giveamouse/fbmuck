@@ -269,6 +269,8 @@ int tp_verbose_clone = VERBOSE_CLONE;
 int tp_muf_comments_strict = MUF_COMMENTS_STRICT;
 int tp_starttls_allow = STARTTLS_ALLOW;
 int tp_m3_huh = M3_HUH;
+int tp_7bit_thing_names = ASCII_THING_NAMES;
+int tp_7bit_other_names = ASCII_OTHER_NAMES;
 
 struct tune_bool_entry {
 	const char *group;
@@ -325,6 +327,8 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Misc",       "ignore_bidirectional", &tp_ignore_bidirectional, 3, "Enable bidirectional @ignore"},
 	{"Misc",	"m3_huh", &tp_m3_huh, 3, "Enable huh? to call an exit named \"huh?\" and set M3, with full command string"},
 	{"SSL",        "starttls_allow", &tp_starttls_allow, 3, "Enable TELNET STARTTLS encryption on plaintext port"},
+	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, 4, "Thing names may contain only 7-bit characters"},
+	{"Charset",	"7bit_other_names", &tp_7bit_other_names, 4, "Exit/room/muf names may contain only 7-bit characters"},
 
 	{NULL, NULL, NULL, 0}
 };
@@ -957,5 +961,5 @@ do_tune(dbref player, char *parmname, char *parmval)
 		return;
 	}
 }
-static const char *tune_c_version = "$RCSfile$ $Revision: 1.45 $";
+static const char *tune_c_version = "$RCSfile$ $Revision: 1.46 $";
 const char *get_tune_c_version(void) { return tune_c_version; }

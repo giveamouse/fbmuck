@@ -141,6 +141,8 @@ extern int tp_ignore_bidirectional;
 extern int tp_verbose_clone;
 extern int tp_muf_comments_strict;
 extern int tp_starttls_allow;
+extern int tp_7bit_thing_names;
+extern int tp_7bit_other_names;
 
 extern int tune_count_parms(void);
 extern void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
@@ -154,7 +156,7 @@ extern stk_array *tune_parms_array(const char* pattern, int mlev);
 
 #ifndef tuneh_version
 #define tuneh_version
-const char *tune_h_version = "$RCSfile$ $Revision: 1.33 $";
+const char *tune_h_version = "$RCSfile$ $Revision: 1.34 $";
 #endif
 #else
 extern const char *tune_h_version;

@@ -87,6 +87,11 @@ do_name(int descr, dbref player, const char *name, char *newname)
 			notify(player, "Name set.");
 			return;
 		} else {
+			if (((Typeof(thing) == TYPE_THING) && !ok_ascii_thing(newname)) ||
+			    ((Typeof(thing) != TYPE_THING) && !ok_ascii_other(newname)) ) {
+				notify(player, "Invalid 8-bit name.");
+				return;
+			}
 			if (!ok_name(newname)) {
 				notify(player, "That is not a reasonable name.");
 				return;
@@ -1304,5 +1309,5 @@ set_flags_from_tunestr(dbref obj, const char* tunestr)
 }
 
 
-static const char *set_c_version = "$RCSfile$ $Revision: 1.29 $";
+static const char *set_c_version = "$RCSfile$ $Revision: 1.30 $";
 const char *get_set_c_version(void) { return set_c_version; }

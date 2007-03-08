@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.17  2007/03/08 17:13:49  winged
+ * adding tunes for 8-bit object names per tracker 1676289
+ *
  * Revision 1.16  2005/08/18 15:46:11  wog
  * Fix bug introduced in r1.15 by which all non-wizards controlled everything (!)
  * if GOD_PRIV was defined.
@@ -595,6 +598,29 @@ word_start(const char *str, const char let)
 	return 0;
 }
 
+static inline int
+ok_ascii_any(const char *name)
+{
+	const unsigned char *scan;
+	for( scan=(const unsigned char*) name; *scan; ++scan ) {
+		if( *scan>127 )
+			return 0;
+	}
+	return 1;
+}
+
+int 
+ok_ascii_thing(const char *name)
+{
+	return !tp_7bit_thing_names || ok_ascii_any(name);
+}
+
+int
+ok_ascii_other(const char *name)
+{
+	return !tp_7bit_other_names || ok_ascii_any(name);
+}
+	
 int
 ok_name(const char *name)
 {
@@ -676,5 +702,5 @@ isancestor(dbref parent, dbref child)
 	}
 	return child == parent;
 }
-static const char *predicates_c_version = "$RCSfile$ $Revision: 1.16 $";
+static const char *predicates_c_version = "$RCSfile$ $Revision: 1.17 $";
 const char *get_predicates_c_version(void) { return predicates_c_version; }
