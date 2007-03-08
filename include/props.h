@@ -47,9 +47,6 @@ typedef struct plist *PropPtr;
 #define PROP_FLTTYP   0x6
 #define PROP_TYPMASK  0x7
 
-/* If set, this prop's string value uses Dr.Cat's compression code. */
-#define PROP_COMPRESSED  0x0008
-
 /* Property flags.  Unimplemented as yet. */
 #define PROP_UREAD       0x0010
 #define PROP_UWRITE      0x0020
@@ -214,7 +211,7 @@ extern int reflist_find(dbref obj, const char* propname, dbref tofind);
 
 #ifndef propsh_version
 #define propsh_version
-const char *props_h_version = "$RCSfile$ $Revision: 1.15 $";
+const char *props_h_version = "$RCSfile$ $Revision: 1.16 $";
 #endif
 #else
 extern const char *props_h_version;

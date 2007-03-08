@@ -135,7 +135,6 @@ do_showextver(dbref player) {
 	notify_nolisten(player, get_array_c_version(), 1);
 	notify_nolisten(player, get_boolexp_c_version(), 1);
 	notify_nolisten(player, get_compile_c_version(), 1);
-	notify_nolisten(player, get_compress_c_version(), 1);
 	notify_nolisten(player, get_copyright_c_version(), 1);
 	notify_nolisten(player, get_create_c_version(), 1);
 	notify_nolisten(player, get_crt_malloc_c_version(), 1);

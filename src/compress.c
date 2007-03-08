@@ -1,5 +1,13 @@
 /* $Header$ */
 
+/*
+* This is now only used by olddecompress.c, no longer in main server code.
+* We only want decompression.
+*/
+
+#undef DO_COMPRESSION
+
+
 /************************************************************************/
 /*                                                                      */
 /*                           * NOTICE! *                                */
@@ -19,8 +27,6 @@
 /************************************************************************/
 
 #include "config.h"
-
-#ifdef COMPRESS
 
 #define BUFFER_LEN 16384		/* nice big buffer */
 
@@ -43,6 +49,33 @@ static unsigned char *to=NULL;
 
 static const char copyright[] = "Copyright 1995 by Dragon's Eye Productions.";
 
+/*
+ * Like strncpy, except it guarentees null termination of the result string.
+ * It also has a more sensible argument ordering.
+ */
+char*
+strcpyn(char* buf, size_t bufsize, const char* src)
+{
+	int pos = 0;
+	char* dest = buf;
+
+	while (++pos < bufsize && *src) {
+		*dest++ = *src++;
+	}
+	*dest = '\0';
+	return buf;
+}
+
+char *
+string_dup(const char *s)
+{
+	char *p;
+
+	p = (char *) malloc(1 + strlen(s));
+	if (p)
+		(void) strcpy(p, s);  /* Guaranteed enough space. */
+	return (p);
+}
 
 unsigned long
 comp_read_line(FILE * file)
@@ -383,8 +416,7 @@ uncompress(const char *s)
 	return (char *)buf;
 }
 
-extern short db_decompression_flag;
-
+#ifdef DO_COMPRESSION
 const char *
 compress(const char *s)
 {
@@ -400,10 +432,6 @@ compress(const char *s)
 	if (!table_initialized) {
 		pawprint();
 		init_compress();
-	}
-
-	if (db_decompression_flag) {
-		return s;
 	}
 
 	if (!s || compressed(s))
@@ -574,7 +602,7 @@ compress(const char *s)
 
 	return (char *)buf;
 }
-
 #endif
-static const char *compress_c_version = "$RCSfile$ $Revision: 1.10 $";
+
+static const char *compress_c_version = "$RCSfile$ $Revision: 1.11 $";
 const char *get_compress_c_version(void) { return compress_c_version; }

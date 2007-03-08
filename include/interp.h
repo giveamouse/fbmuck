@@ -18,11 +18,6 @@ typedef void *voidptr;
 
 void purge_try_pool(void);
 
-#ifdef COMPRESS
-#define alloc_compressed(x) alloc_string(compress(x))
-#else							/* COMPRESS */
-#define alloc_compressed(x) alloc_string(x)
-#endif							/* COMPRESS */
 #define DoNullInd(x) ((x) ? (x) -> data : "")
 
 extern void RCLEAR(struct inst *oper, char *file, int line);
@@ -181,7 +176,7 @@ extern int nargs;				/* DO NOT TOUCH THIS VARIABLE */
 
 #ifndef interph_version
 #define interph_version
-const char *interp_h_version = "$RCSfile$ $Revision: 1.17 $";
+const char *interp_h_version = "$RCSfile$ $Revision: 1.18 $";
 #endif
 #else
 extern const char *interp_h_version;

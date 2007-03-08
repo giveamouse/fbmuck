@@ -1106,7 +1106,7 @@ prim_itoc(PRIM_PROTOTYPE)
 	oper1 = POP();
 	if ((oper1->type != PROG_INTEGER) || (oper1->data.number < 0))
 		abort_interp("Argument must be a positive integer. (1)");
-	if (oper1->data.number > 127 || (!isprint((char) oper1->data.number) &&
+	if ( (!isprint((char) oper1->data.number & 127) &&
 									 ((char) oper1->data.number != '\r') &&
 									 ((char) oper1->data.number != ESCAPE_CHAR))) {
 		result = 0;
@@ -2368,5 +2368,5 @@ prim_ansi_midstr(PRIM_PROTOTYPE)
 	CLEAR(oper3);
 	PushString(buf);
 }
-static const char *p_strings_c_version = "$RCSfile$ $Revision: 1.48 $";
+static const char *p_strings_c_version = "$RCSfile$ $Revision: 1.49 $";
 const char *get_p_strings_c_version(void) { return p_strings_c_version; }

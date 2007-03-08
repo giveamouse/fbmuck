@@ -33,15 +33,6 @@
  */
 #define GOD_PRIV
 
-/* Use to include the string decompression routines into the server, to
- * decompress already-compressed databases.  However:
- * You MUST use the '-compress' command-line option to the server, else
- * strings will not be compressed.  This is because the current compression
- * code has some subtle bugs, there's better algorithms available, and
- * it's easier to import an uncompressed database in any case.
- */
-#define COMPRESS
-
 /* To use a simple disk basing scheme where properties aren't loaded
  * from the input file until they are needed, define this. (Note: if
  * this is not defined, the MUCK will fork into the background to dump
@@ -393,7 +384,7 @@
 
 #ifndef configh_version
 #define configh_version
-const char *config_h_version = "$RCSfile$ $Revision: 1.34 $";
+const char *config_h_version = "$RCSfile$ $Revision: 1.35 $";
 #endif
 #else
 extern const char *config_h_version;

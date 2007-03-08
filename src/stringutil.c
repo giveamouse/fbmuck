@@ -196,8 +196,6 @@ pronoun_substitute(int descr, dbref player, const char *str)
 	prn[0] = '%';
 	prn[2] = '\0';
 
-	str = uncompress(str);
-
 	strcpyn(orig, sizeof(orig), str);
 	str = orig;
 
@@ -253,23 +251,23 @@ pronoun_substitute(int descr, dbref player, const char *str)
 				mywhere = player;
 				d = (isupper(c)) ? c : toupper(c);
 
-				snprintf(globprop, sizeof(globprop), "_pronouns/%.64s/%s", uncompress(sexstr), prn);
+				snprintf(globprop, sizeof(globprop), "_pronouns/%.64s/%s", sexstr, prn);
 				if (d == 'A' || d == 'S' || d == 'O' || d == 'P' || d == 'R' || d == 'N') {
-					self_sub = uncompress(get_property_class(mywhere, prn));
+					self_sub = get_property_class(mywhere, prn);
 				} else {
-					self_sub = uncompress(envpropstr(&mywhere, prn));
+					self_sub = envpropstr(&mywhere, prn);
 				}
 				if (!self_sub) {
-					self_sub = uncompress(get_property_class(player, globprop));
+					self_sub = get_property_class(player, globprop);
 				}
 				if (!self_sub) {
-					self_sub = uncompress(get_property_class(0, globprop));
+					self_sub = get_property_class(0, globprop);
 				}
 				if (!self_sub && (sex == GENDER_UNASSIGNED)) {
 					snprintf(globprop, sizeof(globprop), "_pronouns/_default/%s", prn);
 
-					if (!(self_sub = uncompress(get_property_class(player, globprop))))
-						self_sub = uncompress(get_property_class(0, globprop));
+					if (!(self_sub = get_property_class(player, globprop)))
+						self_sub = get_property_class(0, globprop);
 				}
 
 				if (self_sub) {
@@ -855,5 +853,5 @@ strcatn(char* buf, size_t bufsize, const char* src)
 	}
 	return buf;
 }
-static const char *stringutil_c_version = "$RCSfile$ $Revision: 1.28 $";
+static const char *stringutil_c_version = "$RCSfile$ $Revision: 1.29 $";
 const char *get_stringutil_c_version(void) { return stringutil_c_version; }

@@ -1232,7 +1232,7 @@ extract_prop(FILE * f, const char *dir, PropPtr p)
 	case PROP_STRTYP:
 		if (!*PropDataStr(p))
 			return;
-		ptr2 = uncompress(PropDataStr(p));
+		ptr2 = PropDataStr(p);
 		break;
 	case PROP_LOKTYP:
 		if (PropFlags(p) & PROP_ISUNLOADED)
@@ -1526,5 +1526,5 @@ san_main(void)
 
 	printf("Exiting sanity editor...\n\n");
 }
-static const char *sanity_c_version = "$RCSfile$ $Revision: 1.16 $";
+static const char *sanity_c_version = "$RCSfile$ $Revision: 1.17 $";
 const char *get_sanity_c_version(void) { return sanity_c_version; }

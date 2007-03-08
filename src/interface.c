@@ -267,7 +267,6 @@ extern FILE *delta_infile;
 extern FILE *delta_outfile;
 
 short db_conversion_flag = 0;
-short db_decompression_flag = 1;
 short wizonly_mode = 0;
 pid_t global_resolver_pid=0;
 #ifndef DISKBASE
@@ -301,7 +300,6 @@ show_program_usage(char *prog)
 #endif
 	fprintf(stderr, "        -gamedir PATH    changes directory to PATH before starting up.\n");
 	fprintf(stderr, "        -convert         load the db, then save and quit.\n");
-	fprintf(stderr, "        -compress        when saving db, save in compressed format. (DEPRECATED)\n");
 	fprintf(stderr, "        -nosanity        don't do db sanity checks at startup time.\n");
 	fprintf(stderr, "        -insanity        load db, then enter the interactive sanity editor.\n");
 	fprintf(stderr, "        -sanfix          attempt to auto-fix a corrupt db after loading.\n");
@@ -315,6 +313,8 @@ show_program_usage(char *prog)
 	exit(1);
 }
 
+/* NOTE: Will need to think about this more for unicode */
+#define isinput( q ) isprint( (q) & 127 )
 
 extern int sanity_violated;
 
@@ -373,7 +373,7 @@ main(int argc, char **argv)
 			if (!strcmp(argv[i], "-convert")) {
 				db_conversion_flag = 1;
 			} else if (!strcmp(argv[i], "-compress")) {
-				db_decompression_flag = 0;
+				printf("** -compress no longer does anything\n");
 			} else if (!strcmp(argv[i], "-nosanity")) {
 				sanity_skip = 1;
 			} else if (!strcmp(argv[i], "-insanity")) {
@@ -563,6 +563,8 @@ main(int argc, char **argv)
 #endif
 	}
 
+
+
 /*
  * You have to change gid first, since setgid() relies on root permissions
  * if you don't call initgroups() -- and since initgroups() isn't standard,
@@ -679,7 +681,6 @@ main(int argc, char **argv)
 		purge_mfns();
 		cleanup_game();
 		tune_freeparms();
-		free_compress_dictionary();
 #endif
 
 #ifdef DISKBASE
@@ -781,8 +782,6 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
     int* darr;
     int dcount;
 
-	msg = uncompress(msg);
-
 	ptr2 = msg;
 	while (ptr2 && *ptr2) {
 		ptr1 = buf;
@@ -863,8 +862,6 @@ int
 notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 {
 	const char *ptr;
-
-	ptr = uncompress(msg);
 
 	if (tp_listeners) {
 		if (tp_listeners_obj || Typeof(player) == TYPE_ROOM) {
@@ -1417,8 +1414,6 @@ wall_and_flush(const char *msg)
 	struct descriptor_data *d, *dnext;
 	char buf[BUFFER_LEN + 2];
 
-	msg = uncompress(msg);
-
 	if (!msg || !*msg)
 		return;
 	strcpyn(buf, sizeof(buf), msg);
@@ -1458,8 +1453,6 @@ wall_wizards(const char *msg)
 {
 	struct descriptor_data *d, *dnext;
 	char buf[BUFFER_LEN + 2];
-
-	msg = uncompress(msg);
 
 	strcpyn(buf, sizeof(buf), msg);
 	strcatn(buf, sizeof(buf), "\r\n");
@@ -2254,7 +2247,7 @@ process_input(struct descriptor_data *d)
 			}
 		} else if (d->telnet_state == TELNET_STATE_WILL) {
 			/* We don't negotiate: send back DONT option */
-			char sendbuf[8];
+			unsigned char sendbuf[8];
 #ifdef USE_SSL
 			if (*q == TELOPT_STARTTLS && !d->ssl_session && tp_starttls_allow) {
 				sendbuf[0] = TELNET_IAC;
@@ -2279,7 +2272,7 @@ process_input(struct descriptor_data *d)
 			d->telnet_state = TELNET_STATE_NORMAL;
 		} else if (d->telnet_state == TELNET_STATE_DO) {
 			/* We don't negotiate: send back WONT option */
-			char sendbuf[4];
+			unsigned char sendbuf[4];
 			sendbuf[0] = TELNET_IAC;
 			sendbuf[1] = TELNET_WONT;
 			sendbuf[2] = *q;
@@ -2291,7 +2284,7 @@ process_input(struct descriptor_data *d)
 			d->telnet_state = TELNET_STATE_NORMAL;
 		} else if (d->telnet_state == TELNET_STATE_DONT) {
 			/* We don't negotiate: send back WONT option */
-			char sendbuf[4];
+			unsigned char sendbuf[4];
 			sendbuf[0] = TELNET_IAC;
 			sendbuf[1] = TELNET_WONT;
 			sendbuf[2] = *q;
@@ -2305,8 +2298,9 @@ process_input(struct descriptor_data *d)
 		} else if (*((unsigned char *)q) == TELNET_IAC) {
 			/* Got TELNET IAC, store for next byte */	
 			d->telnet_state = TELNET_STATE_IAC;
-		} else if (p < pend && isascii(*q)) {
-			if (isprint(*q)) {
+		} else if (p < pend) {
+			/* NOTE: This will need rethinking for unicode */
+			if ( isinput( *q ) ) {
 				*p++ = *q;
 			} else if (*q == '\t') {
 				*p++ = ' ';
@@ -2335,7 +2329,7 @@ set_userstring(char **userstring, const char *command)
 		FREE(*userstring);
 		*userstring = 0;
 	}
-	while (*command && isascii(*command) && isspace(*command))
+	while (*command && isinput(*command) && isspace(*command))
 		command++;
 	if (*command)
 		*userstring = string_dup(command);
@@ -2619,22 +2613,22 @@ parse_connect(const char *msg, char *command, char *user, char *pass)
 {
 	char *p;
 
-	while (*msg && isascii(*msg) && isspace(*msg))
+	while (*msg && isinput(*msg) && isspace(*msg))
 		msg++;
 	p = command;
-	while (*msg && isascii(*msg) && !isspace(*msg))
+	while (*msg && isinput(*msg) && !isspace(*msg))
 		*p++ = *msg++;
 	*p = '\0';
-	while (*msg && isascii(*msg) && isspace(*msg))
+	while (*msg && isinput(*msg) && isspace(*msg))
 		msg++;
 	p = user;
-	while (*msg && isascii(*msg) && !isspace(*msg))
+	while (*msg && isinput(*msg) && !isspace(*msg))
 		*p++ = *msg++;
 	*p = '\0';
-	while (*msg && isascii(*msg) && isspace(*msg))
+	while (*msg && isinput(*msg) && isspace(*msg))
 		msg++;
 	p = pass;
-	while (*msg && isascii(*msg) && !isspace(*msg))
+	while (*msg && isinput(*msg) && !isspace(*msg))
 		*p++ = *msg++;
 	*p = '\0';
 }
@@ -2863,7 +2857,7 @@ dump_users(struct descriptor_data *e, char *user)
 							 */
 							(int) (79 - (PLAYER_NAME_LIMIT + 20)),
 							GETDOING(d->player) ?
-								uncompress(GETDOING(d->player)) : ""
+								GETDOING(d->player) : ""
 							);
 				} else {
 					snprintf(buf, sizeof(buf), "%-*s %10s %4s%c%c\r\n",
@@ -2949,7 +2943,6 @@ announce_connect(int descr, dbref player)
 	char buf[BUFFER_LEN];
 	struct match_data md;
 	dbref exit;
-	time_t tt;
 
 	if ((loc = getloc(player)) == NOTHING)
 		return;
@@ -4057,7 +4050,7 @@ int ignore_prime_cache(dbref Player)
 	if ((Player < 0) || (Player >= db_top) || (Typeof(Player) != TYPE_PLAYER))
 		return 0;
 
-	if ((Txt = uncompress(get_property_class(Player, IGNORE_PROP))) == NULL)
+	if ((Txt = get_property_class(Player, IGNORE_PROP)) == NULL)
 	{
 		PLAYER_SET_IGNORE_LAST(Player, AMBIGUOUS);
 		return 0;
@@ -4198,5 +4191,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.111 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.112 $";
 const char *get_interface_c_version(void) { return interface_c_version; }

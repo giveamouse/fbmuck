@@ -192,7 +192,7 @@ prim_getprop(PRIM_PROTOTYPE)
 #endif
 			switch (PropType(prptr)) {
 			case PROP_STRTYP:
-				temp = uncompress(PropDataStr(prptr));
+				temp = PropDataStr(prptr);
 				PushString(temp);
 				break;
 			case PROP_LOKTYP:
@@ -264,7 +264,7 @@ prim_getpropstr(PRIM_PROTOTYPE)
 #endif
 			switch (PropType(ptr)) {
 			case PROP_STRTYP:
-				temp = uncompress(PropDataStr(ptr));
+				temp = PropDataStr(ptr);
 				break;
 				/*
 				 *case PROP_INTTYP:
@@ -392,7 +392,7 @@ prim_envprop(PRIM_PROTOTYPE)
 #endif
 			switch (PropType(ptr)) {
 			case PROP_STRTYP:
-				PushString(uncompress(PropDataStr(ptr)));
+				PushString(PropDataStr(ptr));
 				break;
 			case PROP_INTTYP:
 				result = PropDataVal(ptr);
@@ -457,7 +457,7 @@ prim_envpropstr(PRIM_PROTOTYPE)
 #endif
 			switch (PropType(ptr)) {
 			case PROP_STRTYP:
-				temp = uncompress(PropDataStr(ptr));
+				temp = PropDataStr(ptr);
 				break;
 				/*
 				 *case PROP_INTTYP:
@@ -879,9 +879,6 @@ prim_parseprop(PRIM_PROTOTYPE)
 		}
 
 		temp = get_property_class(oper3->data.objref, type);
-		if (temp) {
-			temp = uncompress(temp);
-		}
 #ifdef LOG_PROPS
 		log2file("props.log", "#%d (%d) GETPROPSTR: o=%d n=\"%s\" s=\"%s\"",
 				 program, pc->line, oper3->data.objref, type, temp);
@@ -961,7 +958,7 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 						switch(PropType(pptr))
 						{
 							case PROP_STRTYP:
-								strncpy(buf, uncompress(PropDataStr(pptr)), BUFFER_LEN);
+								strncpy(buf, PropDataStr(pptr), BUFFER_LEN);
 							break;
 
 							case PROP_LOKTYP:
@@ -1182,7 +1179,7 @@ prim_parsepropex(PRIM_PROTOTYPE)
 		tname[len] = '\0';
 	}
 
-	mpi		= uncompress(get_property_class(oper1->data.objref, tname));
+	mpi		= get_property_class(oper1->data.objref, tname);
 	vars	= oper3->data.array;
 	novars	= array_count(vars);
 
@@ -1339,5 +1336,5 @@ prim_parsepropex(PRIM_PROTOTYPE)
 	PushArrayRaw(vars);
 	PushString(str);
 }
-static const char *p_props_c_version = "$RCSfile$ $Revision: 1.31 $";
+static const char *p_props_c_version = "$RCSfile$ $Revision: 1.32 $";
 const char *get_p_props_c_version(void) { return p_props_c_version; }

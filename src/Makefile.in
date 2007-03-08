@@ -116,7 +116,7 @@ ANNOBJ= announce.o
 
 MISCSRC= Makefile.in ChangeLog COPYING mkversion.sh
 
-CSRC= array.c boolexp.c compile.c compress.c create.c db.c debugger.c \
+CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
 	disassem.c diskprop.c edit.c events.c game.c hashtab.c help.c inst.c \
 	interp.c log.c look.c match.c mcp.c mcpgui.c mcppkgs.c mfuns2.c \
 	mfuns.c move.c msgparse.c mufevent.c oldcompress.c p_array.c \
@@ -127,10 +127,10 @@ CSRC= array.c boolexp.c compile.c compress.c create.c db.c debugger.c \
 	timequeue.c timestamp.c tune.c unparse.c utils.c wiz.c
 
 LSRC= copyright.c
-MSRC= olddecomp.c reconst.c interface.c resolver.c topwords.c
+MSRC= compress.c olddecomp.c reconst.c interface.c resolver.c topwords.c
 
 
-COBJ= array.o boolexp.o compile.o compress.o create.o db.o debugger.o \
+COBJ= array.o boolexp.o compile.o create.o db_header.o db.o debugger.o \
 	disassem.o diskprop.o edit.o events.o game.o hashtab.o help.o inst.o \
 	interp.o log.o look.o match.o mcp.o mcpgui.o mcppkgs.o mfuns2.o \
 	mfuns.o move.o msgparse.o mufevent.o oldcompress.o p_array.o \
@@ -181,9 +181,9 @@ fb-resolver: resolver.o ${LOBJ} ${MALLOBJ} Makefile
 fb-topwords: topwords.o hashtab.o ${MALLOBJ} Makefile
 	${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-topwords topwords.o hashtab.o ${MALLOBJ} ${LIBR}
 
-fb-olddecompress: olddecomp.o oldcompress.o ${LOBJ} ${MALLOBJ} Makefile
-	${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-olddecompress olddecomp.o oldcompress.o ${LIBR} \
-	  ${MALLOBJ} ${LOBJ}
+fb-olddecompress: olddecomp.o oldcompress.o compress.o db_header.o ${LOBJ} ${MALLOBJ} Makefile
+	${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-olddecompress olddecomp.o oldcompress.o \
+		compress.o db_header.o ${LIBR} ${MALLOBJ} ${LOBJ}
 
 fb-announce: ${ANNOBJ} ${LOBJ} ${MALLOBJ} Makefile
 	${CC} ${CFLAGS} ${ANNOBJ} -o fb-announce ${MALLOBJ} ${LIBR} ${LOBJ}

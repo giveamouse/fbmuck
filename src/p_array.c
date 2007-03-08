@@ -1145,7 +1145,7 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 				switch (PropType(prptr)) {
 				case PROP_STRTYP:
 					temp2.type = PROG_STRING;
-					temp2.data.string = alloc_prog_string(uncompress(PropDataStr(prptr)));
+					temp2.data.string = alloc_prog_string(PropDataStr(prptr));
 					break;
 				case PROP_LOKTYP:
 					temp2.type = PROG_LOCK;
@@ -1227,7 +1227,6 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 	if (!maxcount) {
 		strval = get_property_class(ref, propname);
 		if (strval) {
-			strval = uncompress(strval);
 			if (strval && number(strval)) {
 				maxcount = atoi(strval);
 			}
@@ -1237,7 +1236,6 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 			maxcount = get_property_value(ref, propname);
 			if (!maxcount) {
 				strval = get_property_class(ref, propname);
-				strval = uncompress(strval);
 				if (strval && number(strval)) {
 					maxcount = atoi(strval);
 				}
@@ -1277,7 +1275,7 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 				switch (PropType(prptr)) {
 				  case PROP_STRTYP:
 					temp2.type = PROG_STRING;
-					temp2.data.string = alloc_prog_string(uncompress(PropDataStr(prptr)));
+					temp2.data.string = alloc_prog_string(PropDataStr(prptr));
 					break;
 				  case PROP_LOKTYP:
 					temp2.type = PROG_LOCK;
@@ -1587,7 +1585,6 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 
 	nu = new_array_packed(0);
 	rawstr = get_property_class(ref, dir);
-	rawstr = uncompress(rawstr);
 
 	if (rawstr) {
 		while (isspace(*rawstr))
@@ -2155,7 +2152,6 @@ prim_array_get_ignorelist(PRIM_PROTOTYPE)
 	if (tp_ignore_support)
 	{
 		rawstr = get_property_class(ref, IGNORE_PROP);
-		rawstr = uncompress(rawstr);
 
 		if (rawstr) {
 			while (isspace(*rawstr))
@@ -2423,5 +2419,5 @@ prim_array_filter_flags(PRIM_PROTOTYPE)
     PushArrayRaw(nw);
 }
 
-static const char *p_array_c_version = "$RCSfile$ $Revision: 1.54 $";
+static const char *p_array_c_version = "$RCSfile$ $Revision: 1.55 $";
 const char *get_p_array_c_version(void) { return p_array_c_version; }

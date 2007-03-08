@@ -6,6 +6,7 @@
 #include <ctype.h>
 
 #include "db.h"
+#include "db_header.h"
 #include "props.h"
 #include "params.h"
 #include "tune.h"
@@ -43,7 +44,6 @@ extern char *alloc_string(const char *);
 #endif
 
 extern short db_conversion_flag;
-extern short db_decompression_flag;
 
 int number(const char *s);
 int ifloat(const char *s);
@@ -608,22 +608,12 @@ db_write_list(FILE * f, int mode)
 dbref
 db_write(FILE * f)
 {
-	putstring(f, "***Foxen8 TinyMUCK DUMP Format***");
+	putstring(f, DB_VERSION_STRING );
 
 	putref(f, db_top);
-	putref(f, DB_PARMSINFO
-#ifdef COMPRESS
-		   + (db_decompression_flag ? 0 : DB_COMPRESSED)
-#endif
-			);
+	putref(f, DB_PARMSINFO );
 	putref(f, tune_count_parms());
 	tune_save_parms_to_file(f);
-
-#ifdef COMPRESS
-	if (!db_decompression_flag) {
-		save_compress_words_to_file(f);
-	}
-#endif
 
 	db_write_list(f, 1);
 
@@ -672,61 +662,6 @@ parse_dbref(const char *s)
 	}
 	/* else x < 0 or s != 0 */
 	return NOTHING;
-}
-
-static int
-do_peek(FILE * f)
-{
-	int peekch;
-
-	ungetc((peekch = getc(f)), f);
-
-	return (peekch);
-}
-
-dbref
-getref(FILE * f)
-{
-	static char buf[BUFFER_LEN];
-	int peekch;
-
-	/*
-	 * Compiled in with or without timestamps, Sep 1, 1990 by Fuzzy, added to
-	 * Muck by Kinomon.  Thanks Kino!
-	 */
-	if ((peekch = do_peek(f)) == NUMBER_TOKEN || peekch == LOOKUP_TOKEN) {
-		return (0);
-	}
-	fgets(buf, sizeof(buf), f);
-	return (atol(buf));
-}
-
-
-static char xyzzybuf[BUFFER_LEN];
-static const char *
-getstring_noalloc(FILE * f)
-{
-	char *p;
-	char c;
-
-	if (fgets(xyzzybuf, sizeof(xyzzybuf), f) == NULL) {
-		xyzzybuf[0] = '\0';
-		return xyzzybuf;
-	}
-
-	if (strlen(xyzzybuf) == BUFFER_LEN - 1) {
-		/* ignore whatever comes after */
-		if (xyzzybuf[BUFFER_LEN - 2] != '\n')
-			while ((c = fgetc(f)) != '\n') ;
-	}
-	for (p = xyzzybuf; *p; p++) {
-		if (*p == '\n') {
-			*p = '\0';
-			break;
-		}
-	}
-
-	return xyzzybuf;
 }
 
 #define getstring(x) alloc_string(getstring_noalloc(x))
@@ -1006,11 +941,7 @@ read_program(dbref i)
 	return first;
 }
 
-#ifdef COMPRESS
-# define getstring_oldcomp_noalloc(foo) old_uncompress(getstring_noalloc(foo))
-#else
-# define getstring_oldcomp_noalloc(foo) getstring_noalloc(foo)
-#endif
+#define getstring_oldcomp_noalloc(foo) getstring_noalloc(foo)
 
 void
 db_read_object_old(FILE * f, struct object *o, dbref objno)
@@ -1463,140 +1394,50 @@ autostart_progs(void)
 	}
 }
 
-
 dbref
 db_read(FILE * f)
 {
-	dbref i, thisref;
+	int i;
+	dbref grow, thisref;
 	struct object *o;
-	const char *special;
+	const char *special, *version;
 	int doing_deltas;
 	int main_db_format = 0;
 	int parmcnt;
-	int dbflags = 0;
+	int dbflags;
 	char c;
 
-	db_load_format = 0;
-	doing_deltas = 0;
+	/* Parse the header */
+	dbflags = db_read_header( f, &version, &db_load_format, &grow, &parmcnt );
 
-	if ((c = getc(f)) == '*') {
-		special = getstring(f);
-		if (!strcmp(special, "**TinyMUCK DUMP Format***")) {
-			db_load_format = 1;
-		} else if (!strcmp(special, "**Lachesis TinyMUCK DUMP Format***") ||
-				   !strcmp(special, "**WhiteFire TinyMUCK DUMP Format***")) {
-			db_load_format = 2;
-		} else if (!strcmp(special, "**Mage TinyMUCK DUMP Format***")) {
-			db_load_format = 3;
-		} else if (!strcmp(special, "**Foxen TinyMUCK DUMP Format***")) {
-			db_load_format = 4;
-		} else if (!strcmp(special, "**Foxen2 TinyMUCK DUMP Format***")) {
-			db_load_format = 5;
-		} else if (!strcmp(special, "**Foxen3 TinyMUCK DUMP Format***")) {
-			db_load_format = 6;
-		} else if (!strcmp(special, "**Foxen4 TinyMUCK DUMP Format***")) {
-			db_load_format = 6;
-			i = getref(f);
-			db_grow(i);
-		} else if (!strcmp(special, "**Foxen5 TinyMUCK DUMP Format***")) {
-			db_load_format = 7;
-			i = getref(f);
-			dbflags = getref(f);
-			if (dbflags & DB_PARMSINFO) {
-				parmcnt = getref(f);
-				tune_load_parms_from_file(f, NOTHING, parmcnt);
-			}
-			if (dbflags & DB_COMPRESSED) {
-#ifdef COMPRESS
-				init_compress_from_file(f);
-#else
-				fprintf(stderr, "This server is not compiled to read compressed databases.\n");
-				return -1;
-#endif
-			}
-			db_grow(i);
-		} else if (!strcmp(special, "**Foxen6 TinyMUCK DUMP Format***")) {
-			db_load_format = 8;
-			i = getref(f);
-			dbflags = getref(f);
-			if (dbflags & DB_PARMSINFO) {
-				parmcnt = getref(f);
-				tune_load_parms_from_file(f, NOTHING, parmcnt);
-			}
-			if (dbflags & DB_COMPRESSED) {
-#ifdef COMPRESS
-				init_compress_from_file(f);
-#else
-				fprintf(stderr, "This server is not compiled to read compressed databases.\n");
-				return -1;
-#endif
-			}
-			db_grow(i);
-		} else if (!strcmp(special, "**Foxen7 TinyMUCK DUMP Format***")) {
-			db_load_format = 9;
-			i = getref(f);
-			dbflags = getref(f);
-			if (dbflags & DB_PARMSINFO) {
-				parmcnt = getref(f);
-				tune_load_parms_from_file(f, NOTHING, parmcnt);
-			}
-			if (dbflags & DB_COMPRESSED) {
-#ifdef COMPRESS
-				init_compress_from_file(f);
-#else
-				fprintf(stderr, "This server is not compiled to read compressed databases.\n");
-				return -1;
-#endif
-			}
-			db_grow(i);
-		} else if (!strcmp(special, "**Foxen8 TinyMUCK DUMP Format***")) {
-			db_load_format = 10;
-			i = getref(f);
-			dbflags = getref(f);
-			if (dbflags & DB_PARMSINFO) {
-				parmcnt = getref(f);
-				tune_load_parms_from_file(f, NOTHING, parmcnt);
-			}
-			if (dbflags & DB_COMPRESSED) {
-#ifdef COMPRESS
-				init_compress_from_file(f);
-#else
-				fprintf(stderr, "This server is not compiled to read compressed databases.\n");
-				return -1;
-#endif
-			}
-			db_grow(i);
-		} else if (!strcmp(special, "***Foxen Deltas Dump Extention***")) {
-			db_load_format = 4;
-			doing_deltas = 1;
-		} else if (!strcmp(special, "***Foxen2 Deltas Dump Extention***")) {
-			db_load_format = 5;
-			doing_deltas = 1;
-		} else if (!strcmp(special, "***Foxen4 Deltas Dump Extention***")) {
-			db_load_format = 6;
-			doing_deltas = 1;
-		} else if (!strcmp(special, "***Foxen5 Deltas Dump Extention***")) {
-			db_load_format = 7;
-			doing_deltas = 1;
-		} else if (!strcmp(special, "***Foxen6 Deltas Dump Extention***")) {
-			db_load_format = 8;
-			doing_deltas = 1;
-		} else if (!strcmp(special, "***Foxen7 Deltas Dump Extention***")) {
-			db_load_format = 9;
-			doing_deltas = 1;
-		} else if (!strcmp(special, "***Foxen8 Deltas Dump Extention***")) {
-			db_load_format = 10;
-			doing_deltas = 1;
-		}
-		if (doing_deltas && !db) {
+	/* Compression is no longer supported */
+	if( dbflags & DB_ID_CATCOMPRESS ) {
+		fprintf( stderr, "Compressed databases are no longer supported\n" );
+		fprintf( stderr, "Use fb-olddecompress to convert your DB first.\n" );
+		return -1;
+	}
+
+	/* load the @tune values */
+	if( dbflags & DB_ID_PARMSINFO ) {
+		tune_load_parms_from_file(f, NOTHING, parmcnt);
+	}
+
+	/* grow the db up front */
+	if ( dbflags & DB_ID_GROW ) {
+		db_grow( grow );
+	}
+
+	doing_deltas = dbflags & DB_ID_DELTAS;
+	if( doing_deltas ) {
+		if( !db ) {
 			fprintf(stderr, "Can't read a deltas file without a dbfile.\n");
 			return -1;
 		}
-		free((void *) special);
-		if (!doing_deltas)
-			main_db_format = db_load_format;
-		c = getc(f);			/* get next char */
+	} else {
+		main_db_format = db_load_format;
 	}
+
+	c = getc(f);			/* get next char */
 	for (i = 0;; i++) {
 		switch (c) {
 		case NUMBER_TOKEN:
@@ -1630,6 +1471,7 @@ db_read(FILE * f)
 			case 8:
 			case 9:
 			case 10:
+			case 11:
 				db_read_object_foxen(f, o, thisref, db_load_format, doing_deltas);
 				break;
 			default:
@@ -1707,5 +1549,5 @@ db_read(FILE * f)
 		c = getc(f);
 	}							/* for */
 }								/* db_read */
-static const char *db_c_version = "$RCSfile$ $Revision: 1.37 $";
+static const char *db_c_version = "$RCSfile$ $Revision: 1.38 $";
 const char *get_db_c_version(void) { return db_c_version; }

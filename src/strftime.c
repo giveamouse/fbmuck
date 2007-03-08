@@ -1,4 +1,5 @@
 #include "config.h"
+#include "externs.h"
 
 void
 int2str(char *buf, int val, int len, char pref)
@@ -319,5 +320,5 @@ get_tz_offset(void)
 	return timezone;
 #endif
 }
-static const char *strftime_c_version = "$RCSfile$ $Revision: 1.9 $";
+static const char *strftime_c_version = "$RCSfile$ $Revision: 1.10 $";
 const char *get_strftime_c_version(void) { return strftime_c_version; }

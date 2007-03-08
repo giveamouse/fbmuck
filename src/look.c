@@ -62,14 +62,14 @@ exec_or_notify(int descr, dbref player, dbref thing,
 			   const char *message, const char *whatcalled,
 			   int mpiflags)
 {
-	char *p;
+	const char *p;
 	char *p2;
 	char *p3;
 	char buf[BUFFER_LEN];
 	char tmpcmd[BUFFER_LEN];
 	char tmparg[BUFFER_LEN];
 
-	p = (char *) uncompress((char *) message);
+	p = message;
 
 	if (*p == EXEC_SIGNAL) {
 		int i;
@@ -1587,5 +1587,5 @@ do_sweep(int descr, dbref player, const char *name)
 	}
 	notify(player, "**End of list**");
 }
-static const char *look_c_version = "$RCSfile$ $Revision: 1.26 $";
+static const char *look_c_version = "$RCSfile$ $Revision: 1.27 $";
 const char *get_look_c_version(void) { return look_c_version; }

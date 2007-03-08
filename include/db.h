@@ -604,7 +604,7 @@ struct program_specific {
 
 #define PROGRAM_SP(x)			(DBFETCH(x)->sp.program.sp)
 #define ALLOC_PROGRAM_SP(x)     { PROGRAM_SP(x) = (struct program_specific *)malloc(sizeof(struct program_specific)); }
-#define FREE_PROGRAM_SP(x)      { dbref foo = x; (PROGRAM_SP(foo)?free(PROGRAM_SP(foo)):0); PROGRAM_SP(foo) = NULL; }
+#define FREE_PROGRAM_SP(x)      { dbref foo = x; if(PROGRAM_SP(foo)) free(PROGRAM_SP(foo)); PROGRAM_SP(foo) = (struct program_specific *)NULL; }
 
 #define PROGRAM_INSTANCES(x)	(PROGRAM_SP(x)!=NULL?PROGRAM_SP(x)->instances:0)
 #define PROGRAM_CURR_LINE(x)	(PROGRAM_SP(x)->curr_line)
@@ -783,10 +783,6 @@ extern struct shared_string *alloc_prog_string(const char *);
 
 extern dbref new_object(void);		/* return a new object */
 
-extern dbref getref(FILE *);	/* Read a database reference from a file. */
-
-extern void putref(FILE *, dbref);	/* Write one ref to the file */
-
 extern struct boolexp *getboolexp(FILE *);	/* get a boolexp */
 extern void putboolexp(FILE *, struct boolexp *);	/* put a boolexp */
 
@@ -841,7 +837,7 @@ extern dbref parse_dbref(const char *);	/* parse a dbref */
 
 #ifndef dbh_version
 #define dbh_version
-const char *db_h_version = "$RCSfile$ $Revision: 1.46 $";
+const char *db_h_version = "$RCSfile$ $Revision: 1.47 $";
 #endif
 #else
 extern const char *db_h_version;

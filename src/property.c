@@ -13,8 +13,6 @@
 #include <string.h>
 #include <math.h>
 
-#define alloc_compressed(x) alloc_string(compress(x))
-
 /* property.c
    A whole new lachesis mod.
    Adds property manipulation routines to TinyMUCK.   */
@@ -70,10 +68,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 				remove_property_nofetch(player, pname);
 			}
 		} else {
-			SetPDataStr(p, alloc_compressed(dat->data.str));
-#ifdef COMPRESS
-			SetPFlagsRaw(p, (dat->flags | PROP_COMPRESSED));
-#endif
+			SetPDataStr(p, alloc_string(dat->data.str));
 		}
 		break;
 	case PROP_INTTYP:
@@ -332,7 +327,7 @@ has_property_strict(int descr, dbref player, dbref what, const char *pname, cons
 #endif
 		switch (PropType(p)) {
 		    case PROP_STRTYP:
-			str = uncompress(DoNull(PropDataStr(p)));
+			str = DoNull(PropDataStr(p));
 
 			if (has_prop_recursion_limit-->0) {
 				ptr = do_parse_mesg(descr, player, what, str, "(Lock)", buf, sizeof(buf),
@@ -790,8 +785,6 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 #define DOWNCASE(x) (tolower(x))
 
 extern short db_conversion_flag;
-extern short db_decompression_flag;
-
 
 int
 db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdir)
@@ -870,16 +863,8 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 	case PROP_STRTYP:
 		if (!do_diskbase_propvals || pos) {
 			flg &= ~PROP_ISUNLOADED;
-#ifdef COMPRESS
-			if (!(flg & PROP_COMPRESSED)) {
-				value = (char *) old_uncompress(value);
-			}
-#endif
 			if (pnode) {
-				SetPDataStr(pnode, alloc_compressed(value));
-#ifdef COMPRESS
-				flg |= PROP_COMPRESSED;
-#endif
+				SetPDataStr(pnode, alloc_string(value));
 				SetPFlagsRaw(pnode, flg);
 			} else {
 				mydat.flags = flg;
@@ -1015,11 +1000,7 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
 	case PROP_STRTYP:
 		if (!*PropDataStr(p))
 			return;
-		if (db_decompression_flag) {
-			ptr2 = uncompress(PropDataStr(p));
-		} else {
-			ptr2 = PropDataStr(p);
-		}
+		ptr2 = PropDataStr(p);
 		break;
 	case PROP_LOKTYP:
 		if (PropFlags(p) & PROP_ISUNLOADED)
@@ -1164,7 +1145,7 @@ reflist_add(dbref obj, const char* propname, dbref toadd)
 		switch (PropType(ptr)) {
 		case PROP_STRTYP:
 			*outbuf = '\0';
-			list = temp = uncompress(PropDataStr(ptr));
+			list = temp = PropDataStr(ptr);
 			snprintf(buf, sizeof(buf), "%d", toadd);
 			while (*temp) {
 				if (*temp == '#') {
@@ -1239,7 +1220,7 @@ reflist_del(dbref obj, const char* propname, dbref todel)
 		switch (PropType(ptr)) {
 		case PROP_STRTYP:
 			*outbuf = '\0';
-			list = temp = uncompress(PropDataStr(ptr));
+			list = temp = PropDataStr(ptr);
 			snprintf(buf, sizeof(buf), "%d", todel);
 			while (*temp) {
 				if (*temp == '#') {
@@ -1299,7 +1280,7 @@ reflist_find(dbref obj, const char* propname, dbref tofind)
 #endif
 		switch (PropType(ptr)) {
 		case PROP_STRTYP:
-			temp = uncompress(PropDataStr(ptr));
+			temp = PropDataStr(ptr);
 			snprintf(buf, sizeof(buf), "%d", tofind);
 			while (*temp) {
 				if (*temp == '#') {
@@ -1335,5 +1316,5 @@ reflist_find(dbref obj, const char* propname, dbref tofind)
 }
 
 
-static const char *property_c_version = "$RCSfile$ $Revision: 1.29 $";
+static const char *property_c_version = "$RCSfile$ $Revision: 1.30 $";
 const char *get_property_c_version(void) { return property_c_version; }

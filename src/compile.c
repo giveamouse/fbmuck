@@ -453,7 +453,7 @@ include_defs(COMPSTATE * cstat, dbref i)
 	while (j) {
 		strcpyn(dirname, sizeof(dirname), "/_defs/");
 		strcatn(dirname, sizeof(dirname), temp);
-		tmpptr = uncompress(get_property_class(i, dirname));
+		tmpptr = get_property_class(i, dirname);
 		if (tmpptr && *tmpptr)
 			insert_def(cstat, temp, (char *) tmpptr);
 		j = next_prop(pptr, j, temp, sizeof(temp));
@@ -2184,8 +2184,6 @@ do_directive(COMPSTATE * cstat, char *direct)
 			tmpptr = (char*)malloc(4 * sizeof(char));
 			strcpyn(tmpptr, 4*sizeof(char), "0.0");
 			needFree = 1;
-		} else { 
-			uncompress(tmpptr);	
 		}
 		tmpname = (char *) next_token_raw(cstat);
 		if (!tmpname || !*tmpname) {
@@ -3956,5 +3954,5 @@ init_primitives(void)
 	log_status("MUF: %d primitives exist.", BASE_MAX);
 }
 
-static const char *compile_c_version = "$RCSfile$ $Revision: 1.87 $";
+static const char *compile_c_version = "$RCSfile$ $Revision: 1.88 $";
 const char *get_compile_c_version(void) { return compile_c_version; }

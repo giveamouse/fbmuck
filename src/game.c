@@ -33,6 +33,7 @@ FILE *delta_infile;
 FILE *delta_outfile;
 char *in_filename = NULL;
 
+extern void do_showextver(dbref player);
 void fork_and_dump(void);
 void dump_database(void);
 
@@ -1451,5 +1452,5 @@ process_command(int descr, dbref player, char *command)
 }
 
 #undef Matched
-static const char *game_c_version = "$RCSfile$ $Revision: 1.47 $";
+static const char *game_c_version = "$RCSfile$ $Revision: 1.48 $";
 const char *get_game_c_version(void) { return game_c_version; }

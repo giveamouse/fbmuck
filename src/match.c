@@ -127,7 +127,6 @@ find_registered_obj(dbref player, const char *name)
 	switch (PropType(ptr)) {
 	case PROP_STRTYP:
 		p = PropDataStr(ptr);
-		p = uncompress(p);
 		if (*p == NUMBER_TOKEN)
 			p++;
 		if (number(p)) {
@@ -600,5 +599,5 @@ match_rmatch(dbref arg1, struct match_data *md)
 		break;
 	}
 }
-static const char *match_c_version = "$RCSfile$ $Revision: 1.10 $";
+static const char *match_c_version = "$RCSfile$ $Revision: 1.11 $";
 const char *get_match_c_version(void) { return match_c_version; }
