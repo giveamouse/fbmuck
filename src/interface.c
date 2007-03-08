@@ -861,7 +861,7 @@ notify_filtered(dbref from, dbref player, const char *msg, int isprivate)
 int
 notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 {
-	const char *ptr;
+	const char *ptr=msg;
 
 	if (tp_listeners) {
 		if (tp_listeners_obj || Typeof(player) == TYPE_ROOM) {
@@ -4191,5 +4191,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.112 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.113 $";
 const char *get_interface_c_version(void) { return interface_c_version; }
