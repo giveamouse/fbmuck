@@ -48,8 +48,8 @@ The code is written in ANSI C, and is known to compile and run under
 ULTRIX/BSD 4.3/SunOS 4.1 on a VAX 8600, VAX 6400, DEC 3100s/5000s, a
 MicroVAX, a Sun SparcStation/1, and a Sun 3/50.  TinyMUCK is also
 known to have run on a HP9k260, as well as a NeXT.  Lots of people
-run FB under the Debian and RedHat distributions of Linux.  One of the
-developers even compiles and runs it on an Apple MacBook Pro (Darwin x86_64).
+run FB under the Debian and RedHat distributions of Linux.  Some developers
+also compile and run it on Apple systems (Darwin: ppc and x86_64).
 
 As far as other platforms, you're on your own.
 
@@ -77,7 +77,7 @@ PROGRAMS CONTAINED IN THE DISTRIBUTION:
 fbmuck
 
  This is the actual server program; it is invoked as 
-    netmuck [options] starting-dbfile dump-dbfile [portnumber]
+    fbmuck [options] starting-dbfile dump-dbfile [portnumber]
 
  Where the [options] can be:
             -convert       load db, save in current format, and quit.
