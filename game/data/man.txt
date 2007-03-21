@@ -120,7 +120,7 @@ E's
   error_bit      error_name     error_num      error_str      event_count
   event_exists   event_send     event_wait     event_waitfor  execute
   exit           exit?          exits          exits_array    exp
-  explode        explode_array  
+  explode        explode_array  ext-name-ok?   
 
 F's
   fabs         fail         fg_mode      findnext     firstdescr   flag?
@@ -2305,15 +2305,16 @@ String Manipulation Operators
 
 ansi_midstr        ansi_strcut        ansi_strip         ansi_strlen
 array_fmtstrings   atoi               ctoi               explode
-explode_array      fmtstring          instr              instring
-intostr            itoc               midstr             name-ok?
-number?            pname-ok?          pronoun_sub        regexp
-regsub             rinstr             rinstring          rsplit
-smatch             split              stod               strcat
-strcmp             strcut             strdecrypt         strencrypt
-stringcmp          stringpfx          strip              striplead
-striptail          strlen             strncmp            subst
-textattr           tokensplit         tolower            toupper
+explode_array      ext-name-ok?       fmtstring          instr
+instring           intostr            itoc               midstr
+name-ok?           number?            pname-ok?          pronoun_sub
+regexp             regsub             rinstr             rinstring
+rsplit             smatch             split              stod
+strcat             strcmp             strcut             strdecrypt
+strencrypt         stringcmp          stringpfx          strip
+striplead          striptail          strlen             strncmp
+subst              textattr           tokensplit         tolower
+toupper            
 
 ~----------------------------------------------------------------------------
 ~
@@ -2803,12 +2804,37 @@ NAME-OK?
 NAME-OK? (s -- i)
 
   Returns true if the given string would be okay as a general object's name.
+This function remains for backwards compatability. However if the muck
+settings allow 8-bit names in general but not 8-bit Thing names, and you pass
+a name that contains 8-bit chars, NAME-OK? will return true since the name
+would be okay for some objects. But a NEWOBJECT prim with that name will fail
+due to the more restrictive rules for Things.
+
+Instead use EXT-NAME-OK? which determines legal names for each type of object.
+Also see: EXT-NAME-OK?
 ~
 ~
 PNAME-OK?
 PNAME-OK? (s -- i)
 
   Returns true if the given string would be okay as a player name.
+Also see: EXT-NAME-OK?
+~
+~
+EXT-NAME-OK?
+EXT-NAME-OK? ( str:Name ref:Obj -- int:Ok? )
+EXT-NAME-OK? ( str:Name str:Type -- int:Ok? )
+
+  Returns true if Name would be a legal name for an object depending on
+the 8-bit character settings and the object type. If Obj is the object
+you are going to SETNAME then EXT-NAME-OK? will use the naming rules for
+that type of object.
+
+If the object does not exist yet, you may specify a string Type:
+        "exit" or "e"              "muf" or "program" or "f"
+        "player" or "p"            "thing" or "t"
+        "room" or "r"
+Type's case is ignored.
 ~
 ~
 REGEXP
@@ -4231,7 +4257,7 @@ SETNAME  ( d s -- )
 names of objects that are owned by the effective user of the program,
 or any object if the program is Wizard.  The name of a player can never
 be set, since that would normally require a password.
-Also see: SET, NAME and SETDESC
+Also see: SET, NAME, SETDESC and EXT-NAME-OK?
 ~
 ~
 TRUENAME

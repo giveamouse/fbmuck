@@ -899,8 +899,81 @@ prim_name_okp(PRIM_PROTOTYPE)
 		abort_interp("Object name string expected.");
 	if (!oper1->data.string)
 		abort_interp("Cannot be an empty string.");
-	result = ok_ascii_thing(oper1->data.string->data) && ok_name(oper1->data.string->data);
+	result = ok_ascii_other(oper1->data.string->data) && ok_name(oper1->data.string->data);
 	CLEAR(oper1);
+	PushInt(result);
+}
+
+void
+prim_ext_name_okp(PRIM_PROTOTYPE)
+{
+	/* These are function pointers */
+	int(*ok1) (const char*);
+	int(*ok2) (const char*);
+	
+	CHECKOP(2);
+	oper1 = POP();
+	oper2 = POP();
+
+	if (oper1->type != PROG_STRING)
+		abort_interp("Object name string expected (1).");
+	if (!oper1->data.string)
+		abort_interp("Cannot be an empty string (1).");
+
+	if (oper2->type == PROG_STRING) {
+		if (!oper2->data.string)
+			abort_interp("Cannot be an empty string (2).");
+		strcpyn(buf, sizeof(buf), oper2->data.string->data );
+		for (ref = 0; buf[ref]; ref++)
+			buf[ref] = DOWNCASE(buf[ref]);
+		if ( !strcmp(buf,"e") || !strcmp(buf,"exit") ) {
+			ok1 = ok_ascii_other;
+			ok2 = ok_name;
+		} else if ( !strcmp(buf,"r") || !strcmp(buf,"room") ) {
+			ok1 = ok_ascii_other;
+			ok2 = ok_name;
+		} else if ( !strcmp(buf,"t") || !strcmp(buf,"thing") ) {
+			ok1 = ok_ascii_thing;
+			ok2 = ok_name;
+		} else if ( !strcmp(buf,"p") || !strcmp(buf,"player") ) {
+			ok1 = ok_player_name;
+			ok2 = NULL;
+		} else if ( !strcmp(buf,"f") || !strcmp(buf,"muf") \
+				|| !strcmp(buf,"program") ) {
+			ok1 = ok_ascii_other;
+			ok2 = ok_name;
+		} else {
+			abort_interp("String must be a valid object type (2)." );
+		}
+	} else if (oper2->type == PROG_OBJECT) {
+		if (!valid_object(oper2))
+			abort_interp("Invalid argument (2).");
+		switch( Typeof(oper2->data.objref) ) {
+		case TYPE_EXIT:
+		case TYPE_ROOM:
+		case TYPE_PROGRAM:
+			ok1 = ok_ascii_other;
+			ok2 = ok_name;
+			break;
+		case TYPE_THING:
+			ok1 = ok_ascii_thing;
+			ok2 = ok_name;
+			break;
+		case TYPE_PLAYER:
+			ok1 = ok_player_name;
+			ok2 = NULL;
+			break;
+		}
+
+	} else {
+		abort_interp("Dbref or object type name expected (2).");
+	}
+
+	result = ok1 && ok1(oper1->data.string->data);
+	if( ok2 && result )
+		result = ok2(oper1->data.string->data);
+	CLEAR(oper1);
+	CLEAR(oper2);
 	PushInt(result);
 }
 
@@ -1084,5 +1157,5 @@ prim_debug_line(PRIM_PROTOTYPE)
 		notify_nolisten(player, msg, 1);
 	}
 }
-static const char *p_misc_c_version = "$RCSfile$ $Revision: 1.46 $";
+static const char *p_misc_c_version = "$RCSfile$ $Revision: 1.47 $";
 const char *get_p_misc_c_version(void) { return p_misc_c_version; }

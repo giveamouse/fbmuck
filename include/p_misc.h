@@ -33,6 +33,7 @@ extern void prim_event_exists(PRIM_PROTOTYPE);
 extern void prim_event_send(PRIM_PROTOTYPE);
 extern void prim_pname_okp(PRIM_PROTOTYPE);
 extern void prim_name_okp(PRIM_PROTOTYPE);
+extern void prim_ext_name_okp(PRIM_PROTOTYPE);
 extern void prim_force_level(PRIM_PROTOTYPE);
 extern void prim_watchpid(PRIM_PROTOTYPE);
 extern void prim_read_wants_blanks(PRIM_PROTOTYPE);
@@ -51,24 +52,24 @@ extern void prim_debug_line(PRIM_PROTOTYPE);
     prim_unparselock, prim_prettylock, prim_testlock, prim_sysparm, \
     prim_cancallp, prim_setsysparm, prim_timer_start, prim_timer_stop, \
     prim_event_count, prim_event_exists, prim_event_send, prim_pname_okp, \
-    prim_name_okp, prim_force_level, prim_watchpid, prim_read_wants_blanks, \
-    prim_sysparm_array, prim_debugger_break, prim_ignoringp, prim_ignore_add, \
-	prim_ignore_del, prim_debug_on, prim_debug_off, prim_debug_line, \
-	prim_systime_precise
+    prim_name_okp, prim_ext_name_okp, prim_force_level, prim_watchpid, \
+    prim_read_wants_blanks, prim_sysparm_array, prim_debugger_break, \
+    prim_ignoringp, prim_ignore_add, prim_ignore_del, prim_debug_on, \
+    prim_debug_off, prim_debug_line, prim_systime_precise
 
-#define PRIMS_MISC_NAMES "TIME", "DATE", "GMTOFFSET",         \
-    "SYSTIME", "TIMESPLIT", "TIMEFMT", "USERLOG", "QUEUE", "KILL", \
-    "FORCE", "TIMESTAMPS", "FORK", "PID", "STATS",            \
-    "ABORT", "ISPID?", "PARSELOCK", "UNPARSELOCK",            \
-    "PRETTYLOCK", "TESTLOCK", "SYSPARM", "CANCALL?",	      \
-    "SETSYSPARM", "TIMER_START", "TIMER_STOP", "EVENT_COUNT", \
-	"EVENT_EXISTS", "EVENT_SEND", "PNAME-OK?", "NAME-OK?",    \
-	"FORCE_LEVEL", "WATCHPID", "READ_WANTS_BLANKS",           \
-	"SYSPARM_ARRAY", "DEBUGGER_BREAK", "IGNORING?", "IGNORE_ADD", \
-	"IGNORE_DEL", "DEBUG_ON", "DEBUG_OFF", "DEBUG_LINE", \
-	"SYSTIME_PRECISE"
+#define PRIMS_MISC_NAMES "TIME", "DATE", "GMTOFFSET", \
+    "SYSTIME", "TIMESPLIT", "TIMEFMT", "USERLOG", \
+    "QUEUE", "KILL", "FORCE", "TIMESTAMPS", "FORK", \
+    "PID", "STATS", "ABORT", "ISPID?", "PARSELOCK", \
+    "UNPARSELOCK", "PRETTYLOCK", "TESTLOCK", "SYSPARM", \
+    "CANCALL?",	"SETSYSPARM", "TIMER_START", "TIMER_STOP", \
+    "EVENT_COUNT", "EVENT_EXISTS", "EVENT_SEND", "PNAME-OK?", \
+    "NAME-OK?", "EXT-NAME-OK?", "FORCE_LEVEL", "WATCHPID", \
+    "READ_WANTS_BLANKS", "SYSPARM_ARRAY", "DEBUGGER_BREAK", \
+    "IGNORING?", "IGNORE_ADD", "IGNORE_DEL", "DEBUG_ON", \
+    "DEBUG_OFF", "DEBUG_LINE", "SYSTIME_PRECISE"
 
-#define PRIMS_MISC_CNT 42
+#define PRIMS_MISC_CNT 43
 
 
 #endif /* _P_MISC_H */
@@ -77,7 +78,7 @@ extern void prim_debug_line(PRIM_PROTOTYPE);
 
 #ifndef p_misch_version
 #define p_misch_version
-const char *p_misc_h_version = "$RCSfile$ $Revision: 1.19 $";
+const char *p_misc_h_version = "$RCSfile$ $Revision: 1.20 $";
 #endif
 #else
 extern const char *p_misc_h_version;

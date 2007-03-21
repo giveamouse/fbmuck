@@ -1,3 +1,4 @@
+Updated: 2007Mar21
 2007Mar07
 
 From: Winged <winged@sourceforge.net>
@@ -27,13 +28,23 @@ implementation details:
    to the telnet protocol using that character for its IAC escape.)
 3) Player names cannot contain 8-bit characters.
 4) Object names SHOULD NOT contain 8-bit characters, though we're making that
-   a tunable parameter.  (Basically, anything that can annoy a player must
-   be able to be referenced for sweeping or otherwise getting rid of.
-   Clients that can't send 8-bit characters can't reference them.)
+   a pair of tunable parameters.  (Basically, anything that can annoy a player
+   must be able to be referenced for sweeping or otherwise getting rid of.
+   Clients that can't send 8-bit characters can't reference them in object
+   names.)
+5) Due to the differences in object naming policy, we have introduced
+   a new MUF primitive: EXT-NAME-OK? ( {s|d} s -- i )  This takes either
+   a dbref (for an already-created object) or a string specifying the type
+   of object, and the proposed name for it.  It returns 1 if the proposed
+   name is okay for that object/type of object, or 0 if it is not.
+6) There is no support for "lowercase y umlaut", or "yuml" (code 0xff), due
+   to the overloading and lack of sensible compatibility with telnet's IAC
+   protocol.
 
-This is basically a stopgap measure until we get Unicode support.  Once that
-happens, we will provide a conversion script to convert high-ASCII characters
-to their equivalent Unicode codepoints -- but only for ISO-8859-1.
+This is basically a stopgap measure until we get Unicode support (though the
+semantics of EXT-NAME-OK? will not change).  Once that happens, we will
+provide a conversion script to convert high-ASCII characters to their
+equivalent Unicode codepoints -- but only for ISO-8859-1.
 
 Thank you for being tolerant of these changes.  If you have any questions,
 please submit a support request at http://www.sourceforge.net/projects/fbmuck/
@@ -43,3 +54,4 @@ one of the developers (Winged) answers questions on the fb6 scream channel.
 Sincerely,
 
 Winged, March 7 2007
+Winged, March 21 2007

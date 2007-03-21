@@ -409,6 +409,7 @@
   <tr>
     <td nowrap> &nbsp; <a href="#explode">explode</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#explode_array">explode_array</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#ext-name-ok?">ext-name-ok?</a> &nbsp; </td>
   </tr>
 </table></blockquote>
 
@@ -4231,56 +4232,59 @@ identifier.
   </tr>
   <tr>
     <td width="25%"> &nbsp; <a href="#explode_array">explode_array</a> &nbsp; </td>
+    <td width="25%"> &nbsp; <a href="#ext-name-ok?">ext-name-ok?</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#fmtstring">fmtstring</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#instr">instr</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#instring">instring</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="25%"> &nbsp; <a href="#instring">instring</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#intostr">intostr</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#itoc">itoc</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#midstr">midstr</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#name-ok?">name-ok?</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="25%"> &nbsp; <a href="#name-ok?">name-ok?</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#number?">number?</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#pname-ok?">pname-ok?</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#pronoun_sub">pronoun_sub</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#regexp">regexp</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="25%"> &nbsp; <a href="#regexp">regexp</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#regsub">regsub</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#rinstr">rinstr</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#rinstring">rinstring</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#rsplit">rsplit</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="25%"> &nbsp; <a href="#rsplit">rsplit</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#smatch">smatch</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#split">split</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#stod">stod</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#strcat">strcat</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="25%"> &nbsp; <a href="#strcat">strcat</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#strcmp">strcmp</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#strcut">strcut</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#strdecrypt">strdecrypt</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#strencrypt">strencrypt</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="25%"> &nbsp; <a href="#strencrypt">strencrypt</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#stringcmp">stringcmp</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#stringpfx">stringpfx</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#strip">strip</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#striplead">striplead</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="25%"> &nbsp; <a href="#striplead">striplead</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#striptail">striptail</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#strlen">strlen</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#strncmp">strncmp</a> &nbsp; </td>
-    <td width="25%"> &nbsp; <a href="#subst">subst</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="25%"> &nbsp; <a href="#subst">subst</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#textattr">textattr</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#tokensplit">tokensplit</a> &nbsp; </td>
     <td width="25%"> &nbsp; <a href="#tolower">tolower</a> &nbsp; </td>
+  </tr>
+  <tr>
     <td width="25%"> &nbsp; <a href="#toupper">toupper</a> &nbsp; </td>
   </tr>
 </table></blockquote>
@@ -5016,6 +5020,16 @@ $def RINSTRING tolower swap tolower swap rinstr
 <br>
 </a></h4>
   Returns true if the given string would be okay as a general object's name.
+This function remains for backwards compatability. However if the muck
+settings allow 8-bit names in general but not 8-bit Thing names, and you pass
+a name that contains 8-bit chars, NAME-OK? will return true since the name
+would be okay for some objects. But a NEWOBJECT prim with that name will fail
+due to the more restrictive rules for Things.
+
+Instead use EXT-NAME-OK? which determines legal names for each type of object.
+<p><h5>Also see:
+    <a href="#ext-name-ok?">EXT-NAME-OK?</a>
+</h5>
 <p>
 
 
@@ -5025,6 +5039,32 @@ $def RINSTRING tolower swap tolower swap rinstr
 <br>
 </a></h4>
   Returns true if the given string would be okay as a player name.
+<p><h5>Also see:
+    <a href="#ext-name-ok?">EXT-NAME-OK?</a>
+</h5>
+<p>
+
+
+<hr><h4><a name="ext-name-ok?">EXT-NAME-OK? ( str:Name ref:Obj -- int:Ok? )
+<br>
+EXT-NAME-OK? ( str:Name str:Type -- int:Ok? )
+<br>
+
+<br>
+</a></h4>
+  Returns true if Name would be a legal name for an object depending on
+the 8-bit character settings and the object type. If Obj is the object
+you are going to SETNAME then EXT-NAME-OK? will use the naming rules for
+that type of object.
+
+If the object does not exist yet, you may specify a string Type:
+<p>
+        &quot;exit&quot; or &quot;e&quot;              &quot;muf&quot; or &quot;program&quot; or &quot;f&quot;
+<p>
+        &quot;player&quot; or &quot;p&quot;            &quot;thing&quot; or &quot;t&quot;
+<p>
+        &quot;room&quot; or &quot;r&quot;
+Type's case is ignored.
 <p>
 
 
@@ -7304,8 +7344,9 @@ or any object if the program is Wizard.  The name of a player can never
 be set, since that would normally require a password.
 <p><h5>Also see:
     <a href="#set">SET</a>,
-    <a href="#name">NAME</a> and
-    <a href="#setdesc">SETDESC</a>
+    <a href="#name">NAME</a>,
+    <a href="#setdesc">SETDESC</a> and
+    <a href="#ext-name-ok?">EXT-NAME-OK?</a>
 </h5>
 <p>
 
