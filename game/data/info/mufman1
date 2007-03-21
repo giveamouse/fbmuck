@@ -2154,14 +2154,18 @@ $def RINSTRING tolower swap tolower swap rinstr
 
 NAME-OK? (s -- i)
 
-  Returns true if the given string would be okay as a general object's name.
-This function remains for backwards compatability. However if the muck
-settings allow 8-bit names in general but not 8-bit Thing names, and you pass
-a name that contains 8-bit chars, NAME-OK? will return true since the name
-would be okay for some objects. But a NEWOBJECT prim with that name will fail
-due to the more restrictive rules for Things.
+DEPRECATED: Returns true if the given string would be okay as a general
+object's name.
 
-Instead use EXT-NAME-OK? which determines legal names for each type of object.
+This function remains for backwards compatability, but due to changes in the
+server it cannot be guaranteed any longer that it will always return the
+correct answer. If muck settings allow 8-bit names in general but not 8-bit
+Thing names, and you pass a name that contains 8-bit chars, NAME-OK? will
+return true since the name would be okay for some objects. If you then pass
+that name to the NEWOBJECT primitive, the call will fail due to the more
+restrictive rules for Things.
+
+Instead, use EXT-NAME-OK? which determines legal names for each object type.
 
 
 PNAME-OK? (s -- i)
@@ -2173,9 +2177,8 @@ EXT-NAME-OK? ( str:Name ref:Obj -- int:Ok? )
 EXT-NAME-OK? ( str:Name str:Type -- int:Ok? )
 
   Returns true if Name would be a legal name for an object depending on
-the 8-bit character settings and the object type. If Obj is the object
-you are going to SETNAME then EXT-NAME-OK? will use the naming rules for
-that type of object.
+the object type. If Obj is the object you are going to SETNAME, then
+EXT-NAME-OK? will use the naming rules for that type of object.
 
 If the object does not exist yet, you may specify a string Type:
         "exit" or "e"              "muf" or "program" or "f"
