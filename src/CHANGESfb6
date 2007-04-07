@@ -1,3 +1,6 @@
+2.2fb6.09
+No real new changes, just getting the version number back on track.
+
 2.2fb6.08
 Added EXT-NAME-OK? MUF primitive to support object naming policy by type
   from within MUF.
