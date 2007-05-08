@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.18  2007/05/08 09:38:09  winged
+ * Get rid of spoofing vulnerability with single quote (possessive) and comma in player @name
+ *
  * Revision 1.17  2007/03/08 17:13:49  winged
  * adding tunes for 8-bit object names per tracker 1676289
  *
@@ -657,7 +660,9 @@ ok_player_name(const char *name)
 		if (!(isprint(*scan)
 			 && !isspace(*scan))
 			 && *scan != '('
-			 && *scan != ')') {	
+			 && *scan != ')'
+			 && *scan != '\''
+			 && *scan != ',') {	
 		    /* was isgraph(*scan) */
 			return 0;
 		}
@@ -702,5 +707,5 @@ isancestor(dbref parent, dbref child)
 	}
 	return child == parent;
 }
-static const char *predicates_c_version = "$RCSfile$ $Revision: 1.17 $";
+static const char *predicates_c_version = "$RCSfile$ $Revision: 1.18 $";
 const char *get_predicates_c_version(void) { return predicates_c_version; }
