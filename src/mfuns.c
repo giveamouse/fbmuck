@@ -1894,31 +1894,24 @@ mfn_otell(MFUNARGS)
 		ABORT_MPI("OTELL", "Permission denied.");
 	if (argc > 2)
 		eobj = mesg_dbref_raw(descr, player, what, perms, argv[2]);
-	strcpyn(buf2, sizeof(buf2), argv[0]);
-	for (ptr = buf2; *ptr; ptr = ptr2) {
+
+	prefix_message(buf2, argv[0], NAME(player), BUFFER_LEN, 1);
+
+	ptr = buf2;
+	for (ptr = buf2; ptr; ptr = ptr2) {
 		ptr2 = index(ptr, '\r');
-		if (ptr2) {
-			*ptr2++ = '\0';
-		} else {
-			ptr2 = ptr + strlen(ptr);
-		}
-		if (((OWNER(what) == OWNER(obj) || isancestor(what, obj)) &&
-			 (Typeof(what) == TYPE_ROOM ||
-			  (Typeof(what) == TYPE_EXIT && Typeof(getloc(what)) == TYPE_ROOM))) ||
-			string_prefix(argv[0], NAME(player))) {
-			strcpyn(buf, buflen, ptr);
-		} else {
-			snprintf(buf, BUFFER_LEN, "%.16s%s%.4078s", NAME(player),
-					((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
-		}
+		if (ptr2)
+			*(ptr2++) = '\0';
+
 		thing = DBFETCH(obj)->contents;
 		while (thing != NOTHING) {
 			if (thing != eobj) {
-				notify_from_echo(player, thing, buf, 0);
+				notify_from_echo(player, thing, ptr, 0);
 			}
 			thing = DBFETCH(thing)->next;
 		}
 	}
+
 	return argv[0];
 }
 
@@ -2080,5 +2073,5 @@ mfn_usecount(MFUNARGS)
 
 	return buf;
 }
-static const char *mfuns_c_version = "$RCSfile$ $Revision: 1.34 $";
+static const char *mfuns_c_version = "$RCSfile$ $Revision: 1.35 $";
 const char *get_mfuns_c_version(void) { return mfuns_c_version; }
