@@ -32,6 +32,9 @@
 /* Define to 1 if you have the `pcre' library (-lpcre). */
 #define HAVE_LIBPCRE 1
 
+/* Define to 1 if the headers are under <pcre/pcre.h>, not <pcre.h> */
+/* #undef HAVE_PCREINCDIR */
+
 /* Define to 1 if you have the `socket' library (-lsocket). */
 /* #undef HAVE_LIBSOCKET */
 
@@ -40,6 +43,9 @@
 
 /* Define to 1 if you have the <linux/in6.h> header file. */
 /* #undef HAVE_LINUX_IN6_H */
+
+/* Define to 1 if long long works and has more range than long. */
+#define HAVE_LONG_LONG 1
 
 /* Define to 1 if long double works and has more range or precision than
    double. */
@@ -61,7 +67,10 @@
 /* #undef HAVE_NETINET6_IN6_H */
 
 /* ssl headers are under openssl dir. */
-#define HAVE_OPENSSL 
+#define HAVE_OPENSSL
+
+/* Did the user specify debugging assertions? */
+/* #undef DEBUG */
 
 /* Define to 1 if you have the `random' function. */
 /* #undef HAVE_RANDOM */
@@ -152,13 +161,13 @@
 #define PACKAGE_NAME "fbmuck"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "fbmuck 6.02"
+#define PACKAGE_STRING "fbmuck 6.09"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "fbmuck"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "6.02"
+#define PACKAGE_VERSION "6.09"
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 #define RETSIGTYPE void
@@ -179,7 +188,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* The value of the uname -a command. */
-#define UNAME_VALUE "MSVC++ foxbird 1.5.10(0.116/4/2) 2004-05-25 22:07 i686 unknown unknown Cygwin"
+#define UNAME_VALUE "MSVC++ foxbird 1.5.25(0.156/4/2) 2008-03-05 19:27 i686 mscv"
 
 /* Use IPv6 instead of IPv4 sockets. */
 /* #undef USE_IPV6 */
@@ -217,7 +226,7 @@
 /* #undef socklen_t */
 
 /* The base path to the installation for openssl. Usually /usr. */
-#define ssldir "e:/cyg/openssl"
+/* #undef ssldir */
 
 /* Define to `int' if <sys/types.h> doesn't define. */
 /* #undef uid_t */
@@ -242,5 +251,4 @@
 
 /* Defined to 1 if struct mallinfo.allocated exists. */
 /* #undef HAVE_STRUCT_MALLINFO_ALLOCATED */
-
 

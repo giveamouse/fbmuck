@@ -1669,7 +1669,7 @@ addrout(int lport, long a, unsigned short prt)
 		/* it's in a slow mood *grin*. If the nameserver lags */
 		/* consistently, a hostname cache ala OJ's tinymuck2.3 */
 		/* would make more sense:                             */
-		static secs_lost = 0;
+		static int secs_lost = 0;
 
 		if (secs_lost) {
 			secs_lost--;
@@ -1856,7 +1856,7 @@ initializesock(int s, const char *hostname, int is_ssl)
 
 #ifdef USE_SSL
 	if (!is_ssl && tp_starttls_allow) {
-		char telnet_do_starttls[] = {
+		unsigned char telnet_do_starttls[] = {
 			TELNET_IAC, TELNET_DO, TELOPT_STARTTLS,'\0'
 		};
 		socket_write(d, telnet_do_starttls, 3);
@@ -4191,5 +4191,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.113 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.114 $";
 const char *get_interface_c_version(void) { return interface_c_version; }

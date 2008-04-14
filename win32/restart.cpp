@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include "win32.h"
 
 
 #define RESTART_VERSION "Restart Version 2.3"
@@ -332,7 +333,7 @@ int main (int argc, char **argv) {
                print_usage();
                return 0;
             } else if (!strcmp(argv[i], "-c")) {
-               create_ini((argc == 3 ? argv[2] : 0));
+               create_ini((argc == 3 ? argv[2] : "restart.ini"));
                return 0;
             }
          default:

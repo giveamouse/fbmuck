@@ -409,7 +409,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 	dirnamelen = strlen(dir) + 5;
 	dirname = (char *) malloc(dirnamelen);
 	strcpyn(dirname, dirnamelen, dir);
-	strcatn(dirname, dirnamelen, "*.*");
+	strcatn(dirname, dirnamelen, "/*.*");
 	hFind = FindFirstFile(dirname,&finddata);
 	bMore = (hFind != (HANDLE) -1);
 
@@ -674,5 +674,5 @@ main(int argc, char**argv)
 
 #endif /* STANDALONE_HELP */
 
-static const char *help_c_version = "$RCSfile$ $Revision: 1.13 $";
+static const char *help_c_version = "$RCSfile$ $Revision: 1.14 $";
 const char *get_help_c_version(void) { return help_c_version; }

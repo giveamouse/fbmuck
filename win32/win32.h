@@ -18,4 +18,3 @@ extern void set_console();
 #define vsnprintf _vsnprintf
 #define snprintf _snprintf
 
-
