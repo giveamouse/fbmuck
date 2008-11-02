@@ -1147,6 +1147,12 @@ shovechars()
 			ssl_status_ok = 0;
 		}
 	}
+
+	/* Set ssl_ctx to automatically retry conditions that would
+	   otherwise return SSL_ERROR_WANT_(READ|WRITE) */
+	if (ssl_status_ok) {
+		SSL_CTX_set_mode(ssl_ctx,SSL_MODE_AUTO_RETRY);
+	}
  
 	if (ssl_status_ok) {
 		for (i = 0; i < ssl_numsocks; i++) {
@@ -4191,5 +4197,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.114 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.115 $";
 const char *get_interface_c_version(void) { return interface_c_version; }
