@@ -17,7 +17,7 @@
 #endif
 
 /* max length of command argument to process_command */
-#define MAX_COMMAND_LEN 1024
+#define MAX_COMMAND_LEN 2048
 #define BUFFER_LEN ((MAX_COMMAND_LEN)*4)
 #define FILE_BUFSIZ ((BUFSIZ)*8)
 
@@ -837,7 +837,7 @@ extern dbref parse_dbref(const char *);	/* parse a dbref */
 
 #ifndef dbh_version
 #define dbh_version
-const char *db_h_version = "$RCSfile$ $Revision: 1.47 $";
+const char *db_h_version = "$RCSfile$ $Revision: 1.48 $";
 #endif
 #else
 extern const char *db_h_version;

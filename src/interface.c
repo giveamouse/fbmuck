@@ -36,6 +36,7 @@
 # define NEED_SOCKLEN_T
 # include <sys/socket.h>
 # include <netinet/in.h>
+# include <netinet/tcp.h>
 # include <netdb.h>
 # include <arpa/inet.h>
 #else
@@ -151,11 +152,13 @@ struct descriptor_data {
 	struct text_queue input;
 	char *raw_input;
 	char *raw_input_at;
+	int telnet_enabled;
 	telnet_states_t telnet_state;
 	int telnet_sb_opt;
 	int short_reads;
 	long last_time;
 	long connected_at;
+	long last_pinged_at;
 	const char *hostname;
 	const char *username;
 	int quota;
@@ -1397,6 +1400,11 @@ shovechars()
 						d->booted = 1;
 					}
 				}
+				if ((now - d->last_pinged_at) > 150) {
+					if (!send_keepalive(d)) {
+						d->booted = 1;
+					}
+				}
 			}
 			if (cnt > con_players_max) {
 				add_property((dbref) 0, "_sys/max_connects", NULL, cnt);
@@ -1813,6 +1821,8 @@ initializesock(int s, const char *hostname, int is_ssl)
 {
 	struct descriptor_data *d;
 	char buf[128], *ptr;
+	int optval = 1;
+	socklen_t optvallen = sizeof(optval);
 
 	MALLOC(d, struct descriptor_data, 1);
 
@@ -1839,11 +1849,13 @@ initializesock(int s, const char *hostname, int is_ssl)
 	d->input.tail = &d->input.head;
 	d->raw_input = 0;
 	d->raw_input_at = 0;
+	d->telnet_enabled = 0;
 	d->telnet_state = TELNET_STATE_NORMAL;
 	d->telnet_sb_opt = 0;
 	d->short_reads = 0;
 	d->quota = tp_command_burst_size;
 	d->last_time = d->connected_at;
+	d->last_pinged_at = d->connected_at;
 	mcp_frame_init(&d->mcpframe, d);
 	strcpyn(buf, sizeof(buf), hostname);
 	ptr = index(buf, ')');
@@ -1895,11 +1907,25 @@ make_socket(int port)
 		perror("creating stream socket");
 		exit(3);
 	}
+
 	opt = 1;
 	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
 		perror("setsockopt");
 		exit(1);
 	}
+
+	opt = 1;
+	if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *) &opt, sizeof(opt)) < 0) {
+		perror("setsockopt");
+		exit(1);
+	}
+
+	opt = 240;
+	if (setsockopt(s, SOL_TCP, TCP_KEEPIDLE, (char *) &opt, sizeof(opt)) < 0) {
+		perror("setsockopt");
+		exit(1);
+	}
+
 #ifdef USE_IPV6
 	server.sin6_family = AF_INET6;
 	memset(server.sin6_addr.s6_addr, 0, 16);
@@ -1999,6 +2025,46 @@ queue_string(struct descriptor_data *d, const char *s)
 {
 	return queue_write(d, s, strlen(s));
 }
+
+
+int
+send_keepalive(struct descriptor_data *d)
+{
+	int cnt;
+	char telnet_nop[] = {
+		TELNET_IAC, TELNET_NOP, '\0'
+	};
+
+	/* drastic, but this may give us crash test data */
+	if (!d || !d->descriptor) {
+		fprintf(stderr, "process_output: bad descriptor or connect struct!\n");
+		abort();
+	}
+
+	if (d->telnet_enabled) {
+		cnt = socket_write(d, telnet_nop, strlen(telnet_nop));
+	} else {
+		cnt = socket_write(d, "", 0);
+	}
+#ifdef WIN32
+	if (cnt <= 0 || cnt == SOCKET_ERROR) {
+		if (WSAGetLastError() == WSAEWOULDBLOCK)
+			return 1;
+		return 0;
+	}
+#else
+	if (cnt <= 0) {
+		if (errno == EWOULDBLOCK)
+			return 1;
+		if (errno == 0)
+			return 1;
+		log_status("keepalive socket write descr=%i, errno=%i", d->descriptor, errno);
+		return 0;
+	}
+#endif
+	return 1;
+}
+
 
 int
 process_output(struct descriptor_data *d)
@@ -2255,6 +2321,7 @@ process_input(struct descriptor_data *d)
 			/* We don't negotiate: send back DONT option */
 			unsigned char sendbuf[8];
 #ifdef USE_SSL
+            /* If we get a STARTTLS reply, negotiate SSL startup */
 			if (*q == TELOPT_STARTTLS && !d->ssl_session && tp_starttls_allow) {
 				sendbuf[0] = TELNET_IAC;
 				sendbuf[1] = TELNET_SB;
@@ -2268,6 +2335,7 @@ process_input(struct descriptor_data *d)
 				d->short_reads = 1;
 			} else
 #endif
+			/* Otherwise, we don't negotiate: send back DONT option */
 			{
 				sendbuf[0] = TELNET_IAC;
 				sendbuf[1] = TELNET_DONT;
@@ -2276,6 +2344,7 @@ process_input(struct descriptor_data *d)
 				socket_write(d, sendbuf, 3);
 			}
 			d->telnet_state = TELNET_STATE_NORMAL;
+			d->telnet_enabled = 1;
 		} else if (d->telnet_state == TELNET_STATE_DO) {
 			/* We don't negotiate: send back WONT option */
 			unsigned char sendbuf[4];
@@ -2285,9 +2354,11 @@ process_input(struct descriptor_data *d)
 			sendbuf[3] = '\0';
 			socket_write(d, sendbuf, 3);
 			d->telnet_state = TELNET_STATE_NORMAL;
+			d->telnet_enabled = 1;
 		} else if (d->telnet_state == TELNET_STATE_WONT) {
 			/* Ignore WONT option. */
 			d->telnet_state = TELNET_STATE_NORMAL;
+			d->telnet_enabled = 1;
 		} else if (d->telnet_state == TELNET_STATE_DONT) {
 			/* We don't negotiate: send back WONT option */
 			unsigned char sendbuf[4];
@@ -2297,6 +2368,7 @@ process_input(struct descriptor_data *d)
 			sendbuf[3] = '\0';
 			socket_write(d, sendbuf, 3);
 			d->telnet_state = TELNET_STATE_NORMAL;
+			d->telnet_enabled = 1;
 		} else if (d->telnet_state == TELNET_STATE_SB) {
 			d->telnet_sb_opt = *((unsigned char*)q);
 			/* TODO: Start remembering subnegotiation data. */
@@ -3931,6 +4003,7 @@ ssize_t socket_read(struct descriptor_data *d, void *buf, size_t count) {
 ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count) {
 	int i;
 
+	d->last_pinged_at = time(NULL);
 	if (! d->ssl_session) {
 #ifdef WIN32
 		return send(d->descriptor, (char *) buf, count, 0);
@@ -4197,5 +4270,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.115 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.116 $";
 const char *get_interface_c_version(void) { return interface_c_version; }
