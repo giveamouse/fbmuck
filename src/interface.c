@@ -1081,6 +1081,7 @@ idleboot_user(struct descriptor_data *d)
 	queue_immediate(d, "\r\n");
 	queue_immediate(d, tp_idle_mesg);
 	queue_immediate(d, "\r\n\r\n");
+	log_status("idleboot_user: %s set booted=1", unparse_object(NOTHING, d->player));
 	d->booted = 1;
 }
 
@@ -1188,6 +1189,7 @@ shovechars()
 		for (d = descriptor_list; d; d = dnext) {
 			dnext = d->next;
 			if (d->booted) {
+				log_status("main player-interaction loop: %s actually booted", unparse_object(NOTHING, d->player));
 				process_output(d);
 				if (d->booted == 2) {
 					goodbye_user(d);
@@ -1380,11 +1382,13 @@ shovechars()
 				dnext = d->next;
 				if (FD_ISSET(d->descriptor, &input_set)) {
 					if (!process_input(d)) {
+						log_status("descriptor input_set: %s set booted=1", unparse_object(NOTHING, d->player));
 						d->booted = 1;
 					}
 				}
 				if (FD_ISSET(d->descriptor, &output_set)) {
 					if (!process_output(d)) {
+						log_status("descriptor output_set: %s set booted=1", unparse_object(NOTHING, d->player));
 						d->booted = 1;
 					}
 				}
@@ -1397,11 +1401,13 @@ shovechars()
 				} else {
 					/* Hardcode 300 secs -- 5 mins -- at the login screen */
 					if ((now - d->connected_at) > 300) {
+						log_status("connection screen: connection timeout 300 secs");
 						d->booted = 1;
 					}
 				}
 				if ((now - d->last_pinged_at) > 150) {
 					if (!send_keepalive(d)) {
+						log_status("last_pinged_at send_keepalive failed: %s set booted=1",unparse_object(NOTHING, d->player));
 						d->booted = 1;
 					}
 				}
@@ -1438,6 +1444,7 @@ wall_and_flush(const char *msg)
 		queue_ansi(d, buf);
 		/* queue_write(d, "\r\n", 2); */
 		if (!process_output(d)) {
+			log_status("wall_and_flush: %s set booted=1", unparse_object(NOTHING, d->player));
 			d->booted = 1;
 		}
 	}
@@ -1456,6 +1463,7 @@ flush_user_output(dbref player)
     for (di = 0; di < dcount; di++) {
         d = descrdata_by_descr(darr[di]);
         if (d && !process_output(d)) {
+			log_status("flush_user_output for %s: %s set booted=1",unparse_object(NOTHING, player), unparse_object(NOTHING, d->player));
             d->booted = 1;
         }
     }
@@ -1476,6 +1484,7 @@ wall_wizards(const char *msg)
 		if (d->connected && Wizard(d->player)) {
 			queue_ansi(d, buf);
 			if (!process_output(d)) {
+				log_status("wall_wizards: %s set booted=1",unparse_object(NOTHING, d->player));
 				d->booted = 1;
 			}
 		}
@@ -1800,6 +1809,7 @@ FlushText(McpFrame * mfr)
 {
 	struct descriptor_data *d = (struct descriptor_data *)mfr->descriptor;
 	if (d && !process_output(d)) {
+		log_status("McpFrame FlushText: %s set booted=1", unparse_object(NOTHING, d->player));
 		d->booted = 1;
 	}
 }
@@ -1831,6 +1841,7 @@ initializesock(int s, const char *hostname, int is_ssl)
 	d->ssl_session = NULL;
 #endif
 	d->connected = 0;
+	log_status("initializesock: booted=0");
 	d->booted = 0;
 	d->block_writes = 0;
 	d->is_starttls = 0;
@@ -1921,11 +1932,11 @@ make_socket(int port)
 	}
 
 	opt = 240;
-	if (setsockopt(s, SOL_TCP, TCP_KEEPIDLE, (char *) &opt, sizeof(opt)) < 0) {
+/*	if (setsockopt(s, SOL_TCP, TCP_KEEPIDLE, (char *) &opt, sizeof(opt)) < 0) {
 		perror("setsockopt");
 		exit(1);
 	}
-
+*/
 #ifdef USE_IPV6
 	server.sin6_family = AF_INET6;
 	memset(server.sin6_addr.s6_addr, 0, 16);
@@ -2450,6 +2461,7 @@ process_commands(void)
 					}
 					nprocessed++;
 					if (!do_command(d, t->start)) {
+						log_status("process_commands: %s set booted=2", unparse_object(NOTHING, d->player));
 						d->booted = 2;
 						/* Disconnect player next pass through main event loop. */
 					}
@@ -2619,6 +2631,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 					queue_ansi(d, tp_playermax_bootmesg);
 				}
 				queue_string(d, "\r\n");
+				log_status("check_connect, connect, wizonly_mode: %s is not wizard, %s set booted=1",unparse_object(NOTHING, player), unparse_object(NOTHING, d->player));
 				d->booted = 1;
 			} else {
 				log_status("CONNECTED: %s(%d) on descriptor %d",
@@ -2653,6 +2666,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 					queue_ansi(d, tp_playermax_bootmesg);
 				}
 				queue_string(d, "\r\n");
+				log_status("check_connect, create, wizonly_mode: booted=1");
 				d->booted = 1;
 			} else {
 				player = create_player(user, password);
@@ -2726,6 +2740,7 @@ boot_off(dbref player)
 
 	if (last) {
 		process_output(last);
+		log_status("boot_off: %s booted, %s booted=1", unparse_object(NOTHING, player), unparse_object(NOTHING, last->player));
 		last->booted = 1;
 		/* shutdownsock(last); */
 		return 1;
@@ -2745,6 +2760,7 @@ boot_player_off(dbref player)
     for (di = 0; di < dcount; di++) {
         d = descrdata_by_descr(darr[di]);
         if (d) {
+			log_status("boot_player_off: %s booted, %s booted=1",  unparse_object(NOTHING, player), unparse_object(NOTHING, d->player));
             d->booted = 1;
         }
     }
@@ -3600,6 +3616,7 @@ pboot(int c)
 
 	if (d) {
 		process_output(d);
+		log_status("pboot: %s booted=1", unparse_object(NOTHING, d->player));
 		d->booted = 1;
 		/* shutdownsock(d); */
 	}
@@ -3614,6 +3631,7 @@ pdescrboot(int c)
 
     if (d) {
 		process_output(d);
+		log_status("pdescrboot: %s booted=1", unparse_object(NOTHING, d->player));
 		d->booted = 1;
 		/* shutdownsock(d); */
 		return 1;
@@ -3801,6 +3819,7 @@ pdescrflush(int c)
 		d = descrdata_by_descr(c);
 		if (d) {
 			if (!process_output(d)) {
+				log_status("pdescrflush (c != -1): %s booted=1", unparse_object(NOTHING, d->player));
 				d->booted = 1;
 			}
 			i++;
@@ -3808,6 +3827,7 @@ pdescrflush(int c)
 	} else {
 		for (d = descriptor_list; d; d = d->next) {
 			if (!process_output(d)) {
+				log_status("pdescrflush (c == -1): %s booted=1", unparse_object(NOTHING, d->player));
 				d->booted = 1;
 			}
 			i++;
@@ -4270,5 +4290,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.116 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.117 $";
 const char *get_interface_c_version(void) { return interface_c_version; }

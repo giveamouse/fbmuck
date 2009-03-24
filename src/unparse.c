@@ -76,9 +76,11 @@ const char *
 unparse_object(dbref player, dbref loc)
 {
 	static char buf[BUFFER_LEN];
-
+	if (player == NOTHING)
+		goto islog;
 	if (Typeof(player) != TYPE_PLAYER)
 		player = OWNER(player);
+islog:
 	switch (loc) {
 	case NOTHING:
 		return "*NOTHING*";
@@ -90,10 +92,10 @@ unparse_object(dbref player, dbref loc)
 		if (loc < 0 || loc >= db_top)
 			return "*INVALID*";
 
-		if (!(FLAGS(player) & STICKY) &&
+		if ((player == NOTHING) || (!(FLAGS(player) & STICKY) &&
 			(can_link_to(player, NOTYPE, loc) ||
 			 ((Typeof(loc) != TYPE_PLAYER) &&
-			  (controls_link(player, loc) || (FLAGS(loc) & CHOWN_OK))))) {
+			  (controls_link(player, loc) || (FLAGS(loc) & CHOWN_OK)))))) {
 			/* show everything */
 			snprintf(buf, sizeof(buf), "%.*s(#%d%s)", (BUFFER_LEN / 2), NAME(loc), loc, unparse_flags(loc));
 			return buf;
@@ -174,5 +176,5 @@ unparse_boolexp(dbref player, struct boolexp *b, int fullname)
 
 	return boolexp_buf;
 }
-static const char *unparse_c_version = "$RCSfile$ $Revision: 1.9 $";
+static const char *unparse_c_version = "$RCSfile$ $Revision: 1.10 $";
 const char *get_unparse_c_version(void) { return unparse_c_version; }
