@@ -1401,7 +1401,7 @@ shovechars()
 						d->booted = 1;
 					}
 				}
-				if ( tp_idle_ping_enable && (tp_idle_ping_time > 0) && ((now - d->last_pinged_at) > tp_idle_ping_time) ) {
+				if ( d->connected && tp_idle_ping_enable && (tp_idle_ping_time > 0) && ((now - d->last_pinged_at) > tp_idle_ping_time) ) {
 					const char *tmpptr = get_property_class( d->player, "_/sys/no_idle_ping" );
 					if( !tmpptr && !send_keepalive(d)) {
 						d->booted = 1;
@@ -4274,5 +4274,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.119 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.120 $";
 const char *get_interface_c_version(void) { return interface_c_version; }
