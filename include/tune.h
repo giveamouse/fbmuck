@@ -43,7 +43,7 @@ extern int tp_monolithic_interval;
 extern int tp_clean_interval;
 extern int tp_aging_time;
 extern int tp_maxidle;
-
+extern int tp_idle_ping_time;
 
 
 /* integers */
@@ -143,6 +143,7 @@ extern int tp_muf_comments_strict;
 extern int tp_starttls_allow;
 extern int tp_7bit_thing_names;
 extern int tp_7bit_other_names;
+extern int tp_idle_ping_enable;
 
 extern int tune_count_parms(void);
 extern void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
@@ -156,7 +157,7 @@ extern stk_array *tune_parms_array(const char* pattern, int mlev);
 
 #ifndef tuneh_version
 #define tuneh_version
-const char *tune_h_version = "$RCSfile$ $Revision: 1.34 $";
+const char *tune_h_version = "$RCSfile$ $Revision: 1.35 $";
 #endif
 #else
 extern const char *tune_h_version;

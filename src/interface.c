@@ -1405,8 +1405,9 @@ shovechars()
 						d->booted = 1;
 					}
 				}
-				if ((now - d->last_pinged_at) > 150) {
-					if (!send_keepalive(d)) {
+				if ( tp_idle_ping_enable && (tp_idle_ping_time > 0) && ((now - d->last_pinged_at) > tp_idle_ping_time) ) {
+					const char *tmpptr = get_property_class( d->player, "_/sys/no_idle_ping" );
+					if( !tmpptr && !send_keepalive(d)) {
 						log_status("last_pinged_at send_keepalive failed: %s set booted=1",unparse_object(NOTHING, d->player));
 						d->booted = 1;
 					}
@@ -2058,13 +2059,13 @@ send_keepalive(struct descriptor_data *d)
 		cnt = socket_write(d, "", 0);
 	}
 #ifdef WIN32
-	if (cnt <= 0 || cnt == SOCKET_ERROR) {
+	if (cnt < 0 || cnt == SOCKET_ERROR) {
 		if (WSAGetLastError() == WSAEWOULDBLOCK)
 			return 1;
 		return 0;
 	}
 #else
-	if (cnt <= 0) {
+	if (cnt < 0) {
 		if (errno == EWOULDBLOCK)
 			return 1;
 		if (errno == 0)
@@ -4290,5 +4291,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.117 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.118 $";
 const char *get_interface_c_version(void) { return interface_c_version; }

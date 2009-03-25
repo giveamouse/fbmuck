@@ -84,6 +84,7 @@ int tp_monolithic_interval = MONOLITHIC_INTERVAL;
 int tp_clean_interval = CLEAN_INTERVAL;
 int tp_aging_time = AGING_TIME;
 int tp_maxidle = MAXIDLE;
+int tp_idle_ping_time = IDLE_PING_TIME;
 
 
 struct tune_time_entry {
@@ -100,6 +101,7 @@ struct tune_time_entry tune_time_list[] = {
 	{"DB Dumps",  "dump_warntime", &tp_dump_warntime, 0, "Interval between warning and dump"},
 	{"DB Dumps",  "monolithic_interval", &tp_monolithic_interval, 0, "Interval between full dumps"},
 	{"Idle Boot", "maxidle", &tp_maxidle, 0, "Maximum idle time before booting"},
+	{"Idle Boot", "idle_ping_time", &tp_idle_ping_time, 0, "Server side keepalive time in seconds"},
 	{"Tuning",    "clean_interval", &tp_clean_interval, 0, "Interval between memory cleanups."},
 
 	{NULL, NULL, NULL, 0}
@@ -271,6 +273,7 @@ int tp_starttls_allow = STARTTLS_ALLOW;
 int tp_m3_huh = M3_HUH;
 int tp_7bit_thing_names = ASCII_THING_NAMES;
 int tp_7bit_other_names = ASCII_OTHER_NAMES;
+int tp_idle_ping_enable = IDLE_PING_ENABLE;
 
 struct tune_bool_entry {
 	const char *group;
@@ -295,6 +298,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"DB Dumps",   "deltadump_warning", &tp_deltadump_warning, 0, "Enable warning messages for delta DB dumps"},
 	{"DB Dumps",   "dumpdone_warning", &tp_dumpdone_warning, 0, "Enable notification of DB dump completion"},
 	{"Idle Boot",  "idleboot", &tp_idleboot, 0, "Enable booting of idle players"},
+	{"Idle Boot",  "idle_ping_enable", &tp_idle_ping_enable, 0, "Enable server side keepalive"},
 	{"Killing",    "restrict_kill", &tp_restrict_kill, 0, "Restrict kill command to players set Kill_OK"},
 	{"Listeners",  "allow_listeners", &tp_listeners, 0, "Enable programs to listen to player output"},
 	{"Listeners",  "allow_listeners_obj", &tp_listeners_obj, 0, "Allow listeners on things"},
@@ -961,5 +965,5 @@ do_tune(dbref player, char *parmname, char *parmval)
 		return;
 	}
 }
-static const char *tune_c_version = "$RCSfile$ $Revision: 1.46 $";
+static const char *tune_c_version = "$RCSfile$ $Revision: 1.47 $";
 const char *get_tune_c_version(void) { return tune_c_version; }

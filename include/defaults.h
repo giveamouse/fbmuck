@@ -32,6 +32,9 @@
 /*  Boot idle players?  */
 #define IDLEBOOT 1
 
+/* ping anti-idle time in seconds - just under 1 minute NAT timeout */
+#define IDLE_PING_ENABLE 1
+#define IDLE_PING_TIME 55
 
 /* Limit max number of players to allow connected?  (wizards are immune) */
 #define PLAYERMAX 0
@@ -345,7 +348,7 @@
 
 #ifndef defaultsh_version
 #define defaultsh_version
-const char *defaults_h_version = "$RCSfile$ $Revision: 1.32 $";
+const char *defaults_h_version = "$RCSfile$ $Revision: 1.33 $";
 #endif
 #else
 extern const char *defaults_h_version;
