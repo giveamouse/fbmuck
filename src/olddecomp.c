@@ -21,6 +21,7 @@ extern char *string_dup(const char *s);
 
 char *in_filename;
 FILE *infile;
+FILE *outfile;
 
 int
 notify(int player, const char *msg)
@@ -52,6 +53,14 @@ main(int argc, char **argv)
 		}
 	}
 
+	/* Now, reopen stdout with binary mode so Windows doesn't add the \r */
+	outfile = fdopen(1,"wb");
+	if (outfile == NULL) {
+		perror("Cannot open stdout as binary, line endings may be wrong");
+		outfile=stdout;
+		/* Not a fatal error */
+	}
+
 	/* read the db header */
 	dbflags = db_read_header( infile, &version, &db_load_format, &grow, &parmcnt );
 
@@ -59,23 +68,23 @@ main(int argc, char **argv)
 
 	/* Put the ***Foxen_ <etc>*** back */
 	if( DB_ID_VERSIONSTRING ) {
-		puts( version );
+		fprintf( outfile, "%s\n", version );
 	}
 
 	/* Put the grow parameter back */
 	if ( dbflags & DB_ID_GROW ) {
-		printf( "%d\n", grow );
+		fprintf( outfile, "%d\n", grow );
 	}
 
 	/* Put the parms back, and copy the parm lines directly */
 	if( dbflags & DB_ID_PARMSINFO ) {
 		int i;
-		printf( "%d\n", DB_PARMSINFO );
-		printf( "%d\n", parmcnt );
+		fprintf( outfile, "%d\n", DB_PARMSINFO );
+		fprintf( outfile, "%d\n", parmcnt );
 		for( i=0; i<parmcnt; ++i ) {
 			if( fgets(buf, sizeof(buf), infile) ) {
 				buf[sizeof(buf) - 1] = '\0';
-				fputs(buf, stdout);
+				fprintf(outfile, "%s", buf);
 			}
 		}
 	}
@@ -86,19 +95,22 @@ main(int argc, char **argv)
 	}
 
 	/* Now handle each line in the rest of the file */
+	/* This looks like a security hole of buffer overruns
+	   but the buffer size is 4x as big as the one from the
+	   main driver itself. */
 	while (fgets(buf, sizeof(buf), infile)) {
 		buf[sizeof(buf) - 1] = '\0';
 		if( dbflags & DB_ID_CATCOMPRESS ) {
-			fputs(uncompress(buf), stdout);
+			fprintf(outfile, "%s", uncompress(buf));
 		} else if ( dbflags & DB_ID_OLDCOMPRESS ) {
-			fputs(old_uncompress(buf), stdout);
+			fprintf(outfile, "%s", old_uncompress(buf));
 		} else {
-			fputs(buf, stdout);
+			fprintf(outfile, "%s", buf);
 		}
 	}
 
 	exit(0);
 	return 0;
 }
-static const char *olddecomp_c_version = "$RCSfile$ $Revision: 1.9 $";
+static const char *olddecomp_c_version = "$RCSfile$ $Revision: 1.10 $";
 const char *get_olddecomp_c_version(void) { return olddecomp_c_version; }
