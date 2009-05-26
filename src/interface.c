@@ -1128,7 +1128,7 @@ shovechars()
  	OpenSSL_add_ssl_algorithms (); 
 	ssl_ctx = SSL_CTX_new (SSLv23_server_method ());
  
-	if (!SSL_CTX_use_certificate_file (ssl_ctx, SSL_CERT_FILE, SSL_FILETYPE_PEM)) {
+	if (!SSL_CTX_use_certificate_chain_file (ssl_ctx, SSL_CERT_FILE)) {
 		log_status("Could not load certificate file %s", SSL_CERT_FILE);
 		fprintf(stderr, "Could not load certificate file %s\n", SSL_CERT_FILE);
 		ssl_status_ok = 0;
@@ -4274,5 +4274,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.120 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.121 $";
 const char *get_interface_c_version(void) { return interface_c_version; }

@@ -1,3 +1,9 @@
+2.2fb6.11
+Restored {otell} functionality to documented behavior.  Side effect
+  is that {otell} will now stop on the first newline.
+Changed SSL_CTX_use_certificate_file() call in interface.c to
+  SSL_CTX_use_certificate_chain_file().  Credit: goldenhawk
+
 2.2fb6.10
 Eliminated spoofing vulnerability in Latin-type texts related to
   non-alphanumeric punctuation in player name.
