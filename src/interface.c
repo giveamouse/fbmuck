@@ -2699,7 +2699,7 @@ parse_connect(const char *msg, char *command, char *user, char *pass)
 		msg++;
 	p = command;
 	while (*msg && isinput(*msg) && !isspace(*msg))
-		*p++ = *msg++;
+		*p++ = tolower(*msg++);
 	*p = '\0';
 	while (*msg && isinput(*msg) && isspace(*msg))
 		msg++;
@@ -4274,5 +4274,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.121 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.122 $";
 const char *get_interface_c_version(void) { return interface_c_version; }
