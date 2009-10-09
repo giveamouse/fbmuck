@@ -32,7 +32,7 @@ vlog2file(int prepend_time, char *filename, char *format, va_list args)
 	lt = time(NULL);
 	*buf = '\0';
 
-	if ((fp = fopen(filename, "a")) == NULL) {
+	if ((fp = fopen(filename, "ab")) == NULL) {
 		fprintf(stderr, "Unable to open %s!\n", filename);
 		if (prepend_time)
 			fprintf(stderr, "%.16s: ", ctime(&lt));
@@ -143,5 +143,5 @@ notify_fmt(dbref player, char *format, ...)
 	notify(player, bufr);
 	va_end(args);
 }
-static const char *log_c_version = "$RCSfile$ $Revision: 1.17 $";
+static const char *log_c_version = "$RCSfile$ $Revision: 1.18 $";
 const char *get_log_c_version(void) { return log_c_version; }

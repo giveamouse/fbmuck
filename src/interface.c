@@ -516,7 +516,7 @@ main(int argc, char **argv)
 #endif
 
 		/* save the PID for future use */
-		if ((ffd = fopen(PID_FILE, "w")) != NULL) {
+		if ((ffd = fopen(PID_FILE, "wb")) != NULL) {
 			fprintf(ffd, "%d\n", getpid());
 			fclose(ffd);
 		}
@@ -3879,7 +3879,7 @@ welcome_user(struct descriptor_data *d)
 	char *ptr;
 	char buf[BUFFER_LEN];
 
-	if ((f = fopen(WELC_FILE, "r")) == NULL) {
+	if ((f = fopen(WELC_FILE, "rb")) == NULL) {
 		queue_ansi(d, DEFAULT_WELCOME_MESSAGE);
 		perror("spit_file: welcome.txt");
 	} else {
@@ -4274,5 +4274,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.122 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.123 $";
 const char *get_interface_c_version(void) { return interface_c_version; }

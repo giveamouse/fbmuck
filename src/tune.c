@@ -631,7 +631,7 @@ tune_save_parmsfile(void)
 {
 	FILE *f;
 
-	f = fopen(PARMFILE_NAME, "w");
+	f = fopen(PARMFILE_NAME, "wb");
 	if (!f) {
 		log_status("Couldn't open file %s!", PARMFILE_NAME);
 		return;
@@ -905,7 +905,7 @@ tune_load_parmsfile(dbref player)
 {
 	FILE *f;
 
-	f = fopen(PARMFILE_NAME, "r");
+	f = fopen(PARMFILE_NAME, "rb");
 	if (!f) {
 		log_status("Couldn't open file %s!", PARMFILE_NAME);
 		return;
@@ -965,5 +965,5 @@ do_tune(dbref player, char *parmname, char *parmval)
 		return;
 	}
 }
-static const char *tune_c_version = "$RCSfile$ $Revision: 1.47 $";
+static const char *tune_c_version = "$RCSfile$ $Revision: 1.48 $";
 const char *get_tune_c_version(void) { return tune_c_version; }

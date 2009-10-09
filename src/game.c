@@ -172,7 +172,7 @@ dump_database_internal(void)
 
 	snprintf(tmpfile, sizeof(tmpfile), "%s.#%d#", MACRO_FILE, epoch);
 
-	if ((f = fopen(tmpfile, "w")) != NULL) {
+	if ((f = fopen(tmpfile, "wb")) != NULL) {
 		macrodump(macrotop, f);
 		fclose(f);
 #ifdef WIN32
@@ -237,7 +237,7 @@ panic(const char *message)
 
 	/* Write out the macros */
 	snprintf(panicfile, sizeof(panicfile), "%s.PANIC", MACRO_FILE);
-	if ((f = fopen(panicfile, "w")) != NULL) {
+	if ((f = fopen(panicfile, "wb")) != NULL) {
 		macrodump(macrotop, f);
 		fclose(f);
 	} else {
@@ -422,7 +422,7 @@ init_game(const char *infile, const char *outfile)
 {
 	FILE *f;
 
-	if ((f = fopen(MACRO_FILE, "r")) == NULL)
+	if ((f = fopen(MACRO_FILE, "rb")) == NULL)
 		log_status("INIT: Macro storage file %s is tweaked.", MACRO_FILE);
 	else {
 		macroload(f);
@@ -1452,5 +1452,5 @@ process_command(int descr, dbref player, char *command)
 }
 
 #undef Matched
-static const char *game_c_version = "$RCSfile$ $Revision: 1.48 $";
+static const char *game_c_version = "$RCSfile$ $Revision: 1.49 $";
 const char *get_game_c_version(void) { return game_c_version; }

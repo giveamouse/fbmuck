@@ -548,7 +548,8 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 				if (!strncmp(buf, "~~file ", 7)) {
 					fclose(docsfile);
 					buf[strlen(buf) - 1] = '\0';
-					if (!(docsfile = fopen(buf + 7, "w"))) {
+					if (!(docsfile = fopen(buf + 7, "wb")))
+					{
 						fprintf(stderr, "Error: can't write to %s", buf + 7);
 						exit(1);
 					}
@@ -700,18 +701,18 @@ main(int argc, char **argv)
 	if (!strcmp(argv[1], "-")) {
 		infile = stdin;
 	} else {
-		if (!(infile = fopen(argv[1], "r"))) {
+		if (!(infile = fopen(argv[1], "rb"))) {
 			fprintf(stderr, "%s: cannot read %s\n", argv[0], argv[1]);
 			return 1;
 		}
 	}
 
-	if (!(outfile = fopen(argv[2], "w"))) {
+	if (!(outfile = fopen(argv[2], "wb"))) {
 		fprintf(stderr, "%s: cannot write to %s\n", argv[0], argv[2]);
 		return 1;
 	}
 
-	if (!(htmlfile = fopen(argv[3], "w"))) {
+	if (!(htmlfile = fopen(argv[3], "wb"))) {
 		fprintf(stderr, "%s: cannot write to %s\n", argv[0], argv[3]);
 		return 1;
 	}
@@ -726,5 +727,5 @@ main(int argc, char **argv)
 	fclose(htmlfile);
 	return 0;
 }
-static const char *prochelp_c_version = "$RCSfile$ $Revision: 1.12 $";
+static const char *prochelp_c_version = "$RCSfile$ $Revision: 1.13 $";
 const char *get_prochelp_c_version(void) { return prochelp_c_version; }

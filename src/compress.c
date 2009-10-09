@@ -166,7 +166,7 @@ init_compress(void)
 {
 	FILE *dicto;
 
-	if ((dicto = fopen(WORDLIST_FILE, "r")) == NULL) {
+	if ((dicto = fopen(WORDLIST_FILE, "rb")) == NULL) {
 		fprintf(stderr, "Cannot open %s dictionary file.\n", WORDLIST_FILE);
 		exit(5);
 	}
@@ -604,5 +604,5 @@ compress(const char *s)
 }
 #endif
 
-static const char *compress_c_version = "$RCSfile$ $Revision: 1.11 $";
+static const char *compress_c_version = "$RCSfile$ $Revision: 1.12 $";
 const char *get_compress_c_version(void) { return compress_c_version; }

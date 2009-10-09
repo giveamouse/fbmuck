@@ -550,7 +550,7 @@ summarize_to_file(char *t)
 void
 CrT_summarize_to_file(const char *file, const char *comment)
 {
-	if ((summarize_fd = fopen(file, "a")) == 0)
+	if ((summarize_fd = fopen(file, "ab")) == 0)
 		return;
 	if (comment && *comment) {
 		fprintf(summarize_fd, "%s\n", comment);
@@ -949,5 +949,5 @@ fold-fold-on-startup: nil
 End:
 */
 /* }}} */
-static const char *crt_malloc_c_version = "$RCSfile$ $Revision: 1.10 $";
+static const char *crt_malloc_c_version = "$RCSfile$ $Revision: 1.11 $";
 const char *get_crt_malloc_c_version(void) { return crt_malloc_c_version; }

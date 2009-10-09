@@ -122,7 +122,7 @@ spit_file_segment(dbref player, const char *filename, const char *seg)
 			endline = startline = atoi(segbuf);
 		}
 	}
-	if ((f = fopen(filename, "r")) == NULL) {
+	if ((f = fopen(filename, "rb")) == NULL) {
 		snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.", filename);
 		notify(player, buf);
 		fputs("spit_file:", stderr);
@@ -170,7 +170,7 @@ index_file(dbref player, const char *onwhat, const char *file)
 		strcatn(topic, sizeof(topic), "|");
 	}
 
-	if ((f = fopen(file, "r")) == NULL) {
+	if ((f = fopen(file, "rb")) == NULL) {
 		snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.", file);
 		notify(player, buf);
 		fprintf(stderr, "help: No file %s!\n", file);
@@ -278,7 +278,7 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 			return;
 		}
 
-		if ((f = fopen(file, "r")) == NULL) {
+		if ((f = fopen(file, "rb")) == NULL) {
 			snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.", file);
 			fprintf(stderr, "help: No file %s!\n", file);
 			mcp_mesg_init(&omsg, "org-fuzzball-help", "error");
@@ -674,5 +674,5 @@ main(int argc, char**argv)
 
 #endif /* STANDALONE_HELP */
 
-static const char *help_c_version = "$RCSfile$ $Revision: 1.14 $";
+static const char *help_c_version = "$RCSfile$ $Revision: 1.15 $";
 const char *get_help_c_version(void) { return help_c_version; }

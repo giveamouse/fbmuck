@@ -1284,7 +1284,7 @@ extract_program(FILE * f, dbref obj)
 	int c = 0;
 
 	snprintf(buf, sizeof(buf), "muf/%d.m", obj);
-	pf = fopen(buf, "r");
+	pf = fopen(buf, "rb");
 	if (!pf) {
 		fprintf(f, "  (No listing found)\n");
 		return;
@@ -1372,7 +1372,7 @@ extract(void)
 	}
 
 	if (i == 2) {
-		f = fopen(filename, "w");
+		f = fopen(filename, "wb");
 		if (!f) {
 			printf("Could not open file %s\n", filename);
 			return;
@@ -1410,7 +1410,7 @@ extract_single(void)
 	}
 
 	if (i == 2) {
-		f = fopen(filename, "w");
+		f = fopen(filename, "wb");
 		if (!f) {
 			printf("Could not open file %s\n", filename);
 			return;
@@ -1526,5 +1526,5 @@ san_main(void)
 
 	printf("Exiting sanity editor...\n\n");
 }
-static const char *sanity_c_version = "$RCSfile$ $Revision: 1.17 $";
+static const char *sanity_c_version = "$RCSfile$ $Revision: 1.18 $";
 const char *get_sanity_c_version(void) { return sanity_c_version; }
