@@ -273,6 +273,12 @@
 /* substituted _after_ a failed command search, so they can be replaced. */
 #define ENABLE_PREFIX 0
 
+/* Enable or disable the server's ability to 'skip' rooms in the environment */
+/* chain when trying to match a player's exit or command request.  Turning */
+/* this on allows the 'Y'ield and 'O'vert flags to function on things or */
+/* rooms, changing the way in which command or exit names are found. */
+#define ENABLE_MATCH_YIELD 0
+
 /* Enable or disable triggering of movement propqueues when any type of */
 /* object moves, not just objects set ZOMBIE or VEHICLE.  This can vastly */
 /* increase the amount of processing done, but does allow servers to be */
@@ -348,7 +354,7 @@
 
 #ifndef defaultsh_version
 #define defaultsh_version
-const char *defaults_h_version = "$RCSfile$ $Revision: 1.33 $";
+const char *defaults_h_version = "$RCSfile$ $Revision: 1.34 $";
 #endif
 #else
 extern const char *defaults_h_version;

@@ -53,6 +53,10 @@ unparse_flags(dbref thing)
 			*p++ = 'X';
 		if (FLAGS(thing) & ZOMBIE)
 			*p++ = 'Z';
+                if (FLAGS(thing) & YIELD && tp_enable_match_yield)
+                        *p++ = 'Y';
+                if (FLAGS(thing) & OVERT && tp_enable_match_yield)
+                        *p++ = 'O';
 		if (MLevRaw(thing)) {
 			*p++ = 'M';
 			switch (MLevRaw(thing)) {
@@ -176,5 +180,5 @@ unparse_boolexp(dbref player, struct boolexp *b, int fullname)
 
 	return boolexp_buf;
 }
-static const char *unparse_c_version = "$RCSfile$ $Revision: 1.10 $";
+static const char *unparse_c_version = "$RCSfile$ $Revision: 1.11 $";
 const char *get_unparse_c_version(void) { return unparse_c_version; }

@@ -485,6 +485,7 @@ match_all_exits(struct match_data *md)
 {
 	dbref loc;
 	int limit = 88;
+        int blocking = 0;
 
 	strcpyn(match_args, sizeof(match_args), "\0");
 	strcpyn(match_cmdname, sizeof(match_cmdname), "\0");
@@ -516,13 +517,23 @@ match_all_exits(struct match_data *md)
 		match_room_exits(loc, md);
 	}
 
-	while ((loc = DBFETCH(loc)->location) != NOTHING) {
-		if (md->exact_match != NOTHING)
-			md->block_equals = 1;
-		match_room_exits(loc, md);
-		if (!limit--)
-			break;
-	}
+        /* Walk the environment chain to #0, or until depth chain limit
+           has been hit, looking for a match. */
+        while ((loc = DBFETCH(loc)->location) != NOTHING) {
+                /* If we're blocking (because of a yield), only match a room if
+                   and only if it has overt set on it. */
+                if ((blocking && FLAGS(loc) & OVERT) || !blocking) {
+                  if (md->exact_match != NOTHING)
+                    md->block_equals = 1;
+                  match_room_exits(loc, md);
+                }
+                if (!limit--)
+                        break;
+                /* Does this room have env-chain exit blocking enabled? */
+                if (!blocking && tp_enable_match_yield && FLAGS(loc) & YIELD) {
+                  blocking = 1;
+                }
+        }
 }
 
 void
@@ -599,5 +610,5 @@ match_rmatch(dbref arg1, struct match_data *md)
 		break;
 	}
 }
-static const char *match_c_version = "$RCSfile$ $Revision: 1.11 $";
+static const char *match_c_version = "$RCSfile$ $Revision: 1.12 $";
 const char *get_match_c_version(void) { return match_c_version; }

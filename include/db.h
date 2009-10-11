@@ -237,8 +237,8 @@ typedef int dbref;				/* offset into db */
 #define XPRESS XFORCIBLE
 #define READMODE     0x10000000	/* internal: when set, player is in a READ */
 #define SANEBIT      0x20000000	/* internal: used to check db sanity */
-#define EXPANSION4	 0x40000000 /* Expansion flag */
-#define EXPANSION5   0x80000000 /* Expansion flag */
+#define YIELD	     0x40000000 /* Yield flag */
+#define OVERT        0x80000000 /* Overt flag */
 
 
 /* what flags to NOT dump to disk. */
@@ -837,7 +837,7 @@ extern dbref parse_dbref(const char *);	/* parse a dbref */
 
 #ifndef dbh_version
 #define dbh_version
-const char *db_h_version = "$RCSfile$ $Revision: 1.48 $";
+const char *db_h_version = "$RCSfile$ $Revision: 1.49 $";
 #endif
 #else
 extern const char *db_h_version;

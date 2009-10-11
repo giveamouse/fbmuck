@@ -3,6 +3,15 @@ Restored {otell} functionality to documented behavior.  Side effect
   is that {otell} will now stop on the first newline.
 Changed SSL_CTX_use_certificate_file() call in interface.c to
   SSL_CTX_use_certificate_chain_file().  Credit: goldenhawk
+Made the welcome-screen commands (connect, create) be case insensitive.
+Added the 'enable_match_yield' tune.  If this is turned on, two new flags
+  which may only be used on rooms or things become usable.  These are
+  YIELD and OVERT (Y and O).  If you set a room to 'Yield', exit matching
+  will NOT continue up the environment chain.  The only exception to this
+  are any exits on an area up the environment chain that has been set to
+  be 'Overt'.  By setting a room both Yield and Bound, you can limit players
+  to -only- those exits set on the room itself (assuming there are no Overt
+  rooms further up the env chain).
 
 2.2fb6.10
 Eliminated spoofing vulnerability in Latin-type texts related to

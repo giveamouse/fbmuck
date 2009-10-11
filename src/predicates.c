@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.19  2009/10/11 05:19:18  points
+ * Enable 'yielding' of matches up the environment tree when finding possible exits.
+ *
  * Revision 1.18  2007/05/08 09:38:09  winged
  * Get rid of spoofing vulnerability with single quote (possessive) and comma in player @name
  *
@@ -478,6 +481,12 @@ restricted(dbref player, dbref thing, object_flag_type flag)
 		return (!TrueWizard(OWNER(player)) && (Typeof(thing) == TYPE_PROGRAM));
 		/* NOTREACHED */
 		break;
+        case YIELD:
+                        /* Mucking with the env-chain matching requires TrueWizard */
+                return (!(Wizard(OWNER(player))));
+        case OVERT:
+                        /* Mucking with the env-chain matching requires TrueWizard */
+                return (!(Wizard(OWNER(player))));
 	case ZOMBIE:
 			/* Restricting a player from using zombies requires a wizard. */
 		if (Typeof(thing) == TYPE_PLAYER)
@@ -707,5 +716,5 @@ isancestor(dbref parent, dbref child)
 	}
 	return child == parent;
 }
-static const char *predicates_c_version = "$RCSfile$ $Revision: 1.18 $";
+static const char *predicates_c_version = "$RCSfile$ $Revision: 1.19 $";
 const char *get_predicates_c_version(void) { return predicates_c_version; }

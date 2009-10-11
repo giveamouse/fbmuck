@@ -1113,6 +1113,12 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	} else if ((string_prefix("ABODE", p)) ||
 			   (string_prefix("AUTOSTART", p)) || (string_prefix("ABATE", p))) {
 		f = ABODE;
+        } else if (string_prefix("YIELD", p) && tp_enable_match_yield &&
+                   (Typeof(thing) == TYPE_ROOM || Typeof(thing) == TYPE_THING)) {
+                f = YIELD;
+        } else if (string_prefix("OVERT", p) && tp_enable_match_yield &&
+                   (Typeof(thing) == TYPE_ROOM || Typeof(thing) == TYPE_THING)) {
+                f = OVERT;
 	} else {
 		notify(player, "I don't recognize that flag.");
 		return;
@@ -1298,6 +1304,10 @@ set_flags_from_tunestr(dbref obj, const char* tunestr)
 			/* f = WIZARD;     This is very bad to auto-set. */
 		} else if (pcc == 'X') {
 			f = XFORCIBLE;
+                } else if (pcc == 'Y') {
+                        f = YIELD;
+                } else if (pcc == 'O') {
+                        f = OVERT;
 		} else if (pcc == 'Z') {
 			f = ZOMBIE;
 		}
@@ -1309,5 +1319,5 @@ set_flags_from_tunestr(dbref obj, const char* tunestr)
 }
 
 
-static const char *set_c_version = "$RCSfile$ $Revision: 1.30 $";
+static const char *set_c_version = "$RCSfile$ $Revision: 1.31 $";
 const char *get_set_c_version(void) { return set_c_version; }

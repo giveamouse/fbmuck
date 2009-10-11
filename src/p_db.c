@@ -676,6 +676,10 @@ prim_set(PRIM_PROTOTYPE)
 			tmp = VEHICLE;
 		else if (string_prefix("quell", flag))
 			tmp = QUELL;
+                else if (tp_enable_match_yield && string_prefix("yield", flag))
+                        tmp = YIELD;
+                else if (tp_enable_match_yield && string_prefix("overt", flag))
+                        tmp = OVERT;
 	}
 	if (!tmp)
 		abort_interp("Unrecognized flag.");
@@ -696,8 +700,13 @@ prim_set(PRIM_PROTOTYPE)
 		|| (tmp == WIZARD) || (tmp == QUELL) || (tmp == INTERACTIVE)
 		|| ((tmp == ABODE) && (Typeof(ref) == TYPE_PROGRAM))
 		|| (tmp == MUCKER) || (tmp == SMUCKER) || (tmp == XFORCIBLE)
+                || (tmp == YIELD) || (tmp == OVERT)
 			)
 		abort_interp("Permission denied.");
+        if (((tmp == YIELD) || (tmp == OVERT)) &&
+            (Typeof(ref) != TYPE_THING && Typeof(ref) != TYPE_ROOM)) {
+                abort_interp("Permission denied.");
+        }
 	if (result && Typeof(ref) == TYPE_THING && tmp == VEHICLE) {
 		dbref obj = DBFETCH(ref)->contents;
 
@@ -808,6 +817,10 @@ prim_flagp(PRIM_PROTOTYPE)
 			tmp = VEHICLE;
 		else if (string_prefix("quell", flag))
 			tmp = QUELL;
+                else if (tp_enable_match_yield && string_prefix("yield", flag))
+                        tmp = YIELD;
+                else if (tp_enable_match_yield && string_prefix("overt", flag))
+                        tmp = OVERT;
 	}
 	if (result) {
 		if ((!truwiz) && (tmp == WIZARD)) {
@@ -2686,5 +2699,5 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
-static const char *p_db_c_version = "$RCSfile$ $Revision: 1.58 $";
+static const char *p_db_c_version = "$RCSfile$ $Revision: 1.59 $";
 const char *get_p_db_c_version(void) { return p_db_c_version; }

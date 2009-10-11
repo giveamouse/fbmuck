@@ -259,6 +259,7 @@ int tp_idleboot = IDLEBOOT;
 int tp_playermax = PLAYERMAX;
 int tp_allow_home = ALLOW_HOME;
 int tp_enable_prefix = ENABLE_PREFIX;
+int tp_enable_match_yield = ENABLE_MATCH_YIELD;
 int tp_thing_movement = SECURE_THING_MOVEMENT;
 int tp_expanded_debug = EXPANDED_DEBUG_TRACE;
 int tp_proplist_int_counter = PROPLIST_INT_COUNTER;
@@ -286,6 +287,7 @@ struct tune_bool_entry {
 struct tune_bool_entry tune_bool_list[] = {
 	{"Commands",   "enable_home", &tp_allow_home, 4, "Enable 'home' command"},
 	{"Commands",   "enable_prefix", &tp_enable_prefix, 4, "Enable prefix actions"},
+        {"Commands",   "enable_match_yield", &tp_enable_match_yield, 4, "Enable yield/overt flags on rooms and things"},
 	{"Commands",   "verbose_clone", &tp_verbose_clone, 4, "Verbose @clone command"},
 	{"Dark",       "exit_darking", &tp_exit_darking, 0, "Allow setting exits dark"},
 	{"Dark",       "thing_darking", &tp_thing_darking, 0, "Allow setting things dark"},
@@ -965,5 +967,5 @@ do_tune(dbref player, char *parmname, char *parmval)
 		return;
 	}
 }
-static const char *tune_c_version = "$RCSfile$ $Revision: 1.48 $";
+static const char *tune_c_version = "$RCSfile$ $Revision: 1.49 $";
 const char *get_tune_c_version(void) { return tune_c_version; }

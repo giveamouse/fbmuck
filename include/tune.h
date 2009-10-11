@@ -131,6 +131,7 @@ extern int tp_idleboot;
 extern int tp_playermax;
 extern int tp_allow_home;
 extern int tp_enable_prefix;
+extern int tp_idle_ping_enable;
 extern int tp_thing_movement;
 extern int tp_expanded_debug;
 extern int tp_proplist_int_counter;
@@ -157,7 +158,7 @@ extern stk_array *tune_parms_array(const char* pattern, int mlev);
 
 #ifndef tuneh_version
 #define tuneh_version
-const char *tune_h_version = "$RCSfile$ $Revision: 1.35 $";
+const char *tune_h_version = "$RCSfile$ $Revision: 1.36 $";
 #endif
 #else
 extern const char *tune_h_version;

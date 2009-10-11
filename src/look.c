@@ -399,7 +399,10 @@ flag_description(dbref thing)
 			strcatn(buf, sizeof(buf), " JUMP_OK");
 		if (FLAGS(thing) & VEHICLE)
 			strcatn(buf, sizeof(buf), (Typeof(thing) == TYPE_PROGRAM) ? " VIEWABLE" : " VEHICLE");
-
+                if (tp_enable_match_yield && FLAGS(thing) & YIELD)
+                        strcatn(buf, sizeof(buf), " YIELD");
+                if (tp_enable_match_yield && FLAGS(thing) & OVERT)
+                        strcatn(buf, sizeof(buf), " OVERT");
 		if (FLAGS(thing) & XFORCIBLE) {
 			if (Typeof(thing) == TYPE_EXIT) {
 				strcatn(buf, sizeof(buf), " XPRESS");
@@ -1042,6 +1045,15 @@ init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
 			else
 				check->setflags |= LINK_OK;
 			break;
+                case 'O':
+                        if (tp_enable_match_yield) {
+                          if (mode)
+                            check->clearflags |= OVERT;
+                          else
+                            check->setflags |= OVERT;
+                        }
+                        break;
+
 		case 'Q':
 			if (mode)
 				check->clearflags |= QUELL;
@@ -1060,6 +1072,14 @@ init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
 			else
 				check->setflags |= VEHICLE;
 			break;
+                case 'Y':
+                        if (tp_enable_match_yield) {
+                          if (mode)
+                            check->clearflags |= YIELD;
+                          else
+                            check->setflags |= YIELD;
+                        }
+                        break;
 		case 'Z':
 			if (mode)
 				check->clearflags |= ZOMBIE;
@@ -1587,5 +1607,5 @@ do_sweep(int descr, dbref player, const char *name)
 	}
 	notify(player, "**End of list**");
 }
-static const char *look_c_version = "$RCSfile$ $Revision: 1.27 $";
+static const char *look_c_version = "$RCSfile$ $Revision: 1.28 $";
 const char *get_look_c_version(void) { return look_c_version; }
