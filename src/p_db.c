@@ -694,13 +694,12 @@ prim_set(PRIM_PROTOTYPE)
 						|| ((tmp == ZOMBIE) && (Typeof(ref) == TYPE_THING)
 							&& (FLAGS(ProgUID) & ZOMBIE))
 						|| ((tmp == ZOMBIE) && (Typeof(ref) == TYPE_PLAYER))
-						|| (tmp == BUILDER)
+						|| (tmp == BUILDER) || (tmp == YIELD) || (tmp == OVERT)
 		 )
 		)
 		|| (tmp == WIZARD) || (tmp == QUELL) || (tmp == INTERACTIVE)
 		|| ((tmp == ABODE) && (Typeof(ref) == TYPE_PROGRAM))
 		|| (tmp == MUCKER) || (tmp == SMUCKER) || (tmp == XFORCIBLE)
-                || (tmp == YIELD) || (tmp == OVERT)
 			)
 		abort_interp("Permission denied.");
         if (((tmp == YIELD) || (tmp == OVERT)) &&
@@ -2699,5 +2698,5 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
-static const char *p_db_c_version = "$RCSfile$ $Revision: 1.59 $";
+static const char *p_db_c_version = "$RCSfile$ $Revision: 1.60 $";
 const char *get_p_db_c_version(void) { return p_db_c_version; }
