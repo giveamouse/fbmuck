@@ -2,6 +2,9 @@
 
 /*
  * $Log: predicates.c,v $
+ * Revision 1.20  2009/10/11 05:30:43  points
+ * Fixed compile issue if GOD_PRIV not set.  Added missing tune external.
+ *
  * Revision 1.19  2009/10/11 05:19:18  points
  * Enable 'yielding' of matches up the environment tree when finding possible exits.
  *
@@ -564,7 +567,7 @@ restricted(dbref player, dbref thing, object_flag_type flag)
 #else							/* !GOD_PRIV */
 			/* We don't want someone setting themselves !W, to prevent
 			 * a case where there are no wizards at all */
-			return ((Typeof(thing) == TYPE_PLAYER && thing == OWNER(player));
+			return ((Typeof(thing) == TYPE_PLAYER && thing == OWNER(player)));
 #endif							/* GOD_PRIV */
 		} else
 			return 1;
@@ -716,5 +719,5 @@ isancestor(dbref parent, dbref child)
 	}
 	return child == parent;
 }
-static const char *predicates_c_version = "$RCSfile$ $Revision: 1.19 $";
+static const char *predicates_c_version = "$RCSfile$ $Revision: 1.20 $";
 const char *get_predicates_c_version(void) { return predicates_c_version; }
