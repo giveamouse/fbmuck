@@ -22,8 +22,8 @@ generation=`expr $generation + 1`
 creation=`date | awk '{if (NF == 6) { print $1 " "  $2 " " $3 " "  $6 " at " $4 " " $5 } else { print $1 " "  $2 " " $3 " " $7 " at " $4 " " $5 " " $6 }}'`
 cat > version.c <<EOF
 /*
- * Copyright (c) 1991-2000 by Fuzzball Software
- * under the Gnu Public License
+ * Copyright (c) 1991-2009 by Fuzzball Software
+ * under the GNU Public License
  *
  * Some parts of this code -- in particular the dictionary based compression
  * code is Copyright 1995 by Dragon's Eye Productions
@@ -77,13 +77,15 @@ const char *infotext[] =
     "it down.",
     " ",
     "The following programmers currently maintain the code:",
-    "  Foxen/Revar:   revar@belfry.com    Project Lead, Developer",
+    "  Winged:        aerowolf@gmail.com  Project Maintainer",
+    "  Foxen/Revar:   revar@belfry.com    Developer",
     "  Points:                            Bug Finder/Lead/Developer",
     " ",
+    "The following programmers have 
     "  Our Sourceforge developers (http://sourceforge.net/projects/fbmuck/):",
     "  Akari, Alynna, Arcticwolf (Schneelocke), Cerilus, Fentonator,",
     "  Ferretbun, Foxbird, Jenora, McClure, Naiya, Natasha O'Brien, Sombre,",
-    "  Tiger (Fre'ta), Winged, Wog, and WolfWings.",
+    "  Tiger (Fre'ta), Wog, and WolfWings.",
     " ",
     "The following people helped out a lot along the way:",
     "  Caspian, Kim \\"Bookwyrm\\" Liu, Chris, Jenora, Lynx, WhiteFire,",
