@@ -776,7 +776,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 			struct timeval tv = PROGRAM_PROFTIME(thing);
 			snprintf(buf, sizeof(buf), "Program compiled size: %d instructions", PROGRAM_SIZ(thing));
 			notify(player, buf);
-			snprintf(buf, sizeof(buf), "Cumulative runtime: %ld.%06ld seconds ", tv.tv_sec, tv.tv_usec);
+			snprintf(buf, sizeof(buf), "Cumulative runtime: %d.%06d seconds ", (int)tv.tv_sec, (int)tv.tv_usec);
 			notify(player, buf);
 		} else {
 			snprintf(buf, sizeof(buf), "Program not compiled.");
@@ -1607,5 +1607,5 @@ do_sweep(int descr, dbref player, const char *name)
 	}
 	notify(player, "**End of list**");
 }
-static const char *look_c_version = "$RCSfile$ $Revision: 1.28 $";
+static const char *look_c_version = "$RCSfile$ $Revision: 1.29 $";
 const char *get_look_c_version(void) { return look_c_version; }

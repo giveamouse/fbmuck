@@ -1206,7 +1206,7 @@ mfn_smatch(MFUNARGS)
 const char *
 mfn_strlen(MFUNARGS)
 {
-	snprintf(buf, BUFFER_LEN, "%d", strlen(argv[0]));
+	snprintf(buf, BUFFER_LEN, "%d", (int)strlen(argv[0]));
 	return buf;
 }
 
@@ -1644,7 +1644,7 @@ mfn_instr(MFUNARGS)
 	for (ptr = argv[0]; *ptr && !string_prefix(ptr, argv[1]); ptr++) ;
 	if (!*ptr)
 		return "0";
-	snprintf(buf, BUFFER_LEN, "%d", (ptr - argv[0] + 1));
+	snprintf(buf, BUFFER_LEN, "%d", (int)(ptr - argv[0] + 1));
 	return buf;
 }
 
@@ -1909,5 +1909,5 @@ mfn_escape(MFUNARGS)
 	*out = '\0';
 	return buf;
 }
-static const char *mfuns2_c_version = "$RCSfile$ $Revision: 1.40 $";
+static const char *mfuns2_c_version = "$RCSfile$ $Revision: 1.41 $";
 const char *get_mfuns2_c_version(void) { return mfuns2_c_version; }

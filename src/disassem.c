@@ -61,19 +61,19 @@ disassemble(dbref player, dbref program)
 			break;
 		case PROG_ADD:
 			snprintf(buf, sizeof(buf), "%d: (line %d) ADDRESS: %d", i,
-					curr->line, (curr->data.addr->data - codestart));
+					curr->line, (int)(curr->data.addr->data - codestart));
 			break;
 		case PROG_TRY:
-			snprintf(buf, sizeof(buf), "%d: (line %d) TRY: %d", i, curr->line, (curr->data.call - codestart));
+			snprintf(buf, sizeof(buf), "%d: (line %d) TRY: %d", i, curr->line, (int)(curr->data.call - codestart));
 			break;
 		case PROG_IF:
-			snprintf(buf, sizeof(buf), "%d: (line %d) IF: %d", i, curr->line, (curr->data.call - codestart));
+			snprintf(buf, sizeof(buf), "%d: (line %d) IF: %d", i, curr->line, (int)(curr->data.call - codestart));
 			break;
 		case PROG_JMP:
-			snprintf(buf, sizeof(buf), "%d: (line %d) JMP: %d", i, curr->line, (curr->data.call - codestart));
+			snprintf(buf, sizeof(buf), "%d: (line %d) JMP: %d", i, curr->line, (int)(curr->data.call - codestart));
 			break;
 		case PROG_EXEC:
-			snprintf(buf, sizeof(buf), "%d: (line %d) EXEC: %d", i, curr->line, (curr->data.call - codestart));
+			snprintf(buf, sizeof(buf), "%d: (line %d) EXEC: %d", i, curr->line, (int)(curr->data.call - codestart));
 			break;
 		case PROG_OBJECT:
 			snprintf(buf, sizeof(buf), "%d: (line %d) OBJECT REF: %d", i, curr->line, curr->data.number);
@@ -114,5 +114,5 @@ disassemble(dbref player, dbref program)
 		notify(player, buf);
 	}
 }
-static const char *disassem_c_version = "$RCSfile$ $Revision: 1.16 $";
+static const char *disassem_c_version = "$RCSfile$ $Revision: 1.17 $";
 const char *get_disassem_c_version(void) { return disassem_c_version; }
