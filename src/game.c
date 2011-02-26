@@ -323,6 +323,11 @@ fork_and_dump(void)
 		dump_database_internal();
 		_exit(0);
 	}
+	if (global_dumper_pid < 0) {
+	    global_dumper_pid = 0;
+	    wall_wizards("## Could not fork for database dumping.  Possibly out of memory.");
+	    wall_wizards("## Please restart the server when next convenient.");
+	}
 # else /* !WIN32 */
 	dump_database_internal();
 	/* TODO: This is not thread safe - disabled for now... */
@@ -1452,5 +1457,5 @@ process_command(int descr, dbref player, char *command)
 }
 
 #undef Matched
-static const char *game_c_version = "$RCSfile$ $Revision: 1.49 $";
+static const char *game_c_version = "$RCSfile$ $Revision: 1.50 $";
 const char *get_game_c_version(void) { return game_c_version; }
