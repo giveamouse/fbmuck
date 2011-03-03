@@ -27,9 +27,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#ifdef USE_IPV6
-#include <netinet6/in6.h>
-#endif
+//"do not include netinet6/in6.h directly, include netinet/in.h.  see RFC2553"
 
 extern char **environ;
 #ifdef HAVE_ERRNO_H
@@ -171,5 +169,5 @@ main(int argc, char *argv[])
 		close(ns);
 	}
 }								/* main */
-static const char *announce_c_version = "$RCSfile$ $Revision: 1.16 $";
+static const char *announce_c_version = "$RCSfile$ $Revision: 1.17 $";
 const char *get_announce_c_version(void) { return announce_c_version; }

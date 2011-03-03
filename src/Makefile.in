@@ -38,6 +38,7 @@ INCLUDE= ${ROOT}/include
 
 # The root of the directory tree to install to.
 prefix=@prefix@
+datarootdir=@datarootdir@
 exec_prefix=@exec_prefix@
 # Destinations for binaries
 INSTALL_BINDIR=@bindir@

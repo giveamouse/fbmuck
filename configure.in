@@ -208,39 +208,19 @@ if test "$enableval" = yes; then
 fi
 ])
 
-AC_ARG_ENABLE(ipv6,
-[  --enable-ipv6              use IPv6 instead of IPv4 for network connections],
-[
-if test "$enableval" = yes; then
-	AC_DEFINE(USE_IPV6, [], [Use IPv6 instead of IPv4 sockets.])
 
-	found_ipv6_h="0"
-	AC_CHECK_HEADERS(in6.h,
-		AC_DEFINE(HAVE_IN6_H)
-		found_ipv6_h="1"
-	)
-	AC_CHECK_HEADERS(linux/in6.h,
-		AC_DEFINE(HAVE_LINUX_IN6_H)
-		found_ipv6_h="1"
-	)
-	AC_CHECK_HEADERS(netinet6/in6.h,
-		AC_DEFINE(HAVE_NETINET6_IN6_H)
-		found_ipv6_h="1"
-	)
-	if test "$found_ipv6_h" = "0"; then
-		AC_MSG_ERROR([cannot locate in6.h header file.])
+#
+# IPv6
+#
+AC_ARG_WITH(ipv6,
+    [  --with-ipv6             enable IPv6-support],
+    [
+        if test $withval != "no";
+        then
+	    AC_DEFINE(USE_IPV6,1)
 	fi
+    ])
 
-	found_ipv6_lib="0"
-	AC_CHECK_LIB(resolv, bind,
-		LIBS="-lresolv $LIBS"
-		found_ipv6_lib="1"
-	)
-	if test "$found_ipv6_lib" = "0"; then
-		AC_MSG_ERROR([cannot locate libresolv library.])
-	fi
-fi
-])
 
 
 dnl
