@@ -177,7 +177,7 @@ fbmuck: $(INCLUDE)/defines.h ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversi
 	  ${LIBR} ${LOBJ}
 
 fb-resolver: resolver.o ${LOBJ} ${MALLOBJ} Makefile
-	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} ${LOBJ}
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} ${LOBJ} -lpthread
 
 fb-topwords: topwords.o hashtab.o ${MALLOBJ} Makefile
 	${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-topwords topwords.o hashtab.o ${MALLOBJ} ${LIBR}

@@ -2066,7 +2066,7 @@ make_socket_v6(int port)
 	*/
 
 	memset((char*)&server, 0, sizeof(server));
-	server.sin6_len = sizeof(server);
+	//server.sin6_len = sizeof(server);
 	server.sin6_family = AF_INET6;
 	server.sin6_addr = in6addr_any;
 	server.sin6_port = htons(port);
@@ -4469,5 +4469,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.124 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.125 $";
 const char *get_interface_c_version(void) { return interface_c_version; }
