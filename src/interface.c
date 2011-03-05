@@ -162,7 +162,11 @@ struct descriptor_data *descriptor_list = NULL;
 
 #define MAX_LISTEN_SOCKS 16
 
+// Yes, both of these should start defaulted to disabled.
+// If both are still disabled after arg parsing, we'll enable one or both.
+static int ipv4_enabled = 0;
 static int ipv6_enabled = 0;
+
 static int numports = 0;
 static int numsocks = 0;
 static int listener_port[MAX_LISTEN_SOCKS];
@@ -409,7 +413,10 @@ main(int argc, char **argv)
 				}
 				outfile_name = argv[++i];
 
-            } else if (!strcmp(argv[i], "-ipv6")) {
+			} else if (!strcmp(argv[i], "-ipv4")) {
+				ipv4_enabled = 1;
+
+			} else if (!strcmp(argv[i], "-ipv6")) {
 #ifdef USE_IPV6
 				ipv6_enabled = 1;
 #else
@@ -451,7 +458,7 @@ main(int argc, char **argv)
 				}
 #else
 				i++;
-                fprintf(stderr, "-sport: This server isn't configured to enable SSL.  Sorry.\n");
+				fprintf(stderr, "-sport: This server isn't configured to enable SSL.  Sorry.\n");
 				exit(1);
 #endif
 			} else if (!strcmp(argv[i], "-gamedir")) {
@@ -496,6 +503,19 @@ main(int argc, char **argv)
 	if (!infile_name || !outfile_name) {
 		show_program_usage(*argv);
 	}
+
+#ifdef USE_IPV6
+	if (!ipv4_enabled && !ipv6_enabled) {
+	    // No -ipv4 or -ipv6 flags given.  Default to enabling both.
+	    ipv4_enabled = 1;
+	    ipv6_enabled = 1;
+	}
+#else
+	// If IPv6 isn't available always enable IPv4.
+	ipv4_enabled = 1;
+	ipv6_enabled = 0;
+#endif
+
 #ifdef DISKBASE
 	if (!strcmp(infile_name, outfile_name)) {
 		fprintf(stderr, "Output file must be different from the input file.");
@@ -1135,7 +1155,7 @@ shovechars()
 	int ssl_status_ok = 1;
 #endif
 
-	if (!ipv6_enabled) {
+	if (ipv4_enabled) {
 		for (i = 0; i < numports; i++) {
 			sock[i] = make_socket(listener_port[i]);
 			maxd = sock[i] + 1;
@@ -1187,7 +1207,7 @@ shovechars()
 	}
  
 	if (ssl_status_ok) {
-		if (!ipv6_enabled) {
+		if (ipv4_enabled) {
 			for (i = 0; i < ssl_numports; i++) {
 				ssl_sock[i] = make_socket(ssl_listener_port[i]);
 				maxd = ssl_sock[i] + 1;
@@ -2047,13 +2067,19 @@ make_socket_v6(int port)
 
 	opt = 1;
 	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
-		perror("setsockopt");
+		perror("setsockopt(SO_REUSEADDR)");
 		exit(1);
 	}
 
 	opt = 1;
 	if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *) &opt, sizeof(opt)) < 0) {
-		perror("setsockopt");
+		perror("setsockopt(SO_KEEPALIVE)");
+		exit(1);
+	}
+
+	opt = 1;
+	if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, (char *) &opt, sizeof(opt)) < 0) {
+		perror("setsockopt(IPV6_V6ONLY");
 		exit(1);
 	}
 
@@ -4469,5 +4495,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.125 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.126 $";
 const char *get_interface_c_version(void) { return interface_c_version; }
