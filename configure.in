@@ -212,10 +212,10 @@ fi
 #
 # IPv6
 #
-AC_ARG_WITH(ipv6,
-    [  --with-ipv6             enable IPv6-support],
+AC_ARG_ENABLE(ipv6,
+    [  --enable-ipv6             enable IPv6-support],
     [
-        if test $withval != "no";
+        if test $enable_ipv6 == "yes";
         then
 	    AC_DEFINE(USE_IPV6,1)
 	fi
