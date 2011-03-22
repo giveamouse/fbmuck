@@ -217,7 +217,7 @@ AC_ARG_ENABLE(ipv6,
     [
         if test $enable_ipv6 == "yes";
         then
-	    AC_DEFINE(USE_IPV6,1)
+	    AC_DEFINE(USE_IPV6,[], [Enable IPv6 support.])
 	fi
     ])
 
