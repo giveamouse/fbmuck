@@ -1225,7 +1225,6 @@ shovechars()
 # endif
 	} else {
 		ssl_numsocks = 0;
-		ssl_numsocks_v6 = 0;
 	}
 #endif
 	gettimeofday(&last_slice, (struct timezone *) 0);
@@ -4495,5 +4494,5 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
-static const char *interface_c_version = "$RCSfile$ $Revision: 1.126 $";
+static const char *interface_c_version = "$RCSfile$ $Revision: 1.127 $";
 const char *get_interface_c_version(void) { return interface_c_version; }
