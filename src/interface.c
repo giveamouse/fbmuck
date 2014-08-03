@@ -1374,7 +1374,7 @@ shovechars()
 			sel_prof_idle_use++;
 			(void) time(&now);
 			for (i = 0; i < numsocks; i++) {
-				if (pollfd_mgr_get(fds, sock[i])->revents & POLLIN) {
+				if (pollfd_mgr_result(fds, sock[i]) & POLLIN) {
 					if (!(newd = new_connection(listener_port[i], sock[i], 0))) {
 #ifndef WIN32
 						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
@@ -1395,7 +1395,7 @@ shovechars()
 			}
 #ifdef USE_IPV6
 			for (i = 0; i < numsocks_v6; i++) {
-				if (pollfd_mgr_get(fds, sock_v6[i])->revents & POLLIN) {
+				if (pollfd_mgr_result(fds, sock_v6[i]) & POLLIN) {
 					if (!(newd = new_connection_v6(listener_port[i], sock_v6[i], 0))) {
 # ifndef WIN32
 						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
@@ -1417,7 +1417,7 @@ shovechars()
 #endif
 #ifdef USE_SSL
 			for (i = 0; i < ssl_numsocks; i++) {
-				if (pollfd_mgr_get(fds, ssl_sock[i])->revents & POLLIN) {
+				if (pollfd_mgr_result(fds, ssl_sock[i]) & POLLIN) {
 					if (!(newd = new_connection(ssl_listener_port[i], ssl_sock[i], 1))) {
 # ifndef WIN32
 						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
@@ -1442,7 +1442,7 @@ shovechars()
 			}
 # ifdef USE_IPV6
 			for (i = 0; i < ssl_numsocks_v6; i++) {
-				if (pollfd_mgr_get(fds, ssl_sock_v6[i])->revents & POLLIN) {
+				if (pollfd_mgr_result(fds, ssl_sock_v6[i]) & POLLIN) {
 					if (!(newd = new_connection_v6(ssl_listener_port[i], ssl_sock_v6[i], 1))) {
 #  ifndef WIN32
 						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
@@ -1468,18 +1468,18 @@ shovechars()
 # endif
 #endif
 #ifdef SPAWN_HOST_RESOLVER
-			if (pollfd_mgr_get(fds, resolver_sock[1])->revents & POLLIN) {
+			if (pollfd_mgr_result(fds, resolver_sock[1]) & POLLIN) {
 				resolve_hostnames();
 			}
 #endif
 			for (cnt = 0, d = descriptor_list; d; d = dnext) {
 				dnext = d->next;
-				if (pollfd_mgr_get(fds, d->descriptor)->revents & POLLIN) {
+				if (pollfd_mgr_result(fds, d->descriptor) & POLLIN) {
 					if (!process_input(d)) {
 						d->booted = 1;
 					}
 				}
-				if (pollfd_mgr_get(fds, d->descriptor)->revents & POLLOUT) {
+				if (pollfd_mgr_result(fds, d->descriptor) & POLLOUT) {
 					if (!process_output(d)) {
 						d->booted = 1;
 					}
