@@ -44,10 +44,6 @@
   typedef int socklen_t;
 #endif
 
-#ifdef AIX
-# include <sys/select.h>
-#endif
-
 #ifdef HAVE_LIBSSL
 # define USE_SSL
 #endif
@@ -59,6 +55,8 @@
 #  include <ssl.h>
 # endif
 #endif
+
+#include "pollfd_mgr.h"
 
 #include "db.h"
 #include "interface.h"
@@ -1138,7 +1136,7 @@ extern void purge_free_frames(void);
 void
 shovechars()
 {
-	fd_set input_set, output_set;
+    struct pollfd_mgr *fds;
 	time_t now;
 	long tmptq;
 	struct timeval last_slice, current_time;
@@ -1150,6 +1148,8 @@ shovechars()
 	struct timeval sel_in, sel_out;
 	int avail_descriptors;
 	int i;
+
+    fds = pollfd_mgr_new();
 
 #ifdef USE_SSL
 	int ssl_status_ok = 1;
@@ -1274,25 +1274,23 @@ shovechars()
 		next_slice = msec_add(last_slice, tp_command_time_msec);
 		slice_timeout = timeval_sub(next_slice, current_time);
 
-		FD_ZERO(&input_set);
-		FD_ZERO(&output_set);
 		if (ndescriptors < avail_descriptors) {
 			for (i = 0; i < numsocks; i++) {
-				FD_SET(sock[i], &input_set);
+				pollfd_mgr_add(fds, sock[i], POLLIN);
 			}
 #ifdef USE_IPV6
 			for (i = 0; i < numsocks_v6; i++) {
-				FD_SET(sock_v6[i], &input_set);
+				pollfd_mgr_add(fds, sock_v6[i], POLLIN);
 			}
 #endif
 
 #ifdef USE_SSL
 			for (i = 0; i < ssl_numsocks; i++) {
-				FD_SET(ssl_sock[i], &input_set);
+				pollfd_mgr_add(fds, ssl_sock[i], POLLIN);
 			}
 # ifdef USE_IPV6
 			for (i = 0; i < ssl_numsocks_v6; i++) {
-				FD_SET(ssl_sock_v6[i], &input_set);
+				pollfd_mgr_add(fds, ssl_sock_v6[i], POLLIN);
 			}
 # endif
 #endif
@@ -1301,7 +1299,7 @@ shovechars()
 			if (d->input.lines > 100)
 				timeout = slice_timeout;
 			else
-				FD_SET(d->descriptor, &input_set);
+				pollfd_mgr_add(fds, d->descriptor, POLLIN);
 
 #ifdef USE_SSL
 			if (d->output.head && !d->block_writes) {
@@ -1313,9 +1311,9 @@ shovechars()
 				long timeon = now - d->connected_at;
 
 				if (d->ssl_session || !tp_starttls_allow) {
-					FD_SET(d->descriptor, &output_set);
+					pollfd_mgr_add(fds, d->descriptor, POLLOUT);
 				} else if (timeon >= welcome_pause) {
-					FD_SET(d->descriptor, &output_set);
+					pollfd_mgr_add(fds, d->descriptor, POLLOUT);
 				} else {
 					if (timeout.tv_sec > welcome_pause - timeon) {
 						timeout.tv_sec = welcome_pause - timeon;
@@ -1328,23 +1326,23 @@ shovechars()
 				/* SSL may want to write even if the output queue is empty */
 				if ( ! SSL_is_init_finished(d->ssl_session) ) {
 					/* log_status("SSL : Init not finished.\n", "version"); */
-					FD_CLR(d->descriptor, &output_set);
-					FD_SET(d->descriptor, &input_set);
+					pollfd_mgr_remove(fds, d->descriptor, POLLOUT);
+					pollfd_mgr_add(fds, d->descriptor, POLLIN);
 				} 
 				if ( SSL_want_write(d->ssl_session) ) {
 					/* log_status("SSL : Need write.\n", "version"); */
-					FD_SET(d->descriptor, &output_set);
+                    pollfd_mgr_add(fds, d->descriptor, POLLOUT);
 				}
 			}
 #else
 			if (d->output.head && !d->block_writes) {
-				FD_SET(d->descriptor, &output_set);
+				pollfd_mgr_add(fds, d->descriptor, POLLOUT);
 			}
 #endif
 
 		}
 #ifdef SPAWN_HOST_RESOLVER
-		FD_SET(resolver_sock[1], &input_set);
+		pollfd_mgr_add(fds, resolver_sock[1], POLLIN);
 #endif
 
 		tmptq = next_muckevent_time();
@@ -1353,19 +1351,12 @@ shovechars()
 			timeout.tv_usec = (tp_pause_min % 1000) * 1000L;
 		}
 		gettimeofday(&sel_in,NULL);
-#ifndef WIN32
-		if (select(maxd, &input_set, &output_set, (fd_set *) 0, &timeout) < 0) {
+		if (pollfd_mgr_select(fds, &timeout) < 0) {
 			if (errno != EINTR) {
 				perror("select");
+                pollfd_mgr_delete(fds);
 				return;
 			}
-#else
-		if (select(maxd, &input_set, &output_set, (fd_set *) 0, &timeout) == SOCKET_ERROR) {
-			if (WSAGetLastError() != WSAEINTR) {
-				perror("select");
-				return;
-			}
-#endif
 		} else {
 			gettimeofday(&sel_out,NULL);
 			if (sel_out.tv_usec < sel_in.tv_usec) {
@@ -1383,7 +1374,7 @@ shovechars()
 			sel_prof_idle_use++;
 			(void) time(&now);
 			for (i = 0; i < numsocks; i++) {
-				if (FD_ISSET(sock[i], &input_set)) {
+				if (pollfd_mgr_get(fds, sock[i])->revents & POLLIN) {
 					if (!(newd = new_connection(listener_port[i], sock[i], 0))) {
 #ifndef WIN32
 						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
@@ -1404,7 +1395,7 @@ shovechars()
 			}
 #ifdef USE_IPV6
 			for (i = 0; i < numsocks_v6; i++) {
-				if (FD_ISSET(sock_v6[i], &input_set)) {
+				if (pollfd_mgr_get(fds, sock_v6[i])->revents & POLLIN) {
 					if (!(newd = new_connection_v6(listener_port[i], sock_v6[i], 0))) {
 # ifndef WIN32
 						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
@@ -1426,7 +1417,7 @@ shovechars()
 #endif
 #ifdef USE_SSL
 			for (i = 0; i < ssl_numsocks; i++) {
-				if (FD_ISSET(ssl_sock[i], &input_set)) {
+				if (pollfd_mgr_get(fds, ssl_sock[i])->revents & POLLIN) {
 					if (!(newd = new_connection(ssl_listener_port[i], ssl_sock[i], 1))) {
 # ifndef WIN32
 						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
@@ -1451,7 +1442,7 @@ shovechars()
 			}
 # ifdef USE_IPV6
 			for (i = 0; i < ssl_numsocks_v6; i++) {
-				if (FD_ISSET(ssl_sock_v6[i], &input_set)) {
+				if (pollfd_mgr_get(fds, ssl_sock_v6[i])->revents & POLLIN) {
 					if (!(newd = new_connection_v6(ssl_listener_port[i], ssl_sock_v6[i], 1))) {
 #  ifndef WIN32
 						if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
@@ -1477,18 +1468,18 @@ shovechars()
 # endif
 #endif
 #ifdef SPAWN_HOST_RESOLVER
-			if (FD_ISSET(resolver_sock[1], &input_set)) {
+			if (pollfd_mgr_get(fds, resolver_sock[1])->revents & POLLIN) {
 				resolve_hostnames();
 			}
 #endif
 			for (cnt = 0, d = descriptor_list; d; d = dnext) {
 				dnext = d->next;
-				if (FD_ISSET(d->descriptor, &input_set)) {
+				if (pollfd_mgr_get(fds, d->descriptor)->revents & POLLIN) {
 					if (!process_input(d)) {
 						d->booted = 1;
 					}
 				}
-				if (FD_ISSET(d->descriptor, &output_set)) {
+				if (pollfd_mgr_get(fds, d->descriptor)->revents & POLLOUT) {
 					if (!process_output(d)) {
 						d->booted = 1;
 					}
@@ -1526,6 +1517,8 @@ shovechars()
 	(void) time(&now);
 	add_property((dbref) 0, "_sys/lastdumptime", NULL, (int) now);
 	add_property((dbref) 0, "_sys/shutdowntime", NULL, (int) now);
+
+    pollfd_mgr_delete(fds);
 }
 
 

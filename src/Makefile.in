@@ -125,7 +125,8 @@ CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
 	p_misc.c p_props.c p_regex.c predicates.c propdirs.c property.c \
 	props.c p_stack.c p_strings.c random.c rob.c sanity.c set.c \
 	signal.c smatch.c snprintf.c speech.c strftime.c stringutil.c \
-	timequeue.c timestamp.c tune.c unparse.c utils.c wiz.c
+	timequeue.c timestamp.c tune.c unparse.c utils.c wiz.c \
+	pollfd_mgr.cc
 
 LSRC= copyright.c
 MSRC= compress.c olddecomp.c reconst.c interface.c resolver.c topwords.c
@@ -139,7 +140,8 @@ COBJ= array.o boolexp.o compile.o create.o db_header.o db.o debugger.o \
 	p_misc.o p_props.o p_regex.o predicates.o propdirs.o property.o \
 	props.o p_stack.o p_strings.o random.o rob.o sanity.o set.o \
 	signal.o smatch.o snprintf.o speech.o strftime.o stringutil.o \
-	timequeue.o timestamp.o tune.o unparse.o utils.o wiz.o
+	timequeue.o timestamp.o tune.o unparse.o utils.o wiz.o \
+	pollfd_mgr.o
 
 LOBJ= copyright.o
 MOBJ= olddecomp.o reconst.o interface.o resolver.o topwords.o
@@ -161,6 +163,9 @@ HELPFILES= man.txt help.txt mpihelp.txt
 .c.cpp:
 	${PRE} ${CPP} ${CFLAGS} ${INCL} ${DEFS} -c $*.c -o $*.cpp
 
+.cc.o:
+	${PRE} ${CXX} ${CFLAGS} ${INCL} ${DEFS} -c $*.cc
+
 all: $(INCLUDE)/defines.h ${TARGETS} 
 
 $(INCLUDE)/defines.h:
@@ -173,7 +178,7 @@ fbmuck: $(INCLUDE)/defines.h ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversi
 	sh mkversion.sh
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c version.c
 	if [ -f fbmuck ]; then ${MV} fbmuck fbmuck~ ; fi
-	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${COBJ} ${MALLOBJ} interface.o version.o \
+	${PRE} ${CXX} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${COBJ} ${MALLOBJ} interface.o version.o \
 	  ${LIBR} ${LOBJ}
 
 fb-resolver: resolver.o ${LOBJ} ${MALLOBJ} Makefile
